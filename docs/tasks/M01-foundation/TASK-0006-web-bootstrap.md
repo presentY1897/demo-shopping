@@ -91,7 +91,7 @@ Tailwind 는 v4 이므로 설정이 CSS 다. 공통 프리셋도 JS 객체가 �
 | F5b | 포트 오프셋 | `PORT_OFFSET=10 pnpm dev` | 3010/3011/3012 에서 응답, API 연결 정상 | 세 앱 모두 200, 엔드포인트 `http://localhost:4010`, 검색 정상 | [x] |
 | F6 | 클린 클론 | 빈 디렉터리에 clone → install → infra up → dev | **수동 수정 0회로 전부 기동** | 임시 디렉터리에 clone(`PORT_OFFSET=10`) 후 4개 전부 4.2초에 기동 | [x] |
 
-[^db]: TASK 작성 시점의 문구는 "API/DB/검색 3개 항목"이었으나, **`database` 항목은 TASK-0005 가 추가한다.** 이 작업 시점의 `/health` 응답은 `status` · `search` · `uptime` · `version` 뿐이므로 상태 항목은 2개(`status`, `search`)가 정상이다. 화면은 항목 이름을 하드코딩하지 않고 **응답에 들어 있는 상태 값을 그대로 렌더**한다(`healthEntries`). `packages/shared` 의 `healthResponseSchema` 에 `database` 가 추가되는 순간 세 앱이 코드 변경 없이 한 줄 더 그린다 — 한국어 라벨 `데이터베이스` 는 세 앱의 메시지 카탈로그에 미리 넣어 두었다. (검증: `healthEntries({status, search, database, uptime, version})` → 3개 항목 반환)
+[^db]: TASK 작성 시점의 문구는 "API/DB/검색 3개 항목"이었으나, **`database` 항목은 TASK-0005 가 추가한다.** 이 작업 시점의 `/health` 응답은 `status` · `search` · `uptime` · `version` 뿐이므로 상태 항목은 2개(`status`, `search`)가 정상이다. 화면은 항목 이름을 하드코딩하지 않고 **응답에 들어 있는 상태 값을 그대로 렌더**한다(`healthEntries`). `packages/shared` 의 `healthResponseSchema` 에 `database` 가 추가되는 순간 세 앱이 코드 변경 없이 한 줄 더 그린다 — 한국어 라벨 `데이터베이스` 는 세 앱의 메시지 카탈로그에 미리 넣어 두었다. **실제로 확인했다** — 작업 중 `main` 에 TASK-0005 가 머지되었기에, 임시 클론에서 이 브랜치에 `main` 을 병합해 기동해 봤다. `/health` 가 `{"status":"ok","database":"ok","search":"ok",…}` 를 돌려주자 **세 앱 모두 코드 변경 없이 `전체 상태 · 데이터베이스 · 검색엔진` 세 줄을 그렸다.** 병합 충돌은 `pnpm-lock.yaml` 한 건뿐이고(`pnpm install` 로 해소), 병합된 트리에서 `typecheck` · `lint` · `build` · `test` · `format:check` 가 전부 exit 0 이었다.
 
 #### F6 클린 클론 절차 (실제 수행)
 
