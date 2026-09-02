@@ -10,12 +10,14 @@
 | [`decisions/`](./decisions/) | 무엇을 하기로 정했는가 | `DECISIONS.md` 는 현재 상태, 세션 파일은 이력 |
 | [`design/`](./design/) | 어떻게 생겼는가 | 항상 최신 상태만 유지 |
 | [`tasks/`](./tasks/) | 무엇을 언제 만드는가 | **승인 후 구현**이 원칙 |
+| [`retrospective/`](./retrospective/) | 어떻게 일했는가 | 세션별 작업·비용 회고, 추가만 |
 
 ## 어디서부터 읽나
 
 1. **[`decisions/DECISIONS.md`](./decisions/DECISIONS.md)** — 현재 유효한 모든 결정. 작업 전 필독
 2. `design/` — 화면·데이터·상태·금액 규칙
 3. `tasks/README.md` — 마일스톤별 진행 상황
+4. `retrospective/` — 지난 세션이 어떻게 흘렀고 얼마가 들었는지 (선택)
 
 ## 미확정 항목(Q-NN)은 어디에 있나
 
