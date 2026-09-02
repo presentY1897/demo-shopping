@@ -34,6 +34,8 @@
     "infra:ps": "node scripts/infra.mjs ps"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
     "@shopping/config": "workspace:*",
     "eslint": "^10.9.1",
     "husky": "^9.1.7",
