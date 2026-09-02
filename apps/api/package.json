@@ -4,6 +4,11 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "start": "node dist/main.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix --max-warnings 0",
     "typecheck": "tsc --noEmit",
@@ -11,12 +16,21 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
-    "@shopping/shared": "workspace:*"
+    "@nestjs/common": "^12.0.1",
+    "@nestjs/core": "^12.0.1",
+    "@nestjs/platform-express": "^12.0.1",
+    "@shopping/shared": "workspace:*",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
+    "@nestjs/cli": "^12.0.0",
     "@shopping/config": "workspace:*",
+    "@types/node": "^24.13.3",
     "eslint": "^10.9.1",
     "prettier": "^3.9.6",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11"
   }
 }

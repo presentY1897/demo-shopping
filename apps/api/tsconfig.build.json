@@ -1,0 +1,6 @@
+{
+  // Build only: tests stay out of `dist`, but `tsconfig.json` still includes
+  // them so that typecheck and eslint cover them.
+  "extends": "./tsconfig.json",
+  "exclude": ["dist", "node_modules", "**/*.spec.ts"]
+}

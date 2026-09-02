@@ -1,5 +1,10 @@
 {
   "extends": "@shopping/config/tsconfig/nest.json",
+  "compilerOptions": {
+    // TypeScript 6 no longer pulls every `node_modules/@types` package in
+    // automatically, so the ambient globals this app relies on are listed here.
+    "types": ["node"]
+  },
   "include": ["src"],
   "exclude": ["dist", "node_modules"]
 }
