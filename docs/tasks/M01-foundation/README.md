@@ -12,7 +12,7 @@
 | [TASK-0004](./TASK-0004-api-bootstrap.md) | API 부트스트랩 | 완료 | 0002, 0003 |
 | [TASK-0005](./TASK-0005-prisma-setup.md) | Prisma · DB 연결 | 진행중 | 0004 |
 | [TASK-0006](./TASK-0006-web-bootstrap.md) | 웹 앱 3종 부트스트랩 | 완료 | 0002, 0004 |
-| [TASK-0007](./TASK-0007-dev-workflow.md) | 개발 워크플로 · CI | 승인됨 | 0006 |
+| [TASK-0007](./TASK-0007-dev-workflow.md) | 개발 워크플로 · CI | 완료 | 0006 |
 
 ```
 0001 ─┬─ 0002 ─┬─ 0004 ── 0005
