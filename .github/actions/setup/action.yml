@@ -1,0 +1,32 @@
+name: Setup workspace
+description: >
+  Installs pnpm and Node, restores the pnpm store cache and builds the one
+  package every other command depends on.
+
+runs:
+  using: composite
+  steps:
+    # Reads the pnpm version from `packageManager` in the root package.json, so
+    # CI and the local machine can never drift apart.
+    - uses: pnpm/action-setup@v4
+
+    # Must come after pnpm: `cache: pnpm` asks the pnpm binary where its store
+    # lives. The cache key is the hash of pnpm-lock.yaml, so an unchanged
+    # lockfile means the packages are restored instead of downloaded.
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+        cache: pnpm
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+      shell: bash
+
+    # `packages/shared` is consumed through its `dist`, so typecheck, lint and
+    # test all fail with "Cannot find module '@shopping/shared'" until it is
+    # built. `pnpm install` happens to build it through the package's `prepare`
+    # script, but a job must not depend on that side effect: the jobs run in
+    # parallel with no shared workspace, so each one builds it explicitly.
+    - name: Build workspace dependencies
+      run: pnpm --filter @shopping/shared build
+      shell: bash
