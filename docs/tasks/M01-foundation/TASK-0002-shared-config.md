@@ -76,7 +76,7 @@ eslint 프리셋을 **객체가 아니라 함수**로 노출하는 이유: 타�
 | F1 | 공용 타입 사용 | `packages/shared` 타입을 api·shop 에서 import | `pnpm typecheck` error 0 | [x] |
 | F2 | 전체 타입 검사 | `pnpm typecheck` | 전 패키지 검사, error 0 | [x] |
 | F3 | 전체 린트 | `pnpm lint` | 전 패키지 검사, error 0 warning 0 | [x] |
-| F4 | 포맷 일관성 | `pnpm -r --if-present format:check` | 위반 0건 | [x] |
+| F4 | 포맷 일관성 | `pnpm format:check` | 위반 0건 | [x] |
 | F5 | 규칙 위반 검출 | 미사용 변수를 일부러 추가 후 `pnpm lint` | 해당 파일에서 error 발생 | [x] |
 
 > **F4 측정 방법 변경** — 최초 계획은 `pnpm format --check` 였다. 실제로 실행해 보면 이 명령은
