@@ -7,6 +7,7 @@
     "./tsconfig/base.json": "./tsconfig/base.json",
     "./tsconfig/next.json": "./tsconfig/next.json",
     "./tsconfig/nest.json": "./tsconfig/nest.json",
+    "./tailwind/preset.css": "./tailwind/preset.css",
     "./eslint/base": "./eslint/base.js",
     "./eslint/next": "./eslint/next.js",
     "./eslint/nest": "./eslint/nest.js",

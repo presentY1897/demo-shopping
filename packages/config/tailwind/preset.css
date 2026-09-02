@@ -1,0 +1,36 @@
+/*
+ * Shared Tailwind preset — the one place the three apps agree on.
+ *
+ * Each app's entry stylesheet imports Tailwind and then this file:
+ *
+ *   @import 'tailwindcss';
+ *   @import '@shopping/config/tailwind/preset.css';
+ *
+ * Tailwind v4 is configured in CSS, so a "preset" is a stylesheet rather than a
+ * JavaScript object. The design tokens (spacing scale, radii, palette and the
+ * three density steps) land here in M03; until then it holds only what is
+ * already decided, so that adding a token never means editing three apps.
+ */
+
+@theme {
+  /*
+   * Lower bound for any interactive target, independent of the density step a
+   * shopper picked (DECISIONS 1장).
+   */
+  --touch-min: 44px;
+
+  /*
+   * Liveness colours, shared because every app renders the same three states.
+   * Naming them here is what keeps a raw colour out of a component (DECISIONS
+   * 9장: 색 하드코딩 금지), which is the precondition for adding a dark set later.
+   */
+  --color-status-ok: oklch(0.63 0.15 150);
+  --color-status-degraded: oklch(0.75 0.15 75);
+  --color-status-down: oklch(0.58 0.2 25);
+}
+
+/*
+ * Components shipped by `packages/ui` (M03) are scanned for utility classes
+ * here, once, instead of in every app that renders them.
+ */
+@source "../../ui/src";
