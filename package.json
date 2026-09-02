@@ -9,6 +9,7 @@
   },
   "scripts": {
     "preinstall": "node scripts/only-pnpm.mjs",
+    "prepare": "husky",
     "dev": "pnpm -r --parallel --if-present dev",
     "build": "pnpm -r --if-present build",
     "lint": "pnpm run lint:root && pnpm -r --if-present lint",
@@ -35,6 +36,8 @@
   "devDependencies": {
     "@shopping/config": "workspace:*",
     "eslint": "^10.9.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.4.1",
     "prettier": "^3.9.6",
     "typescript": "^6.0.3"
   }
