@@ -5,6 +5,7 @@ import { Logger, VersioningType } from '@nestjs/common'
 import type { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
 import { NestFactory } from '@nestjs/core'
 import type { NestExpressApplication } from '@nestjs/platform-express'
+import { APP_ID_HEADER } from '@shopping/shared'
 
 import { AppModule } from './app.module.js'
 import { createNotFoundFallback } from './common/not-found.middleware.js'
@@ -44,7 +45,10 @@ function corsOptionsFor(config: AppConfig): CorsOptions {
     },
     credentials: true,
     methods: ['GET', 'HEAD', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
+    // APP_ID_HEADER identifies which of the three front ends is calling. The apps
+    // do not share cookies, so credentials alone cannot tell them apart. It comes
+    // from @shopping/shared so the client and this allow-list cannot drift apart.
+    allowedHeaders: ['Content-Type', 'Authorization', APP_ID_HEADER, 'X-Request-Id'],
     exposedHeaders: ['X-Request-Id'],
     maxAge: 600,
   }

@@ -119,6 +119,24 @@ pnpm --filter @shopping/api start   # 컴파일된 결과 실행
 pnpm --filter @shopping/api test    # vitest
 ```
 
+## 데이터베이스
+
+Prisma 명령은 저장소 루트에서 실행한다. `DATABASE_URL` 은 이 워크트리의 `PORT_OFFSET` 에서
+파생되므로 따로 설정할 것이 없다. 먼저 `pnpm infra:up` 으로 Postgres 가 떠 있어야 한다.
+
+| 명령 | 설명 |
+| --- | --- |
+| `pnpm db:migrate` | 스키마 변경을 마이그레이션으로 만들고 적용 (개발) |
+| `pnpm db:deploy` | 이미 만들어진 마이그레이션만 적용 (배포) |
+| `pnpm db:status` | 적용 상태 확인 |
+| `pnpm db:reset` | DB 를 비우고 처음부터 재적용 — **데이터가 사라진다** |
+| `pnpm db:seed` | 시드 실행 (내용은 M05 부터) |
+| `pnpm db:studio` | Prisma Studio. 포트는 `5555 + PORT_OFFSET` |
+| `pnpm db:generate` | Prisma Client 재생성 (`pnpm install` 이 자동으로 한다) |
+
+`db:reset` 은 확인 프롬프트를 띄운다. 비대화형 셸에서는 `pnpm db:reset --force`.
+마이그레이션 SQL 은 커밋한다. 배포 환경에서는 `db:deploy` 만 돈다.
+
 ## 웹 앱 (shop / seller / admin)
 
 구매자·판매자·관리자를 **독립된 Next.js 앱 3개**로 띄운다. 세션도 앱별로 독립이다(쿠키에 `Domain` 미지정).
