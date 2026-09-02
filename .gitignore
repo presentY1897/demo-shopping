@@ -39,3 +39,13 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 uploads/
+
+# monorepo / tooling
+.turbo/
+.pnpm-store/
+.cache/
+
+# other package managers (blocked by scripts/only-pnpm.mjs, but npm still
+# writes a lockfile before the preinstall hook fails)
+package-lock.json
+yarn.lock
