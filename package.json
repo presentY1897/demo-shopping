@@ -15,6 +15,11 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
     "format": "pnpm -r --if-present format",
-    "ports": "node scripts/ports.mjs"
+    "ports": "node scripts/ports.mjs",
+    "infra:up": "node scripts/infra.mjs up",
+    "infra:down": "node scripts/infra.mjs down",
+    "infra:reset": "node scripts/infra.mjs reset",
+    "infra:logs": "node scripts/infra.mjs logs",
+    "infra:ps": "node scripts/infra.mjs ps"
   }
 }
