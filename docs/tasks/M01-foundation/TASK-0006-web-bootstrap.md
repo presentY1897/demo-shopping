@@ -147,7 +147,7 @@ pnpm dev                                   # 4개 전부 기동
 | --- | --- | --- |
 | R1 | 앱 3개 병렬 실행 시 개발 머신 부하 | 개별 실행(`--filter`) 방법을 README 에 함께 안내 — 완료 |
 | R2 | Tailwind 설정 중복 | 공유 프리셋으로 두고 각 앱은 확장만 — `packages/config/tailwind/preset.css` |
-| R3 | **API 의 CORS `allowedHeaders` 에 `X-App-Id` 가 없다** | 이 작업의 헬스 조회는 서버 사이드라 영향이 없지만, **브라우저에서 API 를 직접 호출하는 순간 프리플라이트가 막힌다.** `apps/api` 는 TASK-0005 가 점유 중이라 손대지 않았다. M04(인증) 착수 전에 `apps/api/src/main.ts` 의 `allowedHeaders` 에 `'X-App-Id'` 를 추가해야 한다 |
+| R3 | **API 의 CORS `allowedHeaders` 에 `X-App-Id` 가 없다** | **해소됨.** 웨이브 3 머지 시점에 `apps/api/src/main.ts` 의 `allowedHeaders` 에 추가했다. 문자열을 두 곳에 적지 않도록 `@shopping/shared` 의 `APP_ID_HEADER` 를 import 한다. 프리플라이트 응답에 `X-App-Id` 가 포함되는 것을 확인 |
 | R4 | `pnpm -r --parallel` 은 한 스크립트가 0 이 아닌 값으로 끝나면 나머지를 전부 죽인다 | `scripts/web-app.mjs` 가 의도적인 종료(SIGINT·SIGTERM)를 0 으로 보고한다. 그 외 신호·비정상 종료는 그대로 실패로 전달된다 |
 
 ## 8. 확정된 버전
@@ -168,4 +168,5 @@ pnpm dev                                   # 4개 전부 기동
 | --- | --- |
 | 2026-09-02 | 최초 작성 |
 | 2026-09-02 | 승인 — M01 착수 |
+| 2026-09-03 | R3(CORS `X-App-Id`) 해소. README 에 데이터베이스 명령 절 추가 |
 | 2026-09-02 | 완료. Next 16 앱 3종 + `packages/shared` API 클라이언트(`X-App-Id`) + Tailwind 공통 프리셋. F1~F6 · P1 전부 충족, 워크트리 병행 동시 기동(TASK-0001 이월) 확인 |
