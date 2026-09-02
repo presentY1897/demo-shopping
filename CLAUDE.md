@@ -46,6 +46,11 @@ git worktree remove feature-<name>
 git branch -d feature/<name>
 ```
 
+### 원격
+
+- origin: `git@github-presenty:presentY1897/demo-shopping.git` (GitHub 공개 저장소)
+- 이 머신의 **기본 SSH 키는 다른 GitHub 계정에 연결되어 있다.** `~/.ssh/config` 의 `github-presenty` 별칭이 `presentY1897` 전용 키를 쓰므로, origin URL 에 `github.com` 을 직접 쓰면 push 권한이 없다.
+
 ### 규칙
 
 - `main` 워크트리에서 직접 기능 코드를 작성하지 않는다. 문서/설정 등 사소한 변경만 허용.
@@ -71,16 +76,25 @@ git branch -d feature/<name>
 2. 사용자가 문서를 검토하고 **승인**하면 그때 구현을 시작한다.
 3. **승인 전에는 구현 코드를 작성하지 않는다.** 스캐폴딩/실험이 필요하면 먼저 물어본다.
 4. 구현 중 계획이 바뀌면 코드보다 **문서를 먼저 갱신**한다.
-5. 완료 시 task 문서의 상태를 `완료` 로 바꾸고 `docs/tasks/README.md` 인덱스를 갱신한다.
+5. 완료 시 TASK 문서의 상태를 `완료` 로 바꾸고 `docs/tasks/README.md` 인덱스를 갱신한다.
 
-### 결정 이력
+### TASK 문서의 완료 기준
 
-세션(대화)에서 정해진 사항은 반드시 `docs/decisions/` 에 기록한다.
+- 모든 TASK 문서는 **정량적 완료 기준(Definition of Done)** 절을 포함한다.
+- "구현 완료", "정상 동작" 같은 주관적 표현은 쓰지 않는다. 각 기준은 **측정 방법과 목표값**을 명시한다.
+  (예: `pnpm typecheck` error 0 / Lighthouse Accessibility 90점 이상 / API p95 300ms 이하)
+- 기준을 **전부 충족하기 전에는 상태를 `완료` 로 바꾸지 않는다.**
 
-- 파일: `docs/decisions/YYYY-MM-DD-session-NN.md`
-- 기록 대상: 기술 선택, 스코프 변경, 정책/규칙 합의, 보류된 논의
-- 여러 세션에 걸쳐 누적되므로 **덮어쓰지 말고 추가**한다.
-- 인덱스: `docs/decisions/README.md`
+### 결정 이력 — 두 층으로 관리
+
+| 문서 | 성격 |
+| --- | --- |
+| `docs/decisions/DECISIONS.md` | **현재 유효한 최종 결정만** 주제별로 취합. 이 문서만 읽어도 현재 상태를 알 수 있어야 한다 |
+| `docs/decisions/YYYY-MM-DD-session-NN.md` | 세션별 원본 이력. 논의 과정·선정 근거·폐기안 포함 |
+
+- 세션에서 결정이 나오면 **세션 파일에 `D-NNN` 으로 기록한 뒤 `DECISIONS.md` 의 해당 항목을 갱신**한다.
+- 세션 파일은 덮어쓰지 않고 추가한다. `DECISIONS.md` 는 항상 최신 상태로 덮어쓰며 과거 이력을 남기지 않는다.
+- 결정이 번복되면 세션 파일에 "D-NNN 대체" 로 이력을 남기고 `DECISIONS.md` 에서는 옛 내용을 지운다.
 
 ## 5. 기술 스택
 
@@ -93,7 +107,7 @@ git branch -d feature/<name>
 | 검색 | **Meilisearch** (상품 변경 이벤트 기반 인덱싱) |
 | 결제 | **토스페이먼츠 테스트 연동** (승인/취소/환불 웹훅 포함) |
 | 배송 | 도메인은 실제와 동일하게 구현하되 **운송/추적은 가상 처리** |
-| 인증 | JWT (access + refresh), httpOnly 쿠키 |
+| 인증 | **Google OAuth 2.0** 로그인 + JWT (access + refresh, refresh 는 httpOnly 쿠키) |
 | 배포 | Vercel(web) + Railway/Render(api, postgres, meilisearch) + 오브젝트 스토리지(이미지) |
 | 원격 | GitHub 공개 저장소 |
 
