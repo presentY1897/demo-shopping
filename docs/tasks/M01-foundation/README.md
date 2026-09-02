@@ -7,7 +7,7 @@
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
 | [TASK-0001](./TASK-0001-workspace-skeleton.md) | 워크스페이스 골격 | 완료 | – |
-| [TASK-0002](./TASK-0002-shared-config.md) | 공유 설정 패키지 | 승인됨 | 0001 |
+| [TASK-0002](./TASK-0002-shared-config.md) | 공유 설정 패키지 | 완료 | 0001 |
 | [TASK-0003](./TASK-0003-local-infra.md) | 로컬 인프라 (Docker) | 완료 | 0001 |
 | [TASK-0004](./TASK-0004-api-bootstrap.md) | API 부트스트랩 | 승인됨 | 0002, 0003 |
 | [TASK-0005](./TASK-0005-prisma-setup.md) | Prisma · DB 연결 | 승인됨 | 0004 |
