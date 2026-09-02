@@ -162,12 +162,16 @@ Cloudflare R2 는 **전송량 요금이 0원**이고 S3 호환 API 라 이전이
 | 항목 | 결정 |
 | --- | --- |
 | 원격 저장소 | GitHub **공개** 저장소 `presentY1897/demo-shopping` |
-| 도메인 | **`demo-shopping` 계열.** TLD 우선순위 `.com` → `.dev` → `.store` → `.app` (`.shop` 은 갱신가 때문에 후순위). 실제 확정은 TASK-0008 |
 | SSH | `~/.ssh/config` 의 `github-presenty` 별칭 (계정별 키 분리) |
 | origin URL | `git@github-presenty:presentY1897/demo-shopping.git` |
+| 도메인 | **`demo-shopping.com`** — Cloudflare 에서 구매 완료, 네임서버 이전 불필요 |
 | DNS | Cloudflare. **Vercel·API 레코드는 프록시 끔(DNS only)** — 이중 CDN 은 캐시·SSL 문제를 만든다 |
-| 프론트 배포 | **Vercel** × 3 프로젝트 |
+| 프론트 배포 | **Vercel** Hobby × 3 프로젝트 (무료) |
+| API · 검색 | **Render 무료** — 15분 sleep, 재기동 약 1분 |
+| PostgreSQL | **Neon 무료** — Render 무료 DB 는 30일 만료라 분리. 0.5GB / 월 100 CU-hours, 만료 없음 |
+| 검색 인덱스 | Render 무료는 **영구 디스크가 없어** 재시작마다 인덱스 소실 → **자동 재색인**(800개 수 초) |
 | 콜드 스타트 | 프리워밍 + 3초 후 안내 + 자동 재요청. LCP 게이트는 워밍 후 측정 |
+| 유료 전환 경로 | 전부 Docker 기반. 콜드 스타트를 없애려면 Railway(월 $5~)로 이전 |
 | 실패 알림 | CI·배포·스모크 실패를 **Discord webhook** 으로 즉시 수신. 성공은 알리지 않는다 |
 | 백엔드/DB/검색 | **Railway 또는 Render** (api, PostgreSQL, Meilisearch) |
 | 배포 시점 | **M02 (초반)**. 이후 모든 마일스톤을 배포된 상태로 검증 |
@@ -250,5 +254,5 @@ TASK 착수 시점에 확정할 세부 사항만 남아 있다.
 
 | 항목 | 시점 |
 | --- | --- |
-| 도메인의 실제 TLD (가용성 확인 필요) | TASK-0008 |
 | 각 라이브러리의 정확한 버전 | 해당 TASK 의 8장 |
+| AI 이미지 생성 도구 | TASK-0037 |

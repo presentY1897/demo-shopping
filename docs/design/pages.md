@@ -8,9 +8,9 @@
 
 | 앱 | 도메인 | 대상 | 레이아웃 |
 | --- | --- | --- | --- |
-| `apps/shop` | `shop.<도메인>` | 구매자 | 커머스 (헤더 + 푸터) |
-| `apps/seller` | `seller.<도메인>` | 판매자 | 콘솔 (사이드바) |
-| `apps/admin` | `admin.<도메인>` | 관리자 | 콘솔 (사이드바) |
+| `apps/shop` | `shop.demo-shopping.com` | 구매자 | 커머스 (헤더 + 푸터) |
+| `apps/seller` | `seller.demo-shopping.com` | 판매자 | 콘솔 (사이드바) |
+| `apps/admin` | `admin.demo-shopping.com` | 관리자 | 콘솔 (사이드바) |
 
 - 쿠키는 각 서브도메인 한정(`Domain` 속성 미지정)이라 세션이 섞이지 않는다.
 - **세 역할을 브라우저 탭 3개로 동시에 열 수 있다.** 판매자가 발송 처리하면 구매자 탭에서 상태가 바뀌는 걸 그 자리에서 확인할 수 있다. 데모 시연의 핵심 동선이다.

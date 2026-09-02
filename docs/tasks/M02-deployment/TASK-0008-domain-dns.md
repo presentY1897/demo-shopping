@@ -15,8 +15,8 @@
 ## 2. 범위
 
 ### 포함
-- 도메인 구매 — **`demo-shopping` 계열** (D-059). TLD 는 가용성 확인 후 결정
-- DNS 관리 이전 (Cloudflare 권장 — R2 와 같은 계정에서 관리)
+- ~~도메인 구매~~ — **`demo-shopping.com` 구매 완료 (Cloudflare 등록)**
+- ~~네임서버 이전~~ — Cloudflare 에서 구매했으므로 **불필요**
 - 서브도메인 계획 확정: `shop` / `seller` / `admin` / `api`
 - 루트 도메인 처리 방침 (`shop` 으로 리다이렉트)
 - SSL 인증서 발급 확인
@@ -35,10 +35,10 @@
 
 | 서브도메인 | 연결 대상 |
 | --- | --- |
-| `shop.<도메인>` | Vercel — apps/shop |
-| `seller.<도메인>` | Vercel — apps/seller |
-| `admin.<도메인>` | Vercel — apps/admin |
-| `api.<도메인>` | Railway/Render — apps/api |
+| `shop.demo-shopping.com` | Vercel — apps/shop |
+| `seller.demo-shopping.com` | Vercel — apps/seller |
+| `admin.demo-shopping.com` | Vercel — apps/admin |
+| `api.demo-shopping.com` | **Render** — apps/api |
 
 **쿠키는 각 서브도메인 한정**(`Domain` 속성 미지정)으로 발급한다. 세션이 앱 간에 공유되지 않아야 한다. (D-028)
 
@@ -58,11 +58,10 @@ R2 도 Cloudflare 이므로 도메인·스토리지·DNS 를 한 계정에서 �
 
 ## 5. 구현 계획
 
-1. 도메인 이름 결정 및 구매
-2. Cloudflare 로 네임서버 이전
-3. 서브도메인 레코드 생성 (연결 대상은 이후 TASK 에서 지정)
-4. 루트 리다이렉트 규칙
-5. SSL 확인
+1. 서브도메인 레코드 생성 (연결 대상은 이후 TASK 에서 지정)
+2. **모든 레코드를 DNS only(회색 구름)로 설정** — Vercel·Render 대상
+3. 루트 리다이렉트 규칙
+4. SSL 확인
 
 ## 6. 완료 기준
 
@@ -86,16 +85,14 @@ R2 도 Cloudflare 이므로 도메인·스토리지·DNS 를 한 계정에서 �
 | # | 기준 | 충족 |
 | --- | --- | --- |
 | D1 | 상태 갱신 + 인덱스 2곳 | [ ] |
-| D3 | 확정한 도메인과 TLD 를 `DECISIONS.md` 에 반영 | [ ] |
-| 추가 | `docs/design/pages.md` 의 `<도메인>` 자리표시자를 실제 값으로 치환 | [ ] |
+| 추가 | `docs/design/pages.md` 의 `<도메인>` 자리표시자를 `demo-shopping.com` 으로 치환 | [ ] |
 
 ## 7. 리스크 / 열린 질문
 
 | # | 내용 | 대응 |
 | --- | --- | --- |
-| R1 | 네임서버 전파 지연 (최대 48시간) | 구매 직후 착수해 대기 시간을 다른 TASK 와 겹친다 |
-| R2 | `demo-shopping.com` 이 이미 선점됨 | `.dev` / `.store` / `.app` 순으로 확인. **`.shop` 은 갱신가가 비싼 경우가 많아 후순위** |
-| R3 | 하이픈이 들어간 도메인은 구두 전달이 불편 | 포트폴리오는 링크로 전달되므로 문제되지 않는다 |
+| R1 | ~~네임서버 전파 지연~~ | Cloudflare 등록이라 해당 없음 |
+| R2 | Cloudflare 프록시를 켜두면 Vercel SSL·캐시가 어긋남 | 레코드 생성 시 **DNS only** 확인. F4 로 검증 |
 
 ## 8. 확정된 버전
 
