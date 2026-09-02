@@ -55,8 +55,9 @@ PostgreSQL 과 Meilisearch 를 Docker 로 띄운다. `docker compose` 를 직접
 cp .env.example .env          # .env 는 커밋되지 않는다
 ```
 
-`PORT_OFFSET` 이 0 이 아니면 `.env` 안의 `DATABASE_URL` · `MEILI_HOST` · `API_PORT` · `NEXT_PUBLIC_API_URL` 포트를
-이 워크트리 값으로 바꾼다. 실제 값은 `pnpm ports` 로 확인하거나, `pnpm infra:up` 이 마지막에 출력하는 안내를 그대로 복사하면 된다.
+**복사한 뒤 고칠 것은 없다.** `DATABASE_URL` · `MEILI_HOST` · `API_PORT` · `CORS_ORIGINS` 는 `.env` 에 없으면
+API 가 부팅 시 `PORT_OFFSET` 에서 계산해 채운다. 명시하면 그 값이 그대로 쓰이므로, 로컬 스택이 아닌 곳
+(Neon, 원격 검색 서버)을 가리킬 때만 주석을 풀면 된다. 실제 포트는 `pnpm ports` 로 확인할 수 있다.
 
 ### 명령
 
@@ -90,6 +91,34 @@ pnpm infra:ps        # 두 서비스 모두 (healthy) 여야 한다
 curl -H "Authorization: Bearer $MEILI_MASTER_KEY" "$MEILI_HOST/health"   # {"status":"available"}
 ```
 
+## API
+
+```bash
+pnpm --filter @shopping/api dev     # 4000 + PORT_OFFSET 에서 기동
+curl localhost:4000/api/v1/health   # {"status":"ok","search":"ok","uptime":3,"version":"0.0.0"}
+```
+
+| 항목 | 값 |
+| --- | --- |
+| 프레임워크 | NestJS 12 (Express) |
+| 프리픽스 | `/api/v1` — 버전은 URI 방식, 라우트가 생략하면 `v1` |
+| 헬스체크 | `GET /api/v1/health` → `{ status, search, uptime, version }` |
+| 에러 포맷 | `{ "error": { "code", "message", "details": [] } }` — 성공 응답은 감싸지 않는다 |
+| CORS | `CORS_ORIGINS` 의 오리진만 허용. 기본값은 shop·seller·admin 세 앱 |
+| 로그 | 모든 요청에 `X-Request-Id` 부여 후 `메서드 경로 상태 소요시간 요청ID` 로 기록 |
+
+- 환경변수는 **부팅 시점에 zod 로 검증**한다. 누락·형식 오류면 변수명을 출력하고 종료 코드 1 로 끝난다.
+  값은 절대 출력하지 않는다.
+- 검색 엔진이 죽어도 헬스체크는 **200 을 유지**하고 `search: "down"`, `status: "degraded"` 를 반환한다.
+  API 자체는 살아 있으므로 로드밸런서가 인스턴스를 빼면 안 된다.
+- 스택 트레이스는 `NODE_ENV=development` 에서 5xx 응답에만 들어간다.
+
+```bash
+pnpm --filter @shopping/api build   # dist/ 로 컴파일
+pnpm --filter @shopping/api start   # 컴파일된 결과 실행
+pnpm --filter @shopping/api test    # vitest
+```
+
 ## 환경변수
 
 | 파일 | 커밋 | 담는 것 |
@@ -105,6 +134,26 @@ PORT_OFFSET=40 COMPOSE_PROJECT_NAME=shopping-tmp pnpm infra:up   # 완전히 독
 ```
 
 새 환경변수를 추가하면 **`.env.example` 에도 반드시 추가한다.** 비밀값은 커밋하지 않는다.
+
+### 포트가 들어가는 값은 적지 않는다
+
+아래 네 개는 `.env` 에 **없을 때** API 가 `PORT_OFFSET` 에서 계산한다. 워크트리마다 손으로 고칠 것이 없다는 뜻이다.
+
+| 변수 | 파생 규칙 |
+| --- | --- |
+| `API_PORT` | `4000 + PORT_OFFSET`. 없으면 `PORT`(Render·Railway 가 주입) 를 먼저 본다 |
+| `MEILI_HOST` | `http://localhost:(7700 + PORT_OFFSET)` |
+| `DATABASE_URL` | `postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:(5432 + PORT_OFFSET)/$POSTGRES_DB` |
+| `CORS_ORIGINS` | shop·seller·admin 오리진 (`localhost` 와 `127.0.0.1` 양쪽) |
+
+`scripts/ports.mjs` 가 단일 출처이며, API 는 이 파일을 런타임에 읽는다. 기본 포트를 바꿀 일이 생기면 그 파일만 고치면 된다.
+
+```bash
+PORT_OFFSET=50 pnpm --filter @shopping/api dev   # 파일 수정 없이 4050 에서 기동
+```
+
+**명시한 값이 항상 이긴다.** 배포 환경처럼 워크스페이스도 `.env` 도 없는 곳에서는 파생이 동작하지 않으므로
+플랫폼이 전부 주입해야 하고, 빠진 변수는 부팅 시 검증에서 이름과 함께 보고된다.
 
 ## 문서
 
