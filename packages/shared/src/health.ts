@@ -16,9 +16,8 @@ export type HealthStatus = z.infer<typeof healthStatusSchema>
  *
  * Adding one is a three step change: append the key here, add the field to
  * `healthResponseSchema`, and register an indicator in the API's health module.
- * `database` arrives with Prisma in TASK-0005.
  */
-export const healthDependencyKeys = ['search'] as const
+export const healthDependencyKeys = ['database', 'search'] as const
 
 export type HealthDependencyKey = (typeof healthDependencyKeys)[number]
 
@@ -27,11 +26,12 @@ export type HealthDependencyKey = (typeof healthDependencyKeys)[number]
  *
  * `status` describes the API as a whole: it is `ok` only while every dependency
  * is `ok`, and `degraded` as soon as one is not. The endpoint answers 200 in
- * both cases — a search outage must not make the API look dead to a load
- * balancer that would then stop routing traffic to it.
+ * both cases — a search or database outage must not make the API look dead to a
+ * load balancer that would then stop routing traffic to it.
  */
 export const healthResponseSchema = z.object({
   status: healthStatusSchema,
+  database: healthStatusSchema,
   search: healthStatusSchema,
   /** Seconds since the API process started. */
   uptime: z.number().nonnegative(),

@@ -37,6 +37,7 @@ export class HealthService {
 
     return {
       status: readings.every(([, status]) => status === 'ok') ? 'ok' : 'degraded',
+      database: statusOf(readings, 'database'),
       search: statusOf(readings, 'search'),
       uptime: Math.round(process.uptime()),
       version: this.config.version,
