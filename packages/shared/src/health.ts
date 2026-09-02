@@ -1,15 +1,42 @@
 import { z } from 'zod'
 
 /**
- * Liveness of the API or of one of its dependencies.
+ * Liveness of the API itself or of one of its dependencies.
  *
- * - `up` — reachable and answering within the timeout
- * - `degraded` — reachable but slow or partially unavailable
- * - `down` — unreachable
- *
- * The full `/health` payload is defined in TASK-0004; this is the sample type
- * that proves the shared package wiring works end to end.
+ * - `ok` — reachable and answering within the timeout
+ * - `degraded` — reachable but answering something unexpected
+ * - `down` — unreachable, or answering with an error
  */
-export const healthStatusSchema = z.enum(['up', 'degraded', 'down'])
+export const healthStatusSchema = z.enum(['ok', 'degraded', 'down'])
 
 export type HealthStatus = z.infer<typeof healthStatusSchema>
+
+/**
+ * Dependencies reported by `GET /api/v1/health`, one key per external system.
+ *
+ * Adding one is a three step change: append the key here, add the field to
+ * `healthResponseSchema`, and register an indicator in the API's health module.
+ * `database` arrives with Prisma in TASK-0005.
+ */
+export const healthDependencyKeys = ['search'] as const
+
+export type HealthDependencyKey = (typeof healthDependencyKeys)[number]
+
+/**
+ * Payload of `GET /api/v1/health`.
+ *
+ * `status` describes the API as a whole: it is `ok` only while every dependency
+ * is `ok`, and `degraded` as soon as one is not. The endpoint answers 200 in
+ * both cases — a search outage must not make the API look dead to a load
+ * balancer that would then stop routing traffic to it.
+ */
+export const healthResponseSchema = z.object({
+  status: healthStatusSchema,
+  search: healthStatusSchema,
+  /** Seconds since the API process started. */
+  uptime: z.number().nonnegative(),
+  /** Version of the deployed API build. */
+  version: z.string().min(1),
+})
+
+export type HealthResponse = z.infer<typeof healthResponseSchema>
