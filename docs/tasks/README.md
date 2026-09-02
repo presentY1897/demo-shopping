@@ -1,6 +1,6 @@
 # Task 인덱스
 
-전체 **105개** TASK. 모두 **승인 대기** 상태다.
+전체 **105개** TASK. **M01 7개 승인됨**, 나머지 98개는 **승인 대기** 상태다.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
@@ -26,13 +26,13 @@
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
-| [TASK-0001](./M01-foundation/TASK-0001-workspace-skeleton.md) | 워크스페이스 골격 | 승인 대기 |
-| [TASK-0002](./M01-foundation/TASK-0002-shared-config.md) | 공유 설정 패키지 | 승인 대기 |
-| [TASK-0003](./M01-foundation/TASK-0003-local-infra.md) | 로컬 인프라 (Docker) | 승인 대기 |
-| [TASK-0004](./M01-foundation/TASK-0004-api-bootstrap.md) | API 부트스트랩 | 승인 대기 |
-| [TASK-0005](./M01-foundation/TASK-0005-prisma-setup.md) | Prisma · DB 연결 | 승인 대기 |
-| [TASK-0006](./M01-foundation/TASK-0006-web-bootstrap.md) | 웹 앱 3종 부트스트랩 | 승인 대기 |
-| [TASK-0007](./M01-foundation/TASK-0007-dev-workflow.md) | 개발 워크플로 · CI | 승인 대기 |
+| [TASK-0001](./M01-foundation/TASK-0001-workspace-skeleton.md) | 워크스페이스 골격 | 승인됨 |
+| [TASK-0002](./M01-foundation/TASK-0002-shared-config.md) | 공유 설정 패키지 | 승인됨 |
+| [TASK-0003](./M01-foundation/TASK-0003-local-infra.md) | 로컬 인프라 (Docker) | 승인됨 |
+| [TASK-0004](./M01-foundation/TASK-0004-api-bootstrap.md) | API 부트스트랩 | 승인됨 |
+| [TASK-0005](./M01-foundation/TASK-0005-prisma-setup.md) | Prisma · DB 연결 | 승인됨 |
+| [TASK-0006](./M01-foundation/TASK-0006-web-bootstrap.md) | 웹 앱 3종 부트스트랩 | 승인됨 |
+| [TASK-0007](./M01-foundation/TASK-0007-dev-workflow.md) | 개발 워크플로 · CI | 승인됨 |
 
 <details><summary><b>M02. 배포 파이프라인</b> (0/7)</summary>
 
