@@ -22,7 +22,7 @@
 - Toast (알림 표시)
 - Tabs, Accordion
 - 각 컴포넌트가 토큰만 참조하도록 강제
-- Q-09 결정 (자체 구현 vs shadcn/ui 기반) 반영
+- **Radix Primitives** 기반 — 접근성(포커스 트랩·ARIA·키보드)은 Radix, 스타일은 전부 우리 토큰으로
 
 ### 제외
 - 데이터 표시 컴포넌트 (TASK-0016)
@@ -38,13 +38,15 @@
 
 ## 4. 설계
 
-- **Q-09 선택지**: (a) shadcn/ui 를 `packages/ui` 로 복사해 토큰에 맞게 개조 (b) Radix Primitives 위에 자체 스타일 (c) 완전 자체 구현
-- 접근성 요구(포커스 트랩, ARIA, 키보드)를 직접 구현하면 비용이 크므로 **(b) 또는 (a) 를 권장**한다. 이 TASK 착수 시 확정한다.
-- 컴포넌트는 `variant` / `size` prop 을 받고 값은 토큰에 매핑한다.
+**Radix Primitives 를 쓰고 스타일은 전부 직접 작성한다.** (D-056)
+
+- Modal 포커스 트랩, Select 키보드 탐색, Popover 위치 계산 같은 접근성 요구를 직접 구현하면 품질이 안 나온다. Radix 가 이를 해결한다
+- shadcn/ui 는 자체 CSS 변수 컨벤션(`--background`, `--foreground`)을 쓴다. 우리는 이미 밀도 3단계 토큰 체계가 있어 **토큰이 두 벌**이 된다. 결국 뜯어고쳐야 하므로 처음부터 우리 토큰으로 쓰는 편이 깔끔하다
+- 컴포넌트는 `variant` / `size` prop 을 받고 값은 토큰에 매핑한다
 
 ## 5. 구현 계획
 
-1. Q-09 결정 및 기반 라이브러리 도입
+1. Radix Primitives 도입 및 토큰 연결
 2. 폼 요소 (Input, Select, Checkbox, Radio, Switch)
 3. 액션 요소 (Button, IconButton, Link)
 4. 표시 요소 (Badge, Tag, Avatar, Divider)
@@ -77,20 +79,19 @@
 | # | 기준 | 충족 |
 | --- | --- | --- |
 | D1 | 상태 갱신 + 인덱스 2곳 | [ ] |
-| D3 | Q-09 결정을 세션 파일과 `DECISIONS.md` 에 기록 | [ ] |
+| D2 | 컴포넌트 목록을 `docs/design/pages.md` 에 반영 | [ ] |
 
 ## 7. 리스크 / 열린 질문
 
 | # | 내용 | 대응 |
 | --- | --- | --- |
-| Q-09 | 컴포넌트 라이브러리 선정 | 이 TASK 착수 시 결정 |
-| R1 | 접근성을 자체 구현하면 비용 폭증 | Radix 등 헤드리스 라이브러리 활용 |
+| R1 | Radix 가 제공하지 않는 컴포넌트(Table, Badge 등) | 접근성 요구가 단순한 표시 컴포넌트라 직접 구현해도 문제없다 |
 
 ## 8. 확정된 버전
 
 | 패키지 | 버전 |
 | --- | --- |
-| (Q-09 결정에 따라) | |
+| @radix-ui/react-* | |
 
 ## 9. 변경 이력
 

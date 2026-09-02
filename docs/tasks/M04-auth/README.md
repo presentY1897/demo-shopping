@@ -7,9 +7,10 @@ Google 로그인, 앱별 독립 세션, 데모 계정 발급·만료를 구현�
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
 | [TASK-0020](./TASK-0020-user-schema.md) | 사용자 · 역할 스키마 | 승인 대기 | M03 |
+| [TASK-0105](./TASK-0105-rbac.md) | 퍼미션 기반 권한 체계 (RBAC) | 승인 대기 | 0020 |
 | [TASK-0021](./TASK-0021-google-oauth.md) | Google OAuth 로그인 | 승인 대기 | 0020 |
 | [TASK-0022](./TASK-0022-jwt-session.md) | JWT 발급 · 갱신 · 로그아웃 | 승인 대기 | 0021 |
-| [TASK-0023](./TASK-0023-auth-guard.md) | 인증 UI · 권한 가드 | 승인 대기 | 0022 |
+| [TASK-0023](./TASK-0023-auth-guard.md) | 인증 UI · 권한 가드 | 승인 대기 | 0022, 0105 |
 | [TASK-0024](./TASK-0024-demo-account.md) | 데모 계정 발급 | 승인 대기 | 0023 |
 | [TASK-0025](./TASK-0025-demo-cleanup.md) | 데모 만료 · 정리 스케줄러 | 승인 대기 | 0024 |
 | [TASK-0026](./TASK-0026-seller-onboarding.md) | 판매자 입점 신청 · 승인 | 승인 대기 | 0023 |

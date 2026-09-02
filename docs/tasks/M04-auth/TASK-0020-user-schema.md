@@ -16,7 +16,7 @@
 
 ### 포함
 - `User` — `googleSub`, 이메일, 이름, 아바타, `isDemo`, `demoExpiresAt`, `deletedAt`
-- `UserRole` — BUYER / SELLER / ADMIN (다대다)
+- `UserRole` — **BUYER / SELLER_OWNER / ADMIN_OPERATOR / ADMIN_SUPER / DEMO_ADMIN** (다대다). 퍼미션 매핑은 TASK-0105
 - `Seller` — 브랜드명, 소개, 로고, 상태(PENDING/ACTIVE/REJECTED/SUSPENDED), 개별 수수료율
 - `Address` — 배송지, 기본 배송지 플래그
 - `UserPreference` — 밀도, 언어, 통화, 알림 설정
@@ -42,6 +42,7 @@
 | --- | --- |
 | `User.googleSub` unique | Google 계정당 1개 |
 | `UserRole(userId, role)` unique | 역할 중복 방지 |
+| 역할 → 퍼미션 매핑 | **코드 상수** (DB 아님). TASK-0105 참조 |
 | `Address` 기본값 부분 유니크 인덱스 | 사용자당 기본 배송지 1개 |
 | `RefreshToken(userId, app)` 인덱스 | 앱별 세션 조회 |
 
@@ -62,7 +63,7 @@
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
 | F1 | 마이그레이션 | 새 DB 에 `migrate deploy` | 성공 | [ ] |
-| F2 | 다중 역할 | 한 사용자에 BUYER+SELLER 부여 | 정상 저장 | [ ] |
+| F2 | 다중 역할 | 한 사용자에 BUYER+SELLER_OWNER 부여 | 정상 저장 | [ ] |
 | F3 | 중복 가입 차단 | 같은 `googleSub` 로 2회 삽입 | 유니크 위반 | [ ] |
 | F4 | 기본 배송지 유일성 | 기본 배송지 2개 삽입 시도 | 제약 위반 | [ ] |
 | F5 | 데모 구분 | `isDemo=true` 조회 | 필터링 동작 | [ ] |

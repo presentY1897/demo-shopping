@@ -1,13 +1,13 @@
 # Task 인덱스
 
-전체 **104개** TASK. 모두 **승인 대기** 상태다.
+전체 **105개** TASK. 모두 **승인 대기** 상태다.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
 | [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | 0/7 |
 | [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 0/7 |
-| [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, 컴포넌트, 폼, 레이아웃, Storybook | 0/7 |
-| [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, 권한 가드, 데모 발급·정리, 입점 | 0/8 |
+| [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, Radix 컴포넌트, 폼, 레이아웃, Storybook | 0/7 |
+| [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점 | 0/9 |
 | [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | 0/10 |
 | [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | 0/9 |
 | [M07](./M07-cart-order/) 장바구니·주문 | 장바구니, 금액 계산 엔진, 재고 예약, 주문 2단 분할 | 0/7 |
@@ -62,7 +62,7 @@
 
 </details>
 
-<details><summary><b>M04. 인증·계정</b> (0/8)</summary>
+<details><summary><b>M04. 인증·계정</b> (0/9)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -74,6 +74,7 @@
 | [TASK-0025](./M04-auth/TASK-0025-demo-cleanup.md) | 데모 만료 · 정리 스케줄러 | 승인 대기 |
 | [TASK-0026](./M04-auth/TASK-0026-seller-onboarding.md) | 판매자 입점 신청 · 승인 | 승인 대기 |
 | [TASK-0027](./M04-auth/TASK-0027-profile-address.md) | 프로필 · 배송지 관리 | 승인 대기 |
+| [TASK-0105](./M04-auth/TASK-0105-rbac.md) | 퍼미션 기반 권한 체계 (RBAC) | 승인 대기 |
 
 </details>
 

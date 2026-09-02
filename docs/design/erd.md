@@ -35,13 +35,44 @@ erDiagram
 | 테이블 | 목적 | 비고 |
 | --- | --- | --- |
 | `User` | 계정 | `googleSub` 로 Google 계정 연결. `isDemo`, `demoExpiresAt` 로 데모 계정 구분 |
-| `UserRole` | 역할 | BUYER / SELLER / ADMIN. **다대다** — 한 사람이 구매자이면서 판매자일 수 있다 |
+| `UserRole` | 역할 | **다대다** — 한 사람이 구매자이면서 판매자일 수 있다. 역할 → 퍼미션 매핑은 코드 상수 |
 | `Seller` | 판매자(스토어) | 브랜드명, 로고, 승인 상태, 개별 수수료율(선택) |
 | `Address` | 배송지 | 기본 배송지 플래그 |
 | `RefreshToken` | 세션 | `app` 컬럼으로 shop/seller/admin 구분 — **앱별 세션이 독립**이므로 필요 |
 | `UserPreference` | 사용자 설정 | 표시 밀도(3단계), 언어, 통화 |
 
 **왜 역할을 다대다로 두는가**: 판매자도 물건을 산다. 역할을 단일 컬럼으로 두면 판매자가 구매자 앱을 쓸 수 없거나, 계정을 두 개 만들어야 한다.
+
+### 권한 — 퍼미션 기반 RBAC
+
+권한은 **퍼미션 단위**로 정의하고 역할에 매핑한다. 데모 제한이 별도 장치가 아니라 권한 체계의 일부가 된다.
+
+| 역할 | 성격 |
+| --- | --- |
+| `BUYER` | 자기 데이터만 |
+| `SELLER_OWNER` | 자기 스토어의 product·order·claim·coupon·settlement |
+| `ADMIN_OPERATOR` | 전체 read + catalog/product/coupon write + claim.handle + seller.approve |
+| `ADMIN_SUPER` | 전부 (delete · settlement.pay · user.delete 포함) |
+| `DEMO_ADMIN` | `ADMIN_OPERATOR` 퍼미션 + **리소스 스코프 `demo`** |
+
+**리소스 스코프**가 퍼미션을 보완한다. 퍼미션은 "무엇을 할 수 있나"만 답하고, "누구 것에"는 스코프가 답한다.
+
+| 스코프 | 의미 |
+| --- | --- |
+| `own` | 자기가 소유한 리소스만 |
+| `demo` | **데모 계정이 만든 리소스만** — 시드·실계정 데이터는 조회만 |
+| `any` | 전부 |
+
+```
+SELLER_OWNER    product.write:own
+ADMIN_OPERATOR  product.write:any
+DEMO_ADMIN      product.write:demo      ← 시드·실계정 상품은 못 건드린다
+                seller.approve:demo     ← 데모 판매자의 신청만 승인 가능
+```
+
+`demo` 스코프의 목적은 **실계정 보호**이지 데모 간 격리가 아니다. 판매자 데모가 입점 신청하면 관리자 데모가 승인할 수 있어야 관리자 콘솔이 조회만 되는 껍데기가 되지 않는다. 상세는 TASK-0105.
+
+**기본 거부**: 퍼미션이 지정되지 않은 엔드포인트는 접근 불가다. 부여를 빠뜨려도 무방비로 열리지 않는다.
 
 ---
 
