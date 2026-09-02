@@ -1,0 +1,64 @@
+# Local development infrastructure: PostgreSQL + Meilisearch.
+#
+# Do not call `docker compose` directly. Use the wrappers instead:
+#
+#   pnpm infra:up | infra:down | infra:reset | infra:logs | infra:ps
+#
+# They read this worktree's `.env.local`, derive every published port from
+# PORT_OFFSET (scripts/ports.mjs is the single source of truth) and pass
+# COMPOSE_PROJECT_NAME through, which is what keeps parallel worktrees from
+# sharing one database. The `${VAR:-default}` fallbacks below exist only so that
+# `docker compose config` still validates when this file is read on its own.
+#
+# WSL2: data lives in named volumes, never in a bind mount. A bind mount onto
+# the Windows filesystem is both slow and permission-hostile for Postgres.
+
+name: shopping
+
+services:
+  postgres:
+    image: postgres:17.11-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-shopping}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-shopping}
+      POSTGRES_DB: ${POSTGRES_DB:-shopping}
+    ports:
+      # Host port is 5432 + PORT_OFFSET; the container always listens on 5432.
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-shopping} -d ${POSTGRES_DB:-shopping}']
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.24.0
+    restart: unless-stopped
+    environment:
+      # Set at all times: whenever a master key exists Meilisearch enforces it,
+      # so an unauthenticated request gets 401 even in development mode.
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-local_dev_master_key_change_me}
+      MEILI_ENV: ${MEILI_ENV:-development}
+      MEILI_NO_ANALYTICS: 'true'
+    ports:
+      # Host port is 7700 + PORT_OFFSET; the container always listens on 7700.
+      - '${MEILI_PORT:-7700}:7700'
+    volumes:
+      - meilidata:/meili_data
+    healthcheck:
+      test: ['CMD', 'curl', '--fail', '--silent', 'http://localhost:7700/health']
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 2s
+
+volumes:
+  # Compose prefixes these with the project name, so every worktree gets its own
+  # pair (e.g. `shopping-local-infra_pgdata`).
+  pgdata:
+  meilidata:
