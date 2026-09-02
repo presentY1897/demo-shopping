@@ -1,0 +1,20 @@
+{
+  "name": "shopping",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=24.13.0 <25",
+    "pnpm": ">=9.15.0 <10"
+  },
+  "scripts": {
+    "preinstall": "node scripts/only-pnpm.mjs",
+    "dev": "pnpm -r --parallel --if-present dev",
+    "build": "pnpm -r --if-present build",
+    "lint": "pnpm -r --if-present lint",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "format": "pnpm -r --if-present format",
+    "ports": "node scripts/ports.mjs"
+  }
+}
