@@ -1,11 +1,12 @@
-# TASK-NNN: <제목>
+# TASK-NNNN: <제목>
 
 | 항목 | 내용 |
 | --- | --- |
+| 마일스톤 | MNN 이름 |
 | 상태 | 초안 |
 | 작성일 | YYYY-MM-DD |
 | 브랜치 | `feature/<name>` |
-| 선행 작업 | TASK-NNN / 없음 |
+| 선행 작업 | TASK-NNNN / 없음 |
 
 ## 1. 목적
 
@@ -79,6 +80,7 @@
 | D1 | 이 문서의 상태를 `완료` 로 변경하고 `docs/tasks/README.md` 인덱스 갱신 | [ ] |
 | D2 | 구현 중 바뀐 결정이 있으면 `docs/decisions/` 세션 파일과 `DECISIONS.md` 에 반영 | [ ] |
 | D3 | 새 환경변수가 있으면 `.env.example` 갱신 | [ ] |
+| D4 | 화면·스키마·상태가 바뀌었으면 `docs/design/` 갱신 | [ ] |
 
 ## 7. 리스크 / 열린 질문
 
