@@ -67,7 +67,8 @@ function compose(args, ports, project) {
   )
 
   if (result.error) {
-    if (result.error.code === 'ENOENT') fail('docker 명령을 찾을 수 없습니다. Docker 를 설치하고 다시 시도하세요.')
+    if (result.error.code === 'ENOENT')
+      fail('docker 명령을 찾을 수 없습니다. Docker 를 설치하고 다시 시도하세요.')
     fail(`docker compose 실행 실패: ${result.error.message}`)
   }
   return result.status ?? 1
@@ -102,7 +103,9 @@ const COMMANDS = {
   },
 
   reset(ports, project, extra) {
-    console.log(`\n  ${project} 의 컨테이너와 볼륨을 삭제하고 다시 띄웁니다. DB 데이터는 사라집니다.\n`)
+    console.log(
+      `\n  ${project} 의 컨테이너와 볼륨을 삭제하고 다시 띄웁니다. DB 데이터는 사라집니다.\n`,
+    )
     const status = compose(['down', '--volumes', '--remove-orphans'], ports, project)
     if (status !== 0) return status
     return COMMANDS.up(ports, project, extra)

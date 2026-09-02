@@ -13,9 +13,31 @@ export const commonIgnores = [
 ]
 
 /**
+ * Style rules that need no type information, so they apply to TypeScript and to
+ * the plain ESM tooling files (`eslint.config.mjs`, `scripts/*.mjs`) alike.
+ *
+ * @type {import('eslint').Linter.RulesRecord}
+ */
+const untypedRules = {
+  eqeqeq: ['error', 'smart'],
+  'no-var': 'error',
+  'prefer-const': 'error',
+}
+
+/** `_` prefixed bindings are an explicit "kept on purpose" marker. */
+const unusedVars = {
+  args: 'all',
+  argsIgnorePattern: '^_',
+  varsIgnorePattern: '^_',
+  caughtErrorsIgnorePattern: '^_',
+  destructuredArrayIgnorePattern: '^_',
+  ignoreRestSiblings: true,
+}
+
+/**
  * Rules every package shares. Type-aware rules are enabled for TypeScript only;
- * flat config files (`eslint.config.mjs`, `prettier.config.mjs`) are plain JS and
- * are linted without a program.
+ * flat config files (`eslint.config.mjs`, `prettier.config.mjs`) and the
+ * repository scripts are plain JS and are linted without a program.
  *
  * @param {string} rootDir Absolute path of the package being linted, used to
  *   resolve its tsconfig. Callers pass `import.meta.dirname`.
@@ -38,27 +60,14 @@ export function baseConfig(rootDir) {
         },
       },
       rules: {
-        // `_` prefixed bindings are an explicit "kept on purpose" marker.
-        '@typescript-eslint/no-unused-vars': [
-          'error',
-          {
-            args: 'all',
-            argsIgnorePattern: '^_',
-            varsIgnorePattern: '^_',
-            caughtErrorsIgnorePattern: '^_',
-            destructuredArrayIgnorePattern: '^_',
-            ignoreRestSiblings: true,
-          },
-        ],
+        ...untypedRules,
+        '@typescript-eslint/no-unused-vars': ['error', unusedVars],
         // Type-only imports must be erasable so bundlers never keep a runtime import.
         // `separate-type-imports` (the default fix style) is required by
         // no-import-type-side-effects: an import whose specifiers are all inline
         // `type` would still be emitted as a side-effect import.
         '@typescript-eslint/consistent-type-imports': 'error',
         '@typescript-eslint/no-import-type-side-effects': 'error',
-        eqeqeq: ['error', 'smart'],
-        'no-var': 'error',
-        'prefer-const': 'error',
       },
     },
     {
@@ -67,6 +76,10 @@ export function baseConfig(rootDir) {
       languageOptions: {
         globals: globals.node,
         sourceType: 'module',
+      },
+      rules: {
+        ...untypedRules,
+        'no-unused-vars': ['error', unusedVars],
       },
     },
     // Must stay last: turns off everything prettier already decides.

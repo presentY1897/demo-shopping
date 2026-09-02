@@ -11,11 +11,13 @@
     "preinstall": "node scripts/only-pnpm.mjs",
     "dev": "pnpm -r --parallel --if-present dev",
     "build": "pnpm -r --if-present build",
-    "lint": "pnpm -r --if-present lint",
+    "lint": "pnpm run lint:root && pnpm -r --if-present lint",
+    "lint:fix": "eslint . --fix --max-warnings 0 && pnpm -r --if-present lint:fix",
+    "lint:root": "eslint . --max-warnings 0",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
-    "format": "pnpm -r --if-present format",
-    "format:check": "pnpm -r --if-present format:check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "db:generate": "pnpm --filter @shopping/api db:generate",
     "db:migrate": "pnpm --filter @shopping/api db:migrate",
     "db:deploy": "pnpm --filter @shopping/api db:deploy",
@@ -29,5 +31,11 @@
     "infra:reset": "node scripts/infra.mjs reset",
     "infra:logs": "node scripts/infra.mjs logs",
     "infra:ps": "node scripts/infra.mjs ps"
+  },
+  "devDependencies": {
+    "@shopping/config": "workspace:*",
+    "eslint": "^10.9.1",
+    "prettier": "^3.9.6",
+    "typescript": "^6.0.3"
   }
 }

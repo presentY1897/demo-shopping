@@ -106,7 +106,8 @@ for (const signal of CLEAN_STOP) {
 }
 
 child.on('error', (error) => {
-  if (error.code === 'ENOENT') fail('next 명령을 찾을 수 없습니다. pnpm install 을 먼저 실행하세요.')
+  if (error.code === 'ENOENT')
+    fail('next 명령을 찾을 수 없습니다. pnpm install 을 먼저 실행하세요.')
   fail(`next 실행 실패: ${error.message}`)
 })
 

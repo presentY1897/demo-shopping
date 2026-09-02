@@ -1,0 +1,15 @@
+# Root ignore list. Prettier reads only the `.prettierignore` next to the
+# directory it runs from, and the root run (`pnpm format:check`) covers the whole
+# repository, so every generated path has to be listed here.
+node_modules
+dist
+build
+.next
+coverage
+next-env.d.ts
+pnpm-lock.yaml
+
+# Markdown is written by hand and reviewed as prose. Prettier realigns every
+# table cell (its CJK width math disagrees with the source) and reformats the
+# fenced code samples, which rewrites documentation instead of formatting it.
+*.md
