@@ -21,6 +21,18 @@
 - pnpm store 캐시로 CI 시간 단축
 - PR 템플릿 (관련 TASK 링크, 완료 기준 체크 항목)
 - `main` 브랜치 보호 규칙 문서화
+- **루트 파일 lint·format 커버리지** — 아래 참조
+
+### 루트 파일 커버리지 (TASK-0002 에서 이월)
+
+`pnpm lint` · `pnpm format:check` 는 `pnpm -r` 로 워크스페이스 패키지에만 전파되고 **루트 프로젝트는 제외된다.** 즉 `scripts/ports.mjs` · `scripts/only-pnpm.mjs` · `scripts/infra.mjs` 와 루트 설정 파일들이 지금 어떤 검사도 받지 않는다.
+
+```
+검사됨    apps/*/**, packages/*/**
+검사 안 됨  scripts/*.mjs, 루트 *.json, *.yml, docs/**/*.md
+```
+
+lint-staged 는 **변경된 파일 경로**를 기준으로 도구를 부르므로, 루트 파일이 스테이징되면 eslint·prettier 가 그 경로에 대해 실행된다. 루트에 이 파일들을 담당할 설정이 없으면 훅이 실패하거나(설정 없음) 조용히 통과한다(무의미). 이 TASK 에서 루트 검사 경로를 만들어 해소한다.
 
 ### 제외
 - 배포 워크플로 (M02)

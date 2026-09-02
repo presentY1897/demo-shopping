@@ -21,6 +21,20 @@ NestJS API 를 띄우고, 환경변수 검증과 헬스체크를 붙인다. 이�
 - 전역 예외 필터, 응답 포맷 통일, 요청 로깅
 - CORS 설정 (세 웹 앱 오리진 허용)
 - API 프리픽스 및 버전 규약 (`/api/v1`)
+- **`PORT_OFFSET` 반영** — 아래 참조
+
+### `PORT_OFFSET` 반영 (TASK-0003 에서 이월)
+
+TASK-0003 이 인프라 포트를 `PORT_OFFSET` 에서 파생시켰지만, `.env.example` 의 `DATABASE_URL` · `MEILI_HOST` · `API_PORT` · `NEXT_PUBLIC_API_URL` 에는 포트가 문자열로 박혀 있다. 지금은 오프셋이 있는 워크트리마다 이 값들을 손으로 고쳐야 한다.
+
+```
+# PORT_OFFSET=30 인 워크트리에서 지금 필요한 수작업
+DATABASE_URL=postgresql://shopping:shopping@localhost:5462/shopping   # 5432 → 5462
+MEILI_HOST=http://localhost:7730                                       # 7700 → 7730
+API_PORT=4030                                                          # 4000 → 4030
+```
+
+env 검증 계층이 이 TASK 에서 생기므로 여기서 해소한다. **`.env` 에 포트가 없으면 `scripts/ports.mjs` 의 `resolvePorts()` 로 채우고, 명시돼 있으면 그 값을 그대로 쓴다.** 워크트리를 새로 만들 때 `.env.example` 을 복사하는 것 외에 손댈 것이 없어야 한다.
 
 ### 제외
 - Prisma·DB 연결 (TASK-0005)
