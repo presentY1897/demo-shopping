@@ -74,16 +74,14 @@ function compose(args, ports, project) {
 }
 
 function printSummary(ports, project, elapsedMs) {
-  const user = process.env.POSTGRES_USER ?? 'shopping'
-  const password = process.env.POSTGRES_PASSWORD ?? 'shopping'
-  const database = process.env.POSTGRES_DB ?? 'shopping'
-
   console.log(`\n  인프라 기동 완료 (${(elapsedMs / 1000).toFixed(1)}초)\n`)
   console.log(`  프로젝트  ${project}`)
   console.log(`  포트      postgres ${ports.postgres} · meilisearch ${ports.meilisearch}\n`)
-  console.log('  .env 에 넣을 값:')
-  console.log(`    DATABASE_URL=postgresql://${user}:${password}@localhost:${ports.postgres}/${database}`)
-  console.log(`    MEILI_HOST=http://localhost:${ports.meilisearch}\n`)
+  // Do not print DATABASE_URL / MEILI_HOST as values to copy into `.env`.
+  // Since TASK-0004 the API derives both from PORT_OFFSET at boot, and writing
+  // them into `.env` would pin them and silently disable that derivation.
+  console.log('  API 는 이 포트들을 PORT_OFFSET 에서 직접 계산합니다.')
+  console.log('  .env 에 DATABASE_URL · MEILI_HOST 를 적지 마세요 — 적으면 파생이 꺼집니다.\n')
 }
 
 const COMMANDS = {

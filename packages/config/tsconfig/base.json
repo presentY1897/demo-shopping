@@ -19,6 +19,10 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
 
+    // TypeScript 6 no longer pulls in every node_modules/@types package on its
+    // own, and each app needs a different set (Next apps also want DOM). Declare
+    // `types` in the consuming package's tsconfig, e.g. apps/api uses ["node"].
+
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
