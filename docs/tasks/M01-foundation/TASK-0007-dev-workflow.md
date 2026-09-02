@@ -34,6 +34,16 @@
 
 lint-staged 는 **변경된 파일 경로**를 기준으로 도구를 부르므로, 루트 파일이 스테이징되면 eslint·prettier 가 그 경로에 대해 실행된다. 루트에 이 파일들을 담당할 설정이 없으면 훅이 실패하거나(설정 없음) 조용히 통과한다(무의미). 이 TASK 에서 루트 검사 경로를 만들어 해소한다.
 
+### CI 작업 순서 (TASK-0004 에서 이월)
+
+`pnpm typecheck` 와 `pnpm lint` 는 `packages/shared/dist` 가 있어야 통과한다. 로컬에서는 `pnpm install` 의 `prepare` 훅이 이를 만들어주지만, CI job 을 병렬로 쪼개면서 `build` 없이 `typecheck` 만 도는 job 을 만들면 그 job 은 항상 실패한다.
+
+```
+install → build → (typecheck ∥ lint ∥ test)
+```
+
+각 job 이 독립 실행되므로 **job 마다 `install` 과 `build` 를 선행**하거나, 빌드 산출물을 job 간에 공유해야 한다. 어느 쪽이든 이 순서를 못박는다.
+
 ### 제외
 - 배포 워크플로 (M02)
 - E2E 테스트 — TASK-0099 에서 Playwright 로 도입 (D-057)
