@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "@shopping/config — base",
+  // Shared by every package. Framework specific options live in next.json / nest.json.
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "moduleDetection": "force",
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    // Unused code is reported by eslint (@typescript-eslint/no-unused-vars) so that
+    // a single tool owns the rule and editors can auto-fix it.
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // Consumers must be able to jump from dist back to the original source.
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  }
+}

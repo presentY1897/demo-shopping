@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "@shopping/config — nest",
+  "extends": "./base.json",
+  // NestJS services. Decorators and their metadata are required by the DI container.
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    // DI injects after construction, and DTO fields are assigned by the validator.
+    "strictPropertyInitialization": false,
+    "outDir": "${configDir}/dist",
+    "rootDir": "${configDir}/src",
+    "incremental": true,
+    "declaration": false,
+    "declarationMap": false
+  }
+}
