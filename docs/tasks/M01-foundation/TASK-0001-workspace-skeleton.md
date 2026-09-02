@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M01 기반 구축 |
-| 상태 | 승인됨 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-02 |
 | 브랜치 | `feature/workspace-skeleton` |
 | 선행 작업 | 없음 |
@@ -90,12 +90,15 @@ COMPOSE_PROJECT_NAME=shopping-search    ← 컨테이너·볼륨도 분리
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| F1 | 워크스페이스 인식 | `pnpm ls -r --depth -1` | 패키지 7개 출력 | [ ] |
-| F2 | 잠금 파일 재현성 | `pnpm install --frozen-lockfile` | 성공 | [ ] |
-| F3 | 스크립트 전파 | `pnpm -r exec pwd` | 7개 경로 출력 | [ ] |
-| F4 | 패키지 매니저 강제 | `npm install` 시도 | 차단 메시지 후 종료 | [ ] |
-| F5 | 포트 오프셋 | `PORT_OFFSET=10` 설정 | 전 포트가 +10 으로 이동 | [ ] |
-| F6 | 워크트리 병행 | 두 워크트리에서 동시에 `pnpm dev` | 양쪽 모두 정상 기동, 충돌 0건 | [ ] |
+| F1 | 워크스페이스 인식 | `pnpm ls -r --depth -1` | 패키지 7개 출력 | [x] |
+| F2 | 잠금 파일 재현성 | `pnpm install --frozen-lockfile` | 성공 | [x] |
+| F3 | 스크립트 전파 | `pnpm -r exec pwd` | 7개 경로 출력 | [x] |
+| F4 | 패키지 매니저 강제 | `npm install` 시도 | 차단 메시지 후 종료 코드 1 | [x] |
+| F5 | 포트 오프셋 | `PORT_OFFSET=10 pnpm ports --json` | 전 포트가 +10 으로 이동 | [x] |
+| F6 | 워크트리 병행 (포트 배분) | 서로 다른 오프셋 두 개로 `pnpm ports --json` | 두 포트 집합의 교집합 0개 | [x] |
+
+> **F6 범위 조정** — 최초 계획은 "두 워크트리에서 동시에 `pnpm dev`" 였으나, 이 TASK 시점에는 `dev` 스크립트를 가진 앱이 하나도 없어 검증이 불가능하다.
+> 여기서는 **포트 배분 규칙이 워크트리끼리 겹치지 않는다**는 것까지 검증하고, 실제 동시 기동은 앱이 생기는 **TASK-0006 (F5b·F6)** 에서 확인한다.
 
 ### 6.2 품질 게이트
 
@@ -128,8 +131,17 @@ COMPOSE_PROJECT_NAME=shopping-search    ← 컨테이너·볼륨도 분리
 
 | 패키지 | 버전 |
 | --- | --- |
-| node | |
-| pnpm | |
+| node | 24.13.1 (`.nvmrc`, `engines: >=24.13.0 <25`) |
+| pnpm | 9.15.9 (`packageManager`, `engines: >=9.15.0 <10`) |
+
+런타임 의존성은 아직 없다. `pnpm-lock.yaml` 은 워크스페이스 7개만 기록한 상태로 커밋한다.
+
+### 이 TASK 가 만든 스크립트
+
+| 파일 | 역할 |
+| --- | --- |
+| `scripts/only-pnpm.mjs` | `preinstall` 훅. `npm_config_user_agent` 로 pnpm 이 아니면 종료. 외부 의존성 없이 동작해야 하므로 `npx only-allow` 를 쓰지 않는다 |
+| `scripts/ports.mjs` | 전 포트의 단일 출처. `BASE_PORTS` + `PORT_OFFSET`. 다른 스크립트에서 `portFor('api')` 로 import 한다 |
 
 ## 9. 변경 이력
 
@@ -137,3 +149,4 @@ COMPOSE_PROJECT_NAME=shopping-search    ← 컨테이너·볼륨도 분리
 | --- | --- |
 | 2026-09-02 | 최초 작성 |
 | 2026-09-02 | 승인 — M01 착수 |
+| 2026-09-02 | 완료. F6 을 포트 배분 검증으로 한정하고 동시 기동 검증은 TASK-0006 으로 이관 |

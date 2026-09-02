@@ -4,7 +4,7 @@
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
-| [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | 0/7 |
+| [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | 1/7 |
 | [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 0/7 |
 | [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, Radix 컴포넌트, 폼, 레이아웃, Storybook | 0/7 |
 | [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점 | 0/9 |
@@ -26,7 +26,7 @@
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
-| [TASK-0001](./M01-foundation/TASK-0001-workspace-skeleton.md) | 워크스페이스 골격 | 승인됨 |
+| [TASK-0001](./M01-foundation/TASK-0001-workspace-skeleton.md) | 워크스페이스 골격 | 완료 |
 | [TASK-0002](./M01-foundation/TASK-0002-shared-config.md) | 공유 설정 패키지 | 승인됨 |
 | [TASK-0003](./M01-foundation/TASK-0003-local-infra.md) | 로컬 인프라 (Docker) | 승인됨 |
 | [TASK-0004](./M01-foundation/TASK-0004-api-bootstrap.md) | API 부트스트랩 | 승인됨 |
