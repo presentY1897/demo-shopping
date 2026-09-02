@@ -1,6 +1,10 @@
 {
-  // Build only: tests stay out of `dist`, but `tsconfig.json` still includes
-  // them so that typecheck and eslint cover them.
+  // Build only: tests and the Prisma CLI files stay out of `dist`, but
+  // `tsconfig.json` still includes them so that typecheck and eslint cover them.
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src"
+  },
+  "include": ["src"],
   "exclude": ["dist", "node_modules", "**/*.spec.ts"]
 }

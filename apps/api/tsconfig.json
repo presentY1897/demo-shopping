@@ -3,8 +3,15 @@
   "compilerOptions": {
     // TypeScript 6 no longer pulls every `node_modules/@types` package in
     // automatically, so the ambient globals this app relies on are listed here.
-    "types": ["node"]
+    "types": ["node"],
+    // Widened from the preset's `src` so that the Prisma CLI files below are part
+    // of the same program. `tsconfig.build.json` puts it back, which is the
+    // config that decides the shape of `dist`.
+    "rootDir": "."
   },
-  "include": ["src"],
+  // `prisma.config.mts` and `prisma/seed.mts` live outside `src` because the Prisma
+  // CLI looks for them there. They are still typechecked and linted from here;
+  // `tsconfig.build.json` narrows the set back to `src` so they stay out of dist.
+  "include": ["src", "prisma", "prisma.config.mts"],
   "exclude": ["dist", "node_modules"]
 }

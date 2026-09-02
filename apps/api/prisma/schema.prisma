@@ -1,0 +1,31 @@
+// Single source of truth for the database schema.
+//
+// `docs/design/erd.md` explains what the tables are for and why the model is
+// split the way it is; column types and constraints live here and nowhere else.
+// Every change goes through `pnpm db:migrate`, and the generated SQL is
+// committed — deployments only ever run `prisma migrate deploy`.
+//
+// The datasource URL is not declared here on purpose: `prisma.config.ts`
+// resolves it with the same code the API uses at boot, so the CLI and the
+// running process can never disagree about which database they are talking to.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Small operational key/value store owned by the platform itself.
+///
+/// It is deliberately not a domain table: TASK-0005 needs one model to prove the
+/// migration pipeline end to end, and an operational marker (seed fingerprint,
+/// schema baseline) is the one thing every environment can carry without
+/// pre-empting the domain schema that arrives from M04 onwards.
+model AppMeta {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
