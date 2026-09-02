@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+@import '@shopping/config/tailwind/preset.css';
+
+/*
+ * App level extension of the shared preset. Everything that all three apps
+ * share belongs in the preset; only what is specific to admin goes here.
+ */
+@theme {
+  --color-app-accent: oklch(0.52 0.17 310);
+}

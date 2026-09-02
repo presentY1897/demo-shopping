@@ -1,3 +1,4 @@
 .next
 dist
 coverage
+next-env.d.ts

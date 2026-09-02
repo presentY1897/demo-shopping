@@ -4,19 +4,30 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "node ../../scripts/web-app.mjs admin dev",
+    "build": "node ../../scripts/web-app.mjs admin build",
+    "start": "node ../../scripts/web-app.mjs admin start",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix --max-warnings 0",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "dependencies": {
-    "@shopping/shared": "workspace:*"
+    "@shopping/shared": "workspace:*",
+    "next": "^16.3.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@shopping/config": "workspace:*",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
     "eslint": "^10.9.1",
     "prettier": "^3.9.6",
+    "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3"
   }
 }
