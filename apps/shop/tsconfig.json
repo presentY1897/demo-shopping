@@ -1,5 +1,13 @@
 {
   "extends": "@shopping/config/tsconfig/next.json",
+  // TypeScript 6 no longer auto-includes node_modules/@types, so the app names
+  // what it needs: `node` for process.env, the React types for JSX.
+  "compilerOptions": {
+    "types": ["node", "react", "react-dom"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules", ".next", "dist"]
 }
