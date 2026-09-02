@@ -1,12 +1,12 @@
 # Task 인덱스
 
-전체 **103개** TASK. 모두 **승인 대기** 상태다.
+전체 **104개** TASK. 모두 **승인 대기** 상태다.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
 | [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | 0/7 |
 | [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 0/7 |
-| [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, 컴포넌트, 폼, 레이아웃 | 0/6 |
+| [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, 컴포넌트, 폼, 레이아웃, Storybook | 0/7 |
 | [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, 권한 가드, 데모 발급·정리, 입점 | 0/8 |
 | [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | 0/10 |
 | [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | 0/9 |
@@ -48,7 +48,7 @@
 
 </details>
 
-<details><summary><b>M03. 디자인 시스템</b> (0/6)</summary>
+<details><summary><b>M03. 디자인 시스템</b> (0/7)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -58,6 +58,7 @@
 | [TASK-0017](./M03-design-system/TASK-0017-form-system.md) | 폼 시스템 | 승인 대기 |
 | [TASK-0018](./M03-design-system/TASK-0018-shop-layout.md) | shop 레이아웃 · 밀도 토글 | 승인 대기 |
 | [TASK-0019](./M03-design-system/TASK-0019-console-layout.md) | 콘솔 레이아웃 (seller · admin) | 승인 대기 |
+| [TASK-0104](./M03-design-system/TASK-0104-storybook.md) | Storybook | 승인 대기 |
 
 </details>
 

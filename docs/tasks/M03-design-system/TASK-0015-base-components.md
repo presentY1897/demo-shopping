@@ -50,7 +50,7 @@
 4. 표시 요소 (Badge, Tag, Avatar, Divider)
 5. 오버레이 (Modal, Drawer, Tooltip, Popover, Toast)
 6. 구조 요소 (Tabs, Accordion)
-7. 프리뷰 페이지에 전 컴포넌트 나열
+7. 프리뷰 페이지에 전 컴포넌트 나열 (TASK-0104 에서 Storybook 으로 대체된다)
 
 ## 6. 완료 기준
 
