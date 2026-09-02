@@ -42,6 +42,20 @@
 
 **쿠키는 각 서브도메인 한정**(`Domain` 속성 미지정)으로 발급한다. 세션이 앱 간에 공유되지 않아야 한다. (D-028)
 
+### Cloudflare DNS + Vercel 조합
+
+Cloudflare 에서 도메인을 사고 DNS 를 관리하되, **Vercel 로 향하는 레코드는 프록시를 끈다(DNS only, 회색 구름).**
+
+프록시를 켜면 Cloudflare CDN 과 Vercel CDN 이 이중으로 걸려 캐시 무효화가 어긋나고, Vercel 의 도메인 검증·SSL 발급이 실패하거나 리다이렉트 루프가 생긴다. 흔한 함정이다.
+
+| 서브도메인 | 프록시 |
+| --- | --- |
+| `shop` / `seller` / `admin` → Vercel | **DNS only** |
+| `api` → Railway/Render | **DNS only** |
+| `cdn` → R2 | 프록시 사용 가능 (Cloudflare 자체 서비스) |
+
+R2 도 Cloudflare 이므로 도메인·스토리지·DNS 를 한 계정에서 관리하게 된다. 배포까지 Cloudflare(Pages/Workers)로 옮기는 선택지도 있으나, Next.js App Router 의 SSR 은 Vercel 이 네이티브라 제약이 없다. **DNS 는 Cloudflare, 배포는 Vercel** 조합을 유지한다.
+
 ## 5. 구현 계획
 
 1. 도메인 이름 결정 및 구매
@@ -59,6 +73,7 @@
 | F1 | DNS 해석 | `dig shop.<도메인>` 등 4건 | 전부 응답 | [ ] |
 | F2 | HTTPS | 각 서브도메인 `curl -I` | 인증서 유효, 200 또는 배포 대기 응답 | [ ] |
 | F3 | 루트 리다이렉트 | 루트 도메인 접속 | `shop` 으로 301/302 | [ ] |
+| F4 | 프록시 설정 | Cloudflare 대시보드 확인 | Vercel·API 레코드가 DNS only | [ ] |
 
 ### 6.2 품질 게이트
 

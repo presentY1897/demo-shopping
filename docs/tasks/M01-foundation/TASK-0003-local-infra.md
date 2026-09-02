@@ -18,7 +18,17 @@
 - `docker-compose.yml` — PostgreSQL, Meilisearch (named volume 사용)
 - `.env.example` — 전 변수 목록과 로컬 기본값
 - 환경변수 로딩 규약 (앱별 `.env` 위치와 우선순위)
-- `pnpm infra:up` / `infra:down` / `infra:reset` 스크립트
+- 인프라 스크립트 — `docker compose` 명령을 감싼 단축 명령
+
+  | 스크립트 | 하는 일 |
+  | --- | --- |
+  | `pnpm infra:up` | `docker compose up -d` — Postgres·Meilisearch 백그라운드 기동 |
+  | `pnpm infra:down` | 컨테이너 중지·제거 (볼륨은 유지 → 데이터 보존) |
+  | `pnpm infra:reset` | 볼륨까지 삭제 후 재기동 (완전 초기화) |
+  | `pnpm infra:logs` | 두 컨테이너 로그 확인 |
+  | `pnpm infra:ps` | 기동 상태·헬스체크 확인 |
+
+  긴 docker 명령을 외우지 않게 하고, 워크트리별 `COMPOSE_PROJECT_NAME` 을 스크립트가 자동으로 적용하게 하는 것이 목적이다.
 - README 에 로컬 환경 실행 절차
 
 ### 제외
@@ -42,8 +52,10 @@
 
 | 서비스 | 이미지 | 포트 | 볼륨 |
 | --- | --- | --- | --- |
-| postgres | `postgres:<major>-alpine` | `${POSTGRES_PORT:-5432}` | `pgdata` |
-| meilisearch | `getmeili/meilisearch:<ver>` | `${MEILI_PORT:-7700}` | `meilidata` |
+| postgres | `postgres:<major>-alpine` | `5432 + PORT_OFFSET` | `pgdata` |
+| meilisearch | `getmeili/meilisearch:<ver>` | `7700 + PORT_OFFSET` | `meilidata` |
+
+**워크트리 격리**: `COMPOSE_PROJECT_NAME` 을 워크트리별로 다르게 두어 컨테이너·볼륨·네트워크를 분리한다. 같은 이름이면 두 워크트리가 같은 DB 를 공유해 마이그레이션이 서로를 덮어쓴다.
 
 ### 환경변수
 
@@ -77,6 +89,7 @@
 | F4 | 인증 강제 | 키 없이 `curl localhost:7700/indexes` | 401 | [ ] |
 | F5 | 데이터 영속 | 테이블 생성 → `docker compose restart` → 조회 | 데이터 유지 | [ ] |
 | F6 | 초기화 | `pnpm infra:reset` 후 조회 | 볼륨 삭제되어 초기 상태 | [ ] |
+| F7 | 워크트리 격리 | 두 워크트리에서 각각 `infra:up` | 컨테이너·볼륨 분리, 데이터 독립 | [ ] |
 
 ### 6.2 품질 게이트
 

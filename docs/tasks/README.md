@@ -1,15 +1,15 @@
 # Task 인덱스
 
-전체 **100개** TASK. 모두 **승인 대기** 상태다.
+전체 **103개** TASK. 모두 **승인 대기** 상태다.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
 | [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | 0/7 |
-| [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측 | 0/6 |
+| [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 0/7 |
 | [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, 컴포넌트, 폼, 레이아웃 | 0/6 |
 | [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, 권한 가드, 데모 발급·정리, 입점 | 0/8 |
 | [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | 0/10 |
-| [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 목록/상세 3단계 뷰 | 0/7 |
+| [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | 0/9 |
 | [M07](./M07-cart-order/) 장바구니·주문 | 장바구니, 금액 계산 엔진, 재고 예약, 주문 2단 분할 | 0/7 |
 | [M08](./M08-payment/) 결제 | 프로바이더 추상화, 가상 카드, 토스 연동, 웹훅, 실패 복구 | 0/7 |
 | [M09](./M09-fulfillment/) 배송·주문관리 | 상태 머신, 주문 화면, 가상 배송, 구매확정 | 0/6 |
@@ -34,7 +34,7 @@
 | [TASK-0006](./M01-foundation/TASK-0006-web-bootstrap.md) | 웹 앱 3종 부트스트랩 | 승인 대기 |
 | [TASK-0007](./M01-foundation/TASK-0007-dev-workflow.md) | 개발 워크플로 · CI | 승인 대기 |
 
-<details><summary><b>M02. 배포 파이프라인</b> (0/6)</summary>
+<details><summary><b>M02. 배포 파이프라인</b> (0/7)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -44,6 +44,7 @@
 | [TASK-0011](./M02-deployment/TASK-0011-object-storage.md) | 오브젝트 스토리지 (R2) | 승인 대기 |
 | [TASK-0012](./M02-deployment/TASK-0012-cd-pipeline.md) | 배포 자동화 · 환경변수 관리 | 승인 대기 |
 | [TASK-0013](./M02-deployment/TASK-0013-observability.md) | 로그 · 에러 추적 · 모니터링 | 승인 대기 |
+| [TASK-0101](./M02-deployment/TASK-0101-cold-start.md) | 콜드 스타트 대응 · 서버 웨이크업 UX | 승인 대기 |
 
 </details>
 
@@ -92,7 +93,7 @@
 
 </details>
 
-<details><summary><b>M06. 검색·탐색</b> (0/7)</summary>
+<details><summary><b>M06. 검색·탐색</b> (0/9)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -103,6 +104,8 @@
 | [TASK-0042](./M06-search/TASK-0042-category-page.md) | 카테고리 페이지 | 승인 대기 |
 | [TASK-0043](./M06-search/TASK-0043-product-detail.md) | 상품 상세 (밀도 3단계) | 승인 대기 |
 | [TASK-0044](./M06-search/TASK-0044-home-brand.md) | 홈 · 브랜드관 | 승인 대기 |
+| [TASK-0102](./M06-search/TASK-0102-seo.md) | SEO | 승인 대기 |
+| [TASK-0103](./M06-search/TASK-0103-hangul-autocomplete.md) | 한글 자모 · 초성 자동완성 | 승인 대기 |
 
 </details>
 
@@ -232,6 +235,7 @@
 - **한 TASK = 하나의 작업 목적.** 여러 목적이 섞이면 쪼갠다.
 - 번호는 **전역 4자리 평면 번호**다. 마일스톤이 바뀌어 파일을 옮겨도 번호는 유지한다.
 - 디렉터리는 그룹핑만 담당한다. `TASK-0042` 라는 참조는 위치와 무관하게 유효하다.
+- **삭제된 번호는 재사용하지 않는다.** 결번은 그대로 둔다.
 - 모든 TASK 문서는 [`TASK-TEMPLATE.md`](./TASK-TEMPLATE.md) 를 복사해 작성한다.
 - 품질 게이트는 [`QUALITY-GATES.md`](./QUALITY-GATES.md) 를 참조하고 **예외만** 각 TASK 에 적는다.
 - **6장 완료 기준은 필수**이며 각 항목은 측정 방법과 목표값을 가져야 한다.

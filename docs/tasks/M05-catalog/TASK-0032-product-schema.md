@@ -18,7 +18,7 @@
 - `Product` — 판매자, 카테고리, 이름, 설명, 상태, `attributes`(JSONB), 캐시 컬럼(`minPrice`, `ratingAvg`, `ratingCount`, `salesCount`)
 - `ProductImage` — 순서
 - `ProductOption` / `ProductOptionValue` — 이름, 값, 순서, `meta`(색상칩 등)
-- `ProductVariant` — SKU, 가격, 정가, 재고, 상태
+- `ProductVariant` — SKU, 가격, 정가, 재고, 상태, **1회 주문 최대 수량**
 - `VariantOptionValue` — 조합 매핑
 - **옵션 조합으로 Variant 일괄 생성** 로직
 - 옵션 없는 상품도 Variant 1개 강제 생성
@@ -37,6 +37,7 @@
 - [ ] 판매자는 자신의 상품만 수정할 수 있다
 - [ ] 상품 저장 시 속성 검증(TASK-0030)을 반드시 통과한다
 - [ ] `minPrice` 가 Variant 가격 변경에 따라 갱신된다
+- [ ] 판매자가 1회 주문당 최대 구매 수량을 지정할 수 있다
 
 ## 4. 설계
 
@@ -49,6 +50,24 @@ Product ─ ProductOption(색상) ─ Value(블랙, 화이트, 그레이)
 가격은 **Variant 절대값**이다. "기본가 + 추가금" 방식은 할인 계산 시 적용 대상이 모호해진다.
 
 일부 조합만 판매하는 경우(블랙은 있는데 블랙/XL 은 없음)를 허용한다. 생성 후 개별 Variant 를 비활성화하는 방식으로 처리한다.
+
+### 1회 주문 최대 수량 (`maxPurchaseQuantity`)
+
+한 사람이 전 재고를 쓸어가는 것을 막는다. 인기 상품·한정 수량 상품에서 실제로 필요한 기능이고, 데모에서도 재고 1개짜리 상품을 한 명이 독점하면 다른 방문자가 체험할 수 없다.
+
+| 위치 | 값 |
+| --- | --- |
+| `Product.maxPurchaseQuantity` | 상품 전체 기본값 (null = 무제한) |
+| `ProductVariant.maxPurchaseQuantity` | 개별 SKU 재정의 (null = 상품 값 상속) |
+
+검증 지점은 **네 곳 전부**다. 하나라도 빠지면 우회 경로가 된다.
+
+1. 장바구니 담기·수량 변경 (TASK-0045)
+2. 주문서 진입 시 (TASK-0050)
+3. 재고 예약 시 (TASK-0048)
+4. 주문 생성 시 (TASK-0049) ← 최종 방어선
+
+1인당 **누적** 구매 제한(예: 계정당 평생 1개)은 범위 밖이다. 재구매·반품 후 재주문까지 고려하면 규칙이 복잡해지고, 얻는 것에 비해 비용이 크다.
 
 ## 5. 구현 계획
 
@@ -72,6 +91,8 @@ Product ─ ProductOption(색상) ─ Value(블랙, 화이트, 그레이)
 | F5 | 캐시 갱신 | Variant 최저가 변경 | `minPrice` 갱신 | [ ] |
 | F6 | 부분 조합 | Variant 1개 비활성화 | 해당 조합만 선택 불가 | [ ] |
 | F7 | SKU 유일성 | 중복 SKU 저장 시도 | 400 | [ ] |
+| F8 | 수량 제한 설정 | 상품·Variant 각각 최대 수량 지정 | 저장, Variant 값이 우선 | [ ] |
+| F9 | 상속 | Variant 값 null | 상품 기본값 적용 | [ ] |
 
 ### 6.2 품질 게이트
 

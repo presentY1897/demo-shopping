@@ -12,3 +12,4 @@
 | [TASK-0011](./TASK-0011-object-storage.md) | 오브젝트 스토리지 (R2) | 승인 대기 | 0009 |
 | [TASK-0012](./TASK-0012-cd-pipeline.md) | 배포 자동화 · 환경변수 관리 | 승인 대기 | 0010 |
 | [TASK-0013](./TASK-0013-observability.md) | 로그 · 에러 추적 · 모니터링 | 승인 대기 | 0012 |
+| [TASK-0101](./TASK-0101-cold-start.md) | 콜드 스타트 대응 · 웨이크업 UX | 승인 대기 | 0010 |

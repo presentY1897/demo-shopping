@@ -19,7 +19,7 @@
 - Tailwind CSS 설치 및 공통 프리셋 연결
 - 각 앱의 API 클라이언트 (`packages/shared` 의 타입 사용, 에러 포맷 처리)
 - 각 앱의 확인용 루트 페이지 — API·DB·검색엔진 상태 표시
-- 앱별 포트 분리 (`3000` / `3001` / `3002`)
+- 앱별 포트 분리 (`3000` / `3001` / `3002`, **`PORT_OFFSET` 적용**)
 - 루트 `dev` 스크립트에서 API + 웹 3개 병렬 실행
 
 ### 제외
@@ -74,6 +74,7 @@ packages/shared/src/api/   fetch 래퍼, 에러 포맷 처리, 응답 타입
 | F3 | 장애 시 화면 | API 중지 후 새로고침 | 에러 상태 표시, 페이지 크래시 없음 | [ ] |
 | F4 | 공용 타입 사용 | 응답 타입을 `packages/shared` 에서 참조 | `pnpm typecheck` error 0 | [ ] |
 | F5 | 앱 독립성 | shop 만 중지 | seller·admin 정상 동작 | [ ] |
+| F5b | 포트 오프셋 | `PORT_OFFSET=10` 으로 기동 | 3010/3011/3012 에서 응답, API 연결 정상 | [ ] |
 | F6 | 클린 클론 | 빈 디렉터리에 clone → install → infra up → dev | **수동 수정 0회로 전부 기동** | [ ] |
 
 ### 6.2 품질 게이트
