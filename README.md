@@ -232,6 +232,89 @@ PORT_OFFSET=50 pnpm --filter @shopping/api dev   # 파일 수정 없이 4050 에
 **명시한 값이 항상 이긴다.** 배포 환경처럼 워크스페이스도 `.env` 도 없는 곳에서는 파생이 동작하지 않으므로
 플랫폼이 전부 주입해야 하고, 빠진 변수는 부팅 시 검증에서 이름과 함께 보고된다.
 
+## 개발 워크플로
+
+### 품질 게이트
+
+| 명령 | 검사 |
+| --- | --- |
+| `pnpm typecheck` | `tsc --noEmit` |
+| `pnpm lint` | eslint — **루트 파일 먼저, 그 다음 패키지 7개** |
+| `pnpm format:check` | prettier — 루트에서 한 번에 저장소 전체 |
+| `pnpm build` | 전 패키지 빌드 |
+| `pnpm test` | vitest |
+
+`pnpm -r` 은 **루트 프로젝트를 건너뛴다.** 그래서 `scripts/*.mjs` 와 루트 설정 파일은
+패키지 스크립트로는 영원히 검사되지 않는다. lint 는 루트 검사(`pnpm lint:root`)를 먼저
+돌리고, format 은 아예 루트 한 번으로 저장소 전체를 본다.
+
+마크다운은 prettier 대상에서 뺐다(`.prettierignore`). 표를 CJK 폭 기준으로 다시 정렬하고
+문서 안의 코드 예제까지 다시 쓰기 때문에, 포맷이 아니라 문서 수정이 되어 버린다.
+
+`typecheck` · `lint` · `test` 는 **`packages/shared/dist` 가 있어야** 통과한다.
+`pnpm install` 이 그 패키지의 `prepare` 훅으로 만들어 주지만, 지웠다면 다시 만든다.
+
+```bash
+pnpm --filter @shopping/shared build
+```
+
+### 커밋 훅
+
+| 훅 | 하는 일 | 도구 |
+| --- | --- | --- |
+| `pre-commit` | 스테이징된 파일만 `eslint --fix` → `prettier --write` | lint-staged |
+| `commit-msg` | Conventional Commits 형식 검증 | commitlint |
+
+- 훅은 **변경된 파일만** 본다. 저장소가 커져도 커밋이 느려지지 않는다. 전체 검사는 CI 몫이다.
+- 포맷이 어긋난 파일은 훅이 **고쳐서 다시 스테이징**하므로 그대로 커밋된다.
+  자동으로 못 고치는 린트 오류(미사용 변수 등)는 파일·줄 번호를 출력하고 커밋을 중단한다.
+- 훅은 `pnpm install` 이 설치한다(루트 `prepare: husky`). **새 워크트리를 만들면
+  `pnpm install` 을 한 번 돌려야** 훅이 붙는다.
+
+### 커밋 메시지
+
+[Conventional Commits](https://www.conventionalcommits.org/). 타입은 8개만 허용한다 —
+`feat` `fix` `docs` `chore` `refactor` `test` `style` `perf` (CLAUDE.md 3장과 동일).
+`ci` · `build` · `revert` 는 쓰지 않는다. CI 작업도 `chore` 다.
+
+```
+chore(ci): PR 에서 typecheck · lint · build · test 병렬 실행
+
+본문은 한국어로, 무엇을 왜 바꿨는지 적는다.
+```
+
+### 훅 우회
+
+```bash
+git commit --no-verify -m "..."    # 이 커밋만
+HUSKY=0 git commit -m "..."        # 이 커밋만 (환경변수 방식)
+HUSKY=0 git rebase -i main         # 커밋을 여러 개 다시 쓰는 명령 전체
+```
+
+rebase·cherry-pick 은 커밋마다 훅을 돌리므로 `HUSKY=0` 쪽이 편하다.
+우회하더라도 **PR 에서 같은 검사가 다시 돈다.** 결국 고쳐야 하므로, 우회는 중간 커밋을
+정리하는 동안만 쓴다.
+
+### CI
+
+PR 을 올리면 `.github/workflows/ci.yml` 이 4개 job 을 **병렬로** 돌린다.
+
+| job | 명령 |
+| --- | --- |
+| `typecheck` | `pnpm typecheck` |
+| `lint` | `pnpm lint` + `pnpm format:check` |
+| `build` | `pnpm build` |
+| `test` | `pnpm test` |
+
+- 네 job 은 서로 의존하지 않는다. 각 job 이 `.github/actions/setup` 으로
+  **install → `packages/shared` 빌드**까지 스스로 마친 뒤 자기 명령을 돌린다.
+  빌드 산출물을 job 사이에 공유하려면 앞단에 build job 을 하나 둬야 하는데,
+  그러면 병렬 이득이 사라진다.
+- pnpm store 는 `actions/setup-node` 의 `cache: pnpm` 이 `pnpm-lock.yaml` 해시를
+  키로 캐시한다. 잠금 파일이 그대로면 두 번째 실행부터 패키지를 내려받지 않는다.
+- `main` 브랜치 보호 규칙은 **아직 켜지 않았다.**
+  [`docs/branch-protection.md`](./docs/branch-protection.md) 참조.
+
 ## 문서
 
 - 작업 계획: [`docs/tasks/`](./docs/tasks/)

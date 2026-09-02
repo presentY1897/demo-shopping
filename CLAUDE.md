@@ -66,6 +66,10 @@ git branch -d feature/<name>
   - `type: feat | fix | docs | chore | refactor | test | style | perf`
 - 커밋 본문은 한국어로 작성한다.
 - git identity 는 저장소 로컬 설정으로 고정되어 있다: `presenty1897 / presenty1897@gmail.com`
+- 위 타입 목록은 `commitlint.config.mjs` 의 `type-enum` 과 **동일해야 한다.** `commit-msg` 훅이
+  이 목록으로 커밋을 거부한다. `ci` · `build` · `revert` 는 쓰지 않으며 CI 작업도 `chore` 다.
+  한쪽을 고치면 반드시 다른 쪽도 고친다.
+- 커밋 훅은 `pnpm install` 이 설치한다. 훅 우회 방법은 README 의 "개발 워크플로" 절 참조.
 
 ## 4. 문서 기반 진행 원칙 (중요)
 
