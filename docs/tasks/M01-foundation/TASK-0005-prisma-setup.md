@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M01 기반 구축 |
-| 상태 | 완료 |
+| 상태 | 진행중 |
 | 작성일 | 2026-09-02 |
 | 브랜치 | `feature/prisma-setup` |
 | 선행 작업 | TASK-0004 |
@@ -112,6 +112,17 @@ Prisma 7 은 쿼리 컴파일러 + 드라이버 어댑터 구조라 풀이 `pg` 
 | F5 | 종료 처리 | `kill -TERM` | 커넥션 종료 로그 후 정상 종료 | `[PrismaService] 데이터베이스 커넥션을 닫았습니다. (SIGTERM)` → exit 143, 22ms | [x] |
 | F6 | 재현성 | 새 빈 DB 에 `migrate deploy` | 동일 스키마 생성 | 별도 스택(offset 70)에 적용 후 `pg_dump --schema-only` 두 DB 비교 → 동일 | [x] |
 
+> **완료 처리 보류 — F4 1건 미충족.** `CLAUDE.md` 4장의 "기준을 전부 충족하기 전에는 상태를 `완료` 로 바꾸지 않는다" 에 따라 상태를 `진행중` 으로 둔다.
+> Prisma 7 CLI 는 AI 에이전트의 `migrate reset` 실행을 차단하며, 우회 환경변수는 **사용자의 명시적 동의**를 전제로 한다. 에이전트가 스스로 설정할 수 있는 값이 아니다.
+> 사용자가 아래를 직접 실행하고 성공을 확인하면 F4 를 `[x]` 로 바꾸고 상태를 `완료` 로 변경한다.
+>
+> ```bash
+> cd feature-prisma-setup && pnpm infra:up
+> pnpm db:reset --force && pnpm db:migrate
+> ```
+>
+> 대상은 로컬 개발용 Docker DB(`shopping-prisma-setup`)이며 그 안의 데이터는 사라진다. 지금 들어 있는 것은 마이그레이션 기록 1건뿐이다.
+
 ### 6.2 품질 게이트
 
 [공통 품질 게이트](../QUALITY-GATES.md) 적용. 예외:
@@ -144,7 +155,7 @@ Prisma 7 은 쿼리 컴파일러 + 드라이버 어댑터 구조라 풀이 `pg` 
 | --- | --- | --- |
 | R1 | 배포 DB(Neon 무료, D-060)의 커넥션 수 제한 | `DATABASE_POOL_SIZE` 로 노출(기본 10). M02 배포 시 실제 값 조정 |
 | R2 | `prisma migrate reset` 은 AI 에이전트가 실행할 수 없다 | 로컬 개발 명령이므로 사용자가 직접 실행한다. 비대화형 셸에서는 `pnpm db:reset --force` |
-| R3 | `prisma studio` 는 워크트리와 무관하게 5555 를 쓴다 | 워크트리를 여러 개 띄우면 충돌한다. `scripts/ports.mjs` 의 `BASE_PORTS` 에 `studio: 5555` 를 추가하는 것이 정석 — 별도 작업으로 넘긴다 |
+| R3 | `prisma studio` 는 워크트리와 무관하게 5555 를 쓴다 | **해소됨.** `scripts/ports.mjs` 의 `BASE_PORTS` 에 `studio: 5555` 를 추가하고 `--port <service>` 출력 모드를 만들어 `db:studio` 가 오프셋 포트로 뜨게 했다. 오프셋 50 에서 5605 기동 확인 |
 | R4 | 저장소 밖으로 `apps/api` 만 복사하면 `prisma.config.mts` 가 URL 을 파생하지 못한다 | 그 경우 `DATABASE_URL` 을 환경변수로 직접 준다. 오류 메시지가 그렇게 안내한다 |
 
 ## 8. 확정된 버전
@@ -168,3 +179,4 @@ Prisma 7 은 쿼리 컴파일러 + 드라이버 어댑터 구조라 풀이 `pg` 
 | 2026-09-02 | 승인 — M01 착수 |
 | 2026-09-02 | 시드 골격을 `prisma/seed.ts` → `prisma/seed.mts` 로 변경. Node 24 는 `type: commonjs` 패키지의 `.ts` 를 ESM 으로 감지하지 않아 `import` 구문이 실행되지 않는다 |
 | 2026-09-02 | 완료. Prisma 7.10 + pg 드라이버 어댑터로 파이프라인 구축, `/health` 에 `database` 추가, 풀 크기·타임아웃을 환경변수로 노출. F4 는 CLI 의 AI 차단으로 미검증 |
+| 2026-09-03 | F4 미충족이므로 상태를 `진행중` 으로 정정. Prisma Studio 포트를 `PORT_OFFSET` 경로로 편입(R3 해소) |

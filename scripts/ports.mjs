@@ -20,6 +20,9 @@ export const BASE_PORTS = Object.freeze({
   api: 4000,
   postgres: 5432,
   meilisearch: 7700,
+  // Prisma Studio defaults to a fixed 5555, which collides the moment a second
+  // worktree opens it. Routed through the offset like everything else.
+  studio: 5555,
 })
 
 /** Highest offset that keeps every derived port inside the unprivileged range. */
@@ -70,7 +73,18 @@ if (import.meta.filename === process.argv[1]) {
   }
   const ports = resolvePorts(offset)
 
-  if (process.argv.includes('--json')) {
+  const portFlag = process.argv.indexOf('--port')
+  if (portFlag !== -1) {
+    // `--port <service>` prints one number and nothing else, so that a package
+    // script can use it directly: `prisma studio --port $(... --port studio)`.
+    const service = process.argv[portFlag + 1]
+    try {
+      console.log(portFor(service))
+    } catch (error) {
+      console.error(`\n  ${error.message}\n`)
+      process.exit(1)
+    }
+  } else if (process.argv.includes('--json')) {
     console.log(JSON.stringify({ offset, ports }))
   } else {
     const width = Math.max(...Object.keys(ports).map((name) => name.length))
