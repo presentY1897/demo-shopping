@@ -88,13 +88,12 @@ apps/api/src/
 
 ### 6.2 품질 게이트
 
-| # | 기준 | 측정 방법 | 목표 | 충족 |
-| --- | --- | --- | --- | --- |
-| Q1 | 타입 검사 | `pnpm typecheck` | error 0 | [ ] |
-| Q2 | 린트 | `pnpm lint` | error 0, warning 0 | [ ] |
-| Q3 | 빌드 | `pnpm --filter @shopping/api build` | 성공 | [ ] |
-| Q4 | 테스트 | `pnpm --filter @shopping/api test` | 전부 통과, health 테스트 포함 | [ ] |
-| Q5 | 커버리지 | – | **면제** (기준선만 설정) | – |
+[공통 품질 게이트](../QUALITY-GATES.md) 적용. 예외:
+
+- **Q5(커버리지) 면제** — M05 부터 적용
+- **Q6~Q7 해당 없음** — TASK-0007 에서 구축
+- **3장 API 게이트**: A1(응답시간) 적용. A2~A4 는 인증 도입(M04) 이후 적용
+- **4장(데이터) 해당 없음** — 스키마 없음
 
 ### 6.3 성능
 
