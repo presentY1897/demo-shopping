@@ -22,8 +22,15 @@ export interface AppConfig {
   readonly logLevel: LogLevel
   /** Reported by `GET /api/v1/health` and by the `X-Api-Version` header. */
   readonly version: string
-  /** Not used until TASK-0005; validated now so a typo fails at boot. */
-  readonly databaseUrl: string
+  readonly database: {
+    readonly url: string
+    /** Maximum connections this process holds open. See `DATABASE_POOL_SIZE`. */
+    readonly poolSize: number
+    /** Deadline for acquiring a connection from the pool. */
+    readonly connectTimeoutMs: number
+    /** Deadline for the `/health` probe query. */
+    readonly healthTimeoutMs: number
+  }
   readonly search: {
     readonly host: string
     readonly masterKey: string

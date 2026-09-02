@@ -38,6 +38,36 @@ export const envSchema = z.object({
     error: 'postgresql://user:password@host:port/db 형식의 URL 이어야 합니다',
   }),
 
+  /**
+   * Upper bound on the connections one API process holds open.
+   *
+   * The deployed database is a free Neon instance (D-060), where connections —
+   * not CPU — are the ceiling, so this is deliberately an operator knob rather
+   * than something derived from the core count of whatever container the API
+   * landed on. `pg`'s own default is 10, which is also a sane local value.
+   */
+  DATABASE_POOL_SIZE: z.coerce
+    .number({ error: '1~100 사이의 정수여야 합니다' })
+    .int({ error: '1~100 사이의 정수여야 합니다' })
+    .min(1, { error: '1~100 사이의 정수여야 합니다' })
+    .max(100, { error: '1~100 사이의 정수여야 합니다' })
+    .default(10),
+
+  /** `pg` waits forever by default; a suspended Neon compute must not hang a request. */
+  DATABASE_CONNECT_TIMEOUT_MS: z.coerce
+    .number({ error: '100~60000 사이의 정수(밀리초)여야 합니다' })
+    .int({ error: '100~60000 사이의 정수(밀리초)여야 합니다' })
+    .min(100, { error: '100~60000 사이의 정수(밀리초)여야 합니다' })
+    .max(60_000, { error: '100~60000 사이의 정수(밀리초)여야 합니다' })
+    .default(5_000),
+
+  DATABASE_HEALTH_TIMEOUT_MS: z.coerce
+    .number({ error: '50~10000 사이의 정수(밀리초)여야 합니다' })
+    .int({ error: '50~10000 사이의 정수(밀리초)여야 합니다' })
+    .min(50, { error: '50~10000 사이의 정수(밀리초)여야 합니다' })
+    .max(10_000, { error: '50~10000 사이의 정수(밀리초)여야 합니다' })
+    .default(1_000),
+
   MEILI_HOST: z.url({
     protocol: /^https?$/,
     error: 'http:// 또는 https:// 로 시작하는 URL 이어야 합니다',

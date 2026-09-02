@@ -28,7 +28,12 @@ function toAppConfig(env: Env, version: string, corsOrigins: readonly string[]):
     port: env.API_PORT,
     logLevel: env.LOG_LEVEL,
     version,
-    databaseUrl: env.DATABASE_URL,
+    database: {
+      url: env.DATABASE_URL,
+      poolSize: env.DATABASE_POOL_SIZE,
+      connectTimeoutMs: env.DATABASE_CONNECT_TIMEOUT_MS,
+      healthTimeoutMs: env.DATABASE_HEALTH_TIMEOUT_MS,
+    },
     search: {
       host: env.MEILI_HOST,
       masterKey: env.MEILI_MASTER_KEY,

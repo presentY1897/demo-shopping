@@ -26,6 +26,9 @@ describe('parseEnv', () => {
     expect(result.env.API_HOST).toBe('0.0.0.0')
     expect(result.env.LOG_LEVEL).toBe('log')
     expect(result.env.MEILI_HEALTH_TIMEOUT_MS).toBe(1500)
+    expect(result.env.DATABASE_POOL_SIZE).toBe(10)
+    expect(result.env.DATABASE_CONNECT_TIMEOUT_MS).toBe(5000)
+    expect(result.env.DATABASE_HEALTH_TIMEOUT_MS).toBe(1000)
     expect(result.env.CORS_ORIGINS).toBe('')
     expect(result.env.API_PORT).toBe(4040)
   })
@@ -58,6 +61,21 @@ describe('parseEnv', () => {
   it('rejects a search host that is not an http(s) URL', () => {
     expect(variablesOf({ ...COMPLETE, MEILI_HOST: 'localhost:7740' })).toEqual(['MEILI_HOST'])
     expect(variablesOf({ ...COMPLETE, MEILI_HOST: 'ftp://localhost:7740' })).toEqual(['MEILI_HOST'])
+  })
+
+  it('rejects a pool size that would exhaust a small managed database', () => {
+    expect(variablesOf({ ...COMPLETE, DATABASE_POOL_SIZE: '0' })).toEqual(['DATABASE_POOL_SIZE'])
+    expect(variablesOf({ ...COMPLETE, DATABASE_POOL_SIZE: '101' })).toEqual(['DATABASE_POOL_SIZE'])
+    expect(variablesOf({ ...COMPLETE, DATABASE_POOL_SIZE: '4.5' })).toEqual(['DATABASE_POOL_SIZE'])
+  })
+
+  it('rejects a database timeout outside the supported range', () => {
+    expect(variablesOf({ ...COMPLETE, DATABASE_CONNECT_TIMEOUT_MS: '10' })).toEqual([
+      'DATABASE_CONNECT_TIMEOUT_MS',
+    ])
+    expect(variablesOf({ ...COMPLETE, DATABASE_HEALTH_TIMEOUT_MS: '99999' })).toEqual([
+      'DATABASE_HEALTH_TIMEOUT_MS',
+    ])
   })
 
   it('rejects an unknown NODE_ENV', () => {
