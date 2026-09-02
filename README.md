@@ -119,6 +119,63 @@ pnpm --filter @shopping/api start   # 컴파일된 결과 실행
 pnpm --filter @shopping/api test    # vitest
 ```
 
+## 웹 앱 (shop / seller / admin)
+
+구매자·판매자·관리자를 **독립된 Next.js 앱 3개**로 띄운다. 세션도 앱별로 독립이다(쿠키에 `Domain` 미지정).
+
+```bash
+pnpm dev                              # API + 웹 3개를 한 번에 (아래 표의 포트)
+pnpm --filter @shopping/shop dev      # 필요한 앱만 따로
+pnpm --filter @shopping/seller dev
+pnpm --filter @shopping/admin dev
+```
+
+| 앱 | 패키지 | 포트 | 대상 |
+| --- | --- | --- | --- |
+| `apps/shop` | `@shopping/shop` | 3000 + `PORT_OFFSET` | 구매자 |
+| `apps/seller` | `@shopping/seller` | 3001 + `PORT_OFFSET` | 판매자 |
+| `apps/admin` | `@shopping/admin` | 3002 + `PORT_OFFSET` | 관리자 |
+
+앱 3개를 동시에 띄우면 개발 머신이 버거울 수 있다. **`--filter` 로 필요한 앱만 띄우는 쪽이 기본**이고,
+`pnpm dev` 는 네 프로세스를 한 번에 확인할 때 쓴다. 한 앱을 Ctrl+C 로 멈춰도 나머지는 계속 돈다.
+
+각 앱의 `dev` / `build` / `start` 는 `scripts/web-app.mjs` 를 거친다. Next 는 설정 파일을 읽기 전에
+포트를 정하므로 `next.config.ts` 에서는 늦다. 이 래퍼가 `scripts/ports.mjs` 에서 두 값을 계산해 넘긴다.
+
+| 변수 | 파생 규칙 |
+| --- | --- |
+| `PORT` | 앱별 기본 포트 + `PORT_OFFSET` |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:(4000 + PORT_OFFSET)` |
+
+셸에 이미 있는 값이 이긴다 — 배포 플랫폼이 주입한 `PORT` 가 그대로 쓰이고,
+`PORT_OFFSET=10 pnpm dev` 는 파일 수정 없이 3010·3011·3012·4010 으로 옮겨 준다.
+
+> `NEXT_PUBLIC_*` 은 **빌드 시점에 페이지에 박힌다.** 비밀값을 넣으면 안 되고,
+> `PORT_OFFSET` 을 바꾼 뒤 `pnpm start` 로 확인하려면 다시 빌드해야 한다. `pnpm dev` 는 재시작만 하면 된다.
+
+### 구조
+
+```
+apps/shop/src/
+├── app/          App Router — layout.tsx / page.tsx / globals.css
+├── components/   이 앱 전용 컴포넌트
+├── lib/          api.ts (이 앱의 API 클라이언트) · health.ts
+└── messages/     UI 문구. ko.ts 가 유일한 카탈로그이고 컴포넌트는 types.ts 만 본다
+```
+
+- **API 클라이언트는 `packages/shared/src/api` 하나뿐이다.** 각 앱은 자기 `AppId` 로 인스턴스만 만든다.
+  모든 요청에 `X-App-Id` 가 실리므로, 쿠키를 공유하지 않는 세 앱을 API 가 구분할 수 있다.
+- **UI 문구는 하드코딩하지 않는다.** 한국어 카탈로그(`messages/ko.ts`)만 있고 다국어는 구조만 잡혀 있다.
+- Tailwind 는 v4(CSS 우선 설정)다. 공통 프리셋 `@shopping/config/tailwind/preset.css` 를 세 앱이 확장한다.
+  디자인 토큰과 밀도 3단계는 M03 에 이 프리셋으로 들어온다.
+- 루트 페이지는 **기동 확인용 임시 화면**이다. `/health` 응답에 들어 있는 상태 항목을 그대로 그리므로
+  API 에 항목이 늘면 화면도 따라 늘어난다. M03 에서 실제 화면으로 교체된다.
+
+```bash
+pnpm --filter @shopping/shop build    # .next 로 프로덕션 빌드
+pnpm --filter @shopping/shop start    # 빌드 결과 실행
+```
+
 ## 환경변수
 
 | 파일 | 커밋 | 담는 것 |
@@ -145,6 +202,8 @@ PORT_OFFSET=40 COMPOSE_PROJECT_NAME=shopping-tmp pnpm infra:up   # 완전히 독
 | `MEILI_HOST` | `http://localhost:(7700 + PORT_OFFSET)` |
 | `DATABASE_URL` | `postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:(5432 + PORT_OFFSET)/$POSTGRES_DB` |
 | `CORS_ORIGINS` | shop·seller·admin 오리진 (`localhost` 와 `127.0.0.1` 양쪽) |
+
+웹 앱 3개의 `PORT` 와 `NEXT_PUBLIC_API_URL` 도 같은 방식으로 `scripts/web-app.mjs` 가 채운다.
 
 `scripts/ports.mjs` 가 단일 출처이며, API 는 이 파일을 런타임에 읽는다. 기본 포트를 바꿀 일이 생기면 그 파일만 고치면 된다.
 
