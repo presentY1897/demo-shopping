@@ -1,0 +1,5 @@
+{
+  "extends": "@shopping/config/tsconfig/next.json",
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
