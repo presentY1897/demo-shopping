@@ -17,6 +17,15 @@
  * `pg_advisory_xact_lock` and not the session-scoped variant: the lock is then
  * released by COMMIT or ROLLBACK, including the rollback nobody wrote — a
  * crashed request cannot leave the category tree locked for the next deploy.
+ *
+ * **`AttributeService` takes the same lock** (TASK-0030 4.2), and not one of its
+ * own. The rule attribute writes enforce — one live definition of a key per
+ * *lineage* — is a statement about the shape of the tree, and the shape of the
+ * tree is exactly what a move rewrites. With a separate lock, a move could land
+ * between "read the ancestors" and "insert", so the lineage that was checked
+ * would not be the lineage the row ended up in. Both operations are rare
+ * administrative writes and neither is on a read path, so serialising them
+ * against each other costs nothing measurable.
  */
 
 /** First half of the lock key. `0xCA7` reads as "cat(alogue)" in a lock dump. */
