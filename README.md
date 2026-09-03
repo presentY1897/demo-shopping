@@ -326,8 +326,15 @@ PORT_OFFSET=40 COMPOSE_PROJECT_NAME=shopping-tmp pnpm infra:up   # 완전히 독
 PORT_OFFSET=50 pnpm --filter @shopping/api dev   # 파일 수정 없이 4050 에서 기동
 ```
 
-**명시한 값이 항상 이긴다.** 배포 환경처럼 워크스페이스도 `.env` 도 없는 곳에서는 파생이 동작하지 않으므로
-플랫폼이 전부 주입해야 하고, 빠진 변수는 부팅 시 검증에서 이름과 함께 보고된다.
+**명시한 값이 항상 이긴다.** 워크스페이스도 `.env` 도 없는 곳(컨테이너에 `dist/` 만 실은 경우)에서는
+파생이 아예 동작하지 않으므로 플랫폼이 전부 주입해야 한다.
+
+> **배포 환경이라고 파생이 꺼지는 것은 아니다.** Render 의 Node 런타임은 **저장소 체크아웃 위에서**
+> 빌드하고 실행하므로 `pnpm-workspace.yaml` 과 `scripts/ports.mjs` 가 그대로 있고, 따라서 파생이
+> 동작한다(`PORT_OFFSET` 이 없으니 오프셋 0). 그래서 `DATABASE_URL` · `MEILI_HOST` · `CORS_ORIGINS`
+> 를 빠뜨리면 **부팅이 거부되는 것이 아니라 조용히 localhost 기본값**이 된다.
+> `MEILI_MASTER_KEY` 만 파생 대상이 아니라서 빠지면 이름과 함께 보고되고 종료한다.
+> `render.yaml` 이 네 값을 전부 명시하는 이유다.
 
 ## 개발 워크플로
 
@@ -495,6 +502,120 @@ gh pr merge --rebase --delete-branch
 머지는 **rebase 만** 허용된다(squash·merge commit 은 껐다). 4개 job 이 green 이어야
 머지 버튼이 열리고, PR 브랜치는 `main` 기준 최신이어야 한다.
 자세한 내용은 [`docs/branch-protection.md`](./docs/branch-protection.md).
+
+## 배포
+
+> **현재 상태: 아직 배포되어 있지 않다.** `render.yaml` 은 저장소에 들어왔지만
+> Render 서비스가 아직 만들어지지 않았다. 소유자가 해야 할 클릭은
+> [`docs/OWNER-CHECKLIST.md`](./docs/OWNER-CHECKLIST.md) 에, 남은 항목은
+> [TASK-0009](./docs/tasks/M02-deployment/TASK-0009-backend-deploy.md) 6.1 표에 있다.
+
+| 대상 | 어디에 | 정의된 곳 |
+| --- | --- | --- |
+| API (NestJS) | Render 무료 web `shopping-api` | `render.yaml` |
+| 검색 (Meilisearch) | Render 무료 web `shopping-search` | `render.yaml` |
+| PostgreSQL | **Neon** 무료 | Render 밖. `DATABASE_URL` 로만 연결 |
+| 웹 앱 3개 | Vercel | TASK-0010 |
+
+### 설정은 대시보드가 아니라 `render.yaml` 에 있다
+
+Render 는 저장소 루트의 `render.yaml`(Blueprint)을 읽어 서비스를 만들고 갱신한다.
+**대시보드에서 바꾼 값은 다음 sync 때 파일 값으로 덮인다.** 설정을 바꾸려면 파일을
+고쳐 커밋하고, Render 대시보드의 Blueprint 에서 sync 한다.
+
+예외는 `sync: false` 로 선언한 세 개(`DATABASE_URL` · `MEILI_MASTER_KEY` ·
+`MEILI_HOST`)뿐이다. 이 값들은 파일에 담을 수 없어 대시보드에만 있고, Blueprint 를
+다시 sync 해도 덮이지 않는다.
+
+파일이 스키마에 맞는지 확인:
+
+```bash
+# 편집기(YAML 확장)는 파일 첫 줄의 $schema 주석으로 자동 검증한다.
+# CLI 로 확인하려면 Render 가 공개하는 공식 스키마로 검증한다.
+curl -sSL https://render.com/schema/render.yaml.json -o /tmp/render.schema.json
+npx --yes ajv-cli@5 validate --spec=draft2020 -s /tmp/render.schema.json \
+  -d <(npx --no-install js-yaml render.yaml)
+```
+
+### 빌드와 시작
+
+```
+빌드: pnpm install --frozen-lockfile --prod=false && pnpm --filter @shopping/api build
+시작: pnpm --filter @shopping/api db:deploy && node apps/api/dist/main.js
+```
+
+- **`--prod=false` 를 지우지 않는다.** `NODE_ENV=production` 은 빌드에도 적용되고,
+  그러면 pnpm 이 devDependencies 를 설치하지 않는다. `nest`(빌드)와
+  `prisma`(마이그레이션) CLI 가 둘 다 devDependency 라 빌드도 시작도 깨진다.
+- **마이그레이션이 시작 명령에 있다.** Render 의 `preDeployCommand` 는 유료 전용이다.
+  `migrate deploy` 는 멱등이라 매 기동마다 돌아도 안전하고, 적용할 것이 없으면
+  아무 일도 하지 않는다.
+- 포트는 Render 가 주입하는 `PORT`(기본 10000)를 API 가 폴백으로 읽는다.
+- Node 버전은 `.nvmrc` 가 단일 출처다. Render 가 그 파일을 읽는다.
+
+### 처음 배포하기
+
+`render.yaml` 이 `main` 에 있어야 한다.
+
+1. Render 대시보드 → **New → Blueprint** → `demo-shopping` 저장소 선택 → 브랜치 `main`
+2. Render 가 비밀값 3개를 묻는다. 아래 값을 넣는다.
+
+   | 서비스 | 변수 | 값 |
+   | --- | --- | --- |
+   | `shopping-api` | `DATABASE_URL` | Neon 콘솔의 연결 문자열 (`?sslmode=require` 포함) |
+   | `shopping-api` | `MEILI_MASTER_KEY` | `openssl rand -base64 32` 로 새로 생성 |
+   | `shopping-api` | `MEILI_HOST` | 아직 모른다. `https://REPLACE-ME.onrender.com` 을 넣고 4번에서 고친다 |
+   | `shopping-search` | `MEILI_MASTER_KEY` | **위와 같은 값** |
+
+3. **Deploy Blueprint.** 서비스 2개가 만들어진다.
+4. `shopping-search` 서비스의 URL(`https://shopping-search-xxxx.onrender.com`)을 복사해
+   `shopping-api` 의 `MEILI_HOST` 에 넣고 저장한다. API 가 자동으로 재배포된다.
+5. 확인:
+
+   ```bash
+   curl https://shopping-api-xxxx.onrender.com/api/v1/health
+   # {"status":"ok","database":"ok","search":"ok","uptime":..,"version":".."}
+   ```
+
+`MEILI_HOST` 를 2단계로 넣는 이유는 서비스 URL 이 생성 전에는 존재하지 않기 때문이다.
+`fromService` 로 받을 수 없다 — 그 필드가 주는 것은 사설망 호스트명인데, **무료 web
+서비스는 사설망 요청을 받지 못한다.**
+
+### 설정을 바꾸기 (평상시)
+
+```bash
+# 1. render.yaml 을 고치고 PR 로 main 에 머지한다
+# 2. Render 대시보드 → Blueprints → 해당 Blueprint → Sync
+```
+
+코드만 바뀐 경우에는 아무것도 하지 않아도 된다. `autoDeployTrigger: commit` 이라
+`main` 에 push 되면 자동 배포된다. 단 `buildFilter.paths` 에 걸리는 경로가 바뀌었을
+때만 트리거된다(웹 앱이나 문서만 고치면 API 는 재배포되지 않는다).
+
+### 롤백
+
+| 상황 | 방법 |
+| --- | --- |
+| **코드가 문제** | Render 대시보드 → 서비스 → **Deploys** 탭 → 직전 성공 배포의 **Rollback**. 즉시 그 커밋의 빌드 결과로 되돌아간다 |
+| **설정(`render.yaml`)이 문제** | `main` 에서 해당 커밋을 `git revert` → 머지 → Blueprint **Sync**. 대시보드에서 손으로 되돌리면 다음 sync 때 다시 덮인다 |
+| **비밀값이 문제** | 대시보드에서 값만 고친다. `sync: false` 라 Blueprint sync 로 덮이지 않는다 |
+| **마이그레이션이 문제** | **Rollback 으로는 되돌아가지 않는다.** 아래 참조 |
+
+**마이그레이션은 롤백 대상이 아니다.** `prisma migrate deploy` 는 적용만 하고 되돌리지
+않는다. Render 의 Rollback 은 코드를 되돌릴 뿐 DB 스키마는 새 상태 그대로다. 그래서
+스키마 변경은 **한 단계 전 코드와 호환되게** 만든다 — 컬럼을 지우기 전에 먼저 쓰지
+않는 배포를 내보내고, 다음 배포에서 지운다. 되돌릴 수 없는 변경을 내보내야 한다면
+Neon 콘솔에서 **먼저 브랜치(스냅샷)를 만든다.**
+
+### 무료 플랜에서 알고 있어야 하는 것
+
+| 사실 | 결과 |
+| --- | --- |
+| 15분 무활동 시 spin down, 재기동 약 1분 | 첫 방문이 느리다. TASK-0101 이 다룬다 |
+| 무료 인스턴스 시간 **750h/월을 워크스페이스 전체가 공유** | 서비스 2개를 24시간 깨워 두면(2×730h) 한도를 넘어 **월말까지 정지**된다. 프리워밍을 "항상 깨우기"로 만들면 안 된다 |
+| 영구 디스크 없음 | 재기동마다 검색 인덱스가 빈다 → 자동 재색인(TASK-0038) |
+| Private Service 없음 | 검색 엔진이 공개 URL 을 갖는다. 마스터 키 없이는 전부 401 |
+| Neon 은 5분 뒤 scale-to-zero | 첫 쿼리가 수백 ms 느리다. 타임아웃을 넉넉히 잡아 뒀다 |
 
 ## 문서
 
