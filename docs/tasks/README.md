@@ -1,6 +1,6 @@
 # Task 인덱스
 
-전체 **116개** TASK — 유효 **112개** + 폐기 4개(D-208 레이어 분할). **11개 완료**, 101개 **승인 대기**.
+전체 **116개** TASK — 유효 **112개** + 폐기 4개(D-208 레이어 분할). **11개 완료**, TASK-0106 · TASK-0107 **승인됨**, 99개 **승인 대기**.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
@@ -82,8 +82,8 @@
 | [TASK-0111](./M04-auth/TASK-0111-profile-address-api.md) | 프로필 · 배송지 · 사용자 설정 API | 승인 대기 |
 | [TASK-0112](./M04-auth/TASK-0112-profile-address-page.md) | 프로필 · 배송지 화면 | 승인 대기 |
 | [TASK-0105](./M04-auth/TASK-0105-rbac.md) | 퍼미션 기반 권한 체계 (RBAC) | 완료 |
-| [TASK-0106](./M04-auth/TASK-0106-backend-test-infra.md) | 백엔드 통합 테스트 기반 | 승인 대기 |
-| [TASK-0107](./M04-auth/TASK-0107-frontend-api-mocking.md) | 프론트 API 모킹 · 계약 고정 | 승인 대기 |
+| [TASK-0106](./M04-auth/TASK-0106-backend-test-infra.md) | 백엔드 통합 테스트 기반 | 승인됨 |
+| [TASK-0107](./M04-auth/TASK-0107-frontend-api-mocking.md) | 프론트 API 모킹 · 계약 고정 | 승인됨 |
 
 </details>
 
