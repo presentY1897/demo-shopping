@@ -65,14 +65,17 @@ describe('DatabaseHealthIndicator', () => {
   })
 
   it('gives up once the deadline passes rather than holding the request open', async () => {
-    const startedAt = Date.now()
+    // `performance.now()` and not `Date.now()`: reading the wall clock directly
+    // is banned in this package (see eslint.config.mjs), and a monotonic counter
+    // is the right instrument for an elapsed time anyway.
+    const startedAt = performance.now()
 
     // A server that accepts the connection and then stops answering: the query
     // never settles, so only the deadline can end the check.
     const neverSettles = (): Promise<never> => new Promise<never>(() => undefined)
 
     await expect(indicatorAnswering(neverSettles).check()).resolves.toBe('down')
-    expect(Date.now() - startedAt).toBeLessThan(1_000)
+    expect(performance.now() - startedAt).toBeLessThan(1_000)
   })
 
   it('clears the deadline timer so a healthy check leaves nothing pending', async () => {
