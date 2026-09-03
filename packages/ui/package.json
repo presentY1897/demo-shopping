@@ -8,6 +8,7 @@
     "./components": "./src/components/index.ts",
     "./density": "./src/density/index.ts",
     "./form": "./src/form/index.ts",
+    "./layout": "./src/layout/index.ts",
     "./format": "./src/format/index.ts",
     "./preview": "./src/preview/index.ts"
   },
