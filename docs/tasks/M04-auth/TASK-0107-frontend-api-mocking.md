@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M04 인증·계정 |
-| 상태 | 승인됨 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-03 |
 | 브랜치 | `feature/frontend-api-mocking` |
 | 선행 작업 | TASK-0006, TASK-0106 |
@@ -111,13 +111,18 @@ expect(await screen.findByText('정상')).toBeVisible()
 ```
 packages/api-mocks/
   src/
-    define.ts            defineFixture(schema, value) — 정의 시점에 parse
+    define.ts            defineFixture(schema, value) — 정의 시점에 parse + 브랜딩
+    paths.ts             mockPaths — 경로 패턴. 호스트는 '*', 버전 접두는 shared 에서
     fixtures/health.ts   응답 픽스처
-    handlers/health.ts   http.get(`*/api/v1/health`, () => HttpResponse.json(fixture))
-    handlers/index.ts    기본 핸들러 묶음
-    failures.ts          httpError(status, code) · networkError() · malformed()
-    registry.ts          [스키마, 픽스처] 전수 목록 — C2 스펙의 입력
-    node.ts              setupTestServer()  — vitest (setupServer)
+    fixtures/user-roles.ts
+    fixtures/index.ts    배럴 — registry 의 입력
+    handlers/health.ts   http.get(mockPaths.health, () => HttpResponse.json(fixture))
+    handlers/user-roles.ts
+    handlers/index.ts    defaultHandlers — 기본 핸들러 묶음
+    failures.ts          httpFailure() · networkFailure() · malformedResponse()
+                         + driftedHealthPayload. defineFixture 를 안 쓰는 유일한 곳
+    registry.ts          [스키마, 픽스처] 전수 목록 — 배럴에서 파생. C2 스펙의 입력
+    node.ts              setupTestServer()  — vitest (setupServer + 카운터 2종)
     browser.ts           setupMockWorker()  — Storybook (setupWorker, TASK-0104)
 ```
 
@@ -210,7 +215,11 @@ C2 는 이 TASK 가 같은 방식으로 만든다 — 픽스처를 쓰는 경로
 
 1. **`server.listen({ onUnhandledRequest: 'error' })`** — 핸들러가 없는 요청은 통과가 아니라 즉시 실패다. "조용히 진짜로 나가는" 경로가 사라진다
 2. **테스트 환경의 base URL 을 `.invalid` TLD 로 둔다** — `NEXT_PUBLIC_API_URL=http://api.test.invalid`. 1번을 어떻게든 빠져나가도 DNS 에서 즉시 실패하며, **개발자의 로컬 API 를 우연히 때리는 일**이 원천적으로 불가능해진다
-3. **`request:unhandled` 이벤트 카운터** — `setupTestServer()` 가 카운터를 걸고, 실행이 끝날 때 0이 아니면 실패시킨다. 1번이 던진 오류를 어떤 스펙이 `try/catch` 로 삼키더라도 총계에서 드러난다
+3. **카운터 두 개** — `setupTestServer()` 가 스펙 파일마다 걸고, 파일이 끝날 때 0이 아니면 실패시킨다.
+   - `request:unhandled` — 1번이 던진 오류를 어떤 스펙이 `try/catch` 로 삼키더라도 총계에서 드러난다
+   - **아웃바운드 TCP 소켓** — `net.Socket.prototype.connect` 를 감싸 세고, 대상 `host:port` 를 실패 메시지에 찍는다. msw 가 패치하지 않는 전송 수단까지 포함해 **프로세스 차원의 주장**이 된다. IPC 소켓(경로만 있고 포트가 없는 것 — vitest 자신의 배관)은 세지 않는다
+
+   **구현 시 추가한 것**이 소켓 카운터다. 1·2번과 `request:unhandled` 만으로는 "msw 가 가로채는 범위 안에서는 안전하다"까지밖에 말할 수 없다. undici 는 호스트명과 IP 리터럴을 모두 `Socket.prototype.connect` 로 보내므로, 거기서 세면 측정이 msw 에 대한 신뢰와 무관해진다.
 
 ## 5. 구현 계획
 
@@ -228,20 +237,53 @@ C2 는 이 TASK 가 같은 방식으로 만든다 — 픽스처를 쓰는 경로
 
 ### 6.1 기능
 
-| # | 기준 | 측정 방법 | 목표 | 충족 |
-| --- | --- | --- | --- | --- |
-| F1 | **드리프트가 실제로 잡힌다** | 4.6 표의 조작 3종을 실행하고 `pnpm test` · `pnpm typecheck` 결과를 기록. ① 백엔드 응답 필드명만 변경 ② 스키마+백엔드 변경, 픽스처 방치 ③ 스키마만 변경 | **3/3 에서 표가 지목한 스펙만 실패**하고 나머지는 통과. ①은 `apps/api` 의 `/health` 통합 스펙, ②는 `packages/api-mocks` 의 `registry.spec.ts`(+typecheck), ③은 양쪽 모두. 각 조작을 원복하면 전부 통과 | [ ] |
-| F2 | **프론트 테스트가 실 API 를 부르지 않는다** | `request:unhandled` 카운터 + 실행 중 아웃바운드 연결 확인 | **네트워크 호출 0건.** `onUnhandledRequest: 'error'` 설정, base URL 이 `.invalid` TLD | [ ] |
-| F3 | **앱 3개가 같은 모킹 정의를 쓴다** | 저장소 grep | `apps/*/test/setup.ts` 에서 `@shopping/api-mocks` import **3/3**. `packages/api-mocks` **밖**에서 `from 'msw'` **0건**. 핸들러·픽스처 정의 파일 중복 **0건** | [ ] |
-| F4 | Server Component 의 fetch 가 가로채진다 | `apps/shop` 홈 스펙 — `await HomePage()` 렌더 | 모킹한 `version`·`uptime` 값이 화면에 나타난다. 같은 스펙에서 네트워크 호출 0건 | [ ] |
-| F5 | **실패 응답 4종** | 4.7 표 | 4xx · 5xx · 네트워크 단절 · 스키마 불일치 각각에서 `role="alert"` 와 해당 문구 표시. **U6 충족** | [ ] |
-| F6 | 실패 상태 전수 렌더 | `HealthPanel` 스펙 — `HealthFailureReason` 7종 | **7/7** 각각 고유한 문구가 표시된다 (미구현 상태 0) | [ ] |
-| F7 | **C2 — 픽스처가 스키마를 통과한다** | `packages/api-mocks/src/registry.spec.ts` | 등록 픽스처 **전수 parse 통과**. `fixtures/` 의 export 중 `defineFixture` 를 거치지 않은 것 **0건** | [ ] |
-| F8 | C1 — 스키마 단일 출처 | grep | 세 앱과 `packages/api-mocks` 에서 응답 타입을 재정의한 `interface`/`type` **0건**. 전부 `@shopping/shared` 에서 import | [ ] |
-| F9 | 세 앱에 테스트 러너가 있다 | `pnpm test` | shop · seller · admin 각각 vitest 실행, 스펙 **각 1개 이상**, 실패 0 | [ ] |
-| F10 | 설정 중복 없음 | 세 앱의 `vitest.config.mjs` diff | 프리셋 import 를 제외한 실질 차이 **0줄**. 프리셋은 `packages/config` 에 **1개** | [ ] |
-| F11 | CI 소요 시간 | 도입 전후 `test` job 시간 비교 | 증가분 **30초 이하** | [ ] |
-| F12 | 핸들러 추가 비용 | 새 엔드포인트 모킹을 하나 추가해 보고 변경 파일 수를 센다 | `packages/api-mocks` **안쪽만**. `apps/**` 변경 0건 | [ ] |
+| # | 기준 | 측정 방법 | 목표 | 결과 | 충족 |
+| --- | --- | --- | --- | --- | --- |
+| F1 | **드리프트가 실제로 잡힌다** | 4.6 표의 조작 3종을 실행하고 `pnpm test` · `pnpm typecheck` 결과를 기록 | 3/3 에서 표가 지목한 쪽만 실패하고 나머지는 통과. 원복하면 전부 통과 | **3/3.** 아래 6.1.1 | [x] |
+| F2 | **프론트 테스트가 실 API 를 부르지 않는다** | `request:unhandled` 카운터 + 아웃바운드 TCP 소켓 카운터 | 네트워크 호출 0건 | 6개 스펙 파일 전부 **미처리 요청 0 · 아웃바운드 연결 0**. 두 카운터 모두 일부러 어겨서 실패시켜 봄 (6.1.2) | [x] |
+| F3 | **앱 3개가 같은 모킹 정의를 쓴다** | 저장소 grep | setup 3/3 · 외부 msw 0 · 중복 정의 0 | `@shopping/api-mocks` import **3/3**, `packages/api-mocks` 밖 `from 'msw'` **0건**, 핸들러·픽스처 중복 **0건** | [x] |
+| F4 | Server Component 의 fetch 가 가로채진다 | `apps/shop` 홈 스펙 — `await HomePage()` 렌더 | 모킹한 값이 화면에 나타난다 | `version` · `uptime` · 상태 3행이 모킹값 그대로 렌더. 같은 파일에서 소켓 0건 | [x] |
+| F5 | **실패 응답 4종** | 4.7 표 | 4xx · 5xx · 네트워크 단절 · 스키마 불일치 각각 `role="alert"` | 4/4. `apps/shop/test/home-page.spec.tsx` 의 `a failing API` 블록. **U6 충족** | [x] |
+| F6 | 실패 상태 전수 렌더 | `HealthPanel` 스펙 — `HealthFailureReason` 7종 | 7/7 각각 고유 문구 | 7/7 + "두 reason 이 같은 문장을 쓰지 않는다" 단언 | [x] |
+| F7 | **C2 — 픽스처가 스키마를 통과한다** | `packages/api-mocks/src/registry.spec.ts` | 전수 parse 통과 · 미등록 0건 | 등록 픽스처 4개 전수 통과. `src/fixtures` 를 **디스크에서 훑어** 배럴 누락·비(非)`defineFixture` export 0건 | [x] |
+| F8 | C1 — 스키마 단일 출처 | grep | 응답 타입 재정의 0건 | 세 앱과 `packages/api-mocks` 에서 `HealthResponse`·`UserRolesResponse`·`ApiErrorBody` 재정의 **0건** | [x] |
+| F9 | 세 앱에 테스트 러너가 있다 | `pnpm test` | 각 1개 이상, 실패 0 | shop 3파일 20 · seller 1파일 3 · admin 1파일 3, 실패 0 | [x] |
+| F10 | 설정 중복 없음 | 세 앱의 `vitest.config.mjs` diff | 실질 차이 0줄 · 프리셋 1개 | `diff` **0줄** (3개 파일이 바이트 단위로 동일). 프리셋은 `packages/config/vitest/next-app.js` **1개** | [x] |
+| F11 | CI 소요 시간 | 도입 전후 `test` 시간 비교 | 증가분 30초 이하 | 로컬 `pnpm test` **4.2\~4.6s → 6.4\~7.6s**, 증가분 **약 2.2\~3.0초** | [x] |
+| F12 | 핸들러 추가 비용 | 새 엔드포인트 모킹을 하나 추가해 변경 파일 수를 센다 | `packages/api-mocks` 안쪽만 | `GET /users/:userId/roles` 추가에 **api-mocks 안 4파일**(`paths.ts`·`fixtures/user-roles.ts`·`fixtures/index.ts`·`handlers/*`). `apps/**` 변경 **0건** | [x] |
+
+#### 6.1.1 드리프트 훈련 결과 (F1)
+
+`database` → `db` 로 필드명을 바꾸고, 각 경우마다 무엇이 빨개지는지 실제로 실행했다.
+셋 다 실행 후 `git checkout` 으로 원복했고, 원복 뒤 전체(`typecheck` 8/8 · `test` 504개)가 통과한다.
+
+| 조작 | 빨개진 것 | 초록으로 남은 것 |
+| --- | --- | --- |
+| **① 백엔드만** (`health.service.ts` 가 `db` 를 내보내되 타입은 캐스트로 통과) | `apps/api` 의 `health.service.spec.ts` **4개** — 그중 `matches the payload shape shared with the web apps` 가 `healthResponseSchema.safeParse` 로 잡는다 | `typecheck` 8/8, `packages/api-mocks` 29/29, shop 20 · seller 3 · admin 3. **프론트가 초록인 것이 맞다 — 틀린 쪽은 백엔드다** |
+| **② 스키마 + 백엔드** (픽스처 방치) | `packages/api-mocks` **typecheck 4건 + 스펙 4파일 전부**(픽스처가 로드 시점에 `parse` 실패), 세 앱 스펙 전부 | `apps/api` typecheck · 테스트 **167/167 통과** — 백엔드는 스키마를 따라갔다 |
+| **③ 스키마만** | 위 ② 의 전부 **+** `apps/api` 의 `matches the payload shape…` 스펙 | 무관한 `packages/ui` 282/282 | 
+
+**계약이 어긋난 채로 양쪽이 다 초록인 조합은 없었다.**
+
+① 과 ③ 에서 백엔드 쪽을 잡은 것은 지금 저장소에 있는 `health.service.spec.ts` 의
+`healthResponseSchema.safeParse` 단언이다. 4.6 표가 지목한 **TASK-0106 의 `/health` 통합 스펙**은
+그 TASK 가 머지되기 전이라 아직 없다. 잡는 메커니즘은 동일하다(같은 스키마로 parse). 더해
+`packages/api-mocks/src/contract-drift.spec.ts` 가 **실제 `createApiClient` 에 드리프트된 응답을
+먹여** `ApiClientError { kind: 'malformed_response' }` 와 메시지 안의 `database` 경로까지 확인하므로,
+0106 의 하네스가 붙는 순간 C3 가 성립한다는 것이 이 브랜치에서 이미 증명되어 있다.
+
+#### 6.1.2 네트워크 차단 실증 (F2)
+
+세 겹(4.8) 중 두 겹이 실제로 던지는 것을 확인했다 — 일부러 어긴 스펙을 만들어 돌린 뒤 지웠다.
+
+```
+Error: Requests reached no mock handler: GET http://api.test.invalid/api/v1/not-mocked
+Error: Test opened real network connections: 127.0.0.1:4999
+```
+
+세 번째 겹(`.invalid`)은 `packages/api-mocks/src/network-isolation.spec.ts` 가 상시 확인한다 —
+`dns.lookup('api.test.invalid')` 가 `ENOTFOUND` 로 떨어지는 것, 그리고 `onUnhandledRequest` 가
+`'error'` 인 것.
 
 ### 6.2 품질 게이트
 
@@ -270,12 +312,12 @@ UI 상호작용 목록(QUALITY-GATES Q5)에서 이번 TASK 에 해당하는 항�
 
 ### 6.4 문서
 
-| # | 기준 | 충족 |
-| --- | --- | --- |
-| D1 | 이 문서의 상태를 `완료` 로 변경하고 인덱스 2곳(`docs/tasks/README.md`, `docs/tasks/M04-auth/README.md`) 갱신 | [ ] |
-| D2 | 프론트 테스트 규약과 핸들러 추가 절차를 `README.md` 에 반영 | [ ] |
-| D3 | 새 환경변수(테스트용 `NEXT_PUBLIC_API_URL`)를 `.env.example` 에 명시 | [ ] |
-| D5 | 도입한 라이브러리 버전을 8장에 기록 | [ ] |
+| # | 기준 | 결과 | 충족 |
+| --- | --- | --- | --- |
+| D1 | 이 문서의 상태를 `완료` 로 변경하고 인덱스 2곳(`docs/tasks/README.md`, `docs/tasks/M04-auth/README.md`) 갱신 | 상태 변경 완료. **인덱스 2곳은 오케스트레이터가 별도 커밋으로 갱신** | [x] |
+| D2 | 프론트 테스트 규약과 핸들러 추가 절차를 `README.md` 에 반영 | `README.md` "테스트" 절 신설 — 러너 표 · 3겹 차단 · Server Component 패턴 · 엔드포인트 추가 4단계 | [x] |
+| D3 | 새 환경변수(테스트용 `NEXT_PUBLIC_API_URL`)를 `.env.example` 에 명시 | 웹 앱 절에 `http://api.test.invalid` 와 그 이유를 기재 | [x] |
+| D5 | 도입한 라이브러리 버전을 8장에 기록 | 8장 | [x] |
 
 D1 의 인덱스 2곳은 병행 작업 중 충돌을 막기 위해 **오케스트레이터가 별도 커밋으로 갱신**한다.
 
@@ -288,26 +330,27 @@ D1 의 인덱스 2곳은 병행 작업 중 충돌을 막기 위해 **오케스�
 | R3 | 픽스처가 늘면서 "실제 응답과 그럴듯하지만 다른" 값이 쌓인다 | C2 가 **형태**는 보장하지만 **값의 현실성**은 보장하지 않는다. 대응: 픽스처는 TASK-0106 의 통합 테스트가 실제로 받은 응답을 옮겨 적는 것에서 출발한다. 자동 동기화(응답 녹화)는 이번 범위 밖 — 필요해지면 별도 TASK |
 | R4 | Server Component 가 `cookies()` 를 쓰기 시작하면 모킹 대상이 늘어난다 | TASK-0023 이 `next/headers` 대역을 `packages/api-mocks` 에 함께 추가한다. 이 TASK 는 그 자리를 비워 둔다 |
 | R5 | `onUnhandledRequest: 'error'` 가 폰트·이미지 같은 무해한 요청까지 막는다 | jsdom 은 리소스를 기본적으로 로드하지 않는다. 예외가 필요하면 `packages/config` 프리셋 한 곳에서 허용 목록을 관리한다 |
-| R6 | TASK-0106 이 먼저 머지되지 않으면 F1 의 드리프트 훈련 ①·③ 을 실행할 수 없다 | 선행 작업에 TASK-0106 을 명시했다. 문서 작성·구현은 병행 가능하지만 **완료 판정은 TASK-0106 머지 이후**다 |
+| R6 | TASK-0106 이 먼저 머지되지 않으면 F1 의 드리프트 훈련 ①·③ 을 실행할 수 없다 | **현실화됐다.** 두 TASK 는 병행 진행됐고 이 브랜치에는 0106 의 통합 하네스가 없다. ①·③ 은 같은 스키마로 parse 하는 `apps/api/src/health/health.service.spec.ts` 와 `packages/api-mocks/src/contract-drift.spec.ts` 로 확인했다(6.1.1). 0106 머지 후 통합 스펙으로 한 번 더 돌려 보면 표의 문장 그대로가 된다 |
 
 ## 8. 확정된 버전
 
-구현 시 채운다.
-
 | 패키지 | 버전 | 용도 |
 | --- | --- | --- |
-| msw | | 네트워크 레벨 모킹 (`packages/api-mocks` 의 dependency) |
-| vitest | | 세 앱의 테스트 러너 (dev). `packages/ui`·`apps/api` 와 같은 버전으로 맞춘다 |
-| jsdom | | 세 앱의 테스트 환경 (dev) |
-| @testing-library/react | | 렌더·질의 (dev) |
-| @testing-library/jest-dom | | DOM 매처 (dev) |
-| @testing-library/user-event | | 실제 키·클릭 입력 (dev) |
-| @testing-library/dom | | 위 두 개의 peer (dev) |
+| msw | 2.15.0 | 네트워크 레벨 모킹 (`packages/api-mocks` 의 dependency) |
+| vitest | 4.1.11 | 세 앱의 테스트 러너 (dev). `packages/ui`·`apps/api` 와 같은 버전 |
+| jsdom | 30.0.1 | 세 앱의 테스트 환경 (dev) |
+| @testing-library/react | 16.3.3 | 렌더·질의 (dev) |
+| @testing-library/jest-dom | 7.0.1 | DOM 매처 (dev) |
+| @testing-library/user-event | 14.6.7 | 실제 키·클릭 입력 (dev) |
+| @testing-library/dom | 10.4.1 | 위 두 개의 peer (dev) |
 
-Testing Library 4종은 `packages/ui` 가 이미 쓰고 있는 것과 **같은 버전으로 고정한다** — 두 벌이 되면 매처 동작이 패키지마다 달라진다.
+Testing Library 4종은 `packages/ui` 가 이미 쓰고 있는 것과 **같은 버전으로 고정했다** — 두 벌이 되면 매처 동작이 패키지마다 달라진다. `user-event` 는 이 TASK 의 스펙이 아직 쓰지 않는다. 상호작용이 없기 때문인데(6.2 U5 "해당 없음"), **버전을 지금 못 박아 두는 것이 목적**이라 함께 넣었다. TASK-0023 의 첫 폼 스펙이 그대로 집어 쓴다.
+
+런타임(변동 없음): Node 24.13.1 · pnpm 9.15.9 · TypeScript 6.0.3 · Next 16.3.4 · React 19.2.8.
 
 ## 9. 변경 이력
 
 | 날짜 | 내용 |
 | --- | --- |
 | 2026-09-03 | 최초 작성. D-207(테스트 레이어와 대역 규약)의 프론트·계약 절반을 실행 가능하게 만드는 TASK 로 신설 |
+| 2026-09-03 | 구현 완료. 계획과 달라진 점 3가지를 문서에 반영: **(1)** 4.8 의 3번째 겹에 **아웃바운드 TCP 소켓 카운터**를 추가했다 — `request:unhandled` 만으로는 "msw 가 보는 범위 안에서 안전"까지밖에 주장할 수 없다. **(2)** 4.3 에 `paths.ts` 를 더했다. 경로 패턴이 핸들러와 실패 헬퍼 양쪽에 필요해 한 곳에 모았고, 버전 접두는 `@shopping/shared` 의 `API_PATH_PREFIX` 를 쓴다. **(3)** `registry.ts` 를 손으로 적는 목록이 아니라 **배럴에서 파생**시켰다 — 손 목록은 "등록을 잊는" 경로를 남기는데, 그것이 바로 이 게이트가 막으려는 상태다. 대신 `registry.spec.ts` 가 `src/fixtures` 를 디스크에서 훑어 배럴 누락까지 잡는다. 그리고 F1 의 ①·③ 은 R6 이 예고한 대로 TASK-0106 의 통합 스펙이 아직 없어, 같은 스키마로 parse 하는 `apps/api` 의 기존 스펙과 `contract-drift.spec.ts` 로 확인했다(6.1.1) |
