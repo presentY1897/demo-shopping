@@ -38,13 +38,15 @@ export function ShopHeader({
   readonly messages: LayoutMessages
 }) {
   const band = useViewportBand()
+  // The search field appears one band before the category list does: at 768px
+  // the two together wrap the row onto a second line.
   const compact = band === 'base'
   const inlineCategories = band === 'xl'
 
   return (
     <header className="bg-surface border-border sticky top-0 z-30 border-b">
       <PageContainer className="h-control-lg flex items-center gap-2">
-        {compact ? <MobileMenu messages={messages} /> : null}
+        {inlineCategories ? null : <MobileMenu messages={messages} />}
 
         <NavLink
           className="min-h-touch text-fg flex shrink-0 items-center rounded-md px-2 text-lg font-bold whitespace-nowrap"
