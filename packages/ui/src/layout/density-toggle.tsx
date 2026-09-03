@@ -93,6 +93,22 @@ export function DensityToggle({
 
           const item = (
             <RadioGroupPrimitive.Item
+              onFocus={(event) => {
+                // **Arrow keys have to select, not just move.** That is the
+                // WAI-ARIA radio pattern, and Radix implements it by clicking
+                // the item its own focus handler receives — but that handler
+                // reads a flag set by a listener on `document`, and with React
+                // 19's root attached to the document the roving focus has
+                // already moved before the flag is set. Measured in Chromium,
+                // not assumed: the arrow moved the focus and left the value
+                // behind (TASK-0018 6.1 F4).
+                //
+                // `:focus-visible` is what tells the two cases apart. A pointer
+                // press does not match it — the click that follows selects on
+                // its own — and tabbing in lands on the item that is already
+                // checked, so selecting it again is a no-op.
+                if (focusedFromKeyboard(event.currentTarget)) setDensity(level)
+              }}
               // Icon-only, so the label has to come through ARIA; with the text
               // rendered, the text *is* the name and a second one would win over
               // it and hide the visible word from voice control.
@@ -137,3 +153,18 @@ export function DensityToggle({
  * a hook in every header.
  */
 const LEGEND_ID = 'density-toggle-legend'
+
+/**
+ * Whether this element is showing a focus ring — i.e. focus arrived from the
+ * keyboard rather than from a press.
+ *
+ * jsdom does not implement the selector and throws on it; `false` there is the
+ * honest answer, and the keyboard path is covered in a real browser instead.
+ */
+function focusedFromKeyboard(element: Element): boolean {
+  try {
+    return element.matches(':focus-visible')
+  } catch {
+    return false
+  }
+}
