@@ -329,7 +329,14 @@ export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
             <p className="text-fg-subtle mt-2 text-sm">{messages.keyboardHint}</p>
           </div>
 
-          <div className="lg:w-96 lg:shrink-0">
+          {/*
+            Sticky on a wide screen: forty rows is taller than a viewport, and a
+            toolbar that scrolled away would mean scrolling back up to act on the
+            row just chosen. Below `lg` the two stack and the toolbar sits under
+            the tree, which is the console's documented mobile bar — it has to
+            not break, not to be comfortable (`docs/design/pages.md` 콘솔 절).
+          */}
+          <div className="lg:sticky lg:top-8 lg:w-96 lg:shrink-0">
             <CategoryToolbar
               messages={messages}
               onAddChild={openCreate}
