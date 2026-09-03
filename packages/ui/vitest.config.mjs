@@ -8,5 +8,8 @@ export default defineConfig({
     include: ['src/**/*.spec.{ts,tsx}', 'test/**/*.spec.{ts,tsx}'],
     // The provider and the boot script both touch `document` and `localStorage`.
     environment: 'jsdom',
+    // Registers the DOM matchers and the browser APIs jsdom is missing; see the
+    // file for why Radix needs each one.
+    setupFiles: ['./test/setup.ts'],
   },
 })
