@@ -1,6 +1,6 @@
 # Task 인덱스
 
-전체 **105개** TASK. **M01 7개 + TASK-0014 · TASK-0020 완료**, 나머지 96개는 **승인 대기** 상태다.
+전체 **105개** TASK. **M01 7개 + TASK-0014 · TASK-0020 완료**, TASK-0015 · TASK-0105 **승인됨**, 나머지 94개는 **승인 대기** 상태다.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
@@ -55,7 +55,7 @@
 | ID | 제목 | 상태 |
 | --- | --- | --- |
 | [TASK-0014](./M03-design-system/TASK-0014-design-tokens.md) | 디자인 토큰 · 밀도 3단계 | 완료 |
-| [TASK-0015](./M03-design-system/TASK-0015-base-components.md) | 기본 컴포넌트 | 승인 대기 |
+| [TASK-0015](./M03-design-system/TASK-0015-base-components.md) | 기본 컴포넌트 | 승인됨 |
 | [TASK-0016](./M03-design-system/TASK-0016-data-components.md) | 데이터 표시 컴포넌트 | 승인 대기 |
 | [TASK-0017](./M03-design-system/TASK-0017-form-system.md) | 폼 시스템 | 승인 대기 |
 | [TASK-0018](./M03-design-system/TASK-0018-shop-layout.md) | shop 레이아웃 · 밀도 토글 | 승인 대기 |
@@ -76,7 +76,7 @@
 | [TASK-0025](./M04-auth/TASK-0025-demo-cleanup.md) | 데모 만료 · 정리 스케줄러 | 승인 대기 |
 | [TASK-0026](./M04-auth/TASK-0026-seller-onboarding.md) | 판매자 입점 신청 · 승인 | 승인 대기 |
 | [TASK-0027](./M04-auth/TASK-0027-profile-address.md) | 프로필 · 배송지 관리 | 승인 대기 |
-| [TASK-0105](./M04-auth/TASK-0105-rbac.md) | 퍼미션 기반 권한 체계 (RBAC) | 승인 대기 |
+| [TASK-0105](./M04-auth/TASK-0105-rbac.md) | 퍼미션 기반 권한 체계 (RBAC) | 승인됨 |
 
 </details>
 

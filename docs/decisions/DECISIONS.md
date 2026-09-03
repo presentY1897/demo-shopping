@@ -133,6 +133,7 @@
 | 타입 공유 | `packages/shared` 단일 출처 |
 | UI 컴포넌트 | **Radix Primitives** 위에 자체 스타일. shadcn 은 토큰 체계가 두 벌이 되어 제외 |
 | 컴포넌트 문서화 | **Storybook** (`packages/ui`, 밀도 3단계 툴바 전환). 새 컴포넌트는 스토리를 함께 작성 |
+| 디자인 기준 문서 | Storybook 이 **디자인 토큰 문서 페이지**도 담는다 — 색 스케일·타이포·간격·밀도 × 뷰포트 매트릭스·컨트롤 높이. 디자인 기준은 언제든 확인 가능한 형태로 유지한다 |
 | 관측 | Sentry(에러) + **Vercel Analytics**(페이지뷰·웹 바이탈). 제품 분석 도구는 도입하지 않음 |
 | 다크모드 | **M15 이후로 보류.** 색 하드코딩 금지 규칙만 지키면 나중에 토큰 세트 추가로 끝난다 |
 
@@ -183,6 +184,10 @@ Cloudflare R2 는 **전송량 요금이 0원**이고 S3 호환 API 라 이전이
 | git 레이아웃 | `bare + worktree`. 루트에 `.bare/`, `main/`, `feature-<name>/` |
 | 워크트리 격리 | `PORT_OFFSET` 로 전 포트 이동, `COMPOSE_PROJECT_NAME` 으로 컨테이너·볼륨 분리 |
 | 브랜치 | `feature/<name>`, `fix/<name>`, `chore/<name>`, `docs/<name>` |
+| `main` 보호 | **전면 적용.** 직접 push 금지(관리자 포함), PR 필수(승인 0), CI 4개 green 필수, 선형 히스토리, **rebase 머지만** |
+| CI 트리거 | `pull_request` **와** `push: [main]` 양쪽. rebase 머지가 SHA 를 다시 쓰므로 PR 이 검사한 커밋과 main 의 커밋이 다르다 |
+| 진행 순서 | **마일스톤 번호는 진행 순서가 아니다.** 각 TASK 의 `선행` 이 실제 의존. 마일스톤을 가로질러 병행한다 |
+| 병행 제약 | **`schema.prisma` 를 건드리는 TASK 는 동시에 하나만.** 마이그레이션 타임스탬프가 꼬이면 rebase 로 정리되지 않는다 |
 | 커밋 | Conventional Commits, 본문은 한국어 |
 | git identity | `presenty1897 / presenty1897@gmail.com` (저장소 로컬 설정) |
 | TASK 분할 | **한 TASK = 하나의 작업 목적** |
