@@ -1,12 +1,16 @@
 /**
  * The `details` → field convention.
  *
- * The strings in the "as the API sends them today" tests are not invented: they
- * are what `apps/api/src/common/parse-input.ts` builds from a zod issue and what
- * `all-exceptions.filter.ts` lets through — a Korean sentence whose first token
- * is the dotted field path. That filter drops every non-string entry, which is
- * why the structured shape below is marked as the one the backend does not send
- * yet (TASK-0017 4.5).
+ * Two shapes arrive, and the whole point of TASK-0117 is which one wins. The
+ * structured entries are what `apps/api/src/common/parse-input.ts` now builds
+ * from a zod issue and what the catalog services attach to a domain failure;
+ * the bare strings are what an endpoint that has not been given codes still
+ * sends, and what every endpoint sent before.
+ *
+ * **The negative control lives in this file.** `문구를 바꿔도` below rewrites
+ * every sentence into something unrecognisable and asserts that the placement
+ * does not move. That is TASK-0117 F3 at the unit level: what a form does with
+ * a failure must be a function of `field` and `code`, never of the prose.
  */
 
 import { describe, expect, it } from 'vitest'
@@ -15,7 +19,7 @@ import { serverFieldErrors } from './server-errors'
 
 const FIELDS = ['name', 'slug', 'attributes', 'attributes.material']
 
-describe('details as the API sends them today', () => {
+describe('details from an endpoint that has no codes yet', () => {
   it('places a message whose first token is a field name', () => {
     const result = serverFieldErrors(['slug 값이 올바르지 않습니다.'], { fields: FIELDS })
 
@@ -68,7 +72,7 @@ describe('details as the API sends them today', () => {
   })
 })
 
-describe('the structured shape the API does not send yet', () => {
+describe('the structured shape the API sends today', () => {
   it('reads `field` and `message`', () => {
     const result = serverFieldErrors([{ field: 'name', message: '이미 사용 중인 이름입니다' }], {
       fields: FIELDS,
@@ -130,7 +134,7 @@ describe('errors only the server can detect', () => {
     const result = serverFieldErrors([], {
       code: 'SLUG_TAKEN',
       codeFields: { SLUG_TAKEN: 'slug' },
-      codeMessages: { SLUG_TAKEN: '이미 사용 중인 주소입니다' },
+      messageForCode: (code) => (code === 'SLUG_TAKEN' ? '이미 사용 중인 주소입니다' : undefined),
       fields: FIELDS,
     })
 
@@ -190,5 +194,142 @@ describe('errors only the server can detect', () => {
     })
 
     expect(result.formErrors).toEqual(['저장하지 못했습니다'])
+  })
+})
+
+describe("the app's catalog decides the words (TASK-0117 4.5)", () => {
+  const catalog: Record<string, string> = {
+    CATEGORY_SLUG_TAKEN: '이미 쓰고 있는 주소예요. 다른 주소를 입력해 주세요.',
+  }
+
+  it('prefers the catalog sentence over the one the server sent', () => {
+    const result = serverFieldErrors(
+      [{ field: 'slug', message: '서버가 보낸 문장', code: 'CATEGORY_SLUG_TAKEN' }],
+      { fields: FIELDS, messageForCode: (code) => catalog[code] },
+    )
+
+    expect(result.fieldErrors).toEqual({ slug: catalog.CATEGORY_SLUG_TAKEN })
+  })
+
+  it("falls back to the server's sentence for a code the catalog never heard of", () => {
+    const result = serverFieldErrors(
+      [{ field: 'slug', message: '서버가 보낸 문장', code: 'CODE_FROM_THE_FUTURE' }],
+      { fields: FIELDS, messageForCode: (code) => catalog[code] },
+    )
+
+    // An empty error is worse than a server-worded one.
+    expect(result.fieldErrors).toEqual({ slug: '서버가 보낸 문장' })
+  })
+
+  it("uses the server's sentence when the caller brought no catalog at all", () => {
+    const result = serverFieldErrors(
+      [{ field: 'slug', message: '서버가 보낸 문장', code: 'CATEGORY_SLUG_TAKEN' }],
+      { fields: FIELDS },
+    )
+
+    expect(result.fieldErrors).toEqual({ slug: '서버가 보낸 문장' })
+  })
+
+  it('hands the catalog the values it has to interpolate', () => {
+    const result = serverFieldErrors(
+      [
+        {
+          field: 'name',
+          message: '서버 문장',
+          code: 'CATEGORY_MAX_DEPTH',
+          params: { max: 3 },
+        },
+      ],
+      {
+        fields: FIELDS,
+        messageForCode: (code, params) =>
+          code === 'CATEGORY_MAX_DEPTH'
+            ? `카테고리는 ${String(params?.max)}단계까지만 만들 수 있어요.`
+            : undefined,
+      },
+    )
+
+    expect(result.fieldErrors).toEqual({ name: '카테고리는 3단계까지만 만들 수 있어요.' })
+  })
+
+  it('ignores a params bag that is not an object', () => {
+    const seen: unknown[] = []
+
+    serverFieldErrors(
+      [
+        { field: 'name', message: 'a', code: 'X', params: 'nope' },
+        { field: 'slug', message: 'b', code: 'X', params: ['nope'] },
+        { field: 'attributes', message: 'c', code: 'X', params: null },
+      ],
+      {
+        fields: FIELDS,
+        messageForCode: (_code, params) => {
+          seen.push(params)
+          return undefined
+        },
+      },
+    )
+
+    expect(seen).toEqual([undefined, undefined, undefined])
+  })
+
+  it('ignores a code that is not a non-empty string', () => {
+    const result = serverFieldErrors(
+      [
+        { field: 'name', message: '문장 A', code: '' },
+        { field: 'slug', message: '문장 B', code: 42 },
+      ],
+      { fields: FIELDS, messageForCode: () => '카탈로그 문장' },
+    )
+
+    expect(result.fieldErrors).toEqual({ name: '문장 A', slug: '문장 B' })
+  })
+})
+
+describe('문구를 바꿔도 매핑이 유지된다 (F3)', () => {
+  /**
+   * The same failures, worded twice. Nothing but the prose differs — the field
+   * paths, the codes and the order are identical, exactly as TASK-0117 4.8's
+   * script rewrites the server.
+   */
+  const asShipped = [
+    { field: 'slug', message: 'slug 값이 올바르지 않습니다.', code: 'INVALID' },
+    { field: 'name', message: 'name 값이 올바르지 않습니다.', code: 'INVALID' },
+  ]
+  const reworded = [
+    { field: 'slug', message: '입력하신 내용을 다시 확인해 주세요. (slug)', code: 'INVALID' },
+    { field: 'name', message: '적어주신 값을 다시 봐주세요. (name)', code: 'INVALID' },
+  ]
+
+  it('places both wordings on the same fields', () => {
+    const before = serverFieldErrors(asShipped, { fields: FIELDS })
+    const after = serverFieldErrors(reworded, { fields: FIELDS })
+
+    expect(Object.keys(after.fieldErrors)).toEqual(Object.keys(before.fieldErrors))
+    expect(after.formErrors).toEqual([])
+  })
+
+  it('places a rewording that no longer starts with the field name', () => {
+    // The exact break TASK-0117 1장 describes: the leading token is gone, and
+    // the old reader would have moved this to the top of the form.
+    const result = serverFieldErrors(reworded, { fields: FIELDS })
+
+    expect(result.fieldErrors.slug).toBe(reworded[0]?.message)
+  })
+
+  it('stops guessing at strings once the server has named an input', () => {
+    const result = serverFieldErrors(
+      [
+        { field: 'slug', message: '주소를 확인해 주세요', code: 'CATEGORY_SLUG_TAKEN' },
+        // Reads like a message about `name`, and is not one. Guessing here
+        // could only contradict the entry above it.
+        'name 값이 올바르지 않습니다.',
+      ],
+      { fields: FIELDS },
+    )
+
+    expect(result.fieldErrors).toEqual({ slug: '주소를 확인해 주세요' })
+    // Not dropped: losing an error is worse than showing it unplaced.
+    expect(result.formErrors).toEqual(['name 값이 올바르지 않습니다.'])
   })
 })
