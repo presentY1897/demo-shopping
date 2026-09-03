@@ -14,4 +14,4 @@
 | [TASK-0017](./TASK-0017-form-system.md) | 폼 시스템 | 승인 대기 | 0015 |
 | [TASK-0018](./TASK-0018-shop-layout.md) | shop 레이아웃 · 밀도 토글 | 승인 대기 | 0016 |
 | [TASK-0019](./TASK-0019-console-layout.md) | 콘솔 레이아웃 (seller · admin) | 승인 대기 | 0016 |
-| [TASK-0104](./TASK-0104-storybook.md) | Storybook | 승인 대기 | 0015 |
+| [TASK-0104](./TASK-0104-storybook.md) | Storybook | 승인됨 | 0015 |
