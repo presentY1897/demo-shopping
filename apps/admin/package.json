@@ -7,6 +7,8 @@
     "dev": "node ../../scripts/web-app.mjs admin dev",
     "build": "node ../../scripts/web-app.mjs admin build",
     "start": "node ../../scripts/web-app.mjs admin start",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix --max-warnings 0",
     "typecheck": "next typegen && tsc --noEmit",
@@ -21,14 +23,21 @@
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@shopping/api-mocks": "workspace:*",
     "@shopping/config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
     "eslint": "^10.9.1",
+    "jsdom": "^30.0.1",
     "prettier": "^3.9.6",
     "tailwindcss": "^4.3.3",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11"
   }
 }

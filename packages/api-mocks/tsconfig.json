@@ -1,0 +1,11 @@
+{
+  "extends": "@shopping/config/tsconfig/next.json",
+  // `node` for the registry spec, which sweeps `src/fixtures` off disk. The
+  // handlers themselves need only the DOM globals the next preset already
+  // brings in (Response, Headers), which is what msw speaks.
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
