@@ -8,10 +8,10 @@ M07 에서 만든 금액 계산 엔진의 `discounts` 목록에 쿠폰과 적립
 
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
-| [TASK-0072](./TASK-0072-coupon-schema.md) | 쿠폰 스키마 · 발행 API | 승인 대기 | M10 |
-| [TASK-0073](./TASK-0073-platform-coupon-admin.md) | 관리자 플랫폼 쿠폰 화면 | 승인 대기 | 0072 |
-| [TASK-0074](./TASK-0074-seller-coupon.md) | 판매자 쿠폰 화면 | 승인 대기 | 0072 |
-| [TASK-0075](./TASK-0075-coupon-apply.md) | 쿠폰 적용 · 검증 | 승인 대기 | 0072 |
-| [TASK-0076](./TASK-0076-point-ledger.md) | 적립금 원장 · 적립 · 사용 | 승인 대기 | M10 |
-| [TASK-0077](./TASK-0077-coupon-point-pages.md) | 쿠폰함 · 적립금 내역 화면 | 승인 대기 | 0075, 0076 |
-| [TASK-0078](./TASK-0078-discount-restore.md) | 환불 시 쿠폰 · 적립금 복구 | 승인 대기 | 0075, 0076 |
+| [TASK-0072](./TASK-0072-coupon-schema.md) | 쿠폰 스키마 · 발행 API | 승인됨 | M10 |
+| [TASK-0073](./TASK-0073-platform-coupon-admin.md) | 관리자 플랫폼 쿠폰 화면 | 승인됨 | 0072 |
+| [TASK-0074](./TASK-0074-seller-coupon.md) | 판매자 쿠폰 화면 | 승인됨 | 0072 |
+| [TASK-0075](./TASK-0075-coupon-apply.md) | 쿠폰 적용 · 검증 | 승인됨 | 0072 |
+| [TASK-0076](./TASK-0076-point-ledger.md) | 적립금 원장 · 적립 · 사용 | 승인됨 | M10 |
+| [TASK-0077](./TASK-0077-coupon-point-pages.md) | 쿠폰함 · 적립금 내역 화면 | 승인됨 | 0075, 0076 |
+| [TASK-0078](./TASK-0078-discount-restore.md) | 환불 시 쿠폰 · 적립금 복구 | 승인됨 | 0075, 0076 |

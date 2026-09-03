@@ -13,10 +13,10 @@ Google 로그인, 앱별 독립 세션, 데모 계정 발급·만료를 구현�
 | [TASK-0106](./TASK-0106-backend-test-infra.md) | 백엔드 통합 테스트 기반 | 완료 | 0007, 0020 |
 | [TASK-0107](./TASK-0107-frontend-api-mocking.md) | 프론트 API 모킹 · 계약 고정 | 완료 | 0006, 0106 |
 | [TASK-0021](./TASK-0021-google-oauth.md) | Google OAuth 로그인 | 승인 대기 | 0020 |
-| [TASK-0022](./TASK-0022-jwt-session.md) | JWT 발급 · 갱신 · 로그아웃 | 승인 대기 | 0021 |
+| [TASK-0022](./TASK-0022-jwt-session.md) | JWT 발급 · 갱신 · 로그아웃 | 승인됨 | 0021 |
 | [TASK-0023](./TASK-0023-auth-guard.md) | 인증 UI · 권한 가드 | 승인 대기 | 0022, 0105 |
 | [TASK-0024](./TASK-0024-demo-account.md) | 데모 계정 발급 | 승인 대기 | 0023 |
-| [TASK-0025](./TASK-0025-demo-cleanup.md) | 데모 만료 · 정리 스케줄러 | 승인 대기 | 0024 |
+| [TASK-0025](./TASK-0025-demo-cleanup.md) | 데모 만료 · 정리 스케줄러 | 승인됨 | 0024 |
 | ~~[TASK-0026](./TASK-0026-seller-onboarding.md)~~ | ~~판매자 입점 신청 · 승인~~ | **폐기** → 0108 · 0109 · 0110 | – |
 | ~~[TASK-0027](./TASK-0027-profile-address.md)~~ | ~~프로필 · 배송지 관리~~ | **폐기** → 0111 · 0112 | – |
 | [TASK-0108](./TASK-0108-seller-onboarding-api.md) | 판매자 입점 상태 머신 · API | 승인 대기 | 0022, 0105, 0106 |

@@ -12,7 +12,7 @@
 
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
-| [TASK-0079](./TASK-0079-commission.md) | 수수료 정책 · 관리자 설정 | 승인 대기 | M11 |
-| [TASK-0080](./TASK-0080-settlement-batch.md) | 정산서 생성 배치 | 승인 대기 | 0079 |
+| [TASK-0079](./TASK-0079-commission.md) | 수수료 정책 · 관리자 설정 | 승인됨 | M11 |
+| [TASK-0080](./TASK-0080-settlement-batch.md) | 정산서 생성 배치 | 승인됨 | 0079 |
 | [TASK-0081](./TASK-0081-settlement-admin.md) | 관리자 정산 승인 · 지급 | 승인 대기 | 0080 |
-| [TASK-0082](./TASK-0082-seller-settlement.md) | 판매자 정산 내역 · 매출 대시보드 | 승인 대기 | 0080 |
+| [TASK-0082](./TASK-0082-seller-settlement.md) | 판매자 정산 내역 · 매출 대시보드 | 승인됨 | 0080 |
