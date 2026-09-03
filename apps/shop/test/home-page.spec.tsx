@@ -28,7 +28,23 @@ import { messagesFor } from '@/messages'
 
 import { testServer } from './setup'
 
-const { app, health, wake } = messagesFor()
+const { health, home, wake } = messagesFor()
+
+/**
+ * The liveness rows, and only those.
+ *
+ * The home screen grew a second list in TASK-0018 — the density preview grid,
+ * which is a `<ul>` of placeholder cards — so a bare `getAllByRole('listitem')`
+ * now counts nine things. Scoping to the panel is what keeps this assertion
+ * about the payload rather than about whatever else the page happens to render.
+ */
+function healthRows(): readonly HTMLElement[] {
+  const panel = screen.getByRole('heading', { name: health.title }).closest('section')
+
+  if (panel === null) throw new Error('the health panel has no section around its heading')
+
+  return within(panel).getAllByRole('listitem')
+}
 
 const requests: string[] = []
 
@@ -65,8 +81,8 @@ describe('the server render', () => {
     testServer.server.use(neverAnswers(mockPaths.health))
     render(<HomePage />)
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(app.name)
-    expect(screen.getByText(app.description)).toBeVisible()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(home.title)
+    expect(screen.getByText(home.description)).toBeVisible()
     expect(screen.getByText(health.notice)).toBeVisible()
     expect(screen.getByRole('region', { name: health.title })).toHaveAttribute('aria-busy', 'true')
   })
@@ -84,7 +100,7 @@ describe('the mocked payload reaches the screen', () => {
     render(<HomePage />)
     await screen.findByText(healthOk.version)
 
-    const rows = screen.getAllByRole('listitem')
+    const rows = healthRows()
 
     expect(rows).toHaveLength(healthEntries(healthOk).length)
     expect(within(rows[0]!).getByText(health.itemLabels.status!)).toBeVisible()
