@@ -420,11 +420,20 @@ async function naiveChild(
   )
 }
 
-/** The same move as `moveWithoutLock`, against the unguarded fixture table. */
+/**
+ * The same move as `moveWithoutLock`, against the unguarded fixture table.
+ *
+ * Two rendezvous points rather than one. `read` releases when every caller has
+ * read, and `commit` — when given — releases when every caller has *written*,
+ * so no transaction can see another's rows before choosing what to update. That
+ * second gate is what makes the outcome a fact instead of a coin toss: without
+ * it, a mover that happens to run after its rival committed matches the rival's
+ * rows too and the corruption takes a different (but equally broken) shape.
+ */
 function naiveMove(
   node: { id: number; path: string },
   parent: { id: number; path: string },
-  gate: Barrier,
+  gates: { readonly read: Barrier; readonly commit?: Barrier },
 ): Promise<number> {
   return db.withConnection(async (connection) => {
     await connection.query('BEGIN')
@@ -439,7 +448,7 @@ function naiveMove(
 
       const newPrefix = `${parent.path}${String(node.id)}/`
 
-      await gate.arrive()
+      await gates.read.arrive()
 
       const updated = await connection.query(
         `UPDATE "TestCategoryNaive"
@@ -452,6 +461,7 @@ function naiveMove(
         [seen.path, newPrefix, seen.path.length + 1, node.id, parent.path, parent.id],
       )
 
+      await gates.commit?.arrive()
       await connection.query('COMMIT')
       return updated.rowCount ?? 0
     } catch (error) {
@@ -466,9 +476,9 @@ describe('negative control B — no lock, no constraints', () => {
     const left = await naiveRoot('left')
     const right = await naiveRoot('right')
 
-    const gate = barrier(2)
+    const gates = { read: barrier(2), commit: barrier(2) }
     const results = await concurrently(2, (index) =>
-      index === 0 ? naiveMove(left, right, gate) : naiveMove(right, left, gate),
+      index === 0 ? naiveMove(left, right, gates) : naiveMove(right, left, gates),
     )
 
     // Both "succeed": each moved one row, and neither knew about the other.
@@ -507,7 +517,7 @@ describe('negative control B — no lock, no constraints', () => {
 
     await Promise.all([
       (async () => {
-        await naiveMove(branch, destination, read)
+        await naiveMove(branch, destination, { read })
         await written.arrive()
       })(),
       db.withConnection(async (connection) => {
