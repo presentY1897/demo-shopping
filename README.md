@@ -32,6 +32,7 @@ COMPOSE_PROJECT_NAME=shopping-search
 | admin | 3002 | 3012 |
 | api | 4000 | 4010 |
 | postgres | 5432 | 5442 |
+| storybook | 6006 | 6016 |
 | meilisearch | 7700 | 7710 |
 
 ```bash
@@ -290,6 +291,36 @@ apps/shop/
 pnpm --filter @shopping/shop build    # .next 로 프로덕션 빌드
 pnpm --filter @shopping/shop start    # 빌드 결과 실행
 ```
+
+## 디자인 시스템 (Storybook)
+
+`packages/ui` 의 컴포넌트와 **디자인 토큰 문서**를 한곳에서 본다. 앱을 띄우지 않고 확인할 수 있고,
+툴바에서 **밀도 3단계를 바꾸면 모든 스토리가 즉시 반영**된다 — 이 프로젝트에서 Storybook 을 쓰는 이유다.
+
+```bash
+pnpm storybook         # 6006 + PORT_OFFSET 에서 기동
+pnpm storybook:build   # packages/ui/storybook-static 으로 정적 빌드
+```
+
+| 사이드바 | 담는 것 |
+| --- | --- |
+| **Design tokens / Colour** | 시맨틱·팔레트 토큰 전체, 각 값과 `--color-surface` 대비비, 이름에서 유도한 대비 쌍 |
+| **Design tokens / Typography** | 폰트 스택, 타입 스케일(선택한 밀도에서 실제 렌더된 px), tracking·leading |
+| **Design tokens / Spacing** | `--spacing` 배수, radius, shadow |
+| **Design tokens / Density** | **밀도 3 × 뷰포트 3 매트릭스**, 컨트롤 높이와 44px 터치 하한, 3단계 나란히 비교 |
+| **Components / \*** | 기본 컴포넌트 20종 — 기본 · 전체 variant · 상태 · 엣지 케이스 |
+
+**토큰 문서의 값은 어디에도 적혀 있지 않다.** 토큰 이름은 `document.styleSheets` 를 훑어 찾고,
+값은 `getComputedStyle` 로 읽고, 길이는 브라우저가 배치한 박스를 재서 얻는다. 매트릭스의 나머지 여섯 칸은
+해당 폭으로 만든 화면 밖 `<iframe>` 안에서 잰다 — 미디어 쿼리는 뷰포트에만 답하기 때문이다.
+문서에 숫자를 옮겨 적으면 반드시 어긋나고, 어긋난 순간 이 문서는 믿을 수 없어진다(D-206).
+
+접근성은 화면에 표시만 하지 않는다. **모든 스토리에 axe 를 돌리는 검사가 `pnpm test` 안에 있고**
+(`packages/ui/test/story-a11y.spec.tsx`), 위반이 하나라도 있으면 CI 의 `test` 잡이 빨개진다.
+규칙 집합은 애드온과 이 검사가 `packages/ui/stories/support/a11y.ts` 하나를 공유한다.
+
+> 스토리는 `packages/ui/stories/` 에 둔다. `packages/ui/src` 는 Tailwind 가 스캔하는 트리라서
+> 거기에 두면 **스토리 전용 클래스가 앱 3개의 CSS 에 섞여 들어간다.**
 
 ## 환경변수
 
