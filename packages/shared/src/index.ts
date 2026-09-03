@@ -14,6 +14,35 @@ export type {
   ApiRequestOptions,
   FetchLike,
 } from './api/client.js'
+export {
+  CATEGORY_MAX_DEPTH,
+  categoryIdSchema,
+  categoryListResponseSchema,
+  categoryNameSchema,
+  categoryNodeSchema,
+  categoryResponseSchema,
+  categorySlugSchema,
+  categoryTreeNodeSchema,
+  categoryTreeQueryParamsSchema,
+  categoryTreeQuerySchema,
+  categoryTreeResponseSchema,
+  createCategoryRequestSchema,
+  moveCategoryRequestSchema,
+  reorderCategoriesRequestSchema,
+  updateCategoryRequestSchema,
+} from './api/categories.js'
+export type {
+  CategoryListResponse,
+  CategoryNode,
+  CategoryResponse,
+  CategoryTreeNode,
+  CategoryTreeQuery,
+  CategoryTreeResponse,
+  CreateCategoryRequest,
+  MoveCategoryRequest,
+  ReorderCategoriesRequest,
+  UpdateCategoryRequest,
+} from './api/categories.js'
 export { healthEntries } from './api/health-entries.js'
 export type { HealthEntry } from './api/health-entries.js'
 export { grantRoleRequestSchema, userRolesResponseSchema } from './api/user-roles.js'
