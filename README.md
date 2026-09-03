@@ -658,6 +658,32 @@ Neon 콘솔에서 **먼저 브랜치(스냅샷)를 만든다.**
 | Private Service 없음 | 검색 엔진이 공개 URL 을 갖는다. 마스터 키 없이는 전부 401 |
 | Neon 은 5분 뒤 scale-to-zero | 첫 쿼리가 수백 ms 느리다. 타임아웃을 넉넉히 잡아 뒀다 |
 
+## 커밋 이력 읽는 법
+
+이 저장소의 커밋과 PR 에는 두 줄의 트레일러가 붙는다.
+
+```
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_...
+```
+
+| 트레일러 | 무엇 |
+| --- | --- |
+| `Co-Authored-By` | 이 변경을 함께 만든 도구. 표준 git 트레일러다 |
+| `Claude-Session` | 그 작업이 이루어진 Claude Code 세션 |
+
+**`Claude-Session` 링크는 저장소 소유자의 계정에 묶여 있어 다른 사람은 열 수 없다.** 출처 표기이지 문서가 아니다. 링크가 열리지 않아도 잃는 정보는 없다 — **무엇을 왜 그렇게 했는지는 전부 저장소 안에 있다.**
+
+| 알고 싶은 것 | 볼 곳 |
+| --- | --- |
+| 지금 무엇이 정해져 있나 | [`docs/decisions/DECISIONS.md`](./docs/decisions/DECISIONS.md) |
+| 왜 그렇게 정했나, 무엇을 버렸나 | `docs/decisions/YYYY-MM-DD-session-NN.md` |
+| 이 작업의 목적·설계·완료 기준·검증 결과 | `docs/tasks/M<NN>-*/TASK-<0000>-*.md` |
+| 무엇을 어떻게 검증했나 | 해당 PR 본문 |
+| 화면·데이터·상태 전이·금액 규칙 | [`docs/design/`](./docs/design/) |
+
+즉 **커밋 하나를 이해하는 데 필요한 것은 전부 `git clone` 안에 있다.** 세션 링크는 거기에 더해지는 출처 정보일 뿐이다.
+
 ## 문서
 
 - 작업 계획: [`docs/tasks/`](./docs/tasks/)
