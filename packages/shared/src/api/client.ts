@@ -13,6 +13,21 @@ import { healthResponseSchema } from '../health.js'
 import { ApiClientError } from './api-client-error.js'
 import type { AppId } from './app-id.js'
 import { APP_ID_HEADER } from './app-id.js'
+import type {
+  CategoryListResponse,
+  CategoryResponse,
+  CategoryTreeQuery,
+  CategoryTreeResponse,
+  CreateCategoryRequest,
+  MoveCategoryRequest,
+  ReorderCategoriesRequest,
+  UpdateCategoryRequest,
+} from './categories.js'
+import {
+  categoryListResponseSchema,
+  categoryResponseSchema,
+  categoryTreeResponseSchema,
+} from './categories.js'
 
 /** Every route is versioned; `v1` is the only version in existence today. */
 export const API_PATH_PREFIX = '/api/v1'
@@ -55,6 +70,51 @@ export interface ApiClient {
   readonly baseUrl: string
   request: <TResult>(options: ApiRequestOptions<TResult>) => Promise<TResult>
   getHealth: (options?: ApiCallOptions) => Promise<HealthResponse>
+  /**
+   * The category tree, nested (TASK-0028).
+   *
+   * A method per endpoint rather than a bare {@link ApiClient.request} call at
+   * every use site: the schema is then named once, and gate C1 — "no app
+   * redefines a response type" — holds because there is nothing left to
+   * redefine.
+   */
+  getCategoryTree: (
+    query?: CategoryTreeQuery,
+    options?: ApiCallOptions,
+  ) => Promise<CategoryTreeResponse>
+  createCategory: (
+    body: CreateCategoryRequest,
+    options?: ApiCallOptions,
+  ) => Promise<CategoryResponse>
+  updateCategory: (
+    id: number,
+    body: UpdateCategoryRequest,
+    options?: ApiCallOptions,
+  ) => Promise<CategoryResponse>
+  moveCategory: (
+    id: number,
+    body: MoveCategoryRequest,
+    options?: ApiCallOptions,
+  ) => Promise<CategoryResponse>
+  reorderCategories: (
+    body: ReorderCategoriesRequest,
+    options?: ApiCallOptions,
+  ) => Promise<CategoryListResponse>
+  deleteCategory: (id: number, options?: ApiCallOptions) => Promise<CategoryResponse>
+}
+
+/** `?rootId=3&includeInactive=true`, or an empty string when nothing is set. */
+function categoryTreeSearch(query: CategoryTreeQuery): string {
+  const params = new URLSearchParams()
+
+  if (query.rootId !== undefined) params.set('rootId', String(query.rootId))
+  if (query.includeInactive !== undefined) {
+    params.set('includeInactive', String(query.includeInactive))
+  }
+
+  const search = params.toString()
+
+  return search === '' ? '' : `?${search}`
 }
 
 function normaliseBaseUrl(baseUrl: string): string {
@@ -198,5 +258,56 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     request,
     getHealth: (callOptions = {}) =>
       request({ path: '/health', schema: healthResponseSchema, ...callOptions }),
+
+    getCategoryTree: (query = {}, callOptions = {}) =>
+      request({
+        path: `/categories${categoryTreeSearch(query)}`,
+        schema: categoryTreeResponseSchema,
+        ...callOptions,
+      }),
+
+    createCategory: (body, callOptions = {}) =>
+      request({
+        path: '/categories',
+        method: 'POST',
+        body,
+        schema: categoryResponseSchema,
+        ...callOptions,
+      }),
+
+    updateCategory: (id, body, callOptions = {}) =>
+      request({
+        path: `/categories/${String(id)}`,
+        method: 'PATCH',
+        body,
+        schema: categoryResponseSchema,
+        ...callOptions,
+      }),
+
+    moveCategory: (id, body, callOptions = {}) =>
+      request({
+        path: `/categories/${String(id)}/move`,
+        method: 'POST',
+        body,
+        schema: categoryResponseSchema,
+        ...callOptions,
+      }),
+
+    reorderCategories: (body, callOptions = {}) =>
+      request({
+        path: '/categories/reorder',
+        method: 'POST',
+        body,
+        schema: categoryListResponseSchema,
+        ...callOptions,
+      }),
+
+    deleteCategory: (id, callOptions = {}) =>
+      request({
+        path: `/categories/${String(id)}`,
+        method: 'DELETE',
+        schema: categoryResponseSchema,
+        ...callOptions,
+      }),
   }
 }
