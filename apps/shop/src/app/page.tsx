@@ -29,9 +29,14 @@ export default async function HomePage() {
         page only whoever wrote it knows the URL of.
       */}
       {process.env.NODE_ENV === 'production' ? null : (
-        <a className="text-primary min-h-touch text-sm underline" href="/tokens">
-          {messages.tokens.linkLabel}
-        </a>
+        <nav className="flex flex-col gap-1">
+          <a className="text-primary min-h-touch text-sm underline" href="/tokens">
+            {messages.tokens.linkLabel}
+          </a>
+          <a className="text-primary min-h-touch text-sm underline" href="/components">
+            {messages.components.linkLabel}
+          </a>
+        </nav>
       )}
     </main>
   )
