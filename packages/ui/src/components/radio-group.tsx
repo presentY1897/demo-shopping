@@ -29,8 +29,17 @@ export interface RadioGroupProps {
   readonly disabled?: boolean
   readonly required?: boolean
   readonly name?: string
+  readonly id?: string
+  /**
+   * Renders the error treatment and sets `aria-invalid` on the group.
+   *
+   * On the group rather than on each `Radio`: the answer is invalid, not one
+   * of the options, and it is the group that a form's error message describes.
+   */
+  readonly invalid?: boolean
   readonly 'aria-label'?: string
   readonly 'aria-labelledby'?: string
+  readonly 'aria-describedby'?: string
   readonly className?: string
   readonly children?: ReactNode
 }
@@ -43,19 +52,24 @@ export function RadioGroup({
   disabled = false,
   required,
   name,
+  id,
+  invalid = false,
   className,
   children,
   ...aria
 }: RadioGroupProps) {
   return (
     <RadioGroupPrimitive.Root
+      aria-invalid={invalid || undefined}
       className={cx(
         'flex gap-2',
         orientation === 'vertical' ? 'flex-col' : 'flex-row flex-wrap items-center',
         className,
       )}
+      data-invalid={invalid || undefined}
       defaultValue={defaultValue}
       disabled={disabled}
+      id={id}
       name={name}
       onValueChange={onValueChange}
       orientation={orientation}
