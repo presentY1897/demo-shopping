@@ -36,6 +36,31 @@ export const ko: Messages = {
     },
     notice: '기동 확인용 임시 페이지입니다. 실제 화면은 M03 에서 대체됩니다.',
   },
+  wake: {
+    loadingLabel: 'API 연결 상태를 불러오는 중입니다.',
+    preparing: '서버를 준비하는 중입니다',
+    preparingHint: '잠시만 기다려주세요. 준비가 끝나면 자동으로 표시됩니다.',
+    // 사실 안내이지 변명이 아니다(TASK-0101 R1). 실측 90초에 여유를 얹어
+    // "최대 2분"으로 적는다 — 90초라고 적으면 91초에 거짓말이 된다.
+    coldStartNotice:
+      '무료 플랜 데모 환경이라 한동안 방문이 없으면 서버가 절전 상태로 들어갑니다. 처음 접속은 최대 2분까지 걸릴 수 있습니다.',
+    elapsedLabel: '경과',
+    secondsUnit: '초',
+    attemptLabel: '시도',
+    progressLabel: '서버 준비 진행률',
+    failureTitle: '서버를 깨우지 못했습니다',
+    failureHint: '네트워크가 돌아오거나 이 탭으로 돌아오면 자동으로 다시 시도합니다.',
+    retryLabel: '다시 시도',
+    search: {
+      title: '검색',
+      ready: '검색을 사용할 수 있습니다.',
+      preparingTitle: '검색을 준비하는 중입니다',
+      waking: '검색 서버가 절전 상태에서 깨어나는 중입니다. 준비되면 검색할 수 있습니다.',
+      indexing: '검색 색인을 다시 만드는 중입니다. 지금 검색하면 결과가 비어 보일 수 있습니다.',
+      autoRecheck: '자동으로 다시 확인하고 있습니다.',
+      recheckLabel: '다시 확인',
+    },
+  },
   components: {
     title: '기본 컴포넌트',
     description: 'packages/ui 의 기본 컴포넌트를 한 화면에서 확인하는 개발용 페이지입니다.',
