@@ -1,3 +1,5 @@
+import type { ObjectStorageConfig } from './storage-config.js'
+
 /** Injection token for {@link AppConfig}; the object itself has no class to key on. */
 export const APP_CONFIG = Symbol('APP_CONFIG')
 
@@ -36,6 +38,15 @@ export interface AppConfig {
     readonly masterKey: string
     readonly timeoutMs: number
   }
+  /**
+   * Object storage for uploaded images, or `null` while R2 is not configured.
+   *
+   * Nullable rather than required because the account is provisioned separately
+   * from the code: the API has to run — and every other endpoint has to work —
+   * before a bucket exists. The upload endpoint answers 503 until it does
+   * (TASK-0011 4.5).
+   */
+  readonly storage: ObjectStorageConfig | null
   /** Exact origins allowed by CORS. Anything else is rejected. */
   readonly corsOrigins: readonly string[]
 }

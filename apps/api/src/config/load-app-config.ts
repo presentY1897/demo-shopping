@@ -5,6 +5,8 @@ import type { Env, EnvIssue } from './env.schema.js'
 import { parseEnv } from './env.schema.js'
 import { mergeEnv } from './merge-env.js'
 import { parseOriginList } from './origins.js'
+import type { ObjectStorageConfig } from './storage-config.js'
+import { resolveObjectStorageConfig } from './storage-config.js'
 import { readPackageVersion } from './package-version.js'
 import { findRepoRoot, loadEnvFiles } from './workspace.js'
 
@@ -20,7 +22,12 @@ export interface LoadedAppConfig {
   }
 }
 
-function toAppConfig(env: Env, version: string, corsOrigins: readonly string[]): AppConfig {
+function toAppConfig(
+  env: Env,
+  version: string,
+  corsOrigins: readonly string[],
+  storage: ObjectStorageConfig | null,
+): AppConfig {
   return {
     nodeEnv: env.NODE_ENV,
     isProduction: env.NODE_ENV === 'production',
@@ -39,6 +46,7 @@ function toAppConfig(env: Env, version: string, corsOrigins: readonly string[]):
       masterKey: env.MEILI_MASTER_KEY,
       timeoutMs: env.MEILI_HEALTH_TIMEOUT_MS,
     },
+    storage,
     corsOrigins,
   }
 }
@@ -57,9 +65,14 @@ export async function loadAppConfig(): Promise<LoadedAppConfig> {
   const envFiles = repoRoot === null ? [] : loadEnvFiles(repoRoot)
 
   const derived = await deriveEnvFromPortOffset(repoRoot, process.env)
-  const parsed = parseEnv(mergeEnv(process.env, derived.values))
+  const merged = mergeEnv(process.env, derived.values)
+  const parsed = parseEnv(merged)
+  // Read from the merged record rather than from `Env`: R2 is configured as a
+  // set — all of it or none of it — and that rule cannot be stated as six
+  // independent field validations (`storage-config.ts`).
+  const storage = resolveObjectStorageConfig(merged)
 
-  const issues: EnvIssue[] = [...derived.issues]
+  const issues: EnvIssue[] = [...derived.issues, ...storage.issues]
   if (!parsed.ok) issues.push(...parsed.issues)
 
   if (!parsed.ok || issues.length > 0) throw new EnvValidationError(issues)
@@ -74,7 +87,7 @@ export async function loadAppConfig(): Promise<LoadedAppConfig> {
   const version = parsed.env.API_VERSION ?? readPackageVersion() ?? UNKNOWN_VERSION
 
   return {
-    config: toAppConfig(parsed.env, version, origins),
+    config: toAppConfig(parsed.env, version, origins, storage.config),
     sources: { envFiles, portOffset: derived.offset },
   }
 }
