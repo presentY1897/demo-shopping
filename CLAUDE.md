@@ -103,6 +103,9 @@ pnpm install            # 의존성이 바뀌었을 수 있다. 새 워크트리
   이 목록으로 커밋을 거부한다. `ci` · `build` · `revert` 는 쓰지 않으며 CI 작업도 `chore` 다.
   한쪽을 고치면 반드시 다른 쪽도 고친다.
 - 커밋 훅은 `pnpm install` 이 설치한다. 훅 우회 방법은 README 의 "개발 워크플로" 절 참조.
+- **PR 본문은 저장소 안의 문서로 링크한다.** `Claude-Session` 링크는 다른 사람이 못 열므로,
+  PR 을 읽는 사람이 알아야 할 것은 본문과 `../blob/main/...` 링크로 닿는 곳에 있어야 한다.
+  `.github/pull_request_template.md` 가 그 뼈대를 준다.
 - 커밋·PR 에 `Co-Authored-By` 와 `Claude-Session` 트레일러를 붙인다. **`Claude-Session` 은 계정 범위
   링크라 저장소를 보는 다른 사람은 열 수 없다.** 그러므로 **판단 근거를 그 링크에 미루지 않는다** —
   결정은 `docs/decisions/`, 작업의 목적·설계·검증은 TASK 문서, 검증 결과는 PR 본문에 남긴다.
