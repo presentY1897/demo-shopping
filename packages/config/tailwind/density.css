@@ -1,0 +1,161 @@
+/*
+ * Display density — three steps, crossed with the viewport.
+ *
+ * A shopper picks one of three steps (DECISIONS 1장, D-033) and the whole of
+ * `apps/shop` answers. The console apps pin themselves to step 2 and never show
+ * the toggle; they still read these variables, so one set of components serves
+ * all three apps.
+ *
+ *   1 · minimal   wide margins, large imagery, least information (SSENSE)
+ *   2 · standard  the balance point (무신사, 29CM)
+ *   3 · maximal   dense, most information per screen (쿠팡, 알리익스프레스)
+ *
+ * **Column count and scale are two-dimensional: density × viewport.** Six
+ * columns of maximal at 360px is a 55px card, which is not a product card, so
+ * the step alone cannot decide the grid. The mobile band also narrows the gap
+ * between the three steps: minimal's generous whitespace is wasted on a phone,
+ * and maximal's shrink factor stops being readable.
+ *
+ * What is *shown* stays one-dimensional — the component reads the step and
+ * decides, tokens only carry space and size (TASK-0014 R3). Nine combinations of
+ * "which fields appear" is not a system anyone can hold in their head.
+ *
+ * `docs/design/pages.md` 반응형 절 carries the same matrix in prose, and
+ * `packages/ui` re-states the column counts in TypeScript for the code that has
+ * to compute an image `sizes` attribute. `density-tokens.spec.ts` reads this
+ * file and fails if the three copies disagree.
+ *
+ * Selector note: these rules are unlayered, so they win over the `@layer theme`
+ * block that `@theme` compiles to, regardless of source order. Within the file
+ * the later rule wins on equal specificity (`:root` and `[data-density]` are
+ * both 0-1-0), which is why the defaults come first and each viewport band
+ * restates all three steps.
+ */
+
+/* ------------------------------------------------- base band (0 – 767px) -- */
+
+/*
+ * `:root` carries step 2 as well, so a page that never sets `data-density` —
+ * a console app, an error page, an email preview — still renders with a
+ * complete token set instead of falling back to `initial`.
+ */
+:root,
+[data-density='1'],
+[data-density='2'],
+[data-density='3'] {
+  /* Fixed floor for anything the user taps. Never scaled by density. */
+  --touch-min: 44px;
+}
+
+:root,
+[data-density='2'] {
+  --space-unit: 4px;
+  --font-scale: 1;
+  --radius-scale: 1;
+  --density-cols: 2;
+}
+
+[data-density='1'] {
+  --space-unit: 5px;
+  --font-scale: 1.02;
+  --radius-scale: 1.25;
+  --density-cols: 1;
+}
+
+[data-density='3'] {
+  --space-unit: 3.5px;
+  --font-scale: 0.98;
+  --radius-scale: 0.75;
+  --density-cols: 2;
+}
+
+/*
+ * Page gutter. Derived from `--space-unit` so it moves with the step, and
+ * stepped up per band so a 1440px page is not wearing a phone's margins.
+ */
+:root,
+[data-density='1'],
+[data-density='2'],
+[data-density='3'] {
+  --space-gutter: calc(var(--space-unit) * 4);
+}
+
+/* ---------------------------------------------- md band (768px – 1279px) -- */
+
+@media (min-width: 768px) {
+  :root,
+  [data-density='2'] {
+    --space-unit: 4px;
+    --font-scale: 1;
+    --density-cols: 3;
+  }
+
+  [data-density='1'] {
+    --space-unit: 6px;
+    --font-scale: 1.05;
+    --density-cols: 2;
+  }
+
+  [data-density='3'] {
+    --space-unit: 3px;
+    --font-scale: 0.95;
+    --density-cols: 4;
+  }
+
+  :root,
+  [data-density='1'],
+  [data-density='2'],
+  [data-density='3'] {
+    --space-gutter: calc(var(--space-unit) * 6);
+  }
+}
+
+/* ---------------------------------------------------- xl band (1280px +) -- */
+
+/*
+ * Only the grid widens here. The scale reached its comfortable value at `md`;
+ * pushing it further would make a 1440px page look like a zoomed screenshot.
+ */
+@media (min-width: 1280px) {
+  :root,
+  [data-density='2'] {
+    --density-cols: 4;
+  }
+
+  [data-density='1'] {
+    --density-cols: 3;
+  }
+
+  [data-density='3'] {
+    --density-cols: 6;
+  }
+
+  :root,
+  [data-density='1'],
+  [data-density='2'],
+  [data-density='3'] {
+    --space-gutter: calc(var(--space-unit) * 8);
+  }
+}
+
+/* ---------------------------------------------------------- utilities ----- */
+
+/**
+ * Product-grid columns straight from the matrix above. One class instead of the
+ * `grid-cols-1 md:grid-cols-2 xl:grid-cols-3` triple that would have to be
+ * written out nine times, once per density × viewport pair.
+ */
+@utility grid-density {
+  display: grid;
+  grid-template-columns: repeat(var(--density-cols), minmax(0, 1fr));
+}
+
+/**
+ * Enforces the tap-target floor on an element whose visible box is smaller —
+ * an icon button, a checkbox, a 12px close affordance. The box stays the size
+ * the design asked for; the hit area does not shrink with it.
+ */
+@utility touch-target {
+  min-inline-size: var(--touch-min);
+  min-block-size: var(--touch-min);
+}

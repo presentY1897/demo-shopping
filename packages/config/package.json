@@ -8,6 +8,8 @@
     "./tsconfig/next.json": "./tsconfig/next.json",
     "./tsconfig/nest.json": "./tsconfig/nest.json",
     "./tailwind/preset.css": "./tailwind/preset.css",
+    "./tailwind/tokens.css": "./tailwind/tokens.css",
+    "./tailwind/density.css": "./tailwind/density.css",
     "./eslint/base": "./eslint/base.js",
     "./eslint/next": "./eslint/next.js",
     "./eslint/nest": "./eslint/nest.js",

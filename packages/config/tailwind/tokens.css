@@ -1,0 +1,271 @@
+/*
+ * Design tokens — colour, typography, radius and shadow.
+ *
+ * Imported by `preset.css`; never by an app directly. Everything a component is
+ * allowed to reach for lives here, which is what makes "no hardcoded colour or
+ * spacing" (TASK-0014 F5) a rule a reviewer can check with grep instead of by
+ * eye, and what makes a dark set later a matter of redefining the semantic
+ * layer rather than editing components (DECISIONS 9장).
+ *
+ * Two layers, on purpose:
+ *   1. palette   `--color-neutral-600` — a value, with no opinion about its use
+ *   2. semantic  `--color-fg-muted`    — a role; the only layer components use
+ *
+ * Components that reach past the semantic layer into the palette are the reason
+ * a redesign turns into a rewrite, so the palette exists to be referenced *here*.
+ *
+ * Density does not appear in this file. Sizes that scale with the density step
+ * read `--space-unit` / `--font-scale` / `--radius-scale`, which `density.css`
+ * defines; the `inline` blocks below are what makes those resolve at the element
+ * rather than at `:root`, so a nested `data-density` scope works.
+ */
+
+/* ---------------------------------------------------------------- palette -- */
+
+@theme static {
+  /*
+   * Tailwind's stock palette is dropped. A component that *can* write
+   * `bg-red-500` eventually does, and then the token layer is a suggestion
+   * rather than a contract. `transparent` and `current` stay: they are
+   * structural, not colours.
+   */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-inherit: inherit;
+
+  /*
+   * One neutral ramp with a trace of blue (chroma 0.004–0.006). Pure grey reads
+   * slightly warm on most panels; this stays out of the way without looking
+   * tinted. Lightness values are OKLCH `L`, so the steps are perceptually even.
+   */
+  --color-neutral-0: oklch(1 0 0);
+  --color-neutral-50: oklch(0.985 0.002 265);
+  --color-neutral-100: oklch(0.968 0.003 265);
+  --color-neutral-200: oklch(0.922 0.004 265);
+  --color-neutral-300: oklch(0.87 0.005 265);
+  --color-neutral-400: oklch(0.708 0.006 265);
+  --color-neutral-500: oklch(0.556 0.006 265);
+  --color-neutral-600: oklch(0.44 0.006 265);
+  --color-neutral-700: oklch(0.37 0.006 265);
+  --color-neutral-800: oklch(0.269 0.005 265);
+  --color-neutral-900: oklch(0.205 0.004 265);
+  --color-neutral-950: oklch(0.145 0.003 265);
+  --color-neutral-1000: oklch(0 0 0);
+
+  /*
+   * Accent ramps. Lightness is capped where white text still clears WCAG AA on
+   * the solid fill — `color-tokens.spec.ts` fails the build if a value drifts
+   * past that, so these numbers are enforced rather than remembered.
+   */
+  --color-blue-500: oklch(0.5 0.18 265);
+  --color-blue-600: oklch(0.43 0.17 265);
+  --color-blue-100: oklch(0.94 0.03 265);
+
+  --color-teal-500: oklch(0.5 0.11 195);
+  --color-teal-600: oklch(0.43 0.1 195);
+  --color-teal-100: oklch(0.94 0.03 195);
+
+  --color-violet-500: oklch(0.5 0.17 310);
+  --color-violet-600: oklch(0.43 0.16 310);
+  --color-violet-100: oklch(0.94 0.03 310);
+
+  --color-green-500: oklch(0.5 0.13 150);
+  --color-green-100: oklch(0.94 0.04 150);
+
+  --color-amber-500: oklch(0.5 0.12 75);
+  --color-amber-100: oklch(0.95 0.05 85);
+
+  --color-red-500: oklch(0.5 0.19 25);
+  --color-red-600: oklch(0.44 0.18 25);
+  --color-red-100: oklch(0.94 0.03 25);
+}
+
+/* -------------------------------------------------------------- semantic -- */
+
+@theme static {
+  /* Surfaces, from the page backdrop outwards. */
+  --color-surface: var(--color-neutral-0);
+  --color-surface-sunken: var(--color-neutral-50);
+  --color-surface-raised: var(--color-neutral-0);
+  --color-surface-muted: var(--color-neutral-100);
+  --color-surface-inverse: var(--color-neutral-900);
+
+  /*
+   * Text. Every one of these clears 4.5:1 on `--color-surface`; there is
+   * deliberately no "even lighter" text token, because the moment one exists a
+   * caption ends up wearing it.
+   */
+  --color-fg: var(--color-neutral-950);
+  --color-fg-muted: var(--color-neutral-700);
+  --color-fg-subtle: var(--color-neutral-600);
+  --color-fg-inverse: var(--color-neutral-0);
+
+  /*
+   * Borders. `--color-border` divides content and is decorative (WCAG exempts
+   * it); `--color-border-interactive` outlines a control the user must be able
+   * to find, so it is held to the 3:1 of WCAG 1.4.11.
+   */
+  --color-border: var(--color-neutral-200);
+  --color-border-strong: var(--color-neutral-300);
+  --color-border-interactive: var(--color-neutral-500);
+
+  /*
+   * Primary is the one token each app overrides — shop blue, seller teal, admin
+   * violet — so that three tabs of the same browser are told apart at a glance
+   * (DECISIONS 2장: 세 역할을 탭 3개로 동시에 연다). Everything else is shared.
+   */
+  --color-primary: var(--color-blue-500);
+  --color-primary-strong: var(--color-blue-600);
+  --color-primary-surface: var(--color-blue-100);
+  --color-primary-fg: var(--color-neutral-0);
+
+  --color-danger: var(--color-red-500);
+  --color-danger-strong: var(--color-red-600);
+  --color-danger-surface: var(--color-red-100);
+  --color-danger-fg: var(--color-neutral-0);
+
+  --color-success: var(--color-green-500);
+  --color-success-surface: var(--color-green-100);
+  --color-success-fg: var(--color-neutral-0);
+
+  --color-warning: var(--color-amber-500);
+  --color-warning-surface: var(--color-amber-100);
+  --color-warning-fg: var(--color-neutral-0);
+
+  --color-muted: var(--color-surface-muted);
+  --color-muted-fg: var(--color-fg-subtle);
+
+  /* Focus ring. Named apart from primary: an app may recolour primary, but the
+     ring has to stay findable, so it is changed knowingly. */
+  --color-ring: var(--color-blue-500);
+
+  /*
+   * Liveness colours, shared because every app renders the same three states.
+   * Aliases rather than new values, so "degraded" and "warning" can never drift
+   * into two different yellows.
+   */
+  --color-status-ok: var(--color-success);
+  --color-status-degraded: var(--color-warning);
+  --color-status-down: var(--color-danger);
+}
+
+/* ------------------------------------------------------------ typography -- */
+
+@theme static {
+  /*
+   * System stack, Korean first. No webfont: a downloaded face is a render-
+   * blocking request on the LCP path (QUALITY-GATES P1) and a build-time network
+   * dependency in CI. `Pretendard` is honoured when the visitor already has it.
+   */
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+    'Segoe UI', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, 'D2Coding', monospace;
+
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.02em;
+
+  /* Ratios, not lengths, so a line box grows with `--font-scale` on its own. */
+  --leading-tight: 1.25;
+  --leading-snug: 1.4;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.85;
+}
+
+@theme static inline {
+  /*
+   * Type scale. `--font-scale` is the density multiplier, so `text-base` is one
+   * declaration that answers to the step the shopper picked.
+   *
+   * Line heights are ratios and run a little looser than a Latin-only scale:
+   * Hangul syllable blocks are full-height, so 1.5 that reads as airy in English
+   * reads as cramped in Korean.
+   */
+  --text-*: initial;
+
+  --text-2xs: calc(0.6875rem * var(--font-scale));
+  --text-2xs--line-height: 1.5;
+  --text-xs: calc(0.75rem * var(--font-scale));
+  --text-xs--line-height: 1.5;
+  --text-sm: calc(0.875rem * var(--font-scale));
+  --text-sm--line-height: 1.6;
+  --text-base: calc(1rem * var(--font-scale));
+  --text-base--line-height: 1.6;
+  --text-lg: calc(1.125rem * var(--font-scale));
+  --text-lg--line-height: 1.6;
+  --text-xl: calc(1.25rem * var(--font-scale));
+  --text-xl--line-height: 1.5;
+  --text-2xl: calc(1.5rem * var(--font-scale));
+  --text-2xl--line-height: 1.4;
+  --text-3xl: calc(1.875rem * var(--font-scale));
+  --text-3xl--line-height: 1.3;
+  --text-4xl: calc(2.25rem * var(--font-scale));
+  --text-4xl--line-height: 1.2;
+  --text-5xl: calc(3rem * var(--font-scale));
+  --text-5xl--line-height: 1.1;
+}
+
+/* -------------------------------------------------- radius · shadow · size -- */
+
+@theme static inline {
+  /* Corner softness is part of the density feel: minimal rounds generously,
+     maximal barely at all. `--radius-scale` carries that. */
+  --radius-*: initial;
+
+  --radius-xs: calc(2px * var(--radius-scale));
+  --radius-sm: calc(4px * var(--radius-scale));
+  --radius-md: calc(6px * var(--radius-scale));
+  --radius-lg: calc(10px * var(--radius-scale));
+  --radius-xl: calc(14px * var(--radius-scale));
+  --radius-2xl: calc(20px * var(--radius-scale));
+}
+
+@theme static {
+  /*
+   * Shadows are tinted with the neutral hue rather than pure black, so a raised
+   * card does not look like it is sitting on a different page than the border
+   * tokens above it.
+   */
+  --shadow-*: initial;
+
+  --shadow-xs: 0 1px 2px 0 oklch(0.145 0.003 265 / 0.06);
+  --shadow-sm:
+    0 1px 3px 0 oklch(0.145 0.003 265 / 0.08), 0 1px 2px -1px oklch(0.145 0.003 265 / 0.06);
+  --shadow-md:
+    0 4px 8px -2px oklch(0.145 0.003 265 / 0.09), 0 2px 4px -2px oklch(0.145 0.003 265 / 0.06);
+  --shadow-lg:
+    0 12px 20px -4px oklch(0.145 0.003 265 / 0.1), 0 4px 8px -4px oklch(0.145 0.003 265 / 0.06);
+  --shadow-overlay: 0 24px 48px -12px oklch(0.145 0.003 265 / 0.2);
+}
+
+@theme static inline {
+  /*
+   * The Tailwind spacing multiplier. `p-4`, `gap-3` and `size-10` all compile to
+   * `calc(var(--space-unit) * n)`, so the entire utility spacing scale answers to
+   * the density step without a single component naming a density.
+   *
+   * `inline` is load-bearing here. Without it the multiplier would be resolved
+   * once at `:root`, and a `data-density` scope nested inside the page — the
+   * preview page's side-by-side comparison, a maximal-density panel on an
+   * otherwise standard page — would silently keep the root's spacing.
+   */
+  --spacing: var(--space-unit);
+
+  /*
+   * Control sizes. The `max()` is the whole point: whatever `--space-unit`
+   * shrinks to at the maximal step, an interactive box still ends up at least
+   * `--touch-min` tall (DECISIONS 1장 · TASK-0014 F9). Written as a token rather
+   * than as a rule each component remembers, because the one component that
+   * forgets is the one on the checkout button.
+   */
+  --spacing-touch: var(--touch-min);
+  --spacing-control-sm: max(var(--touch-min), calc(var(--space-unit) * 8));
+  --spacing-control-md: max(var(--touch-min), calc(var(--space-unit) * 11));
+  --spacing-control-lg: max(var(--touch-min), calc(var(--space-unit) * 14));
+
+  /* Horizontal breathing room at the page edge; steps up with the viewport. */
+  --spacing-gutter: var(--space-gutter);
+}
