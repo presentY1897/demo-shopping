@@ -13,6 +13,8 @@ export {
   httpFailure,
   httpFailureOn,
   malformedResponse,
+  MOCK_REQUEST_ID,
+  mockResponseHeaders,
   networkFailure,
   networkFailureAfterOn,
   networkFailureOn,

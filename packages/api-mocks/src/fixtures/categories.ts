@@ -128,6 +128,10 @@ function build(
       path: `${parent?.path ?? '/'}${String(id)}/`,
       sortOrder: index,
       isActive: !INACTIVE_SLUGS.has(entry.slug),
+      // Zero everywhere until TASK-0032 brings products. The console's
+      // pre-warning is behind `> 0`, so this fixture exercises the path a
+      // freshly seeded catalogue takes.
+      productCount: 0,
       version: 0,
       children: [] as readonly CategoryTreeNode[],
     }

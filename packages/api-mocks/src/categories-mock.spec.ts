@@ -13,9 +13,16 @@
  */
 
 import type { CategoryTreeNode } from '@shopping/shared'
-import { CATEGORY_MAX_DEPTH, createApiClient, isApiClientError } from '@shopping/shared'
+import {
+  CATEGORY_MAX_DEPTH,
+  createApiClient,
+  isApiClientError,
+  isApiFieldError,
+  isDomainErrorCode,
+} from '@shopping/shared'
 import { describe, expect, it } from 'vitest'
 
+import { MOCK_REQUEST_ID } from './failures'
 import { categoryTree } from './fixtures/categories'
 import { setupTestServer } from './node'
 
@@ -164,5 +171,110 @@ describe('the category endpoints', () => {
     const call = client.reorderCategories({ parentId: root!.id, orderedIds: [first!.id] })
 
     expect(await statusOf(call)).toBe(400)
+  })
+})
+
+/**
+ * The double's half of TASK-0117's contract (gate C2).
+ *
+ * `apps/api/test/api/error-contract.integration.spec.ts` asserts the same codes
+ * on the same refusals against the real database. Both sides parse the envelope
+ * with `apiErrorSchema`, so a screen that branches on `CATEGORY_SLUG_TAKEN`
+ * cannot be green here and broken there without one of these two files going
+ * red first.
+ */
+describe('what a refusal says (TASK-0117)', () => {
+  interface Refusal {
+    readonly status: number
+    readonly code: string | null
+    readonly details: readonly unknown[]
+    readonly requestId: string | null
+  }
+
+  async function refusalOf(call: Promise<unknown>): Promise<Refusal> {
+    const error: unknown = await call.then(
+      () => null,
+      (reason: unknown) => reason,
+    )
+
+    if (!isApiClientError(error)) throw new Error(`실패를 기대했습니다: ${String(error)}`)
+
+    return {
+      status: error.status ?? 0,
+      code: error.code,
+      details: error.details,
+      requestId: error.requestId,
+    }
+  }
+
+  async function roots(): Promise<CategoryTreeNode[]> {
+    return flatten((await client.getCategoryTree({ includeInactive: true })).nodes)
+  }
+
+  it('gives the three 409s three different codes (F1)', async () => {
+    const [root] = await roots()
+
+    const slugTaken = await refusalOf(
+      client.createCategory({ parentId: null, name: '여성2', slug: 'women' }),
+    )
+    const staleVersion = await refusalOf(
+      client.updateCategory(root!.id, { version: root!.version + 9, name: '여성복' }),
+    )
+    const hasChildren = await refusalOf(client.deleteCategory(root!.id))
+
+    expect([slugTaken.status, staleVersion.status, hasChildren.status]).toEqual([409, 409, 409])
+    expect(slugTaken.code).toBe('CATEGORY_SLUG_TAKEN')
+    expect(staleVersion.code).toBe('CATEGORY_VERSION_CONFLICT')
+    expect(hasChildren.code).toBe('CATEGORY_HAS_CHILDREN')
+  })
+
+  it('names the input at fault, and leaves it out when there is none (F2)', async () => {
+    const [root] = await roots()
+
+    const slugTaken = await refusalOf(
+      client.createCategory({ parentId: null, name: '여성2', slug: 'women' }),
+    )
+    const hasChildren = await refusalOf(client.deleteCategory(root!.id))
+
+    expect(slugTaken.details).toMatchObject([{ field: 'slug', code: 'CATEGORY_SLUG_TAKEN' }])
+    expect(slugTaken.details.every(isApiFieldError)).toBe(true)
+    expect(hasChildren.details).toEqual([])
+  })
+
+  it('carries the depth cap as a value rather than a finished sentence', async () => {
+    const leaf = (await roots()).find((node) => node.depth === CATEGORY_MAX_DEPTH)
+
+    const refusal = await refusalOf(
+      client.createCategory({ parentId: leaf!.id, name: '너무깊음', slug: 'too-deep' }),
+    )
+
+    expect(refusal.code).toBe('CATEGORY_MAX_DEPTH')
+    expect(refusal.details).toMatchObject([
+      { field: 'parentId', params: { max: CATEGORY_MAX_DEPTH } },
+    ])
+  })
+
+  it('only ever emits codes the shared list declares', async () => {
+    const [root] = await roots()
+    const leaf = (await roots()).find((node) => node.depth === CATEGORY_MAX_DEPTH)
+
+    const codes = [
+      (await refusalOf(client.createCategory({ parentId: null, name: 'x', slug: 'women' }))).code,
+      (await refusalOf(client.updateCategory(root!.id, { version: 99, name: 'x' }))).code,
+      (await refusalOf(client.deleteCategory(root!.id))).code,
+      (await refusalOf(client.moveCategory(root!.id, { parentId: leaf!.id }))).code,
+      (await refusalOf(client.moveCategory(root!.id, { parentId: 9_999 }))).code,
+      (await refusalOf(client.reorderCategories({ parentId: null, orderedIds: [root!.id] }))).code,
+    ]
+
+    expect(codes.every((code) => code !== null && isDomainErrorCode(code))).toBe(true)
+  })
+
+  it('hands back a request id, the way the real API does', async () => {
+    const refusal = await refusalOf(
+      client.createCategory({ parentId: null, name: '여성2', slug: 'women' }),
+    )
+
+    expect(refusal.requestId).toBe(MOCK_REQUEST_ID)
   })
 })
