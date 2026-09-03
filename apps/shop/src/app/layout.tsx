@@ -1,8 +1,11 @@
 import { DEFAULT_DENSITY } from '@shopping/ui'
 import { DensityProvider, DensityScript } from '@shopping/ui/density'
+import { SkipLink } from '@shopping/ui/layout'
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
+import { ShopFooter } from '@/components/layout/shop-footer'
+import { ShopHeader } from '@/components/layout/shop-header'
 import { DEFAULT_LOCALE, messagesFor } from '@/messages'
 
 import './globals.css'
@@ -29,6 +32,7 @@ function serverDensity(): null {
 
 export default function RootLayout({ children }: { readonly children: ReactNode }) {
   const initial = serverDensity()
+  const layout = messages.layout
 
   return (
     // `suppressHydrationWarning` covers exactly one thing: `DensityScript`
@@ -36,7 +40,7 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
     // attribute the client sees is legitimately not the one the server sent. It
     // is scoped to this element's own attributes and hides nothing below it.
     <html lang={DEFAULT_LOCALE} data-density={initial ?? DEFAULT_DENSITY} suppressHydrationWarning>
-      <body className="bg-surface text-fg min-h-dvh antialiased">
+      <body className="bg-surface text-fg flex min-h-dvh flex-col antialiased">
         {/*
           First child of <body> so it runs while the parser is still above the
           content — the correction lands before anything is painted. An effect
@@ -44,7 +48,23 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
           every navigation.
         */}
         <DensityScript serverDensity={initial} />
-        <DensityProvider serverDensity={initial}>{children}</DensityProvider>
+
+        <DensityProvider serverDensity={initial}>
+          <SkipLink href="#main">{layout.skipToContent}</SkipLink>
+
+          <ShopHeader brand={messages.app.name} messages={layout} />
+
+          {/*
+            `tabIndex={-1}` is what makes the skip link work: without it the
+            fragment moves the scroll position but not the focus, and the next
+            Tab goes back to the header the visitor just skipped.
+          */}
+          <main className="flex-1" id="main" tabIndex={-1}>
+            {children}
+          </main>
+
+          <ShopFooter brand={messages.app.name} messages={layout.footer} />
+        </DensityProvider>
       </body>
     </html>
   )
