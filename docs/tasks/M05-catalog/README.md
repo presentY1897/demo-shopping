@@ -11,9 +11,9 @@
 | [TASK-0028](./TASK-0028-category-schema.md) | 카테고리 스키마 · 트리 API | 완료 | M04 |
 | [TASK-0029](./TASK-0029-category-admin.md) | 관리자 카테고리 관리 화면 | 완료 | 0028 |
 | [TASK-0030](./TASK-0030-attribute-schema.md) | 속성 정의 스키마 · API | 완료 | 0028 |
-| [TASK-0031](./TASK-0031-attribute-admin.md) | 관리자 속성 관리 화면 | 승인 대기 | 0030 |
+| [TASK-0031](./TASK-0031-attribute-admin.md) | 관리자 속성 관리 화면 | 승인됨 | 0030 |
 | [TASK-0032](./TASK-0032-product-schema.md) | 상품 · 옵션 · Variant 스키마 | 승인 대기 | 0030 |
-| [TASK-0033](./TASK-0033-image-upload.md) | 이미지 업로드 위젯 | 승인 대기 | 0032 |
+| [TASK-0033](./TASK-0033-image-upload.md) | 이미지 업로드 위젯 | 승인됨 | 0032 |
 | ~~[TASK-0034](./TASK-0034-product-editor.md)~~ | ~~판매자 상품 등록 · 수정~~ | **폐기** → 0113 · 0114 | – |
 | ~~[TASK-0035](./TASK-0035-product-list-seller.md)~~ | ~~판매자 상품 목록 · 재고 관리~~ | **폐기** → 0115 · 0116 | – |
 | [TASK-0113](./TASK-0113-product-write-api.md) | 상품 등록 · 수정 API | 승인 대기 | 0032, 0030, 0108, 0106 |
