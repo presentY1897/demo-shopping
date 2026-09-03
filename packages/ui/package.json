@@ -12,6 +12,8 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
+    "storybook": "storybook dev --port $(node ../../scripts/ports.mjs --port storybook)",
+    "build-storybook": "storybook build",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix --max-warnings 0",
     "typecheck": "tsc --noEmit",
@@ -24,6 +26,10 @@
   },
   "devDependencies": {
     "@shopping/config": "workspace:*",
+    "@storybook/addon-a11y": "^10.6.0",
+    "@storybook/addon-docs": "^10.6.0",
+    "@storybook/react-vite": "^10.6.0",
+    "@tailwindcss/vite": "^4.3.3",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
@@ -31,13 +37,18 @@
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
+    "@vitejs/plugin-react": "^6.1.1",
+    "axe-core": "^4.13.0",
     "eslint": "^10.9.1",
     "jsdom": "^30.0.1",
     "postcss": "^8.5.26",
     "prettier": "^3.9.6",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "storybook": "^10.6.0",
+    "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
+    "vite": "^8.2.2",
     "vitest": "^4.1.11"
   },
   "dependencies": {
