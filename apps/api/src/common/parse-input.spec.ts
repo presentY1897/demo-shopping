@@ -27,9 +27,9 @@ describe('parseInput', () => {
       parseInput(schema, { role: 'ROOT', note: 3 })
       expect.unreachable('should have thrown')
     } catch (error) {
-      expect(detailsOf(error)).toEqual([
-        { field: 'role', message: 'role 값이 올바르지 않습니다.', code: 'INVALID' },
-        { field: 'note', message: 'note 값이 올바르지 않습니다.', code: 'INVALID' },
+      expect(detailsOf(error)).toMatchObject([
+        { field: 'role', code: 'INVALID' },
+        { field: 'note', code: 'INVALID' },
       ])
     }
   })
@@ -50,20 +50,41 @@ describe('parseInput', () => {
       parseInput(z.uuid(), 'not-a-uuid', 'userId')
       expect.unreachable('should have thrown')
     } catch (error) {
-      expect(detailsOf(error)).toEqual([
-        { field: 'userId', message: 'userId 값이 올바르지 않습니다.', code: 'INVALID' },
-      ])
+      expect(detailsOf(error)).toMatchObject([{ field: 'userId', code: 'INVALID' }])
     }
   })
 
   // A refinement over the whole body names no input, so there is no field to
   // report and the entry stays the plain string `details` has always allowed.
-  it('falls back to a generic message when there is neither', () => {
+  it('falls back to a plain sentence when there is neither', () => {
     try {
       parseInput(z.uuid(), 'not-a-uuid')
       expect.unreachable('should have thrown')
     } catch (error) {
-      expect(detailsOf(error)).toEqual(['요청 값이 올바르지 않습니다.'])
+      const details = detailsOf(error) as unknown[]
+
+      expect(details).toHaveLength(1)
+      expect(typeof details[0]).toBe('string')
+      expect(details[0]).toMatch(/[가-힣]/)
+    }
+  })
+
+  /**
+   * Every structured entry still carries copy, whatever the copy is.
+   *
+   * The sentence is a fallback for a catalog that has no line for `INVALID`
+   * (TASK-0117 4.1), so what matters is that it exists and is in Korean — not
+   * what it says. Asserting the words would pin this spec to prose, which is
+   * the thing the task removed from the front-end.
+   */
+  it('always carries a fallback sentence beside the field', () => {
+    try {
+      parseInput(z.object({ role: roleSchema }), { role: 'ROOT' })
+      expect.unreachable('should have thrown')
+    } catch (error) {
+      const [entry] = detailsOf(error) as { message: string }[]
+
+      expect(entry?.message).toMatch(/[가-힣]/)
     }
   })
 

@@ -3,7 +3,7 @@ import type { AuthorizationSubject } from '@shopping/shared'
 import { platformOwnership } from '@shopping/shared'
 import { describe, expect, it } from 'vitest'
 
-import { accessDenied, assertResourceAccess } from './access-denied.js'
+import { accessDenied, assertResourceAccess, deniedMessage } from './access-denied.js'
 
 const seller: AuthorizationSubject = {
   userId: 'user-1',
@@ -25,13 +25,28 @@ function messageOf(error: unknown): unknown {
 }
 
 describe('accessDenied', () => {
-  it('distinguishes the two refusals in the message', () => {
-    expect(messageOf(accessDenied('product.write', 'missing_permission'))).toBe(
-      'product.write 퍼미션이 없습니다.',
-    )
-    expect(messageOf(accessDenied('product.write', 'out_of_scope'))).toBe(
-      'product.write 퍼미션으로 접근할 수 없는 리소스입니다.',
-    )
+  /**
+   * Asserted as properties rather than as two Korean literals.
+   *
+   * What the detail owes a caller is: it names the permission, and the two
+   * reasons are told apart. Quoting the sentences would make a copy edit look
+   * like a behaviour change — the failure mode TASK-0117 exists to remove.
+   */
+  it('names the permission and tells the two refusals apart', () => {
+    const missing = messageOf(accessDenied('product.write', 'missing_permission'))
+    const outOfScope = messageOf(accessDenied('product.write', 'out_of_scope'))
+
+    expect(missing).toContain('product.write')
+    expect(outOfScope).toContain('product.write')
+    expect(missing).not.toBe(outOfScope)
+  })
+
+  it('says nothing beyond the permission — a 403 does not explain itself', () => {
+    const message = messageOf(accessDenied('product.write', 'out_of_scope'))
+
+    expect(message).toMatch(/[가-힣]/)
+    // No role names, no scope names, nothing that hints at what would suffice.
+    expect(message).not.toMatch(/SELLER|ADMIN|BUYER|own|demo|any/)
   })
 
   it('answers 403', () => {
@@ -63,7 +78,7 @@ describe('assertResourceAccess', () => {
       assertResourceAccess(seller, 'settlement.pay', ownProduct)
       expect.unreachable('should have thrown')
     } catch (error) {
-      expect(messageOf(error)).toBe('settlement.pay 퍼미션이 없습니다.')
+      expect(messageOf(error)).toBe(deniedMessage('settlement.pay', 'missing_permission'))
     }
   })
 })

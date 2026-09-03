@@ -2,6 +2,7 @@ import type { ApiClient, CategoryTreeNode } from '@shopping/shared'
 import { ApiClientError, categoryTreeResponseSchema } from '@shopping/shared'
 import { beforeEach, describe, expect, it } from 'vitest'
 
+import { deniedMessage } from '../../src/auth/access-denied.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
 import { callers } from '../support/principal.js'
@@ -534,7 +535,7 @@ describe('authorization (A3 · A4)', () => {
       )
 
       expect(refused.status).toBe(403)
-      expect(refused.details).toEqual(['catalog.write 퍼미션이 없습니다.'])
+      expect(refused.details).toEqual([deniedMessage('catalog.write', 'missing_permission')])
     }
   })
 
@@ -543,7 +544,7 @@ describe('authorization (A3 · A4)', () => {
     const refused = await failure(operator().deleteCategory(root))
 
     expect(refused.status).toBe(403)
-    expect(refused.details).toEqual(['catalog.delete 퍼미션이 없습니다.'])
+    expect(refused.details).toEqual([deniedMessage('catalog.delete', 'missing_permission')])
   })
 
   it('keeps a demo administrator out of the platform catalogue', async () => {
@@ -558,6 +559,6 @@ describe('authorization (A3 · A4)', () => {
     )
 
     expect(refused.status).toBe(403)
-    expect(refused.details).toEqual(['catalog.write 퍼미션으로 접근할 수 없는 리소스입니다.'])
+    expect(refused.details).toEqual([deniedMessage('catalog.write', 'out_of_scope')])
   })
 })

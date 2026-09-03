@@ -21,6 +21,22 @@ const REASON_MESSAGE: Readonly<Record<DenialReason, (permission: Permission) => 
 }
 
 /**
+ * The sentence a 403 carries, exported so that a spec can name *which* refusal
+ * it expects without quoting the wording.
+ *
+ * TASK-0117 leaves this copy alone on purpose (4.6): a 403 deliberately does not
+ * say what would have been enough, and the permission name in `details` is for a
+ * console explaining a disabled button. But a spec that wrote the sentence out
+ * was still pinned to it — reword the two lines above and fifteen assertions go
+ * red without a single behaviour having changed. Asserting through this function
+ * keeps them checking the thing they are about (this permission, this reason),
+ * and `access-denied.spec.ts` checks the sentences themselves.
+ */
+export function deniedMessage(permission: Permission, reason: DenialReason): string {
+  return REASON_MESSAGE[reason](permission)
+}
+
+/**
  * A 403 in the shared envelope.
  *
  * `ForbiddenException` with a string payload lands in `details` as one entry —
