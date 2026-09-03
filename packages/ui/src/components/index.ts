@@ -91,3 +91,6 @@ export type { ErrorStateProps } from './error-state'
 
 export { DataList, DATA_LIST_STATES } from './data-list'
 export type { DataListProps, DataListState } from './data-list'
+
+export { ErrorBoundary } from './error-boundary'
+export type { ErrorBoundaryFallbackProps, ErrorBoundaryProps } from './error-boundary'
