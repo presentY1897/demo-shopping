@@ -1,0 +1,30 @@
+/*
+ * The stylesheet every story renders against.
+ *
+ * Identical in shape to an app's `globals.css` — Tailwind, then the shared
+ * preset — minus the accent override each app adds. The preset's default
+ * `--color-primary` is shop's blue, so Storybook shows the system as the
+ * storefront wears it; seller and admin differ by that one token and nothing
+ * else, which is the point the token documentation makes.
+ */
+
+@import 'tailwindcss';
+@import '@shopping/config/tailwind/preset.css';
+
+/*
+ * Stories live outside `packages/ui/src`, which is the only tree the preset
+ * scans, so they name their own source directory here. This is what keeps a
+ * class used only by a story out of the three apps' stylesheets (TASK-0104 F7).
+ */
+@source '../stories';
+
+/*
+ * The story canvas is a page, and a page needs a ground. Written against the
+ * semantic tokens so the canvas cannot drift from what a component expects to
+ * sit on.
+ */
+body {
+  background: var(--color-surface);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+}
