@@ -1,6 +1,6 @@
 # Task 인덱스
 
-전체 **116개** TASK — 유효 **112개** + 폐기 4개(D-208 레이어 분할). **15개 완료**, TASK-0009 **진행중**, 96개 **승인 대기**.
+전체 **116개** TASK — 유효 **112개** + 폐기 4개(D-208 레이어 분할). **15개 완료**, TASK-0009 **진행중**, TASK-0011 · TASK-0016 · TASK-0101 **승인됨**, 93개 **승인 대기**.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
@@ -43,10 +43,10 @@
 | [TASK-0008](./M02-deployment/TASK-0008-domain-dns.md) | 도메인 확보 · DNS 구성 | 승인 대기 |
 | [TASK-0009](./M02-deployment/TASK-0009-backend-deploy.md) | 백엔드 배포 (API · DB · 검색) | 승인됨 |
 | [TASK-0010](./M02-deployment/TASK-0010-frontend-deploy.md) | 프론트 배포 (Vercel × 3) | 승인 대기 |
-| [TASK-0011](./M02-deployment/TASK-0011-object-storage.md) | 오브젝트 스토리지 (R2) | 승인 대기 |
+| [TASK-0011](./M02-deployment/TASK-0011-object-storage.md) | 오브젝트 스토리지 (R2) | 승인됨 |
 | [TASK-0012](./M02-deployment/TASK-0012-cd-pipeline.md) | 배포 자동화 · 환경변수 관리 | 승인 대기 |
 | [TASK-0013](./M02-deployment/TASK-0013-observability.md) | 로그 · 에러 추적 · 모니터링 | 승인 대기 |
-| [TASK-0101](./M02-deployment/TASK-0101-cold-start.md) | 콜드 스타트 대응 · 서버 웨이크업 UX | 승인 대기 |
+| [TASK-0101](./M02-deployment/TASK-0101-cold-start.md) | 콜드 스타트 대응 · 서버 웨이크업 UX | 승인됨 |
 
 </details>
 
@@ -56,7 +56,7 @@
 | --- | --- | --- |
 | [TASK-0014](./M03-design-system/TASK-0014-design-tokens.md) | 디자인 토큰 · 밀도 3단계 | 완료 |
 | [TASK-0015](./M03-design-system/TASK-0015-base-components.md) | 기본 컴포넌트 | 완료 |
-| [TASK-0016](./M03-design-system/TASK-0016-data-components.md) | 데이터 표시 컴포넌트 | 승인 대기 |
+| [TASK-0016](./M03-design-system/TASK-0016-data-components.md) | 데이터 표시 컴포넌트 | 승인됨 |
 | [TASK-0017](./M03-design-system/TASK-0017-form-system.md) | 폼 시스템 | 승인 대기 |
 | [TASK-0018](./M03-design-system/TASK-0018-shop-layout.md) | shop 레이아웃 · 밀도 토글 | 승인 대기 |
 | [TASK-0019](./M03-design-system/TASK-0019-console-layout.md) | 콘솔 레이아웃 (seller · admin) | 승인 대기 |
