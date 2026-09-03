@@ -18,6 +18,11 @@ export const permissions = [
   'product.read',
   'product.write',
   'product.delete',
+  // No `media.read` or `media.delete` counterpart, on purpose: an uploaded
+  // object is read through a public URL that asks for no permission at all, and
+  // removing one follows from deleting the row that references it rather than
+  // being a capability a role holds. `upload` is the whole surface (TASK-0011).
+  'media.upload',
   'order.read',
   'order.write',
   'claim.read',

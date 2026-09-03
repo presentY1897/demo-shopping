@@ -25,6 +25,10 @@ function grant(permission: Permission, scope: ResourceScope): PermissionGrant {
  * doing it, because the account they are editing really is their own. Editing
  * one's own profile is a different capability and gets its own permission when
  * TASK-0027 builds that screen.
+ *
+ * `media.upload` is absent for the same kind of reason: a buyer has nothing to
+ * upload until review photos exist (M13). Granting it now would open a write
+ * path into the bucket that no screen uses and no test covers.
  */
 const BUYER_GRANTS: readonly PermissionGrant[] = [
   grant('catalog.read', 'any'),
@@ -46,12 +50,18 @@ const BUYER_GRANTS: readonly PermissionGrant[] = [
  * `catalog.read` is `any` because a seller has to pick a category from the
  * platform's tree; everything else is `own` and is resolved against the store
  * they own, not against their user id.
+ *
+ * `media.upload:own` is what lets a seller ask for a presigned URL, and the
+ * scope is what confines the key it gets to their own store's prefix — the
+ * upload endpoint resolves it against the `Seller` row, not against the id in
+ * the request (TASK-0011 4.4).
  */
 const SELLER_OWNER_GRANTS: readonly PermissionGrant[] = [
   grant('catalog.read', 'any'),
   grant('product.read', 'own'),
   grant('product.write', 'own'),
   grant('product.delete', 'own'),
+  grant('media.upload', 'own'),
   grant('order.read', 'own'),
   grant('order.write', 'own'),
   grant('claim.read', 'own'),
@@ -70,12 +80,17 @@ const SELLER_OWNER_GRANTS: readonly PermissionGrant[] = [
  * No `delete`, no `settlement.approve`/`settlement.pay`, no `user.write`, no
  * `seller.suspend` — the irreversible and the money-moving actions belong to
  * `ADMIN_SUPER` (TASK-0105 4).
+ *
+ * `media.upload` is `any` because an operator replaces a store's images when a
+ * seller cannot; `DEMO_ADMIN` inherits it narrowed to `demo` below, which is
+ * what keeps a visitor's administrator out of a real store's bucket prefix.
  */
 const ADMIN_OPERATOR_GRANTS: readonly PermissionGrant[] = [
   grant('catalog.read', 'any'),
   grant('catalog.write', 'any'),
   grant('product.read', 'any'),
   grant('product.write', 'any'),
+  grant('media.upload', 'any'),
   grant('order.read', 'any'),
   grant('claim.read', 'any'),
   grant('claim.handle', 'any'),
