@@ -68,6 +68,30 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // TASK-0011. The signature is the reason this floor is here: a branch
+        // nothing reaches is a canonicalisation rule nothing checks, and the
+        // symptom of getting one wrong is a 403 from the storage on some
+        // subset of filenames rather than a failing test. The upload rules and
+        // the environment reader are the other two pieces that decide something
+        // without asking anybody — QUALITY-GATES Q5's 순수 로직 row.
+        'src/storage/sigv4.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        'src/storage/upload-rules.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        'src/config/storage-config.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
       },
     },
   },
