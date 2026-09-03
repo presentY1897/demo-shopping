@@ -1,4 +1,4 @@
-# M01. 기반 구축
+# M01. 기반 구축 — 완료 (2026-09-03)
 
 이후 모든 마일스톤이 올라탈 개발 기반을 만든다. 도메인 기능은 하나도 만들지 않는다.
 
@@ -10,7 +10,7 @@
 | [TASK-0002](./TASK-0002-shared-config.md) | 공유 설정 패키지 | 완료 | 0001 |
 | [TASK-0003](./TASK-0003-local-infra.md) | 로컬 인프라 (Docker) | 완료 | 0001 |
 | [TASK-0004](./TASK-0004-api-bootstrap.md) | API 부트스트랩 | 완료 | 0002, 0003 |
-| [TASK-0005](./TASK-0005-prisma-setup.md) | Prisma · DB 연결 | 진행중 | 0004 |
+| [TASK-0005](./TASK-0005-prisma-setup.md) | Prisma · DB 연결 | 완료 | 0004 |
 | [TASK-0006](./TASK-0006-web-bootstrap.md) | 웹 앱 3종 부트스트랩 | 완료 | 0002, 0004 |
 | [TASK-0007](./TASK-0007-dev-workflow.md) | 개발 워크플로 · CI | 완료 | 0006 |
 

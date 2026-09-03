@@ -1,10 +1,10 @@
 # Task 인덱스
 
-전체 **105개** TASK. **M01 7개 승인됨**, 나머지 98개는 **승인 대기** 상태다.
+전체 **105개** TASK. **M01 7개 완료**, 나머지 98개는 **승인 대기** 상태다.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
-| [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | 6/7 |
+| [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | **7/7 완료** |
 | [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 0/7 |
 | [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, Radix 컴포넌트, 폼, 레이아웃, Storybook | 0/7 |
 | [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점 | 0/9 |
@@ -22,7 +22,7 @@
 
 ---
 
-## M01. 기반 구축 (진행 예정)
+<details><summary><b>M01. 기반 구축</b> (7/7 완료)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -30,9 +30,11 @@
 | [TASK-0002](./M01-foundation/TASK-0002-shared-config.md) | 공유 설정 패키지 | 완료 |
 | [TASK-0003](./M01-foundation/TASK-0003-local-infra.md) | 로컬 인프라 (Docker) | 완료 |
 | [TASK-0004](./M01-foundation/TASK-0004-api-bootstrap.md) | API 부트스트랩 | 완료 |
-| [TASK-0005](./M01-foundation/TASK-0005-prisma-setup.md) | Prisma · DB 연결 | 진행중 |
+| [TASK-0005](./M01-foundation/TASK-0005-prisma-setup.md) | Prisma · DB 연결 | 완료 |
 | [TASK-0006](./M01-foundation/TASK-0006-web-bootstrap.md) | 웹 앱 3종 부트스트랩 | 완료 |
 | [TASK-0007](./M01-foundation/TASK-0007-dev-workflow.md) | 개발 워크플로 · CI | 완료 |
+
+</details>
 
 <details><summary><b>M02. 배포 파이프라인</b> (0/7)</summary>
 

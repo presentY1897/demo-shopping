@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M01 기반 구축 |
-| 상태 | 진행중 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-02 |
 | 브랜치 | `feature/prisma-setup` |
 | 선행 작업 | TASK-0004 |
@@ -33,7 +33,7 @@ Prisma 를 연결하고 마이그레이션 파이프라인을 세운다. 이후 
 - [x] `/health` 가 DB 연결 상태를 반환한다
 - [x] DB 가 죽어 있으면 `database: "down"` 을 반환하되 API 는 200 을 유지한다
 - [x] 애플리케이션 종료 시 커넥션이 정상적으로 닫힌다
-- [ ] `pnpm db:reset` 으로 스키마를 초기화하고 재적용할 수 있다 — 스크립트는 연결되어 있으나 실행 검증은 사용자 몫 (6.1 F4 참조)
+- [x] `pnpm db:reset` 으로 스키마를 초기화하고 재적용할 수 있다
 
 ### 비기능 요구사항
 - 마이그레이션 파일은 커밋한다. 배포 환경에서는 `migrate deploy` 만 실행한다
@@ -108,20 +108,21 @@ Prisma 7 은 쿼리 컴파일러 + 드라이버 어댑터 구조라 풀이 `pg` 
 | F1 | 마이그레이션 적용 | `pnpm db:migrate` | 성공, `_prisma_migrations` 에 기록 | `20260902144734_init` 적용, `applied_steps_count=1` 조회 확인 | [x] |
 | F2 | 헬스체크에 DB 반영 | `curl localhost:4050/api/v1/health` | `database: "ok"` | `{"status":"ok","database":"ok","search":"ok",…}` 200 | [x] |
 | F3 | DB 장애 격리 | Postgres 컨테이너만 중지 후 헬스체크 | 200 유지, `database: "down"` | 200 · `{"status":"degraded","database":"down","search":"ok"}` · p95 10.9ms | [x] |
-| F4 | 초기화 | `pnpm db:reset` 후 `pnpm db:migrate` | 성공 | **미검증** — Prisma 7 CLI 가 AI 에이전트의 `migrate reset` 을 차단(사용자 동의 필요). 대체 검증으로 `infra:reset` 으로 볼륨을 비운 뒤 `pnpm db:migrate` 성공 확인 | [ ] |
+| F4 | 초기화 | `pnpm db:reset --force` 후 `pnpm db:migrate` | 성공 | [x] |
 | F5 | 종료 처리 | `kill -TERM` | 커넥션 종료 로그 후 정상 종료 | `[PrismaService] 데이터베이스 커넥션을 닫았습니다. (SIGTERM)` → exit 143, 22ms | [x] |
 | F6 | 재현성 | 새 빈 DB 에 `migrate deploy` | 동일 스키마 생성 | 별도 스택(offset 70)에 적용 후 `pg_dump --schema-only` 두 DB 비교 → 동일 | [x] |
 
-> **완료 처리 보류 — F4 1건 미충족.** `CLAUDE.md` 4장의 "기준을 전부 충족하기 전에는 상태를 `완료` 로 바꾸지 않는다" 에 따라 상태를 `진행중` 으로 둔다.
-> Prisma 7 CLI 는 AI 에이전트의 `migrate reset` 실행을 차단하며, 우회 환경변수는 **사용자의 명시적 동의**를 전제로 한다. 에이전트가 스스로 설정할 수 있는 값이 아니다.
-> 사용자가 아래를 직접 실행하고 성공을 확인하면 F4 를 `[x]` 로 바꾸고 상태를 `완료` 로 변경한다.
+> **F4 검증 경위.** Prisma 7 CLI 는 AI 에이전트의 `migrate reset` 실행을 차단한다(우회 환경변수는 사용자의 명시적 동의를 전제로 한 값이라 설정하지 않았다).
+> 그래서 이 항목만 **사용자가 직접 실행**했고, 2026-09-03 에 결과를 확인했다.
 >
-> ```bash
-> cd feature-prisma-setup && pnpm infra:up
-> pnpm db:reset --force && pnpm db:migrate
-> ```
+> | 확인 항목 | 값 |
+> | --- | --- |
+> | 볼륨 `shopping-main_pgdata` 생성 시각 | 2026-09-03 00:46:41 |
+> | `_prisma_migrations` 적용 시각 | 2026-09-03 13:23:45 |
+> | 행 수 | 1개 (`20260902144734_init`) |
+> | `pnpm db:status` | `Database schema is up to date!` |
 >
-> 대상은 로컬 개발용 Docker DB(`shopping-prisma-setup`)이며 그 안의 데이터는 사라진다. 지금 들어 있는 것은 마이그레이션 기록 1건뿐이다.
+> 볼륨은 그대로인데 마이그레이션 행만 새로 쓰였다 — `db:migrate` 만 돌렸다면 "Already in sync" 로 아무것도 기록하지 않는다. 스키마가 삭제되고 재적용됐다는 뜻이다.
 
 ### 6.2 품질 게이트
 
@@ -180,3 +181,4 @@ Prisma 7 은 쿼리 컴파일러 + 드라이버 어댑터 구조라 풀이 `pg` 
 | 2026-09-02 | 시드 골격을 `prisma/seed.ts` → `prisma/seed.mts` 로 변경. Node 24 는 `type: commonjs` 패키지의 `.ts` 를 ESM 으로 감지하지 않아 `import` 구문이 실행되지 않는다 |
 | 2026-09-02 | 완료. Prisma 7.10 + pg 드라이버 어댑터로 파이프라인 구축, `/health` 에 `database` 추가, 풀 크기·타임아웃을 환경변수로 노출. F4 는 CLI 의 AI 차단으로 미검증 |
 | 2026-09-03 | F4 미충족이므로 상태를 `진행중` 으로 정정. Prisma Studio 포트를 `PORT_OFFSET` 경로로 편입(R3 해소) |
+| 2026-09-03 | 사용자가 `db:reset --force` → `db:migrate` 를 직접 실행. F4 충족 확인 후 **완료** |
