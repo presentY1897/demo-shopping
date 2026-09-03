@@ -22,6 +22,17 @@ export default async function HomePage() {
       <HealthPanel result={result} messages={messages} />
 
       <p className="text-fg-subtle text-sm">{messages.health.notice}</p>
+
+      {/*
+        The token preview is a development tool and is not served in production
+        (see app/tokens/page.tsx), so the way in is too. Without a link it is a
+        page only whoever wrote it knows the URL of.
+      */}
+      {process.env.NODE_ENV === 'production' ? null : (
+        <a className="text-primary min-h-touch text-sm underline" href="/tokens">
+          {messages.tokens.linkLabel}
+        </a>
+      )}
     </main>
   )
 }
