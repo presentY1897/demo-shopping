@@ -66,9 +66,15 @@ Cloudflare → 해당 도메인 → **DNS** → *Add record*. 넷 다 `CNAME` �
 | `api` | `shopping-api-96sy.onrender.com` | 프록시 | Render → `shopping-api` → 서비스 상단의 `.onrender.com` 주소 |
 | `cdn` | — | 프록시 | **직접 만들지 않는다.** R2 버킷 → Settings → Public access → Connect Domain 하면 Cloudflare 가 레코드를 자동 생성한다 |
 
-**`<해시>` 는 Vercel 이 도메인마다 따로 발급한다.** 세 앱이 서로 다른 값을 받으므로 하나를
-복사해 돌려쓰면 `Invalid Configuration` 이 사라지지 않는다. Cloudflare 입력창에는 끝의 점(`.`)을
-빼고 넣어도 된다.
+**세 앱에 같은 값을 써도 된다.** Vercel 이 안내문에서 밝히듯 레거시 레코드
+`cname.vercel-dns.com` 이 계속 동작하며, Vercel 은 Host 헤더로 어느 프로젝트인지 판별한다.
+프로젝트마다 화면을 열어 해시를 복사할 필요가 없다.
+
+`<해시>.vercel-dns-017.com` 은 Vercel 이 IP 대역 확장 때문에 권장하는 새 방식이다. 쓰려면
+**각 프로젝트의 Domains 화면이 보여 주는 값을 그대로** 복사한다 — 프로젝트끼리 같은지 다른지
+추측하지 말고 화면의 값을 쓴다. 두 방식이 섞여 있어도 상관없다.
+
+Cloudflare 입력창에는 끝의 점(`.`)을 빼고 넣어도 된다.
 
 레코드를 넣은 뒤 Vercel 의 Domains 화면에서 **Refresh** 를 누르면 즉시 재검사한다. 그냥 두면
 자동 재검사까지 몇 분 걸린다.
