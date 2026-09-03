@@ -1,5 +1,18 @@
 import { ko } from './ko'
-import type { HealthMessages, Messages, SearchReadinessMessages, WakeMessages } from './types'
+import type {
+  DensityControlMessages,
+  FooterMessages,
+  HealthMessages,
+  HomeMessages,
+  LayoutMessages,
+  Messages,
+  NavMessages,
+  PlaceholderMessages,
+  RouteStateMessages,
+  SearchReadinessMessages,
+  SearchSlotMessages,
+  WakeMessages,
+} from './types'
 
 /** Korean first (DECISIONS 1장). Other locales are added to `catalogs`. */
 export const DEFAULT_LOCALE = 'ko'
@@ -12,4 +25,17 @@ export function messagesFor(locale: Locale = DEFAULT_LOCALE): Messages {
   return catalogs[locale]
 }
 
-export type { HealthMessages, Messages, SearchReadinessMessages, WakeMessages }
+export type {
+  DensityControlMessages,
+  FooterMessages,
+  HealthMessages,
+  HomeMessages,
+  LayoutMessages,
+  Messages,
+  NavMessages,
+  PlaceholderMessages,
+  RouteStateMessages,
+  SearchReadinessMessages,
+  SearchSlotMessages,
+  WakeMessages,
+}

@@ -1,3 +1,4 @@
+import type { DensityLevel } from '@shopping/ui'
 import type { HealthStatus } from '@shopping/shared'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
@@ -32,6 +33,106 @@ export interface Messages {
    * arrives through this shape.
    */
   readonly components: ComponentGalleryMessages
+  /**
+   * The shell every screen sits inside — header, footer, mobile menu, density
+   * toggle (TASK-0018). Its own slice because it is rendered by the root layout
+   * on every route, while everything above belongs to one screen.
+   */
+  readonly layout: LayoutMessages
+  /** The temporary home screen. TASK-0044 replaces it with the real one. */
+  readonly home: HomeMessages
+  /**
+   * Screens whose route exists so the header's links are not dead ends, and
+   * whose content arrives with its own milestone (TASK-0018 4.5).
+   */
+  readonly placeholder: PlaceholderMessages
+  /** Route-level loading, not-found and error states (P5). */
+  readonly routeStates: RouteStateMessages
+}
+
+export interface LayoutMessages {
+  readonly skipToContent: string
+  /** Accessible name of the logo link. The visible name is `app.name`. */
+  readonly homeLabel: string
+  readonly nav: NavMessages
+  readonly search: SearchSlotMessages
+  readonly density: DensityControlMessages
+  readonly account: {
+    readonly cart: string
+    readonly mypage: string
+  }
+  readonly footer: FooterMessages
+}
+
+export interface NavMessages {
+  /** Names the `<nav>` landmark; there is more than one on the page. */
+  readonly label: string
+  readonly openMenu: string
+  readonly closeMenu: string
+  readonly menuTitle: string
+  readonly menuDescription: string
+  /**
+   * The category list, fixed for now. TASK-0042 replaces it with the tree the
+   * catalogue API serves; the shape is the same either way.
+   */
+  readonly categories: readonly { readonly slug: string; readonly label: string }[]
+  /** Announced inside a link while its route is still loading. */
+  readonly pendingLabel: string
+}
+
+export interface SearchSlotMessages {
+  readonly label: string
+  readonly placeholder: string
+  readonly submit: string
+}
+
+export interface DensityControlMessages {
+  readonly legend: string
+  /** One per step. Also the accessible name of each option in the toggle. */
+  readonly names: Readonly<Record<DensityLevel, string>>
+  /** Accessible name of the button that opens the toggle on a phone. */
+  readonly openLabel: string
+  readonly hintTitle: string
+  readonly hintBody: string
+  readonly hintDismiss: string
+}
+
+export interface FooterMessages {
+  readonly label: string
+  readonly demoTitle: string
+  readonly demoBody: string
+  readonly densityTitle: string
+  readonly densityBody: string
+  readonly copyright: string
+}
+
+export interface HomeMessages {
+  readonly title: string
+  readonly description: string
+  readonly previewTitle: string
+  readonly previewDescription: string
+  /** Names of the placeholder cards. No real brand names anywhere (D-035). */
+  readonly previewItems: readonly string[]
+  readonly previewImageLabel: string
+  readonly previewPriceLabel: string
+}
+
+export interface PlaceholderMessages {
+  readonly comingSoon: string
+  readonly search: { readonly title: string; readonly body: string; readonly queryLabel: string }
+  readonly category: { readonly title: string; readonly body: string }
+  readonly cart: { readonly title: string; readonly body: string }
+  readonly mypage: { readonly title: string; readonly body: string }
+}
+
+export interface RouteStateMessages {
+  readonly loadingLabel: string
+  readonly notFoundTitle: string
+  readonly notFoundBody: string
+  readonly errorTitle: string
+  readonly errorBody: string
+  readonly retryLabel: string
+  readonly homeLabel: string
 }
 
 export interface HealthMessages {

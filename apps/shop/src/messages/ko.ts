@@ -2,8 +2,10 @@ import type { Messages } from './types'
 
 export const ko: Messages = {
   app: {
-    name: '구매자 앱',
-    description: '상품을 둘러보고 주문하는 구매자용 앱입니다.',
+    // 구매자 앱은 셋 중 유일하게 '브랜드'를 가진다 — 콘솔 둘은 도구이고
+    // 이쪽은 손님이 보는 가게다. 헤더 로고와 <title> 이 같은 이름을 쓴다.
+    name: '데모 마켓',
+    description: '가상 브랜드로 꾸민 멀티 셀러 마켓플레이스 데모입니다.',
   },
   health: {
     title: 'API 연결 상태',
@@ -34,7 +36,7 @@ export const ko: Messages = {
       configuration: 'API 주소 설정이 없습니다. pnpm dev 로 실행했는지 확인해주세요.',
       unknown: '알 수 없는 오류가 발생했습니다.',
     },
-    notice: '기동 확인용 임시 페이지입니다. 실제 화면은 M03 에서 대체됩니다.',
+    notice: '상품 데이터가 붙기 전까지 API 연결 상태를 이 자리에 표시합니다.',
   },
   wake: {
     loadingLabel: 'API 연결 상태를 불러오는 중입니다.',
@@ -60,6 +62,104 @@ export const ko: Messages = {
       autoRecheck: '자동으로 다시 확인하고 있습니다.',
       recheckLabel: '다시 확인',
     },
+  },
+  layout: {
+    skipToContent: '본문 바로가기',
+    homeLabel: '홈으로',
+    nav: {
+      label: '카테고리',
+      openMenu: '메뉴 열기',
+      closeMenu: '메뉴 닫기',
+      menuTitle: '전체 메뉴',
+      menuDescription: '카테고리와 검색을 여기에서 엽니다.',
+      // 패션 중심 초기 카테고리(DECISIONS 1장). TASK-0042 에서 카탈로그
+      // API 가 내려주는 트리로 대체된다.
+      categories: [
+        { slug: 'outerwear', label: '아우터' },
+        { slug: 'tops', label: '상의' },
+        { slug: 'bottoms', label: '하의' },
+        { slug: 'shoes', label: '신발' },
+        { slug: 'bags', label: '가방' },
+        { slug: 'accessories', label: '액세서리' },
+      ],
+      pendingLabel: '이동 중',
+    },
+    search: {
+      label: '상품 검색',
+      placeholder: '어떤 상품을 찾으세요?',
+      submit: '검색',
+    },
+    density: {
+      legend: '표시 밀도',
+      names: {
+        1: '미니멀',
+        2: '표준',
+        3: '맥시멀',
+      },
+      openLabel: '표시 밀도 바꾸기',
+      hintTitle: '보기 방식을 고를 수 있습니다',
+      hintBody: '한 화면에 담기는 정보량을 세 단계로 바꿉니다. 고른 값은 다음 방문에도 유지됩니다.',
+      hintDismiss: '안내 닫기',
+    },
+    account: {
+      cart: '장바구니',
+      mypage: '마이페이지',
+    },
+    footer: {
+      label: '사이트 정보',
+      demoTitle: '포트폴리오 데모',
+      demoBody:
+        '실제 판매가 이루어지지 않는 데모 사이트입니다. 브랜드와 상품은 모두 가상으로 만든 것입니다.',
+      densityTitle: '표시 밀도 3단계',
+      densityBody: '헤더의 밀도 버튼으로 간격과 정보량을 바꿀 수 있습니다.',
+      copyright: '© 2026 데모 마켓',
+    },
+  },
+  home: {
+    title: '오늘의 추천',
+    description: '카탈로그가 붙기 전까지 레이아웃과 표시 밀도를 확인하는 화면입니다.',
+    previewTitle: '표시 밀도 미리보기',
+    previewDescription:
+      '헤더에서 밀도를 바꾸면 아래 카드의 열 수와 간격이 함께 바뀝니다. 실제 상품 카드는 M06 에서 이 자리에 들어옵니다.',
+    previewItems: [
+      '울 코트',
+      '리넨 셔츠',
+      '데님 팬츠',
+      '가죽 벨트',
+      '캐시미어 머플러',
+      '캔버스 토트백',
+    ],
+    previewImageLabel: '이미지 자리',
+    previewPriceLabel: '가격 자리',
+  },
+  placeholder: {
+    comingSoon: '준비 중',
+    search: {
+      title: '검색',
+      body: '검색 결과 화면은 M06 에서 열립니다. 지금은 입력한 검색어만 확인할 수 있습니다.',
+      queryLabel: '검색어',
+    },
+    category: {
+      title: '카테고리',
+      body: '카테고리별 상품 목록은 M06 에서 열립니다.',
+    },
+    cart: {
+      title: '장바구니',
+      body: '장바구니는 M07 에서 열립니다.',
+    },
+    mypage: {
+      title: '마이페이지',
+      body: '마이페이지는 로그인이 생기는 M04 이후에 열립니다.',
+    },
+  },
+  routeStates: {
+    loadingLabel: '화면을 불러오는 중입니다',
+    notFoundTitle: '찾을 수 없는 화면입니다',
+    notFoundBody: '주소가 바뀌었거나 아직 만들어지지 않은 화면입니다.',
+    errorTitle: '화면을 표시하지 못했습니다',
+    errorBody: '잠시 후 다시 시도해주세요. 문제가 계속되면 새로고침해주세요.',
+    retryLabel: '다시 시도',
+    homeLabel: '홈으로',
   },
   components: {
     title: '기본 컴포넌트',
