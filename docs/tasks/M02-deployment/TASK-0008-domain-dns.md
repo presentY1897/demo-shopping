@@ -51,8 +51,51 @@ Cloudflare 에서 도메인을 사고 DNS 를 관리하되, **Vercel 로 향하�
 | 서브도메인 | 프록시 |
 | --- | --- |
 | `shop` / `seller` / `admin` → Vercel | **DNS only** |
-| `api` → Railway/Render | **DNS only** |
+| `api` → Render | 프록시 켜도 된다 (아래 4.2) |
 | `cdn` → R2 | 프록시 사용 가능 (Cloudflare 자체 서비스) |
+
+### 4.1 실제로 넣는 레코드
+
+Cloudflare → 해당 도메인 → **DNS** → *Add record*. 넷 다 `CNAME` 이다.
+
+| Name | Target | Proxy | 값을 어디서 얻나 |
+| --- | --- | --- | --- |
+| `shop` | `<해시>.vercel-dns-017.com` | **DNS only** | Vercel → 프로젝트 → Settings → **Domains**. 도메인을 추가하면 화면이 알려 준다 |
+| `seller` | `<해시>.vercel-dns-017.com` | **DNS only** | 〃 |
+| `admin` | `<해시>.vercel-dns-017.com` | **DNS only** | 〃 |
+| `api` | `shopping-api-96sy.onrender.com` | 프록시 | Render → `shopping-api` → 서비스 상단의 `.onrender.com` 주소 |
+| `cdn` | — | 프록시 | **직접 만들지 않는다.** R2 버킷 → Settings → Public access → Connect Domain 하면 Cloudflare 가 레코드를 자동 생성한다 |
+
+**`<해시>` 는 Vercel 이 도메인마다 따로 발급한다.** 세 앱이 서로 다른 값을 받으므로 하나를
+복사해 돌려쓰면 `Invalid Configuration` 이 사라지지 않는다. Cloudflare 입력창에는 끝의 점(`.`)을
+빼고 넣어도 된다.
+
+레코드를 넣은 뒤 Vercel 의 Domains 화면에서 **Refresh** 를 누르면 즉시 재검사한다. 그냥 두면
+자동 재검사까지 몇 분 걸린다.
+
+### 4.2 `api` 는 프록시를 켠다 — 문서보다 실제가 맞다
+
+위 표의 "Vercel 은 DNS only" 는 **Vercel 고유 사정**이다. Vercel 은 자체 CDN 을 두고 도메인
+검증·인증서 발급을 자기 엣지에서 하므로, 앞에 Cloudflare 프록시가 끼면 검증이 실패하거나
+캐시가 이중으로 걸린다.
+
+**Render 에는 그 사정이 없다.** 실제로 `api.demo-shopping.com` 은 프록시를 켠 상태로 동작하고
+있고(`cf-ray` 헤더로 확인), 얻는 것이 있다:
+
+- Cloudflare 가 앞단에서 받아 주므로 Render 무료 인스턴스의 콜드 스타트 노출이 줄어든다
+- 오리진 주소(`*.onrender.com`)가 밖으로 드러나지 않는다
+
+**단 SSL/TLS 모드를 봐야 한다.** Cloudflare → SSL/TLS → Overview:
+
+| 모드 | 브라우저→CF | CF→Render | 판정 |
+| --- | --- | --- | --- |
+| Flexible | HTTPS | **평문 HTTP** | **금지.** 이 API 는 JWT 를 실어 나른다 |
+| Full | HTTPS | HTTPS (인증서 미검증) | 허용. 현재 이 상태 |
+| Full (strict) | HTTPS | HTTPS + 검증 | 권장 |
+
+`Full (strict)` 로 올리기 전에 **Render → `shopping-api` → Settings → Custom Domains 에서
+`api.demo-shopping.com` 이 인증서 발급 완료 상태인지** 확인한다. 프록시가 켜져 있으면 Render 의
+ACME 검증이 막혀 발급이 안 되어 있을 수 있고, 그 상태로 strict 를 켜면 **API 가 즉시 502 로 죽는다.**
 
 R2 도 Cloudflare 이므로 도메인·스토리지·DNS 를 한 계정에서 관리하게 된다. 배포까지 Cloudflare(Pages/Workers)로 옮기는 선택지도 있으나, Next.js App Router 의 SSR 은 Vercel 이 네이티브라 제약이 없다. **DNS 는 Cloudflare, 배포는 Vercel** 조합을 유지한다.
 
@@ -69,10 +112,11 @@ R2 도 Cloudflare 이므로 도메인·스토리지·DNS 를 한 계정에서 �
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| F1 | DNS 해석 | `dig shop.<도메인>` 등 4건 | 전부 응답 | [ ] |
+| F1 | DNS 해석 | `getent hosts <서브도메인>` 4건. **이 머신에 `dig`·`nslookup`·`host` 가 없다** | 전부 응답 | [ ] |
 | F2 | HTTPS | 각 서브도메인 `curl -I` | 인증서 유효, 200 또는 배포 대기 응답 | [ ] |
 | F3 | 루트 리다이렉트 | 루트 도메인 접속 | `shop` 으로 301/302 | [ ] |
-| F4 | 프록시 설정 | Cloudflare 대시보드 확인 | Vercel·API 레코드가 DNS only | [ ] |
+| F4 | 프록시 설정 | Cloudflare 대시보드 확인 | **Vercel 3건이 DNS only.** `api` 는 프록시 허용 (4.2) | [ ] |
+| F5 | 오리진 구간 암호화 | Cloudflare → SSL/TLS → Overview | **Flexible 이 아님** (4.2) | [ ] |
 
 ### 6.2 품질 게이트
 
