@@ -22,6 +22,16 @@ export default async function HomePage() {
       <HealthPanel result={result} messages={messages} />
 
       <p className="text-fg-subtle text-sm">{messages.health.notice}</p>
+
+      {/*
+        The component gallery is a development tool and is not served in
+        production (see app/components/page.tsx), so the way in is too.
+      */}
+      {process.env.NODE_ENV === 'production' ? null : (
+        <a className="text-primary min-h-touch text-sm underline" href="/components">
+          {messages.components.linkLabel}
+        </a>
+      )}
     </main>
   )
 }

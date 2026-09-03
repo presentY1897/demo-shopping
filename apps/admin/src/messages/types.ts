@@ -1,4 +1,5 @@
 import type { HealthStatus } from '@shopping/shared'
+import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { HealthFailureReason } from '@/lib/health'
 
@@ -27,4 +28,11 @@ export interface Messages {
     readonly failures: Readonly<Record<HealthFailureReason, string>>
     readonly notice: string
   }
+  /**
+   * The base component gallery (TASK-0015). Development only, like the token
+   * preview, but the copy still lives here: `packages/ui` cannot see this
+   * catalog and must contain no Korean, so every string the gallery renders
+   * arrives through this shape.
+   */
+  readonly components: ComponentGalleryMessages
 }
