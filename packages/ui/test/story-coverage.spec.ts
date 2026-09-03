@@ -8,9 +8,9 @@
  * afterwards.
  *
  * **Every public entry point that ships components has to be listed below.**
- * TASK-0017 added `@shopping/ui/form`, and until it was named here the form
- * components were exactly what this file exists to prevent: shipped, exported,
- * and outside the accessibility sweep.
+ * TASK-0017 added `@shopping/ui/form` and TASK-0018 added `@shopping/ui/layout`,
+ * and until each was named here its components were exactly what this file
+ * exists to prevent: shipped, exported, and outside the accessibility sweep.
  *
  * It is a source check, and `QUALITY-GATES.md` is right that asserting on class
  * names proves nothing about behaviour. This is not asserting a design; it is
@@ -27,6 +27,7 @@ import { describe, expect, it } from 'vitest'
 
 import * as componentSurface from '../src/components'
 import * as formSurface from '../src/form'
+import * as layoutSurface from '../src/layout'
 
 const PACKAGE_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const STORY_ROOT = join(PACKAGE_ROOT, 'stories', 'components')
@@ -39,7 +40,11 @@ const STORY_ROOT = join(PACKAGE_ROOT, 'stories', 'components')
  * hand-written list of which exports count. `buttonClassName` and `useToast` are
  * functions too and are correctly not components.
  */
-const COMPONENTS = [...Object.entries(componentSurface), ...Object.entries(formSurface)]
+const COMPONENTS = [
+  ...Object.entries(componentSurface),
+  ...Object.entries(formSurface),
+  ...Object.entries(layoutSurface),
+]
   .filter(([name, value]) => /^[A-Z]/.test(name) && typeof value === 'function')
   .map(([name]) => name)
 
