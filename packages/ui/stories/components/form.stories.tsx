@@ -22,7 +22,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { z } from 'zod'
 
 import { Button, Checkbox, Input, Select, Textarea } from '../../src/components'
@@ -64,7 +64,7 @@ type Scenario = (typeof SCENARIOS)[number]
 
 function ProfileForm({ scenario }: { readonly scenario: Scenario }) {
   const form = useForm({
-    initialValues: scenario === 'invalid' ? BLANK : FILLED,
+    initialValues: scenario === 'blank' || scenario === 'invalid' ? BLANK : FILLED,
     mapError: (error) =>
       error instanceof Refused ? serverFieldErrors(error.details, { fields: FIELDS }) : undefined,
     onSubmit: async () => {
@@ -191,4 +191,48 @@ export const Messages: Story = {
       </div>
     </div>
   ),
+}
+
+/**
+ * The submit guard, with the count visible.
+ *
+ * The action here is a `type="button"` — the shape a modal footer forces, and
+ * the one where `Button.loading` is not enough on its own. Pressing Enter in
+ * the field goes straight to the form's `submit` event without ever touching
+ * the button, so the guard that stops the second submit has to be on the form.
+ *
+ * Click Save and then hammer Enter and the button while it is busy: the count
+ * goes to 1 and stays there.
+ */
+function GuardDemo() {
+  const [accepted, setAccepted] = useState(0)
+
+  const form = useForm({
+    initialValues: { email: 'buyer@example.com' },
+    onSubmit: async () => {
+      setAccepted((count) => count + 1)
+      await new Promise<void>((resolve) => setTimeout(resolve, 1500))
+    },
+    schema: z.object({ email: z.string().trim().min(1, 'Enter an email address.') }),
+  })
+
+  return (
+    <Form aria-label="Guarded" className="max-w-96" form={form}>
+      <FormField form={form} label="Email" name="email">
+        <Input {...form.text('email')} type="email" />
+      </FormField>
+
+      <Button loading={form.submitting} onClick={form.submit} type="button">
+        Save
+      </Button>
+
+      <p className="text-fg-muted text-sm">
+        Accepted submits: <output>{accepted}</output>
+      </p>
+    </Form>
+  )
+}
+
+export const SubmitGuard: Story = {
+  render: () => <GuardDemo />,
 }
