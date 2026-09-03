@@ -76,7 +76,8 @@ function AccountForm({ onSubmit, actionSubmits = true }: AccountFormProps) {
         ? serverFieldErrors(error.details, {
             code: error.code,
             codeFields: { EMAIL_TAKEN: 'email' },
-            codeMessages: { EMAIL_TAKEN: '이미 가입된 이메일입니다' },
+            messageForCode: (code) =>
+              code === 'EMAIL_TAKEN' ? '이미 가입된 이메일입니다' : undefined,
             fields: FIELDS,
           })
         : undefined,

@@ -46,6 +46,9 @@ export type { TagProps, TagVariant } from './tag'
 export { Avatar, AVATAR_SIZES } from './avatar'
 export type { AvatarProps, AvatarSize } from './avatar'
 
+export { ErrorNotice } from '../feedback'
+export type { ErrorNoticeProps } from '../feedback'
+
 export { Divider, DIVIDER_ORIENTATIONS } from './divider'
 export type { DividerProps, DividerOrientation } from './divider'
 
