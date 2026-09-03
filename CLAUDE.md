@@ -75,6 +75,7 @@ git branch -D feature/<name>
 
 # main 워크트리
 git pull --ff-only
+pnpm install            # 의존성이 바뀌었을 수 있다. 새 워크트리를 만들 때도 필수
 ```
 
 - 머지 방식은 **rebase 만** 허용된다. squash 는 저장소 설정에서 껐다 — TASK 당 5~10개로
@@ -83,6 +84,8 @@ git pull --ff-only
   브랜치는 버리고 `main` 을 pull 받는다.
 - **병행 작업 시 순서가 있다.** PR 을 하나 머지하면 나머지 PR 은 `main` 기준으로 다시
   rebase·push 해야 한다(규칙 `strict`). 그래서 웨이브의 머지는 순차적이다.
+- **머지 뒤 `pnpm install` 을 빠뜨리지 않는다.** 워크트리마다 `node_modules` 가 따로이므로,
+  다른 워크트리에서 추가한 의존성은 pull 만으로는 설치되지 않는다. 앱이 안 뜨는 원인 1순위다.
 - `--delete-branch` 는 **워크트리에 체크아웃된 브랜치를 지우지 못한다.** 원격 브랜치만 지워지고
   `fatal: 'main' is already used by worktree at ...` 로 끝난다. 워크트리를 먼저 제거한다.
 - 자세한 내용과 해제 방법: [`docs/branch-protection.md`](./docs/branch-protection.md)
