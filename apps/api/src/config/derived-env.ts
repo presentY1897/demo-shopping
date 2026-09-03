@@ -98,6 +98,19 @@ export async function deriveEnvFromPortOffset(
   repoRoot: string | null,
   source: Readonly<Record<string, string | undefined>>,
 ): Promise<DerivedEnv> {
+  // Never derive in production. The guard lives here rather than at the two call
+  // sites so a third one cannot miss it.
+  //
+  // Render runs a Node service on the repository checkout, so `pnpm-workspace.yaml`
+  // and `scripts/ports.mjs` are both present and derivation would happily succeed
+  // there. A deployment that forgot DATABASE_URL would then quietly point at
+  // `localhost:5432` instead of refusing to boot, and one that forgot CORS_ORIGINS
+  // would allow six localhost origins — with `credentials: true`, that hands a page
+  // on the developer's machine a credentialed channel to the live API.
+  //
+  // Locally the derivation is what makes several worktrees run at once, so it stays.
+  if (source.NODE_ENV === 'production') return NOTHING_DERIVED
+
   if (repoRoot === null) return NOTHING_DERIVED
 
   const portsModule = await importPortsModule(repoRoot)
