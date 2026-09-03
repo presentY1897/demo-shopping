@@ -94,3 +94,12 @@ export type { DataListProps, DataListState } from './data-list'
 
 export { ErrorBoundary } from './error-boundary'
 export type { ErrorBoundaryFallbackProps, ErrorBoundaryProps } from './error-boundary'
+
+export { nextSort, sortRows, Table, TABLE_ALIGNMENTS, TABLE_SORT_DIRECTIONS } from './table'
+export type {
+  TableAlignment,
+  TableColumn,
+  TableProps,
+  TableSort,
+  TableSortDirection,
+} from './table'
