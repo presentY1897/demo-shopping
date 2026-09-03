@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M03 디자인 시스템 |
-| 상태 | 승인됨 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-02 |
 | 브랜치 | `feature/form-system` |
 | 선행 작업 | TASK-0015 |
@@ -28,11 +28,11 @@ zod 스키마 하나로 클라이언트 검증과 서버 검증을 공유하고,
 
 ## 3. 요구사항
 
-- [ ] 같은 zod 스키마로 클라이언트·서버가 검증한다
-- [ ] 서버 검증 오류가 해당 필드에 표시된다
-- [ ] 제출 중 중복 클릭이 차단된다
-- [ ] 스크린리더가 에러를 읽을 수 있다
-- [ ] 필드 정의 배열로부터 폼이 생성된다
+- [x] 같은 zod 스키마로 클라이언트·서버가 검증한다
+- [x] 서버 검증 오류가 해당 필드에 표시된다
+- [x] 제출 중 중복 클릭이 차단된다
+- [x] 스크린리더가 에러를 읽을 수 있다
+- [x] 필드 정의 배열로부터 폼이 생성된다
 
 ## 4. 설계
 
@@ -184,13 +184,23 @@ type FieldDef = {
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| F1 | 스키마 공유 | 잘못된 값 제출 | 클라이언트가 먼저 차단, 우회 시 서버가 400 | [ ] |
-| F2 | 서버 에러 매핑 | 서버만 아는 오류(중복 등) 유발 | 해당 필드에 메시지 표시 | [ ] |
-| F3 | 중복 제출 | 제출 버튼 빠르게 3회 클릭 | 요청 1건만 발생 | [ ] |
-| F4 | 접근성 | 스크린리더로 에러 확인 | 에러가 읽힘, `aria-invalid` 설정 | [ ] |
-| F5 | 동적 폼 | FieldDef 5종 배열 전달 | 타입별 입력 요소 자동 생성 | [ ] |
-| F6 | 확인 다이얼로그 | 파괴적 작업 트리거 | 확인 없이는 실행되지 않음 | [ ] |
-| F7 | 암묵적 제출 | 입력란에서 Enter 연타 | 제출 1건만 발생 (4.2) | [ ] |
+| F1 | 스키마 공유 | 잘못된 값 제출 | 클라이언트가 먼저 차단, 우회 시 서버가 400 | [x] |
+| F2 | 서버 에러 매핑 | 서버만 아는 오류(중복 등) 유발 | 해당 필드에 메시지 표시 | [x] |
+| F3 | 중복 제출 | 제출 버튼 빠르게 3회 클릭 | 요청 1건만 발생 | [x] |
+| F4 | 접근성 | 스크린리더로 에러 확인 | 에러가 읽힘, `aria-invalid` 설정 | [x] |
+| F5 | 동적 폼 | FieldDef 5종 배열 전달 | 타입별 입력 요소 자동 생성 | [x] |
+| F6 | 확인 다이얼로그 | 파괴적 작업 트리거 | 확인 없이는 실행되지 않음 | [x] |
+| F7 | 암묵적 제출 | 입력란에서 Enter 연타 | 제출 1건만 발생 (4.2) | [x] |
+
+| # | 결과 |
+| --- | --- |
+| F1 | `form.spec.tsx` — 빈 폼 제출 시 `onSubmit` 호출 0회, 두 필드에 메시지. 통과 후 파싱된 값(`'  buyer@example.com  '` → `'buyer@example.com'`)이 넘어간다. **서버 쪽 400 은 `apps/api` 의 `parseInput` 이 같은 스키마 객체로 담당** — 이 TASK 는 API 를 부르지 않으므로 이쪽에서 재현하지 않는다 |
+| F2 | 서버만 아는 오류 2종을 각각 재현 — `details: ['nickname 값이 올바르지 않습니다.']` 는 문자열 선두 토큰으로, `code: 'EMAIL_TAKEN'` 은 `codeFields` 로 필드에 붙는다. 붙은 뒤 `toHaveAccessibleDescription` 으로 **연결까지** 확인 |
+| F3 | 크로미움에서 클릭 4회(요청 진행 중 3회) → `accepted 1`. submit 이벤트 자체가 추가로 발생하지 않는다(버튼이 클릭 경로를 막음). jsdom 쪽은 `form.spec.tsx` "blocks three more clicks" |
+| F4 | 크로미움에서 키보드만으로 Save → Enter → 필드 오류 4개 표시, 포커스가 첫 무효 컨트롤(email)로 이동. `aria-invalid="true"`, `aria-describedby`가 힌트→오류 순으로 연결 |
+| F5 | 5종 배열 → `textbox` · `spinbutton` · `combobox` · `group`(체크박스 2개) · `checkbox`. `dynamic-form.spec.tsx` |
+| F6 | 확인 전에는 `onDelete` 호출 0회. 취소 · Escape · × · 바깥 클릭 전부 `false` 로 resolve. 최초 포커스가 삭제 버튼이 아님을 함께 확인 |
+| F7 | 크로미움에서 요청 진행 중 Enter 3회 → **submit 이벤트 3건 발생**(우회 경로가 실재한다) → 전부 `defaultPrevented`, `accepted` 는 1 유지, 내비게이션 0. 요청이 끝난 뒤 Enter 1회 → 2. jsdom 쪽은 "the implicit submission bypass" 두 테스트가 **결함 재현 → 차단**을 나란히 둔다 |
 
 ### 6.2 품질 게이트
 
@@ -200,12 +210,27 @@ type FieldDef = {
 - **2장 화면 게이트**: P2·P3·P4·P5 적용
 - **3~5장 해당 없음** — 엔드포인트·스키마 변경 없음. API 를 부르지 않으므로 계약 게이트 대상도 아니다
 
+| # | 결과 |
+| --- | --- |
+| Q1 `pnpm typecheck` | error 0 |
+| Q2 `pnpm lint` | error 0 · warning 0 |
+| Q3 `pnpm build` | 앱 3개 성공 |
+| Q4 `pnpm test` | 전 패키지 통과. `packages/ui` 618 → **728** (+110, 파일 42 → 49) |
+| `pnpm format:check` | All matched files use Prettier code style |
+| Q5 순수 로직 | `pnpm --filter @shopping/ui test:coverage` exit 0 — `field-def` · `field-errors` · `field-ids` · `server-errors` **분기 100%**. 임계값이 실제로 문다는 것은 구현 중 `server-errors` 가 92% 로 떨어져 실패한 것으로 확인했다 |
+| P2 접근성 | Chromium + axe-core 4.13, WCAG 2.1 AA + best-practice, 저장소 규칙 세트 그대로. **스토리 15 × 뷰포트 3 × 밀도 3 = 135 조합에서 위반 0** (통과 규칙 최대 30종). CI 는 `test/story-a11y.spec.tsx` 가 스토리 143 → **158**개에 axe 적용 |
+| P3 반응형 | 360 · 768 · 1440 × 밀도 3 — 135 조합 전부 `documentElement.scrollWidth == clientWidth` |
+| P4 키보드 | 크로미움 실측 — 폼 6개 컨트롤이 Tab 순회로 전부 도달(전부 2px outline 포커스 링), Select 는 Enter → ArrowDown → Enter 로 값 변경, 다이얼로그는 최초 포커스가 닫기 버튼 · Tab 이 안에서 순환 · Escape 로 닫히고 포커스가 트리거로 복귀 |
+| P5 상태 표현 | Form 스토리 4상태(빈 · 무효 · 제출 중 · 서버 거부) + Dynamic form 의 정의 없음 상태 |
+| 터치 타깃 | 같은 135 조합에서 렌더된 모든 버튼·입력·체크박스·라디오·스위치·콤보박스·옵션의 높이를 측정 — **44px 미만 0건** |
+| 하드코딩 | `test/component-tokens.spec.ts` 5종 검사 통과 (`src/form/**` 는 이미 스캔 대상) |
+
 ### 6.3 문서
 
 | # | 기준 | 충족 |
 | --- | --- | --- |
-| D1 | 상태 갱신 + 인덱스 2곳 | [ ] |
-| D5 | 도입 라이브러리 버전 기록 | [ ] |
+| D1 | 상태 갱신 + 인덱스 2곳 | [x] 상태는 이 문서. **인덱스 2곳은 오케스트레이터가 갱신한다**(병행 작업 중 충돌 방지) |
+| D5 | 도입 라이브러리 버전 기록 | [x] 8장 |
 
 ## 7. 리스크 / 열린 질문
 
@@ -229,3 +254,4 @@ type FieldDef = {
 | --- | --- |
 | 2026-09-02 | 최초 작성 |
 | 2026-09-03 | 4.1 폼 라이브러리 선정(도입하지 않음) · 4.2 암묵적 제출 가드 · 4.4~4.5 서버 오류 매핑 규약 · 4.6 생성기 매핑표 · 4.7 확인 다이얼로그 규약 추가. F7 · R2 · R3 추가 |
+| 2026-09-03 | 구현 완료. 계획 대비 변경 4건 — (1) `FormApi.formRef` 를 **콜백 ref** 로 만들었다. ref 객체를 API 에 실으면 `react-hooks/refs` 가 그 객체 전체를 ref 로 보고 `form.submitting` 을 읽는 것까지 "렌더 중 ref 접근"으로 막는다, (2) `FormApi.submit()` 을 더했다 — 액션이 `type="submit"` 이 아닐 때도 `requestSubmit()` 을 거쳐 같은 문으로 들어오게 하는 것이 4.2 의 요지다, (3) `RadioGroup` 에 `id` · `invalid` · `aria-describedby` 를 더했다. 다른 입력 컴포넌트에는 다 있는데 여기만 없어 binder 를 그대로 쓸 수 없었다, (4) `story-coverage.spec.ts` 가 `src/components` 배럴만 읽고 있어 `src/form` 을 함께 읽게 넓혔다 — 넓히지 않았다면 새 컴포넌트 6종이 접근성 게이트 밖에서 머지된다 |
