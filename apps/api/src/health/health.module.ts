@@ -6,6 +6,7 @@ import { HEALTH_INDICATORS } from './health-indicator.js'
 import { HealthService } from './health.service.js'
 import { SearchHealthIndicator } from './search.health-indicator.js'
 import { EXPECTED_SEARCH_INDEXES, SEARCH_INDEXES } from './search-indexes.js'
+import { SearchWarmupService } from './search-warmup.service.js'
 
 @Module({
   controllers: [HealthController],
@@ -13,6 +14,9 @@ import { EXPECTED_SEARCH_INDEXES, SEARCH_INDEXES } from './search-indexes.js'
     DatabaseHealthIndicator,
     SearchHealthIndicator,
     HealthService,
+    // Wakes the search engine once at boot. It has no consumer: the class
+    // implements OnApplicationBootstrap and Nest calls it (TASK-0101 4.6).
+    SearchWarmupService,
     { provide: SEARCH_INDEXES, useValue: EXPECTED_SEARCH_INDEXES },
     {
       // The list is assembled here so that adding a dependency touches this
