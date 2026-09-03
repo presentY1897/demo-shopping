@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./components": "./src/components/index.ts",
     "./density": "./src/density/index.ts"
   },
   "scripts": {
