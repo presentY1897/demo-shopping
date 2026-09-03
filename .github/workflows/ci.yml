@@ -3,6 +3,11 @@ name: CI
 on:
   pull_request:
     branches: [main]
+  # `main` too, and not only for redundancy: a rebase merge rewrites the commits,
+  # so the SHAs that land on `main` are never the ones a PR check ran against.
+  # Without this, a direct push to `main` is tested by nothing at all.
+  push:
+    branches: [main]
 
 # A new push to the same PR makes the previous run obsolete.
 concurrency:

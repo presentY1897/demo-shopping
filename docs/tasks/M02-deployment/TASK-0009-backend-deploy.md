@@ -16,6 +16,7 @@ API, PostgreSQL, Meilisearch 를 배포 환경에 올리고 서로 연결한다.
 
 ### 포함
 - **Render** 무료 플랜에 API·Meilisearch 배포, **PostgreSQL 은 Neon**
+- **`render.yaml` (Blueprint) 로 서비스 정의를 코드에 둔다** — 아래 참조
 - 모노레포에서 `apps/api` 만 빌드하도록 설정
 - 서비스 간 내부 네트워킹 (API → DB, API → Meilisearch)
 - 배포 환경 변수 등록
@@ -43,6 +44,28 @@ API, PostgreSQL, Meilisearch 를 배포 환경에 올리고 서로 연결한다.
 | api | **Render 무료** | 0 | `api.demo-shopping.com` |
 | postgres | **Neon 무료** | 0 | 외부 비노출 (연결 문자열로만) |
 | meilisearch | **Render 무료** | 0 | 내부 전용 |
+
+### 배포 설정을 코드로 — `render.yaml`
+
+대시보드에서 손으로 만들지 않는다. 저장소 루트의 `render.yaml` 이 서비스 정의의 단일 출처이며, Render 는 이 파일을 읽어 서비스를 만들고 갱신한다(Blueprint).
+
+이유는 세 가지다. 설정 변경이 **커밋으로 남아** 왜 바꿨는지 추적된다. 서비스가 날아가도 **같은 구성으로 다시 만들 수 있다**. 그리고 대시보드와 파일이 **갈라지지 않는다** — 손으로 만든 서비스에 Blueprint 를 나중에 붙이면 이름 충돌이 나거나 수동 설정이 조용히 덮인다.
+
+**그래서 서비스 생성은 `render.yaml` 이 저장소에 들어간 뒤에 한다.** 미리 만들어 두지 않는다.
+
+| 시점 | 소유자가 하는 일 |
+| --- | --- |
+| 지금 (M01 중) | Render 가입 → GitHub 연동 → `demo-shopping` 접근 허용. **여기까지만.** |
+| 이 TASK 착수 후 | Render 대시보드에서 `New → Blueprint` → 저장소 선택 → 비밀값 입력 |
+
+비밀값은 파일에 담을 수 없으므로 `sync: false` 로 선언해 Render 가 생성 시 묻게 한다.
+
+| 변수 | 출처 |
+| --- | --- |
+| `DATABASE_URL` | Neon 콘솔의 연결 문자열 |
+| `MEILI_MASTER_KEY` | `openssl rand -base64 32` 로 새로 생성 (로컬 값 재사용 금지) |
+
+나머지(`NODE_ENV` · `MEILI_ENV` · 풀 크기 등)는 `render.yaml` 에 평문으로 둔다. 포트는 Render 가 주입하는 `PORT` 를 API 가 이미 폴백으로 읽는다(TASK-0004).
 
 ### 무료 플랜의 제약과 대응
 
@@ -128,6 +151,8 @@ Meilisearch 는 외부에 노출하지 않는다. Neon 은 연결 문자열과 S
 | R5 | 재색인이 잦아 DB 부하 | 인덱스 비어있을 때만 트리거하고 동시 실행을 락으로 막는다 |
 | R2 | 모노레포 빌드 시 불필요한 앱까지 빌드 | 빌드 필터와 `.dockerignore`/watch path 설정으로 제한 |
 | R3 | 커넥션 수 제한 초과 | Prisma 풀 크기를 환경변수로 조정 |
+| R6 | **Meilisearch 를 무료 플랜에서 외부 비노출로 둘 수 있는지 미확인** | 4장 설계는 Meilisearch 를 "내부 전용"으로 두지만, Render 무료 플랜이 비공개 서비스를 지원하는지 확인하지 않았다. **착수 시 가장 먼저 확인한다.** 불가하면 공개 웹 서비스로 두되 마스터 키로만 보호하고(현재도 키 없이는 401), 그 경우 설계와 F5 기준을 먼저 고친다 |
+| R7 | Blueprint 가 무료 플랜(`plan: free`)을 지원하는지 미확인 | 착수 시 R6 과 함께 확인. 불가하면 대시보드 수동 구성으로 내려가고, 그 결정을 이 문서에 남긴다 |
 
 ## 8. 확정된 버전
 

@@ -13,7 +13,7 @@
 | # | 서비스 | 할 일 | 결과물 |
 | --- | --- | --- | --- |
 | 1 | **Neon** | 가입 → 프로젝트 생성 | 연결 문자열 ✅ *완료* |
-| 2 | **Render** | 가입 → GitHub 연동 → `demo-shopping` 접근 허용 | (설정은 `render.yaml` 로 코드에 넣는다) |
+| 2 | **Render** | 가입 → GitHub 연동 → `demo-shopping` 접근 허용. **서비스는 만들지 말 것** | 서비스 정의는 `render.yaml` 로 코드에 넣고 M02 에서 Blueprint 로 생성한다 ([TASK-0009](./tasks/M02-deployment/TASK-0009-backend-deploy.md)) |
 | 3 | **Vercel** | 가입 → GitHub 연동 → 같은 저장소 접근 허용 | |
 | 4 | **Cloudflare R2** | 대시보드에서 R2 활성화 → API 토큰 발급 | 계정 ID · 액세스 키 · 시크릿 |
 | 5 | **Sentry** | 가입 → 프로젝트 2개(Node / Next.js) | DSN 2개 |
