@@ -113,7 +113,6 @@ export const ko: Messages = {
         nameTooLong: '이름은 60자까지 입력할 수 있습니다.',
         slugRequired: '슬러그를 입력해주세요.',
         slugFormat: '영문 소문자와 숫자, 하이픈만 쓸 수 있습니다. 예: women-outer',
-        slugTaken: '이미 사용 중인 슬러그입니다. 다른 값을 입력해주세요.',
       },
     },
     retire: {
@@ -158,19 +157,15 @@ export const ko: Messages = {
       saveFailed: '저장하지 못했습니다',
       restored: '원래 위치로 되돌렸습니다.',
     },
+    // Only the failures that arrive with no answer to read. Everything the API
+    // answers is keyed by `error.code` in `errors` below.
     failures: {
-      network: 'API 서버에 닿지 못했습니다. 실행 중인지 확인해주세요.',
-      timeout: '응답이 제한 시간 안에 오지 않았습니다.',
-      aborted: '요청이 취소되었습니다.',
-      unauthorized: '로그인이 필요합니다.',
-      forbidden: '이 작업을 수행할 권한이 없습니다.',
-      not_found: '이미 삭제된 카테고리입니다. 목록을 다시 불러와주세요.',
-      conflict: '다른 변경과 충돌했습니다.',
-      invalid: '입력값을 확인해주세요.',
-      server: '서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-      malformed_response: 'API 응답 형식이 예상과 다릅니다.',
-      configuration: 'API 주소 설정이 없습니다. pnpm dev 로 실행했는지 확인해주세요.',
-      unknown: '알 수 없는 오류가 발생했습니다.',
+      network: '서버에 연결하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.',
+      timeout: '응답이 너무 늦어 요청을 멈췄어요. 잠시 후 다시 시도해 주세요.',
+      aborted: '요청을 취소했어요.',
+      malformed_response: '서버가 보낸 응답을 읽지 못했어요. 잠시 후 다시 시도해 주세요.',
+      configuration: '서버 주소 설정이 없어요. 개발 서버를 다시 실행해 주세요.',
+      unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
     },
   },
   components: {
@@ -310,5 +305,53 @@ export const ko: Messages = {
         },
       ],
     },
+  } /**
+   * One sentence per error code (TASK-0117 4.2).
+   *
+   * Four rules, and every line below is checked against them by
+   * `test/error-messages.spec.ts`:
+   *
+   * 1. **말은 사용자가 한 행동의 언어로.** `orderedIds` 가 아니라 "순서",
+   *    `slug` 가 아니라 "주소".
+   * 2. **다음에 무엇을 할지 말한다.** "…할 수 없습니다" 로 끝내지 않는다.
+   * 3. **원인을 짚을 수 있으면 이름으로 짚는다.** `{name}` 은 서버가 실어 보낸
+   *    값으로 채워진다.
+   * 4. **내부 식별자를 쓰지 않는다.** 그것이 F7 이 정규식으로 재는 것이다.
+   */,
+  errors: {
+    // Transport-derived codes. Reached when an endpoint has no domain code yet.
+    BAD_REQUEST: '입력하신 내용을 다시 확인해 주세요.',
+    VALIDATION_FAILED: '입력하신 내용을 다시 확인해 주세요.',
+    UNAUTHORIZED: '로그인이 필요해요.',
+    FORBIDDEN: '이 작업을 할 수 있는 권한이 없어요.',
+    NOT_FOUND: '찾으시는 내용이 없어요. 목록을 새로고침해 주세요.',
+    METHOD_NOT_ALLOWED: '지금은 처리할 수 없는 요청이에요.',
+    CONFLICT: '다른 변경과 겹쳤어요. 최신 내용을 불러온 뒤 다시 시도해 주세요.',
+    PAYLOAD_TOO_LARGE: '보내신 내용이 너무 커요. 크기를 줄여 주세요.',
+    UNSUPPORTED_MEDIA_TYPE: '지원하지 않는 형식이에요. 다른 파일을 선택해 주세요.',
+    TOO_MANY_REQUESTS: '요청이 몰렸어요. 잠시 후 다시 시도해 주세요.',
+    INTERNAL_ERROR: '일시적인 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+    SERVICE_UNAVAILABLE: '지금은 이용할 수 없어요. 잠시 후 다시 시도해 주세요.',
+
+    // Domain codes.
+    AUTH_REQUIRED: '로그인이 필요해요.',
+    INVALID: '입력하신 값을 다시 확인해 주세요.',
+    CATEGORY_SLUG_TAKEN: '이미 쓰고 있는 주소예요. 다른 주소를 입력해 주세요.',
+    CATEGORY_VERSION_CONFLICT: '다른 관리자가 먼저 저장했어요. 최신 내용을 불러올까요?',
+    CATEGORY_HAS_CHILDREN: '하위 카테고리를 먼저 옮기거나 삭제해 주세요.',
+    CATEGORY_MAX_DEPTH: '카테고리는 {max}단계까지만 만들 수 있어요.',
+    CATEGORY_MOVE_INTO_SELF: '카테고리를 자기 자신이나 그 아래로 옮길 수 없어요.',
+    CATEGORY_REORDER_MISMATCH: '순서가 화면과 어긋났어요. 새로고침한 뒤 다시 시도해 주세요.',
+    CATEGORY_PARENT_MISSING: '선택한 상위 카테고리가 없어졌어요. 목록을 새로고침해 주세요.',
+    ATTRIBUTE_KEY_TAKEN: "'{name}' 에 같은 이름의 속성이 이미 있어요.",
+    ATTRIBUTE_VERSION_CONFLICT: '다른 관리자가 먼저 저장했어요. 최신 내용을 불러올까요?',
+  },
+  errorNotice: {
+    title: '일시적인 문제가 생겼어요',
+    requestIdHint: '문의하실 때 이 번호를 알려주시면 더 빨리 확인할 수 있어요.',
+    requestIdLabel: '문의 번호',
+    copyLabel: '번호 복사',
+    copiedLabel: '복사했어요',
+    dismissLabel: '닫기',
   },
 }

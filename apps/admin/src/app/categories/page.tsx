@@ -25,7 +25,7 @@ export const metadata: Metadata = {
  * `<main>` and deleting the heading.
  */
 export default function CategoriesPage() {
-  const { categories } = messagesFor()
+  const { categories, errors, errorNotice } = messagesFor()
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-6 p-8">
@@ -34,7 +34,7 @@ export default function CategoriesPage() {
         <p className="text-fg-muted mt-1">{categories.description}</p>
       </header>
 
-      <CategoryManager messages={categories} />
+      <CategoryManager errors={errors} messages={categories} notice={errorNotice} />
     </main>
   )
 }
