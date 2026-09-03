@@ -128,7 +128,7 @@ LEFT JOIN "AttributeDefinition" d
 | Q3 | `pnpm build` 전 앱 성공 | shared · api · admin · shop · seller 전부 성공 | [x] |
 | Q4 | `pnpm test` 전부 통과 | `apps/api` **786 passed (54 files)** — 이 TASK 이전 565 (47 files). 워크스페이스 전체 green | [x] |
 | Q5 | 순수 로직 분기 100% / 서비스·API 라인 80% / 실 PostgreSQL | `attribute-schema.ts`·`attribute-inheritance.ts` **분기 100%**(임계값을 `vitest.config.mjs` 에 파일 단위로 추가). `apps/api` 라인 **93.63%** · 분기 82.49%. Prisma 모킹 0건 | [x] |
-| Q6 | CI 전 job green | 9.1 참조 | [ ] |
+| Q6 | CI 전 job green | PR [#37](https://github.com/presentY1897/demo-shopping/pull/37) 에서 `typecheck` · `lint` · `build` · `test` **4개 job green** | [x] |
 | Q7 | commitlint 위반 0 | 위반 0 | [x] |
 | A1 | p95 300ms 이하 | 3단계 계통(정의 60개) 조회 **p95 3.4ms**(중앙값 2.2ms, 50회) · 생성(트리 락 포함) **p95 8.0ms**(중앙값 7.3ms, 30회) | [x] |
 | A2 | 잘못된 입력 400 + 통일 포맷 | 본문(key 형식·라벨·선택지)·경로 파라미터·쿼리 전부 400 + `{ error: { code, message, details } }` | [x] |
