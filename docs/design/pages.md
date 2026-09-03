@@ -58,12 +58,20 @@
 | 오버레이 | `Tooltip` · `Popover` | Radix |
 | 알림 | `ToastProvider` / `useToast()` | Radix Toast |
 | 구조 | `Tabs` · `Accordion` | Radix |
+| 데이터 상태 | `DataList` · `EmptyState` · `ErrorState` · `Skeleton` · `ErrorBoundary` | 직접 |
+| 데이터 표시 | `Table` · `TableToCards` · `Pagination` · `useInfiniteScroll` | 직접 |
+| 레이아웃 | `Card` · `Grid` | 직접 |
+| 포맷터 | `formatMoney` · `formatDate` (`@shopping/ui/format`) | `Intl` |
 
 - **Radix 는 동작만, 스타일은 0줄을 쓴다.** 포커스 트랩·ARIA·키보드 탐색·팝업 위치처럼 직접 구현하면 품질이 안 나오는 부분에만 쓴다.
 - **`variant` / `size` 는 prop 이고 값 목록은 배열로 export 한다** (`BUTTON_VARIANTS` 등). 스토리(TASK-0104)가 내부를 뜯지 않고 상태를 나열할 수 있어야 한다.
 - **`'use client'` 는 컴포넌트 파일이 각자 선언한다.** 브라우저 동작이 필요 없는 것(`Button`·`Input`·`Textarea`·`Badge`·`Tag`·`Divider`)은 서버 컴포넌트로 렌더된다.
 - **`packages/ui` 에는 한국어가 없다.** 문구가 필요한 자리(`IconButton.label`, `Modal.closeLabel`, `ToastProvider.regionLabel`, `Tag.removeLabel`)는 prop 으로 받는다. `IconButton.label` 과 `Tag.removeLabel` 은 타입으로 강제된다.
 - **터치 타깃 44px 하한은 컴포넌트가 기억하지 않는다.** `h-control-*` / `size-control-*` / `touch-target` / `min-h-touch` 가 토큰 안의 `max()` 로 보장한다. 체크박스·라디오는 눈에 보이는 상자(20px)와 누르는 영역(44px)을 분리한다.
+- **목록은 `DataList` 로 감싼다.** `loading` · `empty` · `error` 가 기본값 없는 필수 prop 이라 빈 상태를 빠뜨리면 컴파일되지 않는다.
+- **`Grid` 의 열 수는 `--density-cols`** 에서 온다. 아래 밀도 × 뷰포트 매트릭스가 유일한 출처이고 컴포넌트는 숫자를 갖지 않는다.
+- **`Card` 내부는 컨테이너 쿼리**(`@container/card`)다. 같은 카드가 1열과 6열에서 서로 다르게 배치되며, 뷰포트는 관여하지 않는다.
+- **`Table` 은 가로 스크롤을 자기 래퍼 안에 가둔다.** 첫 열은 `<th scope="row">` 이면서 `position: sticky` 이고, 래퍼는 키보드로 도달 가능한 이름 있는 region 이다.
 - 전 컴포넌트를 한 화면에 나열한 **개발 전용** 페이지가 세 앱 모두에 있다 (`/components`, 프로덕션 404). `/tokens` 와 함께 TASK-0104 의 Storybook 이 이어받은 뒤 제거한다 (D-206).
 
 ---
@@ -301,4 +309,20 @@ Tailwind 기본값을 그대로 쓴다. 검증 뷰포트(P3 게이트)와 브레
 - 권한 검사는 각 앱의 미들웨어에서 처리한다. `apps/seller` 는 SELLER, `apps/admin` 은 ADMIN 역할이 없으면 로그인으로 보낸다.
 - 목록 화면은 **커서 기반 페이지네이션**을 기본으로 한다. 오프셋은 깊은 페이지에서 느려지고 데이터 변동 시 중복·누락이 생긴다.
 - 모든 사용자 노출 문구는 메시지 파일에서 가져온다. 하드코딩 금지. (D-014)
-- 금액 표시는 통화 정보를 포함한 값에서 포맷한다.
+- 금액 표시는 통화 정보를 포함한 값에서 포맷한다. 통화 기호·소수 자릿수는 통화 코드에서 나오며 "원"을 붙이지 않는다.
+
+### 커서 페이지네이션 규약
+
+| 항목 | 규약 |
+| --- | --- |
+| 응답 형태 | `{ items, nextCursor }`. `nextCursor: null` 이 마지막 페이지 |
+| 커서 값 | 정렬 키 상의 **위치**를 가리키는 불투명 문자열. 클라이언트는 해석하지 않고 그대로 되돌려준다 |
+| 첫 페이지 | 커서 `null` |
+| 빈 페이지 | `items: []` + `nextCursor` 가 있는 응답은 정상이다. 필터가 걸린 키셋 스캔에서 나온다 |
+| 이전 페이지 | **서버가 주지 않는다.** 클라이언트가 방문한 커서를 스택으로 들고 있는다 (`useCursorPagination`) |
+| 정렬·필터 변경 | 커서는 그 정렬 안에서만 의미가 있으므로 **스택을 리셋**하고 첫 페이지로 돌아간다 |
+| 화면별 이동 수단 | 상품 목록은 무한 스크롤(`useInfiniteScroll`), 콘솔 표는 이전/다음(`Pagination`) |
+| 오프셋 | 쓰지 않는다. "3페이지로 점프"가 필요해 보이면 필터·정렬로 좁히는 쪽을 먼저 검토한다 |
+
+한 행이 목록 앞쪽에 추가돼도 이미 지나온 커서 뒤의 페이지는 그대로다 — 오프셋이라면 모든 행이 한 칸씩 밀려
+1페이지 마지막 행이 2페이지 첫 행으로 다시 나온다. 이것이 커서를 기본으로 삼는 이유다.
