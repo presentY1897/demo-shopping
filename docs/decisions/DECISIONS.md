@@ -189,6 +189,8 @@ Cloudflare R2 는 **전송량 요금이 0원**이고 S3 호환 API 라 이전이
 | 진행 순서 | **마일스톤 번호는 진행 순서가 아니다.** 각 TASK 의 `선행` 이 실제 의존. 마일스톤을 가로질러 병행한다 |
 | 병행 제약 | **`schema.prisma` 를 건드리는 TASK 는 동시에 하나만.** 마이그레이션 타임스탬프가 꼬이면 rebase 로 정리되지 않는다 |
 | 커밋 | Conventional Commits, 본문은 한국어 |
+| 커밋·PR 링크 | **누구나 열 수 있는 링크만.** 계정 범위 세션 링크(`claude.ai/code/session_...`)는 붙이지 않는다. 커밋 트레일러는 `Co-Authored-By` 한 줄, PR 본문 끝은 저장소 안 문서로 가는 `../blob/main/...` 링크 |
+| 판단 근거 | **저장소 안에 남긴다.** 대화 전체가 아니라 남아야 할 결정만 `docs/decisions/` 에 정리하고 참조한다 |
 | git identity | `presenty1897 / presenty1897@gmail.com` (저장소 로컬 설정) |
 | TASK 분할 | **한 TASK = 하나의 작업 목적** |
 | TASK 문서 | `docs/tasks/M<NN>-<name>/TASK-<0000>-<slug>.md`. **번호는 전역 4자리 평면** |
