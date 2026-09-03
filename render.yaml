@@ -109,6 +109,38 @@ services:
       - key: CORS_ORIGINS
         value: https://shop.demo-shopping.com,https://seller.demo-shopping.com,https://admin.demo-shopping.com
 
+      # --- 오브젝트 스토리지 (Cloudflare R2) — TASK-0011 -----------------------
+      # 상품 이미지는 브라우저가 R2 로 직접 올린다. API 는 presigned URL 만
+      # 발급하므로 이미지 본문이 이 서비스를 거치지 않는다 — 무료 인스턴스의
+      # 메모리 512MB 로는 그래야 한다.
+      #
+      # **여섯 개를 전부 채우거나, 하나도 채우지 않는다.** 일부만 채우면 API 가
+      # 부팅을 거부한다. 버킷 이름만 빠진 배포는 "이미지가 안 올라간다" 가 아니라
+      # "다른 버킷에 올라간다" 로 나타나고, 후자는 아무도 눈치채지 못한다.
+      #
+      # 하나도 채우지 않으면 API 는 정상 기동하고 /api/v1/uploads/presign 만
+      # 503 을 준다. R2 계정이 생기기 전까지가 정확히 그 상태이므로, Blueprint
+      # 생성 시 여섯 개를 모두 비워 둔 채로 배포해도 된다.
+      #
+      # 값을 얻는 절차: TASK-0011 부록 A (대시보드 클릭 단위)
+      #
+      # 아래 넷은 비밀이 아니지만 계정이 생기기 전에는 값을 알 수 없다 —
+      # MEILI_HOST 와 같은 이유로 sync: false 다.
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_BUCKET
+        sync: false
+      - key: R2_PUBLIC_BASE_URL
+        sync: false
+      # R2 의 리전은 auto 하나뿐이지만, 값이 서명에 들어가므로 명시한다.
+      - key: R2_REGION
+        sync: false
+      # 진짜 비밀값. R2 API 토큰 생성 화면에 한 번만 표시된다.
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+
   # --- 검색 엔진 (Meilisearch) ------------------------------------------------
   # 공개 URL 을 가지지만 커스텀 도메인은 붙이지 않는다. 주소를 굳이 알리지 않고,
   # 보호는 마스터 키가 전담한다(키 없이는 데이터 경로 전부 401).
