@@ -35,11 +35,6 @@ export default function HomePage() {
       </header>
 
       <section className="flex flex-col gap-3">
-        <ApiWakeGate health={messages.health} wake={messages.wake} />
-        <p className="text-fg-subtle text-sm">{messages.health.notice}</p>
-      </section>
-
-      <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">{home.previewTitle}</h2>
         <p className="text-fg-muted text-sm">{home.previewDescription}</p>
 
@@ -63,6 +58,18 @@ export default function HomePage() {
             </Card>
           ))}
         </Grid>
+      </section>
+
+      {/*
+        The connection panel sits *below* the storefront content, not above it.
+        Measured, not assumed: with it on top, the panel filling in pushed the
+        section below down, Chrome recorded a second LCP candidate at that
+        moment, and the page's LCP went from 0.8s to 2.7s on a throttled mobile
+        profile (TASK-0018 6.2 P1). Nothing above it moves any more.
+      */}
+      <section className="flex flex-col gap-3">
+        <ApiWakeGate health={messages.health} wake={messages.wake} />
+        <p className="text-fg-subtle text-sm">{messages.health.notice}</p>
       </section>
 
       {/*
