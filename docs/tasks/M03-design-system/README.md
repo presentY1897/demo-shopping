@@ -8,7 +8,7 @@
 
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
-| [TASK-0014](./TASK-0014-design-tokens.md) | 디자인 토큰 · 밀도 3단계 | 승인됨 | **M01** |
+| [TASK-0014](./TASK-0014-design-tokens.md) | 디자인 토큰 · 밀도 3단계 | 완료 | **M01** |
 | [TASK-0015](./TASK-0015-base-components.md) | 기본 컴포넌트 | 승인 대기 | 0014 |
 | [TASK-0016](./TASK-0016-data-components.md) | 데이터 표시 컴포넌트 | 승인 대기 | 0015 |
 | [TASK-0017](./TASK-0017-form-system.md) | 폼 시스템 | 승인 대기 | 0015 |
