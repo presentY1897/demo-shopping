@@ -14,3 +14,7 @@ pnpm-lock.yaml
 # table cell (its CJK width math disagrees with the source) and reformats the
 # fenced code samples, which rewrites documentation instead of formatting it.
 *.md
+
+# Vendored from https://render.com/schema/render.yaml.json — kept byte for byte
+# so refreshing it produces a readable diff.
+apps/api/test/ci/schemas/

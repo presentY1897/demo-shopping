@@ -8,7 +8,7 @@
 
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
-| [TASK-0028](./TASK-0028-category-schema.md) | 카테고리 스키마 · 트리 API | 승인됨 | M04 |
+| [TASK-0028](./TASK-0028-category-schema.md) | 카테고리 스키마 · 트리 API | 완료 | M04 |
 | [TASK-0029](./TASK-0029-category-admin.md) | 관리자 카테고리 관리 화면 | 승인 대기 | 0028 |
 | [TASK-0030](./TASK-0030-attribute-schema.md) | 속성 정의 스키마 · API | 승인 대기 | 0028 |
 | [TASK-0031](./TASK-0031-attribute-admin.md) | 관리자 속성 관리 화면 | 승인 대기 | 0030 |
