@@ -10,8 +10,9 @@
     "rootDir": "."
   },
   // `prisma.config.mts` and `prisma/seed.mts` live outside `src` because the Prisma
-  // CLI looks for them there. They are still typechecked and linted from here;
-  // `tsconfig.build.json` narrows the set back to `src` so they stay out of dist.
-  "include": ["src", "prisma", "prisma.config.mts"],
+  // CLI looks for them there, and `test` holds the integration harness. All three
+  // are typechecked and linted from here; `tsconfig.build.json` narrows the set
+  // back to `src` so they stay out of dist.
+  "include": ["src", "test", "prisma", "prisma.config.mts"],
   "exclude": ["dist", "node_modules"]
 }

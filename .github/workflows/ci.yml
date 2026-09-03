@@ -58,7 +58,37 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # The suite runs against a real PostgreSQL (QUALITY-GATES 6장, D-207): the
+    # invariants this project relies on are enforced by the database — partial
+    # unique indexes, CHECK constraints, conditional stock updates — and mocking
+    # Prisma would leave exactly those out of the checks.
+    #
+    # The tag must equal the one in docker-compose.yml. A workflow cannot read a
+    # value out of that file, so `apps/api/test/ci/postgres-image-parity.spec.ts`
+    # compares the two strings and fails when they drift.
+    services:
+      postgres:
+        image: postgres:17.11-alpine
+        env:
+          # `apps/api/src/config/derived-env.ts` falls back to exactly these
+          # three values when no `.env` exists, which is the situation in CI, so
+          # DATABASE_URL comes out right with nothing set here.
+          POSTGRES_USER: shopping
+          POSTGRES_PASSWORD: shopping
+          POSTGRES_DB: shopping
+        ports:
+          - '5432:5432'
+        # Without a health check the first job step can win the race against
+        # postgres finishing its own initdb restart.
+        options: >-
+          --health-cmd "pg_isready -U shopping -d shopping"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
+      # No migration step: the suite's global setup builds a template database,
+      # runs `prisma migrate deploy` against it once and clones it per worker.
+      # The command is the same one a developer runs locally.
       - run: pnpm test
