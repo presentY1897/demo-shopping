@@ -129,3 +129,6 @@ export type { CursorPagination, UseCursorPaginationOptions } from './use-cursor-
 
 export { Pagination } from './pagination'
 export type { PaginationProps } from './pagination'
+
+export { useInfiniteScroll } from './use-infinite-scroll'
+export type { InfiniteScroll, UseInfiniteScrollOptions } from './use-infinite-scroll'
