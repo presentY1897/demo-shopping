@@ -68,6 +68,28 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // TASK-0030. The generator is the only thing standing between a typo
+        // and a `Product.attributes` object nothing can read: values live in
+        // JSONB, so the database accepts `{"weight": "무거움"}` as readily as
+        // `{"weight": 1200}`. A branch nothing reaches here is a value nothing
+        // refuses, and the symptom is not a red test — it is a product row that
+        // no screen renders and no facet counts.
+        'src/catalog/attribute-schema.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        // The resolver decides which definitions reach a category and which of
+        // two definitions of one key wins. The second half has to be a function
+        // of the rows rather than of the order they arrived in, which is only
+        // checkable by reaching every comparison.
+        'src/catalog/attribute-inheritance.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
         // TASK-0011. The signature is the reason this floor is here: a branch
         // nothing reaches is a canonicalisation rule nothing checks, and the
         // symptom of getting one wrong is a 403 from the storage on some
