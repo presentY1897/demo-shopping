@@ -5,18 +5,25 @@ import { describe, expect, it } from 'vitest'
 import { findRepoRoot } from '../config/workspace.js'
 
 /**
- * Guards the parts of the database contract that live outside `schema.prisma`.
+ * Guards the two things whose subject really is a **file**.
  *
- * Three of the rules TASK-0020 relies on cannot be written in PSL, so they are
- * hand written SQL at the bottom of a migration. Prisma is happy to regenerate a
- * migration without them and nothing else in the suite would notice: the schema
- * would still be "valid", the API would still boot, and two concurrent requests
- * would quietly end up with two default addresses. This spec reads the committed
- * files and fails when a rule goes missing.
+ * 1. every committed migration ships its SQL — deployments run `migrate deploy`
+ *    and never regenerate anything, so a directory without its SQL is a
+ *    migration that only ever existed on someone's machine;
+ * 2. no floating point column exists anywhere in the schema (gate S4).
  *
- * It deliberately reads the files rather than a live database — CI has no
- * Postgres, and the artefact that gets deployed is the migration, not the local
- * database someone happened to migrate.
+ * The five constraints that PSL cannot express used to be checked here too, by
+ * looking for their SQL text in the migration. That only ever caught a deletion:
+ * turning `WHERE "isDefault"` into `WHERE NOT "isDefault"` kept the string
+ * present while breaking the rule, and whether the constraint actually worked
+ * was verified by hand in psql (D-207).
+ *
+ * TASK-0106 gave CI a PostgreSQL, so those assertions moved to
+ * `test/db/schema-constraints.spec.ts`, where each rule is *tried* — a violation
+ * has to be refused with the right SQLSTATE and constraint name, and the cases
+ * that must be permitted have to succeed. That is strictly stronger: an index
+ * that disappears makes the violating INSERT succeed and fails the spec. Keeping
+ * both would only leave two answers to the same question.
  */
 
 function apiDir(): string {
@@ -39,18 +46,6 @@ function migrationDirectories(): readonly string[] {
     .sort()
 }
 
-/** Every committed migration's SQL, concatenated. */
-function migrationSql(): string {
-  return migrationDirectories()
-    .map((name) => readFileSync(join(PRISMA_DIR, 'migrations', name, 'migration.sql'), 'utf8'))
-    .join('\n')
-}
-
-/** Collapses whitespace so an assertion is not hostage to line wrapping. */
-function flat(sql: string): string {
-  return sql.replace(/\s+/g, ' ')
-}
-
 describe('committed migrations', () => {
   it('ships SQL for every migration', () => {
     // Deployments run `migrate deploy` and never regenerate anything, so a
@@ -64,36 +59,6 @@ describe('committed migrations', () => {
 
   it('has at least one migration', () => {
     expect(migrationDirectories().length).toBeGreaterThan(0)
-  })
-})
-
-describe('constraints PSL cannot express', () => {
-  it('scopes the Google identity to accounts that are not withdrawn', () => {
-    // A plain `@unique` would let one withdrawal burn a Google account forever.
-    expect(flat(migrationSql())).toContain(
-      'CREATE UNIQUE INDEX "User_googleSub_active_key" ON "User" ("googleSub") WHERE "deletedAt" IS NULL',
-    )
-  })
-
-  it('allows one default shipping address per user', () => {
-    // Without the predicate this would be a unique index on "userId" alone and
-    // a user could keep exactly one address in total.
-    expect(flat(migrationSql())).toContain(
-      'CREATE UNIQUE INDEX "Address_userId_default_key" ON "Address" ("userId") WHERE "isDefault"',
-    )
-  })
-
-  it('keeps the demo flag and the demo expiry consistent', () => {
-    expect(migrationSql()).toContain('"User_demo_expiry_check"')
-  })
-
-  it('requires a Google identity on a live real account', () => {
-    expect(migrationSql()).toContain('"User_google_identity_check"')
-  })
-
-  it('bounds the commission rate to a valid basis point range', () => {
-    expect(migrationSql()).toContain('"Seller_commissionRateBp_check"')
-    expect(flat(migrationSql())).toContain('"commissionRateBp" BETWEEN 0 AND 10000')
   })
 })
 
