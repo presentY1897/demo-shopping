@@ -1,9 +1,10 @@
 /**
- * The four glyphs `packages/ui` ships.
+ * The glyphs `packages/ui` ships.
  *
  * Inline rather than an icon package: these are the only icons the base
- * components need, and a dependency that ships a thousand of them to deliver
- * four is a bundle cost every app pays. Domain icons are the apps' business.
+ * components need, and a dependency that ships a thousand of them to deliver a
+ * handful is a bundle cost every app pays. Domain icons are the apps' business —
+ * which is why `EmptyState` and `ErrorState` take their illustration as a prop.
  *
  * Every path is stroked in `currentColor`, so an icon inherits whatever text
  * colour the control around it resolved from the token layer — which is why the
@@ -12,13 +13,22 @@
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
-import { CheckIcon, ChevronDownIcon, CloseIcon, MinusIcon } from '../../src/components'
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CloseIcon,
+  MinusIcon,
+} from '../../src/components'
 import { Row, Specimen, Stack } from '../support/layout'
 
 const GLYPHS = [
   { Glyph: CheckIcon, name: 'CheckIcon' },
   { Glyph: MinusIcon, name: 'MinusIcon' },
   { Glyph: ChevronDownIcon, name: 'ChevronDownIcon' },
+  { Glyph: ChevronLeftIcon, name: 'ChevronLeftIcon' },
+  { Glyph: ChevronRightIcon, name: 'ChevronRightIcon' },
   { Glyph: CloseIcon, name: 'CloseIcon' },
 ] as const
 

@@ -70,7 +70,14 @@ export type { TabItem, TabsActivationMode, TabsOrientation, TabsProps } from './
 export { Accordion, ACCORDION_TYPES } from './accordion'
 export type { AccordionItemSpec, AccordionProps, AccordionType } from './accordion'
 
-export { CheckIcon, ChevronDownIcon, CloseIcon, MinusIcon } from './icons'
+export {
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CloseIcon,
+  MinusIcon,
+} from './icons'
 
 /* ------------------------------------------------ data display (TASK-0016) -- */
 
@@ -119,3 +126,6 @@ export type { CursorHistory, CursorPage } from './cursor-pagination'
 
 export { useCursorPagination } from './use-cursor-pagination'
 export type { CursorPagination, UseCursorPaginationOptions } from './use-cursor-pagination'
+
+export { Pagination } from './pagination'
+export type { PaginationProps } from './pagination'
