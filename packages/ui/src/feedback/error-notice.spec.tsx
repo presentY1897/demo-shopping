@@ -117,6 +117,27 @@ describe('ErrorNotice', () => {
     expect(screen.getByRole('status')).toHaveTextContent('')
   })
 
+  /**
+   * P4, as far as jsdom can take it.
+   *
+   * There is no layout here and no stylesheet, so "does it overflow at 360px"
+   * cannot be measured — `test/touch-target.spec.ts` explains the same limit and
+   * takes the same way out. What *can* be pinned is the policy that makes the
+   * answer no: a 36-character identifier that may not break, in a console column
+   * that is 288px wide on a phone, overflows unless it is told it may. The
+   * rendered result is checked in Storybook's `Narrow` story.
+   */
+  it('lets a long identifier break rather than pushing the panel wide', () => {
+    render(<ErrorNotice {...COPY_PROPS} title="문제가 생겼어요" />)
+
+    const id = screen.getByLabelText('문의 번호')
+
+    expect(id.className).toContain('break-all')
+    // The id and the copy button share a row; on a narrow viewport the button
+    // has to be able to drop below it.
+    expect(id.parentElement?.className).toContain('flex-wrap')
+  })
+
   it('renders a caller supplied action beside the reference', () => {
     render(
       <ErrorNotice
