@@ -1,46 +1,88 @@
 /**
- * F4 · F5 — the home page is an async Server Component, and the fetch it makes
- * before returning any markup is answered by the mock API.
+ * The page, end to end against the mock API.
  *
- * There is no Next runtime here. `HomePage` is an async function; awaiting it
- * runs `loadHealth()` → `getApiClient()` → `globalThis.fetch`, which is exactly
- * where msw's interceptor sits (TASK-0107 4.1). Rendering what it returns then
- * happens in jsdom, so one process holds both the server fetch and the DOM.
+ * `HomePage` is no longer an async Server Component. It awaits nothing: the
+ * liveness read moved into `ApiWakeGate`'s effect so the markup — heading, copy,
+ * skeleton — is produced and sent while the API is still booting (TASK-0101 4.3).
+ * The request then goes out from the client, where msw's interceptor sits, so a
+ * single process still holds both the fetch and the DOM.
+ *
+ * The wake-up states themselves are covered in `api-wake-gate.spec.tsx`, with a
+ * policy turned down to milliseconds. What is left here is the page: what it
+ * renders before anything has answered, and that the call carries this app's id.
  */
 
 import {
   driftedHealthPayload,
-  httpFailure,
+  healthOk,
   malformedResponse,
   mockPaths,
-  networkFailure,
+  neverAnswers,
 } from '@shopping/api-mocks'
-import { healthDegraded, healthOk } from '@shopping/api-mocks'
 import { APP_ID_HEADER, healthEntries } from '@shopping/shared'
 import { render, screen, within } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import HomePage from '@/app/page'
 import { messagesFor } from '@/messages'
 
 import { testServer } from './setup'
 
-const { health } = messagesFor()
+const { app, health, wake } = messagesFor()
 
-async function renderHome(): Promise<void> {
-  render(await HomePage())
-}
+const requests: string[] = []
+
+beforeEach(() => {
+  requests.length = 0
+  testServer.server.events.on('request:start', ({ request }) => {
+    requests.push(request.url)
+  })
+})
+
+afterEach(() => {
+  testServer.server.events.removeAllListeners('request:start')
+})
+
+/**
+ * F4 — the prewarm does not hold the render up.
+ *
+ * Measured rather than argued: the server render is checked for an await and for
+ * a request, and neither is there. That is a stronger claim than "we timed it
+ * and it was quick", because there is nothing left to be slow.
+ */
+describe('the server render', () => {
+  it('returns markup rather than a promise', () => {
+    expect(HomePage()).not.toBeInstanceOf(Promise)
+  })
+
+  it('makes no API call of its own', () => {
+    HomePage()
+
+    expect(requests).toEqual([])
+  })
+
+  it('paints the page while the API is still asleep', () => {
+    testServer.server.use(neverAnswers(mockPaths.health))
+    render(<HomePage />)
+
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(app.name)
+    expect(screen.getByText(app.description)).toBeVisible()
+    expect(screen.getByText(health.notice)).toBeVisible()
+    expect(screen.getByRole('region', { name: health.title })).toHaveAttribute('aria-busy', 'true')
+  })
+})
 
 describe('the mocked payload reaches the screen', () => {
   it('shows the version and uptime the mock API answered', async () => {
-    await renderHome()
+    render(<HomePage />)
 
-    expect(screen.getByText(healthOk.version)).toBeVisible()
+    expect(await screen.findByText(healthOk.version)).toBeVisible()
     expect(screen.getByText(`${healthOk.uptime}${health.uptimeUnit}`)).toBeVisible()
   })
 
   it('shows one labelled row per liveness field', async () => {
-    await renderHome()
+    render(<HomePage />)
+    await screen.findByText(healthOk.version)
 
     const rows = screen.getAllByRole('listitem')
 
@@ -49,57 +91,36 @@ describe('the mocked payload reaches the screen', () => {
     expect(within(rows[0]!).getByText(health.statusLabels.ok)).toBeVisible()
   })
 
-  it('follows the mock API into a degraded state', async () => {
-    testServer.server.use(malformedResponse(mockPaths.health, healthDegraded))
-    await renderHome()
-
-    expect(screen.getByText(health.statusLabels.degraded)).toBeVisible()
-    expect(screen.getByText(health.statusLabels.down)).toBeVisible()
-  })
-
   it('does not render the failure panel while the API answers', async () => {
-    await renderHome()
+    render(<HomePage />)
+    await screen.findByText(healthOk.version)
 
     expect(screen.queryByRole('alert')).toBeNull()
   })
 })
 
-/** U6 — every way the API can fail is shown, not swallowed (4.7). */
-describe('a failing API', () => {
-  it('says so on a 404', async () => {
-    testServer.server.use(httpFailure(mockPaths.health, 404, 'NOT_FOUND', 'No such endpoint'))
-    await renderHome()
-
-    expect(within(screen.getByRole('alert')).getByText(health.failures.http)).toBeVisible()
-  })
-
-  it('says so on a 500', async () => {
-    testServer.server.use(httpFailure(mockPaths.health, 500, 'INTERNAL_ERROR', 'Boom'))
-    await renderHome()
-
-    expect(within(screen.getByRole('alert')).getByText(health.failures.http)).toBeVisible()
-  })
-
-  it('says so when the API is unreachable', async () => {
-    testServer.server.use(networkFailure(mockPaths.health))
-    await renderHome()
-
-    expect(within(screen.getByRole('alert')).getByText(health.failures.network)).toBeVisible()
-  })
-
-  it('says so when the payload no longer matches the schema', async () => {
+/**
+ * U6, at the page level — a broken contract is shown, not swallowed.
+ *
+ * This is also the one failure the page reaches without waiting out a backoff: a
+ * body that does not match the schema is not retried, because the same request
+ * would produce the same wrong body (see `isWorthRetrying`).
+ */
+describe('a payload that no longer matches the schema', () => {
+  it('is reported instead of rendered', async () => {
     testServer.server.use(malformedResponse(mockPaths.health, driftedHealthPayload))
-    await renderHome()
+    render(<HomePage />)
 
-    expect(
-      within(screen.getByRole('alert')).getByText(health.failures.malformed_response),
-    ).toBeVisible()
+    const alert = await screen.findByRole('alert')
+
+    expect(within(alert).getByText(health.failures.malformed_response)).toBeVisible()
   })
 
   it('keeps the rest of the page up', async () => {
-    testServer.server.use(networkFailure(mockPaths.health))
-    await renderHome()
+    testServer.server.use(malformedResponse(mockPaths.health, driftedHealthPayload))
+    render(<HomePage />)
 
+    expect(await screen.findByText(wake.failureTitle)).toBeVisible()
     expect(screen.getByRole('heading', { level: 1 })).toBeVisible()
     expect(screen.queryByText(health.uptimeLabel)).toBeNull()
   })
@@ -112,9 +133,9 @@ describe('the call itself', () => {
       appIdsSeen.push(request.headers.get(APP_ID_HEADER) ?? '(none)')
     })
 
-    await renderHome()
+    render(<HomePage />)
+    await screen.findByText(healthOk.version)
 
     expect(appIdsSeen).toEqual(['shop'])
-    testServer.server.events.removeAllListeners('request:start')
   })
 })

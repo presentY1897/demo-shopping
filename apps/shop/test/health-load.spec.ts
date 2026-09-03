@@ -31,3 +31,26 @@ describe('loadHealth', () => {
     expect(result.endpoint).toBe('http://api.test.invalid')
   })
 })
+
+/**
+ * A build with no API address cannot be fixed by asking again, and each attempt
+ * would be a request against a free instance whose running time is billed
+ * (TASK-0009 R8). The sequence has to recognise that and stop.
+ */
+describe('the wake-up sequence with no API address', () => {
+  it('gives up after one attempt instead of spending the retry budget', async () => {
+    vi.stubEnv('NEXT_PUBLIC_API_URL', undefined)
+    vi.resetModules()
+
+    const { wakeApi } = await import('@/lib/wake')
+    const { WAKE_POLICY } = await import('@/lib/wake-policy')
+    const attempts: number[] = []
+
+    const result = await wakeApi(WAKE_POLICY, new AbortController().signal, (attempt) => {
+      attempts.push(attempt)
+    })
+
+    expect(result).toMatchObject({ ok: false, reason: 'configuration' })
+    expect(attempts).toEqual([1])
+  })
+})
