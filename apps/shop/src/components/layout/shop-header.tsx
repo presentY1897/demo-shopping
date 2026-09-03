@@ -45,7 +45,13 @@ export function ShopHeader({
 
   return (
     <header className="bg-surface border-border sticky top-0 z-30 border-b">
-      <PageContainer className="h-control-lg flex items-center gap-2">
+      {/*
+        `gap-1` and the `sm` controls below are not cosmetic. At 360px with the
+        minimal step the spacing unit is 5px, which makes a `control-md` button
+        55px wide; four of those plus the logo overflow the row by 20px, which a
+        real browser showed and no unit test would have (TASK-0018 6.1 F5).
+      */}
+      <PageContainer className="h-control-lg flex items-center gap-1">
         {inlineCategories ? null : <MobileMenu messages={messages} />}
 
         <NavLink
@@ -132,7 +138,7 @@ function IconLink({
 }) {
   return (
     <NavLink
-      className="size-control-md touch-target text-fg hover:bg-surface-muted inline-flex items-center justify-center rounded-md"
+      className="size-control-sm touch-target text-fg hover:bg-surface-muted inline-flex items-center justify-center rounded-md"
       href={href}
       pendingLabel={pendingLabel}
     >
