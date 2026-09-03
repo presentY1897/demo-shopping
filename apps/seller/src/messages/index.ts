@@ -1,5 +1,5 @@
 import { ko } from './ko'
-import type { Messages } from './types'
+import type { HealthMessages, Messages, SearchReadinessMessages, WakeMessages } from './types'
 
 /** Korean first (DECISIONS 1장). Other locales are added to `catalogs`. */
 export const DEFAULT_LOCALE = 'ko'
@@ -12,4 +12,4 @@ export function messagesFor(locale: Locale = DEFAULT_LOCALE): Messages {
   return catalogs[locale]
 }
 
-export type { Messages }
+export type { HealthMessages, Messages, SearchReadinessMessages, WakeMessages }
