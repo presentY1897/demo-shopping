@@ -32,10 +32,12 @@ interface CategoryTreeItemProps {
  *
  * **It contains no focusable element.** The expand chevron is a decorative span
  * with a mouse handler, and every action — rename, move, retire — is a button in
- * the toolbar beside the tree. A `<button>` inside a `role="treeitem"` is an axe
- * `nested-interactive` violation and puts two competing focus models on the same
- * row (TASK-0029 4장); the keyboard reaches everything through the arrow keys
- * and the toolbar instead.
+ * the toolbar beside the tree. A `<button>` in here would cost the tree its
+ * single-tab-stop property: Tab would stop forty times over, and reaching a
+ * row's controls would need the treegrid key contract instead of this one
+ * (TASK-0029 4장). axe does not flag it — `nested-interactive` only covers roles
+ * whose children are presentational, which `treeitem` is not — so the rule is
+ * held by `categories-page.spec.tsx`, which checks that Tab leaves the tree.
  */
 export function CategoryTreeItem({
   item,
@@ -69,6 +71,15 @@ export function CategoryTreeItem({
       }`}
       data-category-id={row.id}
       onClick={() => {
+        onSelect(row.id)
+      }}
+      /*
+        Selection follows focus, which is what the single-select tree pattern
+        asks for — and what keeps the roving tabindex, the toolbar and the
+        arrow keys all talking about the same row. A tree where the focused row
+        and the "selected" row could differ would move the wrong category.
+      */
+      onFocus={() => {
         onSelect(row.id)
       }}
       onKeyDown={onKeyDown}

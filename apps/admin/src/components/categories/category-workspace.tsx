@@ -296,12 +296,9 @@ export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
         }
         error={
           <ErrorState
-            action={
-              <Button onClick={reload} variant="primary">
-                {messages.retryLabel}
-              </Button>
-            }
             description={state.status === 'error' ? describe(state.failure) : undefined}
+            onRetry={reload}
+            retryLabel={messages.retryLabel}
             title={messages.errorTitle}
           />
         }

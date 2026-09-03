@@ -23,8 +23,8 @@ interface CategoryToolbarProps {
 /**
  * Everything that can be done to the selected category.
  *
- * It sits **outside** the tree, which is what lets the tree be a single tab stop
- * and keeps a focusable control out of every `treeitem` (TASK-0029 4장). A
+ * It sits **outside** the tree, which is what lets the tree stay a single tab
+ * stop — the property the whole keyboard contract rests on (TASK-0029 4장). A
  * pointer and a keyboard reach the same handlers from here; `Alt`+arrow in the
  * tree is a shortcut for the four move buttons, not a second implementation.
  *
