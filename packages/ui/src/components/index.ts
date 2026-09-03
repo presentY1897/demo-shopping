@@ -1,5 +1,5 @@
 /**
- * The base component set (TASK-0015).
+ * The base component set (TASK-0015) and the data display set (TASK-0016).
  *
  * A barrel rather than one entry point per component: the `'use client'`
  * boundary is drawn *inside* the modules, not by this file. A server component
@@ -71,3 +71,11 @@ export { Accordion, ACCORDION_TYPES } from './accordion'
 export type { AccordionItemSpec, AccordionProps, AccordionType } from './accordion'
 
 export { CheckIcon, ChevronDownIcon, CloseIcon, MinusIcon } from './icons'
+
+/* ------------------------------------------------ data display (TASK-0016) -- */
+
+export { Card, CARD_ELEMENTS, CARD_VARIANTS } from './card'
+export type { CardElement, CardProps, CardVariant } from './card'
+
+export { Grid, GRID_COLUMNS, GRID_ELEMENTS, GRID_GAPS } from './grid'
+export type { GridColumns, GridElement, GridGap, GridProps } from './grid'
