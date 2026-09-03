@@ -79,9 +79,9 @@ describe('HealthService', () => {
       check: () => new Promise<HealthStatus>((resolve) => setTimeout(() => resolve('ok'), 50)),
     })
 
-    const startedAt = Date.now()
+    const startedAt = performance.now()
     await new HealthService([slow('database'), slow('search')], CONFIG).check()
 
-    expect(Date.now() - startedAt).toBeLessThan(90)
+    expect(performance.now() - startedAt).toBeLessThan(90)
   })
 })
