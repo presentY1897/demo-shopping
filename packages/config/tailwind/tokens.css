@@ -136,6 +136,14 @@
   --color-muted: var(--color-surface-muted);
   --color-muted-fg: var(--color-fg-subtle);
 
+  /*
+   * The scrim behind a modal or drawer (TASK-0015). Mixed from the neutral ramp
+   * rather than written as a fourth literal, so it follows the palette instead
+   * of drifting from it — and so no overlay component has to reach for
+   * `bg-black/50`, which is the one colour the token layer would not own.
+   */
+  --color-overlay: color-mix(in oklab, var(--color-neutral-950) 55%, transparent);
+
   /* Focus ring. Named apart from primary: an app may recolour primary, but the
      ring has to stay findable, so it is changed knowingly. */
   --color-ring: var(--color-blue-500);
