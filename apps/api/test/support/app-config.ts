@@ -1,4 +1,5 @@
 import type { AppConfig } from '../../src/config/app-config.js'
+import type { ObjectStorageConfig } from '../../src/config/storage-config.js'
 
 /**
  * Configuration for an application booted inside a test.
@@ -12,6 +13,26 @@ export interface TestConfigOptions {
   readonly databaseUrl: string
   readonly searchHost?: string
   readonly version?: string
+  /** `null` boots the API as if R2 were not configured (TASK-0011 4.5). */
+  readonly storage?: ObjectStorageConfig | null
+}
+
+/**
+ * Credentials for a bucket that does not exist, and cannot.
+ *
+ * Presigning is pure computation — no request leaves the process — so the real
+ * implementation runs in every spec and nothing is mocked (gate A6 applies to
+ * the database; QUALITY-GATES 6장 keeps R2 itself out of the suite). The hosts
+ * are `.invalid`, reserved by RFC 6761 and never resolvable, so a future change
+ * that accidentally introduces a call fails loudly instead of reaching out.
+ */
+export const testStorageConfig: ObjectStorageConfig = {
+  endpoint: 'https://storage.test.invalid',
+  bucket: 'shopping-test',
+  region: 'auto',
+  accessKeyId: 'test-access-key-id',
+  secretAccessKey: 'test-secret-access-key-0000000000000000',
+  publicBaseUrl: 'https://cdn.test.invalid',
 }
 
 /**
@@ -28,6 +49,7 @@ export function testAppConfig({
   databaseUrl,
   searchHost = CLOSED_PORT,
   version = '0.0.0-test',
+  storage = testStorageConfig,
 }: TestConfigOptions): AppConfig {
   return {
     nodeEnv: 'test',
@@ -51,6 +73,7 @@ export function testAppConfig({
       masterKey: 'test-master-key',
       timeoutMs: 300,
     },
+    storage,
     corsOrigins: ['http://127.0.0.1:3000'],
   }
 }

@@ -124,7 +124,7 @@ function hmac(key: Buffer, value: string): Buffer {
 
 /** The four-step derivation: date → region → service → `aws4_request`. */
 function signingKey(secretAccessKey: string, scopeParts: readonly string[]): Buffer {
-  let key = Buffer.from(`AWS4${secretAccessKey}`, 'utf8')
+  let key: Buffer = Buffer.from(`AWS4${secretAccessKey}`, 'utf8')
 
   for (const part of scopeParts) key = hmac(key, part)
 
