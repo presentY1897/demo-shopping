@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M04 인증·계정 |
-| 상태 | 승인됨 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-03 |
 | 브랜치 | `feature/backend-test-infra` |
 | 선행 작업 | TASK-0007, TASK-0020 |
@@ -88,14 +88,15 @@
 ```
 globalSetup (실행당 1회, 메인 프로세스)
   1. 유지보수 DB(postgres)에 pg 클라이언트 1개로 접속
-  2. 마이그레이션 지문 계산 — prisma/migrations/** 의 SHA-256
+  2. 마이그레이션 지문 계산 — prisma/migrations/** + 픽스처 SQL 의 SHA-256
   3. 템플릿 DB shopping_test_tpl
        지문이 같으면            → 그대로 재사용 (로컬 재실행이 빨라진다)
-       다르거나 없으면          → DROP → CREATE → `prisma migrate deploy` → 지문 기록
+       다르거나 없으면          → DROP → CREATE → `prisma migrate deploy`
+                                → 픽스처 테이블 → 지문 기록
   4. 템플릿 커넥션을 닫는다  ← CREATE DATABASE ... TEMPLATE 의 전제
   5. i = 1..maxWorkers
-       DROP DATABASE IF EXISTS shopping_test_w<i> (FORCE)
-       CREATE DATABASE shopping_test_w<i> TEMPLATE shopping_test_tpl
+       지문이 같으면            → 그대로 재사용
+       다르거나 없으면          → DROP (FORCE) → CREATE ... TEMPLATE → 지문 기록
   6. 유지보수 커넥션을 닫는다
 
 setupFiles (워커 프로세스마다)
@@ -111,6 +112,22 @@ useDatabase()  (DB 를 쓰는 describe 가 명시적으로 호출)
 **템플릿 복제가 싼 이유.** `CREATE DATABASE ... TEMPLATE` 은 SQL 을 다시 실행하지 않고 데이터 디렉터리를 **파일 복사**한다. 마이그레이션 2개짜리 지금 스키마의 템플릿은 8MB 남짓이라 복제 1회가 100~200ms 다. 워커마다 `migrate deploy` 를 돌리면 CLI 부팅만 워커당 1.5초씩 붙는다.
 
 **전제 하나**: `CREATE DATABASE ... TEMPLATE` 은 **원본에 다른 세션이 붙어 있으면 실패**한다. 그래서 위 3~4 단계에서 템플릿 커넥션을 명시적으로 닫고, 5 단계의 `DROP ... (FORCE)` 로 이전 실행이 죽으면서 남긴 커넥션을 정리한다.
+
+**워커 DB 도 지문이 같으면 재사용한다** (구현 중 계측으로 추가한 단계). 처음 계획은 매 실행마다 워커 DB 를 DROP 하고 다시 복제하는 것이었는데, 실측하니 비싼 쪽이 복제가 아니라 삭제였다.
+
+| 연산 | 실측 (PostgreSQL 17.11, WSL2) |
+| --- | --- |
+| `CREATE DATABASE ... TEMPLATE` (기본 WAL_LOG) | **70ms** |
+| `CREATE DATABASE ... TEMPLATE STRATEGY FILE_COPY` | 3,351ms |
+| `DROP DATABASE ... (FORCE)` (데이터가 있는 DB) | **1,200~2,000ms** |
+
+`DROP DATABASE` 는 파일을 안전하게 지우기 위해 **즉시 체크포인트를 강제**한다. 그래서 매번 지우면 워커 4개에 5초 이상이 붙는데, 이 삭제가 사는 것이 없다 — 행은 어차피 테스트마다 TRUNCATE 되므로 **재사용한 DB 와 갓 만든 DB 는 테스트 입장에서 구분되지 않는다.** DB 이름과 개수는 그대로이므로 F8 의 "남은 DB = 템플릿 1 + 워커 4" 도 유지된다.
+
+지문이 볼 수 없는 상태(손으로 건드렸거나 실행이 두 문장 사이에서 죽은 경우)를 위해 `TEST_DB_REBUILD=1` 로 전부 다시 만들 수 있다.
+
+CI 는 매번 빈 클러스터에서 시작하므로 `DROP DATABASE IF EXISTS` 가 무비용이고, 실측 워커당 **36ms** 가 나온다.
+
+**픽스처 테이블도 템플릿에 넣는다.** 4.5 의 동시성 실증에는 재고 행이 필요한데 재고 스키마는 TASK-0048 이다. `apps/api/test/setup/test-schema.sql` 이 `TestStock`·`TestReservation` 을 템플릿에 만들고, 워커 DB 가 복제로 물려받으며, `information_schema` 기반 TRUNCATE 가 다른 테이블과 똑같이 비운다. 프로덕션 스키마(`schema.prisma`·마이그레이션)는 손대지 않았다.
 
 **TRUNCATE 대상은 조회해서 만든다.** 목록을 손으로 적으면 M05 에서 테이블이 20개 늘어날 때마다 여기를 고쳐야 하고, 빠뜨린 테이블은 조용히 데이터를 남긴다.
 
@@ -159,11 +176,15 @@ CI 워크플로에 붙는 것:
 ### 4.4 통합 테스트 하네스
 
 ```ts
-// apps/api/test/harness — 세 조각
-const db  = useDatabase()          // 워커 DB 연결 + beforeEach TRUNCATE
-const app = await useApiApp({ db, clock: fixedClock('2026-09-03T00:00:00Z') })
-const res = await app.get('/health', healthResponseSchema)   // zod parse 포함
+// apps/api/test/support — 세 조각 (구현된 형태)
+const db  = useDatabase()                                   // 워커 DB 연결 + beforeEach TRUNCATE
+const api = useApiApp({ database: db, clock: fixedClock('2026-09-03T00:00:00Z') })
+const res = await api.client.getHealth()                    // zod parse 포함
 ```
+
+`useApiApp` 은 `main.ts` 와 **같은 `configureApp()`** 으로 앱을 구성한다 (구현 중 `main.ts` 에서 분리). 하네스가 프리픽스·버저닝·미들웨어 순서를 복사하면 스펙이 프로덕션과 *닮은* 앱을 검증하게 되고, 어긋나는 순간은 CI 가 아니라 브라우저에서 드러난다.
+
+시각 대역은 `@nestjs/testing` 의 `overrideProvider` 로 합성 루트에서 한 번만 교체한다 (8장).
 
 **HTTP 는 실제로 부른다.** Nest 앱을 `listen(0)` 으로 임시 포트에 띄우고 `@shopping/shared` 의 `createApiClient` 로 호출한다.
 
@@ -280,23 +301,29 @@ Prisma 를 거치지 않고 **raw SQL 로 시도한다.** 애플리케이션 검
 
 ### 6.1 기능
 
-| # | 기준 | 측정 방법 | 목표 | 충족 |
-| --- | --- | --- | --- | --- |
-| F1 | **CI 에서 DB 를 쓰는 테스트가 실제로 실행되고 통과한다** | GitHub Actions `test` job 로그 | `useDatabase()` 를 쓰는 스펙 실행 수 **≥ 8**, 실패 0, **skip 0** | [ ] |
-| F2 | **동시성 테스트가 경합을 재현한다** | 재고 1개 · 동시 요청 2건. `stock-contention.spec.ts` 를 20회 반복 | 성공 1 · 실패 1 이 **20/20**, 재고 음수 **0건**, 재고 최종값 0 | [ ] |
-| F3 | **하네스가 경합을 실제로 만든다** (음성 대조군) | 같은 스펙의 read-modify-write 대조 케이스 | 대조군에서 초과판매 **재현 20/20** (예약 2건 · 재고 0). 재현되지 않으면 F2 는 무의미하므로 F3 실패 시 F2 불충족 | [ ] |
-| F4 | **S5 — 제약이 실 DB 에서 위반을 거부한다** | raw SQL 로 위반 시도 (4.8 표) | 거부 **5/5**, SQLSTATE `23505` 2건 · `23514` 3건, 오류의 제약 이름 일치 5/5 | [ ] |
-| F5 | **술어가 정확하다** (조건을 잘못 적은 경우 검출) | 4.8 표의 "허용되어야 하는 것" 8건 시도 | 전부 성공 **8/8** (거부되면 실패) | [ ] |
-| F6 | 파일 읽기 우회책 해소 | `apps/api/src/prisma/schema-guards.spec.ts` | 마이그레이션 SQL 문자열을 검사하는 **제약 단언 0건**. 남는 것은 SQL 동반 여부와 S4(부동소수) 검사뿐 | [ ] |
-| F7 | **테스트 전체 소요 시간** | 로컬 `pnpm test` (4워커) 3회 중앙값 / CI `test` job / CI 전체 | 로컬 **90초 이하** · CI job **3분 이하** · CI wall clock **5분 이하** | [ ] |
-| F8 | **워커 병렬 실행 시 간섭이 없다** | `maxWorkers=4` 로 `pnpm test` **10회 연속** | 실패 0, 순서 의존 실패 0. 실행 후 남은 DB = 템플릿 1 + 워커 4 (그 외 0) | [ ] |
-| F9 | 테스트 사이 초기화 | 임의 스펙 시작 시점의 전 테이블 행 수와 시퀀스 | 모든 테이블 **0행**, `RESTART IDENTITY` 로 다음 ID **1** | [ ] |
-| F10 | 로컬에서 같은 방식으로 돈다 | 인프라 기동 후 `pnpm test` **한 번** | 추가 명령 **0개**. CI 와 postgres 이미지 태그·DB 이름·실행 경로 동일 | [ ] |
-| F11 | 인프라 미기동 시 진단 | postgres 를 내린 상태에서 `pnpm test` | **5초 이내** 종료, exit code ≠ 0, `pnpm infra:up` 을 지시하는 한국어 메시지, **침묵 skip 0건** | [ ] |
-| F12 | 이미지 버전 드리프트 방지 | `ci.yml` 과 `docker-compose.yml` 의 postgres 태그 비교 스펙 | 두 값이 다르면 실패. 현재 값 `postgres:17.11-alpine` 일치 | [ ] |
-| F13 | 시간 주입 | `apps/api/src/**` 에서 `new Date()` · `Date.now()` 직접 호출 (clock 모듈 제외) | **0건** (`pnpm lint` error 0 으로 확인) | [ ] |
-| F14 | 커버리지 리포트 | `pnpm test:coverage` | `apps/api` 라인 커버리지 수치가 출력된다. **임계값은 설정하지 않는다** (M05) | [ ] |
-| F15 | 템플릿 복제 비용 | globalSetup 의 워커 DB 생성 구간 계측 로그 | 워커당 **200ms 이하**, 4워커 합계 1초 이하 | [ ] |
+| # | 기준 | 측정 방법 | 목표 | 결과 | 충족 |
+| --- | --- | --- | --- | --- | --- |
+| F1 | **CI 에서 DB 를 쓰는 테스트가 실제로 실행되고 통과한다** | GitHub Actions `test` job 로그 (run 33729833665) | 스펙 실행 수 ≥ 8, 실패 0, skip 0 | `useDatabase()` 를 쓰는 스펙 **4파일 · 67 테스트**, `apps/api` 전체 **254 passed (254)** · skip 0 | [x] |
+| F2 | **동시성 테스트가 경합을 재현한다** | 재고 1개 · 동시 요청 2건, 20회 반복 | 성공 1 · 실패 1 이 20/20, 재고 음수 0건, 최종값 0 | **20/20**. 두 호출의 `pg_backend_pid()` 가 매번 서로 다름. 요청 5건 케이스도 성공 1 · 재고 0 | [x] |
+| F3 | **하네스가 경합을 실제로 만든다** (음성 대조군) | read-modify-write 대조 케이스 | 초과판매 재현 20/20 | **20/20** — 예약 2건 · 재고 0 (초과판매 1건). `barrier(2)` 로 "모두 읽은 뒤 쓴다" 를 강제해 결정적 | [x] |
+| F4 | **S5 — 제약이 실 DB 에서 위반을 거부한다** | raw SQL 로 위반 시도 (4.8 표) | 거부 5/5, `23505` 2건 · `23514` 3건, 제약 이름 일치 | **5/5**. `Address_userId_default_key`·`User_googleSub_active_key` → `23505`, `User_demo_expiry_check`·`User_google_identity_check`·`Seller_commissionRateBp_check` → `23514`. 제약 이름 5/5 일치 | [x] |
+| F5 | **술어가 정확하다** | 4.8 표의 "허용되어야 하는 것" | 8건 이상 전부 성공 | **10/10** — 기본 아닌 배송지 다수 · 사용자별 기본 1개씩 · 탈퇴 후 재가입 · `googleSub` NULL 데모 다수 · 데모/실계정 만료 조합 2건 · 데모/탈퇴 신원 면제 2건 · 수수료 `0`·`10000`·`NULL` | [x] |
+| F6 | 파일 읽기 우회책 해소 | `src/prisma/schema-guards.spec.ts` | 제약 단언 0건 | **0건**. 남은 것은 마이그레이션 SQL 동반 여부 2건과 S4(부동소수) 3건 | [x] |
+| F7 | **테스트 전체 소요 시간** | 로컬 3회 중앙값 / CI `test` job / CI 전체 | 로컬 90초 · CI job 3분 · wall clock 5분 이하 | 로컬 **3.9초** (3.95 / 3.96 / 3.75) · CI job **62초** · CI wall clock **67초** | [x] |
+| F8 | **워커 병렬 실행 시 간섭이 없다** | `maxWorkers=4` 로 10회 연속 | 실패 0, 남은 DB = 템플릿 1 + 워커 4 | **10/10 통과**. `pg_database` 에 `shopping_test_tpl` + `shopping_test_w1..4` 만 존재 | [x] |
+| F9 | 테스트 사이 초기화 | 스펙 시작 시점의 행 수와 시퀀스 | 모든 테이블 0행, 다음 ID 1 | `test/db/isolation.spec.ts` — 전 테이블 0행, `TestStock` 첫 행 id **1** (연속 두 테스트 모두) | [x] |
+| F10 | 로컬에서 같은 방식으로 돈다 | 인프라 기동 후 `pnpm test` 한 번 | 추가 명령 0개 | 추가 명령 0개. 이미지 태그·DB 이름·실행 경로 모두 CI 와 동일 | [x] |
+| F11 | 인프라 미기동 시 진단 | postgres 중지 후 `pnpm test` | 5초 이내, exit ≠ 0, 한국어 안내, skip 0 | **3.3초** · exit **1** · `pnpm infra:up` 을 지시하는 한국어 메시지 · skip 0 | [x] |
+| F12 | 이미지 버전 드리프트 방지 | 두 파일의 postgres 태그 비교 스펙 | 다르면 실패, 현재 값 일치 | `test/ci/postgres-image-parity.spec.ts` — 두 파일 모두 `postgres:17.11-alpine`. 패치 버전 고정 여부까지 검사 | [x] |
+| F13 | 시간 주입 | `new Date()` · `Date.now()` 직접 호출 | 0건 (`pnpm lint` error 0) | **0건**. 예외는 `src/common/clock.ts` 의 인라인 disable 1줄. `apps/api` 전체(`src` + `test`)에 규칙 적용 | [x] |
+| F14 | 커버리지 리포트 | `pnpm test:coverage` | 라인 커버리지 출력, 임계값 미설정 | `apps/api` **라인 88.94%** (구문 86.61 · 분기 69.54 · 함수 92.72). 임계값 미설정 | [x] |
+| F15 | 템플릿 복제 비용 | globalSetup 계측 로그 | 워커당 200ms 이하, 4워커 합계 1초 이하 | **CI 워커당 36ms · 합계 145ms**, 로컬 최초 144ms, 재실행 1ms. 다만 로컬 **강제 재생성**(`TEST_DB_REBUILD=1`)은 워커당 1.3초 — 복제(70ms)가 아니라 `DROP DATABASE` 가 강제하는 즉시 체크포인트 비용이며, 정상 경로는 이 DROP 을 하지 않는다 | [x] |
+
+**F15 의 단서.** 실측하면 `CREATE DATABASE ... TEMPLATE` 은 70ms, `DROP DATABASE` 는
+1.2~2초다(WSL2). 그래서 워커 DB 는 마이그레이션 지문이 같으면 **버리지 않고 재사용**한다 —
+행은 어차피 테스트마다 TRUNCATE 되므로 재사용한 DB 와 새 DB 는 테스트 입장에서 구분되지
+않는다. CI 는 매번 DB 가 없는 상태에서 시작하므로 DROP 이 무비용이고, 그래서 CI 수치가
+36ms 로 나온다.
 
 ### 6.2 품질 게이트
 
@@ -314,12 +341,12 @@ Prisma 를 거치지 않고 **raw SQL 로 시도한다.** 애플리케이션 검
 
 ### 6.4 문서
 
-| # | 기준 | 충족 |
-| --- | --- | --- |
-| D1 | 이 문서의 상태를 `완료` 로 변경하고 인덱스 2곳(`docs/tasks/README.md`, `docs/tasks/M04-auth/README.md`) 갱신 | [ ] |
-| D2 | 하네스 API 와 작성 규약(4.9)을 `README.md` 테스트 절에 반영 | [ ] |
-| D3 | 새 환경변수가 생기면 `.env.example` 갱신 | [ ] |
-| D5 | 도입한 라이브러리 버전을 8장에 기록 | [ ] |
+| # | 기준 | 결과 | 충족 |
+| --- | --- | --- | --- |
+| D1 | 이 문서의 상태를 `완료` 로 변경하고 인덱스 2곳(`docs/tasks/README.md`, `docs/tasks/M04-auth/README.md`) 갱신 | 상태·6장·8장·9장 갱신 완료. **인덱스 2곳은 오케스트레이터가 별도 커밋** (아래 단서) | [x] |
+| D2 | 하네스 API 와 작성 규약(4.9)을 `README.md` 테스트 절에 반영 | `README.md` 에 `## 테스트` 절 신설 — 격리 방식·하네스 3조각·T1~T7·대역 규약·시각 주입 | [x] |
+| D3 | 새 환경변수가 생기면 `.env.example` 갱신 | `TEST_DB_REBUILD` · `VITEST_MAX_WORKERS` 를 `# --- Tests ---` 절에 문서화 | [x] |
+| D5 | 도입한 라이브러리 버전을 8장에 기록 | pg 8.23.0 · @types/pg 8.23.1 · @vitest/coverage-v8 4.1.11 · @nestjs/testing 12.0.1 | [x] |
 
 D1 의 인덱스 2곳은 병행 작업 중 충돌을 막기 위해 **오케스트레이터가 별도 커밋으로 갱신**한다 (TASK-0007·0014·0015 와 같은 방식).
 
@@ -337,18 +364,23 @@ D1 의 인덱스 2곳은 병행 작업 중 충돌을 막기 위해 **오케스�
 
 ## 8. 확정된 버전
 
-구현 시 채운다.
-
 | 패키지 | 버전 | 용도 |
 | --- | --- | --- |
-| pg | | 유지보수 커넥션(DB 생성·복제·TRUNCATE). `@prisma/adapter-pg` 의 전이 의존이지만 직접 쓰므로 명시 (dev) |
-| @types/pg | | 위의 타입 (dev) |
-| @vitest/coverage-v8 | | 커버리지 리포트 (dev) |
+| pg | 8.23.0 | 유지보수 커넥션(DB 생성·복제·TRUNCATE)과 raw SQL 제약 검증. `@prisma/adapter-pg` 의 전이 의존이지만 직접 쓰므로 명시 (dev) |
+| @types/pg | 8.23.1 | 위의 타입 (dev) |
+| @vitest/coverage-v8 | 4.1.11 | 커버리지 리포트 (dev) |
+| @nestjs/testing | 12.0.1 | `overrideProvider` — 합성 루트에서 `CLOCK` 대역 교체 (dev). 계획에 없던 추가, 아래 참조 |
 
 - postgres 이미지: `postgres:17.11-alpine` — **새로 고르는 것이 아니라 `docker-compose.yml` 과 같은 값을 쓰는 것**이 요점이다 (F12)
+
+**`@nestjs/testing` 을 추가한 이유.** 4.6 이 "테스트 모듈에 포트를 갈아끼우는 방법"을
+요구하는데, 이 저장소에는 그 수단이 없었다. 대안은 `AppModule.forRoot()` 에 테스트용
+인자를 뚫는 것인데, 그러면 프로덕션 합성 루트가 테스트를 알게 된다. `overrideProvider` 는
+Nest 가 공식으로 제공하는 자리이고 프로덕션 코드에 흔적을 남기지 않는다.
 
 ## 9. 변경 이력
 
 | 날짜 | 내용 |
 | --- | --- |
 | 2026-09-03 | 최초 작성. D-207(테스트 레이어와 대역 규약)의 백엔드 절반을 실행 가능하게 만드는 TASK 로 신설 |
+| 2026-09-03 | 완료. CI 에 postgres 서비스 추가, 워커별 DB(템플릿 복제) + TRUNCATE 격리, `useDatabase()`·`useApiApp()`·`concurrently()` 하네스, Clock 포트와 `new Date()` 금지 린트, S5 를 실 DB 검증으로 승격. F1~F15 충족, CI 4 job green (test 62초 · wall clock 67초). 계획 대비 추가: `@nestjs/testing`(포트 교체 수단), 워커 DB 재사용(`DROP DATABASE` 체크포인트 비용 회피), `configureApp` 분리(하네스가 `main.ts` 와 같은 설정을 쓰도록) |
