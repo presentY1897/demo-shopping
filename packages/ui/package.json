@@ -7,6 +7,7 @@
     ".": "./src/index.ts",
     "./components": "./src/components/index.ts",
     "./density": "./src/density/index.ts",
+    "./format": "./src/format/index.ts",
     "./preview": "./src/preview/index.ts"
   },
   "scripts": {
