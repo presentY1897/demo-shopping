@@ -1,14 +1,14 @@
 # Task 인덱스
 
-전체 **107개** TASK. **M01 7개 + TASK-0014 · TASK-0015 · TASK-0020 · TASK-0105 완료**, 나머지 96개는 **승인 대기** 상태다.
+전체 **116개** TASK — 유효 **112개** + 폐기 4개(D-208 레이어 분할). **11개 완료**, 101개 **승인 대기**.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
 | [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | **7/7 완료** |
 | [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 0/7 |
 | [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, Radix 컴포넌트, 폼, 레이아웃, Storybook | 2/7 |
-| [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점, 테스트 기반 | 2/11 |
-| [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | 0/10 |
+| [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점, 테스트 기반 | 2/14 |
+| [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | 0/12 |
 | [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | 0/9 |
 | [M07](./M07-cart-order/) 장바구니·주문 | 장바구니, 금액 계산 엔진, 재고 예약, 주문 2단 분할 | 0/7 |
 | [M08](./M08-payment/) 결제 | 프로바이더 추상화, 가상 카드, 토스 연동, 웹훅, 실패 복구 | 0/7 |
@@ -64,7 +64,7 @@
 
 </details>
 
-<details><summary><b>M04. 인증·계정</b> (2/11)</summary>
+<details><summary><b>M04. 인증·계정</b> (2/14)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -74,15 +74,20 @@
 | [TASK-0023](./M04-auth/TASK-0023-auth-guard.md) | 인증 UI · 권한 가드 | 승인 대기 |
 | [TASK-0024](./M04-auth/TASK-0024-demo-account.md) | 데모 계정 발급 | 승인 대기 |
 | [TASK-0025](./M04-auth/TASK-0025-demo-cleanup.md) | 데모 만료 · 정리 스케줄러 | 승인 대기 |
-| [TASK-0026](./M04-auth/TASK-0026-seller-onboarding.md) | 판매자 입점 신청 · 승인 | 승인 대기 |
-| [TASK-0027](./M04-auth/TASK-0027-profile-address.md) | 프로필 · 배송지 관리 | 승인 대기 |
+| ~~TASK-0026~~ | ~~판매자 입점 신청 · 승인~~ | **폐기** → 0108 · 0109 · 0110 |
+| ~~TASK-0027~~ | ~~프로필 · 배송지 관리~~ | **폐기** → 0111 · 0112 |
+| [TASK-0108](./M04-auth/TASK-0108-seller-onboarding-api.md) | 판매자 입점 상태 머신 · API | 승인 대기 |
+| [TASK-0109](./M04-auth/TASK-0109-seller-onboarding-page.md) | 판매자 입점 신청 · 스토어 설정 화면 | 승인 대기 |
+| [TASK-0110](./M04-auth/TASK-0110-seller-review-admin.md) | 관리자 입점 심사 화면 | 승인 대기 |
+| [TASK-0111](./M04-auth/TASK-0111-profile-address-api.md) | 프로필 · 배송지 · 사용자 설정 API | 승인 대기 |
+| [TASK-0112](./M04-auth/TASK-0112-profile-address-page.md) | 프로필 · 배송지 화면 | 승인 대기 |
 | [TASK-0105](./M04-auth/TASK-0105-rbac.md) | 퍼미션 기반 권한 체계 (RBAC) | 완료 |
 | [TASK-0106](./M04-auth/TASK-0106-backend-test-infra.md) | 백엔드 통합 테스트 기반 | 승인 대기 |
 | [TASK-0107](./M04-auth/TASK-0107-frontend-api-mocking.md) | 프론트 API 모킹 · 계약 고정 | 승인 대기 |
 
 </details>
 
-<details><summary><b>M05. 카탈로그</b> (0/10)</summary>
+<details><summary><b>M05. 카탈로그</b> (0/12)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -92,8 +97,12 @@
 | [TASK-0031](./M05-catalog/TASK-0031-attribute-admin.md) | 관리자 속성 관리 화면 | 승인 대기 |
 | [TASK-0032](./M05-catalog/TASK-0032-product-schema.md) | 상품 · 옵션 · Variant 스키마 | 승인 대기 |
 | [TASK-0033](./M05-catalog/TASK-0033-image-upload.md) | 이미지 업로드 위젯 | 승인 대기 |
-| [TASK-0034](./M05-catalog/TASK-0034-product-editor.md) | 판매자 상품 등록 · 수정 | 승인 대기 |
-| [TASK-0035](./M05-catalog/TASK-0035-product-list-seller.md) | 판매자 상품 목록 · 재고 관리 | 승인 대기 |
+| ~~TASK-0034~~ | ~~판매자 상품 등록 · 수정~~ | **폐기** → 0113 · 0114 |
+| ~~TASK-0035~~ | ~~판매자 상품 목록 · 재고 관리~~ | **폐기** → 0115 · 0116 |
+| [TASK-0113](./M05-catalog/TASK-0113-product-write-api.md) | 상품 등록 · 수정 API | 승인 대기 |
+| [TASK-0114](./M05-catalog/TASK-0114-product-editor-page.md) | 판매자 상품 편집기 화면 | 승인 대기 |
+| [TASK-0115](./M05-catalog/TASK-0115-product-list-stock-api.md) | 판매자 상품 목록 · 재고 조정 API | 승인 대기 |
+| [TASK-0116](./M05-catalog/TASK-0116-product-list-stock-page.md) | 판매자 상품 목록 · 재고 관리 화면 | 승인 대기 |
 | [TASK-0036](./M05-catalog/TASK-0036-stock-ledger.md) | 재고 원장 | 승인 대기 |
 | [TASK-0037](./M05-catalog/TASK-0037-seed-data.md) | 시드 데이터 생성기 | 승인 대기 |
 
