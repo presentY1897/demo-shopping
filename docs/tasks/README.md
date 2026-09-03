@@ -1,13 +1,13 @@
 # Task 인덱스
 
-전체 **116개** TASK — 유효 **112개** + 폐기 4개(D-208 레이어 분할). **11개 완료**, TASK-0106 · TASK-0107 **승인됨**, 99개 **승인 대기**.
+전체 **116개** TASK — 유효 **112개** + 폐기 4개(D-208 레이어 분할). **13개 완료**, 99개 **승인 대기**.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
 | [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | **7/7 완료** |
 | [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 0/7 |
 | [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, Radix 컴포넌트, 폼, 레이아웃, Storybook | 2/7 |
-| [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점, 테스트 기반 | 2/14 |
+| [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점, 테스트 기반 | 4/14 |
 | [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | 0/12 |
 | [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | 0/9 |
 | [M07](./M07-cart-order/) 장바구니·주문 | 장바구니, 금액 계산 엔진, 재고 예약, 주문 2단 분할 | 0/7 |
@@ -64,7 +64,7 @@
 
 </details>
 
-<details><summary><b>M04. 인증·계정</b> (2/14)</summary>
+<details><summary><b>M04. 인증·계정</b> (4/14)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -82,8 +82,8 @@
 | [TASK-0111](./M04-auth/TASK-0111-profile-address-api.md) | 프로필 · 배송지 · 사용자 설정 API | 승인 대기 |
 | [TASK-0112](./M04-auth/TASK-0112-profile-address-page.md) | 프로필 · 배송지 화면 | 승인 대기 |
 | [TASK-0105](./M04-auth/TASK-0105-rbac.md) | 퍼미션 기반 권한 체계 (RBAC) | 완료 |
-| [TASK-0106](./M04-auth/TASK-0106-backend-test-infra.md) | 백엔드 통합 테스트 기반 | 승인됨 |
-| [TASK-0107](./M04-auth/TASK-0107-frontend-api-mocking.md) | 프론트 API 모킹 · 계약 고정 | 승인됨 |
+| [TASK-0106](./M04-auth/TASK-0106-backend-test-infra.md) | 백엔드 통합 테스트 기반 | 완료 |
+| [TASK-0107](./M04-auth/TASK-0107-frontend-api-mocking.md) | 프론트 API 모킹 · 계약 고정 | 완료 |
 
 </details>
 

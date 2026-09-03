@@ -193,7 +193,8 @@ apps/
 └── admin/      관리자   (포트 3002, admin.<도메인>)
 packages/
 ├── shared/     공용 타입 · zod 스키마 · API 클라이언트
-├── config/     eslint / tsconfig / prettier 프리셋
+├── api-mocks/  프론트 테스트용 API 대역 (msw). 프로덕션 번들에 들어가지 않는다
+├── config/     eslint / tsconfig / prettier / vitest 프리셋
 └── ui/         공통 UI 컴포넌트
 ```
 
