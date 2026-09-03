@@ -22,7 +22,10 @@ export default defineConfig({
     // `dist` holds a compiled copy of every spec-free source file; restricting
     // the glob to `src` and `test` keeps the suite from ever running build output.
     include: ['src/**/*.spec.ts', 'test/**/*.spec.ts'],
-    setupFiles: ['./vitest.setup.mjs'],
+    // The global setup builds the template database and clones it once per
+    // worker; the setup file points each worker at its own clone.
+    globalSetup: ['./test/setup/global-setup.ts'],
+    setupFiles: ['./vitest.setup.mjs', './test/setup/worker-database.mts'],
     environment: 'node',
     maxWorkers,
     coverage: {
