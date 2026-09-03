@@ -44,6 +44,30 @@ export type {
   UpdateCategoryRequest,
 } from './api/categories.js'
 export { healthEntries } from './api/health-entries.js'
+export {
+  presignedUploadSchema,
+  presignUploadRequestSchema,
+  presignUploadResponseSchema,
+  productImageKeyPattern,
+  productImageKeySchema,
+  UPLOAD_MAX_BYTES,
+  UPLOAD_URL_TTL_SECONDS,
+  uploadContentTypes,
+  uploadContentTypeSchema,
+  uploadFilenameSchema,
+  uploadImageExtensions,
+  uploadImageFormats,
+  uploadPurposes,
+  uploadPurposeSchema,
+  uploadSizeSchema,
+} from './api/uploads.js'
+export type {
+  PresignedUpload,
+  PresignUploadRequest,
+  PresignUploadResponse,
+  UploadContentType,
+  UploadPurpose,
+} from './api/uploads.js'
 export type { HealthEntry } from './api/health-entries.js'
 export { grantRoleRequestSchema, userRolesResponseSchema } from './api/user-roles.js'
 export type { GrantRoleRequest, UserRolesResponse } from './api/user-roles.js'

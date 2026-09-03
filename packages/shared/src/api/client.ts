@@ -28,6 +28,8 @@ import {
   categoryResponseSchema,
   categoryTreeResponseSchema,
 } from './categories.js'
+import type { PresignUploadRequest, PresignUploadResponse } from './uploads.js'
+import { presignUploadResponseSchema } from './uploads.js'
 
 /** Every route is versioned; `v1` is the only version in existence today. */
 export const API_PATH_PREFIX = '/api/v1'
@@ -101,6 +103,17 @@ export interface ApiClient {
     options?: ApiCallOptions,
   ) => Promise<CategoryListResponse>
   deleteCategory: (id: number, options?: ApiCallOptions) => Promise<CategoryResponse>
+  /**
+   * Asks for one presigned upload (TASK-0011).
+   *
+   * The answer is a URL the caller PUTs the file at directly; nothing here
+   * uploads anything. Whatever `headers` and `contentLength` come back with have
+   * to be reproduced exactly on that PUT — they are signed into the URL.
+   */
+  presignUpload: (
+    body: PresignUploadRequest,
+    options?: ApiCallOptions,
+  ) => Promise<PresignUploadResponse>
 }
 
 /** `?rootId=3&includeInactive=true`, or an empty string when nothing is set. */
@@ -307,6 +320,15 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         path: `/categories/${String(id)}`,
         method: 'DELETE',
         schema: categoryResponseSchema,
+        ...callOptions,
+      }),
+
+    presignUpload: (body, callOptions = {}) =>
+      request({
+        path: '/uploads/presign',
+        method: 'POST',
+        body,
+        schema: presignUploadResponseSchema,
         ...callOptions,
       }),
   }
