@@ -15,8 +15,7 @@ import { HealthPanel } from '@/components/health-panel'
 import type { HealthFailureReason } from '@/lib/health'
 import { messagesFor } from '@/messages'
 
-const messages = messagesFor()
-const { health } = messages
+const { health } = messagesFor()
 
 const REASONS: readonly HealthFailureReason[] = [
   'network',
@@ -30,7 +29,7 @@ const REASONS: readonly HealthFailureReason[] = [
 
 describe('every failure reason', () => {
   it.each(REASONS)('%s is announced with its own copy', (reason) => {
-    render(<HealthPanel messages={messages} result={{ ok: false, endpoint: 'x', reason }} />)
+    render(<HealthPanel messages={health} result={{ ok: false, endpoint: 'x', reason }} />)
 
     const alert = screen.getByRole('alert')
 
