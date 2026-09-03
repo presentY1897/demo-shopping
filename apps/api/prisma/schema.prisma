@@ -315,6 +315,22 @@ model RefreshToken {
 // parent's, and a cycle would need a node whose path is longer than itself.
 // Depth then follows from the path, and the range check caps the tree at three
 // levels no matter which request wrote the row.
+//
+// Attribute definitions (TASK-0030) hang off the same tree and add five more
+// hand written rules, for the same reason:
+//
+//   AttributeDefinition_categoryId_key_active_key  one live definition per key
+//   AttributeDefinition_key_format_check           the key is a JSONB/filter identifier
+//   AttributeDefinition_options_check              options exist iff the type has them
+//   AttributeDefinition_option_blank_check         no empty option label
+//   AttributeDefinition_label_check                the label is not blank
+//   AttributeDefinition_sortOrder_check            a position, never negative
+//
+// What the database deliberately does **not** enforce is uniqueness of a key
+// across a whole *lineage* — that question needs a lookup in other rows, and a
+// CHECK constraint may not contain a subquery. It is held by the service under
+// the tree advisory lock instead (TASK-0030 4.2), which is why that rule has a
+// concurrency spec and these six do not.
 // ---------------------------------------------------------------------------
 
 /// One node of the category tree.
@@ -388,6 +404,8 @@ model Category {
   parent   Category?  @relation("CategoryTree", fields: [parentId, parentPath], references: [id, path], onDelete: Restrict, onUpdate: NoAction)
   children Category[] @relation("CategoryTree")
 
+  attributes AttributeDefinition[]
+
   /// Target of the composite parent edge above.
   @@unique([id, path])
   /// Sibling listing and reordering.
@@ -396,4 +414,110 @@ model Category {
   /// the database collation is `en_US.utf8`, and a default btree index cannot
   /// serve a prefix match under a non-C collation.
   @@index([path(ops: raw("text_pattern_ops"))])
+}
+
+/// What kind of value an attribute holds (TASK-0030 2장).
+///
+/// Five, and closed on purpose. Every one of them has to be expressible as a
+/// zod schema built at runtime from a row of {@link AttributeDefinition} *and*
+/// as a Meilisearch filter later (M06), so a type nobody can filter on would be
+/// a definition the storefront cannot use. Adding one is a migration plus a
+/// branch in `src/catalog/attribute-schema.ts`, which is exactly the visibility
+/// this list is for.
+enum AttributeType {
+  TEXT
+  NUMBER
+  SELECT
+  MULTI_SELECT
+  BOOLEAN
+}
+
+/// One attribute a category — and everything under it — may carry.
+///
+/// This is the table half of "카테고리·속성은 코드 수정 없이 추가·설정 가능"
+/// (DECISIONS 1). The **definitions** are rows so that the product form and the
+/// search filters can be generated from them; the **values** are a JSONB column
+/// on `Product`, so that listing twenty products costs no joins
+/// (`docs/design/erd.md` 2 — 속성을 정의/값으로 나눈 이유).
+///
+/// The price of that split is that the database cannot check a single value.
+/// `src/catalog/attribute-schema.ts` builds a zod schema from these rows on
+/// every save, and it is the only thing standing between a typo and a product
+/// whose `attributes` nothing can read.
+model AttributeDefinition {
+  /// Sequential like `Category.id` and for the same reason: it is platform data
+  /// that never travels in a token, and it is read on every catalogue write.
+  id Int @id @default(autoincrement())
+
+  /// The category this definition is attached to. It applies to that category
+  /// **and to everything below it** — resolution walks the ancestors of the
+  /// target through `Category.path` (TASK-0030 4.3).
+  categoryId Int
+
+  /// Identifier of the value inside `Product.attributes`, e.g. `material`.
+  ///
+  /// Held to `^[a-z][a-z0-9_]{0,39}$` by `AttributeDefinition_key_format_check`,
+  /// because this string is simultaneously a JSON object key and a Meilisearch
+  /// filter field name. A key with a dot or a space parses as a path expression
+  /// on the search side and quietly matches nothing.
+  ///
+  /// Unique per category among live rows
+  /// (`AttributeDefinition_categoryId_key_active_key`). Uniqueness across a
+  /// whole lineage is a rule the database cannot state — see the header above.
+  key String
+
+  /// What a person sees. Korean by default; the message-file split
+  /// (DECISIONS 1) applies to UI chrome, not to operator-entered data.
+  label String
+
+  type AttributeType
+
+  /// Choices for `SELECT` and `MULTI_SELECT`, empty for the other three.
+  ///
+  /// `AttributeDefinition_options_check` states exactly that, in both
+  /// directions: a `SELECT` without options can never validate any value and
+  /// would make a required attribute permanently unsatisfiable, while options
+  /// on a `BOOLEAN` are a definition whose author meant something else.
+  ///
+  /// Duplicates inside the array are refused by the service, not by the
+  /// database: telling duplicates from distinct values needs an aggregate, and
+  /// a CHECK may not contain one.
+  options String[] @default([])
+
+  /// Whether a product in this category must carry the attribute.
+  isRequired Boolean @default(false)
+
+  /// Whether the attribute becomes a search facet (M06). Stored from the start
+  /// so that turning a facet on is data rather than a migration.
+  isFilterable Boolean @default(false)
+
+  /// Display order within the category that owns the definition. Inherited
+  /// attributes always sort before the ones defined further down, so a form
+  /// reads from the general to the specific.
+  sortOrder Int @default(0)
+
+  /// Optimistic lock (DECISIONS 4). An operator edits the label while another
+  /// widens the options; last-write-wins would silently drop one of them.
+  version Int @default(0)
+
+  /// Soft delete, like `Category`. The row survives so that a product still
+  /// carrying the key has something to explain it, and the partial unique index
+  /// lets the key be defined again.
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// `Restrict`: a category is never hard deleted (its own removal is
+  /// `deletedAt`), so this edge exists to refuse the delete nobody wrote —
+  /// a `Cascade` here would let a stray `DELETE FROM "Category"` take the
+  /// definitions with it and leave every product's `attributes` unexplainable.
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  /// Listing a category's own definitions, and the `= ANY(ancestor ids)` join
+  /// that resolves an inherited set in one statement (TASK-0030 4.3).
+  @@index([categoryId, sortOrder])
+  /// The lineage conflict check filters by key first: "does any ancestor or
+  /// descendant already define `material`?" (TASK-0030 4.2).
+  @@index([key])
 }
