@@ -174,11 +174,14 @@ pnpm --filter @shopping/admin dev
 ### 구조
 
 ```
-apps/shop/src/
-├── app/          App Router — layout.tsx / page.tsx / globals.css
-├── components/   이 앱 전용 컴포넌트
-├── lib/          api.ts (이 앱의 API 클라이언트) · health.ts
-└── messages/     UI 문구. ko.ts 가 유일한 카탈로그이고 컴포넌트는 types.ts 만 본다
+apps/shop/
+├── src/
+│   ├── app/          App Router — layout.tsx / page.tsx / globals.css
+│   ├── components/   이 앱 전용 컴포넌트
+│   ├── lib/          api.ts (이 앱의 API 클라이언트) · health.ts
+│   └── messages/     UI 문구. ko.ts 가 유일한 카탈로그이고 컴포넌트는 types.ts 만 본다
+├── test/             스펙 + setup.ts (모킹 서버). 아래 "테스트" 절 참조
+└── vitest.config.mjs @shopping/config 의 프리셋 한 줄
 ```
 
 - **API 클라이언트는 `packages/shared/src/api` 하나뿐이다.** 각 앱은 자기 `AppId` 로 인스턴스만 만든다.
@@ -257,6 +260,71 @@ PORT_OFFSET=50 pnpm --filter @shopping/api dev   # 파일 수정 없이 4050 에
 ```bash
 pnpm --filter @shopping/shared build
 ```
+
+### 테스트
+
+| 패키지 | 러너 | 환경 | 대상 |
+| --- | --- | --- | --- |
+| `apps/shop` · `apps/seller` · `apps/admin` | vitest | jsdom | 화면. **API 는 모킹한다** |
+| `packages/ui` | vitest | jsdom | 컴포넌트 · 토큰 규칙 |
+| `packages/api-mocks` | vitest | node | 모킹 픽스처가 계약(zod 스키마)을 지키는지 |
+| `apps/api` | vitest | node | 서비스 · 가드 · 설정 |
+
+무엇을 실제로 쓰고 무엇을 대역으로 바꾸는지는
+[`docs/tasks/QUALITY-GATES.md`](./docs/tasks/QUALITY-GATES.md) 6장이 정한다.
+
+#### 프론트 테스트는 실 API 를 부르지 않는다
+
+세 앱의 테스트는 `@shopping/api-mocks` 가 띄우는 **MSW 서버**에 대고 돈다.
+`setupTestServer()` 한 번이 모킹 서버 · 미처리 요청 검사 · 아웃바운드 소켓 검사를 모두 건다.
+
+```ts
+// apps/<app>/test/setup.ts — 세 앱이 같은 파일이다
+export const testServer = setupTestServer()
+```
+
+빠져나갈 구멍을 세 겹으로 막는다.
+
+1. `onUnhandledRequest: 'error'` — 핸들러가 없는 요청은 통과가 아니라 **즉시 실패**
+2. 테스트의 `NEXT_PUBLIC_API_URL` 은 `http://api.test.invalid` — `.invalid` 는 RFC 6761
+   예약 TLD 라 **절대 resolve 되지 않는다.** 로컬 API 를 우연히 때리는 일이 불가능하다
+3. `net.Socket.prototype.connect` 카운터 — 스펙 파일이 끝날 때 실제로 열린 TCP 연결이
+   하나라도 있으면 **연결 대상을 이름과 함께 출력하며 실패**시킨다
+
+#### Server Component 테스트
+
+async Server Component 는 그냥 async 함수다. Next 런타임 없이 부르고, 반환된 트리를 그린다.
+그 사이의 `fetch` 는 MSW 가 가로챈다.
+
+```tsx
+render(await HomePage())
+expect(screen.getByText(healthOk.version)).toBeVisible()
+```
+
+#### 응답을 바꿔 보고 싶을 때
+
+기본 핸들러는 언제나 "정상 응답"이다. 이상 상황은 그것을 원하는 스펙이 **직접 선언**한다.
+
+```ts
+testServer.server.use(networkFailure(mockPaths.health))   // API 가 죽었다
+testServer.server.use(httpFailure(mockPaths.health, 500, 'INTERNAL_ERROR', '...'))
+testServer.server.use(malformedResponse(mockPaths.health, driftedHealthPayload))
+```
+
+#### 엔드포인트를 하나 추가하려면
+
+**`packages/api-mocks` 안에서만** 끝난다. 앱 3개를 돌아다니지 않는다.
+
+1. `src/paths.ts` 에 경로 패턴 추가 — 호스트는 `*` 로 둔다(앱마다 API URL 이 다르다)
+2. `src/fixtures/<name>.ts` — **반드시 `defineFixture(스키마, 값)`** 로 만든다.
+   평범한 객체 리터럴은 `registry.spec.ts` 가 잡는다
+3. `src/fixtures/index.ts` 에 re-export
+4. `src/handlers/<name>.ts` 에 핸들러, `src/handlers/index.ts` 의 `defaultHandlers` 에 추가
+
+픽스처는 **`packages/shared` 의 zod 스키마를 통과해야 한다**(계약 게이트 C2). `defineFixture`
+는 모듈 로드 시점에 `parse` 하므로, 어긋난 픽스처는 그것을 import 하는 모든 스펙을 무너뜨린다.
+같은 스키마를 백엔드 통합 테스트가 실제 응답에 적용한다(C3) — 그래서 스키마 · 백엔드 · 모킹
+셋 중 둘이 어긋나면 정해진 스펙이 반드시 빨개진다.
 
 ### 커밋 훅
 
