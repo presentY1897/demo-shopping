@@ -105,8 +105,9 @@ pnpm install            # 의존성이 바뀌었을 수 있다. 새 워크트리
 - 커밋 훅은 `pnpm install` 이 설치한다. 훅 우회 방법은 README 의 "개발 워크플로" 절 참조.
 - **커밋·PR 에 붙는 링크는 전부 다른 사람이 열 수 있어야 한다.** 계정에 묶인
   `https://claude.ai/code/session_...` 링크는 붙이지 않는다 (D-211). 커밋 트레일러는
-  `Co-Authored-By: Claude <noreply@anthropic.com>` 한 줄이고, PR 본문 끝에는 저장소 안
-  문서로 가는 `../blob/main/...` 링크가 붙는다.
+  `Co-Authored-By: Claude <모델> <noreply@anthropic.com>` 한 줄이고, PR 본문 끝에는 저장소
+  안 문서로 가는 `../blob/main/...` 링크가 붙는다. **모델 이름은 고정하지 않는다** — 실제
+  쓰인 모델로 자동으로 채워져야 나중에도 맞는 기록이 된다.
 - **그래서 판단 근거는 저장소 안에 남긴다.** 대화를 통째로 옮기는 것이 아니라 남아야 할 것만
   정리한다 — 결정은 `docs/decisions/`, 작업의 목적·설계·검증은 TASK 문서, 검증 결과는 PR 본문.
   PR 을 읽는 사람이 알아야 할 것은 본문과 `../blob/main/...` 로 닿는 곳에 전부 있어야 하고,

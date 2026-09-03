@@ -745,10 +745,10 @@ DNS 연결(TASK-0008) 전에는 Render 대시보드가 알려 주는 `onrender.c
 커밋에는 한 줄의 트레일러가 붙는다.
 
 ```
-Co-Authored-By: Claude <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
 ```
 
-표준 git 트레일러이고, 이 변경을 함께 만든 도구를 밝히는 것이 전부다.
+표준 git 트레일러다. **무엇이 이 변경을 함께 만들었는지**를 밝히고, 모델 이름은 그때 실제로 쓰인 모델로 자동으로 채워진다 — 프로젝트가 길어지면 모델이 바뀌므로, 고정 문구로 박아 두면 오히려 틀린 기록이 된다.
 
 PR 본문 끝에는 **저장소 안 문서로 가는 링크**가 붙는다. 예전에는 여기에
 `https://claude.ai/code/session_...` 형태의 세션 링크가 함께 들어갔는데, 그 링크는
