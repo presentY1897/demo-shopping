@@ -78,14 +78,19 @@ export function CategoryToolbar({
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-sm">
-          <span className="text-fg-muted">{messages.selectionLabel}</span>{' '}
-          {selected === null ? (
-            <span className="text-fg-subtle">{messages.noSelection}</span>
-          ) : (
+        {/*
+          With nothing selected the label would run into the hint and read as
+          one sentence — "선택한 카테고리 트리에서 카테고리를 선택하면…". The
+          label only earns its place once there is something to label.
+        */}
+        {selected === null ? (
+          <p className="text-fg-subtle text-sm">{messages.noSelection}</p>
+        ) : (
+          <p className="text-sm">
+            <span className="text-fg-muted">{messages.selectionLabel}</span>{' '}
             <span className="font-medium">{selected.name}</span>
-          )}
-        </p>
+          </p>
+        )}
 
         <div className="flex flex-wrap gap-2">
           {moveButton('up', actions.moveUp)}
