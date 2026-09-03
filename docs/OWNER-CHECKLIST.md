@@ -13,7 +13,7 @@
 | # | 서비스 | 할 일 | 결과물 |
 | --- | --- | --- | --- |
 | 1 | **Neon** | 가입 → 프로젝트 생성 | 연결 문자열 ✅ *완료* |
-| 2 | **Render** | 가입 → GitHub 연동 → `demo-shopping` 접근 허용. **서비스는 만들지 말 것** | 서비스 정의는 `render.yaml` 로 코드에 넣고 M02 에서 Blueprint 로 생성한다 ([TASK-0009](./tasks/M02-deployment/TASK-0009-backend-deploy.md)) |
+| 2 | **Render** | 가입 → GitHub 연동 → `demo-shopping` 접근 허용. **서비스는 만들지 말 것** | `render.yaml` 이 저장소에 들어왔다. 다음은 아래 **B-1 Render 서비스 생성** ([TASK-0009](./tasks/M02-deployment/TASK-0009-backend-deploy.md)) |
 | 3 | **Vercel** | 가입 → GitHub 연동 → 같은 저장소 접근 허용 | |
 | 4 | **Cloudflare R2** | 대시보드에서 R2 활성화 → API 토큰 발급 | 계정 ID · 액세스 키 · 시크릿 |
 | 5 | **Sentry** | 가입 → 프로젝트 2개(Node / Next.js) | DSN 2개 |
@@ -48,7 +48,7 @@ Vercel 프리뷰 URL 은 매번 달라지는데 Google 은 와일드카드 리�
 
 | 할 일 | 선행 조건 | 시점 |
 | --- | --- | --- |
-| **Render 서비스 생성** | 저장소에 `render.yaml` 과 API 코드가 있어야 한다 | M02 / TASK-0009 |
+| **Render 서비스 생성** | ~~저장소에 `render.yaml` 과 API 코드가 있어야 한다~~ **준비 완료** | M02 / TASK-0009 → **아래 B-1** |
 | **Vercel 프로젝트 3개 생성 · 도메인 연결** | `apps/shop` `apps/seller` `apps/admin` 이 있어야 빌드된다 | M02 / TASK-0010 |
 | **DNS 레코드 4개 생성** | 연결 대상(Vercel · Render URL)이 먼저 생겨야 한다 | M02 / TASK-0008 |
 | **Storybook 배포 대상 추가** | 컴포넌트가 있어야 한다 | M03 / TASK-0104 |
@@ -59,6 +59,61 @@ Vercel 프리뷰 URL 은 매번 달라지는데 Google 은 와일드카드 리�
 | **이력서 · 포트폴리오에 링크 배포** | 배포가 끝나야 한다 | M15 |
 
 `DNS 레코드` `Vercel 프로젝트` 는 **토큰을 주시면 내가 대신 처리**한다.
+
+### B-1. Render 서비스 생성 (TASK-0009) — **지금 할 수 있다**
+
+`render.yaml` 이 `main` 에 머지되면 바로 진행할 수 있다. 대시보드에서 서비스를 손으로
+만들지 마시고 **반드시 Blueprint 로** 만들어 주세요. 손으로 만든 서비스에 나중에
+Blueprint 를 붙이면 이름이 충돌하거나 수동 설정이 조용히 덮입니다.
+
+**준비물** — 먼저 터미널에서 키를 하나 만들어 메모장에 둡니다. 두 번 입력합니다.
+
+```bash
+openssl rand -base64 32
+```
+
+그리고 Neon 콘솔에서 연결 문자열을 복사합니다 (`?sslmode=require` 가 붙어 있는지 확인).
+
+**클릭 순서**
+
+1. https://dashboard.render.com → 우측 상단 **New** → **Blueprint**
+2. 저장소 목록에서 `presentY1897/demo-shopping` 옆의 **Connect**
+3. Blueprint 이름은 아무거나(`demo-shopping`), **Branch: `main`**, Blueprint Path 는 비워 둠
+4. Render 가 `render.yaml` 을 읽고 만들 서비스 2개(`shopping-api`, `shopping-search`)와
+   **입력이 필요한 값 4칸**을 보여 줍니다. 이렇게 채웁니다.
+
+   | 서비스 | 변수 | 넣을 값 |
+   | --- | --- | --- |
+   | `shopping-api` | `DATABASE_URL` | Neon 연결 문자열 |
+   | `shopping-api` | `MEILI_MASTER_KEY` | 위에서 만든 키 |
+   | `shopping-api` | `MEILI_HOST` | `https://REPLACE-ME.onrender.com` (6번에서 고칩니다) |
+   | `shopping-search` | `MEILI_MASTER_KEY` | **위와 똑같은 키** |
+
+5. **Deploy Blueprint** 클릭. 2~5분 기다립니다.
+6. 왼쪽 메뉴 → `shopping-search` 서비스 → 상단에 보이는 URL
+   (`https://shopping-search-xxxx.onrender.com`) 을 복사합니다.
+7. `shopping-api` 서비스 → **Environment** → `MEILI_HOST` 를 6번에서 복사한 URL 로
+   바꾸고 **Save**. API 가 자동으로 다시 배포됩니다.
+8. 확인 — `shopping-api` 의 URL 뒤에 `/api/v1/health` 를 붙여 브라우저로 엽니다.
+
+   ```
+   {"status":"ok","database":"ok","search":"ok","uptime":3,"version":"0.0.0"}
+   ```
+
+   `search` 가 `"down"` 이면 대개 둘 중 하나입니다 — `MEILI_HOST` 오타, 또는 두
+   서비스의 `MEILI_MASTER_KEY` 가 다릅니다. `database` 가 `"down"` 이면 `DATABASE_URL`
+   입니다.
+
+9. **서비스 URL 2개를 알려 주세요.** 값이 아니라 주소만 있으면 됩니다.
+   `api.demo-shopping.com` 연결(DNS)은 TASK-0008 에서 이어집니다.
+
+**주의 한 가지.** 무료 인스턴스 시간은 워크스페이스당 **월 750시간**이고 두 서비스가
+나눠 씁니다. 15분 놀면 자동으로 잠들고 잠든 동안은 시간이 깎이지 않으니 평소에는
+문제가 없지만, "항상 깨워 두기" 같은 설정은 하지 마세요 (2개 × 730시간 = 1460시간).
+
+**검색 엔진이 공개 주소를 갖습니다.** 무료 플랜에는 비공개 서비스가 없어서 어쩔 수
+없습니다. 마스터 키 없이는 모든 데이터 경로가 401 이고, 색인에는 공개 상품 정보만
+들어갑니다. 유료로 올리면 비공개로 바꿀 수 있습니다.
 
 ---
 
@@ -76,7 +131,8 @@ Vercel 프리뷰 URL 은 매번 달라지는데 Google 은 와일드카드 리�
 
 ```
 A. 지금        계정 9~10개 가입·키 발급 — 오늘 다 가능
-B. 나중        배포 설정(M02) · 디자인 피드백(M03) · 이미지(M05) · README(M15)
+B. 지금(B-1)   Render Blueprint 로 서비스 2개 생성 — render.yaml 준비 완료
+B. 나중        나머지 배포 설정(M02) · 디자인 피드백(M03) · 이미지(M05) · README(M15)
 C. 상시        TASK 승인 15회 + 설계 변경 승인
 ```
 
