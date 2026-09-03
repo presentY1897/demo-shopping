@@ -70,7 +70,11 @@ function CompactControl({ messages }: { readonly messages: DensityControlMessage
       trigger={
         // The current step's name is part of the button's own name, so a screen
         // reader user learns the value without opening the panel.
-        <IconButton label={`${messages.openLabel} · ${messages.names[density]}`} variant="ghost">
+        <IconButton
+          label={`${messages.openLabel} · ${messages.names[density]}`}
+          size="sm"
+          variant="ghost"
+        >
           <CurrentIcon className="size-5" />
         </IconButton>
       }

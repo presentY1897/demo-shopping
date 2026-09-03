@@ -35,7 +35,7 @@ export function MobileMenu({ messages }: { readonly messages: LayoutMessages }) 
       side="bottom"
       title={messages.nav.menuTitle}
       trigger={
-        <IconButton label={messages.nav.openMenu} variant="ghost">
+        <IconButton label={messages.nav.openMenu} size="sm" variant="ghost">
           <MenuIcon className="size-5" />
         </IconButton>
       }
