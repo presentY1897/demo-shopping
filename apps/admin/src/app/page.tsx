@@ -15,13 +15,13 @@ export default async function HomePage() {
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-4 p-8">
       <header>
-        <h1 className="text-2xl font-bold text-app-accent">{messages.app.name}</h1>
-        <p className="mt-1 text-black/60">{messages.app.description}</p>
+        <h1 className="text-primary text-2xl font-bold">{messages.app.name}</h1>
+        <p className="text-fg-muted mt-1">{messages.app.description}</p>
       </header>
 
       <HealthPanel result={result} messages={messages} />
 
-      <p className="text-sm text-black/50">{messages.health.notice}</p>
+      <p className="text-fg-subtle text-sm">{messages.health.notice}</p>
     </main>
   )
 }
