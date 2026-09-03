@@ -69,6 +69,10 @@ gh pr create --fill
 gh pr checks --watch                  # typecheck · lint · build · test 4개 green 대기
 gh pr merge --rebase --delete-branch
 
+# 저장소 루트 — 워크트리를 먼저 지워야 로컬 브랜치가 지워진다
+git worktree remove feature-<name>
+git branch -D feature/<name>
+
 # main 워크트리
 git pull --ff-only
 ```
@@ -79,6 +83,8 @@ git pull --ff-only
   브랜치는 버리고 `main` 을 pull 받는다.
 - **병행 작업 시 순서가 있다.** PR 을 하나 머지하면 나머지 PR 은 `main` 기준으로 다시
   rebase·push 해야 한다(규칙 `strict`). 그래서 웨이브의 머지는 순차적이다.
+- `--delete-branch` 는 **워크트리에 체크아웃된 브랜치를 지우지 못한다.** 원격 브랜치만 지워지고
+  `fatal: 'main' is already used by worktree at ...` 로 끝난다. 워크트리를 먼저 제거한다.
 - 자세한 내용과 해제 방법: [`docs/branch-protection.md`](./docs/branch-protection.md)
 
 ## 3. 브랜치 / 커밋
