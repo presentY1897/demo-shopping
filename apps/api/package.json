@@ -15,6 +15,7 @@
     "db:status": "prisma migrate status",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio --port $(node ../../scripts/ports.mjs --port studio)",
+    "docs:matrix": "node scripts/write-permission-matrix.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings 0",
