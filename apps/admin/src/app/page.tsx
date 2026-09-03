@@ -26,6 +26,11 @@ export default function HomePage() {
 
       <p className="text-fg-subtle text-sm">{messages.health.notice}</p>
 
+      {/* Until TASK-0019 builds the console navigation, this is the way in. */}
+      <a className="text-primary min-h-touch text-sm underline" href="/categories">
+        {messages.categories.title}
+      </a>
+
       {/*
         The component gallery is a development tool and is not served in
         production (see app/components/page.tsx), so the way in is too.
