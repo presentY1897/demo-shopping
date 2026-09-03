@@ -293,3 +293,107 @@ model RefreshToken {
   /// The sweep that deletes expired rows.
   @@index([expiresAt])
 }
+
+// ---------------------------------------------------------------------------
+// Catalogue — the category tree (TASK-0028)
+//
+// The invariants of a tree are not something an application layer can hold on
+// its own: two concurrent requests both read a consistent tree, both decide
+// their change is legal, and both write. So the shape of the tree is stated to
+// the database instead, in the migration:
+//
+//   Category_id_path_key            (id, path) — the target of the edge below
+//   Category_parentId_parentPath_fkey  (parentId, parentPath) -> (id, path)
+//   Category_path_shape_check       path = parentPath || id || '/'
+//   Category_parent_pairing_check   parentId and parentPath are both set or neither
+//   Category_depth_path_check       depth = number of ids in path
+//   Category_depth_range_check      1 <= depth <= 3
+//   Category_slug_active_key        one live category per slug
+//
+// Together the first three make a cycle **unrepresentable**: every node's path
+// is its parent's path plus its own id, so a path is strictly longer than its
+// parent's, and a cycle would need a node whose path is longer than itself.
+// Depth then follows from the path, and the range check caps the tree at three
+// levels no matter which request wrote the row.
+// ---------------------------------------------------------------------------
+
+/// One node of the category tree.
+model Category {
+  /// A short integer, unlike the UUIDv7 of every account-side table.
+  ///
+  /// Deliberate (`docs/design/erd.md` 1): `path` concatenates ancestor ids into
+  /// a string that is read on every catalogue query, so the ids have to stay
+  /// short — and a category id is platform data that never travels in a token,
+  /// so nothing leaks by being sequential.
+  ///
+  /// **Ids are never reused.** Deleting category 5 leaves 5 vacant forever; a
+  /// reused id would make `categoryId: 5` in an old order snapshot, log line or
+  /// search document point at a different category, and nothing would notice.
+  id Int @id @default(autoincrement())
+
+  parentId Int?
+
+  /// Materialised path of ancestors, always ending in this node's own id:
+  /// `/1/5/12/`. One `LIKE '/1/5/%'` returns an entire subtree, which is what
+  /// this column exists for — the adjacency list alone needs recursion.
+  ///
+  /// Written by `CategoryService` and **verified by the database**: the checks
+  /// listed above tie it to `parentPath`, to `id` and to `depth`, so a path that
+  /// disagrees with the tree cannot be committed by any code path.
+  path String
+
+  /// `path` with the trailing `<id>/` removed; NULL for a root.
+  ///
+  /// It exists so that the parent edge can be a *composite* foreign key on
+  /// `(parentId, parentPath)`. A plain `parentId` reference would let the path
+  /// cache drift from the real parent; this way the database refuses the drift.
+  parentPath String?
+
+  /// 1 for a root, capped at 3 (`Category_depth_range_check`). Derived from
+  /// `path` and kept as a column so that "roots first" is an index-ordered read
+  /// rather than a computation over every row.
+  depth Int
+
+  name String
+  /// URL identifier. Unique among live categories only
+  /// (`Category_slug_active_key`) — a deleted category must not hold its slug
+  /// hostage, exactly as a withdrawn account does not hold its Google identity.
+  slug String
+
+  /// Display order among siblings. Gaps are left alone: it is a presentation
+  /// value, not an identity, and renumbering on every delete would rewrite rows
+  /// nobody asked to change.
+  sortOrder Int @default(0)
+
+  /// Hidden from the storefront while staying a valid target for existing
+  /// products. Deletion is `deletedAt`; neither ever frees the id.
+  isActive Boolean @default(true)
+
+  /// Optimistic lock for the fields a person edits — name, slug, activation
+  /// (DECISIONS 4). Structural changes (move, reorder) do not touch it: they
+  /// are serialised by an advisory lock instead, and telling an editor their
+  /// rename conflicts because someone reordered siblings would be noise.
+  version Int @default(0)
+
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  /// `NoAction` rather than the default `Cascade` on update: moving a subtree
+  /// rewrites the parent and all of its descendants in **one** statement, and
+  /// `NO ACTION` is checked when that statement ends — by which time the whole
+  /// subtree is consistent again. `Restrict` would refuse mid-statement, and
+  /// `Cascade` would rewrite `parentPath` without `path`, breaking the shape
+  /// check.
+  parent   Category?  @relation("CategoryTree", fields: [parentId, parentPath], references: [id, path], onDelete: Restrict, onUpdate: NoAction)
+  children Category[] @relation("CategoryTree")
+
+  /// Target of the composite parent edge above.
+  @@unique([id, path])
+  /// Sibling listing and reordering.
+  @@index([parentId, sortOrder])
+  /// Subtree reads are `path LIKE '/1/5/%'`. The operator class is required:
+  /// the database collation is `en_US.utf8`, and a default btree index cannot
+  /// serve a prefix match under a non-C collation.
+  @@index([path(ops: raw("text_pattern_ops"))])
+}
