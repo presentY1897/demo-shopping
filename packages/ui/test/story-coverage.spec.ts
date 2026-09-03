@@ -2,9 +2,15 @@
  * Every shipped component has a story (TASK-0104 F3).
  *
  * The list is not maintained here — it is read off the package's own public
- * surface. Add a component to `src/components/index.ts` and this fails until a
- * story renders it, which is the rule TASK-0104 4장 asks later component TASKs
- * to carry: a story written with the component, not afterwards.
+ * surface. Add a component to `src/components/index.ts` or `src/form/index.ts`
+ * and this fails until a story renders it, which is the rule TASK-0104 4장 asks
+ * later component TASKs to carry: a story written with the component, not
+ * afterwards.
+ *
+ * **Every public entry point that ships components has to be listed below.**
+ * TASK-0017 added `@shopping/ui/form`, and until it was named here the form
+ * components were exactly what this file exists to prevent: shipped, exported,
+ * and outside the accessibility sweep.
  *
  * It is a source check, and `QUALITY-GATES.md` is right that asserting on class
  * names proves nothing about behaviour. This is not asserting a design; it is
@@ -19,7 +25,8 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
-import * as publicSurface from '../src/components'
+import * as componentSurface from '../src/components'
+import * as formSurface from '../src/form'
 
 const PACKAGE_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const STORY_ROOT = join(PACKAGE_ROOT, 'stories', 'components')
@@ -32,7 +39,7 @@ const STORY_ROOT = join(PACKAGE_ROOT, 'stories', 'components')
  * hand-written list of which exports count. `buttonClassName` and `useToast` are
  * functions too and are correctly not components.
  */
-const COMPONENTS = Object.entries(publicSurface)
+const COMPONENTS = [...Object.entries(componentSurface), ...Object.entries(formSurface)]
   .filter(([name, value]) => /^[A-Z]/.test(name) && typeof value === 'function')
   .map(([name]) => name)
 

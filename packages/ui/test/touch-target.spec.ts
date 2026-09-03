@@ -53,6 +53,11 @@ const FLOOR_UTILITIES: Readonly<Record<string, string>> = {
  * land on. `pagination.tsx` is not: every control it renders is a `Button`, so
  * the floor is stated once, there. A component that composes another one does
  * not restate its promises.
+ *
+ * `src/form/**` is absent for that same reason and is worth saying out loud,
+ * because it is a whole directory: the form layer draws labels, messages and a
+ * `fieldset`, and every box a finger lands on inside it is an `Input`, a
+ * `Select`, a `Checkbox` or a `Button` from this list.
  */
 const INTERACTIVE = [
   'accordion.tsx',
