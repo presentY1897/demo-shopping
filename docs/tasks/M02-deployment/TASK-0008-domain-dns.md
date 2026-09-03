@@ -118,11 +118,16 @@ R2 도 Cloudflare 이므로 도메인·스토리지·DNS 를 한 계정에서 �
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| F1 | DNS 해석 | `getent hosts <서브도메인>` 4건. **이 머신에 `dig`·`nslookup`·`host` 가 없다** | 전부 응답 | [ ] |
-| F2 | HTTPS | 각 서브도메인 `curl -I` | 인증서 유효, 200 또는 배포 대기 응답 | [ ] |
-| F3 | 루트 리다이렉트 | 루트 도메인 접속 | `shop` 으로 301/302 | [ ] |
-| F4 | 프록시 설정 | Cloudflare 대시보드 확인 | **Vercel 3건이 DNS only.** `api` 는 프록시 허용 (4.2) | [ ] |
-| F5 | 오리진 구간 암호화 | Cloudflare → SSL/TLS → Overview | **Flexible 이 아님** (4.2) | [ ] |
+| F1 | DNS 해석 | `getent hosts <서브도메인>`. **이 머신에 `dig`·`nslookup`·`host` 가 없다** | 전부 응답 | [x] `shop`·`seller` → 64.29.17.65 / `admin` → 64.29.17.1 (Vercel) · `api` → 216.24.57.15 (Render) · `cdn` → Cloudflare AAAA |
+| F2 | HTTPS | 각 서브도메인 익명 `curl` | 인증서 유효, 200 | [x] 세 앱 모두 **200 + 실제 화면** — `구매자 앱` · `판매자 콘솔` · `관리자 콘솔`. TLS 1.3. `api`·`cdn` 의 루트 404 는 해당 경로에 리소스가 없는 것이라 정상 |
+| F3 | 루트 리다이렉트 | 루트 도메인 접속 | `shop` 으로 301/302 | [ ] **미충족.** `demo-shopping.com`·`www` 둘 다 레코드가 없어 해석되지 않는다 |
+| F4 | 프록시 설정 | Cloudflare 대시보드 확인 | **Vercel 3건이 DNS only.** `api` 는 프록시 허용 (4.2) | [x] Vercel 3건은 Vercel IP 로 직접 해석되므로 DNS only 가 맞다. `api`·`cdn` 은 Cloudflare 응답 |
+| F5 | 오리진 구간 암호화 | Cloudflare → SSL/TLS → Overview | **Flexible 이 아님** (4.2) | [x] `Full` — 오리진 구간이 HTTPS 다. `Full (strict)` 상향은 4.2 의 선행 확인 후 |
+
+**F3 만 남았다.** 루트 도메인을 `shop` 으로 보내는 리다이렉트가 없다. Cloudflare 의 **Redirect
+Rules**(무료) 로 `demo-shopping.com/*` → `https://shop.demo-shopping.com/$1` 301 을 만들거나,
+Vercel 의 shop 프로젝트에 루트 도메인을 추가하고 Redirect 로 지정하면 된다. 후자는 루트에
+CNAME 을 걸 수 없어(CNAME flattening 필요) Cloudflare 쪽이 단순하다.
 
 ### 6.2 품질 게이트
 
