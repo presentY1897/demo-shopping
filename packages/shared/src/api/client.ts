@@ -42,6 +42,16 @@ import { presignUploadResponseSchema } from './uploads.js'
 /** Every route is versioned; `v1` is the only version in existence today. */
 export const API_PATH_PREFIX = '/api/v1'
 
+/**
+ * Correlation id header, written by the API on every response and listed in its
+ * CORS `exposedHeaders` so a browser can read it back.
+ *
+ * Declared here rather than in `apps/api` because both ends need the same
+ * string and only one of them can own it — the same reason {@link APP_ID_HEADER}
+ * lives in this package.
+ */
+export const REQUEST_ID_HEADER = 'x-request-id'
+
 /** Long enough for a cold API, short enough that a page never hangs on it. */
 export const DEFAULT_TIMEOUT_MS = 5_000
 
@@ -231,8 +241,20 @@ async function readJson(response: Response): Promise<unknown> {
   }
 }
 
+/**
+ * The correlation id the API put on the response.
+ *
+ * `null` rather than `undefined` from the header itself; the caller turns a
+ * missing header into an omitted property so that `requestId` stays absent
+ * instead of becoming the string "null".
+ */
+function requestIdOf(response: Response): string | undefined {
+  return response.headers.get(REQUEST_ID_HEADER) ?? undefined
+}
+
 function httpFailure(response: Response, body: unknown): ApiClientError {
   const parsed = apiErrorSchema.safeParse(body)
+  const requestId = requestIdOf(response)
 
   return new ApiClientError({
     kind: 'http',
@@ -241,6 +263,7 @@ function httpFailure(response: Response, body: unknown): ApiClientError {
       : `${response.status} ${response.statusText} from ${response.url}`,
     status: response.status,
     ...(parsed.success ? { body: parsed.data } : {}),
+    ...(requestId === undefined ? {} : { requestId }),
   })
 }
 
@@ -297,10 +320,13 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
 
     const parsed = schema.safeParse(payload)
     if (!parsed.success) {
+      const requestId = requestIdOf(response)
+
       throw new ApiClientError({
         kind: 'malformed_response',
         message: `Response from ${url} does not match its schema: ${parsed.error.message}`,
         status: response.status,
+        ...(requestId === undefined ? {} : { requestId }),
       })
     }
     return parsed.data

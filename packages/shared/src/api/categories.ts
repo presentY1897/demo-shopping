@@ -51,6 +51,18 @@ export const categoryNodeSchema = z.object({
   path: z.string(),
   sortOrder: z.int().min(0),
   isActive: z.boolean(),
+  /**
+   * How many products sit in this category (TASK-0117 2장).
+   *
+   * **Always 0 until TASK-0032 brings the `Product` table.** It is here now, and
+   * required rather than optional, because a screen can only warn *before* a
+   * delete — "이 카테고리에는 상품이 있어요" — if the count arrives with the
+   * tree, and an optional field would leave endpoints that never learned to send
+   * it once products exist. The console treats `> 0` as the only signal and
+   * still handles the server's refusal, so 0 everywhere behaves exactly as
+   * today (TASK-0117 R3).
+   */
+  productCount: z.int().min(0),
   /** Optimistic lock; send it back in an update (DECISIONS 4). */
   version: z.int().min(0),
 })

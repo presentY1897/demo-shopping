@@ -1,12 +1,25 @@
-export { apiErrorSchema, httpErrorCodeSchema, isApiErrorBody } from './api-error.js'
-export type { ApiErrorBody, HttpErrorCode } from './api-error.js'
+export {
+  apiErrorSchema,
+  apiFieldErrorSchema,
+  httpErrorCodeSchema,
+  isApiErrorBody,
+  isApiFieldError,
+} from './api-error.js'
+export type { ApiErrorBody, ApiFieldError, HttpErrorCode } from './api-error.js'
+export { domainErrorCodes, isDomainErrorCode, userFacingErrorCodes } from './api/error-codes.js'
+export type { DomainErrorCode, UserFacingErrorCode } from './api/error-codes.js'
 export { healthDependencyKeys, healthResponseSchema, healthStatusSchema } from './health.js'
 export type { HealthDependencyKey, HealthResponse, HealthStatus } from './health.js'
 export { ApiClientError, apiErrorKinds, isApiClientError } from './api/api-client-error.js'
 export type { ApiClientErrorInit, ApiErrorKind } from './api/api-client-error.js'
 export { APP_ID_HEADER, appIds, isAppId } from './api/app-id.js'
 export type { AppId } from './api/app-id.js'
-export { API_PATH_PREFIX, createApiClient, DEFAULT_TIMEOUT_MS } from './api/client.js'
+export {
+  API_PATH_PREFIX,
+  createApiClient,
+  DEFAULT_TIMEOUT_MS,
+  REQUEST_ID_HEADER,
+} from './api/client.js'
 export type {
   ApiCallOptions,
   ApiClient,
