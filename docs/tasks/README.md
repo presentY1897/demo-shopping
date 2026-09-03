@@ -94,6 +94,7 @@
 | [TASK-0028](./M05-catalog/TASK-0028-category-schema.md) | 카테고리 스키마 · 트리 API | 완료 |
 | [TASK-0029](./M05-catalog/TASK-0029-category-admin.md) | 관리자 카테고리 관리 화면 | 완료 |
 | [TASK-0030](./M05-catalog/TASK-0030-attribute-schema.md) | 속성 정의 스키마 · API | 완료 |
+| [TASK-0117](./M05-catalog/TASK-0117-error-contract.md) | 오류 전달 계약 · 사용자 언어 정리 | 진행중 |
 | [TASK-0031](./M05-catalog/TASK-0031-attribute-admin.md) | 관리자 속성 관리 화면 | 승인됨 |
 | [TASK-0032](./M05-catalog/TASK-0032-product-schema.md) | 상품 · 옵션 · Variant 스키마 | 승인됨 |
 | [TASK-0033](./M05-catalog/TASK-0033-image-upload.md) | 이미지 업로드 위젯 | 승인됨 |
