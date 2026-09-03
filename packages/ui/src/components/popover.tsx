@@ -12,6 +12,7 @@
 
 import * as PopoverPrimitive from '@radix-ui/react-popover'
 import type { ReactNode } from 'react'
+import { useId } from 'react'
 
 import { cx } from '../lib/cx'
 import { RAISED_SURFACE } from '../lib/styles'
@@ -27,11 +28,10 @@ export type PopoverAlign = (typeof POPOVER_ALIGNMENTS)[number]
 /** Distance from the trigger, in px. A Radix layout prop, not a CSS length. */
 const SIDE_OFFSET = 6
 
-export interface PopoverProps {
+interface PopoverBaseProps {
   /** The control that opens the panel. Rendered as the trigger itself. */
   readonly trigger: ReactNode
   readonly children?: ReactNode
-  readonly title?: ReactNode
   readonly open?: boolean
   readonly defaultOpen?: boolean
   readonly onOpenChange?: (open: boolean) => void
@@ -45,6 +45,30 @@ export interface PopoverProps {
   readonly className?: string
 }
 
+/**
+ * The panel is a `role="dialog"`, and a dialog with no accessible name is
+ * announced as nothing at all. The name comes from the heading when there is
+ * one; when there is not, it has to be supplied. The two are a union rather than
+ * two optional props so that the compiler asks for a name instead of a reviewer
+ * noticing it is missing — the same trade `Tag` makes for its remove button.
+ *
+ * TASK-0104 is where this was found. The story sweep in
+ * `test/story-a11y.spec.tsx` failed `aria-dialog-name` on a popover rendered
+ * without a title: a defect this package had already shipped, and one nothing in
+ * the repository would otherwise have caught.
+ */
+interface TitledPopoverProps extends PopoverBaseProps {
+  readonly title: ReactNode
+  readonly 'aria-label'?: string
+}
+
+interface LabelledPopoverProps extends PopoverBaseProps {
+  readonly title?: undefined
+  readonly 'aria-label': string
+}
+
+export type PopoverProps = TitledPopoverProps | LabelledPopoverProps
+
 export function Popover({
   trigger,
   children,
@@ -56,13 +80,18 @@ export function Popover({
   align = 'center',
   closeLabel,
   className,
+  ...aria
 }: PopoverProps) {
+  const titleId = useId()
+
   return (
     <PopoverPrimitive.Root defaultOpen={defaultOpen} onOpenChange={onOpenChange} open={open}>
       <PopoverPrimitive.Trigger asChild>{trigger}</PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
           align={align}
+          aria-label={aria['aria-label']}
+          aria-labelledby={title === undefined ? undefined : titleId}
           className={cx(
             RAISED_SURFACE,
             'z-50 flex w-full max-w-96 flex-col gap-2 rounded-lg p-4 text-sm shadow-lg outline-none',
@@ -76,7 +105,9 @@ export function Popover({
               {title === undefined ? (
                 <span />
               ) : (
-                <span className="text-base font-semibold">{title}</span>
+                <span className="text-base font-semibold" id={titleId}>
+                  {title}
+                </span>
               )}
               {closeLabel === undefined ? null : (
                 <PopoverPrimitive.Close asChild>
