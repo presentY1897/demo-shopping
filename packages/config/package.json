@@ -13,6 +13,7 @@
     "./eslint/base": "./eslint/base.js",
     "./eslint/next": "./eslint/next.js",
     "./eslint/nest": "./eslint/nest.js",
+    "./vitest/next-app": "./vitest/next-app.js",
     "./prettier": "./prettier/index.js",
     "./package.json": "./package.json"
   },
