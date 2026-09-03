@@ -265,6 +265,64 @@ describe('what a 4xx body may contain (F10)', () => {
   })
 })
 
+/**
+ * Gate P2 — the error paths, timed.
+ *
+ * Refusals are measured separately from successes because they take different
+ * routes through the application: a 409 on a delete has already counted
+ * children inside the tree lock, and a 400 from `parseInput` never reaches the
+ * database at all. A success budget says nothing about either.
+ */
+describe('오류 경로의 응답 시간 (P2)', () => {
+  /** The 95th percentile of `runs` timings of `work`, in milliseconds. */
+  async function p95Of(runs: number, work: () => Promise<unknown>): Promise<number> {
+    const durations: number[] = []
+
+    for (let index = 0; index < runs; index += 1) {
+      const started = performance.now()
+
+      await work()
+      durations.push(performance.now() - started)
+    }
+    durations.sort((left, right) => left - right)
+
+    return durations[Math.floor(durations.length * 0.95)] ?? Number.POSITIVE_INFINITY
+  }
+
+  /** Reports the number as well as gating on it, so the value is in the log. */
+  function within(label: string, measured: number): void {
+    console.log(`[P2] ${label} p95 = ${measured.toFixed(1)}ms`)
+    expect(measured).toBeLessThan(300)
+  }
+
+  it('answers a rejected input well inside 300ms at p95', async () => {
+    within(
+      '400 검증 실패',
+      await p95Of(50, () =>
+        refuse(operator().createCategory({ parentId: null, name: '', slug: 'Not A Slug' })),
+      ),
+    )
+  })
+
+  it('answers a conflict well inside 300ms at p95', async () => {
+    await fixture()
+
+    within(
+      '409 주소 중복',
+      await p95Of(50, () =>
+        refuse(operator().createCategory({ parentId: null, name: '의류2', slug: 'clothing' })),
+      ),
+    )
+  })
+
+  it('answers a refused delete — the slowest refusal — well inside 300ms at p95', async () => {
+    const { root } = await fixture()
+
+    // The one that does real work before refusing: tree lock, then a count.
+    within('409 하위 존재', await p95Of(30, () => refuse(superAdmin().deleteCategory(root))))
+  })
+})
+
 describe('every error carries a request id', () => {
   it('puts the same id in the header and in the envelope', async () => {
     const refusal = await refuse(
