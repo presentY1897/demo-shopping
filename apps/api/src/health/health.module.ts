@@ -5,6 +5,7 @@ import { HealthController } from './health.controller.js'
 import { HEALTH_INDICATORS } from './health-indicator.js'
 import { HealthService } from './health.service.js'
 import { SearchHealthIndicator } from './search.health-indicator.js'
+import { EXPECTED_SEARCH_INDEXES, SEARCH_INDEXES } from './search-indexes.js'
 
 @Module({
   controllers: [HealthController],
@@ -12,6 +13,7 @@ import { SearchHealthIndicator } from './search.health-indicator.js'
     DatabaseHealthIndicator,
     SearchHealthIndicator,
     HealthService,
+    { provide: SEARCH_INDEXES, useValue: EXPECTED_SEARCH_INDEXES },
     {
       // The list is assembled here so that adding a dependency touches this
       // array and nothing inside HealthService.
