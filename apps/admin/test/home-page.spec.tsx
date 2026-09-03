@@ -1,14 +1,25 @@
 /**
- * The same three checks as `apps/shop`, against this app's own page.
+ * The same checks as `apps/shop`, against this app's own page.
  *
- * The apps share the preset, the setup file and the handlers; what they do not
- * share is their {@link APP_ID_HEADER} value, which is how the API tells the
- * three sessions apart (DECISIONS 2장). So that is what this spec pins down
- * beyond the render.
+ * The three apps share the preset, the setup file, the handlers and — since
+ * TASK-0101 — the wake-up gate. What they do not share is their
+ * {@link APP_ID_HEADER} value, which is how the API tells the three sessions
+ * apart (DECISIONS 2장). So that is what this spec pins down beyond the render,
+ * along with the two things a cold start makes visible here: the page paints
+ * while the API is still asleep, and a failure is shown rather than swallowed.
+ *
+ * The wake-up sequence itself — thresholds, backoff, automatic recovery — is
+ * covered once, in `apps/shop/test/api-wake-gate.spec.tsx`, against the same
+ * component.
  */
 
-import { mockPaths, networkFailure } from '@shopping/api-mocks'
-import { healthOk } from '@shopping/api-mocks'
+import {
+  driftedHealthPayload,
+  healthOk,
+  malformedResponse,
+  mockPaths,
+  neverAnswers,
+} from '@shopping/api-mocks'
 import { APP_ID_HEADER, healthEntries } from '@shopping/shared'
 import { render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -18,7 +29,7 @@ import { messagesFor } from '@/messages'
 
 import { testServer } from './setup'
 
-const { health } = messagesFor()
+const { app, health, wake } = messagesFor()
 
 const appIdsSeen: string[] = []
 testServer.server.events.on('request:start', ({ request }) => {
@@ -31,22 +42,42 @@ beforeEach(() => {
 
 describe('the admin home page', () => {
   it('renders the mocked health payload', async () => {
-    render(await HomePage())
+    render(<HomePage />)
 
-    expect(screen.getByText(healthOk.version)).toBeVisible()
+    expect(await screen.findByText(healthOk.version)).toBeVisible()
     expect(screen.getAllByText(health.statusLabels.ok)).toHaveLength(healthEntries(healthOk).length)
   })
 
   it('identifies itself as admin on the call', async () => {
-    render(await HomePage())
+    render(<HomePage />)
+    await screen.findByText(healthOk.version)
 
     expect(appIdsSeen).toEqual(['admin'])
   })
 
-  it('shows the failure panel when the API is unreachable', async () => {
-    testServer.server.use(networkFailure(mockPaths.health))
-    render(await HomePage())
+  it('paints while the API is still asleep', () => {
+    // F4 — the server render awaits nothing, so the shell is there before the
+    // API has answered anything at all (TASK-0101 4.3).
+    testServer.server.use(neverAnswers(mockPaths.health))
+    render(<HomePage />)
 
-    expect(within(screen.getByRole('alert')).getByText(health.failures.network)).toBeVisible()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(app.name)
+    expect(screen.getByRole('region', { name: health.title })).toHaveAttribute('aria-busy', 'true')
+  })
+
+  it('shows the failure panel and a retry when the contract is broken', async () => {
+    testServer.server.use(malformedResponse(mockPaths.health, driftedHealthPayload))
+    render(<HomePage />)
+
+    const alert = await screen.findByRole('alert')
+
+    expect(within(alert).getByText(health.failures.malformed_response)).toBeVisible()
+    expect(screen.getByRole('button', { name: wake.retryLabel })).toBeVisible()
+  })
+
+  it('says search is usable when the API reports it ready', async () => {
+    render(<HomePage />)
+
+    expect(await screen.findByText(wake.search.ready)).toBeVisible()
   })
 })

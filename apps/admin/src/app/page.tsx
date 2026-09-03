@@ -1,16 +1,19 @@
-import { HealthPanel } from '@/components/health-panel'
-import { loadHealth } from '@/lib/health'
+import { ApiWakeGate } from '@/components/api-wake-gate'
 import { messagesFor } from '@/messages'
 
 /**
- * Never prerendered: the panel reports the state of a live dependency, and a
- * build time snapshot of it would be a lie the moment it is served.
+ * Static. This page awaits nothing.
+ *
+ * It used to be `force-dynamic` because it read a live dependency on the server,
+ * which meant every visitor waited for the API before receiving any markup at
+ * all — and on a cold instance that wait ends in a timeout, not a page
+ * (TASK-0101 4.3).
+ *
+ * The liveness read now happens in the browser, so there is no live value in the
+ * server render to go stale and the shell can be prerendered.
  */
-export const dynamic = 'force-dynamic'
-
-export default async function HomePage() {
+export default function HomePage() {
   const messages = messagesFor()
-  const result = await loadHealth()
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-4 p-8">
@@ -19,7 +22,7 @@ export default async function HomePage() {
         <p className="text-fg-muted mt-1">{messages.app.description}</p>
       </header>
 
-      <HealthPanel result={result} messages={messages} />
+      <ApiWakeGate health={messages.health} wake={messages.wake} />
 
       <p className="text-fg-subtle text-sm">{messages.health.notice}</p>
 

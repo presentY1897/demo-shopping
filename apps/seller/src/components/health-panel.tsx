@@ -2,7 +2,7 @@ import type { HealthStatus } from '@shopping/shared'
 import { healthEntries } from '@shopping/shared'
 
 import type { HealthResult } from '@/lib/health'
-import type { Messages } from '@/messages'
+import type { HealthMessages } from '@/messages'
 
 /** One class per status, so the colour lives in a token and not in the markup. */
 const STATUS_STYLES: Record<HealthStatus, string> = {
@@ -13,16 +13,19 @@ const STATUS_STYLES: Record<HealthStatus, string> = {
 
 interface HealthPanelProps {
   readonly result: HealthResult
-  readonly messages: Messages
+  /**
+   * The `health` slice alone, not the whole catalog. The panel is rendered from
+   * inside a client component now, and a prop that crosses that boundary should
+   * carry what the component reads and nothing else.
+   */
+  readonly messages: HealthMessages
 }
 
 /**
  * Boot check for the API connection. Deliberately plain: this page is replaced
  * by the real one in M03 and is not a design target (TASK-0006 6.2).
  */
-export function HealthPanel({ result, messages }: HealthPanelProps) {
-  const { health } = messages
-
+export function HealthPanel({ result, messages: health }: HealthPanelProps) {
   return (
     <section className="border-border rounded-lg border p-6">
       <h2 className="text-lg font-semibold">{health.title}</h2>
