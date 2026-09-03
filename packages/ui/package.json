@@ -14,6 +14,7 @@
     "test:watch": "vitest",
     "storybook": "storybook dev --port $(node ../../scripts/ports.mjs --port storybook)",
     "build-storybook": "storybook build",
+    "storybook:build": "storybook build",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix --max-warnings 0",
     "typecheck": "tsc --noEmit",
