@@ -13,7 +13,7 @@
 | # | 서비스 | 할 일 | 결과물 |
 | --- | --- | --- | --- |
 | 1 | **Neon** | 가입 → 프로젝트 생성 | 연결 문자열 ✅ *완료* |
-| 2 | **Render** | 가입 → GitHub 연동 → `demo-shopping` 접근 허용. **서비스는 만들지 말 것** | `render.yaml` 이 저장소에 들어왔다. 다음은 아래 **B-1 Render 서비스 생성** ([TASK-0009](./tasks/M02-deployment/TASK-0009-backend-deploy.md)) |
+| 2 | **Render** | 가입 → Blueprint 배포 | ✅ *완료 (2026-09-03)* — `shopping-api` · `shopping-search` 기동. `/api/v1/health` → `{"status":"ok","database":"ok","search":"ok"}`. 검색은 키 없이 401, CORS 는 프로덕션 오리진만 허용 |
 | 3 | **Vercel** | 가입 → GitHub 연동 → 같은 저장소 접근 허용 | |
 | 4 | **Cloudflare R2** | 대시보드에서 R2 활성화 → API 토큰 발급 | 계정 ID · 액세스 키 · 시크릿 |
 | 5 | **Sentry** | 가입 → 프로젝트 2개(Node / Next.js) | DSN 2개 |
@@ -48,7 +48,7 @@ Vercel 프리뷰 URL 은 매번 달라지는데 Google 은 와일드카드 리�
 
 | 할 일 | 선행 조건 | 시점 |
 | --- | --- | --- |
-| **Render 서비스 생성** | ~~저장소에 `render.yaml` 과 API 코드가 있어야 한다~~ **준비 완료** | M02 / TASK-0009 → **아래 B-1** |
+| ~~**Render 서비스 생성**~~ | **✅ 완료 (2026-09-03)** — 아래 B-1 은 기록으로 남긴다 | M02 / TASK-0009 |
 | **Vercel 프로젝트 3개 생성 · 도메인 연결** | `apps/shop` `apps/seller` `apps/admin` 이 있어야 빌드된다 | M02 / TASK-0010 |
 | **DNS 레코드 4개 생성** | 연결 대상(Vercel · Render URL)이 먼저 생겨야 한다 | M02 / TASK-0008 |
 | **Storybook 배포 대상 추가** | 컴포넌트가 있어야 한다 | M03 / TASK-0104 |
@@ -60,7 +60,9 @@ Vercel 프리뷰 URL 은 매번 달라지는데 Google 은 와일드카드 리�
 
 `DNS 레코드` `Vercel 프로젝트` 는 **토큰을 주시면 내가 대신 처리**한다.
 
-### B-1. Render 서비스 생성 (TASK-0009) — **지금 할 수 있다**
+### B-1. Render 서비스 생성 (TASK-0009) — ✅ **완료 (2026-09-03)**
+
+> 아래 절차는 재생성·복구용 기록이다. 실제 서비스 URL 은 `shopping-api-96sy.onrender.com` · `shopping-search-frrb.onrender.com`.
 
 `render.yaml` 이 `main` 에 머지되면 바로 진행할 수 있다. 대시보드에서 서비스를 손으로
 만들지 마시고 **반드시 Blueprint 로** 만들어 주세요. 손으로 만든 서비스에 나중에
@@ -131,7 +133,7 @@ openssl rand -base64 32
 
 ```
 A. 지금        계정 9~10개 가입·키 발급 — 오늘 다 가능
-B. 지금(B-1)   Render Blueprint 로 서비스 2개 생성 — render.yaml 준비 완료
+B. 다음        Vercel 프로젝트 3개(M02) · 디자인 피드백(M03) · 이미지(M05) · README(M15)
 B. 나중        나머지 배포 설정(M02) · 디자인 피드백(M03) · 이미지(M05) · README(M15)
 C. 상시        TASK 승인 15회 + 설계 변경 승인
 ```
