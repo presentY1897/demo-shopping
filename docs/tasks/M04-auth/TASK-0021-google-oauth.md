@@ -44,7 +44,7 @@ shop → GET /api/v1/auth/google?app=shop   → Google 동의 화면
        ④ User 조회/생성  ⑤ JWT 발급(TASK-0022)  ⑥ 앱으로 리다이렉트
 ```
 
-- 신규 사용자에게는 기본 역할 BUYER 를 부여한다. SELLER 는 입점 승인(TASK-0026), ADMIN 은 수동 부여만 가능하다
+- 신규 사용자에게는 기본 역할 BUYER 를 부여한다. SELLER 는 입점 승인(TASK-0108), ADMIN 은 수동 부여만 가능하다
 - `seller`/`admin` 앱에서 로그인했는데 해당 역할이 없으면 **로그인은 성립하되 권한 없음 안내**를 보여준다
 
 ## 5. 구현 계획
@@ -100,3 +100,4 @@ shop → GET /api/v1/auth/google?app=shop   → Google 동의 화면
 | 날짜 | 내용 |
 | --- | --- |
 | 2026-09-02 | 최초 작성 |
+| 2026-09-03 | D-208 레이어 분할에 따라 참조 갱신 — 입점 승인은 TASK-0026 → **TASK-0108** |
