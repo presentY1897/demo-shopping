@@ -9,3 +9,9 @@
 export const UI_PACKAGE_NAME = '@shopping/ui'
 
 export * from './density/density'
+
+/**
+ * Value formatters. Pure functions over `Intl`, so an API route, a server
+ * component and a test can all reach for them without pulling in React.
+ */
+export * from './format'
