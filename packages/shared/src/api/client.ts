@@ -14,6 +14,14 @@ import { ApiClientError } from './api-client-error.js'
 import type { AppId } from './app-id.js'
 import { APP_ID_HEADER } from './app-id.js'
 import type {
+  AttributeListQuery,
+  AttributeListResponse,
+  AttributeResponse,
+  CreateAttributeRequest,
+  UpdateAttributeRequest,
+} from './attributes.js'
+import { attributeListResponseSchema, attributeResponseSchema } from './attributes.js'
+import type {
   CategoryListResponse,
   CategoryResponse,
   CategoryTreeQuery,
@@ -104,6 +112,28 @@ export interface ApiClient {
   ) => Promise<CategoryListResponse>
   deleteCategory: (id: number, options?: ApiCallOptions) => Promise<CategoryResponse>
   /**
+   * The attribute definitions that apply to one category (TASK-0030).
+   *
+   * Ancestors' definitions are part of the answer unless the caller asks
+   * otherwise — that is what inheritance means, and a form built from this list
+   * needs them. Each entry says whether it is `inherited`, so a screen knows
+   * which rows it may edit here.
+   */
+  getAttributes: (
+    query: AttributeListQuery,
+    options?: ApiCallOptions,
+  ) => Promise<AttributeListResponse>
+  createAttribute: (
+    body: CreateAttributeRequest,
+    options?: ApiCallOptions,
+  ) => Promise<AttributeResponse>
+  updateAttribute: (
+    id: number,
+    body: UpdateAttributeRequest,
+    options?: ApiCallOptions,
+  ) => Promise<AttributeResponse>
+  deleteAttribute: (id: number, options?: ApiCallOptions) => Promise<AttributeResponse>
+  /**
    * Asks for one presigned upload (TASK-0011).
    *
    * The answer is a URL the caller PUTs the file at directly; nothing here
@@ -128,6 +158,17 @@ function categoryTreeSearch(query: CategoryTreeQuery): string {
   const search = params.toString()
 
   return search === '' ? '' : `?${search}`
+}
+
+/** `?categoryId=3&includeInherited=false`, always carrying the category. */
+function attributeListSearch(query: AttributeListQuery): string {
+  const params = new URLSearchParams({ categoryId: String(query.categoryId) })
+
+  if (query.includeInherited !== undefined) {
+    params.set('includeInherited', String(query.includeInherited))
+  }
+
+  return `?${params.toString()}`
 }
 
 function normaliseBaseUrl(baseUrl: string): string {
@@ -320,6 +361,39 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         path: `/categories/${String(id)}`,
         method: 'DELETE',
         schema: categoryResponseSchema,
+        ...callOptions,
+      }),
+
+    getAttributes: (query, callOptions = {}) =>
+      request({
+        path: `/attributes${attributeListSearch(query)}`,
+        schema: attributeListResponseSchema,
+        ...callOptions,
+      }),
+
+    createAttribute: (body, callOptions = {}) =>
+      request({
+        path: '/attributes',
+        method: 'POST',
+        body,
+        schema: attributeResponseSchema,
+        ...callOptions,
+      }),
+
+    updateAttribute: (id, body, callOptions = {}) =>
+      request({
+        path: `/attributes/${String(id)}`,
+        method: 'PATCH',
+        body,
+        schema: attributeResponseSchema,
+        ...callOptions,
+      }),
+
+    deleteAttribute: (id, callOptions = {}) =>
+      request({
+        path: `/attributes/${String(id)}`,
+        method: 'DELETE',
+        schema: attributeResponseSchema,
         ...callOptions,
       }),
 
