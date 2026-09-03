@@ -220,7 +220,7 @@ throw new ForbiddenException('엔드포인트에 퍼미션이 선언되지 않�
 | J1 | 도메인 코드 목록은 `packages/shared/src/api/error-codes.ts` 한 곳에 둔다 | 서버가 던지는 문자열과 프론트 카탈로그의 열쇠가 같아야 한다. 두 곳에 적으면 오타가 "문장 없는 오류"로 조용히 나타난다 (C1 과 같은 이유) |
 | J2 | 앱 카탈로그의 `errors` 는 `Record<UserFacingErrorCode, string>` 로 **전수 타입**을 건다 | 코드를 추가하고 문장을 빠뜨리면 `pnpm typecheck` 가 잡는다. 런타임에 빈 문장이 뜨는 길을 없앤다 |
 | J3 | 서비스는 `domainFailure(code, message, { field, params })` 가 만든 **객체 payload** 로 예외를 던진다 | Nest 예외의 payload 에 `code` 가 있을 때만 도메인 오류로 본다. 문자열 payload 를 던지는 기존 엔드포인트는 그대로 동작한다 (F9) |
-| J4 | **5xx 는 `details` 를 비운다** (개발 환경의 스택 제외) | `InternalServerErrorException()` 의 기본 payload 는 `'Internal Server Error'` 다. 그대로 두면 F8 이 요구하는 "본문에 선언 사정이 없음" 을 우연히 지키게 되고, 다음에 누가 문구를 넣으면 새어 나간다 |
+| J4 | **500 은 `details` 를 비운다** (개발 환경의 스택 제외). 503 등 다른 5xx 는 그대로 | `InternalServerErrorException('…')` 로 던진 문장이 본문으로 새어 나가는 길을 막는다 (F8). 5xx 전체로 넓히지 않는 이유는 503 `이미지 저장소가 설정되지 않아…` 가 **결함이 아니라 상태**이고, 그 설명을 지우면 호출자에게 남는 것이 없기 때문이다 |
 | J5 | `ErrorNotice` 는 새 진입점을 만들지 않고 `@shopping/ui/components` 로 내보낸다 | `story-coverage.spec.ts` 가 배럴 두 개를 읽어 스토리 누락을 잡는다. 세 번째 진입점을 만들면 그 목록에 손으로 등록해야 하고, 등록을 잊으면 접근성 게이트 밖으로 나간다 |
 | J6 | `errors` 슬라이스는 **`apps/admin` 에만** 넣는다 | `apps/shop`·`apps/seller` 는 아직 헬스 패널뿐이라 코드로 조회할 실패 화면이 없다. 쓰지 않는 카탈로그는 곧 실제와 어긋난다 |
 | J7 | `apps/admin` 은 `@shopping/ui/form` 의 **`serverFieldErrors` 만** 가져다 쓴다 | 폼 시스템 전면 이관(`src/form/` 제거)은 TASK-0017 의 채택 작업이고 이 TASK 의 목적이 아니다. 필드 매핑은 순수 함수 하나로 충분하다 |

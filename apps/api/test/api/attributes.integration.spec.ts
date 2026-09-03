@@ -204,8 +204,10 @@ describe('creating a definition', () => {
   it('refuses a category that is not there', async () => {
     const refused = await failure(operator().createAttribute(definition(9_999)))
 
+    // Still a plain string, on purpose: this endpoint is what keeps `details`
+    // carrying both shapes honest (TASK-0117 F9).
     expect(refused.status).toBe(400)
-    expect(refused.details).toEqual(['카테고리를 찾을 수 없습니다.'])
+    expect(refused.details).toEqual(['선택한 카테고리가 없어졌어요. 목록을 새로고침해 주세요.'])
   })
 
   it('refuses the same key on the same category', async () => {
@@ -228,9 +230,8 @@ describe('creating a definition', () => {
     )
 
     expect(refused.status).toBe(409)
-    expect(refused.details).toEqual([
-      "'brand' 속성은 같은 카테고리 계통의 '의류' 에 이미 정의되어 있습니다.",
-    ])
+    expect(refused.code).toBe('ATTRIBUTE_KEY_TAKEN')
+    expect(refused.details).toMatchObject([{ field: 'key', params: { name: '의류' } }])
   })
 
   it('refuses a key a descendant already defines (F7)', async () => {
@@ -245,9 +246,8 @@ describe('creating a definition', () => {
     )
 
     expect(refused.status).toBe(409)
-    expect(refused.details).toEqual([
-      "'brand' 속성은 같은 카테고리 계통의 '티셔츠' 에 이미 정의되어 있습니다.",
-    ])
+    expect(refused.code).toBe('ATTRIBUTE_KEY_TAKEN')
+    expect(refused.details).toMatchObject([{ field: 'key', params: { name: '티셔츠' } }])
   })
 
   it('allows the same key on an unrelated branch', async () => {
@@ -346,7 +346,7 @@ describe('editing a definition', () => {
     )
 
     expect(refused.status).toBe(400)
-    expect(refused.details).toEqual(['SELECT 속성은 선택지가 최소 1개 필요합니다.'])
+    expect(refused.details).toMatchObject([{ field: 'options', code: 'INVALID' }])
   })
 
   it('refuses options on a type that has none', async () => {
@@ -358,7 +358,7 @@ describe('editing a definition', () => {
     )
 
     expect(refused.status).toBe(400)
-    expect(refused.details).toEqual(['TEXT 속성은 선택지를 가질 수 없습니다.'])
+    expect(refused.details).toMatchObject([{ field: 'options', code: 'INVALID' }])
   })
 
   it('answers 404 rather than 409 when the row is gone', async () => {
@@ -398,9 +398,9 @@ describe('input validation (A2)', () => {
 
     expect(refused.status).toBe(400)
     expect(refused.code).toBe('BAD_REQUEST')
-    expect(refused.details).toEqual([
-      'key 값이 올바르지 않습니다.',
-      'label 값이 올바르지 않습니다.',
+    expect(refused.details).toMatchObject([
+      { field: 'key', code: 'INVALID' },
+      { field: 'label', code: 'INVALID' },
     ])
   })
 
@@ -411,7 +411,7 @@ describe('input validation (A2)', () => {
     )
 
     expect(refused.status).toBe(400)
-    expect(refused.details).toEqual(['options 값이 올바르지 않습니다.'])
+    expect(refused.details).toMatchObject([{ field: 'options', code: 'INVALID' }])
   })
 
   it('answers 400 for duplicate options', async () => {
@@ -441,7 +441,7 @@ describe('input validation (A2)', () => {
 
     expect(response.status).toBe(400)
     expect(await response.json()).toMatchObject({
-      error: { code: 'BAD_REQUEST', details: ['id 값이 올바르지 않습니다.'] },
+      error: { code: 'BAD_REQUEST', details: [{ field: 'id', code: 'INVALID' }] },
     })
   })
 })

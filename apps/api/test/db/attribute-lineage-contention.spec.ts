@@ -58,8 +58,15 @@ function statusOf(reason: unknown): number {
   return reason instanceof ApiClientError ? (reason.status ?? 0) : 0
 }
 
-function detailOf(reason: unknown): unknown {
-  return reason instanceof ApiClientError ? reason.body?.error.details?.[0] : undefined
+/**
+ * The refusal's domain code.
+ *
+ * Was the Korean sentence, which made a copy edit break a concurrency test and,
+ * worse, let the test pass on *any* 409 whose wording happened to match
+ * (TASK-0117 R1).
+ */
+function codeOf(reason: unknown): string | null {
+  return reason instanceof ApiClientError ? reason.code : null
 }
 
 /** Unique per call, so a repeated run never collides with the previous one. */
@@ -135,7 +142,7 @@ describe('two creates of one key from opposite ends of a lineage', () => {
     // 409 and not 500: the loser was refused by the service, which read the
     // lineage the winner had already committed.
     expect(statusOf(refusal)).toBe(409)
-    expect(String(detailOf(refusal))).toContain("'brand' 속성은 같은 카테고리 계통의")
+    expect(codeOf(refusal)).toBe('ATTRIBUTE_KEY_TAKEN')
 
     // One answer to "what does 브랜드 mean here", not two rows of which one is
     // invisible.

@@ -277,26 +277,28 @@ afterAll(async () => {
 })
 
 describe('deny by default over HTTP', () => {
-  it('blocks an endpoint that declares no permission, even for a super admin', async () => {
+  /**
+   * A missing decorator is a bug in our code, not a shortfall in the caller's
+   * account, so it is a 500 whose body says nothing about it (TASK-0117 F8).
+   * The reason is in the log, where it can be acted on.
+   */
+  it('blocks an endpoint that declares no permission with an unexplained 500', async () => {
     const answer = await call('GET', '/fixtures/undeclared', { as: callers.superAdmin })
 
-    expect(answer.status).toBe(403)
-    expect(envelopeOf(answer)).toEqual({
-      code: 'FORBIDDEN',
-      message: '이 작업을 수행할 권한이 없습니다.',
-      details: ['엔드포인트에 퍼미션이 선언되지 않았습니다.'],
-    })
+    expect(answer.status).toBe(500)
+    expect(envelopeOf(answer)).toMatchObject({ code: 'INTERNAL_ERROR', details: [] })
+    expect(JSON.stringify(answer.body)).not.toContain('퍼미션')
   })
 
   it('serves an endpoint that declares itself public', async () => {
     expect(await call('GET', '/fixtures/open')).toEqual({ status: 200, body: { ok: true } })
   })
 
-  it('answers 401 when nobody could be identified', async () => {
+  it('answers 401 when nobody could be identified, and says what to do', async () => {
     const answer = await call('POST', '/fixtures/products')
 
     expect(answer.status).toBe(401)
-    expect(envelopeOf(answer).code).toBe('UNAUTHORIZED')
+    expect(envelopeOf(answer).code).toBe('AUTH_REQUIRED')
   })
 })
 
@@ -462,7 +464,7 @@ describe('role administration', () => {
     const badId = await call('GET', '/users/not-a-uuid/roles', { as: callers.superAdmin })
 
     expect(badId.status).toBe(400)
-    expect(envelopeOf(badId).details).toEqual(['userId 값이 올바르지 않습니다.'])
+    expect(envelopeOf(badId).details).toMatchObject([{ field: 'userId', code: 'INVALID' }])
 
     const badRole = await call('POST', `/users/${BUYER}/roles`, {
       as: callers.superAdmin,
@@ -470,7 +472,7 @@ describe('role administration', () => {
     })
 
     expect(badRole.status).toBe(400)
-    expect(envelopeOf(badRole).details).toEqual(['role 값이 올바르지 않습니다.'])
+    expect(envelopeOf(badRole).details).toMatchObject([{ field: 'role', code: 'INVALID' }])
   })
 
   it('answers 404 for an account that does not exist', async () => {

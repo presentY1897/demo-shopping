@@ -47,8 +47,16 @@ function statusOf(reason: unknown): number {
   return reason instanceof ApiClientError ? (reason.status ?? 0) : 0
 }
 
-function detailOf(reason: unknown): unknown {
-  return reason instanceof ApiClientError ? reason.body?.error.details?.[0] : undefined
+/**
+ * The refusal's domain code.
+ *
+ * The assertion used to be on the Korean sentence, which meant a copy edit
+ * broke a concurrency test — and, worse, that the test was only ever checking
+ * that *a* refusal came back with familiar words rather than that the right rule
+ * refused it (TASK-0117 R1).
+ */
+function codeOf(reason: unknown): string | null {
+  return reason instanceof ApiClientError ? reason.code : null
 }
 
 /**
@@ -157,7 +165,7 @@ describe('a move racing a create against the three-level cap', () => {
     // tree the winner had already committed. Without the lock this is where a
     // raw constraint violation would surface instead.
     expect(statusOf(refusal)).toBe(400)
-    expect(detailOf(refusal)).toBe('카테고리는 3단계까지만 만들 수 있습니다.')
+    expect(codeOf(refusal)).toBe('CATEGORY_MAX_DEPTH')
 
     const [deepest] = await db.query<{ depth: number }>(
       `SELECT max("depth") AS depth FROM "Category"`,
@@ -183,7 +191,7 @@ describe('two moves that would close a cycle', () => {
     const [refusal] = rejected(results)
 
     expect(statusOf(refusal)).toBe(400)
-    expect(detailOf(refusal)).toBe('카테고리를 자기 자신이나 하위 카테고리로 옮길 수 없습니다.')
+    expect(codeOf(refusal)).toBe('CATEGORY_MOVE_INTO_SELF')
 
     // One of them is now the other's child, and neither is its own ancestor.
     const paths = await db.query<{ id: number; path: string }>(

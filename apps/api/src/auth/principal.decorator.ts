@@ -1,8 +1,9 @@
 import type { IncomingMessage } from 'node:http'
 
 import type { ExecutionContext } from '@nestjs/common'
-import { createParamDecorator, UnauthorizedException } from '@nestjs/common'
+import { createParamDecorator } from '@nestjs/common'
 
+import { authRequired } from './permission.guard.js'
 import type { RequestPrincipal } from './request-principal.js'
 import { principalOf } from './request-principal.js'
 
@@ -19,9 +20,7 @@ export const Principal = createParamDecorator(
   (_data: unknown, context: ExecutionContext): RequestPrincipal => {
     const principal = principalOf(context.switchToHttp().getRequest<IncomingMessage>())
 
-    if (principal === null) {
-      throw new UnauthorizedException('인증 정보가 없어 요청을 처리할 수 없습니다.')
-    }
+    if (principal === null) throw authRequired()
 
     return principal
   },

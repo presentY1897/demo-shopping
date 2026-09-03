@@ -1,7 +1,11 @@
 import type { IncomingMessage } from 'node:http'
 
-import type { ExecutionContext } from '@nestjs/common'
-import { ForbiddenException, UnauthorizedException } from '@nestjs/common'
+import type { ExecutionContext, HttpException } from '@nestjs/common'
+import {
+  ForbiddenException,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -95,15 +99,29 @@ function detailOf(error: unknown): unknown {
     : payload
 }
 
+/** Whatever the exception carries, as text, for a "does not mention" check. */
+function payloadTextOf(error: unknown): string {
+  return JSON.stringify((error as HttpException).getResponse())
+}
+
 describe('deny by default', () => {
-  it('refuses a handler that declares nothing, even to a super admin', async () => {
+  /**
+   * 500, not 403 (TASK-0117 4.3, F8).
+   *
+   * A 403 would tell the caller their account is short of something, and they
+   * would go looking for a role that fixes it — but nothing about the caller is
+   * wrong: a decorator is missing. The reason is logged; the response says
+   * nothing about it.
+   */
+  it('answers a handler that declares nothing with a 500 that explains nothing', async () => {
     const { guard } = guardWith(principal())
     const context = contextFor(Handlers, handlerOf(Handlers, 'undeclared'))
 
-    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(ForbiddenException)
-    await expect(guard.canActivate(context).catch(detailOf)).resolves.toBe(
-      '엔드포인트에 퍼미션이 선언되지 않았습니다.',
-    )
+    const error: unknown = await guard.canActivate(context).catch((reason: unknown) => reason)
+
+    expect(error).toBeInstanceOf(InternalServerErrorException)
+    expect((error as HttpException).getStatus()).toBe(500)
+    expect(payloadTextOf(error)).not.toContain('퍼미션')
   })
 
   it('never asks the resolver for an undeclared handler', async () => {
@@ -115,13 +133,14 @@ describe('deny by default', () => {
     expect(resolve).not.toHaveBeenCalled()
   })
 
-  it('refuses a handler that is both public and permission guarded', async () => {
+  it('answers a contradictory declaration the same way, and says nothing either', async () => {
     const { guard } = guardWith(principal())
     const context = contextFor(Handlers, handlerOf(Handlers, 'contradictory'))
 
-    await expect(guard.canActivate(context).catch(detailOf)).resolves.toBe(
-      '엔드포인트 권한 선언이 잘못되었습니다.',
-    )
+    const error: unknown = await guard.canActivate(context).catch((reason: unknown) => reason)
+
+    expect(error).toBeInstanceOf(InternalServerErrorException)
+    expect(payloadTextOf(error)).not.toContain('@PublicEndpoint')
   })
 })
 

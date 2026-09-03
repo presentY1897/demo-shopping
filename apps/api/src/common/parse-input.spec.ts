@@ -20,7 +20,7 @@ describe('parseInput', () => {
     expect(parseInput(roleSchema, 'ADMIN_SUPER')).toBe('ADMIN_SUPER')
   })
 
-  it('reports the offending field in Korean, one entry per issue', () => {
+  it('names the offending field, one entry per issue', () => {
     const schema = z.object({ role: roleSchema, note: z.string() })
 
     try {
@@ -28,9 +28,20 @@ describe('parseInput', () => {
       expect.unreachable('should have thrown')
     } catch (error) {
       expect(detailsOf(error)).toEqual([
-        'role 값이 올바르지 않습니다.',
-        'note 값이 올바르지 않습니다.',
+        { field: 'role', message: 'role 값이 올바르지 않습니다.', code: 'INVALID' },
+        { field: 'note', message: 'note 값이 올바르지 않습니다.', code: 'INVALID' },
       ])
+    }
+  })
+
+  it('joins a nested path with dots, the way a form names its fields', () => {
+    const schema = z.object({ attributes: z.array(z.object({ options: z.string() })) })
+
+    try {
+      parseInput(schema, { attributes: [{ options: 3 }] })
+      expect.unreachable('should have thrown')
+    } catch (error) {
+      expect(detailsOf(error)).toMatchObject([{ field: 'attributes.0.options' }])
     }
   })
 
@@ -39,10 +50,14 @@ describe('parseInput', () => {
       parseInput(z.uuid(), 'not-a-uuid', 'userId')
       expect.unreachable('should have thrown')
     } catch (error) {
-      expect(detailsOf(error)).toEqual(['userId 값이 올바르지 않습니다.'])
+      expect(detailsOf(error)).toEqual([
+        { field: 'userId', message: 'userId 값이 올바르지 않습니다.', code: 'INVALID' },
+      ])
     }
   })
 
+  // A refinement over the whole body names no input, so there is no field to
+  // report and the entry stays the plain string `details` has always allowed.
   it('falls back to a generic message when there is neither', () => {
     try {
       parseInput(z.uuid(), 'not-a-uuid')

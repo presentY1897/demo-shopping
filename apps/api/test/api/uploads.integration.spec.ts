@@ -212,7 +212,7 @@ describe('input validation (A2)', () => {
 
     expect(error.status).toBe(400)
     expect(error.code).toBe('BAD_REQUEST')
-    expect(error.details).toEqual(['size 값이 올바르지 않습니다.'])
+    expect(error.details).toMatchObject([{ field: 'size', code: 'INVALID' }])
   })
 
   it.each([0, -1, 1.5])('refuses %s as a size', async (size) => {
@@ -226,7 +226,7 @@ describe('input validation (A2)', () => {
     const error = await refused({ filename })
 
     expect(error.status).toBe(400)
-    expect(error.details).toEqual(['filename 값이 올바르지 않습니다.'])
+    expect(error.details).toMatchObject([{ field: 'filename', code: 'INVALID' }])
   })
 
   it('refuses a filename that is only whitespace', async () => {
@@ -235,7 +235,9 @@ describe('input validation (A2)', () => {
     const error = await refused({ filename: '   ' })
 
     expect(error.status).toBe(400)
-    expect(error.details).toContain('filename 값이 올바르지 않습니다.')
+    expect(error.details).toContainEqual(
+      expect.objectContaining({ field: 'filename', code: 'INVALID' }),
+    )
   })
 
   it('refuses a store id that is not a UUID', async () => {
@@ -244,7 +246,7 @@ describe('input validation (A2)', () => {
     )
 
     expect(error.status).toBe(400)
-    expect(error.details).toEqual(['sellerId 값이 올바르지 않습니다.'])
+    expect(error.details).toMatchObject([{ field: 'sellerId', code: 'INVALID' }])
   })
 
   it('refuses a purpose nobody defined', async () => {
@@ -256,7 +258,7 @@ describe('input validation (A2)', () => {
     )
 
     expect(error.status).toBe(400)
-    expect(error.details).toEqual(['purpose 값이 올바르지 않습니다.'])
+    expect(error.details).toMatchObject([{ field: 'purpose', code: 'INVALID' }])
   })
 
   it('reports every offending field at once, not just the first', async () => {
@@ -267,11 +269,11 @@ describe('input validation (A2)', () => {
     )
 
     expect(error.status).toBe(400)
-    expect(error.details).toEqual([
-      'sellerId 값이 올바르지 않습니다.',
-      'filename 값이 올바르지 않습니다.',
-      'contentType 값이 올바르지 않습니다.',
-      'size 값이 올바르지 않습니다.',
+    expect(error.details).toMatchObject([
+      { field: 'sellerId' },
+      { field: 'filename' },
+      { field: 'contentType' },
+      { field: 'size' },
     ])
   })
 })
@@ -281,7 +283,7 @@ describe('authentication (A4)', () => {
     const error = await failure(api.client.presignUpload(request()))
 
     expect(error.status).toBe(401)
-    expect(error.code).toBe('UNAUTHORIZED')
+    expect(error.code).toBe('AUTH_REQUIRED')
   })
 })
 

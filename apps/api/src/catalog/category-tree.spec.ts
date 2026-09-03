@@ -22,6 +22,7 @@ function node(id: number, parentId: number | null, path: string, sortOrder = 0):
     slug: `category-${String(id)}`,
     sortOrder,
     isActive: true,
+    productCount: 0,
     version: 0,
   }
 }
