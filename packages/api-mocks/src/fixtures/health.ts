@@ -29,3 +29,19 @@ export const healthDegraded = defineFixture(healthResponseSchema, {
   uptime: 12,
   version: '0.0.0',
 })
+
+/**
+ * The engine is up but the catalogue is not searchable yet.
+ *
+ * The free plan has no persistent disk, so a restart leaves Meilisearch with no
+ * documents and a search against it answers zero results rather than an error
+ * (TASK-0009 4장). `search: 'degraded'` is how the API reports that, and it is
+ * what makes a screen say "준비 중" instead of "결과 없음" (TASK-0101 4.7).
+ */
+export const healthSearchIndexing = defineFixture(healthResponseSchema, {
+  status: 'degraded',
+  database: 'ok',
+  search: 'degraded',
+  uptime: 12,
+  version: '0.0.0',
+})
