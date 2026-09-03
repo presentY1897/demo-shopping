@@ -1,6 +1,6 @@
 # Task 인덱스
 
-전체 **116개** TASK — 유효 **112개** + 폐기 4개(D-208 레이어 분할). **18개 완료**, TASK-0009 · TASK-0011 **진행중**(외부 계정 대기), 93개 **승인 대기**.
+전체 **116개** TASK — 유효 **112개** + 폐기 4개(D-208 레이어 분할). **18개 완료**, TASK-0009 · TASK-0011 **진행중**(외부 계정 대기), TASK-0017 · TASK-0029 · TASK-0030 **승인됨**, 90개 **승인 대기**.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
@@ -57,7 +57,7 @@
 | [TASK-0014](./M03-design-system/TASK-0014-design-tokens.md) | 디자인 토큰 · 밀도 3단계 | 완료 |
 | [TASK-0015](./M03-design-system/TASK-0015-base-components.md) | 기본 컴포넌트 | 완료 |
 | [TASK-0016](./M03-design-system/TASK-0016-data-components.md) | 데이터 표시 컴포넌트 | 완료 |
-| [TASK-0017](./M03-design-system/TASK-0017-form-system.md) | 폼 시스템 | 승인 대기 |
+| [TASK-0017](./M03-design-system/TASK-0017-form-system.md) | 폼 시스템 | 승인됨 |
 | [TASK-0018](./M03-design-system/TASK-0018-shop-layout.md) | shop 레이아웃 · 밀도 토글 | 승인 대기 |
 | [TASK-0019](./M03-design-system/TASK-0019-console-layout.md) | 콘솔 레이아웃 (seller · admin) | 승인 대기 |
 | [TASK-0104](./M03-design-system/TASK-0104-storybook.md) | Storybook | 완료 |
@@ -92,8 +92,8 @@
 | ID | 제목 | 상태 |
 | --- | --- | --- |
 | [TASK-0028](./M05-catalog/TASK-0028-category-schema.md) | 카테고리 스키마 · 트리 API | 완료 |
-| [TASK-0029](./M05-catalog/TASK-0029-category-admin.md) | 관리자 카테고리 관리 화면 | 승인 대기 |
-| [TASK-0030](./M05-catalog/TASK-0030-attribute-schema.md) | 속성 정의 스키마 · API | 승인 대기 |
+| [TASK-0029](./M05-catalog/TASK-0029-category-admin.md) | 관리자 카테고리 관리 화면 | 승인됨 |
+| [TASK-0030](./M05-catalog/TASK-0030-attribute-schema.md) | 속성 정의 스키마 · API | 승인됨 |
 | [TASK-0031](./M05-catalog/TASK-0031-attribute-admin.md) | 관리자 속성 관리 화면 | 승인 대기 |
 | [TASK-0032](./M05-catalog/TASK-0032-product-schema.md) | 상품 · 옵션 · Variant 스키마 | 승인 대기 |
 | [TASK-0033](./M05-catalog/TASK-0033-image-upload.md) | 이미지 업로드 위젯 | 승인 대기 |
