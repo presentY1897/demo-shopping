@@ -1,7 +1,7 @@
 import type { ApiErrorBody } from '@shopping/shared'
 import { apiErrorSchema } from '@shopping/shared'
 import type { JsonBodyType, RequestHandler } from 'msw'
-import { http, HttpResponse } from 'msw'
+import { delay, http, HttpResponse } from 'msw'
 
 import { defineFixture } from './define'
 import type { MockMethod, MockPath } from './paths'
@@ -62,6 +62,26 @@ export function networkFailure(path: MockPath): RequestHandler {
 /** {@link networkFailure} for a verb other than `GET`. */
 export function networkFailureOn(method: MockMethod, path: MockPath): RequestHandler {
   return http[method](path, () => HttpResponse.error())
+}
+
+/**
+ * Fails, but only after `ms`.
+ *
+ * The delay is the point. A screen that draws an optimistic frame and undoes it
+ * on failure would, against an instant failure, finish both inside one `await` —
+ * and a spec could then never tell "it moved and came back" from "it never
+ * moved". Holding the failure open leaves the optimistic frame observable.
+ */
+export function networkFailureAfterOn(
+  method: MockMethod,
+  path: MockPath,
+  ms: number,
+): RequestHandler {
+  return http[method](path, async () => {
+    await delay(ms)
+
+    return HttpResponse.error()
+  })
 }
 
 /**
