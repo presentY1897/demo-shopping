@@ -14,6 +14,7 @@ export {
   httpFailureOn,
   malformedResponse,
   networkFailure,
+  networkFailureAfterOn,
   networkFailureOn,
 } from './failures'
 export {

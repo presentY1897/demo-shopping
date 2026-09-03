@@ -81,6 +81,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.5
         version: 19.2.5(@types/react@19.2.18)
+      axe-core:
+        specifier: ^4.13.0
+        version: 4.13.0
       eslint:
         specifier: ^10.9.1
         version: 10.9.1(jiti@2.7.0)
