@@ -514,10 +514,17 @@ model AttributeDefinition {
   /// definitions with it and leave every product's `attributes` unexplainable.
   category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
-  /// Listing a category's own definitions, and the `= ANY(ancestor ids)` join
-  /// that resolves an inherited set in one statement (TASK-0030 4.3).
-  @@index([categoryId, sortOrder])
   /// The lineage conflict check filters by key first: "does any ancestor or
   /// descendant already define `material`?" (TASK-0030 4.2).
+  ///
+  /// The other query — `categoryId = ANY(ancestor ids) AND deletedAt IS NULL`,
+  /// which resolves an inherited set in one statement — needs no index of its
+  /// own: `AttributeDefinition_categoryId_key_active_key` already leads with
+  /// `categoryId` and carries `WHERE "deletedAt" IS NULL` as its predicate, so
+  /// it is a **better** match than a plain `(categoryId, sortOrder)` would be.
+  /// A second index over the same prefix would be write amplification that no
+  /// read benefits from; the display order is a sort over a handful of rows the
+  /// application does in memory. Verified by the `EXPLAIN` in
+  /// `test/api/attributes-performance.spec.ts` (gate S3).
   @@index([key])
 }

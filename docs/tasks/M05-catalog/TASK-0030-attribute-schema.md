@@ -77,7 +77,7 @@ LEFT JOIN "AttributeDefinition" d
   ON d."categoryId" = ANY (string_to_array(btrim(t."path", '/'), '/')::int[])
 ```
 
-문장 하나이므로 스냅샷이 일관되고(읽는 중에 이동이 끼어들어 계통이 반쯤 바뀌는 일이 없다), `= ANY` 가 `AttributeDefinition_categoryId_sortOrder_idx` 를 타므로 깊이가 늘어도 문장 수가 늘지 않는다(A5). `LEFT JOIN` 인 이유는 **정의가 하나도 없는 카테고리와 존재하지 않는 카테고리를 구분**하기 위해서다 — 전자는 행 1개(정의 열이 NULL), 후자는 0개다.
+문장 하나이므로 스냅샷이 일관되고(읽는 중에 이동이 끼어들어 계통이 반쯤 바뀌는 일이 없다), `= ANY` 가 `AttributeDefinition_categoryId_key_active_key`(부분 유니크, `categoryId` 선두, `deletedAt IS NULL` 조건 내장)를 타므로 깊이가 늘어도 문장 수가 늘지 않는다(A5). `LEFT JOIN` 인 이유는 **정의가 하나도 없는 카테고리와 존재하지 않는 카테고리를 구분**하기 위해서다 — 전자는 행 1개(정의 열이 NULL), 후자는 0개다.
 
 ### 4.4 수정할 수 있는 것과 없는 것
 

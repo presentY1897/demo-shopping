@@ -21,9 +21,6 @@ CREATE TABLE "AttributeDefinition" (
 );
 
 -- CreateIndex
-CREATE INDEX "AttributeDefinition_categoryId_sortOrder_idx" ON "AttributeDefinition"("categoryId", "sortOrder");
-
--- CreateIndex
 CREATE INDEX "AttributeDefinition_key_idx" ON "AttributeDefinition"("key");
 
 -- AddForeignKey

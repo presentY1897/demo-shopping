@@ -307,8 +307,10 @@ export class AttributeService {
    *
    * The lineage is computed inside the query — `btrim` strips the surrounding
    * slashes from `/1/5/12/` and `string_to_array` turns what is left into
-   * `{1,5,12}` — so `= ANY` can use `AttributeDefinition_categoryId_sortOrder_idx`
-   * and the depth of the category costs nothing (gate A5).
+   * `{1,5,12}` — so `= ANY` is served by
+   * `AttributeDefinition_categoryId_key_active_key` — which leads with
+   * `categoryId` and is already restricted to live rows — and the depth of the
+   * category costs nothing (gate A5).
    *
    * The join is a `LEFT JOIN` for one reason: a category with no definitions and
    * a category that does not exist would otherwise both answer with zero rows,
