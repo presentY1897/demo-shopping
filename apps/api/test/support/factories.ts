@@ -149,3 +149,86 @@ export async function createStock(
     [options.variant ?? unique('variant'), options.stock],
   )
 }
+
+export interface CategoryRow {
+  readonly id: number
+  readonly parentId: number | null
+  readonly path: string
+  readonly depth: number
+  readonly slug: string
+  readonly sortOrder: number
+}
+
+export interface CategoryOptions {
+  readonly parent?: CategoryRow | null
+  readonly name?: string
+  readonly slug?: string
+  readonly sortOrder?: number
+  readonly isActive?: boolean
+  readonly deletedAt?: Date | null
+}
+
+/**
+ * A category, inserted the way the service inserts one.
+ *
+ * The id comes from the sequence and the path is built from it in the same
+ * statement, because `Category_path_shape_check` refuses any row whose path
+ * does not end in its own id — there is no moment at which a placeholder path
+ * would be accepted.
+ *
+ * Raw SQL, like every factory here: a constraint spec has to see the database's
+ * own answer, and Prisma's validation would answer first.
+ */
+export async function createCategory(
+  db: Database,
+  options: CategoryOptions = {},
+): Promise<CategoryRow> {
+  const parent = options.parent ?? null
+
+  return db.one<CategoryRow>(
+    `WITH allocated AS (
+       SELECT nextval(pg_get_serial_sequence('"Category"', 'id'))::int AS id
+     )
+     INSERT INTO "Category"
+       ("id", "parentId", "parentPath", "path", "depth",
+        "name", "slug", "sortOrder", "isActive", "deletedAt", "updatedAt")
+     SELECT a.id, $1::int, $2::text, COALESCE($2::text, '/') || a.id || '/', $3::int,
+            $4, $5, $6, $7, $8, now()
+       FROM allocated a
+     RETURNING "id", "parentId", "path", "depth", "slug", "sortOrder"`,
+    [
+      parent?.id ?? null,
+      parent?.path ?? null,
+      (parent?.depth ?? 0) + 1,
+      options.name ?? unique('카테고리'),
+      options.slug ?? unique('cat'),
+      options.sortOrder ?? 0,
+      options.isActive ?? true,
+      options.deletedAt ?? null,
+    ],
+  )
+}
+
+/**
+ * A three-level branch: root > child > leaf.
+ *
+ * The shape every tree spec needs first, and the deepest one the schema allows.
+ */
+export async function createCategoryBranch(
+  db: Database,
+  prefix = 'branch',
+): Promise<{ root: CategoryRow; child: CategoryRow; leaf: CategoryRow }> {
+  const root = await createCategory(db, { slug: unique(`${prefix}-root`), name: '루트' })
+  const child = await createCategory(db, {
+    parent: root,
+    slug: unique(`${prefix}-child`),
+    name: '중간',
+  })
+  const leaf = await createCategory(db, {
+    parent: child,
+    slug: unique(`${prefix}-leaf`),
+    name: '잎',
+  })
+
+  return { root, child, leaf }
+}

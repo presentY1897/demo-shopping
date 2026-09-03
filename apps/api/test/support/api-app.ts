@@ -11,15 +11,19 @@ import { createApiClient } from '@shopping/shared'
 import { afterAll, beforeAll } from 'vitest'
 
 import { AppModule } from '../../src/app.module.js'
+import { PRINCIPAL_RESOLVER } from '../../src/auth/principal-resolver.js'
 import { configureApp } from '../../src/bootstrap/configure-app.js'
 import type { AppConfig } from '../../src/config/app-config.js'
 import { CLOCK } from '../../src/common/clock.js'
+import { PrismaService } from '../../src/prisma/prisma.service.js'
 import { testAppConfig } from './app-config.js'
 import type { TestClock } from './clock.js'
 import { DEFAULT_TEST_INSTANT, fixedClock } from './clock.js'
 import type { CookieJar } from './cookie-jar.js'
 import { createCookieJar } from './cookie-jar.js'
 import type { Database } from './database.js'
+import type { TestCaller } from './principal.js'
+import { callerHeaders, HeaderPrincipalResolver } from './principal.js'
 
 /**
  * Boots the real API over real HTTP for the length of a spec file.
@@ -44,6 +48,24 @@ export interface ApiAppOptions {
   readonly clock?: TestClock
   /** Applied over {@link testAppConfig}, e.g. to point at a dead database. */
   readonly config?: Partial<AppConfig>
+  /**
+   * Reads the caller from `x-test-*` headers instead of answering anonymous.
+   *
+   * Off by default so that a spec which says nothing keeps testing the
+   * application as it is deployed today — every guarded endpoint 401. A spec
+   * that needs a role opts in, and then {@link ApiApp.clientAs} decides who is
+   * calling per request (gate A3).
+   */
+  readonly authenticate?: boolean
+  /**
+   * Replaces the Prisma client the application uses.
+   *
+   * For the one thing the production client cannot do: report the statements it
+   * issues. The replacement is a **real** `PrismaClient` against the same worker
+   * database — nothing here is a mock, which gate A6 forbids — differing only in
+   * having query logging turned on. The spec owns its lifecycle.
+   */
+  readonly prisma?: object
 }
 
 export interface ApiApp {
@@ -52,6 +74,13 @@ export interface ApiApp {
   readonly baseUrl: string
   /** The `@shopping/shared` client, wired to this app and to the cookie jar. */
   readonly client: ApiClient
+  /**
+   * The same client, calling as `caller`.
+   *
+   * Requires `authenticate: true`; without it the header is read by nobody and
+   * every call is anonymous.
+   */
+  clientAs: (caller: TestCaller) => ApiClient
   readonly cookies: CookieJar
   readonly clock: TestClock
   /** Resolves a provider, for asserting what the container actually bound. */
@@ -70,12 +99,15 @@ function serverOrigin(app: INestApplication): string {
  * Node's `fetch` keeps no cookie state of its own, so this closes the loop that
  * a browser would close — and leaves the attributes visible for assertions.
  */
-function cookieAwareFetch(jar: CookieJar): FetchLike {
+function cookieAwareFetch(jar: CookieJar, caller?: TestCaller): FetchLike {
   return async (input, init) => {
     const headers = new Headers(init.headers)
     const cookie = jar.header()
 
     if (cookie !== undefined) headers.set('Cookie', cookie)
+    if (caller !== undefined) {
+      for (const [name, value] of Object.entries(callerHeaders(caller))) headers.set(name, value)
+    }
 
     const response = await fetch(input, { ...init, headers })
 
@@ -107,10 +139,18 @@ export function useApiApp(options: ApiAppOptions = {}): ApiApp {
     // `overrideProvider` is the reason `@nestjs/testing` is here: the clock is
     // swapped at the composition root, so every service below it sees the fixed
     // instant without any of them knowing it is in a test.
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule.forRoot(config)] })
+    const builder = Test.createTestingModule({ imports: [AppModule.forRoot(config)] })
       .overrideProvider(CLOCK)
       .useValue(clock)
-      .compile()
+
+    if (options.authenticate === true) {
+      builder.overrideProvider(PRINCIPAL_RESOLVER).useClass(HeaderPrincipalResolver)
+    }
+    if (options.prisma !== undefined) {
+      builder.overrideProvider(PrismaService).useValue(options.prisma)
+    }
+
+    const moduleRef = await builder.compile()
 
     const created = moduleRef.createNestApplication<NestExpressApplication>({ logger: false })
 
@@ -137,6 +177,13 @@ export function useApiApp(options: ApiAppOptions = {}): ApiApp {
     },
     get client(): ApiClient {
       return started(client, 'client')
+    },
+    clientAs(caller: TestCaller): ApiClient {
+      return createApiClient({
+        baseUrl: started(baseUrl === '' ? null : baseUrl, 'baseUrl'),
+        appId: 'admin',
+        fetch: cookieAwareFetch(cookies, caller),
+      })
     },
     cookies,
     clock,
