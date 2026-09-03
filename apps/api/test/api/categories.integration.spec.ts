@@ -123,7 +123,8 @@ describe('creating a tree', () => {
     )
 
     expect(refused.status).toBe(400)
-    expect(refused.details).toEqual(['카테고리는 3단계까지만 만들 수 있습니다.'])
+    expect(refused.code).toBe('CATEGORY_MAX_DEPTH')
+    expect(refused.details).toMatchObject([{ field: 'parentId', params: { max: 3 } }])
   })
 
   it('refuses an unknown parent', async () => {
@@ -132,7 +133,8 @@ describe('creating a tree', () => {
     )
 
     expect(refused.status).toBe(400)
-    expect(refused.details).toEqual(['상위 카테고리를 찾을 수 없습니다.'])
+    expect(refused.code).toBe('CATEGORY_PARENT_MISSING')
+    expect(refused.details).toMatchObject([{ field: 'parentId' }])
   })
 
   it('refuses a slug that is already taken, and the database is what decides', async () => {
@@ -143,7 +145,8 @@ describe('creating a tree', () => {
     )
 
     expect(refused.status).toBe(409)
-    expect(refused.details).toEqual(['이미 사용 중인 슬러그입니다.'])
+    expect(refused.code).toBe('CATEGORY_SLUG_TAKEN')
+    expect(refused.details).toMatchObject([{ field: 'slug' }])
   })
 
   it('appends new siblings after the existing ones', async () => {
@@ -258,9 +261,8 @@ describe('moving a node', () => {
       const refused = await failure(operator().moveCategory(root, { parentId }))
 
       expect(refused.status).toBe(400)
-      expect(refused.details).toEqual([
-        '카테고리를 자기 자신이나 하위 카테고리로 옮길 수 없습니다.',
-      ])
+      expect(refused.code).toBe('CATEGORY_MOVE_INTO_SELF')
+      expect(refused.details).toMatchObject([{ field: 'parentId' }])
     }
   })
 
@@ -286,7 +288,7 @@ describe('moving a node', () => {
     const refused = await failure(operator().moveCategory(child, { parentId: other.id }))
 
     expect(refused.status).toBe(400)
-    expect(refused.details).toEqual(['카테고리는 3단계까지만 만들 수 있습니다.'])
+    expect(refused.code).toBe('CATEGORY_MAX_DEPTH')
   })
 
   it('answers 404 for a node that is not there', async () => {
@@ -329,9 +331,8 @@ describe('ordering siblings', () => {
     )
 
     expect(refused.status).toBe(400)
-    expect(refused.details).toEqual([
-      'orderedIds 는 해당 상위 카테고리의 하위 전체를 중복 없이 담아야 합니다.',
-    ])
+    expect(refused.code).toBe('CATEGORY_REORDER_MISMATCH')
+    expect(refused.details).toMatchObject([{ field: 'orderedIds' }])
   })
 
   it('refuses a duplicate id', async () => {
@@ -380,9 +381,7 @@ describe('editing a category', () => {
     )
 
     expect(refused.status).toBe(409)
-    expect(refused.details).toEqual([
-      '다른 사용자가 먼저 수정했습니다. 새로고침 후 다시 시도해주세요.',
-    ])
+    expect(refused.code).toBe('CATEGORY_VERSION_CONFLICT')
 
     const { nodes } = await operator().getCategoryTree({ rootId: category.id })
 
@@ -461,7 +460,10 @@ describe('removing a category', () => {
     const refused = await failure(superAdmin().deleteCategory(root))
 
     expect(refused.status).toBe(409)
-    expect(refused.details).toEqual(['하위 카테고리가 남아 있어 삭제할 수 없습니다.'])
+    expect(refused.code).toBe('CATEGORY_HAS_CHILDREN')
+    // No field: nothing the caller typed is at fault, so nothing gets an error
+    // hung under it.
+    expect(refused.details).toEqual([])
   })
 })
 
@@ -477,9 +479,9 @@ describe('input validation (A2)', () => {
 
     expect(refused.status).toBe(400)
     expect(refused.code).toBe('BAD_REQUEST')
-    expect(refused.details).toEqual([
-      'name 값이 올바르지 않습니다.',
-      'slug 값이 올바르지 않습니다.',
+    expect(refused.details).toMatchObject([
+      { field: 'name', code: 'INVALID' },
+      { field: 'slug', code: 'INVALID' },
     ])
   })
 
@@ -491,7 +493,7 @@ describe('input validation (A2)', () => {
 
     expect(response.status).toBe(400)
     expect(await response.json()).toMatchObject({
-      error: { code: 'BAD_REQUEST', details: ['id 값이 올바르지 않습니다.'] },
+      error: { code: 'BAD_REQUEST', details: [{ field: 'id', code: 'INVALID' }] },
     })
   })
 

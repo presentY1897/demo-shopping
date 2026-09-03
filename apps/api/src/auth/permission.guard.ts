@@ -2,9 +2,9 @@ import type { IncomingMessage } from 'node:http'
 
 import type { CanActivate, ExecutionContext } from '@nestjs/common'
 import {
-  ForbiddenException,
   Inject,
   Injectable,
+  InternalServerErrorException,
   Logger,
   UnauthorizedException,
 } from '@nestjs/common'
@@ -12,6 +12,7 @@ import { Reflector } from '@nestjs/core'
 import type { Permission } from '@shopping/shared'
 import { canPerform } from '@shopping/shared'
 
+import { domainFailure } from '../common/domain-failure.js'
 import { accessDenied } from './access-denied.js'
 import type { PrincipalResolver } from './principal-resolver.js'
 import { PRINCIPAL_RESOLVER } from './principal-resolver.js'
@@ -58,9 +59,7 @@ export class PermissionGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<IncomingMessage>()
     const principal = await this.resolver.resolve(request)
 
-    if (principal === null) {
-      throw new UnauthorizedException('인증 정보가 없어 요청을 처리할 수 없습니다.')
-    }
+    if (principal === null) throw authRequired()
 
     attachPrincipal(request, principal)
 
@@ -78,6 +77,12 @@ export class PermissionGuard implements CanActivate {
    * than a preference, so it is refused too: guessing which one was meant would
    * either open something that was supposed to be guarded or silently ignore a
    * decorator someone wrote on purpose.
+   *
+   * **Both refusals are 500, not 403** (TASK-0117 4.3). A 403 tells the caller
+   * "your account is not allowed", and they would go looking for a role that
+   * would fix it — but nothing about the caller is wrong here; a decorator is
+   * missing. The reason stays in the log, where the person who can act on it
+   * reads it, and the caller gets an unexplained server error and a request id.
    */
   private withoutPermission(
     context: ExecutionContext,
@@ -92,10 +97,23 @@ export class PermissionGuard implements CanActivate {
       this.logger.error(
         `${handler} 이(가) @PublicEndpoint 와 @RequirePermission 을 함께 선언했습니다.`,
       )
-      throw new ForbiddenException('엔드포인트 권한 선언이 잘못되었습니다.')
+      throw new InternalServerErrorException()
     }
 
     this.logger.error(`${handler} 에 퍼미션 선언이 없어 요청을 차단했습니다. (기본 거부)`)
-    throw new ForbiddenException('엔드포인트에 퍼미션이 선언되지 않았습니다.')
+    throw new InternalServerErrorException()
   }
+}
+
+/**
+ * The 401 every unauthenticated request gets.
+ *
+ * `AUTH_REQUIRED` rather than the transport's `UNAUTHORIZED`, and "로그인이
+ * 필요해요." rather than "인증 정보가 없어 요청을 처리할 수 없습니다.": what a
+ * person needs is the next action, not the state of a header (TASK-0117 4.3).
+ * Shared with `@Principal()` so that the two doors into the same situation
+ * cannot answer differently.
+ */
+export function authRequired(): UnauthorizedException {
+  return new UnauthorizedException(domainFailure('AUTH_REQUIRED', '로그인이 필요해요.'))
 }

@@ -22,6 +22,7 @@ import { assertResourceAccess } from '../auth/access-denied.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
+import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import type { Inherited } from './attribute-inheritance.js'
 import { ancestorIdsOf, resolveEffectiveAttributes } from './attribute-inheritance.js'
@@ -173,15 +174,15 @@ export class AttributeService {
     assertResourceAccess(principal, 'catalog.write', platformOwnership)
 
     return this.inTree(async (tx) => {
-      const path = await this.categoryPath(tx, input.categoryId)
+      const category = await this.categoryFor(tx, input.categoryId)
 
-      await this.refuseLineageConflict(tx, path, input.key)
+      await this.refuseLineageConflict(tx, category.path, input.key)
 
       const sortOrder = input.sortOrder ?? (await this.nextSortOrder(tx, input.categoryId))
       const now = this.now()
 
       const created = await this.uniqueKey(
-        input.key,
+        category.name,
         () => tx.$queryRaw<AttributeDefinition[]>`
           INSERT INTO "AttributeDefinition"
             ("categoryId", "key", "label", "type", "options",
@@ -222,7 +223,15 @@ export class AttributeService {
       const issues = optionIssues(stored.type, input.options)
 
       if (issues.length > 0) {
-        throw new BadRequestException(issues.map((issue) => issue.message))
+        // One entry per issue, each naming `options` — the same shape
+        // `parseInput` produces, so a form places these without a second branch.
+        throw new BadRequestException({
+          message: issues.map((issue) => ({
+            field: issue.path.join('.'),
+            message: issue.message,
+            code: 'INVALID',
+          })),
+        })
       }
     }
 
@@ -247,7 +256,13 @@ export class AttributeService {
     // link — the distinction the caller needs, because one is resolved by
     // reloading and the other is not.
     await this.mustExist(this.prisma, id)
-    throw new ConflictException('다른 사용자가 먼저 수정했습니다. 새로고침 후 다시 시도해주세요.')
+    throw new ConflictException(
+      domainFailure(
+        'ATTRIBUTE_VERSION_CONFLICT',
+        '다른 관리자가 먼저 저장했어요. 최신 내용을 불러올까요?',
+        { field: 'version' },
+      ),
+    )
   }
 
   /**
@@ -378,16 +393,29 @@ export class AttributeService {
     })
   }
 
-  /** The category's materialised path. 400, because the caller named it. */
-  private async categoryPath(tx: Tx, categoryId: number): Promise<string> {
-    const rows = await tx.$queryRaw<{ path: string }[]>`
-      SELECT "path" FROM "Category" WHERE "id" = ${categoryId}::int AND "deletedAt" IS NULL
+  /**
+   * The category a definition is being attached to. 400, because the caller
+   * named it.
+   *
+   * The name comes along because {@link AttributeService.uniqueKey} needs it:
+   * the conflict sentence a console shows says *which* category already defines
+   * the key, and that is a fact only this row carries.
+   *
+   * Deliberately still a plain-string refusal rather than a coded one — it is
+   * the endpoint that keeps `details` carrying both shapes honest (F9).
+   */
+  private async categoryFor(tx: Tx, categoryId: number): Promise<{ path: string; name: string }> {
+    const rows = await tx.$queryRaw<{ path: string; name: string }[]>`
+      SELECT "path", "name" FROM "Category"
+       WHERE "id" = ${categoryId}::int AND "deletedAt" IS NULL
     `
     const [row] = rows
 
-    if (row === undefined) throw new BadRequestException('카테고리를 찾을 수 없습니다.')
+    if (row === undefined) {
+      throw new BadRequestException('선택한 카테고리가 없어졌어요. 목록을 새로고침해 주세요.')
+    }
 
-    return row.path
+    return row
   }
 
   /**
@@ -419,7 +447,14 @@ export class AttributeService {
     if (conflict === undefined) return
 
     throw new ConflictException(
-      `'${key}' 속성은 같은 카테고리 계통의 '${conflict.name}' 에 이미 정의되어 있습니다.`,
+      domainFailure(
+        'ATTRIBUTE_KEY_TAKEN',
+        `'${conflict.name}' 에 같은 이름의 속성이 이미 있어요.`,
+        {
+          field: 'key',
+          params: { name: conflict.name },
+        },
+      ),
     )
   }
 
@@ -452,13 +487,26 @@ export class AttributeService {
    * first, because the lineage check runs against live rows and the index also
    * covers the row this very statement is inserting — and because a check that
    * is only ever right is a check nobody notices going wrong.
+   *
+   * Answers with the same code and the same sentence as the lineage check: the
+   * caller is in the same situation either way, and two wordings for one
+   * situation is how a screen ends up with two branches for one thing.
    */
-  private async uniqueKey<T>(key: string, work: () => Promise<T>): Promise<T> {
+  private async uniqueKey<T>(categoryName: string, work: () => Promise<T>): Promise<T> {
     try {
       return await work()
     } catch (error) {
       if (sqlStateOf(error) === UNIQUE_VIOLATION) {
-        throw new ConflictException(`'${key}' 속성은 이 카테고리에 이미 정의되어 있습니다.`)
+        throw new ConflictException(
+          domainFailure(
+            'ATTRIBUTE_KEY_TAKEN',
+            `'${categoryName}' 에 같은 이름의 속성이 이미 있어요.`,
+            {
+              field: 'key',
+              params: { name: categoryName },
+            },
+          ),
+        )
       }
       throw error
     }

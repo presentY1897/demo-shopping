@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
 
 import { buildErrorBody, writeErrorResponse } from './error-response.js'
+import { requestIdOf } from './request-context.middleware.js'
 
 const NOT_FOUND = 404
 
@@ -17,7 +18,12 @@ const NOT_FOUND = 404
 export function createNotFoundFallback() {
   return function notFoundFallback(request: IncomingMessage, response: ServerResponse): void {
     const details = [`Cannot ${request.method ?? '-'} ${request.url ?? '-'}`]
+    const body = buildErrorBody({
+      status: NOT_FOUND,
+      requestId: requestIdOf(request),
+      details,
+    })
 
-    writeErrorResponse(response, NOT_FOUND, buildErrorBody(NOT_FOUND, details))
+    writeErrorResponse(response, NOT_FOUND, body)
   }
 }

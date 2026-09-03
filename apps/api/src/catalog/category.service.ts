@@ -22,6 +22,7 @@ import { assertResourceAccess } from '../auth/access-denied.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
+import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import {
   CATEGORY_TREE_LOCK_CLASS,
@@ -48,6 +49,16 @@ const NODE_FIELDS = [
 ] as const
 
 /**
+ * `productCount`, until there is a `Product` table to count (TASK-0032).
+ *
+ * A literal in the query rather than a `0` added in TypeScript after the rows
+ * come back: the column then exists in exactly one place, and the day products
+ * arrive this line becomes a subquery without any caller learning about it.
+ * Unqualified on purpose — it belongs to no table, so an alias would not parse.
+ */
+const PRODUCT_COUNT_COLUMN = '0::int AS "productCount"'
+
+/**
  * The column list, optionally qualified by a table alias.
  *
  * `Prisma.raw` is safe here because the only input is the constant above — and
@@ -57,7 +68,9 @@ const NODE_FIELDS = [
 function nodeColumns(alias?: string): Prisma.Sql {
   const prefix = alias === undefined ? '' : `${alias}.`
 
-  return Prisma.raw(NODE_FIELDS.map((field) => `${prefix}"${field}"`).join(', '))
+  return Prisma.raw(
+    [...NODE_FIELDS.map((field) => `${prefix}"${field}"`), PRODUCT_COUNT_COLUMN].join(', '),
+  )
 }
 
 const NODE_COLUMNS = nodeColumns()
@@ -80,6 +93,24 @@ function sqlStateOf(error: unknown): string | undefined {
     .driverAdapterError?.cause?.originalCode
 
   return typeof cause === 'string' ? cause : undefined
+}
+
+/**
+ * The depth cap, refused the same way wherever it is hit.
+ *
+ * Create and move both reach it and both blame the chosen parent, so they share
+ * one builder rather than two sentences that will one day disagree. `params.max`
+ * is what lets the reader's own catalog write the number into its own sentence
+ * instead of showing ours.
+ */
+function tooDeep(): BadRequestException {
+  return new BadRequestException(
+    domainFailure(
+      'CATEGORY_MAX_DEPTH',
+      `카테고리는 ${String(CATEGORY_MAX_DEPTH)}단계까지만 만들 수 있어요.`,
+      { field: 'parentId', params: { max: CATEGORY_MAX_DEPTH } },
+    ),
+  )
 }
 
 interface TreeQuery {
@@ -176,11 +207,7 @@ export class CategoryService {
     return this.inTree(async (tx) => {
       const parent = await this.parentFor(tx, input.parentId)
 
-      if (parent !== null && parent.depth >= CATEGORY_MAX_DEPTH) {
-        throw new BadRequestException(
-          `카테고리는 ${String(CATEGORY_MAX_DEPTH)}단계까지만 만들 수 있습니다.`,
-        )
-      }
+      if (parent !== null && parent.depth >= CATEGORY_MAX_DEPTH) throw tooDeep()
 
       const sortOrder = input.sortOrder ?? (await this.nextSortOrder(tx, input.parentId))
       const now = this.now()
@@ -246,7 +273,13 @@ export class CategoryService {
     // The distinction is what the caller needs — one is a dead link, the other
     // is a conflict they can resolve by reloading.
     await this.mustExist(this.prisma, id)
-    throw new ConflictException('다른 사용자가 먼저 수정했습니다. 새로고침 후 다시 시도해주세요.')
+    throw new ConflictException(
+      domainFailure(
+        'CATEGORY_VERSION_CONFLICT',
+        '다른 관리자가 먼저 저장했어요. 최신 내용을 불러올까요?',
+        { field: 'version' },
+      ),
+    )
   }
 
   /**
@@ -280,13 +313,15 @@ export class CategoryService {
       )
 
       if (refusal === 'cycle') {
-        throw new BadRequestException('카테고리를 자기 자신이나 하위 카테고리로 옮길 수 없습니다.')
-      }
-      if (refusal === 'too_deep') {
         throw new BadRequestException(
-          `카테고리는 ${String(CATEGORY_MAX_DEPTH)}단계까지만 만들 수 있습니다.`,
+          domainFailure(
+            'CATEGORY_MOVE_INTO_SELF',
+            '카테고리를 자기 자신이나 그 아래로 옮길 수 없어요.',
+            { field: 'parentId' },
+          ),
         )
       }
+      if (refusal === 'too_deep') throw tooDeep()
 
       const oldPrefix = node.path
       const newPrefix = pathOf(parent?.path ?? null, id)
@@ -352,7 +387,11 @@ export class CategoryService {
         input.orderedIds.some((id) => !expected.has(id))
       ) {
         throw new BadRequestException(
-          'orderedIds 는 해당 상위 카테고리의 하위 전체를 중복 없이 담아야 합니다.',
+          domainFailure(
+            'CATEGORY_REORDER_MISMATCH',
+            '순서가 화면과 어긋났어요. 새로고침한 뒤 다시 시도해 주세요.',
+            { field: 'orderedIds' },
+          ),
         )
       }
 
@@ -393,7 +432,11 @@ export class CategoryService {
       `
 
       if (children !== undefined && children.count > 0) {
-        throw new ConflictException('하위 카테고리가 남아 있어 삭제할 수 없습니다.')
+        // No `field`: nothing the operator typed is wrong. Inventing one would
+        // put a message under a control they never touched (4.7 J3).
+        throw new ConflictException(
+          domainFailure('CATEGORY_HAS_CHILDREN', '하위 카테고리를 먼저 옮기거나 삭제해 주세요.'),
+        )
       }
 
       const now = this.now()
@@ -439,7 +482,15 @@ export class CategoryService {
 
     const parent = await this.find(tx, parentId)
 
-    if (parent === null) throw new BadRequestException('상위 카테고리를 찾을 수 없습니다.')
+    if (parent === null) {
+      throw new BadRequestException(
+        domainFailure(
+          'CATEGORY_PARENT_MISSING',
+          '선택한 상위 카테고리가 없어졌어요. 목록을 새로고침해 주세요.',
+          { field: 'parentId' },
+        ),
+      )
+    }
 
     return parent
   }
@@ -494,7 +545,13 @@ export class CategoryService {
       return await work()
     } catch (error) {
       if (sqlStateOf(error) === UNIQUE_VIOLATION) {
-        throw new ConflictException('이미 사용 중인 슬러그입니다.')
+        throw new ConflictException(
+          domainFailure(
+            'CATEGORY_SLUG_TAKEN',
+            '이미 쓰고 있는 주소예요. 다른 주소를 입력해 주세요.',
+            { field: 'slug' },
+          ),
+        )
       }
       throw error
     }

@@ -796,17 +796,7 @@
     "runtime": {
       "type": "string",
       "description": "The runtime environment for the service.",
-      "enum": [
-        "docker",
-        "elixir",
-        "go",
-        "image",
-        "node",
-        "python",
-        "ruby",
-        "rust",
-        "static"
-      ]
+      "enum": ["docker", "elixir", "go", "image", "node", "python", "ruby", "rust", "static"]
     },
     "serverService": {
       "type": "object",
@@ -990,17 +980,7 @@
     "serviceType": {
       "type": "string",
       "description": "The type of service for environment variable references.",
-      "enum": [
-        "web",
-        "cron",
-        "worker",
-        "pserv",
-        "static",
-        "dpg",
-        "job",
-        "redis",
-        "keyvalue"
-      ]
+      "enum": ["web", "cron", "worker", "pserv", "static", "dpg", "job", "redis", "keyvalue"]
     },
     "staticService": {
       "type": "object",

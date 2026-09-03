@@ -4,11 +4,34 @@ import type { ApiErrorBody } from '@shopping/shared'
 
 import { mappingForStatus } from './http-error-code.js'
 
-/** Builds the shared envelope for a status. One place decides its shape. */
-export function buildErrorBody(status: number, details: unknown[] = []): ApiErrorBody {
-  const { code, message } = mappingForStatus(status)
+export interface ErrorBodyInit {
+  readonly status: number
+  /**
+   * The id `request-context.middleware.ts` put on the request and the response
+   * header. Required rather than optional: an envelope without one is an error
+   * nobody can look up, and an optional field is one every call site forgets.
+   */
+  readonly requestId: string
+  readonly details?: readonly unknown[]
+  /**
+   * Code and sentence from a domain failure, when the thrower named one.
+   *
+   * Overrides what the status alone would say — which is the whole point of
+   * TASK-0117: three different 409s stop being one `CONFLICT`.
+   */
+  readonly failure?: { readonly code: string; readonly message: string }
+}
 
-  return { error: { code, message, details } }
+/** Builds the shared envelope. One place decides its shape. */
+export function buildErrorBody({
+  status,
+  requestId,
+  details = [],
+  failure,
+}: ErrorBodyInit): ApiErrorBody {
+  const { code, message } = failure ?? mappingForStatus(status)
+
+  return { error: { code, message, details: [...details], requestId } }
 }
 
 /**

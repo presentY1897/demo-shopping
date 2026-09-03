@@ -90,6 +90,42 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        /**
+         * TASK-0117. The error contract's decision-making, all of it pure:
+         * which code and sentence a status maps to, what a domain failure's
+         * payload looks like, which `details` shape one zod issue becomes, and
+         * what goes into the envelope.
+         *
+         * A branch nothing reaches here is a failure nobody can read — and the
+         * symptom is not a red test. It is an error that renders in the wrong
+         * place, or with no sentence at all, while every check stays green.
+         * That is the exact failure this task exists to remove, so the modules
+         * that decide it are held to the 순수 로직 row of Q5.
+         */
+        'src/common/domain-failure.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        'src/common/error-response.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        'src/common/http-error-code.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        'src/common/parse-input.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
         // TASK-0011. The signature is the reason this floor is here: a branch
         // nothing reaches is a canonicalisation rule nothing checks, and the
         // symptom of getting one wrong is a 403 from the storage on some

@@ -27,7 +27,7 @@ function run(request: Partial<IncomingMessage>, headersSent = false) {
 
 describe('notFoundFallback', () => {
   it('answers a path outside the API prefix with the shared envelope', () => {
-    const captured = run({ method: 'GET', url: '/nope' })
+    const captured = run({ method: 'GET', url: '/nope', headers: {} })
 
     expect(captured.status).toBe(404)
     expect(apiErrorSchema.safeParse(captured.body).success).toBe(true)
@@ -35,8 +35,24 @@ describe('notFoundFallback', () => {
     expect(captured.body.error.details).toEqual(['Cannot GET /nope'])
   })
 
+  it('carries the request id it was given, so the log line and the body agree', () => {
+    const captured = run({
+      method: 'GET',
+      url: '/nope',
+      headers: { 'x-request-id': 'abc-123' },
+    })
+
+    expect(captured.body.error.requestId).toBe('abc-123')
+  })
+
+  it('makes an id up rather than answering without one', () => {
+    const captured = run({ method: 'GET', url: '/nope', headers: {} })
+
+    expect(captured.body.error.requestId).not.toBe('')
+  })
+
   it('closes a response whose headers already went out instead of throwing', () => {
-    const captured = run({ method: 'GET', url: '/nope' }, true)
+    const captured = run({ method: 'GET', url: '/nope', headers: {} }, true)
 
     expect(captured.ended).toBe(true)
     expect(captured.status).toBe(0)
