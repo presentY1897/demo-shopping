@@ -12,7 +12,7 @@ import { describe, expect, it } from 'vitest'
 import { healthOk } from './fixtures/health'
 import { setupTestServer } from './node'
 import { mockPaths } from './paths'
-import { neverAnswers, slowResponse, wakesAfter } from './waking'
+import { neverAnswers, sleepingInstance, slowResponse, wakesAfter } from './waking'
 
 const testServer = setupTestServer()
 
@@ -77,5 +77,20 @@ describe('wakesAfter', () => {
 
     testServer.server.use(wakesAfter(mockPaths.health, 1, healthOk))
     expect(kindOf(await healthFailure(500))).toBe('network')
+  })
+})
+
+describe('sleepingInstance', () => {
+  it('answers every waiting caller at one shared deadline', async () => {
+    testServer.server.use(sleepingInstance(mockPaths.health, 120, healthOk))
+
+    // The first caller gives up early; the spin-up it started keeps going.
+    const startedAt = performance.now()
+    expect(kindOf(await healthFailure(40))).toBe('timeout')
+
+    await expect(client.getHealth({ timeoutMs: 500 })).resolves.toEqual(healthOk)
+
+    // Roughly the original 120ms, not 40ms plus another 120.
+    expect(performance.now() - startedAt).toBeLessThan(220)
   })
 })

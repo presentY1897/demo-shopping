@@ -62,3 +62,34 @@ export function wakesAfter(
     return seen <= coldAttempts ? HttpResponse.error() : HttpResponse.json(body)
   })
 }
+
+/**
+ * An instance that is asleep and boots once, the way Render actually behaves.
+ *
+ * The distinction from {@link slowResponse} decides whether a replay means
+ * anything. Render does not reject a request aimed at a sleeping service: it
+ * holds it, starts the instance, and answers every request that arrived in the
+ * meantime as soon as the instance is up. So the deadline is **shared** — a
+ * caller that gives up after 10 seconds and asks again does not restart the
+ * 90 second wait, it joins one already 10 seconds along.
+ *
+ * A per-request delay models the opposite, and a retry policy tested against it
+ * can never succeed no matter how patient it is. The clock starts on the first
+ * request, exactly as the spin-up does.
+ */
+export function sleepingInstance(
+  path: MockPath,
+  wakesAfterMs: number,
+  body: JsonBodyType,
+): RequestHandler {
+  let readyAt: number | null = null
+
+  return http.get(path, async () => {
+    readyAt ??= Date.now() + wakesAfterMs
+
+    const remaining = readyAt - Date.now()
+    if (remaining > 0) await delay(remaining)
+
+    return HttpResponse.json(body)
+  })
+}
