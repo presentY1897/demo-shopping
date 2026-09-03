@@ -1,8 +1,10 @@
 import type {
+  ApiFieldError,
   CategoryNode,
   CategoryTreeNode,
   CategoryTreeResponse,
   CreateCategoryRequest,
+  DomainErrorCode,
   MoveCategoryRequest,
   ReorderCategoriesRequest,
   UpdateCategoryRequest,
@@ -23,7 +25,7 @@ import { http, HttpResponse } from 'msw'
 import type { z } from 'zod'
 
 import { defineFixture } from '../define'
-import { apiErrorBody } from '../failures'
+import { apiErrorBody, mockResponseHeaders } from '../failures'
 import { categoryTree } from '../fixtures/categories'
 import { mockPaths } from '../paths'
 
@@ -58,7 +60,7 @@ import { mockPaths } from '../paths'
  * drifted from the contract fails here rather than in the app it misleads.
  */
 
-/** The statuses this double can answer with, as `AllExceptionsFilter` shapes them. */
+/** What the status alone says, for a refusal that names no domain code. */
 const ERROR_ENVELOPES: Readonly<
   Record<number, { readonly code: string; readonly message: string }>
 > = {
@@ -67,34 +69,81 @@ const ERROR_ENVELOPES: Readonly<
   409: { code: 'CONFLICT', message: '다른 요청과 충돌해 처리하지 못했습니다.' },
 }
 
+interface RefusalOptions {
+  /** The domain code, when this refusal has one. Lands on `error.code`. */
+  readonly code?: DomainErrorCode
+  /** The input at fault. Produces the `details[]` entry a form places. */
+  readonly field?: string
+  readonly params?: Readonly<Record<string, string | number>>
+}
+
 /**
- * A refusal on its way out of the store.
+ * A refusal on its way out of the store, shaped exactly as the API shapes one
+ * (`apps/api/src/common/domain-failure.ts`).
  *
- * The reason travels in `details`, not in `code`, because that is where the real
- * API puts it: the code is derived from the status alone, so all three 409s —
- * a stale version, a taken slug, a category with children — arrive as
- * `CONFLICT`. A screen that pattern-matched on the Korean sentence would break
- * the day the sentence is edited; TASK-0029 4장 says how it tells them apart
- * instead, and this class is what makes that distinction reproducible.
+ * **This class is the mock's half of the error contract.** Before TASK-0117 the
+ * reason lived only in a Korean sentence in `details`, because that was all the
+ * API sent — so a screen telling a taken slug from a lost optimistic lock had to
+ * read prose or guess from the HTTP method it had used. Now the code is on the
+ * envelope and the field is on the entry, and this double has to produce both or
+ * the front-end specs would be passing against an API that no longer exists.
  */
 class MockApiError extends Error {
+  readonly code: DomainErrorCode | undefined
+  readonly field: string | undefined
+  readonly params: Readonly<Record<string, string | number>> | undefined
+
   constructor(
     readonly status: number,
     readonly detail: string,
+    options: RefusalOptions = {},
   ) {
     super(detail)
     this.name = 'MockApiError'
+    this.code = options.code
+    this.field = options.field
+    this.params = options.params
+  }
+
+  /** The `details[]` entry, or none for a refusal about no particular input. */
+  entries(): readonly (ApiFieldError | string)[] {
+    if (this.field === undefined) return this.code === undefined ? [this.detail] : []
+
+    return [
+      {
+        field: this.field,
+        message: this.detail,
+        ...(this.code === undefined ? {} : { code: this.code }),
+        ...(this.params === undefined ? {} : { params: this.params }),
+      },
+    ]
   }
 }
 
 const FALLBACK_ENVELOPE = { code: 'BAD_REQUEST', message: '요청을 처리할 수 없습니다.' } as const
 
 function errorResponse(error: MockApiError): Response {
-  const envelope = ERROR_ENVELOPES[error.status] ?? FALLBACK_ENVELOPE
+  const fallback = ERROR_ENVELOPES[error.status] ?? FALLBACK_ENVELOPE
+  const code = error.code ?? fallback.code
+  const message = error.code === undefined ? fallback.message : error.detail
 
-  return HttpResponse.json(apiErrorBody(envelope.code, envelope.message, [error.detail]), {
+  return HttpResponse.json(apiErrorBody(code, message, error.entries()), {
     status: error.status,
+    headers: mockResponseHeaders,
   })
+}
+
+/** The depth cap, refused the same way from create and from move. */
+function tooDeep(): MockApiError {
+  return new MockApiError(
+    400,
+    `카테고리는 ${String(CATEGORY_MAX_DEPTH)}단계까지만 만들 수 있어요.`,
+    {
+      code: 'CATEGORY_MAX_DEPTH',
+      field: 'parentId',
+      params: { max: CATEGORY_MAX_DEPTH },
+    },
+  )
 }
 
 /** Drops the nesting; the store keeps rows, exactly as the table does. */
@@ -147,12 +196,7 @@ class CategoryStore {
   create(input: CreateCategoryRequest): CategoryNode {
     const parent = this.parentFor(input.parentId)
 
-    if (parent !== undefined && parent.depth >= CATEGORY_MAX_DEPTH) {
-      throw new MockApiError(
-        400,
-        `카테고리는 ${String(CATEGORY_MAX_DEPTH)}단계까지만 만들 수 있습니다.`,
-      )
-    }
+    if (parent !== undefined && parent.depth >= CATEGORY_MAX_DEPTH) throw tooDeep()
     this.refuseTakenSlug(input.slug, null)
 
     const id = this.nextId
@@ -167,6 +211,7 @@ class CategoryStore {
       path: `${parent?.path ?? '/'}${String(id)}/`,
       sortOrder: input.sortOrder ?? this.nextSortOrder(input.parentId),
       isActive: true,
+      productCount: 0,
       version: 0,
     }
     this.rows.push(created)
@@ -180,7 +225,10 @@ class CategoryStore {
     // Version first, then the slug: the real statement guards on the version in
     // its `WHERE`, so a stale editor never reaches the unique index at all.
     if (row.version !== input.version) {
-      throw new MockApiError(409, '다른 사용자가 먼저 수정했습니다. 새로고침 후 다시 시도해주세요.')
+      throw new MockApiError(409, '다른 관리자가 먼저 저장했어요. 최신 내용을 불러올까요?', {
+        code: 'CATEGORY_VERSION_CONFLICT',
+        field: 'version',
+      })
     }
     if (input.slug !== undefined) this.refuseTakenSlug(input.slug, id)
 
@@ -201,16 +249,14 @@ class CategoryStore {
     const parent = this.parentFor(input.parentId)
 
     if (parent?.path.startsWith(node.path) === true) {
-      throw new MockApiError(400, '카테고리를 자기 자신이나 하위 카테고리로 옮길 수 없습니다.')
+      throw new MockApiError(400, '카테고리를 자기 자신이나 그 아래로 옮길 수 없어요.', {
+        code: 'CATEGORY_MOVE_INTO_SELF',
+        field: 'parentId',
+      })
     }
 
     const depthDelta = (parent?.depth ?? 0) + 1 - node.depth
-    if (this.subtreeDepth(node.path) + depthDelta > CATEGORY_MAX_DEPTH) {
-      throw new MockApiError(
-        400,
-        `카테고리는 ${String(CATEGORY_MAX_DEPTH)}단계까지만 만들 수 있습니다.`,
-      )
-    }
+    if (this.subtreeDepth(node.path) + depthDelta > CATEGORY_MAX_DEPTH) throw tooDeep()
 
     const sortOrder =
       input.sortOrder ??
@@ -240,10 +286,10 @@ class CategoryStore {
       given.size !== siblings.length ||
       siblings.some((row) => !given.has(row.id))
     ) {
-      throw new MockApiError(
-        400,
-        'orderedIds 는 해당 상위 카테고리의 하위 전체를 중복 없이 담아야 합니다.',
-      )
+      throw new MockApiError(400, '순서가 화면과 어긋났어요. 새로고침한 뒤 다시 시도해 주세요.', {
+        code: 'CATEGORY_REORDER_MISMATCH',
+        field: 'orderedIds',
+      })
     }
 
     this.rows = this.rows.map((row) => {
@@ -261,7 +307,9 @@ class CategoryStore {
     const row = this.mustExist(id)
 
     if (this.rows.some((candidate) => candidate.parentId === id)) {
-      throw new MockApiError(409, '하위 카테고리가 남아 있어 삭제할 수 없습니다.')
+      throw new MockApiError(409, '하위 카테고리를 먼저 옮기거나 삭제해 주세요.', {
+        code: 'CATEGORY_HAS_CHILDREN',
+      })
     }
 
     // Soft delete: the row leaves the tree and its id is never handed out again.
@@ -291,14 +339,22 @@ class CategoryStore {
 
     const parent = this.rows.find((row) => row.id === parentId)
 
-    if (parent === undefined) throw new MockApiError(400, '상위 카테고리를 찾을 수 없습니다.')
+    if (parent === undefined) {
+      throw new MockApiError(400, '선택한 상위 카테고리가 없어졌어요. 목록을 새로고침해 주세요.', {
+        code: 'CATEGORY_PARENT_MISSING',
+        field: 'parentId',
+      })
+    }
 
     return parent
   }
 
   private refuseTakenSlug(slug: string, exceptId: number | null): void {
     if (this.rows.some((row) => row.slug === slug && row.id !== exceptId)) {
-      throw new MockApiError(409, '이미 사용 중인 슬러그입니다.')
+      throw new MockApiError(409, '이미 쓰고 있는 주소예요. 다른 주소를 입력해 주세요.', {
+        code: 'CATEGORY_SLUG_TAKEN',
+        field: 'slug',
+      })
     }
   }
 
