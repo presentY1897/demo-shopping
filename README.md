@@ -145,7 +145,7 @@ Prisma 명령은 저장소 루트에서 실행한다. `DATABASE_URL` 은 이 워
 ```bash
 pnpm infra:up          # Postgres 가 떠 있어야 한다
 pnpm test              # 워크스페이스 전체
-pnpm test:coverage     # 커버리지 리포트 (임계값은 M05 부터)
+pnpm test:coverage     # 커버리지 리포트 + 임계값 (M05 부터 적용)
 ```
 
 **백엔드 테스트는 실제 PostgreSQL 에 대해 돈다.** 이 프로젝트는 불변식을 DB 가 강제하도록
@@ -190,6 +190,8 @@ it('...', async () => {
 | --- | --- | --- |
 | `useDatabase()` | `apps/api/test/support/database.ts` | 워커 DB 풀, `query` · `one` · `execute` · `withConnection`, 테스트마다 TRUNCATE |
 | `useApiApp()` | `apps/api/test/support/api-app.ts` | `main.ts` 와 **같은** `configureApp` 으로 앱을 띄우고 실제 소켓에 바인딩. `client` 는 프론트가 쓰는 `createApiClient` |
+| `useApiApp({ authenticate: true })` · `api.clientAs(caller)` | `apps/api/test/support/principal.ts` | 헤더로 호출자를 지정한다. 인증이 아직 없어(TASK-0021·0022) 이것 없이는 모든 보호 엔드포인트가 401 이라 **게이트 A3(403)을 관측할 수 없다** |
+| `useApiApp({ prisma })` | `apps/api/test/support/api-app.ts` | 앱이 쓸 Prisma 클라이언트를 교체한다. 용도는 **쿼리 로깅 하나** — 게이트 A5(N+1 없음)를 코드 읽기가 아니라 **문장 수 측정**으로 확인한다. 모킹이 아니라 같은 클래스·같은 워커 DB 다 |
 | `concurrently(n, fn)` · `barrier(n)` | `apps/api/test/support/concurrently.ts` | 동시 호출과 결정적 인터리빙 |
 | `fixedClock(iso)` | `apps/api/test/support/clock.ts` | `CLOCK` 포트에 바인딩되는 고정 시각 |
 | `createUser` · `createAddress` · … | `apps/api/test/support/factories.ts` | 픽스처 팩토리 |
@@ -214,6 +216,14 @@ HTTP 를 **실제로** 부른다(`listen(0)`). 인프로세스 호출이 빠르�
 겹치지 않아도 통과한다. 일부러 틀린 구현(read-then-write)이 **반드시 초과판매를 재현**하는
 것을 함께 보여야 앞의 단언이 구현에 대한 증거가 된다. 본보기는
 `apps/api/test/db/stock-contention.spec.ts`.
+
+**불변식을 DB 가 강제하면 대조군은 두 겹이 된다.** 카테고리 트리처럼 제약이 손상 자체를
+불가능하게 만든 경우, 락 없는 구현을 실제 테이블에 돌려도 DB 가 먼저 거부하므로 "트리가
+깨지는 모습"을 볼 수 없다. 그래서 `apps/api/test/db/category-tree-contention.spec.ts` 는
+① 락 없는 구현을 **실 테이블**에 돌려 *성공했다고 답하지만 아무것도 옮기지 않는* 사일런트
+오답을 재현하고, ② 같은 인터리빙을 제약이 없는 픽스처 테이블(`TestCategoryNaive`)에 돌려
+**순환 참조와 끊어진 경로 캐시**를 실제로 만들어 보인다. 두 번째가 없으면 제약이 무엇을
+막고 있는지 아무도 확인하지 않은 채로 남는다.
 
 ### 시각 주입
 
