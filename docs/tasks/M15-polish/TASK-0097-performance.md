@@ -12,6 +12,27 @@
 
 전 화면·API 의 성능을 측정하고 기준 미달 지점을 개선한다. 각 TASK 에서 개별 확인했지만 **전체를 한 번에 재점검**한다.
 
+### 이미 확인된 미달 지점 — admin 셸 번들
+
+[TASK-0029](../M05-catalog/TASK-0029-category-admin.md) 6.4 가 Lighthouse 12 로 실측하면서 발견했다.
+**개별 화면의 문제가 아니라 앱 셸의 고정 비용**이므로 이 TASK 가 받는다.
+
+| 측정 | 값 |
+| --- | --- |
+| LCP (모바일 프리셋: 4x CPU · Slow 4G) | **2,557ms** — 게이트 P1 기준 2,500ms 초과 |
+| 같은 조건, admin `/` 홈 | **2,557ms** — 화면 내용과 무관하게 동일 |
+| LCP 분해 | TTFB 453ms(18%) · **Render Delay 2,106ms(82%)** |
+| 렌더 블로킹 CSS | 8KB 1개 (153ms) — 병목 아님 |
+| 스크립트 전송량 | **276KB** — 4x CPU 스로틀에서의 파싱이 실제 병목 |
+| Desktop 프리셋 LCP | 0.6s (perf 100, a11y 100) |
+
+재현: `apps/admin` 프로덕션 빌드를 `next start -p <admin포트>` 로 띄우고
+`CHROME_PATH=<playwright chromium> npx lighthouse@12 <url> --only-categories=performance,accessibility`.
+Lighthouse 는 전역 설치 없이 `npx` 로 실행되고, 브라우저는 Playwright 캐시의 Chromium 을 쓴다.
+
+**admin 의 화면 TASK 들은 이 값이 내려가기 전까지 P1 을 충족할 수 없다.** 그래서 그쪽에서는
+P1 을 `[-]`(이 TASK 소유)로 두고 있다. 여기서 셸 번들을 줄이면 함께 해소된다.
+
 ## 2. 범위
 
 ### 포함
