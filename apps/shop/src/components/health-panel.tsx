@@ -24,10 +24,10 @@ export function HealthPanel({ result, messages }: HealthPanelProps) {
   const { health } = messages
 
   return (
-    <section className="rounded-lg border border-black/10 p-6">
+    <section className="border-border rounded-lg border p-6">
       <h2 className="text-lg font-semibold">{health.title}</h2>
 
-      <p className="mt-1 text-sm text-black/60">
+      <p className="text-fg-muted mt-1 text-sm">
         {health.endpointLabel}: <code>{result.endpoint}</code>
       </p>
 
@@ -37,7 +37,7 @@ export function HealthPanel({ result, messages }: HealthPanelProps) {
             {healthEntries(result.response).map((entry) => (
               <li
                 key={entry.key}
-                className="flex min-h-[var(--touch-min)] items-center gap-3 border-b border-black/5 last:border-b-0"
+                className="border-border min-h-touch flex items-center gap-3 border-b last:border-b-0"
               >
                 <span
                   aria-hidden="true"
@@ -49,7 +49,7 @@ export function HealthPanel({ result, messages }: HealthPanelProps) {
             ))}
           </ul>
 
-          <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm text-black/60">
+          <dl className="text-fg-muted mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
             <dt>{health.uptimeLabel}</dt>
             <dd>
               {result.response.uptime}
@@ -65,7 +65,7 @@ export function HealthPanel({ result, messages }: HealthPanelProps) {
             <span aria-hidden="true" className="size-2.5 rounded-full bg-status-down" />
             {health.failureTitle}
           </p>
-          <p className="mt-1 text-sm text-black/60">{health.failures[result.reason]}</p>
+          <p className="text-fg-muted mt-1 text-sm">{health.failures[result.reason]}</p>
         </div>
       )}
     </section>
