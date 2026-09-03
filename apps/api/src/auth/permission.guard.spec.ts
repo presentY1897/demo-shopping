@@ -9,6 +9,7 @@ import {
 import { Reflector } from '@nestjs/core'
 import { describe, expect, it, vi } from 'vitest'
 
+import { deniedMessage } from './access-denied.js'
 import { PermissionGuard } from './permission.guard.js'
 import type { PrincipalResolver } from './principal-resolver.js'
 import { PublicEndpoint } from './public-endpoint.decorator.js'
@@ -170,7 +171,7 @@ describe('guarded endpoints', () => {
 
     await expect(guard.canActivate(context)).rejects.toBeInstanceOf(ForbiddenException)
     await expect(guard.canActivate(context).catch(detailOf)).resolves.toBe(
-      'product.write 퍼미션이 없습니다.',
+      deniedMessage('product.write', 'missing_permission'),
     )
   })
 

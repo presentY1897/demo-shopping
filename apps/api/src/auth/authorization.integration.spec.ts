@@ -16,7 +16,7 @@ import { APP_CONFIG } from '../config/app-config.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { UserRolesController } from '../users/user-roles.controller.js'
 import { UserRolesService } from '../users/user-roles.service.js'
-import { assertResourceAccess } from './access-denied.js'
+import { assertResourceAccess, deniedMessage } from './access-denied.js'
 import { PermissionGuard } from './permission.guard.js'
 import type { PrincipalResolver } from './principal-resolver.js'
 import { PRINCIPAL_RESOLVER } from './principal-resolver.js'
@@ -310,7 +310,9 @@ describe('permission refusals', () => {
     })
 
     expect(answer.status).toBe(403)
-    expect(envelopeOf(answer).details).toEqual(['product.write 퍼미션이 없습니다.'])
+    expect(envelopeOf(answer).details).toEqual([
+      deniedMessage('product.write', 'missing_permission'),
+    ])
   })
 })
 
@@ -331,9 +333,7 @@ describe('own scope', () => {
     })
 
     expect(answer.status).toBe(403)
-    expect(envelopeOf(answer).details).toEqual([
-      'product.write 퍼미션으로 접근할 수 없는 리소스입니다.',
-    ])
+    expect(envelopeOf(answer).details).toEqual([deniedMessage('product.write', 'out_of_scope')])
   })
 })
 
@@ -342,9 +342,7 @@ describe('demo scope', () => {
     const answer = await call('POST', '/fixtures/catalog', { as: callers.demoAdmin })
 
     expect(answer.status).toBe(403)
-    expect(envelopeOf(answer).details).toEqual([
-      'catalog.write 퍼미션으로 접근할 수 없는 리소스입니다.',
-    ])
+    expect(envelopeOf(answer).details).toEqual([deniedMessage('catalog.write', 'out_of_scope')])
   })
 
   it('refuses a demo administrator the product of a real account', async () => {
@@ -409,9 +407,7 @@ describe('role administration', () => {
     const answer = await call('GET', `/users/${SELLER}/roles`, { as: callers.buyer })
 
     expect(answer.status).toBe(403)
-    expect(envelopeOf(answer).details).toEqual([
-      'user.read 퍼미션으로 접근할 수 없는 리소스입니다.',
-    ])
+    expect(envelopeOf(answer).details).toEqual([deniedMessage('user.read', 'out_of_scope')])
   })
 
   it('lets an operator read anyone, but grants nothing', async () => {
@@ -423,7 +419,7 @@ describe('role administration', () => {
     })
 
     expect(answer.status).toBe(403)
-    expect(envelopeOf(answer).details).toEqual(['user.write 퍼미션이 없습니다.'])
+    expect(envelopeOf(answer).details).toEqual([deniedMessage('user.write', 'missing_permission')])
   })
 
   it('grants and revokes for a super admin, idempotently', async () => {

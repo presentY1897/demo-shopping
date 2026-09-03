@@ -2,6 +2,7 @@ import type { ApiClient, CreateAttributeRequest } from '@shopping/shared'
 import { ApiClientError, attributeListResponseSchema } from '@shopping/shared'
 import { describe, expect, it } from 'vitest'
 
+import { deniedMessage } from '../../src/auth/access-denied.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
 import { callers } from '../support/principal.js'
@@ -205,9 +206,13 @@ describe('creating a definition', () => {
     const refused = await failure(operator().createAttribute(definition(9_999)))
 
     // Still a plain string, on purpose: this endpoint is what keeps `details`
-    // carrying both shapes honest (TASK-0117 F9).
+    // carrying both shapes honest (TASK-0117 F9). The shape is the contract —
+    // the sentence is this endpoint's own, and asserting it would pin the spec
+    // to prose the way TASK-0117 exists to stop.
     expect(refused.status).toBe(400)
-    expect(refused.details).toEqual(['선택한 카테고리가 없어졌어요. 목록을 새로고침해 주세요.'])
+    expect(refused.code).toBe('BAD_REQUEST')
+    expect(refused.details).toHaveLength(1)
+    expect(typeof refused.details[0]).toBe('string')
   })
 
   it('refuses the same key on the same category', async () => {
@@ -475,7 +480,7 @@ describe('authorization (A3 · A4)', () => {
       const refused = await failure(api.clientAs(caller).createAttribute(definition(leaf)))
 
       expect(refused.status).toBe(403)
-      expect(refused.details).toEqual(['catalog.write 퍼미션이 없습니다.'])
+      expect(refused.details).toEqual([deniedMessage('catalog.write', 'missing_permission')])
     }
   })
 
@@ -485,7 +490,7 @@ describe('authorization (A3 · A4)', () => {
     const refused = await failure(operator().deleteAttribute(attribute.id))
 
     expect(refused.status).toBe(403)
-    expect(refused.details).toEqual(['catalog.delete 퍼미션이 없습니다.'])
+    expect(refused.details).toEqual([deniedMessage('catalog.delete', 'missing_permission')])
   })
 
   it('keeps a demo administrator out of the platform catalogue', async () => {
@@ -493,6 +498,6 @@ describe('authorization (A3 · A4)', () => {
     const refused = await failure(api.clientAs(callers.demoAdmin).createAttribute(definition(leaf)))
 
     expect(refused.status).toBe(403)
-    expect(refused.details).toEqual(['catalog.write 퍼미션으로 접근할 수 없는 리소스입니다.'])
+    expect(refused.details).toEqual([deniedMessage('catalog.write', 'out_of_scope')])
   })
 })

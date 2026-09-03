@@ -7,6 +7,7 @@ import {
 } from '@shopping/shared'
 import { describe, expect, it } from 'vitest'
 
+import { deniedMessage } from '../../src/auth/access-denied.js'
 import { useApiApp } from '../support/api-app.js'
 import { testStorageConfig } from '../support/app-config.js'
 import { useDatabase } from '../support/database.js'
@@ -294,7 +295,7 @@ describe('authorisation (A3)', () => {
 
     expect(error.status).toBe(403)
     expect(error.code).toBe('FORBIDDEN')
-    expect(error.details).toEqual(['media.upload 퍼미션이 없습니다.'])
+    expect(error.details).toEqual([deniedMessage('media.upload', 'missing_permission')])
   })
 
   it("refuses a seller asking for another store's key", async () => {
@@ -305,7 +306,7 @@ describe('authorisation (A3)', () => {
     )
 
     expect(error.status).toBe(403)
-    expect(error.details).toEqual(['media.upload 퍼미션으로 접근할 수 없는 리소스입니다.'])
+    expect(error.details).toEqual([deniedMessage('media.upload', 'out_of_scope')])
   })
 
   it('lets an operator upload for any store', async () => {
@@ -322,7 +323,7 @@ describe('authorisation (A3)', () => {
     )
 
     expect(error.status).toBe(403)
-    expect(error.details).toEqual(['media.upload 퍼미션으로 접근할 수 없는 리소스입니다.'])
+    expect(error.details).toEqual([deniedMessage('media.upload', 'out_of_scope')])
   })
 
   it('lets a demo administrator upload for a store a demo account owns', async () => {

@@ -8,6 +8,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import type { AppConfig } from '../config/app-config.js'
 import { AllExceptionsFilter } from './all-exceptions.filter.js'
+import { mappingForStatus } from './http-error-code.js'
 
 interface Captured {
   status: number
@@ -55,7 +56,10 @@ describe('AllExceptionsFilter', () => {
     expect(captured.status).toBe(404)
     expect(apiErrorSchema.safeParse(captured.body).success).toBe(true)
     expect(captured.body.error.code).toBe('NOT_FOUND')
-    expect(captured.body.error.message).toBe('요청한 경로를 찾을 수 없습니다.')
+    // Through the mapping rather than as a literal: `http-error-code.spec.ts`
+    // is where the sentences themselves are checked, and quoting one here would
+    // make a copy edit look like a regression in the filter (TASK-0117 R1).
+    expect(captured.body.error.message).toBe(mappingForStatus(404).message)
     expect(captured.body.error.details).toEqual(['Cannot GET /api/v1/nope'])
   })
 
@@ -64,7 +68,7 @@ describe('AllExceptionsFilter', () => {
 
     expect(captured.status).toBe(500)
     expect(captured.body.error.code).toBe('INTERNAL_ERROR')
-    expect(captured.body.error.message).toBe('서버 내부 오류가 발생했습니다.')
+    expect(captured.body.error.message).toBe(mappingForStatus(500).message)
     expect(JSON.stringify(captured.body)).not.toContain('postgres://')
   })
 

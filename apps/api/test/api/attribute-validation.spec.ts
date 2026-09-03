@@ -1,4 +1,5 @@
 import type { ApiClient, CreateAttributeRequest } from '@shopping/shared'
+import { NotFoundException } from '@nestjs/common'
 import { describe, expect, it } from 'vitest'
 
 import { AttributeService } from '../../src/catalog/attribute.service.js'
@@ -134,9 +135,17 @@ describe('a lineage of definitions decides what a product may carry', () => {
   })
 
   it('answers 404 for a category that does not exist', async () => {
-    await expect(attributes().validateAttributes(9_999, {})).rejects.toThrow(
-      '카테고리를 찾을 수 없습니다.',
-    )
+    // The status, not the sentence: what a caller acts on is that this is a
+    // dead reference rather than an empty rule set (TASK-0117 R1).
+    const error: unknown = await attributes()
+      .validateAttributes(9_999, {})
+      .then(
+        () => null,
+        (reason: unknown) => reason,
+      )
+
+    expect(error).toBeInstanceOf(NotFoundException)
+    expect((error as NotFoundException).getStatus()).toBe(404)
   })
 })
 
