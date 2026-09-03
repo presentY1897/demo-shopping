@@ -1,3 +1,4 @@
+import { CONSOLE_DENSITY } from '@shopping/ui'
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
@@ -16,8 +17,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { readonly children: ReactNode }) {
   return (
-    <html lang={DEFAULT_LOCALE}>
-      <body className="min-h-dvh bg-white text-black antialiased">{children}</body>
+    // Pinned to the standard step and no toggle anywhere (D-033): an operations
+    // screen wants the same information density every time, and a per-operator
+    // setting is one more variable during a support call. The tokens are the
+    // shared ones, so the console gets the design system without the choice.
+    <html lang={DEFAULT_LOCALE} data-density={CONSOLE_DENSITY}>
+      <body className="bg-surface text-fg min-h-dvh antialiased">{children}</body>
     </html>
   )
 }

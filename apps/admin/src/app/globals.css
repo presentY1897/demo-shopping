@@ -2,9 +2,15 @@
 @import '@shopping/config/tailwind/preset.css';
 
 /*
- * App level extension of the shared preset. Everything that all three apps
- * share belongs in the preset; only what is specific to admin goes here.
+ * App level extension of the shared preset. Everything the three apps share
+ * lives in the preset; only what is specific to admin goes here.
+ *
+ * The accent is deliberately the only difference. Three browser tabs of the
+ * same site are open at once during a demo (DECISIONS 2장), and the colour is
+ * how you tell which one you are looking at without reading the header.
  */
 @theme {
-  --color-app-accent: oklch(0.52 0.17 310);
+  --color-primary: var(--color-violet-500);
+  --color-primary-strong: var(--color-violet-600);
+  --color-primary-surface: var(--color-violet-100);
 }
