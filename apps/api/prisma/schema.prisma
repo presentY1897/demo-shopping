@@ -29,3 +29,58 @@ model AppMeta {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ---------------------------------------------------------------------------
+// Accounts · roles · sessions (TASK-0020)
+//
+// Three constraints below cannot be expressed in PSL and live in the migration
+// as raw SQL — Prisma's drift detection ignores partial indexes and CHECK
+// constraints, so they survive later `migrate dev` runs untouched:
+//
+//   User_googleSub_active_key    one live account per Google identity
+//   Address_userId_default_key   one default shipping address per user
+//   *_check                      demo/real invariants and the commission range
+//
+// Anything the database is asked to guarantee is stated there and repeated
+// in a comment on the field it guards, so the two never drift silently.
+// ---------------------------------------------------------------------------
+
+/// Roles a single account can hold at once.
+///
+/// Modelled as rows in `UserRole` rather than a column on `User` because a
+/// seller also buys: a single-valued role would force that person to keep two
+/// accounts. The mapping from a role to its permissions is a **code constant**,
+/// never a table (TASK-0105) — permissions change with a deploy, not with an
+/// UPDATE, and a table would let a production row silently widen access.
+enum Role {
+  BUYER
+  SELLER_OWNER
+  ADMIN_OPERATOR
+  ADMIN_SUPER
+  DEMO_ADMIN
+}
+
+/// Lifecycle of a seller's store. `SUSPENDED` is the terminal state instead of
+/// a delete: products, orders and settlements point at the store forever.
+enum SellerStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+  SUSPENDED
+}
+
+/// The three front-ends. Sessions are independent per app (DECISIONS 2), so a
+/// refresh token records which app it was issued for and is worthless in the
+/// other two — that is the schema-level half of "cookies carry no `Domain`".
+enum ClientApp {
+  SHOP
+  SELLER
+  ADMIN
+}
+
+/// Product display density in `apps/shop` (`docs/design/pages.md`).
+enum DisplayDensity {
+  MINIMAL
+  STANDARD
+  MAXIMAL
+}
