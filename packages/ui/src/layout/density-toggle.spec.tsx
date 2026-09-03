@@ -75,11 +75,11 @@ describe('DensityToggle', () => {
 
     expect(screen.getByRole('radio', { name: LABELS[3] })).toHaveFocus()
 
-    // Space commits the focused step. Radix also commits on the arrow itself —
-    // it clicks the item from its focus handler when an arrow key is down — but
-    // that path depends on focus being delivered after the key event finishes
-    // bubbling, which jsdom does not reproduce. The browser behaviour is
-    // verified where it can be: TASK-0018 6.1 F4, in Chromium.
+    // Space commits the focused step, and so does the arrow itself — the
+    // component selects whatever the arrow focused, because that is the
+    // WAI-ARIA radio pattern. That half needs `:focus-visible`, which jsdom
+    // does not implement, so it is verified in Chromium instead
+    // (TASK-0018 6.1 F4): 표준 → ArrowRight → 맥시멀, `data-density="3"`.
     await userEvent.keyboard(' ')
 
     expect(appliedDensity()).toBe('3')
