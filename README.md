@@ -116,7 +116,7 @@ curl localhost:4000/api/v1/health   # {"status":"ok","search":"ok","uptime":3,"v
 ```bash
 pnpm --filter @shopping/api build   # dist/ 로 컴파일
 pnpm --filter @shopping/api start   # 컴파일된 결과 실행
-pnpm --filter @shopping/api test    # vitest
+pnpm --filter @shopping/api test    # vitest (Postgres 필요 — "테스트" 절 참조)
 ```
 
 ## 데이터베이스
@@ -136,6 +136,100 @@ Prisma 명령은 저장소 루트에서 실행한다. `DATABASE_URL` 은 이 워
 
 `db:reset` 은 확인 프롬프트를 띄운다. 비대화형 셸에서는 `pnpm db:reset --force`.
 마이그레이션 SQL 은 커밋한다. 배포 환경에서는 `db:deploy` 만 돈다.
+
+## 테스트
+
+`pnpm test` 하나로 로컬과 CI 가 **같은 방식**으로 돈다. 로컬에서는 `pnpm infra:up` 이 선행이다.
+
+```bash
+pnpm infra:up          # Postgres 가 떠 있어야 한다
+pnpm test              # 워크스페이스 전체
+pnpm test:coverage     # 커버리지 리포트 (임계값은 M05 부터)
+```
+
+**백엔드 테스트는 실제 PostgreSQL 에 대해 돈다.** 이 프로젝트는 불변식을 DB 가 강제하도록
+설계했으므로(부분 유니크 인덱스·CHECK·조건부 재고 갱신·행 잠금), Prisma 를 모킹하면 정확히
+그 부분만 검증에서 빠진다. 근거는 [D-207](./docs/decisions/2026-09-03-session-02.md),
+규약은 [QUALITY-GATES 6장](./docs/tasks/QUALITY-GATES.md#6-테스트-대역-규약).
+
+Postgres 가 없으면 **건너뛰지 않고 실패한다.** 5초 안에 원인과 `pnpm infra:up` 을 안내한다 —
+아무것도 검증하지 않은 초록이 가장 나쁜 결과이기 때문이다.
+
+### 격리 방식
+
+| 경계 | 방법 |
+| --- | --- |
+| 워커 사이 | **워커별 데이터베이스.** `shopping_test_tpl` 에 마이그레이션을 1회 적용하고 `CREATE DATABASE ... TEMPLATE` 로 `shopping_test_w1..4` 를 복제 |
+| 테스트 사이 | **`TRUNCATE ... RESTART IDENTITY CASCADE`.** 대상 테이블은 `information_schema` 에서 조회하므로 스키마가 늘어도 손댈 곳이 없다 |
+
+**테스트를 트랜잭션으로 감싸 롤백하지 않는다.** 커밋되지 않은 행은 다른 커넥션에서 보이지
+않아 동시 요청 상황 자체를 만들 수 없고, 프로덕션 코드의 트랜잭션이 savepoint 로 강등된다.
+전부 진짜 커밋이므로 잠금·격리 수준이 프로덕션과 같은 의미로 동작한다.
+
+두 번째 실행부터는 마이그레이션 지문이 같으면 템플릿과 워커 DB 를 **그대로 재사용**한다
+(`DROP DATABASE` 는 체크포인트를 강제해서 1~2초가 든다). 손으로 건드려 이상해졌다면
+`TEST_DB_REBUILD=1 pnpm test` 로 전부 다시 만든다.
+
+### 하네스
+
+```ts
+import { useApiApp } from '../support/api-app.js'
+import { useDatabase } from '../support/database.js'
+
+const db = useDatabase()                     // 워커 DB 연결 + beforeEach TRUNCATE
+const api = useApiApp({ database: db })      // listen(0) + createApiClient
+
+it('...', async () => {
+  const health = await api.client.getHealth()   // zod 로 parse 된 응답 (게이트 C3)
+  expect(health.database).toBe('ok')
+})
+```
+
+| 조각 | 위치 | 하는 일 |
+| --- | --- | --- |
+| `useDatabase()` | `apps/api/test/support/database.ts` | 워커 DB 풀, `query` · `one` · `execute` · `withConnection`, 테스트마다 TRUNCATE |
+| `useApiApp()` | `apps/api/test/support/api-app.ts` | `main.ts` 와 **같은** `configureApp` 으로 앱을 띄우고 실제 소켓에 바인딩. `client` 는 프론트가 쓰는 `createApiClient` |
+| `concurrently(n, fn)` · `barrier(n)` | `apps/api/test/support/concurrently.ts` | 동시 호출과 결정적 인터리빙 |
+| `fixedClock(iso)` | `apps/api/test/support/clock.ts` | `CLOCK` 포트에 바인딩되는 고정 시각 |
+| `createUser` · `createAddress` · … | `apps/api/test/support/factories.ts` | 픽스처 팩토리 |
+| 쿠키 | `api.cookies` | `Set-Cookie` 를 저장했다가 다음 요청에 실어 보낸다. `HttpOnly`·`SameSite`·`Path`·`Max-Age` 를 단언할 수 있다 |
+
+HTTP 를 **실제로** 부른다(`listen(0)`). 인프로세스 호출이 빠르지만 동시 요청이 진짜 동시가
+되지 않고, 쿠키·CORS·헤더가 검증 범위에서 빠진다.
+
+### 작성 규약
+
+| # | 규칙 | 이유 |
+| --- | --- | --- |
+| T1 | Prisma·리포지토리를 **모킹하지 않는다** | 모킹하는 순간 DB 가 강제하는 불변식이 검증에서 빠진다 |
+| T2 | 픽스처는 **팩토리 함수**로 만든다 | 스키마가 늘 때 한 곳만 고친다 |
+| T3 | 다른 테스트가 남긴 데이터를 전제하지 않는다 | TRUNCATE 가 매번 돈다 |
+| T4 | 고정 ID 를 하드코딩하지 않는다 | `RESTART IDENTITY` 때문에 우연히 통과하는 테스트가 생긴다 |
+| T5 | 잔액·재고·순서·멱등이 걸린 경로는 **동시 요청 케이스를 반드시 쓴다** | 게이트 A7 |
+| T6 | 응답은 `packages/shared` 의 zod 스키마로 parse 한다 | 게이트 C3. 프론트 모킹과 같은 스키마여야 드리프트가 잡힌다 |
+| T7 | 시각은 주입한다. `new Date()` · `Date.now()` 를 쓰지 않는다 | 아래 |
+
+**동시 요청 테스트에는 음성 대조군을 붙인다.** "하나만 성공했다"는 단언은 두 요청이 실제로는
+겹치지 않아도 통과한다. 일부러 틀린 구현(read-then-write)이 **반드시 초과판매를 재현**하는
+것을 함께 보여야 앞의 단언이 구현에 대한 증거가 된다. 본보기는
+`apps/api/test/db/stock-contention.spec.ts`.
+
+### 시각 주입
+
+만료·정산 마감처럼 시각에 의존하는 로직은 현재 시각을 **인자 또는 `Clock` 포트로 받는다**.
+`apps/api/src/**` 에서 `new Date()` · `Date.now()` 직접 호출은 **린트가 막는다**
+(`apps/api/eslint.config.mjs`). 예외는 포트 구현체인 `src/common/clock.ts` 한 곳뿐이다.
+
+`vi.setSystemTime` 으로 대신하지 않는다 — **DB 의 `now()` 는 따라오지 않아서** `DEFAULT now()`
+컬럼과 애플리케이션 시각이 어긋나고, 만료 판정이 테스트에서만 맞는다.
+
+### 대역 규약
+
+| 대상 | 대역 |
+| --- | --- |
+| PostgreSQL · 가상 카드 | **실제** |
+| Meilisearch · 토스페이먼츠 · Google OAuth · Cloudflare R2 | 모킹 |
+| 시간 | 주입 (`Clock`) |
 
 ## 웹 앱 (shop / seller / admin)
 
@@ -372,7 +466,7 @@ PR 을 올리면 `.github/workflows/ci.yml` 이 4개 job 을 **병렬로** 돌�
 | `typecheck` | `pnpm typecheck` |
 | `lint` | `pnpm lint` + `pnpm format:check` |
 | `build` | `pnpm build` |
-| `test` | `pnpm test` |
+| `test` | `pnpm test` — **postgres 서비스 컨테이너와 함께** |
 
 - 네 job 은 서로 의존하지 않는다. 각 job 이 `.github/actions/setup` 으로
   **install → `packages/shared` 빌드**까지 스스로 마친 뒤 자기 명령을 돌린다.
@@ -380,6 +474,10 @@ PR 을 올리면 `.github/workflows/ci.yml` 이 4개 job 을 **병렬로** 돌�
   그러면 병렬 이득이 사라진다.
 - pnpm store 는 `actions/setup-node` 의 `cache: pnpm` 이 `pnpm-lock.yaml` 해시를
   키로 캐시한다. 잠금 파일이 그대로면 두 번째 실행부터 패키지를 내려받지 않는다.
+- `test` job 에만 **`postgres:17.11-alpine` 서비스 컨테이너**가 붙는다. 이미지 태그는
+  `docker-compose.yml` 과 같아야 하며, 워크플로가 그 파일을 읽을 수 없으므로
+  `apps/api/test/ci/postgres-image-parity.spec.ts` 가 두 문자열을 비교한다.
+  마이그레이션 단계는 없다 — 테스트의 globalSetup 이 템플릿 DB 를 만들면서 적용한다.
 CI 는 **PR 과 `main` push 양쪽**에서 돈다. rebase 머지는 커밋을 다시 쓰므로 PR 이 검사한
 SHA 와 `main` 에 올라간 SHA 가 다르다. 그래서 `main` 에서도 한 번 더 돈다.
 
