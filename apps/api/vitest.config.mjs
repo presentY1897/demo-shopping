@@ -33,9 +33,42 @@ export default defineConfig({
       reporter: ['text', 'html'],
       include: ['src/**/*.ts'],
       exclude: ['src/**/*.spec.ts', 'src/main.ts'],
-      // Deliberately no thresholds: the coverage gate (QUALITY-GATES Q5) starts
-      // at M05. Turning it on here would only reward tests written to raise a
-      // number before there is domain code worth covering.
+      /**
+       * The coverage gate, switched on by the first M05 task (TASK-0028).
+       *
+       * QUALITY-GATES Q5 asks for two different numbers, so there are two kinds
+       * of entry here.
+       *
+       * - **Backend services and API — line coverage 80%.** A global floor, not
+       *   a per-file one: a small module that is exercised entirely through the
+       *   endpoint above it would otherwise have to grow tests of its own that
+       *   assert nothing new.
+       * - **Pure logic — branch coverage 100%.** Named file by file, because
+       *   "is this pure logic?" is a judgement and a glob would quietly answer
+       *   it for code nobody looked at. Every path decision and every move
+       *   refusal is decided in these two modules, and a branch nothing reaches
+       *   is a rule nothing checks.
+       *
+       * Statements and branches are deliberately left without a global floor:
+       * Q5 states line coverage for this layer, and adding numbers the gate
+       * does not ask for is how a suite starts collecting tests that exist to
+       * move a percentage.
+       */
+      thresholds: {
+        lines: 80,
+        'src/catalog/category-path.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        'src/catalog/category-tree.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+      },
     },
   },
 })
