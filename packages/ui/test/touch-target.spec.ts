@@ -48,6 +48,11 @@ const FLOOR_UTILITIES: Readonly<Record<string, string>> = {
  * `link.tsx` is deliberately absent: WCAG 2.5.8 exempts a link inside a
  * sentence, and padding an inline link to 44px would break the line box it sits
  * in. `badge`, `avatar` and `divider` render nothing interactive at all.
+ *
+ * `table.tsx` is here for its sort headers, which are buttons a finger has to
+ * land on. `pagination.tsx` is not: every control it renders is a `Button`, so
+ * the floor is stated once, there. A component that composes another one does
+ * not restate its promises.
  */
 const INTERACTIVE = [
   'accordion.tsx',
@@ -58,6 +63,7 @@ const INTERACTIVE = [
   'radio-group.tsx',
   'select.tsx',
   'switch.tsx',
+  'table.tsx',
   'tabs.tsx',
   'tag.tsx',
   'textarea.tsx',
