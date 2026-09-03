@@ -1,7 +1,7 @@
 import type { JsonBodyType, RequestHandler } from 'msw'
 import { delay, http, HttpResponse } from 'msw'
 
-import type { MockPath } from './paths'
+import type { MockMethod, MockPath } from './paths'
 
 /**
  * A cold API, as a front-end spec can hold it still and look at it.
@@ -36,7 +36,19 @@ export function slowResponse(path: MockPath, ms: number, body: JsonBodyType): Re
  * failure a sleeping instance produces when the wait is capped too low.
  */
 export function neverAnswers(path: MockPath): RequestHandler {
-  return http.get(path, async () => {
+  return neverAnswersOn('get', path)
+}
+
+/**
+ * {@link neverAnswers} for a verb other than `GET`.
+ *
+ * A mutation that never answers is how a spec holds a screen still *during* a
+ * request: an optimistic update has already been drawn and the response that
+ * would confirm or undo it has not arrived, which is the only window in which
+ * "즉시 반영" can be observed at all.
+ */
+export function neverAnswersOn(method: MockMethod, path: MockPath): RequestHandler {
+  return http[method](path, async () => {
     await delay('infinite')
   })
 }

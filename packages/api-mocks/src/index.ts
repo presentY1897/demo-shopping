@@ -11,13 +11,21 @@ export {
   apiErrorBody,
   driftedHealthPayload,
   httpFailure,
+  httpFailureOn,
   malformedResponse,
   networkFailure,
+  networkFailureOn,
 } from './failures'
-export { defaultHandlers, healthHandlers, userRolesHandlers } from './handlers'
-export { mockPaths } from './paths'
-export type { MockPath } from './paths'
+export {
+  categoryHandlers,
+  defaultHandlers,
+  healthHandlers,
+  resetCategoryStore,
+  userRolesHandlers,
+} from './handlers'
+export { mockMethods, mockPaths } from './paths'
+export type { MockMethod, MockPath } from './paths'
 export { fixtureRegistry } from './registry'
 export type { RegisteredFixture } from './registry'
-export { neverAnswers, sleepingInstance, slowResponse, wakesAfter } from './waking'
+export { neverAnswers, neverAnswersOn, sleepingInstance, slowResponse, wakesAfter } from './waking'
 export * from './fixtures'

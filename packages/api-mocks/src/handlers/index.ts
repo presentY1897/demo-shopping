@@ -1,5 +1,6 @@
 import type { RequestHandler } from 'msw'
 
+import { categoryHandlers } from './categories'
 import { healthHandlers } from './health'
 import { userRolesHandlers } from './user-roles'
 
@@ -11,6 +12,11 @@ import { userRolesHandlers } from './user-roles'
  * the one spec that wants it via `server.use(...)`, so a test that says nothing
  * about failures is a test of the happy path and cannot become one by accident.
  */
-export const defaultHandlers: readonly RequestHandler[] = [...healthHandlers, ...userRolesHandlers]
+export const defaultHandlers: readonly RequestHandler[] = [
+  ...healthHandlers,
+  ...userRolesHandlers,
+  ...categoryHandlers,
+]
 
+export { categoryHandlers, resetCategoryStore } from './categories'
 export { healthHandlers, userRolesHandlers }
