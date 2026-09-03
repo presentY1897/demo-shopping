@@ -8,6 +8,7 @@ export const commonIgnores = [
   '**/dist/**',
   '**/build/**',
   '**/.next/**',
+  '**/storybook-static/**',
   '**/coverage/**',
   '**/node_modules/**',
 ]

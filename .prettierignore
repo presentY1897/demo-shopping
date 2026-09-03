@@ -5,6 +5,7 @@ node_modules
 dist
 build
 .next
+storybook-static
 coverage
 next-env.d.ts
 pnpm-lock.yaml

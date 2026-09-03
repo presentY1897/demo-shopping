@@ -4,13 +4,19 @@
   // names what it needs. `node` is for the test files, which read a stylesheet
   // off disk; the components themselves use none of it.
   "compilerOptions": {
-    "types": ["node", "react", "react-dom"],
+    // `vite/client` is for the Storybook side of the package: it declares the
+    // CSS side-effect import in `.storybook/preview.tsx` and `import.meta.glob`,
+    // which `test/story-a11y.spec.tsx` uses to sweep every story.
+    "types": ["node", "react", "react-dom", "vite/client"],
     // The Next preset leaves JSX untransformed for Next's own compiler. This
     // package is not a Next app: Next compiles it with the consuming app's
     // settings, and the only other tools that read this file — tsc and the
     // Vitest transform — both need the JSX emitted.
     "jsx": "react-jsx"
   },
-  "include": ["src", "test"],
+  // `.storybook/**/*` rather than `.storybook`: TypeScript's wildcard expansion
+  // skips dot-prefixed directories, so naming the directory alone leaves
+  // `main.ts` out of the program — and out of eslint's type-aware pass with it.
+  "include": ["src", "test", "stories", ".storybook/**/*"],
   "exclude": ["node_modules", "dist"]
 }

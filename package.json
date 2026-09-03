@@ -27,6 +27,8 @@
     "db:status": "pnpm --filter @shopping/api db:status",
     "db:seed": "pnpm --filter @shopping/api db:seed",
     "db:studio": "pnpm --filter @shopping/api db:studio",
+    "storybook": "pnpm --filter @shopping/ui storybook",
+    "storybook:build": "pnpm --filter @shopping/ui build-storybook",
     "ports": "node scripts/ports.mjs",
     "infra:up": "node scripts/infra.mjs up",
     "infra:down": "node scripts/infra.mjs down",

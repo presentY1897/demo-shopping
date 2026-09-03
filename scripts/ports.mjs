@@ -18,6 +18,10 @@ export const BASE_PORTS = Object.freeze({
   seller: 3001,
   admin: 3002,
   api: 4000,
+  // The design system's Storybook (TASK-0104). Storybook's own default, routed
+  // through the offset like everything else so two worktrees can serve it at
+  // once.
+  storybook: 6006,
   postgres: 5432,
   meilisearch: 7700,
   // Prisma Studio defaults to a fixed 5555, which collides the moment a second
