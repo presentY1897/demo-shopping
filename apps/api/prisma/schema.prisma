@@ -84,3 +84,212 @@ enum DisplayDensity {
   STANDARD
   MAXIMAL
 }
+
+/// One person's account, real or demo.
+///
+/// Identifiers are UUIDv7 rather than a serial: a user id travels in URLs and
+/// tokens, where a sequential number leaks how many accounts exist and invites
+/// enumeration. v7 keeps the time prefix, so inserts still land at the right
+/// edge of the B-tree instead of scattering across it like v4.
+model User {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  /// Google's stable subject claim; the login identity.
+  ///
+  /// Nullable because a demo account never went through Google, and because a
+  /// withdrawn account may have its identity scrubbed (TASK-0025) while the row
+  /// stays behind as an FK anchor for its orders.
+  ///
+  /// Uniqueness is enforced by the partial index `User_googleSub_active_key`
+  /// (`WHERE "deletedAt" IS NULL`), not by `@unique`: a plain unique index would
+  /// burn the Google account forever the moment its owner withdrew.
+  googleSub String?
+
+  /// Not unique. The identity is `googleSub` — a Google account can change its
+  /// email, and demo accounts get a generated one.
+  email     String
+  name      String
+  avatarUrl String?
+
+  /// Demo accounts are issued on the spot and expire (DECISIONS 2). The pair is
+  /// held consistent by `User_demo_expiry_check`: a demo account always carries
+  /// an expiry and a real one never does, so "is this a demo?" has exactly one
+  /// answer no matter which of the two columns a query looks at.
+  isDemo        Boolean   @default(false)
+  demoExpiresAt DateTime?
+
+  lastLoginAt DateTime?
+
+  /// Withdrawal. Orders, reviews and settlements keep pointing here, so the row
+  /// is never physically removed; `deletedAt` is what takes the account out of
+  /// the login path and out of the `googleSub` unique index.
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  roles         UserRole[]
+  seller        Seller?
+  addresses     Address[]
+  preference    UserPreference?
+  refreshTokens RefreshToken[]
+
+  /// Admin console looks accounts up by email.
+  @@index([email])
+  /// The expiry sweep: `WHERE "isDemo" AND "demoExpiresAt" < now()`.
+  @@index([isDemo, demoExpiresAt])
+}
+
+/// A role granted to an account. Many rows per user — see {@link Role}.
+model UserRole {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @db.Uuid
+  role      Role
+  grantedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// Granting the same role twice is a no-op, not a second row.
+  @@unique([userId, role])
+  /// "who are the admins" — a scan over every user would be the alternative.
+  @@index([role])
+}
+
+/// A seller's store. One per account.
+model Seller {
+  id     String @id @default(uuid(7)) @db.Uuid
+  userId String @unique @db.Uuid
+
+  brandName String @unique
+  /// URL identifier for the storefront; separate from `brandName` so renaming
+  /// the brand does not have to break every link that points at the store.
+  slug         String  @unique
+  introduction String?
+  logoUrl      String?
+
+  status SellerStatus @default(PENDING)
+  /// Why the store was rejected or suspended, shown back to the seller.
+  statusReason    String?
+  statusChangedAt DateTime?
+
+  /// Platform commission in **basis points** (1 bp = 0.01%), e.g. 350 = 3.50%.
+  /// NULL means "no individual rate" and the category default applies
+  /// (`docs/design/pricing.md` 5). An integer because money is integer KRW and
+  /// a float rate would reintroduce rounding drift into settlement; the range
+  /// is held to 0–10000 by `Seller_commissionRateBp_check`.
+  commissionRateBp Int?
+
+  /// Optimistic lock (DECISIONS 4). Two people edit this row — the seller
+  /// changes brand copy while an operator approves or suspends the store — and
+  /// last-write-wins would quietly revert one of them.
+  version Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// `Restrict`, unlike the personal tables below: a store carries products,
+  /// orders and settlements, so removing its owner must fail loudly rather than
+  /// cascade through the catalogue.
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  /// The operator queue: pending applications first.
+  @@index([status])
+}
+
+/// An entry in a user's address book.
+///
+/// Orders snapshot the recipient (`docs/design/erd.md` 4), so nothing points at
+/// this row and it can be deleted for real — which is also what makes purging a
+/// withdrawn account's personal data possible without breaking order history.
+model Address {
+  id     String @id @default(uuid(7)) @db.Uuid
+  userId String @db.Uuid
+
+  /// User-supplied nickname such as "집" or "회사".
+  label         String?
+  recipientName String
+  phone         String
+
+  /// Korean five-digit postal code.
+  postalCode   String
+  addressLine1 String
+  addressLine2 String?
+
+  /// At most one per user, enforced by the partial unique index
+  /// `Address_userId_default_key`. Application-level checking is not enough:
+  /// two concurrent "make this the default" requests both read zero defaults
+  /// and both write one.
+  isDefault Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The address book listing. The partial index above only covers the default
+  /// row, so it cannot serve this query.
+  @@index([userId])
+}
+
+/// Per-account display and notification settings.
+///
+/// Keyed by `userId` instead of carrying an id of its own: the relation is
+/// one-to-one, and a surrogate key would allow a second row to exist.
+model UserPreference {
+  userId String @id @db.Uuid
+
+  density  DisplayDensity @default(STANDARD)
+  /// BCP 47 tag. Korean first, but the column exists from the start so that
+  /// adding a locale later is data rather than a migration (DECISIONS 1).
+  locale   String         @default("ko-KR")
+  /// ISO 4217. Amounts are integer minor-unit values; this says of what.
+  currency String         @default("KRW")
+
+  /// In-app notification centre only — email and push are out of scope
+  /// (DECISIONS 8), so these are the switches that actually do something.
+  notifyOrder     Boolean @default(true)
+  notifyClaim     Boolean @default(true)
+  notifyMarketing Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// One issued refresh token.
+///
+/// The token itself is never stored — `tokenHash` holds a digest, so a dump of
+/// this table cannot be replayed as a session. Rotation and reuse detection are
+/// TASK-0022; what this table has to get right now is that a session belongs to
+/// exactly one app.
+model RefreshToken {
+  id     String @id @default(uuid(7)) @db.Uuid
+  userId String @db.Uuid
+
+  /// Which front-end this session belongs to. A SHOP token presented to the
+  /// admin API is rejected by a lookup that filters on this column.
+  app ClientApp
+
+  /// Digest of the token, not the token.
+  tokenHash String @unique
+
+  expiresAt DateTime
+  /// Set on logout and on rotation; a revoked row is kept so that a replay can
+  /// still be recognised instead of merely missing.
+  revokedAt DateTime?
+
+  /// Shown in a "signed-in devices" list, and the only way to tell two sessions
+  /// of the same app apart.
+  userAgent String?
+  ipAddress String?
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// "this user's sessions on this app" — issue, list and revoke all use it.
+  @@index([userId, app])
+  /// The sweep that deletes expired rows.
+  @@index([expiresAt])
+}
