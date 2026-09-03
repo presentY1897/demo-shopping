@@ -103,3 +103,6 @@ export type {
   TableSort,
   TableSortDirection,
 } from './table'
+
+export { TableToCards } from './table-to-cards'
+export type { TableToCardsProps } from './table-to-cards'
