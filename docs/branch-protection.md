@@ -1,28 +1,34 @@
 # main 브랜치 보호 규칙
 
-**아직 켜지 않았다.** 켤지 말지는 저장소 소유자가 정한다 — 켜는 순간 지금의 로컬 머지
-흐름이 막히기 때문이다. 이 문서는 **무엇을 어떤 순서로 켜야 하는지**와 **켜면 무엇이
-달라지는지**를 적어 둔 것이다.
+**2026-09-03 에 1~8번을 전부 켰다.** 대상은 `presentY1897/demo-shopping` 의 `main`.
 
-대상: `presentY1897/demo-shopping` 의 `main`.
+`main` 에 직접 push 하는 것은 관리자에게도 거부된다. 모든 변경은 PR 을 거치고,
+CI 4개가 green 이어야 머지된다. 실제 거부 응답:
 
-## 왜 아직 안 켰나
-
-지금 이 저장소는 **로컬에서 머지**한다.
-
-```bash
-# feature-<name> 워크트리
-git rebase main
-pnpm typecheck && pnpm lint && pnpm build && pnpm test
-
-# main 워크트리
-git merge --ff-only feature/<name>
-git push origin main
+```
+remote: error: GH006: Protected branch update failed for refs/heads/main.
+remote: - Changes must be made through a pull request.
+remote: - 4 of 4 required status checks are expected.
+! [remote rejected] main -> main (protected branch hook declined)
 ```
 
-`main` 에 보호 규칙을 켜면 마지막 `git push origin main` 이 거부된다.
-1인 저장소에서 이 흐름은 빠르고 히스토리도 깨끗하므로, 규칙을 켜는 것은
-**"CI 를 신뢰할 수 있게 됐으니 이제 우회로를 막는다"** 는 별도의 결정이다.
+아래는 왜 이 구성인지와, 어떤 순서로 켜야 하는지의 기록이다.
+
+## 왜 켰나
+
+M01 동안은 **로컬에서 머지**했다 — `git rebase main` → 게이트 5종 로컬 실행 →
+`git merge --ff-only` → `git push origin main`.
+
+이 흐름의 문제는 CI 가 **한 번도 돌지 않았다**는 것이었다. `ci.yml` 의 트리거가
+`pull_request` 뿐이라 `main` 직접 push 는 아무 검사도 받지 않았다. 실측하면 M01 의
+main 커밋들은 체크 0개이고, CI 가 실제로 돈 것은 PR #1 하나뿐이었다.
+
+트리거에 `push: [main]` 을 추가해 그 구멍은 막았지만, 그것만으로는 **깨진 것을 알려줄
+뿐 막지는 못한다.** 보호 규칙은 "알려주기"를 "막기"로 바꾼다.
+
+또 하나. 로컬 게이트는 **워킹 트리**를, CI 는 **커밋된 내용**을 검사한다.
+`git add` 를 빠뜨린 파일은 로컬에서만 통과한다. 이건 로컬 검사를 아무리 성실히 돌려도
+구조적으로 못 잡는다.
 
 ## 켜는 순서
 
@@ -89,12 +95,53 @@ git pull --ff-only
 막히므로, revert 커밋을 PR 로 올려야 한다. **혼자 쓰는 저장소에서는 사고 복구가
 느려지는 쪽이 더 큰 비용**이라, 8번은 마지막에 따로 판단한다.
 
-## 명령
+## 실제로 적용한 설정
 
-UI 로 켜도 되고 아래 API 로 켜도 된다. **아래 명령은 실행하지 않았다.**
+먼저 **머지 방식을 rebase 로 제한**했다. `Require linear history` 는 rebase 와 squash 를
+남기는데, squash 가 눌리면 TASK 당 5~10개로 나눠 둔 커밋이 하나로 뭉개진다.
 
 ```bash
-# 3~6번만 (지금 흐름 유지, 관리자 우회 허용)
+gh api repos/presentY1897/demo-shopping -X PATCH \
+  -F allow_merge_commit=false -F allow_squash_merge=false \
+  -F allow_rebase_merge=true -F delete_branch_on_merge=true
+```
+
+그 다음 보호 규칙:
+
+```bash
+gh api -X PUT repos/presentY1897/demo-shopping/branches/main/protection \
+  --input - <<'JSON'
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": ["typecheck", "lint", "build", "test"]
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "dismiss_stale_reviews": false,
+    "require_code_owner_reviews": false,
+    "required_approving_review_count": 0
+  },
+  "restrictions": null,
+  "required_linear_history": true,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+JSON
+```
+
+**`required_approving_review_count` 가 0 인 이유**: 1인 저장소에서는 자기 PR 을 자기가
+승인할 수 없다. 1 이상으로 두면 머지가 영구히 막힌다. 0 이면 "PR 은 필수, 승인은 불필요"가 된다.
+
+**필수 체크에 `GitGuardian Security Checks` 는 넣지 않았다.** 서드파티 앱이 보고를
+멈추면 머지가 영영 열리지 않는다. 우리가 통제하는 4개만 필수로 둔다.
+
+### 참고 — 단계별로 켤 경우
+
+UI 로 켜도 되고 아래 API 로 켜도 된다.
+
+```bash
+# 3~6번만 (로컬 ff-only 흐름 유지, 관리자 우회 허용)
 gh api -X PUT repos/presentY1897/demo-shopping/branches/main/protection \
   --input - <<'JSON'
 {
@@ -132,11 +179,19 @@ gh api repos/presentY1897/demo-shopping/branches/main/protection
 gh api -X DELETE repos/presentY1897/demo-shopping/branches/main/protection
 ```
 
-## 권장
+## 잠길 위험은 없다
 
-| 시점 | 상태 |
+`enforce_admins` 는 규칙 **우회**만 막고 규칙 **관리**는 막지 않는다. CI 가 영구히 깨지는
+등으로 머지가 불가능해지면 소유자가 보호 규칙을 끄고 고친 뒤 다시 켤 수 있다.
+
+```bash
+gh api repos/presentY1897/demo-shopping/branches/main/protection            # 확인
+gh api -X DELETE repos/presentY1897/demo-shopping/branches/main/protection  # 해제
+```
+
+## 적용 이력
+
+| 날짜 | 내용 |
 | --- | --- |
-| 지금 (M01) | 규칙 없음. 로컬 ff-only 머지 |
-| CI 가 몇 번 돌아 신뢰가 생기면 | **3~6번**. 흐름은 그대로고 실수만 막힌다 |
-| 배포가 붙은 뒤 (M02 이후) | **7번**. `main` 이 곧 배포이므로 검사를 안 거친 커밋이 들어가면 안 된다 |
-| 채용 담당자에게 공개할 때 | 8번은 선택. 켜면 히스토리가 "규칙을 지킨 저장소"로 보이지만 사고 복구가 느려진다 |
+| 2026-09-03 | 머지 방식을 rebase 로 제한, 머지 후 브랜치 자동 삭제 |
+| 2026-09-03 | 보호 규칙 3~8번 전부 적용. `main` 직접 push 가 관리자에게도 거부되는 것을 확인 |

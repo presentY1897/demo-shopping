@@ -53,9 +53,33 @@ git branch -d feature/<name>
 
 ### 규칙
 
-- `main` 워크트리에서 직접 기능 코드를 작성하지 않는다. 문서/설정 등 사소한 변경만 허용.
+- **`main` 은 보호된 브랜치다. 직접 push 할 수 없다** (관리자 포함). 모든 변경은 PR 을 거친다.
+- `main` 워크트리는 이제 **`git pull --ff-only` 만 하는 곳**이다. 여기서 커밋하지 않는다.
 - 워크트리 디렉터리 이름은 `feature-<name>`, 브랜치 이름은 `feature/<name>` 로 짝을 맞춘다.
 - 한 브랜치는 한 워크트리에만 체크아웃할 수 있다(git 제약).
+
+### 머지 흐름
+
+```bash
+# feature-<name> 워크트리
+git rebase main                       # 규칙상 main 기준 최신이어야 머지된다
+git push -u origin feature/<name>
+gh pr create --fill
+
+gh pr checks --watch                  # typecheck · lint · build · test 4개 green 대기
+gh pr merge --rebase --delete-branch
+
+# main 워크트리
+git pull --ff-only
+```
+
+- 머지 방식은 **rebase 만** 허용된다. squash 는 저장소 설정에서 껐다 — TASK 당 5~10개로
+  나눈 커밋이 하나로 뭉개지면 안 된다.
+- `gh pr merge --rebase` 는 GitHub 이 커밋을 다시 쓰므로 **SHA 가 바뀐다.** 머지 뒤 로컬
+  브랜치는 버리고 `main` 을 pull 받는다.
+- **병행 작업 시 순서가 있다.** PR 을 하나 머지하면 나머지 PR 은 `main` 기준으로 다시
+  rebase·push 해야 한다(규칙 `strict`). 그래서 웨이브의 머지는 순차적이다.
+- 자세한 내용과 해제 방법: [`docs/branch-protection.md`](./docs/branch-protection.md)
 
 ## 3. 브랜치 / 커밋
 
