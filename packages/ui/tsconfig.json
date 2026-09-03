@@ -1,5 +1,16 @@
 {
   "extends": "@shopping/config/tsconfig/next.json",
-  "include": ["src"],
+  // TypeScript 6 no longer auto-includes node_modules/@types, so the package
+  // names what it needs. `node` is for the test files, which read a stylesheet
+  // off disk; the components themselves use none of it.
+  "compilerOptions": {
+    "types": ["node", "react", "react-dom"],
+    // The Next preset leaves JSX untransformed for Next's own compiler. This
+    // package is not a Next app: Next compiles it with the consuming app's
+    // settings, and the only other tools that read this file — tsc and the
+    // Vitest transform — both need the JSX emitted.
+    "jsx": "react-jsx"
+  },
+  "include": ["src", "test"],
   "exclude": ["node_modules", "dist"]
 }
