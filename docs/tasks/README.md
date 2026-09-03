@@ -1,6 +1,6 @@
 # Task 인덱스
 
-전체 **116개** TASK — 유효 **112개** + 폐기 4개(D-208 레이어 분할). **21개 완료**, TASK-0009 · TASK-0011 **진행중**(외부 계정 대기), **55개 승인됨**, 36개 **승인 대기**.
+전체 **116개** TASK — 유효 **112개** + 폐기 4개(D-208 레이어 분할). **20개 완료**, TASK-0009 · TASK-0011 **진행중**(외부 계정 대기), **90개 승인됨**. 승인 대기 0개.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
@@ -40,12 +40,12 @@
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
-| [TASK-0008](./M02-deployment/TASK-0008-domain-dns.md) | 도메인 확보 · DNS 구성 | 승인 대기 |
-| [TASK-0009](./M02-deployment/TASK-0009-backend-deploy.md) | 백엔드 배포 (API · DB · 검색) | 승인됨 |
+| [TASK-0008](./M02-deployment/TASK-0008-domain-dns.md) | 도메인 확보 · DNS 구성 | 승인됨 |
+| [TASK-0009](./M02-deployment/TASK-0009-backend-deploy.md) | 백엔드 배포 (API · DB · 검색) | 진행중 |
 | [TASK-0010](./M02-deployment/TASK-0010-frontend-deploy.md) | 프론트 배포 (Vercel × 3) | 승인됨 |
 | [TASK-0011](./M02-deployment/TASK-0011-object-storage.md) | 오브젝트 스토리지 (R2) | 진행중 |
-| [TASK-0012](./M02-deployment/TASK-0012-cd-pipeline.md) | 배포 자동화 · 환경변수 관리 | 승인 대기 |
-| [TASK-0013](./M02-deployment/TASK-0013-observability.md) | 로그 · 에러 추적 · 모니터링 | 승인 대기 |
+| [TASK-0012](./M02-deployment/TASK-0012-cd-pipeline.md) | 배포 자동화 · 환경변수 관리 | 승인됨 |
+| [TASK-0013](./M02-deployment/TASK-0013-observability.md) | 로그 · 에러 추적 · 모니터링 | 승인됨 |
 | [TASK-0101](./M02-deployment/TASK-0101-cold-start.md) | 콜드 스타트 대응 · 서버 웨이크업 UX | 완료 |
 
 </details>
@@ -59,7 +59,7 @@
 | [TASK-0016](./M03-design-system/TASK-0016-data-components.md) | 데이터 표시 컴포넌트 | 완료 |
 | [TASK-0017](./M03-design-system/TASK-0017-form-system.md) | 폼 시스템 | 완료 |
 | [TASK-0018](./M03-design-system/TASK-0018-shop-layout.md) | shop 레이아웃 · 밀도 토글 | 승인됨 |
-| [TASK-0019](./M03-design-system/TASK-0019-console-layout.md) | 콘솔 레이아웃 (seller · admin) | 승인 대기 |
+| [TASK-0019](./M03-design-system/TASK-0019-console-layout.md) | 콘솔 레이아웃 (seller · admin) | 승인됨 |
 | [TASK-0104](./M03-design-system/TASK-0104-storybook.md) | Storybook | 완료 |
 
 </details>
@@ -69,18 +69,18 @@
 | ID | 제목 | 상태 |
 | --- | --- | --- |
 | [TASK-0020](./M04-auth/TASK-0020-user-schema.md) | 사용자 · 역할 스키마 | 완료 |
-| [TASK-0021](./M04-auth/TASK-0021-google-oauth.md) | Google OAuth 로그인 | 승인 대기 |
+| [TASK-0021](./M04-auth/TASK-0021-google-oauth.md) | Google OAuth 로그인 | 승인됨 |
 | [TASK-0022](./M04-auth/TASK-0022-jwt-session.md) | JWT 발급 · 갱신 · 로그아웃 | 승인됨 |
-| [TASK-0023](./M04-auth/TASK-0023-auth-guard.md) | 인증 UI · 권한 가드 | 승인 대기 |
-| [TASK-0024](./M04-auth/TASK-0024-demo-account.md) | 데모 계정 발급 | 승인 대기 |
+| [TASK-0023](./M04-auth/TASK-0023-auth-guard.md) | 인증 UI · 권한 가드 | 승인됨 |
+| [TASK-0024](./M04-auth/TASK-0024-demo-account.md) | 데모 계정 발급 | 승인됨 |
 | [TASK-0025](./M04-auth/TASK-0025-demo-cleanup.md) | 데모 만료 · 정리 스케줄러 | 승인됨 |
 | ~~TASK-0026~~ | ~~판매자 입점 신청 · 승인~~ | **폐기** → 0108 · 0109 · 0110 |
 | ~~TASK-0027~~ | ~~프로필 · 배송지 관리~~ | **폐기** → 0111 · 0112 |
-| [TASK-0108](./M04-auth/TASK-0108-seller-onboarding-api.md) | 판매자 입점 상태 머신 · API | 승인 대기 |
-| [TASK-0109](./M04-auth/TASK-0109-seller-onboarding-page.md) | 판매자 입점 신청 · 스토어 설정 화면 | 승인 대기 |
-| [TASK-0110](./M04-auth/TASK-0110-seller-review-admin.md) | 관리자 입점 심사 화면 | 승인 대기 |
-| [TASK-0111](./M04-auth/TASK-0111-profile-address-api.md) | 프로필 · 배송지 · 사용자 설정 API | 승인 대기 |
-| [TASK-0112](./M04-auth/TASK-0112-profile-address-page.md) | 프로필 · 배송지 화면 | 승인 대기 |
+| [TASK-0108](./M04-auth/TASK-0108-seller-onboarding-api.md) | 판매자 입점 상태 머신 · API | 승인됨 |
+| [TASK-0109](./M04-auth/TASK-0109-seller-onboarding-page.md) | 판매자 입점 신청 · 스토어 설정 화면 | 승인됨 |
+| [TASK-0110](./M04-auth/TASK-0110-seller-review-admin.md) | 관리자 입점 심사 화면 | 승인됨 |
+| [TASK-0111](./M04-auth/TASK-0111-profile-address-api.md) | 프로필 · 배송지 · 사용자 설정 API | 승인됨 |
+| [TASK-0112](./M04-auth/TASK-0112-profile-address-page.md) | 프로필 · 배송지 화면 | 승인됨 |
 | [TASK-0105](./M04-auth/TASK-0105-rbac.md) | 퍼미션 기반 권한 체계 (RBAC) | 완료 |
 | [TASK-0106](./M04-auth/TASK-0106-backend-test-infra.md) | 백엔드 통합 테스트 기반 | 완료 |
 | [TASK-0107](./M04-auth/TASK-0107-frontend-api-mocking.md) | 프론트 API 모킹 · 계약 고정 | 완료 |
@@ -95,16 +95,16 @@
 | [TASK-0029](./M05-catalog/TASK-0029-category-admin.md) | 관리자 카테고리 관리 화면 | 완료 |
 | [TASK-0030](./M05-catalog/TASK-0030-attribute-schema.md) | 속성 정의 스키마 · API | 완료 |
 | [TASK-0031](./M05-catalog/TASK-0031-attribute-admin.md) | 관리자 속성 관리 화면 | 승인됨 |
-| [TASK-0032](./M05-catalog/TASK-0032-product-schema.md) | 상품 · 옵션 · Variant 스키마 | 승인 대기 |
+| [TASK-0032](./M05-catalog/TASK-0032-product-schema.md) | 상품 · 옵션 · Variant 스키마 | 승인됨 |
 | [TASK-0033](./M05-catalog/TASK-0033-image-upload.md) | 이미지 업로드 위젯 | 승인됨 |
 | ~~TASK-0034~~ | ~~판매자 상품 등록 · 수정~~ | **폐기** → 0113 · 0114 |
 | ~~TASK-0035~~ | ~~판매자 상품 목록 · 재고 관리~~ | **폐기** → 0115 · 0116 |
-| [TASK-0113](./M05-catalog/TASK-0113-product-write-api.md) | 상품 등록 · 수정 API | 승인 대기 |
-| [TASK-0114](./M05-catalog/TASK-0114-product-editor-page.md) | 판매자 상품 편집기 화면 | 승인 대기 |
-| [TASK-0115](./M05-catalog/TASK-0115-product-list-stock-api.md) | 판매자 상품 목록 · 재고 조정 API | 승인 대기 |
-| [TASK-0116](./M05-catalog/TASK-0116-product-list-stock-page.md) | 판매자 상품 목록 · 재고 관리 화면 | 승인 대기 |
-| [TASK-0036](./M05-catalog/TASK-0036-stock-ledger.md) | 재고 원장 | 승인 대기 |
-| [TASK-0037](./M05-catalog/TASK-0037-seed-data.md) | 시드 데이터 생성기 | 승인 대기 |
+| [TASK-0113](./M05-catalog/TASK-0113-product-write-api.md) | 상품 등록 · 수정 API | 승인됨 |
+| [TASK-0114](./M05-catalog/TASK-0114-product-editor-page.md) | 판매자 상품 편집기 화면 | 승인됨 |
+| [TASK-0115](./M05-catalog/TASK-0115-product-list-stock-api.md) | 판매자 상품 목록 · 재고 조정 API | 승인됨 |
+| [TASK-0116](./M05-catalog/TASK-0116-product-list-stock-page.md) | 판매자 상품 목록 · 재고 관리 화면 | 승인됨 |
+| [TASK-0036](./M05-catalog/TASK-0036-stock-ledger.md) | 재고 원장 | 승인됨 |
+| [TASK-0037](./M05-catalog/TASK-0037-seed-data.md) | 시드 데이터 생성기 | 승인됨 |
 
 </details>
 
@@ -112,15 +112,15 @@
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
-| [TASK-0038](./M06-search/TASK-0038-search-indexing.md) | Meilisearch 인덱스 · 동기화 파이프라인 | 승인 대기 |
+| [TASK-0038](./M06-search/TASK-0038-search-indexing.md) | Meilisearch 인덱스 · 동기화 파이프라인 | 승인됨 |
 | [TASK-0039](./M06-search/TASK-0039-search-api.md) | 검색 API (필터 · 정렬 · 패싯) | 승인됨 |
-| [TASK-0040](./M06-search/TASK-0040-product-card.md) | 상품 카드 · 목록 (밀도 3단계) | 승인 대기 |
-| [TASK-0041](./M06-search/TASK-0041-search-page.md) | 검색 페이지 · 자동완성 · 필터 | 승인 대기 |
+| [TASK-0040](./M06-search/TASK-0040-product-card.md) | 상품 카드 · 목록 (밀도 3단계) | 승인됨 |
+| [TASK-0041](./M06-search/TASK-0041-search-page.md) | 검색 페이지 · 자동완성 · 필터 | 승인됨 |
 | [TASK-0042](./M06-search/TASK-0042-category-page.md) | 카테고리 페이지 | 승인됨 |
-| [TASK-0043](./M06-search/TASK-0043-product-detail.md) | 상품 상세 (밀도 3단계) | 승인 대기 |
+| [TASK-0043](./M06-search/TASK-0043-product-detail.md) | 상품 상세 (밀도 3단계) | 승인됨 |
 | [TASK-0044](./M06-search/TASK-0044-home-brand.md) | 홈 · 브랜드관 | 승인됨 |
-| [TASK-0102](./M06-search/TASK-0102-seo.md) | SEO | 승인 대기 |
-| [TASK-0103](./M06-search/TASK-0103-hangul-autocomplete.md) | 한글 자모 · 초성 자동완성 | 승인 대기 |
+| [TASK-0102](./M06-search/TASK-0102-seo.md) | SEO | 승인됨 |
+| [TASK-0103](./M06-search/TASK-0103-hangul-autocomplete.md) | 한글 자모 · 초성 자동완성 | 승인됨 |
 
 </details>
 
@@ -128,12 +128,12 @@
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
-| [TASK-0045](./M07-cart-order/TASK-0045-cart-api.md) | 장바구니 스키마 · API | 승인 대기 |
+| [TASK-0045](./M07-cart-order/TASK-0045-cart-api.md) | 장바구니 스키마 · API | 승인됨 |
 | [TASK-0046](./M07-cart-order/TASK-0046-cart-page.md) | 장바구니 화면 (판매자별 그룹) | 승인됨 |
 | [TASK-0047](./M07-cart-order/TASK-0047-pricing-engine.md) | 금액 계산 엔진 | 승인됨 |
 | [TASK-0048](./M07-cart-order/TASK-0048-stock-reservation.md) | 재고 예약 | 승인됨 |
-| [TASK-0049](./M07-cart-order/TASK-0049-order-create.md) | 주문 생성 API (2단 분할) | 승인 대기 |
-| [TASK-0050](./M07-cart-order/TASK-0050-checkout-page.md) | 주문서 화면 | 승인 대기 |
+| [TASK-0049](./M07-cart-order/TASK-0049-order-create.md) | 주문 생성 API (2단 분할) | 승인됨 |
+| [TASK-0050](./M07-cart-order/TASK-0050-checkout-page.md) | 주문서 화면 | 승인됨 |
 | [TASK-0051](./M07-cart-order/TASK-0051-reservation-expiry.md) | 예약 만료 스케줄러 | 승인됨 |
 
 </details>
@@ -157,7 +157,7 @@
 | ID | 제목 | 상태 |
 | --- | --- | --- |
 | [TASK-0059](./M09-fulfillment/TASK-0059-order-state-machine.md) | 주문 상태 머신 구현 | 승인됨 |
-| [TASK-0060](./M09-fulfillment/TASK-0060-seller-orders.md) | 판매자 주문 관리 화면 | 승인 대기 |
+| [TASK-0060](./M09-fulfillment/TASK-0060-seller-orders.md) | 판매자 주문 관리 화면 | 승인됨 |
 | [TASK-0061](./M09-fulfillment/TASK-0061-shipment.md) | 배송 · 운송장 가상 처리 | 승인됨 |
 | [TASK-0062](./M09-fulfillment/TASK-0062-delivery-simulator.md) | 배송 상태 자동 진행 시뮬레이터 | 승인됨 |
 | [TASK-0063](./M09-fulfillment/TASK-0063-buyer-orders.md) | 구매자 주문 내역 · 상세 | 승인됨 |
@@ -175,7 +175,7 @@
 | [TASK-0068](./M10-claims/TASK-0068-refund-calc.md) | 환불 안분 계산 · 실행 | 승인됨 |
 | [TASK-0069](./M10-claims/TASK-0069-stock-restore.md) | 재고 복원 | 승인됨 |
 | [TASK-0070](./M10-claims/TASK-0070-seller-claims.md) | 판매자 클레임 처리 화면 | 승인됨 |
-| [TASK-0071](./M10-claims/TASK-0071-admin-claims.md) | 관리자 클레임 개입 | 승인 대기 |
+| [TASK-0071](./M10-claims/TASK-0071-admin-claims.md) | 관리자 클레임 개입 | 승인됨 |
 
 </details>
 
@@ -199,7 +199,7 @@
 | --- | --- | --- |
 | [TASK-0079](./M12-settlement/TASK-0079-commission.md) | 수수료 정책 · 관리자 설정 | 승인됨 |
 | [TASK-0080](./M12-settlement/TASK-0080-settlement-batch.md) | 정산서 생성 배치 | 승인됨 |
-| [TASK-0081](./M12-settlement/TASK-0081-settlement-admin.md) | 관리자 정산 승인 · 지급 | 승인 대기 |
+| [TASK-0081](./M12-settlement/TASK-0081-settlement-admin.md) | 관리자 정산 승인 · 지급 | 승인됨 |
 | [TASK-0082](./M12-settlement/TASK-0082-seller-settlement.md) | 판매자 정산 내역 · 매출 대시보드 | 승인됨 |
 
 </details>
@@ -216,7 +216,7 @@
 | [TASK-0088](./M13-community/TASK-0088-product-qna.md) | 상품 Q&A | 승인됨 |
 | [TASK-0089](./M13-community/TASK-0089-seller-follow.md) | 판매자 팔로우 | 승인됨 |
 | [TASK-0090](./M13-community/TASK-0090-notification.md) | 알림 시스템 | 승인됨 |
-| [TASK-0091](./M13-community/TASK-0091-report.md) | 신고 처리 | 승인 대기 |
+| [TASK-0091](./M13-community/TASK-0091-report.md) | 신고 처리 | 승인됨 |
 
 </details>
 
@@ -225,7 +225,7 @@
 | ID | 제목 | 상태 |
 | --- | --- | --- |
 | [TASK-0092](./M14-admin/TASK-0092-admin-dashboard.md) | 관리자 대시보드 | 승인됨 |
-| [TASK-0093](./M14-admin/TASK-0093-user-management.md) | 회원 관리 | 승인 대기 |
+| [TASK-0093](./M14-admin/TASK-0093-user-management.md) | 회원 관리 | 승인됨 |
 | [TASK-0094](./M14-admin/TASK-0094-seller-management.md) | 판매자 관리 | 승인됨 |
 | [TASK-0095](./M14-admin/TASK-0095-global-catalog-orders.md) | 전체 상품 · 주문 조회 | 승인됨 |
 | [TASK-0096](./M14-admin/TASK-0096-demo-management.md) | 데모 계정 관리 | 승인됨 |
@@ -236,9 +236,9 @@
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
-| [TASK-0097](./M15-polish/TASK-0097-performance.md) | 성능 최적화 · 측정 | 승인 대기 |
-| [TASK-0098](./M15-polish/TASK-0098-accessibility.md) | 접근성 점검 | 승인 대기 |
-| [TASK-0099](./M15-polish/TASK-0099-e2e-demo.md) | E2E 테스트 · 데모 시나리오 | 승인 대기 |
+| [TASK-0097](./M15-polish/TASK-0097-performance.md) | 성능 최적화 · 측정 | 승인됨 |
+| [TASK-0098](./M15-polish/TASK-0098-accessibility.md) | 접근성 점검 | 승인됨 |
+| [TASK-0099](./M15-polish/TASK-0099-e2e-demo.md) | E2E 테스트 · 데모 시나리오 | 승인됨 |
 | [TASK-0100](./M15-polish/TASK-0100-portfolio-docs.md) | README · 포트폴리오 문서 | 승인됨 |
 
 </details>

@@ -16,4 +16,4 @@
 | [TASK-0088](./TASK-0088-product-qna.md) | 상품 Q&A | 승인됨 | M12 |
 | [TASK-0089](./TASK-0089-seller-follow.md) | 판매자 팔로우 | 승인됨 | 0086 |
 | [TASK-0090](./TASK-0090-notification.md) | 알림 시스템 | 승인됨 | M12 |
-| [TASK-0091](./TASK-0091-report.md) | 신고 처리 | 승인 대기 | 0084, 0088 |
+| [TASK-0091](./TASK-0091-report.md) | 신고 처리 | 승인됨 | 0084, 0088 |

@@ -4,7 +4,7 @@
 
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
-| [TASK-0097](./TASK-0097-performance.md) | 성능 최적화 · 측정 | 승인 대기 | M14 |
-| [TASK-0098](./TASK-0098-accessibility.md) | 접근성 점검 | 승인 대기 | M14 |
-| [TASK-0099](./TASK-0099-e2e-demo.md) | E2E 테스트 · 데모 시나리오 | 승인 대기 | M14 |
+| [TASK-0097](./TASK-0097-performance.md) | 성능 최적화 · 측정 | 승인됨 | M14 |
+| [TASK-0098](./TASK-0098-accessibility.md) | 접근성 점검 | 승인됨 | M14 |
+| [TASK-0099](./TASK-0099-e2e-demo.md) | E2E 테스트 · 데모 시나리오 | 승인됨 | M14 |
 | [TASK-0100](./TASK-0100-portfolio-docs.md) | README · 포트폴리오 문서 | 승인됨 | 0097, 0098, 0099 |
