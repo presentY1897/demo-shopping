@@ -232,3 +232,62 @@ export async function createCategoryBranch(
 
   return { root, child, leaf }
 }
+
+export interface AttributeDefinitionRow {
+  readonly id: number
+  readonly categoryId: number
+  readonly key: string
+  readonly type: string
+  readonly options: string[]
+  readonly isRequired: boolean
+  readonly sortOrder: number
+}
+
+export interface AttributeDefinitionOptions {
+  readonly categoryId: number
+  readonly key?: string
+  readonly label?: string
+  readonly type?: 'TEXT' | 'NUMBER' | 'SELECT' | 'MULTI_SELECT' | 'BOOLEAN'
+  readonly options?: readonly string[]
+  readonly isRequired?: boolean
+  readonly isFilterable?: boolean
+  readonly sortOrder?: number
+  readonly deletedAt?: Date | null
+}
+
+/**
+ * An attribute definition, inserted the way the service inserts one.
+ *
+ * A `TEXT` attribute by default, because that is the type with the fewest
+ * preconditions — `AttributeDefinition_options_check` requires `SELECT` and
+ * `MULTI_SELECT` to carry choices, so a spec asking for one of those has to say
+ * what they are.
+ *
+ * Raw SQL, like every factory here: a constraint spec has to see the database's
+ * own answer, and Prisma's validation would answer first.
+ */
+export async function createAttributeDefinition(
+  db: Database,
+  options: AttributeDefinitionOptions,
+): Promise<AttributeDefinitionRow> {
+  const type = options.type ?? 'TEXT'
+
+  return db.one<AttributeDefinitionRow>(
+    `INSERT INTO "AttributeDefinition"
+       ("categoryId", "key", "label", "type", "options",
+        "isRequired", "isFilterable", "sortOrder", "deletedAt", "updatedAt")
+     VALUES ($1, $2, $3, $4::"AttributeType", $5::text[], $6, $7, $8, $9, now())
+     RETURNING "id", "categoryId", "key", "type"::text AS "type", "options", "isRequired", "sortOrder"`,
+    [
+      options.categoryId,
+      options.key ?? unique('attr').replaceAll('-', '_').toLowerCase(),
+      options.label ?? '속성',
+      type,
+      options.options ?? [],
+      options.isRequired ?? false,
+      options.isFilterable ?? false,
+      options.sortOrder ?? 0,
+      options.deletedAt ?? null,
+    ],
+  )
+}
