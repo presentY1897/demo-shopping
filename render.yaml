@@ -1,0 +1,139 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+#
+# Render Blueprint — 배포 서비스 정의의 단일 출처 (TASK-0009).
+#
+# 대시보드에서 손으로 만들지 않는다. Render 는 이 파일을 읽어 서비스를 만들고
+# 갱신하며(New → Blueprint), sync 할 때 대시보드에서 바꾼 값을 이 파일 값으로
+# 덮는다. 설정을 바꾸려면 이 파일을 고치고 커밋한다.
+#
+# 절차와 롤백: README "배포" 절. 소유자가 클릭할 것: docs/OWNER-CHECKLIST.md
+#
+# 위 첫 줄의 스키마는 Render 가 공개하는 공식 JSON Schema 다. 편집기(YAML
+# 확장)가 이 파일을 그것으로 검증한다. CLI 로 확인하려면 README "배포" 절 참조.
+#
+# PostgreSQL 은 여기에 없다. Render 무료 Postgres 는 생성 30일 뒤 만료되므로
+# Neon 을 쓰기로 했고(D-060), Neon 은 Render 밖이라 DATABASE_URL 로만 연결된다.
+#
+# 무료 플랜의 제약 (2026-09-03 확인. 근거는 TASK-0009 7장 R6·R7):
+#   - Private Service 는 무료 플랜에 없다. 그래서 검색 엔진도 web 서비스다.
+#   - 무료 web 서비스는 사설망 요청을 보낼 수는 있어도 받지 못한다. 그래서
+#     API 는 검색 엔진의 공개 URL 로 접속하고, 보호는 마스터 키가 전담한다.
+#   - preDeployCommand 는 유료 전용이라 마이그레이션이 startCommand 에 있다.
+#   - 영구 디스크가 없어 재기동마다 검색 인덱스가 빈다 → 자동 재색인(TASK-0038).
+#   - 무료 인스턴스 시간 750h/월을 두 서비스가 나눠 쓴다. 항상 깨워 두면 넘는다.
+
+services:
+  # --- API (NestJS) ----------------------------------------------------------
+  - type: web
+    name: shopping-api
+    runtime: node
+    plan: free
+    region: singapore
+    branch: main
+    healthCheckPath: /api/v1/health
+
+    # Node 버전은 저장소 루트의 `.nvmrc` 가 단일 출처다. Render 가 그 파일을
+    # 읽으므로 NODE_VERSION 을 여기에 두지 않는다 — 두면 출처가 둘이 된다.
+
+    # `--prod=false` 가 핵심이다. 아래 NODE_ENV=production 은 빌드에도 적용되고,
+    # pnpm 은 NODE_ENV=production 이면 devDependencies 를 설치하지 않는다.
+    # nest CLI(빌드)와 prisma CLI(마이그레이션)가 둘 다 devDependency 이므로
+    # 빼면 빌드도 시작도 실패한다.
+    buildCommand: pnpm install --frozen-lockfile --prod=false && pnpm --filter @shopping/api build
+
+    # 마이그레이션은 매 기동마다 돈다. preDeployCommand 가 유료 전용이라 다른
+    # 자리가 없다. `migrate deploy` 는 적용할 것이 없으면 아무 일도 하지 않는다.
+    # `db:deploy` 는 prisma.config.mts 를 거치므로 API 와 같은 코드로
+    # DATABASE_URL 을 해석한다 — 마이그레이션과 실행이 다른 DB 를 볼 수 없다.
+    startCommand: pnpm --filter @shopping/api db:deploy && node apps/api/dist/main.js
+
+    # Render 자체의 push 배포. TASK-0012 에서 `checksPass` 로 바꿔 CI 통과를
+    # 조건으로 건다.
+    autoDeployTrigger: commit
+
+    # 관련 없는 변경(웹 앱·Storybook·문서)으로 API 가 재배포되지 않게 한다.
+    buildFilter:
+      paths:
+        - apps/api/**
+        - packages/shared/**
+        - packages/config/**
+        - scripts/**
+        - package.json
+        - pnpm-lock.yaml
+        - pnpm-workspace.yaml
+        - .nvmrc
+        - render.yaml
+
+    domains:
+      # DNS 레코드는 TASK-0008 에서 만든다. 레코드가 없는 동안에는 미검증으로
+      # 남고 onrender.com 주소는 그대로 동작한다.
+      - api.demo-shopping.com
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: log
+
+      # Neon 콘솔 → Connection string. `?sslmode=require` 가 포함돼야 한다.
+      - key: DATABASE_URL
+        sync: false
+      # Neon 무료는 CPU 가 아니라 커넥션이 병목이다. 기본값 10 에서 낮춘다.
+      - key: DATABASE_POOL_SIZE
+        value: '5'
+      # Neon 은 5분 유휴 뒤 scale-to-zero 된다. 깨어나는 동안의 첫 연결을 기다린다.
+      - key: DATABASE_CONNECT_TIMEOUT_MS
+        value: '15000'
+      # 같은 이유. 기본값 1000ms 면 깨어나는 중에 database: "down" 이 보고된다.
+      - key: DATABASE_HEALTH_TIMEOUT_MS
+        value: '3000'
+
+      # 아래 shopping-search 의 공개 URL — https://<서비스이름>.onrender.com
+      # Blueprint 생성 시점에는 아직 존재하지 않으므로 2단계로 채운다.
+      # fromService 로는 받을 수 없다: property: host 는 사설망 호스트명이고
+      # 무료 web 서비스는 사설망 요청을 받지 못한다.
+      - key: MEILI_HOST
+        sync: false
+      # shopping-search 에 넣는 값과 **같은 값**을 넣어야 한다.
+      #   openssl rand -base64 32
+      - key: MEILI_MASTER_KEY
+        sync: false
+      # 검색 엔진이 유휴에서 깨는 데 약 1분 걸린다. 상한이 10초라 그 시간을
+      # 기다릴 수는 없다 — 깨는 동안 search: "down" 은 설계상 정상이고 API 는
+      # 200 을 유지한다(status: "degraded").
+      - key: MEILI_HEALTH_TIMEOUT_MS
+        value: '5000'
+
+      # 파생이 아니라 명시. 비워 두면 API 가 PORT_OFFSET 규칙으로 localhost
+      # 오리진을 채워 넣어 배포 환경에서 조용히 잘못된 값이 된다.
+      - key: CORS_ORIGINS
+        value: https://shop.demo-shopping.com,https://seller.demo-shopping.com,https://admin.demo-shopping.com
+
+  # --- 검색 엔진 (Meilisearch) ------------------------------------------------
+  # 공개 URL 을 가지지만 커스텀 도메인은 붙이지 않는다. 주소를 굳이 알리지 않고,
+  # 보호는 마스터 키가 전담한다(키 없이는 데이터 경로 전부 401).
+  - type: web
+    name: shopping-search
+    runtime: image
+    plan: free
+    region: singapore
+    image:
+      url: docker.io/getmeili/meilisearch:v1.24.0
+    # /health 만 인증 없이 열려 있고 {"status":"available"} 을 돌려준다.
+    healthCheckPath: /health
+
+    envVars:
+      # Render web 서비스의 기본 포트가 10000 이다. Meilisearch 는 PORT 를 읽지
+      # 않으므로 같은 값을 직접 지정해 포트 감지가 어긋나지 않게 한다.
+      - key: MEILI_HTTP_ADDR
+        value: 0.0.0.0:10000
+      # production 이면 검색 미리보기 UI 가 꺼지고 마스터 키가 16바이트 이상으로
+      # 강제된다. openssl rand -base64 32 는 44자라 조건을 만족한다.
+      - key: MEILI_ENV
+        value: production
+      # shopping-api 에 넣는 값과 **같은 값**이어야 한다. 다르면 검색이 401 로
+      # 조용히 실패한다.
+      - key: MEILI_MASTER_KEY
+        sync: false
+      - key: MEILI_NO_ANALYTICS
+        value: 'true'
