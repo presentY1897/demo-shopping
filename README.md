@@ -283,7 +283,7 @@ apps/shop/
 ├── src/
 │   ├── app/          App Router — layout.tsx / page.tsx / globals.css
 │   ├── components/   이 앱 전용 컴포넌트
-│   ├── lib/          api.ts (이 앱의 API 클라이언트) · health.ts
+│   ├── lib/          api.ts (이 앱의 API 클라이언트) · health.ts · 웨이크업(wake*.ts)
 │   └── messages/     UI 문구. ko.ts 가 유일한 카탈로그이고 컴포넌트는 types.ts 만 본다
 ├── test/             스펙 + setup.ts (모킹 서버). 아래 "테스트" 절 참조
 └── vitest.config.mjs @shopping/config 의 프리셋 한 줄
@@ -296,6 +296,10 @@ apps/shop/
   디자인 토큰과 밀도 3단계는 M03 에 이 프리셋으로 들어온다.
 - 루트 페이지는 **기동 확인용 임시 화면**이다. `/health` 응답에 들어 있는 상태 항목을 그대로 그리므로
   API 에 항목이 늘면 화면도 따라 늘어난다. M03 에서 실제 화면으로 교체된다.
+- **루트 페이지는 서버에서 아무것도 기다리지 않는다.** `/health` 호출은 클라이언트 컴포넌트
+  `ApiWakeGate` 의 이펙트에서 나가므로 세 앱의 `/` 는 정적 프리렌더 대상이고, 헤더와 스켈레톤은
+  API 가 기동 중이어도 즉시 보인다. 대기·안내·재시도는 전부 그 게이트 안에 있다 — 아래
+  ["콜드 스타트"](#콜드-스타트-무료-플랜의-절전) 참조.
 
 ```bash
 pnpm --filter @shopping/shop build    # .next 로 프로덕션 빌드
@@ -439,9 +443,12 @@ async Server Component 는 그냥 async 함수다. Next 런타임 없이 부르�
 그 사이의 `fetch` 는 MSW 가 가로챈다.
 
 ```tsx
-render(await HomePage())
-expect(screen.getByText(healthOk.version)).toBeVisible()
+render(<HomePage />)
+expect(await screen.findByText(healthOk.version)).toBeVisible()
 ```
+
+`findBy…` 인 이유: 페이지는 서버에서 아무것도 기다리지 않고 헬스체크는 클라이언트 컴포넌트의
+이펙트에서 나간다(위 "콜드 스타트"). 서버 렌더가 만드는 것은 스켈레톤이고, 값은 그다음 프레임에 온다.
 
 #### 응답을 바꿔 보고 싶을 때
 
@@ -452,6 +459,20 @@ testServer.server.use(networkFailure(mockPaths.health))   // API 가 죽었다
 testServer.server.use(httpFailure(mockPaths.health, 500, 'INTERNAL_ERROR', '...'))
 testServer.server.use(malformedResponse(mockPaths.health, driftedHealthPayload))
 ```
+
+절전에서 깨어나는 상황은 따로 있다. 실측 90초를 스펙에서 그대로 기다리지 않고, 웨이크업 정책을
+값으로 넘겨 같은 순서를 밀리초로 재현한다.
+
+```ts
+testServer.server.use(slowResponse(mockPaths.health, 260, healthOk))   // 느리지만 답한다
+testServer.server.use(neverAnswers(mockPaths.health))                  // 호출자의 마감이 끝낸다
+testServer.server.use(wakesAfter(mockPaths.health, 2, healthOk))       // 2회 실패 후 깨어난다
+testServer.server.use(sleepingInstance(mockPaths.health, 90_000, healthOk))
+```
+
+마지막 것이 Render 의 실제 동작이다. **마감이 요청마다가 아니라 인스턴스마다** 하나다 — 10초에
+포기하고 다시 부른 호출자는 90초를 처음부터 기다리는 것이 아니라 이미 10초 진행된 대기에 합류한다.
+요청마다 지연을 거는 모델로는 어떤 재시도 정책도 통과할 수 없으므로, 재시도를 검증하려면 이쪽을 쓴다.
 
 #### 엔드포인트를 하나 추가하려면
 
@@ -652,11 +673,72 @@ Neon 콘솔에서 **먼저 브랜치(스냅샷)를 만든다.**
 
 | 사실 | 결과 |
 | --- | --- |
-| 15분 무활동 시 spin down, 재기동 약 1분 | 첫 방문이 느리다. TASK-0101 이 다룬다 |
+| 15분 무활동 시 spin down, **재기동 약 90초**(실측) | 첫 방문이 느리다. 아래 "콜드 스타트" 참조 |
 | 무료 인스턴스 시간 **750h/월을 워크스페이스 전체가 공유** | 서비스 2개를 24시간 깨워 두면(2×730h) 한도를 넘어 **월말까지 정지**된다. 프리워밍을 "항상 깨우기"로 만들면 안 된다 |
 | 영구 디스크 없음 | 재기동마다 검색 인덱스가 빈다 → 자동 재색인(TASK-0038) |
 | Private Service 없음 | 검색 엔진이 공개 URL 을 갖는다. 마스터 키 없이는 전부 401 |
 | Neon 은 5분 뒤 scale-to-zero | 첫 쿼리가 수백 ms 느리다. 타임아웃을 넉넉히 잡아 뒀다 |
+
+### 콜드 스타트 (무료 플랜의 절전)
+
+Render 무료 서비스는 15분 무활동이면 잠들고, 다시 깨는 데 시간이 걸린다. 2026-09-03 실측:
+
+| 상태 | `GET /api/v1/health` |
+| --- | --- |
+| 잠든 뒤 첫 요청 | **약 90초** |
+| 깨어 있을 때 | **0.35초** (한국 → 싱가포르 리전) |
+
+**API 와 검색 엔진은 각각 따로 잔다.** 둘 다 별개의 무료 web 서비스다. 반면 **웹 앱 3개(Vercel)는 잠들지
+않는다** — 그래서 방문자는 화면을 먼저 보고, 기다리는 것은 데이터 영역뿐이다.
+
+#### 화면이 하는 일
+
+| 경과 | 보이는 것 |
+| --- | --- |
+| 0초 | 헤더·안내문·스켈레톤. 서버 렌더가 API 를 기다리지 않으므로 프리렌더된 HTML 그대로다 |
+| 3초 | "서버를 준비하는 중입니다" + 경과 초 + 진행 표시 |
+| 15초 | "무료 플랜 데모 환경이라 … 최대 2분까지 걸릴 수 있습니다" |
+| 응답 | 자동으로 정상 화면. 누를 것이 없다 |
+| 3회 실패 | 실패 사유 + 재시도 버튼. 네트워크가 돌아오거나 탭이 다시 보이면 자동 재시도 |
+
+요청은 **10초 → 40초 → 90초** 타임아웃에 1초·2초 지수 백오프로 최대 3회, 누적 상한 143초다.
+Render 는 자는 인스턴스로 온 요청을 끊지 않고 붙잡았다가 기동 후 응답하므로 마지막 시도가
+90초 기동을 그대로 받아 낸다. 정책 상수는 `apps/*/src/lib/wake-policy.ts` 한 곳에 있다.
+
+**검색은 따로 표시한다.** 검색 엔진이 아직 깨는 중이거나 색인을 다시 만드는 중이면 헬스 응답의
+`search` 가 `ok` 가 아니고, 화면은 "검색 준비 중"을 띄운다. 빈 결과를 검색 결과처럼 보여 주지 않는다.
+
+전체 시퀀스를 실제 속도(92초)로 재현해 볼 수 있다.
+
+```bash
+COLD_START_REPLAY=1 pnpm --filter @shopping/shop test cold-start-replay
+```
+
+#### cron 으로 계속 깨워 두지 않는 이유
+
+무료 인스턴스 시간은 **750h/월을 워크스페이스가 공유**한다. 서비스는 API·검색 2개다.
+
+| | 계산 |
+| --- | --- |
+| cron 으로 상시 가동 | 2 × 730h = **1460h** → 한도의 1.9배 |
+| 서비스당 예산 | 750 ÷ 2 = **375h/월 = 하루 12.5시간** |
+| 방문 1회 | 마지막 요청 후 15분까지 살아 있으므로 서비스당 0.25h, 두 서비스 합 **0.5h** |
+
+즉 cron 은 콜드 스타트 90초를 없애는 대신 **월 후반 전체를 다운타임으로 바꾼다.** 방문 기반으로만
+깨우면 월 1500회 방문까지 한도 안이다. **그래서 cron 핑은 쓰지 않는다.**
+
+#### 링크를 보내기 직전에 손으로 깨우기
+
+자동화 대신 이것을 쓴다. 실행 후 15분 안에 접속하면 상대는 0.35초 화면을 본다.
+
+```bash
+# 최대 90초 걸린다. 응답의 uptime 이 한 자릿수면 방금 깨어난 것이다.
+curl -s https://api.<도메인>/api/v1/health
+```
+
+DNS 연결(TASK-0008) 전에는 Render 대시보드가 알려 주는 `onrender.com` 주소를 쓴다.
+**검색 엔진도 이 한 번으로 함께 깨어난다** — API 가 헬스체크를 답하면서 검색 엔진을 호출하고,
+부팅 시점에도 한 번 깨우기 때문이다. 다만 검색은 API 가 뜬 뒤에 출발하므로 조금 더 걸린다.
 
 ## 커밋 이력 읽는 법
 
