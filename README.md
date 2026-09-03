@@ -312,8 +312,23 @@ PR 을 올리면 `.github/workflows/ci.yml` 이 4개 job 을 **병렬로** 돌�
   그러면 병렬 이득이 사라진다.
 - pnpm store 는 `actions/setup-node` 의 `cache: pnpm` 이 `pnpm-lock.yaml` 해시를
   키로 캐시한다. 잠금 파일이 그대로면 두 번째 실행부터 패키지를 내려받지 않는다.
-- `main` 브랜치 보호 규칙은 **아직 켜지 않았다.**
-  [`docs/branch-protection.md`](./docs/branch-protection.md) 참조.
+CI 는 **PR 과 `main` push 양쪽**에서 돈다. rebase 머지는 커밋을 다시 쓰므로 PR 이 검사한
+SHA 와 `main` 에 올라간 SHA 가 다르다. 그래서 `main` 에서도 한 번 더 돈다.
+
+### 브랜치 보호
+
+`main` 은 **보호된 브랜치다. 직접 push 할 수 없다**(관리자 포함).
+
+```bash
+git rebase main && git push -u origin feature/<name>
+gh pr create --fill
+gh pr checks --watch
+gh pr merge --rebase --delete-branch
+```
+
+머지는 **rebase 만** 허용된다(squash·merge commit 은 껐다). 4개 job 이 green 이어야
+머지 버튼이 열리고, PR 브랜치는 `main` 기준 최신이어야 한다.
+자세한 내용은 [`docs/branch-protection.md`](./docs/branch-protection.md).
 
 ## 문서
 

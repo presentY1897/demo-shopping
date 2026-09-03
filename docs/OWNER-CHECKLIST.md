@@ -68,7 +68,7 @@ Vercel 프리뷰 URL 은 매번 달라지는데 Google 은 와일드카드 리�
 | --- | --- | --- |
 | **TASK 승인** | 마일스톤 착수 전 해당 TASK 문서 검토·승인 | 15회 |
 | **설계 변경 승인** | 구현 중 문제가 나오면 작업 중단 → 문서 수정 → 승인 → 재개 (D-037) | 수시 |
-| **`main` 브랜치 보호 규칙 결정** | 켤지 말지 판단 — [`branch-protection.md`](./branch-protection.md). 켜면 지금의 로컬 ff-only 머지가 막힌다 | 1회 |
+| ~~**`main` 브랜치 보호 규칙 결정**~~ | **완료 (2026-09-03)** — 1~8번 전부 적용. [`branch-protection.md`](./branch-protection.md) | – |
 
 ---
 
