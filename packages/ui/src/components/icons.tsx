@@ -1,9 +1,10 @@
 /**
- * The four glyphs the base components need.
+ * The glyphs the base components need.
  *
  * Inline rather than an icon package: these are the only icons `packages/ui`
- * requires to work, and a dependency that ships a thousand of them to deliver
- * four is a bundle cost every app pays. Domain icons are the apps' business.
+ * requires to work, and a dependency that ships a thousand of them to deliver a
+ * handful is a bundle cost every app pays. Domain icons are the apps' business —
+ * which is why the empty and error states take their illustration as a prop.
  *
  * Every path is stroked in `currentColor`, so an icon inherits whatever text
  * colour the control around it resolved from the token layer. The numbers below
@@ -54,6 +55,23 @@ export function ChevronDownIcon(props: IconProps) {
   return (
     <Icon {...props}>
       <path d="m6 9 6 6 6-6" />
+    </Icon>
+  )
+}
+
+/** Cursor pagination moves one page at a time, so these are the only two. */
+export function ChevronLeftIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m15 6-6 6 6 6" />
+    </Icon>
+  )
+}
+
+export function ChevronRightIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m9 6 6 6-6 6" />
     </Icon>
   )
 }
