@@ -742,19 +742,21 @@ DNS 연결(TASK-0008) 전에는 Render 대시보드가 알려 주는 `onrender.c
 
 ## 커밋 이력 읽는 법
 
-이 저장소의 커밋과 PR 에는 두 줄의 트레일러가 붙는다.
+커밋에는 한 줄의 트레일러가 붙는다.
 
 ```
-Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_...
+Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-| 트레일러 | 무엇 |
-| --- | --- |
-| `Co-Authored-By` | 이 변경을 함께 만든 도구. 표준 git 트레일러다 |
-| `Claude-Session` | 그 작업이 이루어진 Claude Code 세션 |
+표준 git 트레일러이고, 이 변경을 함께 만든 도구를 밝히는 것이 전부다.
 
-**`Claude-Session` 링크는 저장소 소유자의 계정에 묶여 있어 다른 사람은 열 수 없다.** 출처 표기이지 문서가 아니다. 링크가 열리지 않아도 잃는 정보는 없다 — **무엇을 왜 그렇게 했는지는 전부 저장소 안에 있다.**
+PR 본문 끝에는 **저장소 안 문서로 가는 링크**가 붙는다. 예전에는 여기에
+`https://claude.ai/code/session_...` 형태의 세션 링크가 함께 들어갔는데, 그 링크는
+**저장소 소유자의 계정에 묶여 있어 다른 사람은 열 수 없다.** 저장소를 처음 보는 사람에게
+열리지 않는 링크는 근거가 아니라 막다른 길이므로 지금은 붙이지 않는다.
+
+대신 **필요한 판단 근거는 저장소 안에 문서로 남기고 그 문서를 링크한다.** 대화를 통째로
+옮기는 것이 아니라, 남아야 할 결정만 `docs/decisions/` 에 정리하고 거기를 가리킨다.
 
 | 알고 싶은 것 | 볼 곳 |
 | --- | --- |
@@ -764,7 +766,7 @@ Claude-Session: https://claude.ai/code/session_...
 | 무엇을 어떻게 검증했나 | 해당 PR 본문 |
 | 화면·데이터·상태 전이·금액 규칙 | [`docs/design/`](./docs/design/) |
 
-즉 **커밋 하나를 이해하는 데 필요한 것은 전부 `git clone` 안에 있다.** 세션 링크는 거기에 더해지는 출처 정보일 뿐이다.
+즉 **커밋 하나를 이해하는 데 필요한 것은 전부 `git clone` 안에 있다.** 저장소 밖을 봐야만 알 수 있는 것은 남기지 않는다.
 
 ## 문서
 

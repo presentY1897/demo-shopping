@@ -56,10 +56,8 @@ TASK 문서 6장을 옮겨 적는 것이 아니라 **실제로 확인한 결과*
 ---
 
 <!--
-아래 트레일러는 자동으로 붙는다. `Claude-Session` 링크는 저장소 소유자의 계정에
-묶여 있어 다른 사람은 열 수 없다 — 출처 표기이지 문서가 아니다.
-
-그러므로 이 PR 을 읽는 사람이 알아야 할 것은 전부 위 본문과 저장소 안에 있어야 한다.
+아래 링크는 자동으로 붙는다. 계정에 묶여 다른 사람이 못 여는 링크는 붙이지 않는다 —
+이 PR 을 읽는 사람이 알아야 할 것은 전부 위 본문과 저장소 안에 있어야 한다.
 자세한 내용: README 의 "커밋 이력 읽는 법" 절.
 -->
 
@@ -69,4 +67,4 @@ TASK 문서 6장을 옮겨 적는 것이 아니라 **실제로 확인한 결과*
 - 지금 무엇이 정해져 있나 — [`DECISIONS.md`](../blob/main/docs/decisions/DECISIONS.md)
 - 왜 그렇게 정했나 — [`docs/decisions/`](../blob/main/docs/decisions/)
 - 품질 기준 — [`QUALITY-GATES.md`](../blob/main/docs/tasks/QUALITY-GATES.md)
-- 트레일러가 무엇인지 — [README 「커밋 이력 읽는 법」](../blob/main/README.md#커밋-이력-읽는-법)
+- 커밋 트레일러가 무엇인지 — [README 「커밋 이력 읽는 법」](../blob/main/README.md#커밋-이력-읽는-법)
