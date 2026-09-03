@@ -36,4 +36,56 @@ export const ko: Messages = {
     },
     notice: '기동 확인용 임시 페이지입니다. 실제 화면은 M03 에서 대체됩니다.',
   },
+  tokens: {
+    title: '디자인 토큰',
+    description: '색·타이포·간격·밀도 토큰을 한 화면에서 확인하는 개발용 페이지입니다.',
+    devOnlyNotice: '개발 환경에서만 열립니다. 프로덕션 빌드에서는 404 를 응답합니다.',
+    linkLabel: '디자인 토큰 미리보기',
+    density: {
+      legend: '표시 밀도',
+      names: {
+        1: '미니멀',
+        2: '표준',
+        3: '맥시멀',
+      },
+      current: '현재 밀도',
+      hint: '선택한 값은 이 브라우저에 저장되어 새로고침 후에도 유지됩니다.',
+    },
+    sections: {
+      color: '색',
+      typography: '타이포그래피',
+      spacing: '간격',
+      shape: '모서리 · 그림자',
+      control: '컨트롤 크기 · 터치 타깃',
+      grid: '밀도 × 뷰포트 그리드',
+      comparison: '밀도 3단계 비교',
+    },
+    captions: {
+      color:
+        '컴포넌트는 시맨틱 토큰만 사용합니다. 팔레트는 시맨틱 토큰이 참조하는 원본 값이며 화면에서 직접 쓰지 않습니다.',
+      typography: '글자 크기는 밀도 배율(--font-scale)과 함께 움직입니다.',
+      spacing:
+        '모든 간격은 --space-unit 의 배수입니다. 밀도를 바꾸면 아래 막대 길이가 함께 바뀝니다.',
+      shape: '모서리 반경은 밀도 배율(--radius-scale)을 따릅니다. 그림자는 밀도와 무관합니다.',
+      control:
+        '어떤 밀도에서도 44px 아래로 내려가지 않습니다. 브라우저가 실제로 렌더한 높이를 함께 표시합니다.',
+      grid: '열 수는 밀도와 뷰포트의 2차원 매트릭스로 정해집니다. 창 너비를 바꾸면 값이 바뀝니다.',
+      comparison:
+        '세 단계를 한 화면에서 비교합니다. 각 패널은 자기 밀도로 렌더되며 페이지 전체 밀도와 무관합니다.',
+    },
+    labels: {
+      palette: '팔레트',
+      semantic: '시맨틱',
+      measuredHeight: '실제 높이',
+      measuring: '측정 중',
+      columns: '열',
+      columnsFromCss: 'CSS 변수',
+      columnsFromMatrix: 'TypeScript 매트릭스',
+      viewportWidth: '창 너비',
+      sampleText: '가나다라 Ag 123',
+      sampleButton: '버튼',
+      iconButton: '아이콘 버튼',
+      touchFloor: '터치 하한 44px',
+    },
+  },
 }
