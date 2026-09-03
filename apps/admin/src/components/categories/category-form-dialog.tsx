@@ -2,7 +2,7 @@
 
 import { categoryNameSchema, categorySlugSchema } from '@shopping/shared'
 import { Button, Input, Modal, ModalClose } from '@shopping/ui/components'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import type { FieldErrors } from '@/form'
 import { Field, fieldAria, hasFieldErrors, useSubmit } from '@/form'
@@ -13,8 +13,17 @@ export interface CategoryFormValues {
   readonly slug: string
 }
 
-/** What the caller's save attempt came back with, in the terms this form shows. */
-export type CategoryFormOutcome = 'saved' | 'slug-taken' | 'failed'
+/**
+ * What the caller's save attempt came back with, in the terms this form shows.
+ *
+ * `rejected` carries messages already **placed on fields** — the caller resolved
+ * them from `details[].field` and the message catalog (TASK-0117 4.5). It used
+ * to be the single token `'slug-taken'`, which was all the screen could work out
+ * from a 409 and which said nothing about *why* it thought so.
+ */
+export type CategoryFormOutcome =
+  | { readonly kind: 'saved' }
+  | { readonly kind: 'rejected'; readonly fieldErrors: FieldErrors<Field_> }
 
 type Field_ = 'name' | 'slug'
 
@@ -73,15 +82,41 @@ export function CategoryFormDialog({
 }: CategoryFormDialogProps) {
   const [values, setValues] = useState<CategoryFormValues>(initial)
   const [errors, setErrors] = useState<FieldErrors<Field_>>({})
+  /** Bumped on every rejected submit so the focus effect runs again. */
+  const [rejections, setRejections] = useState(0)
+  const formRef = useRef<HTMLFormElement | null>(null)
   const { form } = messages
+
+  /**
+   * Moves focus to the first control the server or the schema objected to.
+   *
+   * Without it the message is announced only if the reader happens to be on that
+   * field, and on a dialog with two inputs the second one is exactly where they
+   * are not. `aria-invalid` is set by `fieldAria`, so the query finds the same
+   * control the error is described by (TASK-0017 규약, TASK-0117 F4).
+   */
+  useEffect(() => {
+    if (rejections === 0) return
+    formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus()
+  }, [rejections])
+
+  const reject = (found: FieldErrors<Field_>): void => {
+    setErrors(found)
+    setRejections((count) => count + 1)
+  }
 
   const { submitting, submit } = useSubmit(async (): Promise<void> => {
     const found = validate(values, messages)
-    setErrors(found)
-    if (hasFieldErrors(found)) return
+
+    if (hasFieldErrors(found)) {
+      reject(found)
+      return
+    }
+    setErrors({})
 
     const outcome = await onSubmit(values)
-    if (outcome === 'slug-taken') setErrors({ slug: form.errors.slugTaken })
+
+    if (outcome.kind === 'rejected') reject(outcome.fieldErrors)
   })
 
   return (
@@ -102,6 +137,7 @@ export function CategoryFormDialog({
       <form
         className="flex flex-col gap-4"
         noValidate
+        ref={formRef}
         onSubmit={(event) => {
           event.preventDefault()
           void submit()

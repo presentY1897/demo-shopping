@@ -1,6 +1,7 @@
 import { ko } from './ko'
 import type {
   CategoryMessages,
+  ErrorNoticeMessages,
   HealthMessages,
   Messages,
   SearchReadinessMessages,
@@ -18,4 +19,11 @@ export function messagesFor(locale: Locale = DEFAULT_LOCALE): Messages {
   return catalogs[locale]
 }
 
-export type { CategoryMessages, HealthMessages, Messages, SearchReadinessMessages, WakeMessages }
+export type {
+  CategoryMessages,
+  ErrorNoticeMessages,
+  HealthMessages,
+  Messages,
+  SearchReadinessMessages,
+  WakeMessages,
+}

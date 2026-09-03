@@ -2,6 +2,7 @@ import type { HealthStatus } from '@shopping/shared'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { CategoryFailureReason } from '@/lib/categories/errors'
+import type { ErrorMessages } from '@/lib/errors'
 import type { HealthFailureReason } from '@/lib/health'
 
 /**
@@ -35,6 +36,29 @@ export interface Messages {
   readonly components: ComponentGalleryMessages
   /** The category console (TASK-0029). */
   readonly categories: CategoryMessages
+  /**
+   * One sentence per error code the API can answer with (TASK-0117).
+   *
+   * Its own top-level slice rather than a corner of `categories`, because the
+   * codes are not the category screen's: `AUTH_REQUIRED` and `INTERNAL_ERROR`
+   * reach every screen, and a catalog that grew a second copy per feature is a
+   * catalog whose two copies disagree.
+   */
+  readonly errors: ErrorMessages
+  /** What is said about a failure nobody on this screen can fix (4.4). */
+  readonly errorNotice: ErrorNoticeMessages
+}
+
+export interface ErrorNoticeMessages {
+  readonly title: string
+  /** Why a UUID is on screen at all. */
+  readonly requestIdHint: string
+  /** Accessible name of the id itself. */
+  readonly requestIdLabel: string
+  readonly copyLabel: string
+  readonly copiedLabel: string
+  /** Puts the notice away. A panel with no way out is a panel that stays. */
+  readonly dismissLabel: string
 }
 
 export interface HealthMessages {
@@ -109,7 +133,14 @@ export interface CategoryMessages {
   readonly retire: CategoryRetireMessages
   readonly conflict: CategoryConflictMessages
   readonly toast: CategoryToastMessages
-  /** One line per failure, so no reason falls through to a generic sentence. */
+  /**
+   * One line per way a call can fail **before the API answers**.
+   *
+   * Everything the API *does* answer is keyed by `error.code` in `errors`
+   * instead. Splitting them that way is the point of TASK-0117: a 409 used to
+   * arrive as one reason with the real story in a Korean sentence, and this
+   * record was where the screen's vocabulary for "conflict" ended.
+   */
   readonly failures: Readonly<Record<CategoryFailureReason, string>>
 }
 
@@ -145,12 +176,19 @@ export interface CategoryFormMessages {
   readonly saving: string
   readonly cancel: string
   readonly closeLabel: string
+  /**
+   * What this form says about a value before it is sent.
+   *
+   * `slugTaken` used to live here too. It does not any more: "이미 쓰고 있는
+   * 주소예요" is the server's answer rather than the form's rule, and it now
+   * arrives as `CATEGORY_SLUG_TAKEN` and is looked up in `errors` like every
+   * other code (TASK-0117). One sentence, one home.
+   */
   readonly errors: {
     readonly nameRequired: string
     readonly nameTooLong: string
     readonly slugRequired: string
     readonly slugFormat: string
-    readonly slugTaken: string
   }
 }
 

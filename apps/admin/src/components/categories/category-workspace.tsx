@@ -4,17 +4,22 @@ import {
   Button,
   DataList,
   EmptyState,
+  ErrorNotice,
   ErrorState,
   Skeleton,
   useToast,
 } from '@shopping/ui/components'
+import { serverFieldErrors } from '@shopping/ui/form'
 import { useMemo, useState } from 'react'
 
 import type { CategoryFailure } from '@/lib/categories/errors'
+import { failureMessage, hasCode, quotableRequestId } from '@/lib/categories/errors'
 import type { CategoryRow, MoveDirection } from '@/lib/categories/tree'
 import { branchIds, hasChildren, rowById, visibleRows } from '@/lib/categories/tree'
 import { useCategoryTree } from '@/lib/categories/use-category-tree'
-import type { CategoryMessages } from '@/messages'
+import type { ErrorMessages } from '@/lib/errors'
+import { errorMessage } from '@/lib/errors'
+import type { CategoryMessages, ErrorNoticeMessages } from '@/messages'
 
 import { CategoryConflictDialog } from './category-conflict-dialog'
 import type { CategoryFormOutcome, CategoryFormValues } from './category-form-dialog'
@@ -25,6 +30,18 @@ import { CategoryTree } from './category-tree'
 import { CategoryToolbar } from './category-toolbar'
 
 const EMPTY_VALUES: CategoryFormValues = { name: '', slug: '' }
+
+/** The inputs this screen's form owns. Nothing outside it is ever placed. */
+const FORM_FIELDS = ['name', 'slug'] as const
+
+/**
+ * Codes that name no field of their own but still belong on one.
+ *
+ * `CATEGORY_SLUG_TAKEN` arrives with `details[].field === 'slug'` today, so this
+ * is the belt to that braces: an endpoint that sends the code without the entry
+ * still places the message where it belongs (`serverFieldErrors` shape 3).
+ */
+const CODE_FIELDS: Readonly<Record<string, string>> = { CATEGORY_SLUG_TAKEN: 'slug' }
 
 type Dialog =
   | { readonly kind: 'none' }
@@ -51,6 +68,10 @@ type Dialog =
 
 interface CategoryWorkspaceProps {
   readonly messages: CategoryMessages
+  /** `code` → sentence, for everything the API answers (TASK-0117 4.2). */
+  readonly errors: ErrorMessages
+  /** Copy for a failure nobody on this screen can fix (4.4). */
+  readonly notice: ErrorNoticeMessages
 }
 
 /**
@@ -61,7 +82,7 @@ interface CategoryWorkspaceProps {
  * to be called under it, and a screen that provided its own context and consumed
  * it in the same component would be a hook order accident waiting to happen.
  */
-export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
+export function CategoryWorkspace({ messages, errors, notice }: CategoryWorkspaceProps) {
   const { state, reload, create, update, move, remove } = useCategoryTree()
   const { toast } = useToast()
 
@@ -69,6 +90,15 @@ export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
   const [dialog, setDialog] = useState<Dialog>({ kind: 'none' })
   const [pending, setPending] = useState(false)
   const [formKey, setFormKey] = useState(0)
+
+  /**
+   * A failure the operator cannot act on, held until they dismiss it.
+   *
+   * A toast is the wrong home for a correlation id: it disappears, and the one
+   * thing the reader is being asked to do with the number is copy it somewhere
+   * else (TASK-0117 4.4). Failures they *can* act on keep the toast.
+   */
+  const [reported, setReported] = useState<CategoryFailure | null>(null)
 
   /**
    * `null` means "nobody has folded anything yet", which is drawn fully
@@ -82,10 +112,57 @@ export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
   const items = useMemo(() => visibleRows(rows, openBranches), [rows, openBranches])
   const selected = selectedId === null ? null : (rowById(rows, selectedId) ?? null)
 
+  /** The catalog's sentence for this failure. Never the server's, if we have one. */
   function describe(failure: CategoryFailure): string {
-    const line = messages.failures[failure.reason]
+    return failureMessage(failure, { errors, categories: messages })
+  }
 
-    return failure.detail === undefined ? line : `${line} ${failure.detail}`
+  /**
+   * Says what went wrong, in the form the failure deserves.
+   *
+   * A failure with a quotable reference gets the persistent notice: the one
+   * thing the reader is asked to do with the number is carry it somewhere else,
+   * and a toast disappears while they are still reading it. Everything else —
+   * including a dead network, which produced no number — keeps the toast,
+   * because its answer is already on screen.
+   */
+  function report(title: string, failure: CategoryFailure): void {
+    if (quotableRequestId(failure) !== null) {
+      setReported(failure)
+      return
+    }
+
+    toast({ title, description: describe(failure), variant: 'danger' })
+  }
+
+  /**
+   * Turns a refused save into messages under the inputs they are about.
+   *
+   * This is the whole of TASK-0117 on this screen: `details[].field` says which
+   * input, `code` says which sentence, and neither is read out of Korean prose.
+   */
+  function fieldErrorsFor(failure: CategoryFailure): Record<string, string> {
+    const placed = serverFieldErrors(failure.kind === 'http' ? failure.details : [], {
+      fields: FORM_FIELDS,
+      code: failure.kind === 'http' ? failure.code : null,
+      codeFields: CODE_FIELDS,
+      messageForCode: (code, params) => errorMessage(errors, code, params),
+    })
+
+    return placed.fieldErrors
+  }
+
+  /**
+   * `{ requestId }` when there is one worth quoting, `{}` otherwise.
+   *
+   * Spread rather than passed as `string | undefined` because
+   * `exactOptionalPropertyTypes` treats "absent" and "present and undefined" as
+   * different things — and here they mean different things too.
+   */
+  function requestIdProp(failure: CategoryFailure): { requestId?: string } {
+    const id = quotableRequestId(failure)
+
+    return id === null ? {} : { requestId: id }
   }
 
   function toggle(id: number, force?: boolean): void {
@@ -103,15 +180,20 @@ export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
   async function handleMove(id: number, direction: MoveDirection): Promise<void> {
     const result = await move(id, direction)
 
-    if (!result.ok) {
-      // The tree has already jumped back to where it was; say so, or the
-      // operator is left wondering whether the move happened.
-      toast({
-        title: messages.toast.moveFailed,
-        description: `${describe(result.failure)} ${messages.toast.restored}`,
-        variant: 'danger',
-      })
+    if (result.ok) return
+
+    if (quotableRequestId(result.failure) !== null) {
+      setReported(result.failure)
+      return
     }
+
+    // The tree has already jumped back to where it was; say so, or the
+    // operator is left wondering whether the move happened.
+    toast({
+      title: messages.toast.moveFailed,
+      description: `${describe(result.failure)} ${messages.toast.restored}`,
+      variant: 'danger',
+    })
   }
 
   function openCreate(parentId: number | null): void {
@@ -137,6 +219,39 @@ export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
     setDialog({ kind: 'retire', id, intent })
   }
 
+  /**
+   * Chooses the recovery this failure calls for (F5).
+   *
+   * Three answers, and each is chosen by a code rather than inferred:
+   * a taken address belongs under the field, somebody else's edit belongs in the
+   * comparison dialog, and anything else is a message.
+   */
+  function rejectSave(
+    failure: CategoryFailure,
+    values: CategoryFormValues,
+    /** The row as the server holds it, when the failure was somebody else's edit. */
+    latest?: CategoryRow,
+  ): CategoryFormOutcome {
+    // `latest` is absent when the re-read failed. The comparison dialog would
+    // have nothing to show on its "지금 저장된 값" side, so the message is all
+    // that is left — and it is still the right message, because the code said so.
+    if (hasCode(failure, 'CATEGORY_VERSION_CONFLICT') && dialog.kind === 'edit') {
+      if (latest !== undefined) {
+        setDialog({ kind: 'conflict', id: dialog.id, latest, mine: values })
+
+        return { kind: 'rejected', fieldErrors: {} }
+      }
+    }
+
+    const fieldErrors = fieldErrorsFor(failure)
+
+    if (Object.keys(fieldErrors).length > 0) return { kind: 'rejected', fieldErrors }
+
+    report(messages.toast.saveFailed, failure)
+
+    return { kind: 'rejected', fieldErrors: {} }
+  }
+
   async function submitForm(values: CategoryFormValues): Promise<CategoryFormOutcome> {
     if (dialog.kind === 'create') {
       const result = await create({ parentId: dialog.parentId, ...values })
@@ -145,20 +260,13 @@ export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
         setDialog({ kind: 'none' })
         toast({ title: messages.toast.created, variant: 'success' })
 
-        return 'saved'
+        return { kind: 'saved' }
       }
-      if (result.failure.reason === 'conflict') return 'slug-taken'
 
-      toast({
-        title: messages.toast.saveFailed,
-        description: describe(result.failure),
-        variant: 'danger',
-      })
-
-      return 'failed'
+      return rejectSave(result.failure, values)
     }
 
-    if (dialog.kind !== 'edit') return 'failed'
+    if (dialog.kind !== 'edit') return { kind: 'rejected', fieldErrors: {} }
 
     const result = await update(dialog.id, { version: dialog.version, ...values })
 
@@ -166,25 +274,10 @@ export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
       setDialog({ kind: 'none' })
       toast({ title: messages.toast.updated, variant: 'success' })
 
-      return 'saved'
+      return { kind: 'saved' }
     }
 
-    // A conflict with a row attached is somebody else's edit; without one it is
-    // the slug, which belongs on the field rather than in a dialog.
-    if (result.conflict !== undefined) {
-      setDialog({ kind: 'conflict', id: dialog.id, latest: result.conflict, mine: values })
-
-      return 'failed'
-    }
-    if (result.failure.reason === 'conflict') return 'slug-taken'
-
-    toast({
-      title: messages.toast.saveFailed,
-      description: describe(result.failure),
-      variant: 'danger',
-    })
-
-    return 'failed'
+    return rejectSave(result.failure, values, result.conflict)
   }
 
   async function confirmRetire(): Promise<void> {
@@ -217,19 +310,15 @@ export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
       return
     }
 
-    // The server refused the delete — most often because something still points
-    // at the category. The dialog turns into the explanation rather than closing.
-    if (dialog.intent === 'remove' && result.failure.reason === 'conflict') {
+    // The server refused the delete because something is still under the
+    // category. The dialog turns into the explanation rather than closing.
+    if (hasCode(result.failure, 'CATEGORY_HAS_CHILDREN')) {
       setDialog({ kind: 'retire', id: dialog.id, intent: 'remove-blocked' })
 
       return
     }
 
-    toast({
-      title: messages.toast.saveFailed,
-      description: describe(result.failure),
-      variant: 'danger',
-    })
+    report(messages.toast.saveFailed, result.failure)
   }
 
   async function overwrite(): Promise<void> {
@@ -246,11 +335,7 @@ export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
       return
     }
 
-    toast({
-      title: messages.toast.saveFailed,
-      description: describe(result.failure),
-      variant: 'danger',
-    })
+    report(messages.toast.saveFailed, result.failure)
   }
 
   /** Puts the server's current values into the form, unsaved, on its version. */
@@ -275,8 +360,33 @@ export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
       ? (rowById(rows, dialog.parentId)?.name ?? messages.form.rootParent)
       : messages.form.rootParent
 
+  const loadFailure = state.status === 'error' ? state.failure : null
+
   return (
     <div className="flex flex-col gap-4">
+      {reported === null ? null : (
+        <ErrorNotice
+          action={
+            <Button
+              onClick={() => {
+                setReported(null)
+              }}
+              size="sm"
+              variant="ghost"
+            >
+              {notice.dismissLabel}
+            </Button>
+          }
+          copiedLabel={notice.copiedLabel}
+          copyLabel={notice.copyLabel}
+          description={describe(reported)}
+          requestIdHint={notice.requestIdHint}
+          requestIdLabel={notice.requestIdLabel}
+          title={notice.title}
+          {...requestIdProp(reported)}
+        />
+      )}
+
       <DataList
         empty={
           <EmptyState
@@ -295,12 +405,29 @@ export function CategoryWorkspace({ messages }: CategoryWorkspaceProps) {
           />
         }
         error={
-          <ErrorState
-            description={state.status === 'error' ? describe(state.failure) : undefined}
-            onRetry={reload}
-            retryLabel={messages.retryLabel}
-            title={messages.errorTitle}
-          />
+          loadFailure !== null && quotableRequestId(loadFailure) !== null ? (
+            <ErrorNotice
+              action={
+                <Button onClick={reload} size="sm" variant="outline">
+                  {messages.retryLabel}
+                </Button>
+              }
+              copiedLabel={notice.copiedLabel}
+              copyLabel={notice.copyLabel}
+              description={describe(loadFailure)}
+              requestIdHint={notice.requestIdHint}
+              requestIdLabel={notice.requestIdLabel}
+              title={messages.errorTitle}
+              {...requestIdProp(loadFailure)}
+            />
+          ) : (
+            <ErrorState
+              description={loadFailure === null ? undefined : describe(loadFailure)}
+              onRetry={reload}
+              retryLabel={messages.retryLabel}
+              title={messages.errorTitle}
+            />
+          )
         }
         loading={<Skeleton label={messages.loadingLabel} lines={6} />}
         state={

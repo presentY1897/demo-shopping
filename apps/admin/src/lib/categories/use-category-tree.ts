@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { getApiClient } from '@/lib/api'
 
 import type { CategoryFailure } from './errors'
-import { categoryFailure } from './errors'
+import { categoryFailure, hasCode } from './errors'
 import type { CategoryRow, MoveDirection } from './tree'
 import { applyPlan, mergeRows, planMove, toRows } from './tree'
 
@@ -20,15 +20,21 @@ export type CategoryTreeState =
  *
  * A result rather than a thrown error: every caller here is a dialog or a
  * keystroke that has to keep rendering, and `conflict` carries the one thing a
- * 409 on an edit leaves the screen needing — the row as it now stands, so the
- * operator can see what they would be overwriting.
+ * `CATEGORY_VERSION_CONFLICT` leaves the screen needing — the row as it now
+ * stands, so the operator can see what they would be overwriting.
  */
 export type CategoryMutationResult =
   | { readonly ok: true }
   | {
       readonly ok: false
       readonly failure: CategoryFailure
-      /** Present only when the 409 was the optimistic lock, not a taken slug. */
+      /**
+       * The row as the server now holds it.
+       *
+       * Present only for `CATEGORY_VERSION_CONFLICT`, and only when the re-read
+       * succeeded — the conflict dialog needs something to show on its "지금
+       * 저장된 값" side, and without it there is nothing to compare against.
+       */
       readonly conflict?: CategoryRow
     }
 
@@ -43,6 +49,12 @@ export interface CategoryTreeController {
 }
 
 const SUCCESS: CategoryMutationResult = { ok: true }
+
+/** No tree has been loaded, so there is nothing to mutate against. */
+const NOT_LOADED: CategoryMutationResult = {
+  ok: false,
+  failure: { kind: 'transport', reason: 'unknown' },
+}
 
 /**
  * The category tree, and the six things the console does to it.
@@ -130,7 +142,7 @@ export function useCategoryTree(): CategoryTreeController {
   const create = useCallback(
     async (input: CreateCategoryRequest): Promise<CategoryMutationResult> => {
       const rows = rowsRef.current
-      if (rows === null) return { ok: false, failure: { reason: 'unknown' } }
+      if (rows === null) return NOT_LOADED
 
       try {
         const { category } = await getApiClient().createCategory(input)
@@ -146,14 +158,20 @@ export function useCategoryTree(): CategoryTreeController {
   )
 
   /**
-   * Saves the fields a person typed, and works out what a 409 meant.
+   * Saves the fields a person typed.
    *
-   * The API answers both a stale version and a taken slug with `CONFLICT`, and
-   * the sentence that separates them is Korean prose no screen should match on
-   * (TASK-0029 4장). So the tree is read again and the versions compared: a
-   * version that moved on is somebody else's edit, and a version that did not is
-   * the slug. The re-read is not wasted either way — it puts the other editor's
-   * change on screen at the moment the operator is told about it.
+   * **The 409 is no longer guesswork.** The API used to answer both a stale
+   * version and a taken address with `CONFLICT`, so this hook re-read the whole
+   * tree and compared `version` numbers to work out which had happened — a
+   * second round trip spent on a question the server had already answered in
+   * prose nobody could safely match on (TASK-0029 4장). The version that had not
+   * moved was read as "the slug, then", which is a guess: it is also what a
+   * conflict looks like when the other editor saved and reverted.
+   *
+   * Now `CATEGORY_VERSION_CONFLICT` says it outright, and the re-read is only
+   * for **showing** the operator what they would overwrite. When it fails, the
+   * failure is still reported as the conflict it is; only the comparison view is
+   * missing.
    */
   const update = useCallback(
     async (id: number, input: UpdateCategoryRequest): Promise<CategoryMutationResult> => {
@@ -165,14 +183,13 @@ export function useCategoryTree(): CategoryTreeController {
         return SUCCESS
       } catch (error) {
         const failure = categoryFailure(error)
-        if (failure.reason !== 'conflict') return { ok: false, failure }
+        if (!hasCode(failure, 'CATEGORY_VERSION_CONFLICT')) return { ok: false, failure }
 
         const latest = await refetch(id).catch(() => undefined)
-        if (latest === undefined || latest.version === input.version) {
-          return { ok: false, failure }
-        }
 
-        return { ok: false, failure, conflict: latest }
+        return latest === undefined
+          ? { ok: false, failure }
+          : { ok: false, failure, conflict: latest }
       }
     },
     [refetch, setRows],
@@ -181,7 +198,7 @@ export function useCategoryTree(): CategoryTreeController {
   const move = useCallback(
     async (id: number, direction: MoveDirection): Promise<CategoryMutationResult> => {
       const snapshot = rowsRef.current
-      if (snapshot === null) return { ok: false, failure: { reason: 'unknown' } }
+      if (snapshot === null) return NOT_LOADED
 
       const plan = planMove(snapshot, id, direction)
       // Nothing to do — the toolbar disables these, and a keystroke can still

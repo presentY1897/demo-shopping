@@ -32,7 +32,7 @@ import { messagesFor } from '@/messages'
 
 import { testServer } from './setup'
 
-const { categories: copy } = messagesFor()
+const { categories: copy, errors: errorCopy } = messagesFor()
 
 /**
  * A second administrator, editing the same tree from their own browser.
@@ -122,6 +122,7 @@ describe('the four states the tree can be in (U1)', () => {
         mockPaths.categories,
         403,
         'FORBIDDEN',
+        // Whatever the server's own sentence is. The screen shows its own.
         '이 작업을 수행할 권한이 없습니다.',
       ),
     )
@@ -130,7 +131,7 @@ describe('the four states the tree can be in (U1)', () => {
     const alert = await screen.findByRole('alert')
 
     expect(within(alert).getByText(copy.errorTitle)).toBeVisible()
-    expect(within(alert).getByText(copy.failures.forbidden, { exact: false })).toBeVisible()
+    expect(within(alert).getByText(errorCopy.FORBIDDEN, { exact: false })).toBeVisible()
     expect(screen.getByRole('button', { name: copy.retryLabel })).toBeVisible()
   })
 
@@ -392,7 +393,9 @@ describe('adding a category (F2)', () => {
     await user.type(screen.getByLabelText(copy.form.slugFieldLabel, { exact: false }), 'women')
     await user.click(screen.getByRole('button', { name: copy.form.save }))
 
-    expect(await screen.findByText(copy.form.errors.slugTaken)).toBeVisible()
+    // The catalog's sentence for `CATEGORY_SLUG_TAKEN`, under the slug input —
+    // not the server's, and not at the top of the form.
+    expect(await screen.findByText(errorCopy.CATEGORY_SLUG_TAKEN)).toBeVisible()
   })
 })
 
@@ -520,15 +523,15 @@ describe('retiring a category (F5, F6)', () => {
     const user = userEvent.setup()
     await openConsole()
 
-    // What a category with products in it will answer once products exist.
+    // What a category with products in it will answer once products exist. The
+    // screen picks the alternative from the code, not from the sentence.
     testServer.server.use(
       httpFailureOn(
         'delete',
         mockPaths.category,
         409,
-        'CONFLICT',
-        '다른 요청과 충돌해 처리하지 못했습니다.',
-        ['이 카테고리에 등록된 상품이 있어 삭제할 수 없습니다.'],
+        'CATEGORY_HAS_CHILDREN',
+        '하위 카테고리를 먼저 옮기거나 삭제해 주세요.',
       ),
     )
 

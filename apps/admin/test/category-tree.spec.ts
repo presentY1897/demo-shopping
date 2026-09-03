@@ -43,6 +43,7 @@ function sample(): CategoryRow[] {
     slug: `s${String(id)}`,
     sortOrder,
     isActive: true,
+    productCount: 0,
     version: 0,
   })
 
