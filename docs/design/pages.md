@@ -1,6 +1,6 @@
 # 페이지 구조
 
-> 현재 유효한 화면 목록과 라우팅만 담는다. 최종 갱신: 2026-09-02
+> 현재 유효한 화면 목록과 라우팅만 담는다. 최종 갱신: 2026-09-03
 
 ## 앱 구성
 
@@ -42,6 +42,29 @@
 **표시 여부는 토큰이 아니라 컴포넌트가 정한다.** 토큰은 공간과 크기만 담당한다.
 
 설정 저장: 로그인 사용자는 `UserPreference`, 비로그인은 localStorage(`shopping.shop.density`). 첫 페인트 전에 인라인 스크립트가 저장값을 `data-density` 에 적용하므로 새로고침 시 깜빡임이 없다.
+
+## 공통 UI 컴포넌트
+
+세 앱이 공유하는 기본 컴포넌트는 `@shopping/ui/components` 한 곳에 있다. 스타일은 전부 디자인 토큰이고, 접근성 동작은 **Radix Primitives** 에 맡긴다 (D-056).
+
+| 묶음 | 컴포넌트 | 기반 |
+| --- | --- | --- |
+| 액션 | `Button` · `IconButton` · `Link` | 직접 (플랫폼 기본 동작으로 충분) |
+| 폼 | `Input` · `Textarea` | 직접 |
+| 폼 | `Select` · `Checkbox` · `RadioGroup`/`Radio` · `Switch` | Radix |
+| 표시 | `Badge` · `Tag` · `Divider` | 직접 |
+| 표시 | `Avatar` | Radix (이미지 로드 상태) |
+| 오버레이 | `Modal` · `Drawer` | Radix Dialog |
+| 오버레이 | `Tooltip` · `Popover` | Radix |
+| 알림 | `ToastProvider` / `useToast()` | Radix Toast |
+| 구조 | `Tabs` · `Accordion` | Radix |
+
+- **Radix 는 동작만, 스타일은 0줄을 쓴다.** 포커스 트랩·ARIA·키보드 탐색·팝업 위치처럼 직접 구현하면 품질이 안 나오는 부분에만 쓴다.
+- **`variant` / `size` 는 prop 이고 값 목록은 배열로 export 한다** (`BUTTON_VARIANTS` 등). 스토리(TASK-0104)가 내부를 뜯지 않고 상태를 나열할 수 있어야 한다.
+- **`'use client'` 는 컴포넌트 파일이 각자 선언한다.** 브라우저 동작이 필요 없는 것(`Button`·`Input`·`Textarea`·`Badge`·`Tag`·`Divider`)은 서버 컴포넌트로 렌더된다.
+- **`packages/ui` 에는 한국어가 없다.** 문구가 필요한 자리(`IconButton.label`, `Modal.closeLabel`, `ToastProvider.regionLabel`, `Tag.removeLabel`)는 prop 으로 받는다. `IconButton.label` 과 `Tag.removeLabel` 은 타입으로 강제된다.
+- **터치 타깃 44px 하한은 컴포넌트가 기억하지 않는다.** `h-control-*` / `size-control-*` / `touch-target` / `min-h-touch` 가 토큰 안의 `max()` 로 보장한다. 체크박스·라디오는 눈에 보이는 상자(20px)와 누르는 영역(44px)을 분리한다.
+- 전 컴포넌트를 한 화면에 나열한 **개발 전용** 페이지가 세 앱 모두에 있다 (`/components`, 프로덕션 404). `/tokens` 와 함께 TASK-0104 의 Storybook 이 이어받은 뒤 제거한다 (D-206).
 
 ---
 
