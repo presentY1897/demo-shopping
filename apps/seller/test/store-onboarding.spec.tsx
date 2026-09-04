@@ -97,7 +97,7 @@ describe('U1 · P5 — the four states of the read', () => {
     expect(field(BRAND_NAME)).toHaveValue('')
     expect(screen.getByRole('button', { name: copy.form.applyLabel })).toBeEnabled()
     // No banner: there is no store to say anything about.
-    expect(screen.queryByText(copy.status.pendingTitle)).not.toBeInTheDocument()
+    expect(screen.queryByText(copy.status.notice.PENDING.title)).not.toBeInTheDocument()
   })
 
   it('shows the store when there is one', async () => {
@@ -149,10 +149,25 @@ describe('U1 · P5 — the four states of the read', () => {
 
 describe('F2 — every status has a face', () => {
   it.each([
-    [sellerPending, copy.status.pendingTitle, copy.status.label.PENDING, copy.form.saveLabel],
-    [sellerRejected, copy.status.rejectedTitle, copy.status.label.REJECTED, copy.form.reapplyLabel],
-    [sellerActive, copy.status.activeTitle, copy.status.label.ACTIVE, copy.form.saveLabel],
-    [sellerSuspended, copy.status.suspendedTitle, copy.status.label.SUSPENDED, copy.form.saveLabel],
+    [
+      sellerPending,
+      copy.status.notice.PENDING.title,
+      copy.status.label.PENDING,
+      copy.form.saveLabel,
+    ],
+    [
+      sellerRejected,
+      copy.status.notice.REJECTED.title,
+      copy.status.label.REJECTED,
+      copy.form.reapplyLabel,
+    ],
+    [sellerActive, copy.status.notice.ACTIVE.title, copy.status.label.ACTIVE, copy.form.saveLabel],
+    [
+      sellerSuspended,
+      copy.status.notice.SUSPENDED.title,
+      copy.status.label.SUSPENDED,
+      copy.form.saveLabel,
+    ],
   ])('%#', async (seed: Seller, title: string, badge: string, action: string) => {
     await openApply(seed)
 
@@ -227,7 +242,7 @@ describe('F1 — applying', () => {
     await user.click(screen.getByRole('button', { name: copy.form.applyLabel }))
 
     expect(
-      await screen.findByRole('heading', { level: 2, name: copy.status.pendingTitle }),
+      await screen.findByRole('heading', { level: 2, name: copy.status.notice.PENDING.title }),
     ).toBeVisible()
     expect(sent('GET').filter((entry) => entry.path === '/sellers/me')).toHaveLength(1)
   })

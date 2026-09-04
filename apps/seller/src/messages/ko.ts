@@ -358,16 +358,24 @@ export const ko: Messages = {
         REJECTED: '반려됨',
         SUSPENDED: '판매 정지',
       },
-      pendingTitle: '심사 중입니다',
-      pendingBody:
-        '관리자 심사가 끝나면 판매자 콘솔의 모든 기능이 열립니다. 심사 중에도 아래 내용은 고칠 수 있습니다.',
-      rejectedTitle: '입점 신청이 반려됐습니다',
-      rejectedBody: '아래 사유를 확인하고 내용을 고쳐 다시 신청해주세요.',
-      activeTitle: '운영 중인 스토어입니다',
-      activeBody: '여기서 고친 내용은 구매자에게 바로 보입니다.',
-      suspendedTitle: '판매가 정지된 스토어입니다',
-      suspendedBody:
-        '이미 받은 주문은 계속 처리할 수 있습니다. 상품 등록과 신규 판매만 막혀 있습니다.',
+      notice: {
+        PENDING: {
+          title: '심사 중입니다',
+          body: '관리자 심사가 끝나면 판매자 콘솔의 모든 기능이 열립니다. 심사 중에도 아래 내용은 고칠 수 있습니다.',
+        },
+        REJECTED: {
+          title: '입점 신청이 반려됐습니다',
+          body: '아래 사유를 확인하고 내용을 고쳐 다시 신청해주세요.',
+        },
+        ACTIVE: {
+          title: '운영 중인 스토어입니다',
+          body: '여기서 고친 내용은 구매자에게 바로 보입니다.',
+        },
+        SUSPENDED: {
+          title: '판매가 정지된 스토어입니다',
+          body: '이미 받은 주문은 계속 처리할 수 있습니다. 상품 등록과 신규 판매만 막혀 있습니다.',
+        },
+      },
       reasonLabel: '사유',
     },
     conflict: {

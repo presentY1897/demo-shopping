@@ -17,6 +17,7 @@ import {
   storeFormValues,
   storeUpdateFormSchema,
 } from '@/lib/sellers/store-form'
+import { canApply } from '@/lib/sellers/store-status'
 import type { OwnStoreController } from '@/lib/sellers/use-own-store'
 import { useOwnStore } from '@/lib/sellers/use-own-store'
 import { useBrandNameAvailability } from '@/lib/sellers/use-brand-name-availability'
@@ -244,7 +245,7 @@ function StoreEditor({
   const copy = messages.store
   const bannerId = useId()
 
-  const reapplying = seller === null || seller.status === 'REJECTED'
+  const applying = canApply(seller?.status ?? null)
   const initialValues = useMemo<StoreFormValues>(() => storeFormValues(seller), [seller])
 
   /**
@@ -288,10 +289,10 @@ function StoreEditor({
 
   const schema = useMemo(
     () =>
-      reapplying
+      applying
         ? applicationFormSchema({ messages: copy.form.errors })
         : storeUpdateFormSchema(version, { messages: copy.form.errors }),
-    [copy.form.errors, reapplying, version],
+    [copy.form.errors, applying, version],
   )
 
   const form = useForm({
@@ -330,12 +331,11 @@ function StoreEditor({
     current: seller?.brandName ?? null,
   })
 
-  const submitLabel =
-    seller === null
+  const submitLabel = !applying
+    ? copy.form.saveLabel
+    : seller === null
       ? copy.form.applyLabel
-      : seller.status === 'REJECTED'
-        ? copy.form.reapplyLabel
-        : copy.form.saveLabel
+      : copy.form.reapplyLabel
 
   return (
     <div className="flex max-w-2xl flex-col gap-6">

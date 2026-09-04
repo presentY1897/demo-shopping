@@ -36,22 +36,6 @@ const SURFACES: Readonly<Record<SellerStatus, string>> = {
   SUSPENDED: 'border-danger bg-danger-surface',
 }
 
-function copyFor(
-  status: SellerStatus,
-  messages: StoreStatusMessages,
-): { readonly title: string; readonly body: string } {
-  switch (status) {
-    case 'PENDING':
-      return { title: messages.pendingTitle, body: messages.pendingBody }
-    case 'ACTIVE':
-      return { title: messages.activeTitle, body: messages.activeBody }
-    case 'REJECTED':
-      return { title: messages.rejectedTitle, body: messages.rejectedBody }
-    case 'SUSPENDED':
-      return { title: messages.suspendedTitle, body: messages.suspendedBody }
-  }
-}
-
 export function StoreStatusNotice({
   seller,
   messages,
@@ -63,7 +47,7 @@ export function StoreStatusNotice({
   readonly headingId: string
 }) {
   const { status, statusReason } = seller
-  const { title, body } = copyFor(status, messages)
+  const { title, body } = messages.notice[status]
 
   return (
     <section
