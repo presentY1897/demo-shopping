@@ -40,6 +40,7 @@ import type { DomainFailurePayload } from '../common/domain-failure.js'
 import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { StockService } from '../stock/stock.service.js'
+import { SearchOutboxService } from '../search/search-outbox.service.js'
 import type { AttributeIssue, AttributeRule } from './attribute-schema.js'
 import { validateAttributeValues, withoutRequired } from './attribute-schema.js'
 import { AttributeService } from './attribute.service.js'
@@ -227,6 +228,7 @@ export class ProductService {
     @Inject(CLOCK) private readonly clock: Clock,
     private readonly attributes: AttributeService,
     private readonly stock: StockService,
+    private readonly outbox: SearchOutboxService,
   ) {}
 
   /**
@@ -996,6 +998,26 @@ export class ProductService {
              "updatedAt" = ${this.nowSql()}
        WHERE p."id" = ${productId}::uuid
     `
+
+    /*
+     * The search index is told here, and **only** here (TASK-0038 4장).
+     *
+     * `settle` is the last statement of every write that can change what a
+     * document says — creation, edit, publish, unpublish and the bulk status
+     * change all end in it. Publishing from each of those instead would be five
+     * places for one of them to be forgotten, and a forgotten one is a listing
+     * that is on sale and unfindable.
+     *
+     * The event is written **inside the caller's transaction**, which is what
+     * makes it exist exactly when the change does: a rollback takes it with it,
+     * and the engine is never touched while the lock is held.
+     *
+     * Always `UPSERT`, never `REMOVE`. Whether the listing belongs in the index
+     * is a question about its status, and the worker asks it against the row as
+     * it is when the event is applied — which is more current than anything this
+     * transaction could record.
+     */
+    await this.outbox.publish(tx, productId, 'UPSERT')
   }
 
   // ------------------------------------------------------------------- reads

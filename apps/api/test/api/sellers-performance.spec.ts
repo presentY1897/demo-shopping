@@ -6,6 +6,7 @@ import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
+import { recordStatements } from '../support/statements.js'
 import { callers } from '../support/principal.js'
 
 /**
@@ -60,14 +61,8 @@ function reviewList(search = ''): Promise<SellerReviewListResponse> {
 }
 
 /** Runs `work` and reports every statement it caused. */
-async function statementsDuring(work: () => Promise<unknown>): Promise<string[]> {
-  statements.length = 0
-  await work()
-  // The event is emitted from the adapter's callback; a macrotask is enough for
-  // the ones already resolved to have arrived.
-  await new Promise((resolve) => setTimeout(resolve, 20))
-
-  return [...statements]
+async function statementsDuring(work: () => Promise<unknown>): Promise<readonly string[]> {
+  return recordStatements(statements, work)
 }
 
 /** Statements that actually touched one of this task's tables. */

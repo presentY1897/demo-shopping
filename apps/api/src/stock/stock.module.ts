@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common'
 
+import { SearchModule } from '../search/search.module.js'
+
 import { StockController } from './stock.controller.js'
 import { StockService } from './stock.service.js'
 
@@ -13,6 +15,7 @@ import { StockService } from './stock.service.js'
  * same. Nothing gets to write that column by reaching for Prisma instead.
  */
 @Module({
+  imports: [SearchModule],
   controllers: [StockController],
   providers: [StockService],
   exports: [StockService],

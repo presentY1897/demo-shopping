@@ -1029,3 +1029,59 @@ model StockLedger {
   /// of TASK-0030's removed `(categoryId, sortOrder)`).
   @@id([variantId, seq])
 }
+
+/// What a search-index event asks the worker to do.
+///
+/// Two verbs, not five. "생성 · 수정 · 재고 변동 · 가격 변동" all end in the same
+/// place — the document is rebuilt from the row as it is *now* — so recording
+/// which of them happened would be recording something no consumer reads
+/// (TASK-0038 4장). `REMOVE` is separate because there is no row left to read.
+enum SearchOutboxKind {
+  UPSERT
+  REMOVE
+}
+
+/// A search-index change that has not been applied yet (TASK-0038 4장).
+///
+/// **Why an outbox and not a direct call.** Putting the index write inside the
+/// product transaction makes a search-engine outage stop product registration;
+/// putting it outside leaves a ghost document when the transaction rolls back.
+/// A row written *in* the transaction and applied *after* it avoids both: the
+/// event exists exactly when the product change does, and the engine is reached
+/// on somebody else's time.
+///
+/// **The table is a queue, so a processed row is deleted.** Keeping them would
+/// grow a table nobody reads to answer a question nobody asks — the ledger of
+/// what was indexed is the index itself. What is kept is a row that has *not*
+/// succeeded yet, which is also what "대기 건수" on `/health` counts.
+model SearchOutbox {
+  id BigInt @id @default(autoincrement())
+
+  /// The listing whose document is stale. Not a foreign key — see below.
+  productId String @db.Uuid
+
+  kind SearchOutboxKind
+
+  /// How many times the worker has tried and failed.
+  ///
+  /// Kept on the row rather than in the worker so that a restart does not reset
+  /// everybody's backoff to zero, which is how a failing event becomes a hot
+  /// loop against a search engine that is already struggling.
+  attempts Int @default(0)
+
+  /// When the worker may try again. Now, until a failure pushes it out.
+  nextAttemptAt DateTime @default(now())
+
+  /// The last failure, for somebody reading the queue at 3am.
+  lastError String?
+
+  createdAt DateTime @default(now())
+
+  /// The queue's read: `WHERE nextAttemptAt <= now() ORDER BY nextAttemptAt`.
+  ///
+  /// One index, on the column the worker filters *and* orders by. `productId`
+  /// gets none: the worker collapses duplicates in memory over a batch it has
+  /// already read, and a second index would make every product write pay for a
+  /// lookup that never happens.
+  @@index([nextAttemptAt])
+}

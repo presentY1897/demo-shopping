@@ -22,6 +22,7 @@ import type { RequestPrincipal } from '../auth/request-principal.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { SearchOutboxService } from '../search/search-outbox.service.js'
 import type { LedgerAudit, MovementDraft, MovementIssue } from './stock-ledger.js'
 import { movementIssues, nextBalance, reconciliationFaults } from './stock-ledger.js'
 
@@ -111,6 +112,7 @@ export class StockService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
+    private readonly outbox: SearchOutboxService,
   ) {}
 
   // ------------------------------------------------------------------ writes
@@ -150,7 +152,40 @@ export class StockService {
       })
     }
 
-    return this.record(tx, movement, draft, { seq: state.lastSeq + 1, balance })
+    const entry = await this.record(tx, movement, draft, { seq: state.lastSeq + 1, balance })
+
+    await this.publishStockCrossing(tx, movement.variantId, state.stock, balance)
+
+    return entry
+  }
+
+  /**
+   * Tells the search index only when the **answer** changed (TASK-0038 R3).
+   *
+   * The index carries `inStock`, a boolean, not the number — so a sale that
+   * leaves 41 of 42 changes nothing a searcher can see. Publishing on every
+   * movement would put one event per sale into the queue and rebuild the same
+   * document for the same bytes; publishing on the zero crossing puts one event
+   * where there is one change.
+   *
+   * The listing is reached from the variant rather than passed in because the
+   * caller of a movement is holding an order line or an adjustment, and neither
+   * of them knows or should know that a search index exists.
+   */
+  private async publishStockCrossing(
+    tx: Tx,
+    variantId: string,
+    before: number,
+    after: number,
+  ): Promise<void> {
+    if ((before === 0) === (after === 0)) return
+
+    const rows = await tx.$queryRaw<readonly { productId: string }[]>`
+      SELECT "productId" FROM "ProductVariant" WHERE "id" = ${variantId}::uuid
+    `
+    const productId = rows[0]?.productId
+
+    if (productId !== undefined) await this.outbox.publish(tx, productId, 'UPSERT')
   }
 
   /**

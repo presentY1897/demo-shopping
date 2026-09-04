@@ -107,6 +107,8 @@ export const untouchedTables: Readonly<Record<string, string>> = {
   Category: '공용이다. 데모 계정은 카테고리를 만들지 않는다',
   AttributeDefinition: '공용이다',
   AppMeta: '계정 소유가 아니다',
+  SearchOutbox:
+    '큐다. 정리는 여기에 REMOVE 를 **넣는다** — 지우면 자기가 방금 한 일을 되돌린다 (TASK-0038)',
 }
 
 /**

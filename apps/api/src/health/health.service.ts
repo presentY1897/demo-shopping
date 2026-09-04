@@ -4,6 +4,7 @@ import type { HealthDependencyKey, HealthResponse, HealthStatus } from '@shoppin
 import type { AppConfig } from '../config/app-config.js'
 import { APP_CONFIG } from '../config/app-config.js'
 import { DemoCleanupReporter } from './demo-cleanup.reporter.js'
+import { SearchIndexReporter } from './search-index.reporter.js'
 import type { HealthIndicator } from './health-indicator.js'
 import { HEALTH_INDICATORS } from './health-indicator.js'
 
@@ -20,6 +21,7 @@ export class HealthService {
     @Inject(HEALTH_INDICATORS) private readonly indicators: readonly HealthIndicator[],
     @Inject(APP_CONFIG) private readonly config: AppConfig,
     private readonly demoCleanup: DemoCleanupReporter,
+    private readonly searchIndex: SearchIndexReporter,
   ) {}
 
   /**
@@ -30,7 +32,7 @@ export class HealthService {
    * a dependency means registering one more indicator and reading it here.
    */
   async check(): Promise<HealthResponse> {
-    const [readings, lastRunAt] = await Promise.all([
+    const [readings, lastRunAt, searchIndex] = await Promise.all([
       Promise.all(
         this.indicators.map(async (indicator): Promise<Reading> => [
           indicator.key,
@@ -38,6 +40,7 @@ export class HealthService {
         ]),
       ),
       this.demoCleanup.lastRunAt(),
+      this.searchIndex.report(),
     ])
 
     return {
@@ -47,6 +50,7 @@ export class HealthService {
       uptime: Math.round(process.uptime()),
       version: this.config.version,
       demoCleanup: { lastRunAt },
+      searchIndex,
     }
   }
 }

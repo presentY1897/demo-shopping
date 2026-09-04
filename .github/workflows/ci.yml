@@ -85,6 +85,27 @@ jobs:
           --health-interval 2s
           --health-timeout 3s
           --health-retries 20
+      # TASK-0038. One spec wants a real search engine, and the questions it asks
+      # are the ones only an engine answers: does the settings body it accepted
+      # make `attr_material` filterable, does the synonym list find 니트 for
+      # 스웨터. A double would agree with itself and disagree with production —
+      # the same argument gate A6 makes for a real database.
+      #
+      # Every other spec is pointed at a closed port (`testAppConfig`), so this
+      # service is used by exactly one file.
+      meilisearch:
+        image: getmeili/meilisearch:v1.24
+        env:
+          MEILI_MASTER_KEY: ci-master-key
+          MEILI_NO_ANALYTICS: 'true'
+          MEILI_ENV: development
+        ports:
+          - '7700:7700'
+        options: >-
+          --health-cmd "curl -fsS http://localhost:7700/health || exit 1"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
@@ -106,3 +127,8 @@ jobs:
       # switching this line would have quietly stopped running the shop, seller
       # and api-mocks tests in CI, which is a worse failure than the one it fixes.
       - run: pnpm test:coverage
+        env:
+          # There is no `.env` in CI, so the search spec reads the key from here.
+          # The host it derives itself: `scripts/ports.mjs` with no `PORT_OFFSET`
+          # answers 7700, which is the port the service above publishes.
+          MEILI_MASTER_KEY: ci-master-key

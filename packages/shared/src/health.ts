@@ -51,6 +51,24 @@ export const healthResponseSchema = z.object({
    * it (요구사항 「스케줄러가 멈추면 헬스체크로 알 수 있다」).
    */
   demoCleanup: z.object({ lastRunAt: z.iso.datetime().nullable() }),
+  /**
+   * The search index queue (TASK-0038 F7).
+   *
+   * `pending` is how many product changes have not reached the index yet, and
+   * `lastRunAt` is when the worker last applied any. Together they are the
+   * answer to "검색이 왜 옛날 것을 보여주나": a pending count that is not falling
+   * is a stopped worker, and a falling one is a busy one.
+   *
+   * Not a `HealthDependencyKey` either — `search` already is one, and it reports
+   * the *engine*. This reports the pipeline that feeds it, which can be behind
+   * while the engine is perfectly healthy.
+   */
+  searchIndex: z.object({
+    pending: z.int().min(0),
+    lastRunAt: z.iso.datetime().nullable(),
+    /** When the oldest waiting change was queued. `null` when nothing waits. */
+    oldestPendingAt: z.iso.datetime().nullable(),
+  }),
 })
 
 export type HealthResponse = z.infer<typeof healthResponseSchema>
