@@ -36,6 +36,7 @@ import { CLOCK } from '../common/clock.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { StockService } from '../stock/stock.service.js'
 import { AttributeService } from './attribute.service.js'
+import { defaultSkuPrefix, generatedSku } from './product-sku.js'
 import type { AxisInput, PlanIssue, PlanIssueCode, VariantPlan } from './variant-rules.js'
 import { optionSignatureOf, planVariants, resolvePurchaseLimit } from './variant-rules.js'
 
@@ -567,7 +568,7 @@ export class ProductService {
       return {
         productId: input.productId,
         sellerId: input.sellerId,
-        sku: override?.sku ?? `${input.skuPrefix}-${String(input.skuFrom + index)}`,
+        sku: override?.sku ?? generatedSku(input.skuPrefix, input.skuFrom + index),
         price: override?.price ?? input.defaults.price,
         listPrice: override?.listPrice ?? input.defaults.listPrice ?? null,
         maxPurchaseQuantity:
@@ -1168,15 +1169,4 @@ function valueIdsOf(axes: readonly StoredAxis[], combination: readonly string[])
 /** Which axis a value belongs to. */
 function optionIdOf(axes: readonly StoredAxis[], optionValueId: string): string {
   return axes.find((axis) => axis.values.some((value) => value.id === optionValueId))?.id ?? ''
-}
-
-/**
- * The prefix generated SKUs carry when the caller names none.
- *
- * Derived from the product's own id rather than randomly, so the SKUs of one
- * product are reproducible from the row and a re-run of the same request cannot
- * produce a different set. Uppercase hex, which the SKU format check accepts.
- */
-function defaultSkuPrefix(productId: string): string {
-  return productId.replaceAll('-', '').slice(0, 8).toUpperCase()
 }
