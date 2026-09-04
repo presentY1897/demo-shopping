@@ -168,6 +168,79 @@ export const ko: Messages = {
       unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
     },
   },
+  layout: {
+    // 콘솔 이름. 사이드바 위와 모바일 시트 제목에 같은 문자열이 쓰인다.
+    brand: '관리자 콘솔',
+    shell: {
+      skipToContent: '본문 바로가기',
+      navLabel: '주요 메뉴',
+      openNav: '메뉴 열기',
+      collapseSidebar: '사이드바 접기',
+      expandSidebar: '사이드바 펼치기',
+      closeNav: '메뉴 닫기',
+      navSheetDescription: '콘솔의 모든 화면을 여기에서 엽니다.',
+    },
+    // 경로와 순서는 docs/design/pages.md 가 유일한 출처다. 절 제목만 이
+    // TASK 의 분류다(TASK-0019 4.9). M04 가 이 정의 앞에 권한 필터를 얹는다.
+    menu: [
+      { id: 'overview', items: [{ href: '/', label: '대시보드' }] },
+      {
+        id: 'operations',
+        label: '운영',
+        items: [
+          { href: '/users', label: '회원 관리' },
+          { href: '/sellers', label: '판매자 관리' },
+          { href: '/products', label: '상품 관리' },
+          { href: '/orders', label: '주문 관리' },
+          { href: '/claims', label: '클레임 관리' },
+          { href: '/reports', label: '신고 처리' },
+        ],
+      },
+      {
+        id: 'catalog',
+        label: '카탈로그',
+        items: [
+          { href: '/categories', label: '카테고리 관리' },
+          { href: '/attributes', label: '속성 관리' },
+        ],
+      },
+      {
+        id: 'settlement',
+        label: '정산·프로모션',
+        items: [
+          { href: '/commissions', label: '수수료 설정' },
+          { href: '/settlements', label: '정산 관리' },
+          { href: '/coupons', label: '플랫폼 쿠폰' },
+        ],
+      },
+      { id: 'system', label: '시스템', items: [{ href: '/demo', label: '데모 계정 관리' }] },
+    ],
+    notifications: {
+      label: '알림',
+      title: '알림',
+      body: '알림함은 M11 에서 이 자리에 들어옵니다.',
+      closeLabel: '닫기',
+    },
+    account: {
+      label: '내 계정',
+      title: '내 계정',
+      body: '로그인과 계정 메뉴는 M04 에서 이 자리에 들어옵니다.',
+      closeLabel: '닫기',
+    },
+  },
+  placeholder: {
+    comingSoon: '준비 중',
+    body: '이 화면은 해당 도메인 마일스톤에서 열립니다. 지금은 콘솔 레이아웃을 확인하는 자리입니다.',
+  },
+  routeStates: {
+    loadingLabel: '화면을 불러오는 중입니다',
+    notFoundTitle: '찾을 수 없는 화면입니다',
+    notFoundBody: '주소가 바뀌었거나 아직 만들어지지 않은 화면입니다.',
+    errorTitle: '화면을 표시하지 못했습니다',
+    errorBody: '잠시 후 다시 시도해주세요. 문제가 계속되면 새로고침해주세요.',
+    retryLabel: '다시 시도',
+    homeLabel: '대시보드로',
+  },
   components: {
     title: '기본 컴포넌트',
     description: 'packages/ui 의 기본 컴포넌트를 한 화면에서 확인하는 개발용 페이지입니다.',

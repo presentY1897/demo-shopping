@@ -61,6 +61,77 @@ export const ko: Messages = {
       recheckLabel: '다시 확인',
     },
   },
+  layout: {
+    // 콘솔 이름. 사이드바 위와 모바일 시트 제목에 같은 문자열이 쓰인다.
+    brand: '판매자 콘솔',
+    shell: {
+      skipToContent: '본문 바로가기',
+      navLabel: '주요 메뉴',
+      openNav: '메뉴 열기',
+      collapseSidebar: '사이드바 접기',
+      expandSidebar: '사이드바 펼치기',
+      closeNav: '메뉴 닫기',
+      navSheetDescription: '콘솔의 모든 화면을 여기에서 엽니다.',
+    },
+    // 경로와 순서는 docs/design/pages.md 가 유일한 출처다. 절 제목만 이
+    // TASK 의 분류다(TASK-0019 4.9). M04 가 이 정의 앞에 권한 필터를 얹는다.
+    menu: [
+      { id: 'overview', items: [{ href: '/', label: '대시보드' }] },
+      {
+        id: 'sales',
+        label: '판매',
+        items: [
+          { href: '/products', label: '상품 관리' },
+          { href: '/orders', label: '주문 관리' },
+          { href: '/claims', label: '취소·반품' },
+        ],
+      },
+      {
+        id: 'customers',
+        label: '고객',
+        items: [
+          { href: '/reviews', label: '리뷰 관리' },
+          { href: '/questions', label: '문의 관리' },
+        ],
+      },
+      {
+        id: 'settlement',
+        label: '정산·설정',
+        items: [
+          { href: '/coupons', label: '쿠폰' },
+          { href: '/settlements', label: '정산 내역' },
+          { href: '/settings', label: '스토어 설정' },
+        ],
+      },
+    ],
+    notifications: {
+      label: '알림',
+      title: '알림',
+      body: '알림함은 M11 에서 이 자리에 들어옵니다.',
+      closeLabel: '닫기',
+    },
+    account: {
+      label: '내 계정',
+      title: '내 계정',
+      body: '로그인과 계정 메뉴는 M04 에서 이 자리에 들어옵니다.',
+      closeLabel: '닫기',
+    },
+  },
+  placeholder: {
+    comingSoon: '준비 중',
+    body: '이 화면은 해당 도메인 마일스톤에서 열립니다. 지금은 콘솔 레이아웃을 확인하는 자리입니다.',
+    // 메뉴 항목이 아닌 하위 경로. 여기서만 제목이 필요하다.
+    productNew: '상품 등록',
+  },
+  routeStates: {
+    loadingLabel: '화면을 불러오는 중입니다',
+    notFoundTitle: '찾을 수 없는 화면입니다',
+    notFoundBody: '주소가 바뀌었거나 아직 만들어지지 않은 화면입니다.',
+    errorTitle: '화면을 표시하지 못했습니다',
+    errorBody: '잠시 후 다시 시도해주세요. 문제가 계속되면 새로고침해주세요.',
+    retryLabel: '다시 시도',
+    homeLabel: '대시보드로',
+  },
   components: {
     title: '기본 컴포넌트',
     description: 'packages/ui 의 기본 컴포넌트를 한 화면에서 확인하는 개발용 페이지입니다.',
