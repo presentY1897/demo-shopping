@@ -190,7 +190,8 @@ model Seller {
   /// `Restrict`, unlike the personal tables below: a store carries products,
   /// orders and settlements, so removing its owner must fail loudly rather than
   /// cascade through the catalogue.
-  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  products Product[]
 
   /// The operator queue: pending applications first.
   @@index([status])
@@ -405,6 +406,7 @@ model Category {
   children Category[] @relation("CategoryTree")
 
   attributes AttributeDefinition[]
+  products   Product[]
 
   /// Target of the composite parent edge above.
   @@unique([id, path])
@@ -527,4 +529,359 @@ model AttributeDefinition {
   /// application does in memory. Verified by the `EXPLAIN` in
   /// `test/api/attributes-performance.spec.ts` (gate S3).
   @@index([key])
+}
+
+// ---------------------------------------------------------------------------
+// Catalogue — products, options and variants (TASK-0032)
+//
+// Three tables carry the model: what is sold (`Product`), the axes a buyer
+// chooses along (`ProductOption` / `ProductOptionValue`) and the thing that has
+// a price and a stock level (`ProductVariant`). The unit of both is the variant
+// (D-024), never the product — which is why a product with no options still
+// gets one.
+//
+// The invariants of a combination cannot be held by an application on its own,
+// for the same reason a tree's cannot: two requests each read a consistent
+// product, each decide their change is legal, and both write. So the shape is
+// stated to the database, in the migration:
+//
+//   Product_id_sellerId_key            (id, sellerId) — target of the edge below
+//   ProductVariant_seller_sku_key      one live SKU per seller
+//   ProductVariant_product_signature_key  one live variant per combination
+//   VariantOptionValue_variantId_optionId_key  one value per option per variant
+//   VariantOptionValue_*_fkey          composite edges tying a mapping to one product
+//   *_check                            money, quantity and rating invariants
+//
+// Together the composite edges make a *cross-product* mapping unrepresentable:
+// a `VariantOptionValue` carries the product id, and both the variant it
+// belongs to and the option it names have to agree with it. The signature index
+// then makes a duplicate combination — and a second variant on an optionless
+// product — impossible rather than merely refused.
+//
+// What the database deliberately does **not** enforce is that
+// `ProductVariant.optionSignature` agrees with the mapping rows, and that
+// `Product.minPrice` equals the real minimum: both need an aggregate over other
+// rows, which a CHECK may not contain. They are held by `ProductService` inside
+// the transaction that writes them, under a row lock on the product
+// (TASK-0032 4.3, 4.6, 4.7) — which is why those two rules have a concurrency
+// spec and the ones above do not.
+// ---------------------------------------------------------------------------
+
+/// Where a listing is in its life (TASK-0032 4.9).
+///
+/// `SUSPENDED` is the site operator's forced hide and is the reason this is an
+/// enum rather than a boolean pair: a seller may move between the first three
+/// and may not touch the fourth, and a column that cannot express "hidden by
+/// somebody else" would make that rule unstateable.
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+/// One listing: a seller's product in one category.
+///
+/// Identifiers are UUIDv7, unlike `Category`'s short integers and for the
+/// opposite reason (`docs/design/erd.md` 2): a product id travels in a public
+/// URL, where a sequential number would publish how many products exist and how
+/// fast they arrive, and invite enumeration. v7 keeps the time prefix so inserts
+/// still land at the right edge of the B-tree.
+model Product {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  /// The store that sells it. `Restrict`, like `Seller`'s own edge to `User`:
+  /// a store carries orders and settlements, so removing it must fail loudly
+  /// rather than take the catalogue with it.
+  sellerId String @db.Uuid
+
+  /// Which category's attribute definitions apply (TASK-0030 4.3).
+  categoryId Int
+
+  name        String
+  description String?
+
+  /// Starts as `DRAFT`: `Product_active_price_check` requires a live price
+  /// before a listing may go on sale, and the price is not known until the
+  /// variants exist. `ProductService` sets the requested status in the same
+  /// statement that recomputes `minPrice`.
+  status ProductStatus @default(DRAFT)
+
+  /// Attribute **values**, keyed by `AttributeDefinition.key`.
+  ///
+  /// JSONB rather than rows so that listing twenty products costs no joins
+  /// (`docs/design/erd.md` 2). The price of that is stated in the same place:
+  /// the database cannot check a single value, and
+  /// `AttributeService.validateAttributes` is the only thing that can. What the
+  /// database *does* hold is that this is an object at all
+  /// (`Product_attributes_object_check`) — a JSONB column would otherwise
+  /// accept `[]` or `"소재"` and every reader would have to guard.
+  attributes Json @default("{}")
+
+  /// Default cap on one order's quantity; `null` is no cap (TASK-0032 4.1).
+  /// A variant may override it, and `resolvePurchaseLimit` is the single place
+  /// that decides which of the two wins.
+  maxPurchaseQuantity Int?
+
+  /// Lowest price among the variants a buyer can actually order.
+  ///
+  /// Derived, never accumulated: it is recomputed from the variants in one
+  /// statement on every write (TASK-0032 4.6). An incremental update is wrong
+  /// the moment a price goes **up** — the cheapest variant becoming dearer has
+  /// to raise this value, and a `min(old, new)` never does.
+  ///
+  /// `NULL` when nothing is sellable, and `Product_active_price_check` then
+  /// refuses `ACTIVE`.
+  minPrice Int?
+
+  /// Average review score **times 100** (0–500), so 4.35 stars is `435`.
+  ///
+  /// An integer because there is no floating point column anywhere in this
+  /// schema and this is not the place to introduce the first one: the guard in
+  /// `schema-guards.spec.ts` exists so that money can never quietly become a
+  /// `Float`, and an exception for a rating is how that guard stops meaning
+  /// anything. Filled by M13; `Product_rating_check` keeps it paired with the
+  /// count so that "no reviews" reads the same from either column.
+  ratingAvg   Int @default(0)
+  ratingCount Int @default(0)
+
+  /// Confirmed purchases, for "많이 팔린 순". Written by M09's confirmation step.
+  salesCount Int @default(0)
+
+  /// Optimistic lock (DECISIONS 4). Two people edit a listing — the seller
+  /// writes copy while an operator hides it — and last-write-wins would revert
+  /// one of them silently. `ProductService` takes a row lock **before** reading
+  /// this, so the version it compares is the committed one (TASK-0032 4.7).
+  version Int @default(0)
+
+  /// Soft delete. An order item points at a variant of this product forever, so
+  /// the row is never physically removed and the id is never reused.
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  seller   Seller   @relation(fields: [sellerId], references: [id], onDelete: Restrict)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  images   ProductImage[]
+  options  ProductOption[]
+  variants ProductVariant[]
+
+  /// Target of `ProductVariant`'s composite edge: it carries `sellerId` so that
+  /// "one live SKU per seller" can be an index, and this is what stops that
+  /// copy from ever disagreeing with the product it belongs to.
+  ///
+  /// The two read paths — the seller console's list and the category listing —
+  /// are served by **partial** indexes written by hand in the migration
+  /// (`WHERE "deletedAt" IS NULL`), which PSL cannot express. Declaring plain
+  /// ones here as well would put two indexes on the same leading column and
+  /// make every write pay for a read that never uses them (the lesson of
+  /// TASK-0030's removed `(categoryId, sortOrder)`).
+  @@unique([id, sellerId])
+}
+
+/// One picture of a product, in display order.
+///
+/// Hard deleted, unlike everything else here: nothing points at an image row —
+/// an order snapshot copies the URL as a string — and an editor that replaces
+/// the gallery should not leave a growing tail of retired rows behind.
+model ProductImage {
+  id        String @id @default(uuid(7)) @db.Uuid
+  productId String @db.Uuid
+
+  /// Public URL in the object store (TASK-0011). Not a key: the bucket layout
+  /// is the storage module's business, and an order snapshot needs something it
+  /// can render years later without asking anybody how to build a URL.
+  url String
+  /// Alternative text. Nullable because the seller may not have written one;
+  /// the storefront falls back to the product name rather than to an empty alt.
+  alt String?
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  /// The gallery, in order. No unique on `(productId, sortOrder)`: reordering
+  /// rewrites several rows in one statement and a non-deferrable unique index
+  /// is checked per row, so the intermediate state would be refused.
+  @@index([productId, sortOrder])
+}
+
+/// One axis a buyer chooses along — 색상, 사이즈.
+///
+/// Soft deleted like everything a variant's combination is built from: an order
+/// snapshot has to stay explainable, and "이 주문의 옵션이 무엇이었나" is a
+/// question about rows that may no longer be on sale.
+model ProductOption {
+  id        String @id @default(uuid(7)) @db.Uuid
+  productId String @db.Uuid
+
+  name      String
+  sortOrder Int    @default(0)
+
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  /// `Restrict`: a product with options is not hard deletable. Its removal is
+  /// `deletedAt`, so this edge exists to refuse the delete nobody wrote.
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  values   ProductOptionValue[]
+  variants VariantOptionValue[]
+
+  /// Target of `VariantOptionValue`'s composite edge — the half that keeps a
+  /// mapping inside one product.
+  ///
+  /// No `(productId, sortOrder)` index: the partial unique
+  /// `ProductOption_product_name_key` already leads with `productId` and
+  /// carries `deletedAt IS NULL` as its predicate, so it is the better match
+  /// for "this product's live options" — and ordering a handful of rows is done
+  /// in memory.
+  @@unique([id, productId])
+}
+
+/// One choice on an axis — 블랙, M.
+model ProductOptionValue {
+  id       String @id @default(uuid(7)) @db.Uuid
+  optionId String @db.Uuid
+
+  value String
+
+  /// Presentation extras the storefront reads — a colour chip's hex, a size
+  /// chart's measurements. JSONB and deliberately unmodelled: it is display
+  /// data, it differs per axis, and giving each kind a column would make adding
+  /// one a migration.
+  meta Json?
+
+  sortOrder Int @default(0)
+
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  option ProductOption @relation(fields: [optionId], references: [id], onDelete: Restrict)
+
+  variants VariantOptionValue[]
+
+  /// Target of `VariantOptionValue`'s composite edge: a mapping names both the
+  /// value and its option, and this is what stops the two from disagreeing.
+  /// `ProductOptionValue_option_value_key` covers the read, as on
+  /// {@link ProductOption}.
+  @@unique([id, optionId])
+}
+
+/// A sellable SKU: the unit of price and of stock (D-024).
+///
+/// Exists even when the product has no options — one variant with an empty
+/// combination — so that nothing downstream needs a branch for "a product you
+/// order directly" (DECISIONS 3).
+model ProductVariant {
+  id        String @id @default(uuid(7)) @db.Uuid
+  productId String @db.Uuid
+
+  /// Copied from the product so that "one live SKU per seller" can be a unique
+  /// index. It cannot drift: `(productId, sellerId)` is a **composite foreign
+  /// key** onto `Product (id, sellerId)`, exactly as `Category.parentPath` is
+  /// tied to its parent.
+  sellerId String @db.Uuid
+
+  /// The seller's own stock keeping unit. Unique per seller among live rows
+  /// (`ProductVariant_seller_sku_key`), not globally: two stores naming a
+  /// variant `TSHIRT-BLACK-M` is a coincidence, not a conflict.
+  sku String
+
+  /// Selling price in whole KRW. An **absolute** value, never "base + delta":
+  /// a discount applied to a delta has no unambiguous target, and an order
+  /// snapshot of an absolute price is one integer rather than a formula whose
+  /// inputs may since have changed (TASK-0032 4.4).
+  price Int
+
+  /// The struck-through price, when there is one. `NULL` means "no discount".
+  /// `ProductVariant_list_price_check` keeps it at or above `price`, because a
+  /// negative discount renders as a percentage with the sign lost.
+  listPrice Int?
+
+  /// On-hand quantity. The **current value**; the ledger that explains how it
+  /// got there is `StockLedger` (TASK-0036) and hangs off this row's id.
+  /// Available stock is this minus live reservations (`docs/design/erd.md` 3),
+  /// and the conditional update that guards it needs the `>= 0` check below.
+  stock Int @default(0)
+
+  /// Overrides the product's cap; `null` inherits it (TASK-0032 4.1).
+  maxPurchaseQuantity Int?
+
+  /// Whether this combination can be ordered. A product may sell 블랙/S and not
+  /// 블랙/XL; the combination still exists so that the option grid can grey the
+  /// second one out instead of pretending it was never offered.
+  isActive Boolean @default(true)
+
+  /// Canonical form of the combination: the option value ids, sorted, joined by
+  /// `/`. Empty for a product with no options.
+  ///
+  /// It exists so that "one live variant per combination" can be an index
+  /// (`ProductVariant_product_signature_key`). Without it, duplicate
+  /// combinations are only refusable by an application check that two
+  /// concurrent writers both pass — and the symptom is a storefront showing a
+  /// different price on every refresh, because two rows answer the same query.
+  ///
+  /// Its agreement with the `VariantOptionValue` rows is **not** something the
+  /// database can state: telling them apart needs an aggregate and a CHECK may
+  /// not contain one. `ProductService` writes both in one transaction.
+  optionSignature String @default("")
+
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  /// Composite: the variant's product **and** the seller copy above.
+  product Product @relation(fields: [productId, sellerId], references: [id, sellerId], onDelete: Restrict)
+
+  optionValues VariantOptionValue[]
+
+  /// Target of `VariantOptionValue`'s composite edge. Reading a product's live
+  /// variants is served by `ProductVariant_product_signature_key`, which leads
+  /// with `productId` and is already restricted to live rows.
+  @@unique([id, productId])
+}
+
+/// Which option value a variant carries on one axis.
+///
+/// The join table of the combination, and the place three composite foreign
+/// keys meet (TASK-0032 4.3). `optionId` and `productId` are copies — of the
+/// value's own option and of the variant's own product — and each is tied back
+/// to its source by an edge, so a mapping that names another product's option,
+/// or an option the value does not belong to, cannot be written at all.
+model VariantOptionValue {
+  variantId     String @db.Uuid
+  optionValueId String @db.Uuid
+  optionId      String @db.Uuid
+  productId     String @db.Uuid
+
+  /// `NoAction` on every edge, which is what this table wants anyway.
+  ///
+  /// `NO ACTION` refuses a delete that would orphan a mapping, exactly as
+  /// `RESTRICT` does — a variant, an option and an option value are all removed
+  /// with `deletedAt`, so an edge that let one of them vanish underneath a
+  /// mapping would be a path nobody wrote. The difference is *when* the check
+  /// runs: `NO ACTION` is verified at the end of the statement, so a rewrite
+  /// that removes a mapping and its value together is legal while `RESTRICT`
+  /// would refuse it halfway — the same reason `Category`'s parent edge is
+  /// `NO ACTION` on update.
+  ///
+  /// It is also the only thing Prisma will emit here: `productId` takes part in
+  /// two of these relations and `optionId` in two, and a scalar shared by two
+  /// relations may not carry a referential action.
+  variant     ProductVariant     @relation(fields: [variantId, productId], references: [id, productId], onDelete: NoAction, onUpdate: NoAction)
+  option      ProductOption      @relation(fields: [optionId, productId], references: [id, productId], onDelete: NoAction, onUpdate: NoAction)
+  optionValue ProductOptionValue @relation(fields: [optionValueId, optionId], references: [id, optionId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([variantId, optionValueId])
+  /// One value per axis per variant. A variant that was 블랙 *and* 화이트 would
+  /// make "which colour did I order" unanswerable.
+  @@unique([variantId, optionId])
+  /// The reverse read: which variants carry 블랙 — the option grid's query.
+  @@index([optionValueId])
 }
