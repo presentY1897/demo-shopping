@@ -24,18 +24,24 @@ afterEach(() => {
 /**
  * How long a `findBy*` or `waitFor` keeps asking before it gives up.
  *
- * Testing Library's default is **one second**, and it is not vitest's
- * `testTimeout` — raising that changes nothing here. One second is a fair
- * budget for a component that renders from props; it is not one for a console
- * that mounts, boots a session, fetches through msw and paints a table, with
- * five other workspaces competing for the machine because `pnpm -r` runs them
- * in parallel.
+ * Testing Library's default is **one second**, and it is **not** vitest's
+ * `testTimeout` — raising that changes nothing here, which is how this was
+ * found.
+ *
+ * One second is a budget rather than a measurement. Nothing on these screens is
+ * *supposed* to take a second, and a spec that waits five still finishes in
+ * twenty milliseconds when the render lands. What the default actually bounds
+ * is how much CPU the process can be starved of while it waits — and
+ * `pnpm -r test:coverage` starts a vitest instance per workspace, each with a
+ * worker per core.
  *
  * The symptom was a query failing with "Unable to find role=table", which reads
- * as a rendering bug and is not one — the table arrives, later than a second.
- * It moved between files (`attributes-page` → `attributes-a11y` →
- * `attributes-error-contract` → `sellers-page`) as suites grew, which is what
- * a budget problem looks like from the outside.
+ * as a rendering bug and is not one: the table arrives, later than a second. It
+ * moved between files as the suites grew — `attributes-page` →
+ * `attributes-a11y` → `attributes-error-contract` → `sellers-page` — which is
+ * what a budget problem looks like from the outside.
+ *
+ * **A screen that never renders still fails**, five seconds later.
  */
 configure({ asyncUtilTimeout: 5_000 })
 
