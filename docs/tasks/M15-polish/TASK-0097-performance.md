@@ -12,6 +12,31 @@
 
 전 화면·API 의 성능을 측정하고 기준 미달 지점을 개선한다. 각 TASK 에서 개별 확인했지만 **전체를 한 번에 재점검**한다.
 
+### 앱 셸 LCP 기준선 — 화면 TASK 의 P1 증분이 여기서 출발한다
+
+**이 표가 단일 출처다.** [QUALITY-GATES P1](../QUALITY-GATES.md#2-화면-게이트-사용자-대상-화면이-있는-task) 은
+화면 TASK 에게 "이 값 대비 +500ms 이내" 를 요구한다. 대조군을 매번 새로 만들지 말고 여기를 읽는다.
+
+| 앱 | 셸 LCP 기준선 | 잰 방법 | 출처 |
+| --- | --- | --- | --- |
+| `apps/shop` | **2,036ms** | Lighthouse 12 모바일 프리셋, 셸만 있는 `/cart` 5회 중앙값 | TASK-0018 6장 |
+| `apps/admin` | **2,557ms** | 같은 조건, 홈 `/` 3회 중앙값 | TASK-0029 6.4 |
+| `apps/seller` | 미측정 | — | 첫 화면 TASK 가 등록한다 |
+
+측정 명령:
+
+```bash
+CHROME_PATH=~/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome \
+  npx --yes lighthouse@12 <url> --only-categories=performance \
+  --chrome-flags="--headless=new --no-sandbox --disable-dev-shm-usage --user-data-dir=<임시경로>"
+```
+
+> `--user-data-dir` 을 주지 않으면 **실행 디렉터리에 `C:\Users\...` 형태의 프로필 디렉터리**가 생긴다.
+> 이 저장소에서 실수로 커밋해 1,264개 파일이 들어간 적이 있다.
+
+**세 앱 모두 절대값 2.5s 를 놓고 보면 여유가 거의 없거나 마이너스다.** 그것을 줄이는 것이
+이 TASK 의 일이고, 그때까지 화면 TASK 들은 자기가 더한 증분만 책임진다.
+
 ### 이미 확인된 미달 지점 — admin 셸 번들
 
 [TASK-0029](../M05-catalog/TASK-0029-category-admin.md) 6.4 가 Lighthouse 12 로 실측하면서 발견했다.
