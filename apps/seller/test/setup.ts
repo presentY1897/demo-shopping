@@ -52,6 +52,18 @@ function polyfill(target: object, name: string, value: unknown): void {
   Object.defineProperty(target, name, { configurable: true, value, writable: true })
 }
 
+/**
+ * Radix's `Select` scrolls the highlighted option into view and asks about
+ * pointer capture before treating a drag as one. jsdom implements neither, and
+ * without them the product editor's category picker throws on open rather than
+ * failing an assertion (`apps/admin/test/setup.ts` and
+ * `packages/ui/test/setup.ts` carry the same four, for the same control).
+ */
+polyfill(Element.prototype, 'scrollIntoView', (): void => undefined)
+polyfill(Element.prototype, 'hasPointerCapture', (): boolean => false)
+polyfill(Element.prototype, 'setPointerCapture', (): void => undefined)
+polyfill(Element.prototype, 'releasePointerCapture', (): void => undefined)
+
 class ResizeObserverStub {
   readonly observe = (): void => undefined
   readonly unobserve = (): void => undefined
