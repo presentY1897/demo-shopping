@@ -17,7 +17,7 @@
 | [TASK-0033](./TASK-0033-image-upload.md) | 이미지 업로드 위젯 | 완료 | 0032 |
 | ~~[TASK-0034](./TASK-0034-product-editor.md)~~ | ~~판매자 상품 등록 · 수정~~ | **폐기** → 0113 · 0114 | – |
 | ~~[TASK-0035](./TASK-0035-product-list-seller.md)~~ | ~~판매자 상품 목록 · 재고 관리~~ | **폐기** → 0115 · 0116 | – |
-| [TASK-0113](./TASK-0113-product-write-api.md) | 상품 등록 · 수정 API | 승인됨 | 0032, 0030, 0108, 0106 |
+| [TASK-0113](./TASK-0113-product-write-api.md) | 상품 등록 · 수정 API | 완료 | 0032, 0030, 0108, 0106 |
 | [TASK-0114](./TASK-0114-product-editor-page.md) | 판매자 상품 편집기 화면 | 승인됨 | 0113, 0033, 0017, 0019, 0023, 0107 |
 | [TASK-0115](./TASK-0115-product-list-stock-api.md) | 판매자 상품 목록 · 재고 조정 API | 승인됨 | 0113, 0036, 0106 |
 | [TASK-0116](./TASK-0116-product-list-stock-page.md) | 판매자 상품 목록 · 재고 관리 화면 | 승인됨 | 0115, 0016, 0019, 0023, 0107 |
