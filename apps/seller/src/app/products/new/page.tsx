@@ -1,19 +1,26 @@
 import type { Metadata } from 'next'
 
-import { PlaceholderScreen } from '@/components/placeholder-screen'
+import { ProductEditor } from '@/components/products/product-editor'
 import { messagesFor } from '@/messages'
 
-const { productNew } = messagesFor().placeholder
+const title = messagesFor().products.newTitle
 
-export const metadata: Metadata = { title: productNew }
+export const metadata: Metadata = {
+  title,
+  description: messagesFor().products.newDescription,
+}
 
 /**
- * `/products/new` — the one route below a menu entry.
+ * `/products/new` — 상품 등록 (TASK-0114).
  *
- * It exists so that "a screen with no entry of its own still marks the section
- * it belongs to" (F2) is something a browser can be pointed at, rather than a
- * rule only a unit test has seen. TASK-0114 replaces this file.
+ * Nothing is awaited here, so the heading is prerendered and every read the
+ * editor needs — the category tree, the chosen category's definitions — happens
+ * in the browser (TASK-0101 4.3). That is also what gives the screen its
+ * loading state rather than a blank first paint.
+ *
+ * `productId` is `null` rather than absent, so the editor's two entrances are
+ * one prop apart and neither can drift into a second implementation.
  */
 export default function Page() {
-  return <PlaceholderScreen title={productNew} />
+  return <ProductEditor productId={null} title={title} />
 }
