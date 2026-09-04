@@ -1,6 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
-import { APP_ID_HEADER, DEMO_ISSUE_LIMIT } from '@shopping/shared'
+import { APP_ID_HEADER } from '@shopping/shared'
 import { afterAll, describe, expect, it } from 'vitest'
 
 import { DEMO_PRODUCT_COUNT } from '../../src/demo/demo-catalog-clone.js'
@@ -56,10 +56,30 @@ function issue(role: string, app: string, ip: string): Promise<Response> {
   })
 }
 
+/**
+ * Fifty, like every other performance spec here.
+ *
+ * The number is not decoration: `p95Of` reads `sorted[floor(n * 0.95)]`, so with
+ * twenty samples "p95" is the **maximum** and a single scheduling hiccup decides
+ * the gate. Fifty puts three samples above the index and makes the number the
+ * shape of the distribution rather than its worst moment.
+ */
+const SAMPLES = 50
+
 function p95Of(durations: readonly number[]): number {
   const sorted = [...durations].sort((left, right) => left - right)
 
   return sorted[Math.floor(sorted.length * 0.95)] ?? Number.POSITIVE_INFINITY
+}
+
+/**
+ * A fresh address per sample.
+ *
+ * The issue limit is per address (`demo-rate-limit.ts`), so measuring fifty
+ * issues from one would measure the refusal instead of the work.
+ */
+function addressFor(prefix: string, sample: number): string {
+  return `${prefix}.${String(Math.floor(sample / 250))}.${String((sample % 250) + 1)}`
 }
 
 /**
@@ -133,10 +153,9 @@ describe('발급의 응답 시간', () => {
   it('구매자 발급이 300ms 안에 끝난다 (A1)', async () => {
     const durations: number[] = []
 
-    // Fresh addresses, so the rate limit never becomes the thing being measured.
-    for (let sample = 0; sample < 20; sample += 1) {
+    for (let sample = 0; sample < SAMPLES; sample += 1) {
       const started = performance.now()
-      const response = await issue('BUYER', 'shop', `192.0.2.${String(sample + 1)}`)
+      const response = await issue('BUYER', 'shop', addressFor('192.0', sample))
 
       durations.push(performance.now() - started)
       expect(response.status).toBe(200)
@@ -151,9 +170,9 @@ describe('발급의 응답 시간', () => {
 
     const durations: number[] = []
 
-    for (let sample = 0; sample < DEMO_ISSUE_LIMIT; sample += 1) {
+    for (let sample = 0; sample < SAMPLES; sample += 1) {
       const started = performance.now()
-      const response = await issue('SELLER', 'seller', `198.18.0.${String(sample + 1)}`)
+      const response = await issue('SELLER', 'seller', addressFor('198.18', sample))
 
       durations.push(performance.now() - started)
       expect(response.status).toBe(200)
