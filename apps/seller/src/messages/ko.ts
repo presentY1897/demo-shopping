@@ -123,6 +123,112 @@ export const ko: Messages = {
     // 메뉴 항목이 아닌 하위 경로. 여기서만 제목이 필요하다.
     productNew: '상품 등록',
   },
+  // API 가 코드로 말하는 실패의 문장 (TASK-0117). 서버도 문장을 보내지만 그것은
+  // 이 카탈로그에 없는 코드를 위한 대비책이다. 사용자가 한 행동의 언어로 쓰고,
+  // 다음에 무엇을 할지 말하고, 내부 식별자를 쓰지 않는다.
+  errors: {
+    BAD_REQUEST: '입력하신 값을 다시 확인해 주세요.',
+    VALIDATION_FAILED: '입력하신 값을 다시 확인해 주세요.',
+    UNAUTHORIZED: '로그인이 필요해요.',
+    FORBIDDEN: '이 작업을 할 수 있는 권한이 없어요. 내 스토어가 맞는지 확인해 주세요.',
+    NOT_FOUND: '찾으시는 것이 없어요. 목록을 새로고침해 주세요.',
+    METHOD_NOT_ALLOWED: '지금은 처리할 수 없는 요청이에요. 새로고침한 뒤 다시 시도해 주세요.',
+    CONFLICT: '다른 곳에서 먼저 바뀌었어요. 최신 내용을 불러온 뒤 다시 시도해 주세요.',
+    PAYLOAD_TOO_LARGE: '파일이 너무 커요. 더 작은 파일을 선택해 주세요.',
+    UNSUPPORTED_MEDIA_TYPE: '지원하지 않는 형식이에요. JPG · PNG · WebP 만 올릴 수 있어요.',
+    TOO_MANY_REQUESTS: '요청이 너무 잦아요. 잠시 후 다시 시도해 주세요.',
+    INTERNAL_ERROR: '잠시 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+    SERVICE_UNAVAILABLE: '이미지 저장소가 아직 준비되지 않았어요. 잠시 후 다시 시도해 주세요.',
+    AUTH_REQUIRED: '로그인이 필요해요.',
+    INVALID: '입력하신 값을 다시 확인해 주세요.',
+    // 아래 카탈로그 코드는 판매자 화면에서 나오지 않지만, 코드 목록이 늘어나면
+    // 문장도 함께 늘어야 한다는 것을 타입이 강제한다 (TASK-0117 4.7 J2).
+    CATEGORY_SLUG_TAKEN: '이미 쓰고 있는 주소예요. 다른 주소를 입력해 주세요.',
+    CATEGORY_VERSION_CONFLICT: '다른 곳에서 먼저 저장했어요. 최신 내용을 불러올까요?',
+    CATEGORY_HAS_CHILDREN: '하위 분류를 먼저 옮기거나 삭제해 주세요.',
+    CATEGORY_MAX_DEPTH: '분류를 더 깊게 만들 수 없어요.',
+    CATEGORY_MOVE_INTO_SELF: '분류를 자기 자신이나 그 아래로 옮길 수 없어요.',
+    CATEGORY_REORDER_MISMATCH: '순서가 화면과 어긋났어요. 새로고침한 뒤 다시 시도해 주세요.',
+    CATEGORY_PARENT_MISSING: '선택한 상위 분류가 없어졌어요. 목록을 새로고침해 주세요.',
+    ATTRIBUTE_KEY_TAKEN: '같은 이름의 속성이 이미 있어요.',
+    ATTRIBUTE_VERSION_CONFLICT: '다른 곳에서 먼저 저장했어요. 최신 내용을 불러올까요?',
+  },
+  // 응답이 아예 오지 않은 실패. 읽을 코드가 없으므로 번호도 보여 주지 않는다.
+  apiFailures: {
+    network: '서버에 연결하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.',
+    timeout: '응답이 너무 늦어 요청을 멈췄어요. 잠시 후 다시 시도해 주세요.',
+    aborted: '요청을 취소했어요.',
+    malformed_response: '서버가 보낸 응답을 읽지 못했어요. 잠시 후 다시 시도해 주세요.',
+    configuration: '서버 주소 설정이 없어요. 개발 서버를 다시 실행해 주세요.',
+    unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+  },
+  // 이미지 업로드 위젯 (TASK-0033). packages/ui 는 문구를 갖지 않으므로 행
+  // 버튼의 이름까지 전부 여기서 나간다.
+  imageUpload: {
+    title: '상품 이미지',
+    description:
+      '첫 번째 이미지가 목록과 상세의 대표 이미지가 됩니다. 순서를 바꾸면 구매자에게 보이는 순서도 바뀝니다.',
+    hint: 'JPG · PNG · WebP · 한 장당 5MB 까지 · 최대 10장. 긴 변이 2,000픽셀을 넘으면 올리기 전에 줄입니다.',
+    pickLabel: '이미지를 끌어다 놓거나 파일을 선택하세요',
+    dropLabel: '여기에 놓으세요',
+    fullNotice: '이미지를 10장까지 등록했습니다. 더 올리려면 먼저 하나를 빼주세요.',
+    emptyDescription: '아직 등록한 이미지가 없습니다.',
+    retryAllLabel: '실패한 것만 다시 시도',
+    rejectedTitle: '올리지 않은 파일이 있습니다',
+    rejections: {
+      unsupportedType: 'JPG · PNG · WebP 만 올릴 수 있어요.',
+      tooManyImages: '이미지는 10장까지 등록할 수 있어요.',
+    },
+    noticeTitle: '이미지를 올리지 못했습니다',
+    requestIdLabel: '문의 번호',
+    requestIdHint: '문의하실 때 이 번호를 알려주시면 훨씬 빨리 찾을 수 있습니다.',
+    copyLabel: '복사',
+    copiedLabel: '복사했습니다',
+    list: {
+      listLabel: '등록한 이미지',
+      primaryBadge: '대표',
+      progressLabel: '업로드 진행률',
+      statusLabels: {
+        queued: '대기 중',
+        preparing: '이미지를 줄이는 중',
+        requesting: '업로드 준비 중',
+        uploading: '올리는 중',
+        uploaded: '완료',
+        failed: '실패',
+      },
+      moveUp: '앞으로',
+      moveDown: '뒤로',
+      makePrimary: '대표로',
+      retry: '다시 시도',
+      cancel: '취소',
+      remove: '빼기',
+    },
+    failures: {
+      unsupportedType: 'JPG · PNG · WebP 만 올릴 수 있어요.',
+      tooManyImages: '이미지는 10장까지 등록할 수 있어요.',
+      tooLarge: '줄인 뒤에도 5MB 를 넘어요. 다른 사진을 선택해 주세요.',
+      decodeFailed: '이미지를 읽지 못했어요. 파일이 손상되지 않았는지 확인해 주세요.',
+      // 브라우저는 이 둘을 구분해 주지 않는다. R2 의 403 응답에는 CORS 헤더가
+      // 없어서 만료된 주소도, 프리플라이트 거부도, 끊긴 네트워크도 전부
+      // "응답 없음"으로 도착한다(TASK-0033 4.9 실측). 그래서 blocked 의 문장이
+      // 가장 흔한 원인인 만료를 먼저 말하고, 다시 시도가 실제 해결책이다 —
+      // 재시도는 presign 부터 다시 하므로 주소를 새로 받는다.
+      blocked:
+        '이미지를 올리지 못했어요. 업로드 주소가 만료됐거나 네트워크가 끊겼을 수 있어요. 다시 시도하면 새 주소를 받습니다.',
+      rejected: '업로드 주소가 만료됐어요. 다시 시도해 주세요.',
+      timeout: '업로드가 제한 시간을 넘겼어요. 다시 시도해 주세요.',
+      aborted: '업로드를 취소했어요.',
+      http: '저장소가 업로드를 받지 못했어요. 잠시 후 다시 시도해 주세요.',
+    },
+    preview: {
+      title: '이미지 업로드 위젯',
+      devOnlyNotice:
+        '개발 환경에서만 열립니다. 프로덕션 빌드에서는 404 를 응답합니다. 상품 등록 화면(TASK-0114)이 이 위젯을 폼에 붙이면 이 페이지는 사라집니다.',
+      storeLabel: '스토어 ID',
+      outputTitle: '상품 저장 요청에 실릴 값',
+      outputEmpty: '아직 올린 이미지가 없습니다.',
+    },
+  },
   routeStates: {
     loadingLabel: '화면을 불러오는 중입니다',
     notFoundTitle: '찾을 수 없는 화면입니다',

@@ -3,6 +3,8 @@ import { consoleMenuItemAt } from '@shopping/ui/console'
 import { ko } from './ko'
 import type {
   ConsoleLayoutMessages,
+  ImageUploadMessages,
+  ImageUploadPreviewMessages,
   ConsolePlaceholderMessages,
   ConsoleSlotMessages,
   HealthMessages,
@@ -40,6 +42,8 @@ export function screenTitle(href: string, locale: Locale = DEFAULT_LOCALE): stri
 
 export type {
   ConsoleLayoutMessages,
+  ImageUploadMessages,
+  ImageUploadPreviewMessages,
   ConsolePlaceholderMessages,
   ConsoleSlotMessages,
   HealthMessages,
