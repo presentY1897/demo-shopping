@@ -32,9 +32,13 @@ export default defineConfig({
        * the only client-side statement of rules that `apps/api` enforces on the
        * other side. A branch nothing reaches in them is a rule nothing checks.
        * `apps/api/vitest.config.mjs` names its pure modules the same way and for
-       * the same reason.
+       * the same reason. `src/console/menu.ts` joins them in TASK-0019: which
+       * sidebar entry a path belongs to is input-to-output, and the branch that
+       * is easy to lose — the root matching everything — is the one that makes
+       * every console screen look like the dashboard.
        */
       thresholds: {
+        'src/console/menu.ts': complete,
         'src/form/field-def.ts': complete,
         'src/form/field-errors.ts': complete,
         'src/form/field-ids.ts': complete,
