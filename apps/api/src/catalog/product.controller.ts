@@ -1,9 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common'
 import type { ProductListResponse, ProductResponse } from '@shopping/shared'
 import {
   createProductRequestSchema,
   productIdSchema,
   productListQueryParamsSchema,
+  productPublishRequestSchema,
   updateProductRequestSchema,
 } from '@shopping/shared'
 
@@ -73,6 +85,49 @@ export class ProductController {
       principal,
       parseInput(productIdSchema, id, 'id'),
       parseInput(updateProductRequestSchema, body),
+    )
+  }
+
+  /**
+   * Puts a listing on sale, and takes it off again (TASK-0113).
+   *
+   * 200 rather than 201: nothing is created, an existing listing changes state.
+   *
+   * Two endpoints instead of `PATCH { status }`, which would do the same thing.
+   * The reason is not the transition but what rides on it — 판매 시작 is the
+   * moment the category's required attributes stop being optional, so 저장 and
+   * 판매 시작 fail for different reasons and a screen has to be able to say
+   * which one it asked for. The service routes both back through `update`, so
+   * the row lock, the version check and the price derivation happen once and in
+   * one place.
+   */
+  @Post(':id/publish')
+  @HttpCode(HttpStatus.OK)
+  @RequirePermission('product.write')
+  publish(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ): Promise<ProductResponse> {
+    return this.products.publish(
+      principal,
+      parseInput(productIdSchema, id, 'id'),
+      parseInput(productPublishRequestSchema, body).version,
+    )
+  }
+
+  @Post(':id/unpublish')
+  @HttpCode(HttpStatus.OK)
+  @RequirePermission('product.write')
+  unpublish(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ): Promise<ProductResponse> {
+    return this.products.unpublish(
+      principal,
+      parseInput(productIdSchema, id, 'id'),
+      parseInput(productPublishRequestSchema, body).version,
     )
   }
 
