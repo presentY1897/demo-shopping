@@ -262,38 +262,57 @@ describe('the settings a type asks for (F2)', () => {
 })
 
 describe('editing the choices of a SELECT (F3)', () => {
-  it('saves the choices that were typed and offers them in the preview', async () => {
-    const user = userEvent.setup()
-    await openConsole()
-    await selectCategory(user, PATHS.coat)
-    await screen.findByText('여성 에서 물려받음')
+  /**
+   * The heaviest interaction in this suite, and the only one near the limit.
+   *
+   * It drives roughly forty user events through React — a category select, a
+   * full new-attribute form, then three add-choice clicks each followed by
+   * typing a Korean word. Measured at **902ms locally** while the next slowest
+   * test in the file is 440ms.
+   *
+   * CI runs this suite about 5.6x slower than a warm local machine, which puts
+   * this one test at ~5.1s against vitest's 5s default — it timed out there
+   * while passing locally and in the previous run. The budget is raised rather
+   * than the test trimmed: what makes it slow is the thing it exists to check,
+   * which is that choices typed into the editor survive a save and reach the
+   * generated form.
+   */
+  it(
+    'saves the choices that were typed and offers them in the preview',
+    { timeout: 20_000 },
+    async () => {
+      const user = userEvent.setup()
+      await openConsole()
+      await selectCategory(user, PATHS.coat)
+      await screen.findByText('여성 에서 물려받음')
 
-    await fillNewAttribute(user, { key: 'color', label: '색상', type: copy.typeLabels.SELECT })
+      await fillNewAttribute(user, { key: 'color', label: '색상', type: copy.typeLabels.SELECT })
 
-    for (const choice of ['블랙', '아이보리', '카멜']) {
-      await user.click(screen.getByRole('button', { name: copy.form.optionAddLabel }))
-      const boxes = within(
-        screen.getByRole('group', { name: copy.form.optionsLabel }),
-      ).getAllByRole('textbox')
-      await user.type(boxes[boxes.length - 1]!, choice)
-    }
+      for (const choice of ['블랙', '아이보리', '카멜']) {
+        await user.click(screen.getByRole('button', { name: copy.form.optionAddLabel }))
+        const boxes = within(
+          screen.getByRole('group', { name: copy.form.optionsLabel }),
+        ).getAllByRole('textbox')
+        await user.type(boxes[boxes.length - 1]!, choice)
+      }
 
-    await user.click(screen.getByRole('button', { name: copy.form.save }))
+      await user.click(screen.getByRole('button', { name: copy.form.save }))
 
-    await waitFor(() => {
-      expect(shownLabels()).toContain('색상')
-    })
+      await waitFor(() => {
+        expect(shownLabels()).toContain('색상')
+      })
 
-    const { attributes } = await otherAdmin.getAttributes({ categoryId: COAT })
-    expect(attributes.find((row) => row.key === 'color')?.options).toEqual([
-      '블랙',
-      '아이보리',
-      '카멜',
-    ])
+      const { attributes } = await otherAdmin.getAttributes({ categoryId: COAT })
+      expect(attributes.find((row) => row.key === 'color')?.options).toEqual([
+        '블랙',
+        '아이보리',
+        '카멜',
+      ])
 
-    // And the generated form now asks for it.
-    expect(within(preview()).getByRole('combobox', { name: /색상/ })).toBeVisible()
-  })
+      // And the generated form now asks for it.
+      expect(within(preview()).getByRole('combobox', { name: /색상/ })).toBeVisible()
+    },
+  )
 
   it('refuses a SELECT with no choices, under the choice list (U2)', async () => {
     const user = userEvent.setup()
