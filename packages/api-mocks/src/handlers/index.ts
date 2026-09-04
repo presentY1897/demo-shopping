@@ -1,5 +1,6 @@
 import type { RequestHandler } from 'msw'
 
+import { adminSellerHandlers } from './admin-sellers'
 import { attributeHandlers } from './attributes'
 import { categoryHandlers } from './categories'
 import { healthHandlers } from './health'
@@ -23,9 +24,11 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...categoryHandlers,
   ...attributeHandlers,
   ...sellerHandlers,
+  ...adminSellerHandlers,
   ...uploadHandlers,
 ]
 
+export { adminSellerHandlers, resetAdminSellerStore } from './admin-sellers'
 export { attributeHandlers, resetAttributeStore } from './attributes'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
 export { resetSellerStore, sellerHandlers, sellerRequests, sellerRowSnapshot } from './sellers'
