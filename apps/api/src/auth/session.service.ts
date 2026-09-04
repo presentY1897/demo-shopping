@@ -3,6 +3,7 @@ import { createHash, randomBytes } from 'node:crypto'
 import { Inject, Injectable } from '@nestjs/common'
 import type { AppId } from '@shopping/shared'
 import { isAppId, isRole } from '@shopping/shared'
+import type { Prisma } from '@prisma/client'
 import { ClientApp, Role } from '@prisma/client'
 
 import type { Clock } from '../common/clock.js'
@@ -107,9 +108,23 @@ export class SessionService {
     return { secure: this.config.isProduction }
   }
 
-  /** Starts a session. Called by the OAuth callback (TASK-0021 ⑤). */
-  issue(owner: SessionOwner, app: AppId, meta: SessionRequestMeta = {}): Promise<IssuedSession> {
-    return this.mint(owner, app, meta)
+  /**
+   * Starts a session. Called by the OAuth callback (TASK-0021 ⑤).
+   *
+   * `client` lets a caller mint the token **inside its own transaction**. Demo
+   * issuing (TASK-0024 4.3) needs it for two reasons: an account committed
+   * without a session is a demo nobody can use and nothing repairs, and the
+   * issue rate limit counts this very row — so a token written after the
+   * account's own commit would be invisible to a request racing it. Omitting
+   * the argument is exactly the behaviour every existing caller already had.
+   */
+  issue(
+    owner: SessionOwner,
+    app: AppId,
+    meta: SessionRequestMeta = {},
+    client?: Prisma.TransactionClient,
+  ): Promise<IssuedSession> {
+    return this.mint(owner, app, meta, client)
   }
 
   /**
@@ -249,13 +264,14 @@ export class SessionService {
     owner: SessionOwner,
     app: AppId,
     meta: SessionRequestMeta,
+    client: Prisma.TransactionClient = this.prisma,
   ): Promise<IssuedSession> {
     const now = this.clock.now()
     const issuedAt = Math.floor(now.getTime() / 1000)
     const accessExpiresAt = new Date((issuedAt + this.config.auth.accessTokenTtlSeconds) * 1000)
     const refreshToken = randomBytes(REFRESH_TOKEN_BYTES).toString('base64url')
 
-    await this.prisma.refreshToken.create({
+    await client.refreshToken.create({
       data: {
         userId: owner.userId,
         app: CLIENT_APP[app],

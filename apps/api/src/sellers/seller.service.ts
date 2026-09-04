@@ -348,34 +348,47 @@ export class SellerService {
    * `SELLER_OWNER` go in together, so the demo path cannot produce a store
    * shape the reviewed path never produces.
    */
-  async openDemoStore(input: DemoStoreInput): Promise<Seller> {
-    const now = this.clock.now()
-
+  async openDemoStore(input: DemoStoreInput, client?: Tx): Promise<Seller> {
     const created = await this.duplicateAware(() =>
-      this.prisma.$transaction(async (tx) => {
-        const seller = await tx.seller.create({
-          data: {
-            userId: input.userId,
-            brandName: input.brandName,
-            slug: input.slug,
-            introduction: input.introduction ?? null,
-            logoUrl: input.logoUrl ?? null,
-            status: 'ACTIVE',
-            statusReason: null,
-            statusChangedAt: now,
-            createdAt: now,
-            updatedAt: now,
-          },
-          select: SELLER_SELECT,
-        })
-
-        await this.grantOwnerRole(tx, seller.userId)
-
-        return seller
-      }),
+      client === undefined
+        ? this.prisma.$transaction((tx) => this.insertDemoStore(tx, input))
+        : this.insertDemoStore(client, input),
     )
 
     return toSeller(created)
+  }
+
+  /**
+   * The two writes an approved store is, in whichever transaction it belongs to.
+   *
+   * `client` is passed in by TASK-0024's issuing path so that the store joins
+   * the account, its roles and its seeded catalogue in **one** transaction — a
+   * demo account with no store is a console the visitor cannot enter and nothing
+   * would ever repair it. Called with no client this opens its own, which is
+   * what it always did.
+   */
+  private async insertDemoStore(tx: Tx, input: DemoStoreInput): Promise<SellerRecord> {
+    const now = this.clock.now()
+
+    const seller = await tx.seller.create({
+      data: {
+        userId: input.userId,
+        brandName: input.brandName,
+        slug: input.slug,
+        introduction: input.introduction ?? null,
+        logoUrl: input.logoUrl ?? null,
+        status: 'ACTIVE',
+        statusReason: null,
+        statusChangedAt: now,
+        createdAt: now,
+        updatedAt: now,
+      },
+      select: SELLER_SELECT,
+    })
+
+    await this.grantOwnerRole(tx, seller.userId)
+
+    return seller
   }
 
   // ---------------------------------------------------------- the state gate
