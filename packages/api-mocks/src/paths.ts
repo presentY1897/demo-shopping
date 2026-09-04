@@ -88,6 +88,27 @@ export const mockPaths = {
    * what the real API's router does with a route that does not exist.
    */
   adminSellerDecision: `*${API_PATH_PREFIX}/admin/sellers/:id/:action`,
+  /**
+   * The catalogue: `POST` a listing whole (TASK-0113).
+   *
+   * Not under `/seller/` even though only a seller calls it. Which role may
+   * call an endpoint is said once by the permission table, and a URL that says
+   * it a second time eventually disagrees with the first —
+   * `uploads.controller.ts` made the same call and TASK-0113 4장 followed it.
+   */
+  products: `*${API_PATH_PREFIX}/products`,
+  /** `GET` for the editor and the preview, `PATCH` to save. */
+  product: `*${API_PATH_PREFIX}/products/:id`,
+  /**
+   * `POST` to put a listing on sale, and to take it off again.
+   *
+   * Registered **before** {@link mockPaths.product}: msw takes the first
+   * handler that matches, and a path parameter never spans a `/`, so these two
+   * cannot swallow {@link mockPaths.product} — but listing them first keeps the
+   * reading order the same as the category routes next door.
+   */
+  productPublish: `*${API_PATH_PREFIX}/products/:id/publish`,
+  productUnpublish: `*${API_PATH_PREFIX}/products/:id/unpublish`,
   /** `POST` a request for one presigned upload (TASK-0011). */
   uploadPresign: `*${API_PATH_PREFIX}/uploads/presign`,
   /**
