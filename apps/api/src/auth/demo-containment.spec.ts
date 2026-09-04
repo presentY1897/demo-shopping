@@ -31,6 +31,17 @@ const ALLOWED = [
   // The vocabulary itself, and the scope that reads it.
   'packages/shared/src/auth/resource-scope.ts',
   'packages/shared/src/auth/authorize.ts',
+  // TASK-0024, and the review this list exists to force. Issuing an account is
+  // the one thing that has to *write* the flag, and `User_demo_expiry_check`
+  // means it must be written together with the expiry — so the pair lives in one
+  // function whose whole job is that INSERT.
+  //
+  // Nothing else in that task names it. The rate limit counts
+  // `demoExpiresAt IS NOT NULL`, the status endpoint answers with the expiry,
+  // and the browser is never told the boolean exists — the two columns imply
+  // each other, so reading the one that a screen actually needs costs nothing
+  // and keeps this list one entry long (TASK-0024 4.5).
+  'apps/api/src/demo/demo-account.ts',
 ] as const
 
 const SCANNED = ['apps/api/src', 'packages/shared/src'] as const
