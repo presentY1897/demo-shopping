@@ -264,6 +264,25 @@ export type {
 export { sessionFailureReasons, sessionResponseSchema } from './api/session.js'
 export type { SessionFailureReason, SessionResponse } from './api/session.js'
 
+export {
+  DEMO_ACCOUNT_TTL_HOURS,
+  DEMO_ISSUE_LIMIT,
+  DEMO_ISSUE_WINDOW_SECONDS,
+  demoAccountSchema,
+  demoIssueRequestSchema,
+  demoIssueResponseSchema,
+  demoRoles,
+  demoRoleSchema,
+  demoStatusResponseSchema,
+} from './api/demo.js'
+export type {
+  DemoAccount,
+  DemoIssueRequest,
+  DemoIssueResponse,
+  DemoRole,
+  DemoStatusResponse,
+} from './api/demo.js'
+
 export { grantRoleRequestSchema, userRolesResponseSchema } from './api/user-roles.js'
 export type { GrantRoleRequest, UserRolesResponse } from './api/user-roles.js'
 
