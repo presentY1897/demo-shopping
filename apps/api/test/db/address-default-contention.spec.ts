@@ -4,7 +4,7 @@ import type { PoolClient } from 'pg'
 import { DatabaseError } from 'pg'
 import { beforeAll, describe, expect, it } from 'vitest'
 
-import { barrier, concurrently, fulfilled, rejected } from '../support/concurrently.js'
+import { awaitBlocked, barrier, concurrently, rejected } from '../support/concurrently.js'
 import { useDatabase } from '../support/database.js'
 import { createAddress, createUser } from '../support/factories.js'
 
@@ -25,10 +25,17 @@ import { createAddress, createUser } from '../support/factories.js'
  * index, so an account keeps as many ordinary addresses as it likes while a
  * second live default is refused (`erd.md` 1장).
  *
- * **Why the interleaving is arranged and not hoped for.** Both writers must have
- * cleared before either sets; otherwise the second simply waits on the first's
- * row lock, finds nothing left to clear, and the specification proves nothing
- * about simultaneity. {@link barrier} pins that down (QUALITY-GATES A7).
+ * **Why the interleaving is driven step by step.** A barrier holds everyone
+ * until the last reader arrives, which pins down that both *read* before either
+ * *writes* — and that is not enough here. If the two write phases then run one
+ * after another, the second transaction clears the first one's default and sets
+ * its own, both succeed, and no invariant is ever violated. The spec passes
+ * having proved nothing.
+ *
+ * That is not hypothetical: this file did exactly that, green locally and red in
+ * CI, until the choreography below replaced the barrier. Every step is awaited
+ * in order, and {@link awaitBlocked} is what makes "the second one is now
+ * waiting on the index" a fact rather than a hope (QUALITY-GATES A7).
  *
  * `AddressService` is what turns the losing write into a 409; that half is
  * proved over HTTP in `test/api/me-addresses.spec.ts` (F3b). This file proves
@@ -67,6 +74,15 @@ async function promote(connection: PoolClient, userId: string, id: string): Prom
   }
 }
 
+/** The default this account has, read outside any transaction. */
+function currentDefault2(userId: string): Promise<string | null> {
+  return db
+    .query<{ id: string }>('SELECT "id" FROM "Address" WHERE "userId" = $1 AND "isDefault"', [
+      userId,
+    ])
+    .then((rows) => rows[0]?.id ?? null)
+}
+
 function defaultCount(userId: string): Promise<number> {
   return db
     .one<{ count: number }>(
@@ -74,6 +90,22 @@ function defaultCount(userId: string): Promise<number> {
       [userId],
     )
     .then((row) => row.count)
+}
+
+/** The backend serving one connection, so its wait state can be watched. */
+async function backendPidOf(connection: PoolClient): Promise<number> {
+  const { rows } = await connection.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')
+
+  return rows[0]?.pid ?? 0
+}
+
+/** `BEGIN` and the clear, leaving the transaction open. */
+async function beginAndClear(connection: PoolClient, userId: string): Promise<void> {
+  await connection.query('BEGIN')
+  await connection.query(
+    'UPDATE "Address" SET "isDefault" = false WHERE "userId" = $1 AND "isDefault"',
+    [userId],
+  )
 }
 
 /** Runs `work`, asserting it was the database that refused, and how. */
@@ -93,51 +125,75 @@ async function refusal(work: Promise<unknown>): Promise<DatabaseError> {
 }
 
 describe('A7 — 같은 계정의 배송지 둘을 동시에 기본으로 지정', () => {
-  it('둘이 동시에 지정하면 하나만 남고 나머지는 23505 로 거절된다', async () => {
+  it('둘이 겹치면 하나만 남고 나머지는 23505 로 거절된다', async () => {
     const user = await createUser(db)
     const first = await createAddress(db, { userId: user.id })
     const second = await createAddress(db, { userId: user.id })
-    const gate = barrier(2)
 
-    const results = await concurrently(2, async (index) =>
-      db.withConnection(async (connection) => {
-        // Everyone reads first, and finds no default…
-        expect(await currentDefault(connection, user.id)).toBeNull()
-        // …and nobody writes until both have read.
-        await gate.arrive()
+    await db.withConnection(async (a) => {
+      await db.withConnection(async (b) => {
+        // Both transactions open and clear. Neither sees a default, because
+        // there is none — this is the state the service reads before it writes.
+        await beginAndClear(a, user.id)
+        await beginAndClear(b, user.id)
+        expect(await currentDefault(a, user.id)).toBeNull()
+        expect(await currentDefault(b, user.id)).toBeNull()
 
-        return promote(connection, user.id, index === 0 ? first.id : second.id)
-      }),
-    )
+        // A writes its default and holds it uncommitted.
+        await a.query('UPDATE "Address" SET "isDefault" = true WHERE "id" = $1', [first.id])
 
-    expect(fulfilled(results)).toHaveLength(1)
-    expect(rejected(results)).toHaveLength(1)
+        // B writes its own. The partial unique index has no way to accept both,
+        // so this **blocks** until A resolves — it cannot fail yet, because A
+        // might still roll back. Not awaited for that reason.
+        const pid = await backendPidOf(b)
+        const blocked = b.query('UPDATE "Address" SET "isDefault" = true WHERE "id" = $1', [
+          second.id,
+        ])
 
-    const loser = rejected(results)[0] as { code?: string; constraint?: string }
-    expect(loser.code).toBe(UNIQUE_VIOLATION)
-    expect(loser.constraint).toBe(INDEX)
+        await awaitBlocked(db.query, pid)
+        await a.query('COMMIT')
+
+        const loser = await refusal(blocked)
+        expect(loser.code).toBe(UNIQUE_VIOLATION)
+        expect(loser.constraint).toBe(INDEX)
+
+        await b.query('ROLLBACK')
+      })
+    })
 
     expect(await defaultCount(user.id)).toBe(1)
+    expect(await currentDefault2(user.id)).toBe(first.id)
   })
 
-  it('다섯이 동시에 와도 기본은 하나다', async () => {
+  it('앞선 것이 물러나면 뒤엣것이 그 자리를 얻는다', async () => {
+    // The mirror image, and the reason the second writer must block rather than
+    // fail outright: A's write is not a decision until it commits.
     const user = await createUser(db)
-    const addresses = await Promise.all(
-      Array.from({ length: 5 }, () => createAddress(db, { userId: user.id })),
-    )
-    const gate = barrier(5)
+    const first = await createAddress(db, { userId: user.id })
+    const second = await createAddress(db, { userId: user.id })
 
-    const results = await concurrently(5, async (index) =>
-      db.withConnection(async (connection) => {
-        expect(await currentDefault(connection, user.id)).toBeNull()
-        await gate.arrive()
+    await db.withConnection(async (a) => {
+      await db.withConnection(async (b) => {
+        await beginAndClear(a, user.id)
+        await beginAndClear(b, user.id)
 
-        return promote(connection, user.id, addresses[index]?.id ?? '')
-      }),
-    )
+        await a.query('UPDATE "Address" SET "isDefault" = true WHERE "id" = $1', [first.id])
 
-    expect(fulfilled(results)).toHaveLength(1)
+        const pid = await backendPidOf(b)
+        const blocked = b.query('UPDATE "Address" SET "isDefault" = true WHERE "id" = $1', [
+          second.id,
+        ])
+
+        await awaitBlocked(db.query, pid)
+        await a.query('ROLLBACK')
+
+        await blocked
+        await b.query('COMMIT')
+      })
+    })
+
     expect(await defaultCount(user.id)).toBe(1)
+    expect(await currentDefault2(user.id)).toBe(second.id)
   })
 
   it('다른 계정끼리는 서로를 막지 않는다', async () => {
@@ -243,30 +299,31 @@ describe('A7 — 음성 대조군 (부분 유니크 인덱스 없음)', () => {
       ])
     }
 
-    const gate = barrier(2)
-    const results = await concurrently(2, async (index) =>
-      db.withConnection(async (connection) => {
-        const { rows } = await connection.query(
-          'SELECT "id" FROM "unindexed_address" WHERE "userId" = $1 AND "isDefault"',
-          [userId],
-        )
-        expect(rows).toHaveLength(0)
-        await gate.arrive()
+    // The same choreography as the positive case, minus the index. Nothing
+    // blocks: the second write has no constraint to wait on, so both commit.
+    await db.withConnection(async (a) => {
+      await db.withConnection(async (b) => {
+        await a.query('BEGIN')
+        await b.query('BEGIN')
 
-        await connection.query('BEGIN')
-        await connection.query(
+        // Both clear, and both find nothing — neither sees the other's
+        // uncommitted write.
+        await a.query(
           'UPDATE "unindexed_address" SET "isDefault" = false WHERE "userId" = $1 AND "isDefault"',
           [userId],
         )
-        await connection.query(
-          'UPDATE "unindexed_address" SET "isDefault" = true WHERE "id" = $1',
-          [ids[index]],
+        await b.query(
+          'UPDATE "unindexed_address" SET "isDefault" = false WHERE "userId" = $1 AND "isDefault"',
+          [userId],
         )
-        await connection.query('COMMIT')
-      }),
-    )
 
-    expect(rejected(results)).toHaveLength(0)
+        await a.query('UPDATE "unindexed_address" SET "isDefault" = true WHERE "id" = $1', [ids[0]])
+        await b.query('UPDATE "unindexed_address" SET "isDefault" = true WHERE "id" = $1', [ids[1]])
+
+        await a.query('COMMIT')
+        await b.query('COMMIT')
+      })
+    })
 
     const { count } = await db.one<{ count: number }>(
       'SELECT count(*)::int AS count FROM "unindexed_address" WHERE "userId" = $1 AND "isDefault"',
@@ -274,6 +331,10 @@ describe('A7 — 음성 대조군 (부분 유니크 인덱스 없음)', () => {
     )
     // Two defaults, one account. Checkout would preselect whichever the planner
     // returned first, and nothing anywhere would report it.
+    //
+    // **If this ever goes green, the positive case above is proving nothing** —
+    // it would mean the two transactions no longer overlap, and the index would
+    // never have been asked to decide anything.
     expect(count).toBe(2)
   })
 })

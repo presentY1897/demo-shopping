@@ -60,3 +60,38 @@ export function barrier(parties: number): Barrier {
     },
   }
 }
+
+/**
+ * Waits until the backend serving `pid` is actually blocked on a lock.
+ *
+ * **A barrier is not enough on its own.** It holds every participant until the
+ * last one arrives, which pins down that they all *read* before any of them
+ * writes — but the write phases can still run one after another, and a spec
+ * whose damage only appears when they overlap then passes for the wrong reason.
+ * That failure is invisible: the assertion is green, and it is green on a
+ * machine where the code is broken.
+ *
+ * This is the other half. Issue the statement that must block, wait here until
+ * the database agrees it is waiting, and only then let the other transaction
+ * commit. The interleaving becomes an arrangement rather than a hope.
+ *
+ * `product-contention.spec.ts` learned this the hard way — its control failed in
+ * CI 8 runs out of 10 while passing locally.
+ */
+export async function awaitBlocked(
+  query: (text: string, values?: readonly unknown[]) => Promise<{ waiting: number }[]>,
+  pid: number,
+): Promise<void> {
+  for (let attempt = 0; attempt < 200; attempt += 1) {
+    const [row] = await query(
+      `SELECT count(*)::int AS waiting FROM pg_stat_activity
+        WHERE "pid" = $1 AND "wait_event_type" = 'Lock'`,
+      [pid],
+    )
+
+    if ((row?.waiting ?? 0) > 0) return
+    await new Promise((resolve) => setTimeout(resolve, 10))
+  }
+
+  throw new Error('기다릴 것으로 기대한 트랜잭션이 잠금 대기 상태가 되지 않았습니다.')
+}
