@@ -82,6 +82,22 @@ API 가 실패를 알리는 형식과, 각 오류 코드가 화면에서 어떤 
 | `CATEGORY_PARENT_MISSING` | 400 | `parentId` | — | 선택한 상위 카테고리가 없어졌어요. 목록을 새로고침해 주세요. | 필드 오류 |
 | `ATTRIBUTE_KEY_TAKEN` | 409 | `key` | `name` | '{name}' 에 같은 이름의 속성이 이미 있어요. | 필드 오류 |
 | `ATTRIBUTE_VERSION_CONFLICT` | 409 | `version` | — | 다른 관리자가 먼저 저장했어요. 최신 내용을 불러올까요? | 충돌 다이얼로그 |
+| `ATTRIBUTE_IN_USE` | 409 | — | `count` | 이 속성을 쓰는 상품이 {count}개 있어요. 상품에서 먼저 값을 지워 주세요. | 비활성화 안내 |
+| `PRODUCT_ATTRIBUTES_REQUIRED` | 400 | `attributes.<key>` | — | 판매를 시작하려면 필수 정보를 모두 채워야 해요. | 필드 오류 |
+| `PRODUCT_TOO_MANY_VARIANTS` | 400 | `options` | `max` | 옵션 조합은 최대 {max}개까지 만들 수 있어요. 옵션 값을 줄여 주세요. | 필드 오류 |
+| `PRODUCT_NOT_SELLABLE` | 400 | `status` | — | 판매하려면 주문할 수 있는 옵션이 하나는 있어야 해요. | 필드 오류 |
+| `PRODUCT_SELLER_INACTIVE` | 403 | — | — | 스토어가 승인된 뒤에 상품을 등록할 수 있어요. | 안내 배너 |
+| `PRODUCT_SKU_TAKEN` | 409 | — | — | 이미 쓰고 있는 SKU 예요. 다른 SKU 를 입력해 주세요. | 필드 오류 |
+| `PRODUCT_VERSION_CONFLICT` | 409 | `version` | — | 다른 곳에서 먼저 저장했어요. 최신 내용을 불러올까요? | 충돌 다이얼로그 |
+
+**`PRODUCT_SELLER_INACTIVE` 가 403 인데 `FORBIDDEN` 이 아닌 이유.** 같은 403 이라도 복구 수단이
+정반대다. `FORBIDDEN`(소유권)은 "내 스토어가 맞는지 확인" 이고, 이것은 **내 스토어가 맞는데 아직
+승인되지 않았다**는 뜻이다. 코드로 갈라 놓지 않으면 판매자에게 "권한이 없다"고 말하게 된다
+(TASK-0113 4장).
+
+**두 개의 409 를 가르는 이유.** `PRODUCT_VERSION_CONFLICT` 는 최신 내용을 불러오면 풀리고,
+`PRODUCT_SKU_TAKEN` 은 불러와도 풀리지 않는다 — SKU 를 바꿔야 한다. 하나의 `CONFLICT` 로는
+화면이 "다시 불러오기" 버튼을 언제 보여야 할지 결정할 수 없다.
 
 **`field` 가 없는 코드가 있는 이유.** `CATEGORY_HAS_CHILDREN` 은 어떤 입력의 문제도 아니다.
 사용자가 건드리지 않은 컨트롤 아래에 오류를 다는 것보다 아무 데도 달지 않는 편이 낫다.

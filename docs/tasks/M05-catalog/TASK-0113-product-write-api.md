@@ -31,7 +31,9 @@
 - **속성값 동적 검증 연동** — 저장 전 `validateAttributes(categoryId, values)`(TASK-0030) 필수 통과
 - **상태 전환** — `DRAFT` ↔ `ACTIVE`. 임시저장은 필수 속성 미충족을 허용하고, `ACTIVE` 전환은 전부 요구
 - **Variant 일괄 생성 지원** — 옵션 조합 → Variant 생성은 TASK-0032 의 로직을 호출한다. 이 TASK 는
-  **조합 수 상한(100) 검증**과 가격 · 재고 · SKU · `maxPurchaseQuantity` 일괄 값 반영을 담당
+  **조합 수 상한 검증**과 가격 · 재고 · SKU · `maxPurchaseQuantity` 일괄 값 반영을 담당.
+  상한값은 `PRODUCT_MAX_VARIANTS` = **200** 이다 — 이 문서가 계획할 때 적은 100 이 아니라,
+  TASK-0032 가 `packages/shared` 에 이미 세운 숫자다 (4장 「조합 수 상한」)
 - **주문에 사용된 Variant 보호** — 삭제 대신 비활성화만 허용
 - **업로드된 이미지의 수명 관리** ([TASK-0033](./TASK-0033-image-upload.md) F6 이 넘긴 것) —
   presign 이 발급하는 **키를 서버가 만들므로 정리도 서버가 한다.** 판매자가 이미지를 올린 뒤
@@ -86,16 +88,32 @@
 
 ### API / 라우트
 
-| 메서드 · 경로 | 용도 | 퍼미션 |
-| --- | --- | --- |
-| `POST /api/v1/seller/products` | 상품 생성 (DRAFT 또는 ACTIVE) | `product.write:own` |
-| `GET /api/v1/seller/products/:id` | 편집기 로드 · 미리보기용 상세 | `product.read:own` |
-| `PATCH /api/v1/seller/products/:id` | 상품 수정 (옵션 차분 포함) | `product.write:own` |
-| `POST /api/v1/seller/products/:id/publish` | `DRAFT → ACTIVE` | `product.write:own` |
-| `POST /api/v1/seller/products/:id/unpublish` | `ACTIVE → DRAFT` | `product.write:own` |
+| 메서드 · 경로 | 용도 | 퍼미션 | 누가 만들었나 |
+| --- | --- | --- | --- |
+| `POST /api/v1/products` | 상품 생성 (DRAFT 또는 ACTIVE) | `product.write:own` | TASK-0032 (이 TASK 가 계약을 채운다) |
+| `GET /api/v1/products/:id` | 편집기 로드 · 미리보기용 상세 | `product.read` | TASK-0032 |
+| `PATCH /api/v1/products/:id` | 상품 수정 (옵션 차분 포함) | `product.write:own` | TASK-0032 (이 TASK 가 계약을 채운다) |
+| **`POST /api/v1/products/:id/publish`** | `DRAFT → ACTIVE` | `product.write:own` | **이 TASK** |
+| **`POST /api/v1/products/:id/unpublish`** | `ACTIVE → DRAFT` | `product.write:own` | **이 TASK** |
+
+> **경로를 `/seller/` 아래에 두지 않는다 — 계획을 착수 시점에 고쳤다.**
+> 이 문서는 다섯 엔드포인트를 전부 `/api/v1/seller/products` 로 계획했다. 그런데 TASK-0032 가
+> **같은 리소스를 `/api/v1/products` 로 이미 배포했고**, 그 위에 두 번째 경로 트리를 세우면
+> 한 리소스에 계약이 둘이 된다 — 어느 쪽이 정본인지는 다음 사람이 알 수 없고, 둘은 반드시
+> 갈라진다. 같은 판단이 저장소에 이미 적혀 있다: `uploads.controller.ts` 가 "판매자가 부르는
+> 엔드포인트지만 `/seller` 아래에 두지 않는다 — 어느 역할이 부를 수 있는지는 **퍼미션 표가 한 번**
+> 말하고, URL 이 그것을 두 번째로 말하면 언젠가 표와 어긋난다" 고 한다. 그래서 이 TASK 는 기존
+> 경로의 **계약을 채우고**, 발행 전환 두 개만 새로 붙인다.
 
 **새 퍼미션은 없다.** `product.write` · `product.read` 는 TASK-0105 가 이미 `SELLER_OWNER:own` 으로
 부여했다. 이 TASK 가 확인할 것은 그 스코프가 실제로 남의 상품을 막는가다(F7).
+
+### 조합 수 상한
+
+`PRODUCT_MAX_VARIANTS` = **200**, `packages/shared/src/api/products.ts` 에 있다. 계획 단계에서 이
+문서가 적은 100 은 TASK-0032 가 그 상수를 세우기 전의 숫자이고, **숫자는 한 곳에만 있어야 한다**는
+이 문서의 원칙이 그대로 적용된다 — 두 곳에 적힌 순간 화면과 서버가 다른 값을 막는다. 이 TASK 는
+상수를 옮기지 않고 그 값을 쓰며, 초과 시 응답에 `params.max` 로 실어 보낸다.
 
 ### 판매자 상태 검사
 
@@ -157,26 +175,133 @@ function defaultSkuPrefix(productId: string): string {
 의 `Product` 주석). 고칠 곳은 **접두사 생성 규칙**이고, 시간의 상위 비트가 아니라 판매자 안에서 충돌하지
 않는 값을 쓰면 된다.
 
-> **TASK-0032 F1 과의 관계는 착수 시 실제로 확인한다.** TASK-0036 7.5 는 접두사에 엔트로피를 더하면 F1 이
-> 고정한 "생성 SKU 번호가 판매자가 표에서 읽는 순서와 같다"가 함께 바뀐다고 봤다. 다만 접두사는 **상품
-> 단위**이고 F1 의 번호는 **한 상품 안 Variant 의 접미사**라, 접두사만 고치면 F1 은 그대로일 수 있다.
-> 어느 쪽이든 규칙을 고치는 커밋이 F1 을 다시 돌려 확인한다.
+**고친 규칙.** 접두사가 상품 id 의 **시간 상위 32비트만** 쓰던 것을, 같은 id 의 **난수 꼬리**를 함께
+쓰도록 바꾼다.
+
+```ts
+// apps/api/src/catalog/product-sku.ts
+export function defaultSkuPrefix(productId: string): string {
+  const hex = productId.replaceAll('-', '')
+
+  return `${hex.slice(0, 8)}${hex.slice(-6)}`.toUpperCase()
+}
+```
+
+- **여전히 상품 id 에서 파생된다.** 난수를 새로 뽑지 않는다. 같은 상품을 나중에 수정해 조합을 더할 때
+  (`appendVariants`) 접두사를 다시 계산하는데, 그때 다른 값이 나오면 한 상품 안에서 SKU 접두사가
+  둘로 갈린다. 재현 가능성은 장식이 아니라 **수정 경로가 의존하는 성질**이다.
+- **앞 8자리를 유지한다.** UUIDv7 의 시간 상위 비트라 SKU 가 생성 순서대로 정렬된다 — 판매자가 표에서
+  읽는 순서와 같다는 성질(TASK-0032 F1 의 근거)을 접두사 쪽에서도 잃지 않는다.
+- **뒤 6자리는 id 의 난수부**(v7 의 `rand_b` 꼬리)다. 한 판매자가 같은 65초 창 안에 만든 두 상품이
+  충돌하려면 24비트가 함께 맞아야 한다 — 1,677만분의 1 이고, 그마저도 부분 유니크 인덱스가
+  409 로 잡는다(조용한 손상이 아니다).
+- 길이 14, `SKU_PREFIX_PATTERN`(최대 40자)과 `SKU_PATTERN`(최대 64자) 양쪽을 만족한다.
+
+> **TASK-0032 F1 과의 관계 — 확인 결과.** TASK-0036 7.5 는 접두사에 엔트로피를 더하면 F1 이 고정한
+> "생성 SKU 번호가 판매자가 표에서 읽는 순서와 같다"가 함께 바뀐다고 봤다. **바뀌지 않는다.**
+> F1 의 단언은 `skuPrefix: 'TEE'` 를 **명시로 주고** `TEE-1` … `TEE-12` 를 기대하며, 번호는
+> `skuFrom + index` 로 조합 전개 순서에서 나온다 — 접두사 생성 규칙이 관여하지 않는 경로다.
+> 이 TASK 는 접두사만 고치고 접미사 발번은 손대지 않았고, 규칙을 고치는 커밋에서 F1 스펙을 다시
+> 돌려 통과를 확인했다(6.1 F12 의 결과 칸).
 
 ### 절단면 — `packages/shared` 의 zod 스키마
 
 이 TASK 가 **정의**하고 그대로 응답한다. TASK-0114 가 **같은 스키마로 모킹 데이터를 만든다.**
 
-| 스키마 | 내용 | 쓰는 곳 |
-| --- | --- | --- |
-| `productStatusSchema` | `DRAFT` / `ACTIVE` / `INACTIVE` | 0113 · 0114 · 0115 · 0116 |
-| `productWriteRequestSchema` | 저장 본문 전체 (기본 정보 + attributes + images + options + variants) | 0113 · 0114 |
-| `productOptionInputSchema` | 옵션명 + 값 목록 + 순서 | 0113 · 0114 |
-| `productVariantInputSchema` | SKU · 가격 · 재고 · `maxPurchaseQuantity` · 조합 매핑 | 0113 · 0114 |
-| `productDetailResponseSchema` | 편집기 로드 · 미리보기 응답 (옵션 · Variant · 이미지 포함) | 0113 · 0114 |
-| `productAttributeValuesSchema` | `attributes` JSONB 값의 공통 형태 (키별 타입 검증은 TASK-0030 의 동적 스키마) | 0113 · 0114 |
+계획 단계의 이름 여섯 개는 TASK-0032 가 이미 세운 이름과 달랐다. **이름을 새로 만들지 않고 기존
+스키마에 맞춘다** — 같은 것을 두 이름으로 내보내면 C1(단일 출처)이 그 자리에서 거짓이 된다. 아래가
+실제 이름이고, 계획했던 이름은 오른쪽에 남겨 둔다.
 
-**조합 수 상한 100 은 `productWriteRequestSchema` 에 담는다.** 화면이 먼저 막고 서버가 다시 막되, 숫자는
-한 곳에만 있어야 한다.
+| 실제 스키마 | 계획 시 이름 | 내용 | 주인 |
+| --- | --- | --- | --- |
+| `productStatusSchema` | 〃 | `DRAFT` / `ACTIVE` / `INACTIVE` / `SUSPENDED` (`SUSPENDED` 는 운영자 강제 숨김) | 0032 |
+| `createProductRequestSchema` · `updateProductRequestSchema` | `productWriteRequestSchema` | 저장 본문 전체 | 0032 |
+| **`productOptionInputSchema`** | 〃 | 옵션명 + 값 목록 | **0113 이 export 로 승격** |
+| **`productVariantInputSchema`** | 〃 | SKU · 가격 · 재고 · `maxPurchaseQuantity` · 조합 매핑 | **0113 이 export 로 승격** |
+| **`productImageInputSchema`** | (없었음) | 이미지 URL + 대체 텍스트 | **0113 이 export 로 승격** |
+| `productSchema` · `productResponseSchema` | `productDetailResponseSchema` | 편집기 로드 · 미리보기 응답 | 0032 |
+| `attributeValuesSchema` | `productAttributeValuesSchema` | `attributes` JSONB 값의 공통 형태 | 0030 |
+| **`productPublishRequestSchema`** | (없었음) | 발행 · 발행 취소 본문 (`version` 하나) | **0113** |
+
+세 개의 입력 스키마는 `products.ts` 안에 **비공개로** 있었다 — 그것을 쓰는 화면이 없었기 때문이다.
+TASK-0114 가 모킹 요청을 만들려면 이름이 있어야 하므로 이 TASK 가 export 로 올린다. 정의를 옮기지
+않는 것이 핵심이다: 복사하면 그 순간 두 벌이 된다.
+
+### 필수 속성은 언제 요구되는가
+
+TASK-0032 는 **모든 저장**에 필수 속성을 요구했다. 임시저장이 없었기 때문이다. 편집기가 생기면
+그것은 "소재를 아직 못 정했으니 오늘은 저장하지 말라"가 되고, 그것이 F4 가 막는 상태다.
+
+| 저장되는 상태 | 필수 속성 | 왜 |
+| --- | --- | --- |
+| `DRAFT` | **요구하지 않음** | 작성 중이다. 값이 비어 있는 것이 정상이고, 비운 채 닫을 수 있어야 한다 |
+| `INACTIVE` | 요구하지 않음 | 판매하지 않는 상태다. 판매를 멈춘 이유가 속성이 아닐 수 있는데, 멈추는 조작이 속성 때문에 실패하면 판매자가 상품을 내릴 수 없다 |
+| `ACTIVE` | **전량 요구** | 구매자가 본다. 필수 속성은 검색 패싯과 상세 표의 재료라, 빠진 채 노출되면 그 상품만 목록에서 사라진다 |
+| `SUSPENDED` | 요구하지 않음 | 운영자의 강제 숨김이다. 판매자 데이터의 흠 때문에 운영자의 조치가 실패해서는 안 된다 |
+
+**즉 판정 기준은 "저장 결과가 `ACTIVE` 인가" 하나다.** 요청이 상태를 말하지 않은 수정이면 저장된
+상태가 그대로 결과가 되므로, `ACTIVE` 상품을 편집하면 속성은 계속 전량 검증된다 — 판매 중인
+상품에서 필수 값을 지우는 경로가 열리지 않는다.
+
+값이 **틀린** 것은 상태와 무관하게 언제나 400 이다. 완화되는 것은 "없음"뿐이고, 정의에 없는 키나
+선택지 밖의 값은 초안에서도 거부된다. 초안이 담을 수 있는 것은 **미완성**이지 **오류**가 아니다.
+`Product_active_price_check` 가 가격에 대해 하는 말과 같은 모양이다 — 판매 중일 때만 요구한다.
+
+### 도메인 오류 코드 (TASK-0032 · 0036 의 4.10 을 회수한다)
+
+TASK-0032 는 상품 도메인 코드를 만들지 않고 전송 계층 코드로만 답했다. 이유는 `apps/admin` 의
+`Record<UserFacingErrorCode, string>` 카탈로그를 그 TASK 가 건드릴 수 없었기 때문이다. 이 TASK 가
+받는다.
+
+| `code` | 상태 | `field` | `params` | 무엇이 달라지나 |
+| --- | --- | --- | --- | --- |
+| `PRODUCT_ATTRIBUTES_REQUIRED` | 400 | `attributes.<key>` | — | 판매 시작을 막는 것이 **빈 필수 속성**이라는 것. `INVALID`(값이 틀림)와 복구 수단이 다르다 — 하나는 고치기, 하나는 채우기 |
+| `PRODUCT_TOO_MANY_VARIANTS` | 400 | `options` | `max` | 옵션 값을 줄여야 한다. 상한값을 서버만 알기 때문에 `params` 로 함께 보낸다 |
+| `PRODUCT_NOT_SELLABLE` | 400 | `status` | — | 주문 가능한 조합이 하나도 없다. 속성 문제와 같은 400 이지만 고칠 곳이 옵션 표다 |
+| `PRODUCT_SELLER_INACTIVE` | 403 | — | — | 내 상품이 아니라 **내 스토어 상태**가 막는다. 화면은 "입점 심사 결과를 기다려 주세요"를 띄워야 하고, 소유권 403 의 "내 스토어가 맞는지 확인해 주세요"와 정반대다 |
+| `PRODUCT_SKU_TAKEN` | 409 | — | — | 두 개의 409 중 SKU 쪽. 다시 불러온다고 풀리지 않는다 — SKU 를 바꿔야 한다 |
+| `PRODUCT_VERSION_CONFLICT` | 409 | `version` | — | 나머지 409. 최신 내용을 불러오면 풀린다. `CATEGORY_VERSION_CONFLICT` · `ATTRIBUTE_VERSION_CONFLICT` 와 같은 자리 |
+
+**소유권 403 에는 코드를 만들지 않는다.** 계획(F13)은 소유권을 네 번째로 적었지만, 그 403 은
+`assertResourceAccess` 가 **모든 도메인에 대해** 내는 플랫폼 공통 refusal 이고 `apps/api/src/auth/`
+소유다. 상품에만 다른 코드를 붙이면 같은 판정이 도메인마다 다른 이름으로 나가게 된다. 두 콘솔의
+카탈로그가 `FORBIDDEN` 에 대해 이미 "이 작업을 할 수 있는 권한이 없어요. 내 스토어가 맞는지 확인해
+주세요." 를 갖고 있어 **소유권 실패의 문장은 이미 맞다.** 대신 판매자 상태를 코드로 갈라내면 화면이
+필요한 분기를 전부 얻는다.
+
+> **`apps/admin` 카탈로그를 건드려야 한다 — 오케스트레이터 판단 필요.**
+> `userFacingErrorCodes` 는 HTTP 코드 + 도메인 코드의 합이고 두 콘솔이 그것을 `Record` 로
+> 전수 검사한다. **코드를 하나라도 더하면 `apps/admin/src/messages/ko.ts` 도 반드시 늘어야
+> `pnpm typecheck` 이 통과한다** — 노출을 조절할 방법이 타입 수준에 없다. 그래서 이 TASK 는
+> 두 콘솔의 `errors` 슬라이스에 문장을 함께 넣었다(메시지 파일에 한정). `apps/admin` 을 여는
+> 다른 TASK 와 그 객체 리터럴에서 rebase 충돌이 날 수 있다.
+>
+> **`params` 보간은 이번에도 미룬다.** HANDOFF 3.3 이 이 TASK 를 `api-failure.ts` 두 벌을
+> 합칠 접점으로 지목했지만, 합치려면 `apps/seller/src/lib/` 와 `apps/admin/src/lib/` 를
+> 동시에 고쳐야 한다 — 메시지 파일이 아니라 소유 경계 밖이다. 대신 `PRODUCT_TOO_MANY_VARIANTS`
+> 의 판매자 문장이 `PRODUCT_MAX_VARIANTS` 를 **import 해서 문자열에 넣는다.** 플레이스홀더가
+> 없어도 숫자는 한 곳에 남고, `params.max` 는 봉투에 그대로 실려 admin 이 나중에 보간할 수 있다.
+
+### 업로드된 이미지의 수명 — 무엇을 여기서 정하고 무엇을 넘기는가
+
+TASK-0033 F6 이 넘긴 것은 "행 없는 R2 객체를 없애는 경로"다. **삭제 엔드포인트가 아니라 버킷
+스윕**으로 정한다.
+
+| 안 | 왜 아닌가 |
+| --- | --- |
+| `DELETE /uploads/:key` | presign 은 `ProductImage` 행이 생기기 **전에** 객체를 만든다. 판매자가 업로드하고 브라우저를 닫으면 클라이언트가 삭제를 부를 기회 자체가 없다 — 가장 흔한 고아를 못 지운다 |
+| 발급 대장 테이블 | 추적은 확실하지만 `schema.prisma` 변경이고, 그 파일은 TASK-0032 소유이며 이 TASK 는 무변경으로 못박혀 있다(2장) |
+| **버킷 스윕** | 키가 `products/{sellerId}/…` 로 갈려 있어 **판매자별 목록**이 가능하다. 살아 있는 `ProductImage` 가 가리키는 키 집합을 빼면 남는 것이 고아다. 새 테이블도, 클라이언트 협조도 필요 없다 |
+
+**이 TASK 가 하는 것은 스윕이 성립하기 위한 전제**다. 스윕은 "이 접두사 아래 객체는 이 스토어의
+것"이라는 가정 위에서만 안전한데, 지금은 상품 저장이 **아무 URL 이나 받는다.** 판매자 A 의 상품이
+`products/{B}/…` 를 가리키고 있으면 B 의 스윕이 A 가 쓰는 객체를 지운다. 그래서 저장 시
+**우리 키 형태로 읽히는 URL 은 그 상품의 판매자 접두사여야 한다**를 검증한다(F14). 우리 키로 읽히지
+않는 URL(외부 스톡 이미지 — DECISIONS 13 의 780개)은 그대로 통과시킨다 — 스윕의 대상이 아니다.
+
+**스윕 잡 자체는 이 TASK 가 하지 않는다.** `ObjectStorage` 에 `list`·`delete` 를 더하는 일(둘 다 실
+네트워크 I/O 라 포트 뒤 대역이 필요하다)과 그것을 주기적으로 돌릴 스케줄러가 필요하고, 둘 다
+`apps/api/src/storage/**` 와 배포 구성 — 이 TASK 의 소유 경로 밖이다. **주인을 정해야 한다**(7장 R7).
 
 ### 역할별 권한
 
@@ -189,37 +314,41 @@ function defaultSkuPrefix(productId: string): string {
 
 ## 5. 구현 계획
 
-1. `packages/shared` 에 절단면 스키마 6종 정의 + `index.ts` export
-2. 옵션 조합 전개 · 차분 계산 순수 함수 (분기 100% 대상)
-3. 생성 API (트랜잭션 · 속성 검증 · 조합 상한)
-4. 상세 조회 API (편집기 로드 · 미리보기, N+1 제거)
-5. 수정 API (옵션 차분 · 기존 재고 보존)
-6. 발행 · 발행 취소 API (`ACTIVE` 전환 시 필수 속성 전량 검증)
-7. 소유권 · 판매자 상태 검사 연결
-8. 기본 SKU 접두사 규칙 교체 (4장) + TASK-0032 F1 재확인
-9. 상품 쓰기 도메인 오류 코드 정의 + `apps/seller` 메시지 카탈로그 문장 추가
-10. 실제 PostgreSQL 통합 테스트 — 트랜잭션 롤백, 차분, 권한, 조합 상한
+착수 시점에 확인해 보니 **2 · 3 · 4 · 5 는 TASK-0032 가 이미 배포했다.** 이 TASK 가 채우는 것은
+그 위에 비어 있던 편집기 계약이다. 남은 순서는 이렇다.
+
+1. `packages/shared` — 입력 스키마 3종을 export 로 승격 + `productPublishRequestSchema` + 클라이언트 메서드 2개
+2. 도메인 오류 코드 6종 + `error-contract.md` 2.2 + **두 콘솔**의 메시지 카탈로그 문장
+3. 기본 SKU 접두사 규칙 교체 (4장) — 순수 함수로 분리, 분기 100% + TASK-0032 F1 재실행
+4. 임시저장 — 필수 속성을 상태에 따라 요구 (4장 「필수 속성은 언제 요구되는가」)
+5. 판매자 상태 검사 연결 — TASK-0032 의 409 를 403 으로 (TASK-0108 의 표를 그대로 쓴다)
+6. 발행 · 발행 취소 엔드포인트
+7. 이미지 키의 판매자 접두사 검증 (버킷 스윕의 전제, F14)
+8. 속성 삭제 거부에 사용 상품 수 싣기 (TASK-0031 F5 의 서버 절반, F15)
+9. 실 PostgreSQL 통합 스펙 + SKU 발급 경합(A7, 음성 대조군 포함)
 
 ## 6. 완료 기준 (Definition of Done)
 
 ### 6.1 기능
 
-| # | 기준 | 측정 방법 | 목표 | 충족 |
-| --- | --- | --- | --- | --- |
-| F1 | 한 번에 저장 | 옵션 2종(3 × 4) 포함 생성 요청 1회 | Product 1 · Option 2 · Variant 12 · 이미지 n 행 생성 | [ ] |
-| F2 | 트랜잭션 | Variant 생성 단계에서 강제 실패 주입 | Product 행 0건 (부분 저장 없음) | [ ] |
-| F3 | 필수 속성 검증 | 필수 속성을 비우고 `ACTIVE` 저장 | 400 + `details` 에 **필드 key** 포함 | [ ] |
-| F4 | 임시저장 | 필수 속성을 비우고 `DRAFT` 저장 | 201, 재조회 시 입력값 복원 | [ ] |
-| F5 | 옵션 차분 | 사이즈에 `XL` 추가 후 수정 | Variant 3행 추가, 기존 12행의 재고 값 불변 | [ ] |
-| F5b | 옵션 값 삭제 | 주문에 쓰인 조합의 옵션 값 삭제 | 해당 Variant 비활성화, 행 삭제 0건 | [ ] |
-| F6 | 조합 상한 | 옵션 조합 101개 요청 | 400 + 상한값 안내 | [ ] |
-| F7 | 소유권 | 다른 판매자의 상품 id 로 `PATCH` | 403 | [ ] |
-| F8 | 판매자 상태 | `PENDING` 판매자로 생성 요청 | 403 (TASK-0026 F3 계승) | [ ] |
-| F9 | 구매 수량 제한 | `maxPurchaseQuantity=2` 로 저장 후 상세 조회 | 응답 Variant 에 `2` 그대로 반환 | [ ] |
-| F10 | 발행 전환 | `DRAFT` 상품을 publish | `ACTIVE` 전환, 필수 속성 전량 검증 통과 시에만 | [ ] |
-| F11 | 캐시 갱신 | Variant 최저가를 낮춰 저장 | `Product.minPrice` 갱신 | [ ] |
-| F12 | SKU 접두사 충돌 | 한 판매자로 `skuPrefix` 없이 상품 2개를 **연속** 생성(같은 65초 창) | 둘 다 201, 두 SKU 가 서로 다름 | [ ] |
-| F13 | 도메인 오류 코드 | 상품 쓰기 실패 4종(속성 미충족 · 조합 상한 · 소유권 · 판매자 상태)의 응답 | 각각 고유 `error.code`, `apps/seller` 카탈로그에 대응 문장 존재(`Record` 전수 검사 통과) | [ ] |
+| # | 기준 | 측정 방법 | 목표 | 결과 | 충족 |
+| --- | --- | --- | --- | --- | --- |
+| F1 | 한 번에 저장 | 옵션 2종(3 × 4) 포함 생성 요청 1회 | Product 1 · Option 2 · Variant 12 · 이미지 n 행 생성 | | [ ] |
+| F2 | 트랜잭션 | Variant 생성 단계에서 강제 실패 주입 | Product 행 0건 (부분 저장 없음) | | [ ] |
+| F3 | 필수 속성 검증 | 필수 속성을 비우고 `ACTIVE` 저장 | 400 + `details` 에 **필드 key** 포함 | | [ ] |
+| F4 | 임시저장 | 필수 속성을 비우고 `DRAFT` 저장 | 201, 재조회 시 입력값 복원 | | [ ] |
+| F5 | 옵션 차분 | 사이즈에 `XL` 추가 후 수정 | Variant 3행 추가, 기존 12행의 재고 값 불변 | | [ ] |
+| F5b | 옵션 값 삭제 | 주문에 쓰인 조합의 옵션 값 삭제 | 해당 Variant 비활성화, 행 삭제 0건 | | [ ] |
+| F6 | 조합 상한 | 옵션 조합 **201개** 요청 (`PRODUCT_MAX_VARIANTS` = 200) | 400 + 상한값 안내(`params.max`) | | [ ] |
+| F7 | 소유권 | 다른 판매자의 상품 id 로 `PATCH` | 403 | | [ ] |
+| F8 | 판매자 상태 | `PENDING` 판매자로 생성 요청 | **403** (TASK-0026 F3 계승 · TASK-0032 의 409 를 옮긴다) | | [ ] |
+| F9 | 구매 수량 제한 | `maxPurchaseQuantity=2` 로 저장 후 상세 조회 | 응답 Variant 에 `2` 그대로 반환 | | [ ] |
+| F10 | 발행 전환 | `DRAFT` 상품을 publish | `ACTIVE` 전환, 필수 속성 전량 검증 통과 시에만 | | [ ] |
+| F11 | 캐시 갱신 | Variant 최저가를 낮춰 저장 | `Product.minPrice` 갱신 | | [ ] |
+| F12 | SKU 접두사 충돌 | 한 판매자로 `skuPrefix` 없이 상품 2개를 **연속** 생성(같은 65초 창) | 둘 다 201, 두 SKU 가 서로 다름. TASK-0032 F1 재실행 통과 | | [ ] |
+| F13 | 도메인 오류 코드 | 상품 쓰기 실패 **6종**(빈 필수 속성 · 조합 상한 · 판매 불가 · 판매자 상태 · SKU 충돌 · 낙관적 잠금)의 응답 | 각각 고유 `error.code`, **두 콘솔** 카탈로그에 대응 문장 존재(`Record` 전수 검사 통과) | | [ ] |
+| F14 | 이미지 키의 스토어 | 다른 판매자 접두사(`products/{남의 id}/…`)의 URL 로 저장 | 400 + `details[].field = images.<n>.url`. 외부 URL 은 통과 | | [ ] |
+| F15 | 속성 삭제 시 사용 상품 수 | 상품이 쓰는 속성 정의를 삭제 | 409 + `params.count` 에 실제 상품 수 (TASK-0031 F5 의 서버 절반) | | [ ] |
 
 > **F9 의 원본 측정 방법 이관** — TASK-0034 의 F4b 는 "저장 후 구매자 화면에서 2개까지만 선택 가능"으로
 > 측정했다. 구매자 화면(TASK-0043)과 구매 수량 강제 지점(장바구니 · 주문서 · 예약 · 주문 생성 — DECISIONS 3)이
@@ -236,31 +365,32 @@ function defaultSkuPrefix(productId: string): string {
 | 1장 코드 게이트 | Q1~Q4 · Q6 · Q7 전부 | |
 | Q5 테스트 충실도 | **라인 커버리지 80%**(M05 부터 적용). 옵션 조합 전개 · 차분 계산은 **분기 100%**(Q5 강화) | 대역: **실제 PostgreSQL**. R2 는 모킹(URL 만 받으므로 실제 호출 없음) |
 | **2장 화면 게이트** | **해당 없음** | 사용자 대상 화면이 없다. 화면은 TASK-0114 |
-| 3장 API 게이트 | A1~A6 적용. **A7 해당 없음** | 재고·잔액이 걸린 동시성은 TASK-0115 · TASK-0036 의 몫이다. 이 API 는 재고를 증감시키지 않는다 |
+| 3장 API 게이트 | A1~A6 적용. **A7 적용 — 착수 시 뒤집었다** | 계획은 "재고를 증감시키지 않으므로 해당 없음" 이었다. **SKU 발급이 A7 의 '순서·멱등' 칸에 해당한다** — 이 TASK 가 고치는 버그가 정확히 "같은 판매자의 두 요청이 같은 SKU 를 만든다"이고, 그것을 연속 호출로만 재현하면 겹치지 않은 채 초록이 될 수 있다. 재고·잔액 쪽 동시성은 계획대로 TASK-0115 · 0036 의 몫이다 |
 | **4장 데이터 게이트** | **해당 없음** | `schema.prisma` 무변경 — 스키마는 TASK-0032 소유 |
 | 5장 계약 게이트 | **C1 · C3** | C2 는 TASK-0114 |
 | 7장 문서 게이트 | D1~D5 | |
 
-| # | 기준 | 측정 방법 | 목표 | 충족 |
-| --- | --- | --- | --- | --- |
-| A1 | 응답 시간 | Variant 12행 상품 저장 p95 | 300ms 이하 | [ ] |
-| A2 | 입력 검증 | 음수 가격 · 알 수 없는 카테고리 | 400 + 통일된 에러 포맷 | [ ] |
-| A3 | 권한 | `BUYER` 토큰으로 생성 호출 | 403 | [ ] |
-| A4 | 인증 | 토큰 없이 호출 | 401 | [ ] |
-| A5 | N+1 | 상세 조회 쿼리 로그 | Variant · 이미지 수와 무관하게 쿼리 수 일정 | [ ] |
-| A6 | 실 DB | 서비스·API 테스트 실행 대상 | Prisma 모킹 0건, 실제 PostgreSQL | [ ] |
-| C1 | 스키마 단일 출처 | 응답 DTO 출처 확인 | 전부 `packages/shared` 의 zod 스키마 | [ ] |
-| C3 | 실제 응답 검증 | 통합 테스트에서 실제 응답을 `productDetailResponseSchema` 로 `parse` | 전부 통과 | [ ] |
+| # | 기준 | 측정 방법 | 목표 | 결과 | 충족 |
+| --- | --- | --- | --- | --- | --- |
+| A1 | 응답 시간 | Variant 12행 상품 저장 p95 | 300ms 이하 | | [ ] |
+| A2 | 입력 검증 | 음수 가격 · 알 수 없는 카테고리 | 400 + 통일된 에러 포맷 | | [ ] |
+| A3 | 권한 | `BUYER` 토큰으로 생성 호출 | 403 | | [ ] |
+| A4 | 인증 | 토큰 없이 호출 | 401 | | [ ] |
+| A5 | N+1 | 상세 조회 쿼리 로그 | Variant · 이미지 수와 무관하게 쿼리 수 일정 | | [ ] |
+| A6 | 실 DB | 서비스·API 테스트 실행 대상 | Prisma 모킹 0건, 실제 PostgreSQL | | [ ] |
+| A7 | 동시 요청 | 한 판매자가 `skuPrefix` 없이 동시에 상품 2건 생성 (배리어로 겹침 고정) + 음성 대조군 | 둘 다 201 · SKU 서로 다름. 대조군(같은 접두사 명시)은 정확히 1건 409 | | [ ] |
+| C1 | 스키마 단일 출처 | 응답 DTO 출처 확인 | 전부 `packages/shared` 의 zod 스키마 | | [ ] |
+| C3 | 실제 응답 검증 | 통합 테스트에서 실제 응답을 `productResponseSchema` 로 `parse` | 전부 통과 | | [ ] |
 
 ### 6.3 문서
 
-| # | 기준 | 충족 |
-| --- | --- | --- |
-| D1 | 상태를 `완료` 로 변경 + `docs/tasks/README.md` · `M05-catalog/README.md` 인덱스 갱신 | [ ] |
-| D2 | `docs/design/erd.md` 2장과 실제 저장 경로가 일치하는지 확인 | [ ] |
-| D3 | 결정 변경 없음 확인 (`DECISIONS.md` 3장과 대조) | [ ] |
-| D4 | 새 환경변수 없음 확인 | [ ] |
-| D5 | 새 라이브러리 없음 확인 (8장) | [ ] |
+| # | 기준 | 결과 | 충족 |
+| --- | --- | --- | --- |
+| D1 | 상태를 `완료` 로 변경 + `docs/tasks/README.md` · `M05-catalog/README.md` 인덱스 갱신 | | [ ] |
+| D2 | `docs/design/erd.md` 2장과 실제 저장 경로가 일치하는지 확인 · `docs/design/error-contract.md` 2.2 에 새 코드 반영 | | [ ] |
+| D3 | 결정 변경 없음 확인 (`DECISIONS.md` 3장과 대조) | | [ ] |
+| D4 | 새 환경변수 없음 확인 | | [ ] |
+| D5 | 새 라이브러리 없음 확인 (8장) | | [ ] |
 
 ## 7. 리스크 / 열린 질문
 
@@ -270,8 +400,18 @@ function defaultSkuPrefix(productId: string): string {
 | R2 | 옵션 값이 많으면 Variant 표가 수백 행 | 조합 수 상한 100 을 스키마에 두고 초과 시 400 (F6). 화면은 같은 값을 읽어 미리 안내한다 |
 | R3 | 수정 시 옵션 삭제로 주문 이력이 깨진다 | 주문에 사용된 Variant 는 **비활성화만** 허용한다(F5b) |
 | R4 | 편집기가 재고를 직접 쓰려고 할 수 있다 | 신규 Variant 초기 재고만 이 API 가 받는다. 이후 증감은 TASK-0115 의 조정 API 로만 열어 둔다 |
-| R5 | 이미지 URL 을 그대로 믿는다 | 업로드 경로가 presign 으로 판매자를 검증한다(TASK-0033). 이 API 는 URL 형식과 개수만 검증한다 |
-| R6 | **속성 삭제 시 "사용 상품 수" 는 이 TASK 의 소유 경계 밖일 수 있다** — TASK-0031 F5 가 넘겼고 `params` 계약이 생겨야 붙는데, 그 엔드포인트는 속성 정의 쪽(관리자 화면 · `apps/admin` 카탈로그)이다 | 이 TASK 는 `packages/shared` 에 **오류 `params` 계약을 만드는 것까지** 책임진다. `apps/admin` 문장을 넣는 일은 그 앱을 소유하는 TASK 가 받는다 — 착수 시 어느 TASK 인지 정하고 HANDOFF 2절에 옮긴다. **없는 계약을 지어내지 않는다** |
+| R5 | 이미지 URL 을 그대로 믿는다 | 업로드 경로가 presign 으로 판매자를 검증한다(TASK-0033). 이 API 는 URL 형식과 개수, 그리고 **우리 키로 읽히는 URL 의 판매자 접두사**를 검증한다 — 그것이 버킷 스윕이 성립하기 위한 전제다(4장 「업로드된 이미지의 수명」, F14) |
+| R6 | **속성 삭제 시 "사용 상품 수"** — TASK-0031 F5 가 넘겼다. 계획은 "엔드포인트가 `apps/admin` 쪽이라 소유 경계가 어긋난다" 였다 | **착수 시 다시 보니 절반이 이 TASK 안이었다.** 그 엔드포인트는 `apps/api/src/catalog/attribute.controller.ts` — 이 TASK 의 소유 경로다. 그래서 `packages/shared` 의 `params` 계약(`ATTRIBUTE_IN_USE` + `params.count`)뿐 아니라 **서버가 실제로 수를 싣는 것까지** 했다(F15). 남은 것은 그 수를 그리는 **관리자 화면**뿐이고, 그것만 `apps/admin` 을 여는 TASK 로 넘긴다 (7.1) |
+| R7 | **고아 R2 객체 스윕 잡의 주인이 없다** | 이 TASK 가 경로를 정하고(4장) 전제를 검증한다(F14). 스윕 자체는 `ObjectStorage.list`·`delete` + 스케줄러가 필요해 소유 경로 밖이다 — **주인을 정해야 한다** (7.1) |
+
+### 7.1 주인이 필요한 것 — 오케스트레이터 판단
+
+| 무엇 | 왜 여기서 못 닫나 | 후보 |
+| --- | --- | --- |
+| 속성 삭제 시 **사용 상품 수를 그리는 화면** | `apps/admin` 은 다른 TASK 가 열려 있다. 서버는 이미 `params.count` 를 보낸다 | M14(TASK-0093~0095) 또는 `apps/admin` 을 여는 다음 TASK |
+| **고아 R2 객체 스윕 잡** | `ObjectStorage.list`·`delete`(실 I/O)와 스케줄러가 필요. `apps/api/src/storage/**` · 배포 구성은 소유 경로 밖 | TASK-0012(배포 잡) 또는 M15 |
+| `api-failure.ts` 두 벌 합치기 (`params` 보간) | 두 앱의 `src/lib/` 를 동시에 고쳐야 한다 — 메시지 파일이 아니다 | HANDOFF 3.3 그대로 열려 있다 |
+| **`apps/admin` 카탈로그를 이 TASK 가 건드린 것** | `Record<UserFacingErrorCode, string>` 이 전수 검사라 도메인 코드를 더하면 피할 수 없다 | 웨이브 머지 순서에서 rebase 충돌 확인 필요 |
 
 ## 8. 확정된 버전
 
@@ -283,3 +423,4 @@ function defaultSkuPrefix(productId: string): string {
 | --- | --- |
 | 2026-09-03 | 최초 작성. D-208 에 따라 TASK-0034 에서 분할하고, 원본에 없던 백엔드 절반을 채움 |
 | 2026-09-04 | **이월 3건을 문서에 회수.** 기본 SKU 접두사의 65초 해상도(TASK-0036 7.5 발견 — 범위 · 4장 · F12), 카탈로그 도메인 오류 코드(TASK-0032 · 0036 의 4.10 — 범위 · F13), 속성 삭제 시 사용 상품 수(TASK-0031 F5 — 범위 · R6). 셋 다 HANDOFF 에만 있고 이 문서에는 없었다 |
+| 2026-09-04 | **착수 시 계획과 코드가 어긋난 곳 여섯 군데를 문서 쪽에서 고쳤다.** 코드를 먼저 만지지 않았다 (CLAUDE.md 4장). ① **경로** — 계획의 `/api/v1/seller/products` 를 기존 `/api/v1/products` 로. TASK-0032 가 같은 리소스를 이미 배포했고 두 번째 경로 트리는 한 리소스에 계약을 둘로 만든다. `uploads.controller.ts` 가 같은 판단을 이미 적어 두었다. ② **조합 상한** — 100 → `PRODUCT_MAX_VARIANTS` = 200. 상수가 이미 `packages/shared` 에 있으므로 문서가 두 번째 숫자를 갖지 않는다. ③ **절단면 스키마 이름** — 계획의 6개 이름 중 4개는 TASK-0032 가 다른 이름으로 이미 세웠다. 새 이름을 만들면 C1 이 그 자리에서 거짓이 되므로 기존 이름에 맞추고, 비공개였던 입력 스키마 3종만 export 로 승격. ④ **A7** — "해당 없음" 을 "적용" 으로. 이 TASK 가 고치는 버그가 정확히 "같은 판매자의 두 요청이 같은 SKU 를 만든다" 이고, 연속 호출만으로는 겹치지 않은 채 초록이 될 수 있다. ⑤ **F13 의 네 번째** — 소유권 403 을 뺐다. `assertResourceAccess` 는 모든 도메인 공통이고 두 콘솔의 `FORBIDDEN` 문장이 이미 소유권 실패를 정확히 말한다. 대신 판매 불가·SKU 충돌·낙관적 잠금을 더해 6종으로. ⑥ **R6** — 계획은 "엔드포인트가 소유 경계 밖" 이라고 봤으나 그 엔드포인트는 `apps/api/src/catalog/` 안이다. 서버 절반을 이 TASK 가 닫고(F15) 화면만 넘긴다. 더해 필수 속성의 요구 시점(4장), 도메인 코드 표(4장), 이미지 수명 결정(4장), F14 · F15 · R7 · 7.1 을 새로 적었다 |
