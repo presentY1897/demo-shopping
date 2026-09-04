@@ -40,6 +40,13 @@ export default {
         'src/lib/attributes/order.ts': complete,
         'src/lib/attributes/preview.ts': complete,
         'src/lib/attributes/text.ts': complete,
+        // TASK-0110's one decision taken before anything is drawn: which
+        // actions a status offers, which permission each needs, whether a
+        // reason is required. It is a **mirror** of the transition table in
+        // `apps/api` (see the file), so a branch nothing reaches is a row of
+        // the review queue offering the wrong buttons — and the symptom is
+        // never a red test, because the buttons still render.
+        'src/lib/sellers/decisions.ts': complete,
       },
     },
   },
