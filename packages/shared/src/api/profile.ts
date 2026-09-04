@@ -211,17 +211,25 @@ export type UserPreferenceUpdateRequest = z.infer<typeof userPreferenceUpdateReq
  * One's own profile.
  *
  * `roles` travels with it so that a console can render what the account may do
- * without decoding the access token, and `isDemo` so that a demo session can
- * say so in the header. `email` is read-only here: the identity is Google's
- * `sub`, and letting somebody type an address would create a second, unverified
- * one (`schema.prisma`, `User.email`).
+ * without decoding the access token. `email` is read-only: the identity is
+ * Google's `sub`, and letting somebody type an address would create a second,
+ * unverified one (`schema.prisma`, `User.email`).
+ *
+ * **No demo flag, although TASK-0111 4장 listed one.** `apps/api/src/auth/
+ * demo-containment.spec.ts` (TASK-0105 F8) allows the column to be named in
+ * exactly three files, so that "데모냐" stays one value in the permission table
+ * instead of a condition every service remembers to write. Putting it in a
+ * response schema would name it in a fourth. The amendment procedure exists —
+ * a task that genuinely needs the flag adds its file to that allow-list in the
+ * same commit — but nothing in this task reads it: the demo banner belongs to
+ * TASK-0024/0026 and the screens to TASK-0112, and the field would have shipped
+ * with no reader at all.
  */
 export const profileSchema = z.object({
   id: z.uuid(),
   email: z.string(),
   name: z.string(),
   avatarUrl: z.string().nullable(),
-  isDemo: z.boolean(),
   roles: z.array(roleSchema),
 })
 
