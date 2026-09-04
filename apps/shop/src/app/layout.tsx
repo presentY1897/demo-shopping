@@ -1,11 +1,12 @@
 import { DEFAULT_DENSITY } from '@shopping/ui'
-import { DensityProvider, DensityScript } from '@shopping/ui/density'
+import { DensityScript } from '@shopping/ui/density'
 import { SkipLink } from '@shopping/ui/layout'
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
 import { AuthProvider } from '@/lib/auth/auth-context'
 
+import { AccountDensityProvider } from '@/components/layout/account-density-provider'
 import { ShopFooter } from '@/components/layout/shop-footer'
 import { ShopHeader } from '@/components/layout/shop-header'
 import { DEFAULT_LOCALE, messagesFor } from '@/messages'
@@ -20,13 +21,15 @@ export const metadata: Metadata = {
 }
 
 /**
- * The density a signed-in shopper stored on the server.
+ * The density the *server* renders, which is still nothing.
  *
- * **M04 seam.** `UserPreference` does not exist yet, so every visitor is
- * anonymous and the value comes from localStorage. When accounts land this
- * becomes an awaited read of the session, and the same number flows to both the
- * boot script and the provider — the two places that have to agree for the first
- * paint to be right.
+ * **The M04 seam closed on the client, not here** (TASK-0112). Reading the
+ * account server side would mean reading the session cookie, and a page that
+ * reads a cookie drops out of static rendering — which is the one thing
+ * `docs/design/pages.md` refuses for this app, because the storefront's static
+ * home page is all a visitor sees during a cold start of up to 90 seconds
+ * (TASK-0101). So the boot script paints what localStorage holds, and
+ * `AccountDensityProvider` reconciles it with the account a moment later.
  */
 function serverDensity(): null {
   return null
@@ -57,7 +60,7 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
           (TASK-0023 4장).
         */}
         <AuthProvider>
-          <DensityProvider serverDensity={initial}>
+          <AccountDensityProvider>
             <SkipLink href="#main">{layout.skipToContent}</SkipLink>
 
             <ShopHeader brand={messages.app.name} messages={layout} />
@@ -72,7 +75,7 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
             </main>
 
             <ShopFooter brand={messages.app.name} messages={layout.footer} />
-          </DensityProvider>
+          </AccountDensityProvider>
         </AuthProvider>
       </body>
     </html>

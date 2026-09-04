@@ -2,6 +2,7 @@ import type { DensityLevel } from '@shopping/ui'
 import type { DenialReason, HealthStatus, OauthFailureReason, OauthNotice } from '@shopping/shared'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
+import type { ApiFailureReason } from '@/lib/api-failure'
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'
 
@@ -59,6 +60,202 @@ export interface Messages {
    * vocabulary the sign-in round trip actually speaks.
    */
   readonly auth: AuthMessages
+  /**
+   * The account screens — profile, display and notification settings,
+   * withdrawal, the address book (TASK-0112).
+   *
+   * Its own slice rather than more keys under `auth`: `auth` is about *being*
+   * signed in, and this is about what one does afterwards. The two are read by
+   * different screens and only this one is behind `RequireSignIn`.
+   */
+  readonly mypage: MyPageMessages
+}
+
+export interface MyPageMessages {
+  readonly title: string
+  readonly description: string
+  readonly nav: MyPageNavMessages
+  readonly settings: SettingsMessages
+  readonly addresses: AddressBookMessages
+  /** A request that never got an answer. Keyed by the reason it did not. */
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+  /**
+   * The refusals these screens **branch on**, keyed by `error.code`.
+   *
+   * Partial on purpose, and the one place this catalog differs in kind from the
+   * consoles' `Record<UserFacingErrorCode, string>`. TASK-0023 kept an
+   * exhaustive catalog out of `apps/shop` because a storefront with one
+   * reachable sentence in fifteen is a catalog that drifts unnoticed; the
+   * account screens raise that to four, not to fifteen. Anything unlisted keeps
+   * the server's own sentence, which is what `serverFieldErrors` already falls
+   * back to (TASK-0112 4장).
+   */
+  readonly errors: Readonly<Record<string, string>>
+  readonly loadingLabel: string
+  readonly loadErrorTitle: string
+  readonly retryLabel: string
+  /** Shown only for a failure the reader cannot act on — a 5xx with an id. */
+  readonly requestIdLabel: string
+  readonly requestIdHint: string
+  readonly copyLabel: string
+  readonly copiedLabel: string
+}
+
+export interface MyPageNavMessages {
+  readonly label: string
+  readonly settings: string
+  readonly addresses: string
+}
+
+export interface SettingsMessages {
+  readonly title: string
+  readonly description: string
+  readonly profile: ProfileFormMessages
+  readonly density: DensitySettingMessages
+  readonly notifications: NotificationSettingMessages
+  readonly withdrawal: WithdrawalMessages
+}
+
+export interface ProfileFormMessages {
+  readonly legend: string
+  readonly avatarAlt: string
+  readonly nameLabel: string
+  readonly nameHint: string
+  readonly namePlaceholder: string
+  readonly avatarLabel: string
+  readonly avatarHint: string
+  readonly avatarPlaceholder: string
+  /** Google owns the identity, so the address is shown and never edited. */
+  readonly emailLabel: string
+  readonly emailHint: string
+  readonly rolesLabel: string
+  readonly save: string
+  readonly saving: string
+  readonly savedNotice: string
+  readonly submitError: string
+}
+
+export interface DensitySettingMessages {
+  readonly title: string
+  readonly description: string
+  readonly savedNotice: string
+  readonly saveError: string
+}
+
+export interface NotificationSettingMessages {
+  readonly legend: string
+  readonly description: string
+  /** One per switch, keyed by the `userPreferenceSchema` field it writes. */
+  readonly switches: Readonly<Record<'notifyOrder' | 'notifyClaim' | 'notifyMarketing', ToggleCopy>>
+  readonly savedNotice: string
+  readonly saveError: string
+}
+
+export interface ToggleCopy {
+  readonly label: string
+  readonly description: string
+}
+
+export interface WithdrawalMessages {
+  readonly title: string
+  readonly description: string
+  /** What is erased and what survives. Rendered as a list, not a sentence. */
+  readonly erased: readonly string[]
+  readonly kept: readonly string[]
+  readonly trigger: string
+  readonly confirmTitle: string
+  readonly confirmDescription: string
+  /**
+   * The word a person types to confirm, and its label.
+   *
+   * A second step in front of an irreversible action, because a dialog whose
+   * confirm button is one keypress away is a formality (TASK-0112 R4).
+   */
+  readonly phrase: string
+  readonly phraseLabel: string
+  readonly phraseHint: string
+  readonly phraseMismatch: string
+  readonly confirmLabel: string
+  readonly cancelLabel: string
+  readonly closeLabel: string
+  readonly blockedReason: string
+  readonly doneTitle: string
+  readonly doneBody: string
+  readonly doneAddresses: string
+  readonly doneSessions: string
+  readonly failed: string
+}
+
+export interface AddressBookMessages {
+  readonly title: string
+  readonly description: string
+  readonly listLabel: string
+  readonly loadingLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly addLabel: string
+  readonly defaultBadge: string
+  readonly makeDefault: string
+  readonly edit: string
+  readonly remove: string
+  readonly recipientLabel: string
+  readonly phoneLabel: string
+  readonly removeTitle: string
+  readonly removeDescription: string
+  readonly removeConfirm: string
+  readonly removeCancel: string
+  readonly removeCloseLabel: string
+  readonly removedNotice: string
+  /** Said only when the deletion moved the default to another address. */
+  readonly promotedNotice: string
+  readonly defaultChangedNotice: string
+  readonly savedNotice: string
+  readonly form: AddressFormMessages
+}
+
+export interface AddressFormMessages {
+  readonly addTitle: string
+  readonly editTitle: string
+  readonly labelLabel: string
+  readonly labelHint: string
+  readonly labelPlaceholder: string
+  readonly recipientLabel: string
+  readonly recipientPlaceholder: string
+  readonly phoneLabel: string
+  readonly phoneHint: string
+  readonly phonePlaceholder: string
+  readonly postalCodeLabel: string
+  readonly postalCodePlaceholder: string
+  readonly addressLine1Label: string
+  readonly addressLine1Placeholder: string
+  readonly addressLine2Label: string
+  readonly addressLine2Hint: string
+  readonly addressLine2Placeholder: string
+  readonly makeDefaultLabel: string
+  readonly makeDefaultHint: string
+  readonly firstIsDefaultHint: string
+  readonly searchLabel: string
+  readonly searchOpening: string
+  readonly searchPanelLabel: string
+  readonly searchClose: string
+  /** Shown when the widget could not be used, above the three plain fields. */
+  readonly manualTitle: string
+  readonly manualBody: string
+  readonly save: string
+  readonly saving: string
+  readonly cancel: string
+  readonly submitError: string
+  /** Field-level copy for the two rules the shared schema owns. */
+  readonly errors: AddressFormErrorMessages
+}
+
+export interface AddressFormErrorMessages {
+  readonly label: string
+  readonly recipientName: string
+  readonly phone: string
+  readonly postalCode: string
+  readonly addressLine1: string
+  readonly addressLine2: string
 }
 
 export interface AuthMessages {
@@ -123,9 +320,8 @@ export interface UserMenuMessages {
   readonly rolesLabel: string
   /** One per role, so the menu never shows `SELLER_OWNER` to a person. */
   readonly roleNames: Readonly<Record<string, string>>
+  /** Links to `/mypage/settings`, which TASK-0112 built. */
   readonly profileLabel: string
-  /** Profile editing arrives with TASK-0112; the entry says so until then. */
-  readonly profileReason: string
 }
 
 export interface RequireSignInMessages {
