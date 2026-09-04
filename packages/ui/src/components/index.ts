@@ -13,6 +13,9 @@
 export { Button, buttonClassName, BUTTON_SIZES, BUTTON_VARIANTS } from './button'
 export type { ButtonProps, ButtonSize, ButtonStyleOptions, ButtonVariant } from './button'
 
+export { GuardedButton } from './guarded-button'
+export type { GuardedButtonProps } from './guarded-button'
+
 export { IconButton, ICON_BUTTON_SIZES, ICON_BUTTON_VARIANTS } from './icon-button'
 export type { IconButtonProps } from './icon-button'
 

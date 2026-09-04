@@ -14,6 +14,18 @@
 export interface ConsoleMenuItem {
   readonly href: string
   readonly label: string
+  /**
+   * What the screen behind this entry asks the API for first, if anything.
+   *
+   * A plain string rather than `@shopping/shared`'s `Permission`: this package
+   * holds no contracts and imports none (`form/server-errors.ts` states the same
+   * rule). The app supplies its own vocabulary and {@link filterConsoleMenu}
+   * never interprets the value — it only hands it back to the predicate.
+   *
+   * Absent means "no permission gates this entry", which is the honest answer
+   * for a screen whose resource has none yet (TASK-0023 4장).
+   */
+  readonly permission?: string
 }
 
 /**
@@ -67,6 +79,31 @@ export function activeConsoleMenuItem(menu: ConsoleMenu, pathname: string): Cons
   }
 
   return best
+}
+
+/**
+ * The menu with everything the reader may not reach removed.
+ *
+ * Sections whose items all disappear go with them: a heading over nothing reads
+ * as a loading failure, and leaving it would make an empty group indistinguish-
+ * able from a broken one.
+ *
+ * The predicate is passed in rather than a set of held permissions, because the
+ * decision belongs to `@shopping/shared`'s authorization table and this package
+ * must not know it exists. An entry with no `permission` is always kept.
+ */
+export function filterConsoleMenu(
+  menu: ConsoleMenu,
+  allows: (permission: string) => boolean,
+): ConsoleMenu {
+  return menu
+    .map((section) => ({
+      ...section,
+      items: section.items.filter(
+        (item) => item.permission === undefined || allows(item.permission),
+      ),
+    }))
+    .filter((section) => section.items.length > 0)
 }
 
 /** The item at exactly this path — what a placeholder screen asks for. */

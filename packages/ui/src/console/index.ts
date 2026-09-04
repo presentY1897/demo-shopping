@@ -24,6 +24,7 @@ export {
   activeConsoleMenuItem,
   consoleMenuItemAt,
   consoleMenuItems,
+  filterConsoleMenu,
   isConsoleMenuItemActive,
 } from './menu'
 export type { ConsoleMenu, ConsoleMenuItem, ConsoleMenuSection } from './menu'
