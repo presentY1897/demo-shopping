@@ -278,6 +278,23 @@ function ConflictNotice({
 }
 
 /**
+ * The axes cannot be expanded, so there is nothing to save (F9).
+ *
+ * Refused here rather than by disabling the button: a natively disabled submit
+ * blocks the browser's *implicit* submission too, so Enter in a text field
+ * would do nothing at all and say nothing about why — the dead end TASK-0018
+ * 4.5 refuses and TASK-0109 made the same call. Pressing it meets this guard,
+ * which puts the reason above the table the repair is in.
+ */
+class OptionsRejected extends Error {
+  override readonly name = 'OptionsRejected'
+
+  constructor(readonly notice: string) {
+    super('the option axes cannot be expanded')
+  }
+}
+
+/**
  * 판매 시작 refused before the request went out, because a required attribute
  * is still empty (F6).
  *
@@ -434,6 +451,11 @@ function ProductEditorBody({
       // and the messages are already placed.
       if (error instanceof IncompleteForPublish) return error.errors
 
+      if (error instanceof OptionsRejected) {
+        setTableNotice(error.notice)
+        return { fieldErrors: {}, formErrors: [] }
+      }
+
       const failure = error instanceof ProductWriteRejection ? error.failure : apiFailure(error)
       const message = failureMessage(failure, {
         errors: messages.errors,
@@ -495,6 +517,10 @@ function ProductEditorBody({
         throw new ProductWriteRejection({ kind: 'transport', reason: 'unknown' })
       }
 
+      const [firstIssue] = optionIssues(axes)
+
+      if (firstIssue !== undefined) throw new OptionsRejected(copy.options.issues[firstIssue.code])
+
       // 임시저장 and 판매 시작 are validated differently, because the server
       // validates them differently (TASK-0113 4장): a draft may be unfinished
       // and a listing a buyer can see may not. The form itself holds the draft
@@ -539,6 +565,7 @@ function ProductEditorBody({
       bulk,
       categoryId,
       controller,
+      copy.options.issues,
       fields,
       images,
       messages,

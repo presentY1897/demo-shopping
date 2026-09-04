@@ -75,9 +75,18 @@ export function rowsFor(
   axes: readonly OptionAxis[],
   previous: readonly VariantRow[],
 ): readonly VariantRow[] {
+  const combinations = expandCombinations(axes)
+
+  // Nothing to expand: an axis with no choices yet, or a grid past the cap.
+  // The rows stay exactly as they were rather than emptying, because a table
+  // that vanished on the keystroke that added a 67th size would take every
+  // price the seller had typed with it — and the axes are one keystroke from
+  // being expandable again. The save is refused meanwhile (F9).
+  if (combinations.length === 0) return previous
+
   const held = new Map(previous.map((row) => [row.key, row] as const))
 
-  return expandCombinations(axes).map((values) => {
+  return combinations.map((values) => {
     const key = combinationKeyOf(values)
 
     return held.get(key) ?? blankRow(values)
