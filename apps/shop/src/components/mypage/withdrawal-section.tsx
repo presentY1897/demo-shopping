@@ -1,10 +1,9 @@
 'use client'
 
-import type { WithdrawalResponse } from '@shopping/shared'
+import type { ApiFailure, WithdrawalResponse } from '@shopping/shared'
 import { Button, Card, GuardedButton, Input, Modal, ModalClose } from '@shopping/ui/components'
 import { useId, useState } from 'react'
 
-import type { ApiFailure } from '@/lib/api-failure'
 import { useAuthorization } from '@/lib/auth/authorization'
 import type { WithdrawalResult } from '@/lib/profile/use-account'
 import type { MyPageMessages, WithdrawalMessages } from '@/messages'

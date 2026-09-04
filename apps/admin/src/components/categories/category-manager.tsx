@@ -1,8 +1,8 @@
 'use client'
 
 import { ToastProvider } from '@shopping/ui/components'
+import type { ErrorMessages } from '@shopping/shared'
 
-import type { ErrorMessages } from '@/lib/errors'
 import type { CategoryMessages, ErrorNoticeMessages } from '@/messages'
 
 import { CategoryWorkspace } from './category-workspace'

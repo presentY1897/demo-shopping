@@ -8,12 +8,10 @@ import type {
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
-import type { AttributeType } from '@shopping/shared'
+import type { ApiFailureReason, AttributeType, ErrorMessages } from '@shopping/shared'
 
 import type { SellerDecision } from '@/lib/sellers/decisions'
 
-import type { ApiFailureReason } from '@/lib/api-failure'
-import type { ErrorMessages } from '@/lib/errors'
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'
 

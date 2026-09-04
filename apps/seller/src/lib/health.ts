@@ -1,7 +1,7 @@
 import type { HealthResponse } from '@shopping/shared'
-import { isApiClientError } from '@shopping/shared'
+import { ApiConfigurationError, isApiClientError } from '@shopping/shared'
 
-import { ApiConfigurationError, getApiClient } from './api'
+import { getApiClient } from './api'
 
 /** Every way the health call can fail, as one closed set the catalog covers. */
 export type HealthFailureReason =

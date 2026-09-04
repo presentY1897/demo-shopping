@@ -1,7 +1,5 @@
-import { isApiFieldError } from '@shopping/shared'
-
-import type { ApiFailure } from '@/lib/api-failure'
-import { hasCode } from '@/lib/api-failure'
+import { hasCode, isApiFieldError } from '@shopping/shared'
+import type { ApiFailure } from '@shopping/shared'
 
 /**
  * Where a refused save is drawn (TASK-0114 4장 「도메인 오류 코드를 어디에

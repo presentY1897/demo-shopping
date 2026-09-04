@@ -9,8 +9,8 @@
  */
 
 import { describe, expect, it } from 'vitest'
+import type { ApiFailure } from '@shopping/shared'
 
-import type { ApiFailure } from '@/lib/api-failure'
 import {
   isSellerInactive,
   isVersionConflict,

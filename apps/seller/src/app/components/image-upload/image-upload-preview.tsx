@@ -1,10 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import type { ApiFailureReason, ErrorMessages } from '@shopping/shared'
 
 import { ProductImageUploader } from '@/components/product-images/product-image-uploader'
-import type { ApiFailureReason } from '@/lib/api-failure'
-import type { ErrorMessages } from '@/lib/errors'
 import type { ImageUploadMessages } from '@/messages'
 
 /**

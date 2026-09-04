@@ -1,10 +1,13 @@
 'use client'
 
-import type { Address, AddressCreateRequest, AddressUpdateRequest } from '@shopping/shared'
+import type {
+  Address,
+  AddressCreateRequest,
+  AddressUpdateRequest,
+  ApiFailure,
+} from '@shopping/shared'
 import { useCallback, useEffect, useState } from 'react'
-
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure, hasCode } from '@/lib/api-failure'
+import { apiFailure, hasCode } from '@shopping/shared'
 
 import {
   createAddress,

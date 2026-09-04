@@ -96,3 +96,17 @@ export class ApiClientError extends Error {
 export function isApiClientError(value: unknown): value is ApiClientError {
   return value instanceof ApiClientError
 }
+
+/**
+ * The API origin is not configured — thrown before a request is ever made.
+ *
+ * Not an {@link ApiClientError}: nothing was sent, so there is no kind, no
+ * status and no request id to carry. It is here rather than in each app because
+ * `apiFailure` has to tell it apart from everything else by `instanceof`, and
+ * three classes with the same name are three different types to that check.
+ * Each app's `lib/api.ts` used to declare its own, byte for byte identical
+ * (D-219).
+ */
+export class ApiConfigurationError extends Error {
+  override readonly name = 'ApiConfigurationError'
+}

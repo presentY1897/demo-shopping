@@ -1,13 +1,12 @@
 'use client'
 
-import type { DisplayDensity } from '@shopping/shared'
+import type { ApiFailure, DisplayDensity } from '@shopping/shared'
 import type { DensityLevel } from '@shopping/ui'
 import { DensityProvider, readStoredDensity } from '@shopping/ui/density'
 import type { ReactNode } from 'react'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { apiFailure } from '@shopping/shared'
 
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure } from '@/lib/api-failure'
 import { useAuth } from '@/lib/auth/auth-context'
 import {
   densityLevelOf,

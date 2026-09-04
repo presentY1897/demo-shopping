@@ -1,6 +1,12 @@
 'use client'
 
-import type { AttributeValues, Product, ProductImageInput, ProductStatus } from '@shopping/shared'
+import type {
+  ApiFailure,
+  AttributeValues,
+  Product,
+  ProductImageInput,
+  ProductStatus,
+} from '@shopping/shared'
 import {
   Badge,
   Button,
@@ -15,10 +21,8 @@ import { PageHeader } from '@shopping/ui/console'
 import type { FieldDef, FieldValue, FormValues, ValidationErrors } from '@shopping/ui/form'
 import { serverFieldErrors, validateWithSchema } from '@shopping/ui/form'
 import { useCallback, useMemo, useState } from 'react'
+import { apiFailure, errorMessage, failureMessage, quotableRequestId } from '@shopping/shared'
 
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure, failureMessage, quotableRequestId } from '@/lib/api-failure'
-import { errorMessage } from '@/lib/errors'
 import { attributeFields, fieldSignature, formValuesFrom } from '@/lib/products/attribute-values'
 import type { OptionAxis } from '@/lib/products/combinations'
 import { expandCombinations, optionIssues, variantDiff } from '@/lib/products/combinations'

@@ -9,14 +9,20 @@
  * canvas, and jsdom has none.
  */
 
-import { ApiClientError, PRODUCT_MAX_IMAGES, UPLOAD_MAX_BYTES } from '@shopping/shared'
+import {
+  ApiClientError,
+  ApiConfigurationError,
+  apiFailure,
+  errorMessage,
+  failureMessage,
+  PRODUCT_MAX_IMAGES,
+  quotableRequestId,
+  UPLOAD_MAX_BYTES,
+} from '@shopping/shared'
 import type { ImageUploadStatus } from '@shopping/ui/components'
 import { describe, expect, it } from 'vitest'
+import type { ApiFailure } from '@shopping/shared'
 
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure, failureMessage, quotableRequestId } from '@/lib/api-failure'
-import { ApiConfigurationError } from '@/lib/api'
-import { errorMessage } from '@/lib/errors'
 import type { UploadMessages } from '@/lib/uploads/failures'
 import { localFailure, presignFailure, storageFailureKey } from '@/lib/uploads/failures'
 import type { GalleryEntry } from '@/lib/uploads/gallery'

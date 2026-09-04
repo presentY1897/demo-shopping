@@ -2,8 +2,8 @@
 
 import { Button, ErrorNotice } from '@shopping/ui/components'
 import { useState } from 'react'
+import { apiFailure } from '@shopping/shared'
 
-import { apiFailure } from '@/lib/api-failure'
 import { useAuth } from '@/lib/auth/auth-context'
 import { issueDemoAccount } from '@/lib/demo/demo-client'
 import type { AuthMessages, DemoMessages } from '@/messages'

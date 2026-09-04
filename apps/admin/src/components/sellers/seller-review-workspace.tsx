@@ -1,7 +1,7 @@
 'use client'
 
-import type { Seller, SellerStatus } from '@shopping/shared'
-import { grantedScopes, sellerStatuses } from '@shopping/shared'
+import type { ApiFailure, ErrorMessages, Seller, SellerStatus } from '@shopping/shared'
+import { failureMessage, grantedScopes, quotableRequestId, sellerStatuses } from '@shopping/shared'
 import {
   Button,
   DataList,
@@ -16,11 +16,8 @@ import {
 } from '@shopping/ui/components'
 import { useCallback, useId, useState } from 'react'
 
-import type { ApiFailure } from '@/lib/api-failure'
-import { failureMessage, quotableRequestId } from '@/lib/api-failure'
 import { useAuth } from '@/lib/auth/auth-context'
 import { useAuthorization } from '@/lib/auth/authorization'
-import type { ErrorMessages } from '@/lib/errors'
 import type { SellerDecision } from '@/lib/sellers/decisions'
 import { useDecisionDenial } from '@/lib/sellers/use-decision-denial'
 import { useSellerReviewQueue } from '@/lib/sellers/use-seller-review'

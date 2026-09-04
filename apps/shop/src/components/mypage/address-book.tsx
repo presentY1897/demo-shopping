@@ -1,11 +1,10 @@
 'use client'
 
-import type { Address } from '@shopping/shared'
+import type { Address, ApiFailure } from '@shopping/shared'
 import { Button, DataList, EmptyState } from '@shopping/ui/components'
 import { ConfirmDialog, useConfirm } from '@shopping/ui/form'
 import { useCallback, useState } from 'react'
 
-import type { ApiFailure } from '@/lib/api-failure'
 import type { AddressFormValues } from '@/lib/profile/address-form-schema'
 import { addressCreateFrom, addressUpdateFrom } from '@/lib/profile/address-form-schema'
 import { useAddressBook } from '@/lib/profile/use-addresses'

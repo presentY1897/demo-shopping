@@ -3,10 +3,9 @@
 import { uploadContentTypes } from '@shopping/shared'
 import { Button, ErrorNotice, ImageDropZone, ImageUploadList } from '@shopping/ui/components'
 import { useEffect } from 'react'
+import type { ApiFailureReason, ErrorMessages } from '@shopping/shared'
 
 import { getApiClient } from '@/lib/api'
-import type { ApiFailureReason } from '@/lib/api-failure'
-import type { ErrorMessages } from '@/lib/errors'
 import type { ImageUploadMessages } from '@/messages'
 import { useImageUpload } from '@/lib/uploads/use-image-upload'
 import type { ImageEncoder } from '@/lib/uploads/prepare-image'

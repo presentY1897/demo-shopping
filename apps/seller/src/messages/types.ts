@@ -1,5 +1,7 @@
 import type {
+  ApiFailureReason,
   DenialReason,
+  ErrorMessages,
   HealthStatus,
   OauthFailureReason,
   OauthNotice,
@@ -10,8 +12,6 @@ import type { ImageUploadListLabels } from '@shopping/ui/components'
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
-import type { ApiFailureReason } from '@/lib/api-failure'
-import type { ErrorMessages } from '@/lib/errors'
 import type { StoreFieldErrorMessages } from '@/lib/sellers/store-form'
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'

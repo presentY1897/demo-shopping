@@ -1,15 +1,15 @@
 'use client'
 
 import type {
+  ApiFailure,
   AttributeDefinition,
   CreateAttributeRequest,
   EffectiveAttribute,
   UpdateAttributeRequest,
 } from '@shopping/shared'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { apiFailure, hasCode } from '@shopping/shared'
 
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure, hasCode } from '@/lib/api-failure'
 import { getApiClient } from '@/lib/api'
 import { toRows } from '@/lib/categories/tree'
 

@@ -1,5 +1,5 @@
-import type { ErrorParams } from '@/lib/errors'
-import { interpolate } from '@/lib/errors'
+import type { ErrorParams } from '@shopping/shared'
+import { interpolate } from '@shopping/shared'
 
 /**
  * `'{name} 에서 물려받음'` + `{ name: '여성' }` → `'여성 에서 물려받음'`.

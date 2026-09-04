@@ -10,8 +10,23 @@ export { domainErrorCodes, isDomainErrorCode, userFacingErrorCodes } from './api
 export type { DomainErrorCode, UserFacingErrorCode } from './api/error-codes.js'
 export { healthDependencyKeys, healthResponseSchema, healthStatusSchema } from './health.js'
 export type { HealthDependencyKey, HealthResponse, HealthStatus } from './health.js'
-export { ApiClientError, apiErrorKinds, isApiClientError } from './api/api-client-error.js'
+export {
+  ApiClientError,
+  ApiConfigurationError,
+  apiErrorKinds,
+  isApiClientError,
+} from './api/api-client-error.js'
 export type { ApiClientErrorInit, ApiErrorKind } from './api/api-client-error.js'
+export {
+  apiFailure,
+  apiFailureReasons,
+  failureMessage,
+  hasCode,
+  quotableRequestId,
+} from './api/api-failure.js'
+export type { ApiFailure, ApiFailureReason } from './api/api-failure.js'
+export { errorMessage, firstFieldError, interpolate, paramsOf } from './api/error-messages.js'
+export type { ErrorMessages, ErrorParams } from './api/error-messages.js'
 export { APP_ID_HEADER, appIds, isAppId } from './api/app-id.js'
 export type { AppId } from './api/app-id.js'
 export {

@@ -11,15 +11,13 @@ import {
 } from '@shopping/ui/components'
 import { serverFieldErrors } from '@shopping/ui/form'
 import { useMemo, useState } from 'react'
+import type { ApiFailure, ErrorMessages } from '@shopping/shared'
+import { errorMessage, failureMessage, hasCode, quotableRequestId } from '@shopping/shared'
 
 import { useAuthorization } from '@/lib/auth/authorization'
-import type { ApiFailure } from '@/lib/api-failure'
-import { failureMessage, hasCode, quotableRequestId } from '@/lib/api-failure'
 import type { CategoryRow, MoveDirection } from '@/lib/categories/tree'
 import { branchIds, hasChildren, rowById, visibleRows } from '@/lib/categories/tree'
 import { useCategoryTree } from '@/lib/categories/use-category-tree'
-import type { ErrorMessages } from '@/lib/errors'
-import { errorMessage } from '@/lib/errors'
 import type { CategoryMessages, ErrorNoticeMessages } from '@/messages'
 
 import { CategoryConflictDialog } from './category-conflict-dialog'
