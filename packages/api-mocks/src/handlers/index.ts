@@ -3,6 +3,7 @@ import type { RequestHandler } from 'msw'
 import { adminSellerHandlers } from './admin-sellers'
 import { attributeHandlers } from './attributes'
 import { categoryHandlers } from './categories'
+import { demoHandlers } from './demo'
 import { healthHandlers } from './health'
 import { sellerHandlers } from './sellers'
 import { profileHandlers } from './profile'
@@ -21,6 +22,7 @@ import { userRolesHandlers } from './user-roles'
 export const defaultHandlers: readonly RequestHandler[] = [
   ...healthHandlers,
   ...sessionHandlers,
+  ...demoHandlers,
   ...userRolesHandlers,
   ...profileHandlers,
   ...categoryHandlers,
@@ -33,6 +35,7 @@ export const defaultHandlers: readonly RequestHandler[] = [
 export { adminSellerHandlers, resetAdminSellerStore } from './admin-sellers'
 export { attributeHandlers, resetAttributeStore } from './attributes'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
+export { demoHandlers, failNextDemoIssue, mockDemoAccount, resetDemoStore } from './demo'
 export { resetSellerStore, sellerHandlers, sellerRequests, sellerRowSnapshot } from './sellers'
 export type { SellerRequestRecord } from './sellers'
 export {
