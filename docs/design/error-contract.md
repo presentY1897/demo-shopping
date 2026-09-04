@@ -82,7 +82,7 @@ API 가 실패를 알리는 형식과, 각 오류 코드가 화면에서 어떤 
 | `CATEGORY_PARENT_MISSING` | 400 | `parentId` | — | 선택한 상위 카테고리가 없어졌어요. 목록을 새로고침해 주세요. | 필드 오류 |
 | `ATTRIBUTE_KEY_TAKEN` | 409 | `key` | `name` | '{name}' 에 같은 이름의 속성이 이미 있어요. | 필드 오류 |
 | `ATTRIBUTE_VERSION_CONFLICT` | 409 | `version` | — | 다른 관리자가 먼저 저장했어요. 최신 내용을 불러올까요? | 충돌 다이얼로그 |
-| `ATTRIBUTE_IN_USE` | 409 | — | `count` | 이 속성을 쓰는 상품이 {count}개 있어요. 상품에서 먼저 값을 지워 주세요. | 비활성화 안내 |
+| `ATTRIBUTE_IN_USE` | 409 | `id` | `count` | 이 속성을 쓰는 상품이 {count}개 있어요. 상품에서 먼저 값을 지워 주세요. | 비활성화 안내 |
 | `PRODUCT_ATTRIBUTES_REQUIRED` | 400 | `attributes.<key>` | — | 판매를 시작하려면 필수 정보를 모두 채워야 해요. | 필드 오류 |
 | `PRODUCT_TOO_MANY_VARIANTS` | 400 | `options` | `max` | 옵션 조합은 최대 {max}개까지 만들 수 있어요. 옵션 값을 줄여 주세요. | 필드 오류 |
 | `PRODUCT_NOT_SELLABLE` | 400 | `status` | — | 판매하려면 주문할 수 있는 옵션이 하나는 있어야 해요. | 필드 오류 |

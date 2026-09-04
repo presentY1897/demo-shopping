@@ -486,23 +486,36 @@ export class AttributeService {
    * below it**, because that is where the definition applies (TASK-0030 4.3).
    */
   private async refuseRemovalInUse(stored: StoredDefinition): Promise<void> {
-    const [row] = await this.prisma.$queryRaw<{ used: boolean }[]>`
-      SELECT EXISTS (
-        SELECT 1
-          FROM "Product" p
-          JOIN "Category" c ON c."id" = p."categoryId"
-         WHERE p."deletedAt" IS NULL
-           AND c."path" LIKE (
-                 SELECT d."path" FROM "Category" d WHERE d."id" = ${stored.categoryId}::int
-               ) || '%'
-           AND jsonb_exists(p."attributes", ${stored.key}::text)
-      ) AS "used"
+    // A count rather than an `EXISTS`. TASK-0031 F5 asked the screen to say how
+    // many products stand on the definition and could not be given the number:
+    // the refusal carried a sentence and nothing else, and a console cannot put
+    // a figure it was never sent into its own copy. The two queries cost the
+    // same index scan — `EXISTS` stops early, but this runs once, on a
+    // deliberate delete, against a predicate that is almost always empty.
+    const [row] = await this.prisma.$queryRaw<{ used: number }[]>`
+      SELECT count(*)::int AS "used"
+        FROM "Product" p
+        JOIN "Category" c ON c."id" = p."categoryId"
+       WHERE p."deletedAt" IS NULL
+         AND c."path" LIKE (
+               SELECT d."path" FROM "Category" d WHERE d."id" = ${stored.categoryId}::int
+             ) || '%'
+         AND jsonb_exists(p."attributes", ${stored.key}::text)
     `
+    const used = row?.used ?? 0
 
-    if (row?.used !== true) return
+    if (used === 0) return
 
     throw new ConflictException(
-      '이 속성을 쓰고 있는 상품이 있어요. 상품에서 먼저 값을 지운 뒤 삭제해 주세요.',
+      domainFailure(
+        'ATTRIBUTE_IN_USE',
+        `이 속성을 쓰고 있는 상품이 ${String(used)}개 있어요. 상품에서 먼저 값을 지운 뒤 삭제해 주세요.`,
+        // `id` — the definition the operator asked to delete. Not a control
+        // they typed into, but the thing they acted on, and `params` rides on a
+        // `details` entry which has to name something. A screen puts this
+        // message on the row rather than under an input.
+        { field: 'id', params: { count: used } },
+      ),
     )
   }
 
