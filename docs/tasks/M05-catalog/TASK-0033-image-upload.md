@@ -303,6 +303,8 @@ F8·F9 는 계획에 없던 항목이다. TASK-0011 이 서명·용량·형식·
 | Q3 빌드 | `pnpm build` | 전 패키지·전 앱 성공 |
 | Q4 테스트 | `pnpm test` | **2,317 통과 · 1 skip · 0 실패** (ui 829 / api 946 / admin 244 / seller 106 / shop 100 / api-mocks 92). 이 브랜치가 더한 것 **117개** |
 | — 포맷 | `pnpm format:check` | exit 0 |
+| Q6 CI | [PR #57](https://github.com/presentY1897/demo-shopping/pull/57) | **typecheck · lint · build · test 4개 전부 green.** Vercel 배포 4건은 계정의 24시간 배포 한도에 걸려 실패했다 — 이 변경과 무관하고 필수 체크가 아니다 |
+| Q7 커밋 | commitlint | 위반 0 |
 | Q5 순수 로직 | `pnpm --filter @shopping/seller exec vitest run --coverage` | `image-plan` · `gallery` · `prepare-image` · `storage-transport` · `failures` · `errors` · `api-failure` **분기 100%** |
 | Q5 프론트 | 아래 U 목록 | 대역: 백엔드도 버킷도 msw. `setupTestServer` 가 소켓을 세므로 실 API 호출 **0건**이 측정값이다 |
 | P2 접근성 | 실 브라우저에서 axe-core 4.13 (WCAG 2.1 A·AA + best-practice) | **위반 0건** — 빈 화면과 3장짜리 갤러리 양쪽 |
