@@ -36,7 +36,31 @@ export const permissions = [
   'user.read',
   'user.write',
   'user.delete',
+  /**
+   * Editing **one's own** account — profile, preferences, addresses.
+   *
+   * Separate from `user.write`, which TASK-0105 gave to `ADMIN_SUPER` alone so
+   * that operating on somebody else's account stays a rare capability. Reusing
+   * it here would have handed every buyer the admin's ability (TASK-0111).
+   */
+  'profile.write',
+  /**
+   * Closing one's own account.
+   *
+   * Split from `profile.write` because it cannot be undone: a future role meant
+   * to allow only "change display density" would otherwise carry the ability to
+   * delete the account with it (TASK-0111).
+   */
+  'profile.delete',
   'seller.read',
+  /**
+   * Applying to sell, and editing one's own store.
+   *
+   * `BUYER` holds it too — **applying is done by somebody who is not a seller
+   * yet** — and the `own` scope is what keeps that from reaching another store
+   * (TASK-0108).
+   */
+  'seller.write',
   'seller.approve',
   'seller.suspend',
   'demo.manage',
