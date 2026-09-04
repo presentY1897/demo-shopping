@@ -90,6 +90,21 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // TASK-0032. Two questions with no I/O and no second opinion: which
+        // variants a product has, and how many of one an order may contain.
+        // Both fail silently when they are wrong — a duplicated combination is
+        // two rows answering one buyer selection, so the price shown depends on
+        // which the planner returned first, and a cap resolved with the
+        // precedence backwards is enforced by nobody while every screen still
+        // displays it. Four other tasks will call `resolvePurchaseLimit`
+        // (TASK-0045 · 0048 · 0049 · 0050), which is the reason it is a function
+        // here rather than an expression in each of them.
+        'src/catalog/variant-rules.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
         /**
          * TASK-0117. The error contract's decision-making, all of it pure:
          * which code and sentence a status maps to, what a domain failure's
