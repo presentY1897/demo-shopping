@@ -60,6 +60,22 @@ export function StoreOnboarding({
   const controller = useOwnStore()
   const { state } = controller
 
+  /**
+   * What the last write did, held **here** rather than inside the form.
+   *
+   * The form is remounted whenever the stored row moves on, which is exactly
+   * what a successful save does — so a notice owned by the form would be thrown
+   * away by the very thing it is announcing. The read's own states are the same
+   * story: applying takes the screen from `absent` to `ready`, and that is a
+   * different branch, not a re-render.
+   */
+  const [outcome, setOutcome] = useState<Outcome>({ kind: 'idle' })
+
+  const reload = useCallback(() => {
+    setOutcome({ kind: 'idle' })
+    controller.reload()
+  }, [controller])
+
   const description = surface === 'apply' ? copy.applyDescription : copy.settingsDescription
 
   return (
@@ -85,7 +101,15 @@ export function StoreOnboarding({
       ) : null}
 
       {state.status === 'absent' && surface === 'apply' ? (
-        <StoreEditor controller={controller} messages={messages} seller={null} title={title} />
+        <StoreEditor
+          controller={controller}
+          messages={messages}
+          onOutcome={setOutcome}
+          onReload={reload}
+          outcome={outcome}
+          seller={null}
+          title={title}
+        />
       ) : null}
 
       {state.status === 'ready' ? (
@@ -96,6 +120,9 @@ export function StoreOnboarding({
           // here, which is exactly why the reader's text survives one.
           key={`${state.seller.id}-${String(state.seller.version)}`}
           messages={messages}
+          onOutcome={setOutcome}
+          onReload={reload}
+          outcome={outcome}
           seller={state.seller}
           title={title}
         />
@@ -199,16 +226,22 @@ function StoreEditor({
   seller,
   controller,
   messages,
+  outcome,
+  onOutcome,
+  onReload,
   title,
 }: {
   readonly seller: Seller | null
   readonly controller: OwnStoreController
   readonly messages: Messages
+  /** Owned by the caller, because a save remounts this component. */
+  readonly outcome: Outcome
+  readonly onOutcome: (outcome: Outcome) => void
+  readonly onReload: () => void
   /** Names the form for a screen reader, so it is not an unlabelled region. */
   readonly title: string
 }) {
   const copy = messages.store
-  const [outcome, setOutcome] = useState<Outcome>({ kind: 'idle' })
   const bannerId = useId()
 
   const reapplying = seller === null || seller.status === 'REJECTED'
@@ -278,13 +311,13 @@ function StoreEditor({
           : await controller.save(submission.request)
 
       if (result.ok) {
-        setOutcome({ kind: submission.kind === 'apply' ? 'applied' : 'saved' })
+        onOutcome({ kind: submission.kind === 'apply' ? 'applied' : 'saved' })
         return
       }
       // A lost optimistic lock is not a field error: `version` is not an input,
       // and the answer is a choice rather than a correction (F6).
       if (result.conflict !== undefined) {
-        setOutcome({ kind: 'conflict', latest: result.conflict })
+        onOutcome({ kind: 'conflict', latest: result.conflict })
         return
       }
 
@@ -314,7 +347,7 @@ function StoreEditor({
         <StoreConflictNotice
           messages={copy.conflict}
           onOverwrite={form.submit}
-          onReload={controller.reload}
+          onReload={onReload}
           pending={form.submitting}
         />
       ) : null}
@@ -340,12 +373,16 @@ function StoreEditor({
         />
 
         <div className="flex flex-wrap gap-2">
-          <Button
-            disabled={availability.status === 'taken'}
-            loading={form.submitting}
-            type="submit"
-            variant="primary"
-          >
+          {/*
+            Not `disabled` when the name is taken, and that is a decision rather
+            than an omission. A natively disabled submit button blocks the
+            browser's *implicit* submission too, so Enter in a text field would
+            do nothing at all and say nothing about why — the dead end TASK-0018
+            4.5 refuses. Pressing it instead meets the guard in `onSubmit`, which
+            puts the reason under the input it is about, which is where the
+            server's own 409 about the same name lands (R2). TASK-0109 9장.
+          */}
+          <Button loading={form.submitting} type="submit" variant="primary">
             {submitLabel}
           </Button>
         </div>
