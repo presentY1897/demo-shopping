@@ -133,6 +133,9 @@ export interface ProfileFormMessages {
   readonly saving: string
   readonly savedNotice: string
   readonly submitError: string
+  /** One sentence per rule the shared schema owns. The rule itself stays there. */
+  readonly nameError: string
+  readonly avatarError: string
 }
 
 export interface DensitySettingMessages {
