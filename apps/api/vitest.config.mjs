@@ -251,6 +251,19 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // TASK-0111. Which address is the default, with no I/O. The partial
+        // unique index says "never two"; it cannot say "while there are
+        // addresses, one of them". That half is decided here, and it fails
+        // silently — an account whose default was deleted and never replaced
+        // has an address book that looks entirely normal, and what breaks is
+        // checkout (M07), later, on the one account it happened to. A branch
+        // nothing reaches is a moment nobody decided about.
+        'src/profile/default-address.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
       },
     },
   },
