@@ -8,6 +8,7 @@
     "build": "node ../../scripts/web-app.mjs shop build",
     "start": "node ../../scripts/web-app.mjs shop start",
     "test": "vitest run",
+    "test:coverage": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix --max-warnings 0",
