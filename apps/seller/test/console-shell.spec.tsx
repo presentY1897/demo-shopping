@@ -16,9 +16,9 @@
  * provider seeded with the role that opens this console.
  */
 
-import { sessionSellerOwner } from '@shopping/api-mocks'
+import { sessionBuyer, sessionSellerApplicant, sessionSellerOwner } from '@shopping/api-mocks'
 import { consoleMenuItems } from '@shopping/ui/console'
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
@@ -139,5 +139,60 @@ describe('the account menu', () => {
 
     expect(profile).toHaveAttribute('aria-disabled', 'true')
     expect(profile).toHaveAccessibleDescription(auth.menu.profileReason)
+  })
+})
+
+/**
+ * Whoever cannot enter the console gets the one screen they can use
+ * (TASK-0109 4장).
+ *
+ * The permission filter above cannot do this and the assertion below says why:
+ * a `BUYER` holds nearly every `*.read` the menu is gated on, so filtering an
+ * applicant's sidebar by permission leaves eight links that all bounce off
+ * `ConsoleGuard`. The question this filter asks is `mayEnterConsole` — the same
+ * one the guard asks.
+ */
+describe('the sidebar before an application is approved', () => {
+  const [entry] = consoleMenuItems(layout.onboardingMenu)
+
+  it.each([
+    ['applied, not yet approved', sessionSellerApplicant],
+    ['never applied', sessionBuyer],
+  ])('offers only 입점 신청 (%s)', async (_label, session) => {
+    pathname.current = '/apply'
+    stubViewport(VIEWPORTS.desktop)
+    renderWithAuth(
+      <SellerShell messages={layout}>
+        <h1>{'/apply'}</h1>
+      </SellerShell>,
+      { session },
+    )
+
+    const nav = screen.getByRole('navigation', { name: layout.shell.navLabel })
+
+    expect(await within(nav).findByRole('link', { name: entry?.label })).toHaveAttribute(
+      'href',
+      entry?.href,
+    )
+    // Every console destination is gone, not merely reordered. The brand link
+    // at the top of the sidebar is the shell's own and stays.
+    await waitFor(() => {
+      for (const item of consoleMenuItems(layout.menu)) {
+        expect(within(nav).queryByRole('link', { name: item.label })).not.toBeInTheDocument()
+      }
+    })
+  })
+
+  it('leaves the full menu for an approved seller', async () => {
+    renderShell('/')
+
+    const nav = screen.getByRole('navigation', { name: layout.shell.navLabel })
+
+    await waitFor(() => {
+      expect(within(nav).queryByRole('link', { name: entry?.label })).not.toBeInTheDocument()
+    })
+    for (const item of consoleMenuItems(layout.menu)) {
+      expect(within(nav).getByRole('link', { name: item.label })).toBeVisible()
+    }
   })
 })
