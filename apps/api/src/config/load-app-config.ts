@@ -11,11 +11,22 @@ import { mergeEnv } from './merge-env.js'
 import { parseOriginList } from './origins.js'
 import type { ObjectStorageConfig } from './storage-config.js'
 import { resolveObjectStorageConfig } from './storage-config.js'
+import { REFRESH_MAX_AGE_SECONDS } from '../auth/session-cookie.js'
 import { readPackageVersion } from './package-version.js'
 import { findRepoRoot, loadEnvFiles } from './workspace.js'
 
 /** Used only when `apps/api/package.json` cannot be read (unexpected layout). */
 const UNKNOWN_VERSION = '0.0.0-unknown'
+
+/**
+ * 15 minutes (TASK-0022 4장).
+ *
+ * A constant rather than a variable: the number is a security decision paired
+ * with "no revocation list" (R4), not something an operator tunes per
+ * deployment. Making it configurable would invite a deployment where a stolen
+ * access token stays good for a day.
+ */
+const ACCESS_TOKEN_TTL_SECONDS = 15 * 60
 
 export interface LoadedAppConfig {
   readonly config: AppConfig
@@ -55,6 +66,11 @@ function toAppConfig(env: Env, resolved: Resolved): AppConfig {
     },
     storage: resolved.storage,
     googleOAuth: resolved.googleOAuth,
+    auth: {
+      jwtSecret: env.JWT_SECRET,
+      accessTokenTtlSeconds: ACCESS_TOKEN_TTL_SECONDS,
+      refreshTokenTtlSeconds: REFRESH_MAX_AGE_SECONDS,
+    },
     corsOrigins: resolved.corsOrigins,
     appOrigins: resolved.appOrigins,
   }

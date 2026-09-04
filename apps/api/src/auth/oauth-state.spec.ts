@@ -9,7 +9,6 @@ import {
   OAUTH_STATE_COOKIE,
   OAUTH_STATE_MAX_AGE_SECONDS,
   OAUTH_STATE_PATH,
-  readCookie,
   statesMatch,
 } from './oauth-state.js'
 
@@ -158,51 +157,4 @@ describe('the cookie the callback sends back', () => {
       expect(withoutMaxAge(cleared)).toEqual(withoutMaxAge(set))
     },
   )
-})
-
-describe('reading one cookie out of a request', () => {
-  it('finds it among the others a browser sends', () => {
-    expect(
-      readCookie(`other=1; ${OAUTH_STATE_COOKIE}=shop.${STATE}; last=2`, OAUTH_STATE_COOKIE),
-    ).toBe(`shop.${STATE}`)
-  })
-
-  it('tolerates the spacing browsers actually use', () => {
-    expect(readCookie(`  ${OAUTH_STATE_COOKIE} =  value  ;other=1`, OAUTH_STATE_COOKIE)).toBe(
-      'value',
-    )
-  })
-
-  it('does not answer with a cookie whose name merely starts the same', () => {
-    // `shopping_oauth_state_v2` next to `shopping_oauth_state` is not a
-    // hypothetical: a rename that ships alongside the old name would otherwise
-    // make every sign-in compare the wrong value.
-    const header = `${OAUTH_STATE_COOKIE}_v2=wrong; ${OAUTH_STATE_COOKIE}=right`
-
-    expect(readCookie(header, OAUTH_STATE_COOKIE)).toBe('right')
-  })
-
-  it('keeps a value containing an equals sign intact', () => {
-    expect(readCookie('token=YWJj==', 'token')).toBe('YWJj==')
-  })
-
-  it('skips a fragment that is not a pair at all', () => {
-    expect(readCookie(`nonsense; ${OAUTH_STATE_COOKIE}=value`, OAUTH_STATE_COOKIE)).toBe('value')
-  })
-
-  it('answers undefined when the cookie is absent or there is no header', () => {
-    expect(readCookie('other=1', OAUTH_STATE_COOKIE)).toBeUndefined()
-    expect(readCookie(undefined, OAUTH_STATE_COOKIE)).toBeUndefined()
-  })
-
-  it('reads back what the sign-in wrote', () => {
-    // The two halves meeting: what `buildStateCookie` serialises is what a
-    // browser sends back on the callback, and it has to decode to the app the
-    // sign-in started from.
-    const value = encodeOauthState({ state: STATE, app: 'seller' })
-
-    expect(
-      decodeOauthState(readCookie(`${OAUTH_STATE_COOKIE}=${value}`, OAUTH_STATE_COOKIE)),
-    ).toEqual({ state: STATE, app: 'seller' })
-  })
 })

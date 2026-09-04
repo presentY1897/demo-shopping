@@ -224,6 +224,9 @@ export type {
   OauthResult,
 } from './api/google-auth.js'
 
+export { sessionFailureReasons, sessionResponseSchema } from './api/session.js'
+export type { SessionFailureReason, SessionResponse } from './api/session.js'
+
 export { grantRoleRequestSchema, userRolesResponseSchema } from './api/user-roles.js'
 export type { GrantRoleRequest, UserRolesResponse } from './api/user-roles.js'
 export {

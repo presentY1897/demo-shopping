@@ -79,6 +79,26 @@ export const envSchema = z.object({
     // No default on purpose: a fallback secret is a secret that reaches production.
     .refine((key) => key.length >= 8, { error: '8자 이상이어야 합니다' }),
 
+  /**
+   * Signs the access token (TASK-0022).
+   *
+   * **Required, unlike R2 and Google.** Those two answer 503 on one endpoint
+   * while unconfigured, because the account they need is provisioned separately
+   * from the code. Signing is not like that: without a secret every
+   * authenticated request fails, and a process that boots into that state is
+   * only useful for discovering the problem in production. Tests supply their
+   * own through `testAppConfig`, so CI is unaffected.
+   *
+   * 32 characters, which is what `openssl rand -base64 32` produces once padded
+   * — the same generator `render.yaml` already tells an operator to use for
+   * `MEILI_MASTER_KEY`. Shorter than the 256-bit HMAC block is not an attack,
+   * but it is almost always a placeholder somebody meant to replace.
+   */
+  JWT_SECRET: z
+    .string({ error: '값이 필요합니다' })
+    .min(1, { error: '값이 필요합니다' })
+    .refine((key) => key.length >= 32, { error: '32자 이상이어야 합니다' }),
+
   MEILI_HEALTH_TIMEOUT_MS: z.coerce
     .number({ error: '50~10000 사이의 정수(밀리초)여야 합니다' })
     .int({ error: '50~10000 사이의 정수(밀리초)여야 합니다' })

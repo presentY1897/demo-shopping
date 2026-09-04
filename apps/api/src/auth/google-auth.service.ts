@@ -31,6 +31,14 @@ const REQUIRED_ROLES: Readonly<Partial<Record<AppId, readonly Role[]>>> = {
 export interface SignedInUser {
   readonly userId: string
   readonly roles: readonly Role[]
+  /**
+   * The store this account owns, if any.
+   *
+   * Carried out of the sign-in because TASK-0022 bakes it into the access
+   * token: a second lookup between here and there could answer differently, and
+   * then the token and the response would disagree about who the caller is.
+   */
+  readonly sellerId: string | null
 }
 
 export interface CallbackOutcome {
@@ -234,7 +242,9 @@ export class GoogleAuthService {
         // who can sign in and do nothing, and nothing would ever repair it.
         await tx.userRole.create({ data: { userId: created.id, role: Role.BUYER } })
 
-        return { userId: created.id, roles: [Role.BUYER] }
+        // A brand-new account owns no store: `SELLER_OWNER` is granted by the
+        // onboarding review (TASK-0108), never by signing in (D-016).
+        return { userId: created.id, roles: [Role.BUYER], sellerId: null }
       })
     } catch (error) {
       if (
@@ -257,14 +267,22 @@ export class GoogleAuthService {
       // Matches the partial index: a withdrawn account releases its identity so
       // the same person can sign up again (`erd.md` 2장).
       where: { googleSub: sub, deletedAt: null },
-      select: { id: true, roles: { select: { role: true } } },
+      select: {
+        id: true,
+        roles: { select: { role: true } },
+        seller: { select: { id: true } },
+      },
     })
 
     if (user === null) return null
 
     await this.prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: now } })
 
-    return { userId: user.id, roles: user.roles.map((entry) => entry.role) }
+    return {
+      userId: user.id,
+      roles: user.roles.map((entry) => entry.role),
+      sellerId: user.seller?.id ?? null,
+    }
   }
 
   private noticeFor(app: AppId, roles: readonly Role[]): OauthNotice | undefined {

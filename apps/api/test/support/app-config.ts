@@ -22,6 +22,8 @@ export interface TestConfigOptions {
   readonly googleOAuth?: GoogleOAuthConfig | null
   /** Overrides the derived three-app allow list; `[]` leaves every app unreachable. */
   readonly corsOrigins?: readonly string[]
+  /** Shortens the access token so a spec can watch one expire without waiting. */
+  readonly accessTokenTtlSeconds?: number
 }
 
 /**
@@ -70,6 +72,14 @@ export const testCorsOrigins = [
 const TEST_WEB_PORTS = { shop: 3000, seller: 3001, admin: 3002 } as const
 
 /**
+ * A signing key that exists only here.
+ *
+ * Required rather than nullable in `AppConfig`, so every booted app has one —
+ * which is also why CI needs no secret of its own (TASK-0022 R3).
+ */
+const TEST_JWT_SECRET = 'test-jwt-secret-0000000000000000000000'
+
+/**
  * A port on the loopback interface that nothing listens on.
  *
  * The search indicator is expected to report `down` in every integration spec:
@@ -86,6 +96,7 @@ export function testAppConfig({
   storage = testStorageConfig,
   googleOAuth = testGoogleOAuthConfig,
   corsOrigins = testCorsOrigins,
+  accessTokenTtlSeconds = 15 * 60,
 }: TestConfigOptions): AppConfig {
   // Resolved by the same function the loader uses, so a spec that asserts on a
   // redirect target is exercising the real mapping rather than a hand-written
@@ -116,6 +127,11 @@ export function testAppConfig({
     },
     storage,
     googleOAuth,
+    auth: {
+      jwtSecret: TEST_JWT_SECRET,
+      accessTokenTtlSeconds,
+      refreshTokenTtlSeconds: 14 * 24 * 60 * 60,
+    },
     corsOrigins,
     appOrigins,
   }

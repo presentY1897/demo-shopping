@@ -3,12 +3,14 @@ import { APP_GUARD } from '@nestjs/core'
 
 import type { AppConfig } from '../config/app-config.js'
 import { APP_CONFIG } from '../config/app-config.js'
-import { AnonymousPrincipalResolver } from './anonymous-principal.resolver.js'
+import { AccessTokenPrincipalResolver } from './access-token.resolver.js'
 import { GoogleAuthController } from './google-auth.controller.js'
 import { GoogleAuthService } from './google-auth.service.js'
 import { createGoogleOAuthClient, GOOGLE_OAUTH } from './google-oauth.client.js'
 import { PermissionGuard } from './permission.guard.js'
 import { PRINCIPAL_RESOLVER } from './principal-resolver.js'
+import { SessionController } from './session.controller.js'
+import { SessionService } from './session.service.js'
 
 /**
  * Wires authorization into the application.
@@ -18,13 +20,17 @@ import { PRINCIPAL_RESOLVER } from './principal-resolver.js'
  * of this one. Registering the guard per controller would put the rule back in
  * the hands of whoever writes the next controller.
  *
- * The resolver binding is the line TASK-0021/0022 change — from the anonymous
- * placeholder to a JWT-backed implementation — and nothing else moves.
+ * The resolver binding was the line TASK-0021/0022 were always going to change,
+ * and TASK-0022 changed it: `AnonymousPrincipalResolver` is gone and
+ * `AccessTokenPrincipalResolver` reads the bearer token. Nothing else moved —
+ * the guard, the scope checks and every controller consume the same
+ * `RequestPrincipal`, which is now filled in.
  */
 @Module({
-  controllers: [GoogleAuthController],
+  controllers: [GoogleAuthController, SessionController],
   providers: [
-    { provide: PRINCIPAL_RESOLVER, useClass: AnonymousPrincipalResolver },
+    { provide: PRINCIPAL_RESOLVER, useClass: AccessTokenPrincipalResolver },
+    SessionService,
     { provide: APP_GUARD, useClass: PermissionGuard },
     GoogleAuthService,
     {
@@ -36,6 +42,6 @@ import { PRINCIPAL_RESOLVER } from './principal-resolver.js'
       useFactory: (config: AppConfig) => createGoogleOAuthClient(config.googleOAuth),
     },
   ],
-  exports: [PRINCIPAL_RESOLVER, GOOGLE_OAUTH],
+  exports: [PRINCIPAL_RESOLVER, GOOGLE_OAUTH, SessionService],
 })
 export class AuthModule {}
