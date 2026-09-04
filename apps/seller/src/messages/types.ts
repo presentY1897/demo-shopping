@@ -7,6 +7,9 @@ import type {
   OauthNotice,
   ProductStatus,
   SellerStatus,
+  SellerStockAdjustType,
+  SellerStockFilter,
+  StockLedgerType,
 } from '@shopping/shared'
 import type { ImageUploadListLabels } from '@shopping/ui/components'
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
@@ -90,6 +93,18 @@ export interface Messages {
   readonly store: StoreMessages
   /** 상품 등록 · 수정 (TASK-0114). */
   readonly products: ProductEditorMessages
+  /**
+   * 상품 목록 · 재고 관리 (TASK-0116).
+   *
+   * A slice of its own rather than more of `products`. The editor's vocabulary
+   * is about *one* listing being written; this is about *many* being surveyed,
+   * and the two screens share not one sentence. Folding them together would
+   * make the exhaustive editor catalog the place a reader looks for the word
+   * 품절, which is on the other screen entirely.
+   */
+  readonly productList: ProductListMessages
+  /** Variant 별 재고 조정과 그 이력 (TASK-0116). */
+  readonly productStock: ProductStockMessages
 }
 
 /**
@@ -638,4 +653,176 @@ export interface ProductToastMessages {
   readonly regionLabel: string
   readonly closeLabel: string
   readonly failureTitle: string
+}
+
+/* ------------------------------------------- 상품 목록 · 재고 (TASK-0116) -- */
+
+/** The filter bar over the listing table. */
+export interface ProductListFilterMessages {
+  readonly legend: string
+  readonly statusLabel: string
+  readonly statusAll: string
+  readonly categoryLabel: string
+  readonly categoryAll: string
+  readonly stockLabel: string
+  readonly stockAll: string
+  /** `sellerStockFilters` — the two the API accepts, no more. */
+  readonly stockOptions: Readonly<Record<SellerStockFilter, string>>
+  readonly searchLabel: string
+  readonly searchPlaceholder: string
+  readonly reset: string
+}
+
+/** Column headers and the per-row controls. */
+export interface ProductListTableMessages {
+  readonly caption: string
+  readonly name: string
+  readonly status: string
+  readonly totalStock: string
+  readonly minPrice: string
+  readonly actions: string
+  /** `{name}` — an accessible name for a checkbox that has no visible label. */
+  readonly selectRow: string
+  readonly selectAll: string
+  readonly manageStock: string
+  readonly edit: string
+  readonly duplicate: string
+  readonly noPrice: string
+}
+
+/**
+ * The two stock badges.
+ *
+ * `low` carries no number. Writing "5개 이하" here would be the second place
+ * `LOW_STOCK_THRESHOLD` lives, and the one that would not be updated (R4).
+ */
+export interface ProductStockBadgeMessages {
+  readonly out: string
+  readonly low: string
+}
+
+/** Selecting rows and changing all of them at once. */
+export interface ProductBulkMessages {
+  /** `{count}` — always shown, so a selection that scrolled off is not a surprise. */
+  readonly selected: string
+  readonly clear: string
+  readonly activate: string
+  readonly deactivate: string
+  readonly confirmTitle: string
+  /** `{count}` */
+  readonly confirmBody: string
+  readonly confirm: string
+  readonly cancel: string
+  /** `{count}` */
+  readonly done: string
+}
+
+/** Copying a listing, and saying what the copy is before the click. */
+export interface ProductDuplicateMessages {
+  readonly confirmTitle: string
+  /** `{name}` */
+  readonly confirmBody: string
+  /** Why the copy is a draft — the sentence that stops a surprise publication. */
+  readonly draftNotice: string
+  readonly confirm: string
+  readonly cancel: string
+  /** `{name}` */
+  readonly done: string
+  readonly goToEdit: string
+}
+
+export interface ProductListMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly newProduct: string
+  readonly filters: ProductListFilterMessages
+  readonly table: ProductListTableMessages
+  readonly badges: ProductStockBadgeMessages
+  readonly bulk: ProductBulkMessages
+  readonly duplicate: ProductDuplicateMessages
+  readonly pagination: PaginationMessages
+  readonly empty: EmptyStateMessages
+  readonly filteredEmpty: EmptyStateMessages
+  readonly errorTitle: string
+  readonly retry: string
+}
+
+/*
+ * **상태 라벨은 여기 없다.** `products.statusLabels` 가 이미 `ProductStatus`
+ * 전체를 담고, 그것은 화면의 어휘가 아니라 **상품의** 어휘다. 두 벌을 두면
+ * 편집기에서는 「판매 중지」이고 목록에서는 「중지됨」인 날이 온다.
+ */
+
+/** Previous · next, for the cursor pager. */
+export interface PaginationMessages {
+  readonly label: string
+  readonly previous: string
+  readonly next: string
+  /** `{page}` — a keyset list knows its position but not its length. */
+  readonly page: string
+}
+
+export interface EmptyStateMessages {
+  readonly title: string
+  readonly description: string
+}
+
+/** The adjustment control — the one that has no absolute field (F2b). */
+export interface StockAdjustMessages {
+  readonly deltaLabel: string
+  readonly deltaPlaceholder: string
+  readonly typeLabel: string
+  readonly typeOptions: Readonly<Record<SellerStockAdjustType, string>>
+  readonly reasonLabel: string
+  readonly reasonPlaceholder: string
+  readonly apply: string
+  /** `{from}` → `{to}` — shown before the click, which is what R1 answers with. */
+  readonly preview: string
+  readonly deltaRequired: string
+  readonly deltaZero: string
+  /** `{max}` */
+  readonly deltaRange: string
+  readonly reasonTooLong: string
+}
+
+/** The history under the table. */
+export interface StockLedgerMessages {
+  readonly title: string
+  readonly caption: string
+  readonly seq: string
+  readonly type: string
+  readonly quantity: string
+  readonly balanceAfter: string
+  readonly reason: string
+  readonly at: string
+  readonly empty: string
+  readonly noReason: string
+  readonly typeLabels: Readonly<Record<StockLedgerType, string>>
+  readonly close: string
+  /** `{option}` — names which combination's history is open. */
+  readonly openLabel: string
+}
+
+export interface ProductStockMessages {
+  readonly title: string
+  /** `{name}` — the listing whose combinations these are. */
+  readonly subtitle: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly backToList: string
+  readonly caption: string
+  readonly option: string
+  readonly sku: string
+  readonly stock: string
+  readonly adjustColumn: string
+  readonly historyColumn: string
+  readonly badges: ProductStockBadgeMessages
+  readonly adjust: StockAdjustMessages
+  readonly ledger: StockLedgerMessages
+  readonly empty: EmptyStateMessages
+  readonly errorTitle: string
+  readonly retry: string
+  /** `{stock}` */
+  readonly adjusted: string
 }
