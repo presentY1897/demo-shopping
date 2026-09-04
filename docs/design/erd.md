@@ -549,8 +549,33 @@ erDiagram
 | 관련 컬럼 | 위치 | 목적 |
 | --- | --- | --- |
 | `isDemo`, `demoExpiresAt` | `User` | 데모 계정 식별과 만료 시각 |
-| `createdByDemo` | 데모가 생성 가능한 테이블 | 만료 시 일괄 삭제 대상 표시 |
 
-- 상품 카탈로그는 공용이고, 장바구니·주문·리뷰·판매자 상품 등 개인 데이터만 격리한다.
-- 만료 스케줄러가 `demoExpiresAt < now` 인 계정과 그 계정이 생성한 데이터를 삭제한다.
-- 관리자 데모 계정의 파괴적 작업 차단 범위는 별도 TASK 에서 정의한다. (미확정)
+`createdByDemo` 컬럼은 **두지 않았다.** 소유는 이미 외래키로 표현돼 있고(`userId` ·
+`sellerId`), 같은 사실을 두 곳에 적으면 한 곳만 갱신되는 날이 온다. 정리는 소유를 따라 내려간다.
+
+상품 카탈로그는 공용이고 개인 데이터만 격리한다. 만료 스케줄러가 `demoExpiresAt <= now` 인 계정을
+15분마다 최대 50건씩 수거한다(TASK-0025).
+
+### 만료 시 무엇이 어떻게 되나
+
+| 대상 | 처리 | 왜 |
+| --- | --- | --- |
+| `RefreshToken` · `UserPreference` · `Address` · `UserRole` | 하드 삭제 | 그 계정만의 것이고 아무것도 가리키지 않는다 |
+| `Product` · `ProductOption` · `ProductVariant` | **소프트 삭제** | 아래 |
+| `Seller` | `SUSPENDED` + 사유 | `Product.sellerId` 가 `RESTRICT` 다. 행은 남기고 상태로 닫는다 |
+| `User` | 소프트 삭제 | 아래 |
+| `StockLedger` | **건드리지 않는다** | append-only 이고, 사라진 상품의 재고 이력이 남는 것이 옳다 |
+
+**상품을 하드 삭제할 수 없는 이유는 주문이 아니라 재고 원장이다.** `StockLedger_append_only`
+트리거가 원장 행의 UPDATE · DELETE 를 거부하고, `StockLedger.variantId` 가 `ProductVariant` 를
+`ON DELETE RESTRICT` 로 잡는다. 모든 Variant 는 태어나면서 개시 `INBOUND` 를 하나 가지므로
+**원장 행이 없는 Variant 는 없다.** `User` 도 같다 — `StockLedger.actorId` 가 `RESTRICT` 라
+재고를 한 번이라도 조정한 계정은 지워지지 않는다.
+
+목록과 상세가 이미 `deletedAt IS NULL` 로 거르므로, 구매자에게는 사라진 것과 같다.
+
+**정리 계획은 코드에 데이터로 있다** — `apps/api/src/demo/demo-cleanup-plan.ts`. 계정이 소유할 수
+있는 테이블을 `schema.prisma` 에서 읽어 계획과 대조하는 검사가 있어서, 새 테이블이 생기면 그것을
+쓸지 말지 정할 때까지 실패한다. 이 표와 코드가 어긋나는 상태로는 CI 가 통과하지 않는다.
+
+관리자 데모 계정의 파괴적 작업 차단 범위는 별도 TASK 에서 정의한다. (미확정)

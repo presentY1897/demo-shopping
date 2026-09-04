@@ -9,7 +9,7 @@
 | [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | **7/7 완료** |
 | [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 3/7 |
 | [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, Radix 컴포넌트, 폼, 레이아웃, Storybook | **7/7 완료** |
-| [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점, 테스트 기반 | 13/14 |
+| [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점, 테스트 기반 | **14/14 완료** |
 | [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | **13/13 완료** |
 | [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | 0/9 |
 | [M07](./M07-cart-order/) 장바구니·주문 | 장바구니, 금액 계산 엔진, 재고 예약, 주문 2단 분할 | 0/7 |
@@ -66,7 +66,7 @@
 
 </details>
 
-<details><summary><b>M04. 인증·계정</b> (13/14)</summary>
+<details><summary><b>M04. 인증·계정</b> (14/14 완료)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -75,7 +75,7 @@
 | [TASK-0022](./M04-auth/TASK-0022-jwt-session.md) | JWT 발급 · 갱신 · 로그아웃 | 완료 |
 | [TASK-0023](./M04-auth/TASK-0023-auth-guard.md) | 인증 UI · 권한 가드 | 완료 |
 | [TASK-0024](./M04-auth/TASK-0024-demo-account.md) | 데모 계정 발급 | 완료 |
-| [TASK-0025](./M04-auth/TASK-0025-demo-cleanup.md) | 데모 만료 · 정리 스케줄러 | 승인됨 |
+| [TASK-0025](./M04-auth/TASK-0025-demo-cleanup.md) | 데모 만료 · 정리 스케줄러 | 완료 |
 | ~~TASK-0026~~ | ~~판매자 입점 신청 · 승인~~ | **폐기** → 0108 · 0109 · 0110 |
 | ~~TASK-0027~~ | ~~프로필 · 배송지 관리~~ | **폐기** → 0111 · 0112 |
 | [TASK-0108](./M04-auth/TASK-0108-seller-onboarding-api.md) | 판매자 입점 상태 머신 · API | 완료 |
