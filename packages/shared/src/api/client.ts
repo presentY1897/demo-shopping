@@ -38,15 +38,31 @@ import {
 } from './categories.js'
 import type {
   CreateProductRequest,
+  ProductBulkStatusRequest,
+  ProductBulkStatusResponse,
   ProductListQuery,
   ProductListResponse,
   ProductPublishRequest,
   ProductResponse,
+  SellerProductListQuery,
+  SellerProductListResponse,
+  SellerVariantListResponse,
   UpdateProductRequest,
 } from './products.js'
-import { productListResponseSchema, productResponseSchema } from './products.js'
-import type { StockLedgerQuery, StockLedgerResponse } from './stock.js'
-import { stockLedgerResponseSchema } from './stock.js'
+import {
+  productBulkStatusResponseSchema,
+  productListResponseSchema,
+  productResponseSchema,
+  sellerProductListResponseSchema,
+  sellerVariantListResponseSchema,
+} from './products.js'
+import type {
+  StockAdjustRequest,
+  StockAdjustResponse,
+  StockLedgerQuery,
+  StockLedgerResponse,
+} from './stock.js'
+import { stockAdjustResponseSchema, stockLedgerResponseSchema } from './stock.js'
 import type { PresignUploadRequest, PresignUploadResponse } from './uploads.js'
 import { presignUploadResponseSchema } from './uploads.js'
 
@@ -198,6 +214,58 @@ export interface ApiClient {
   /** Retires a listing. The row and its variants survive for order history. */
   deleteProduct: (id: string, options?: ApiCallOptions) => Promise<ProductResponse>
   /**
+   * The seller console's own catalogue page (TASK-0115).
+   *
+   * Always the caller's store — there is no `sellerId` to pass, because the
+   * console has exactly one. Each row carries the aggregates a management
+   * screen decides from (total stock, the cheapest variant, whether stock is
+   * running out) and none of the variants themselves: twenty listings' worth of
+   * combinations is a payload nobody renders.
+   */
+  getSellerProducts: (
+    query?: SellerProductListQuery,
+    options?: ApiCallOptions,
+  ) => Promise<SellerProductListResponse>
+  /** Every live variant of one listing, with its combination already spelled out. */
+  getSellerProductVariants: (
+    id: string,
+    options?: ApiCallOptions,
+  ) => Promise<SellerVariantListResponse>
+  /**
+   * Takes several listings off sale, or puts them back (TASK-0115).
+   *
+   * All or nothing: the ownership of every id is checked before the first row
+   * is written, and the whole change runs in one transaction, so a request
+   * carrying somebody else's id changes nothing rather than changing the ones
+   * that came before it.
+   */
+  changeProductStatuses: (
+    body: ProductBulkStatusRequest,
+    options?: ApiCallOptions,
+  ) => Promise<ProductBulkStatusResponse>
+  /**
+   * Copies a listing — options, variants, gallery, attribute values — as a
+   * `DRAFT` with no stock (TASK-0115).
+   *
+   * The stock is not copied on purpose: a level that appeared without a
+   * movement is a level the ledger cannot explain, and that invariant would be
+   * false from the copy's first row.
+   */
+  duplicateProduct: (id: string, options?: ApiCallOptions) => Promise<ProductResponse>
+  /**
+   * Records one movement against a variant's stock (TASK-0115).
+   *
+   * A **delta**, never a level: "재고를 17로" overwrites whatever sold between
+   * the read and the save, while "+5 입고" is right whenever it is processed
+   * (D-024). The answer carries the balance afterwards and the movement's
+   * position, which is also the cursor of {@link ApiClient.getVariantLedger}.
+   */
+  adjustVariantStock: (
+    id: string,
+    body: StockAdjustRequest,
+    options?: ApiCallOptions,
+  ) => Promise<StockAdjustResponse>
+  /**
    * One variant's stock history, newest first (TASK-0036).
    *
    * The answer carries the current stock **and** the ledger's own sum, so that
@@ -256,6 +324,22 @@ function productListSearch(query: ProductListQuery): string {
   if (query.sellerId !== undefined) params.set('sellerId', query.sellerId)
   if (query.categoryId !== undefined) params.set('categoryId', String(query.categoryId))
   if (query.status !== undefined) params.set('status', query.status)
+  if (query.limit !== undefined) params.set('limit', String(query.limit))
+  if (query.cursor !== undefined) params.set('cursor', query.cursor)
+
+  const search = params.toString()
+
+  return search === '' ? '' : `?${search}`
+}
+
+/** `?status=ACTIVE&stock=low&q=티셔츠&…`, or empty when nothing is set. */
+function sellerProductListSearch(query: SellerProductListQuery): string {
+  const params = new URLSearchParams()
+
+  if (query.status !== undefined) params.set('status', query.status)
+  if (query.categoryId !== undefined) params.set('categoryId', String(query.categoryId))
+  if (query.stock !== undefined) params.set('stock', query.stock)
+  if (query.q !== undefined) params.set('q', query.q)
   if (query.limit !== undefined) params.set('limit', String(query.limit))
   if (query.cursor !== undefined) params.set('cursor', query.cursor)
 
@@ -569,6 +653,47 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         path: `/products/${id}`,
         method: 'DELETE',
         schema: productResponseSchema,
+        ...callOptions,
+      }),
+
+    getSellerProducts: (query = {}, callOptions = {}) =>
+      request({
+        path: `/seller/products${sellerProductListSearch(query)}`,
+        schema: sellerProductListResponseSchema,
+        ...callOptions,
+      }),
+
+    getSellerProductVariants: (id, callOptions = {}) =>
+      request({
+        path: `/seller/products/${id}/variants`,
+        schema: sellerVariantListResponseSchema,
+        ...callOptions,
+      }),
+
+    changeProductStatuses: (body, callOptions = {}) =>
+      request({
+        path: '/seller/products/status',
+        method: 'POST',
+        body,
+        schema: productBulkStatusResponseSchema,
+        ...callOptions,
+      }),
+
+    duplicateProduct: (id, callOptions = {}) =>
+      request({
+        path: `/seller/products/${id}/duplicate`,
+        method: 'POST',
+        body: {},
+        schema: productResponseSchema,
+        ...callOptions,
+      }),
+
+    adjustVariantStock: (id, body, callOptions = {}) =>
+      request({
+        path: `/variants/${id}/stock-adjustments`,
+        method: 'POST',
+        body,
+        schema: stockAdjustResponseSchema,
         ...callOptions,
       }),
 

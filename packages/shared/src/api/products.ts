@@ -464,3 +464,210 @@ export type UpdateProductRequest = z.infer<typeof updateProductRequestSchema>
 export const productPublishRequestSchema = z.object({ version: z.int().min(0) })
 
 export type ProductPublishRequest = z.infer<typeof productPublishRequestSchema>
+
+// ---------------------------------------------------------------------------
+// The seller console's own catalogue (TASK-0115)
+//
+// A different read from `GET /products` above, and deliberately a different
+// contract. That one is the *catalogue*: it answers about a store or about all
+// of them, and its row carries what a storefront draws. This one is the
+// **console's list of things to manage** — always the caller's own store, and
+// its row carries what a person deciding "무엇을 채워 넣어야 하나" needs: how
+// much stock there is in total, whether that number is about to become a
+// problem, and what it is worth.
+// ---------------------------------------------------------------------------
+
+/**
+ * When a listing counts as 품절 임박.
+ *
+ * One number, in one place, because the filter and the badge have to agree. A
+ * threshold written where it is needed is written twice — once in the query and
+ * once in the row — and the two disagree within a release, at which point a
+ * seller filters for 품절 임박 and gets rows that do not carry the badge
+ * (TASK-0035 left the value undecided and this is what that cost).
+ *
+ * The **predicate** does not live here, though: `packages/shared` has no test
+ * script, so a decision function placed here would receive none of the branch
+ * coverage QUALITY-GATES Q5 requires of pure logic. The API decides and sends
+ * `isLowStock` on every row it returns; this constant is what a screen puts in
+ * its own copy ("재고 5개 이하") so that the sentence cannot go stale either.
+ */
+export const LOW_STOCK_THRESHOLD = 5
+
+/**
+ * The stock filter of the console's list.
+ *
+ * Two values and not three: "재고가 넉넉한 것만" is not a thing anybody looks
+ * for, and the absence of the parameter already means "전부". They do not
+ * overlap — `out` is exactly zero and `low` starts at one — so a listing can
+ * never appear under both, which is what keeps the badge and the filter the
+ * same judgement (TASK-0115 4장).
+ */
+export const sellerStockFilters = ['out', 'low'] as const
+
+export type SellerStockFilter = (typeof sellerStockFilters)[number]
+
+export const sellerStockFilterSchema = z.enum(sellerStockFilters)
+
+/**
+ * How long a name search may be.
+ *
+ * The console searches its own store by product name, so this is a convenience
+ * rather than a search engine — Meilisearch is M06 and answers the storefront's
+ * queries. Bounded because the string reaches PostgreSQL as an `ILIKE` pattern
+ * and an unbounded one is a way to make one seller's list expensive for
+ * everybody.
+ */
+export const PRODUCT_SEARCH_MAX_LENGTH = 100
+
+export const productSearchSchema = z.string().trim().min(1).max(PRODUCT_SEARCH_MAX_LENGTH)
+
+/** Query of `GET /api/v1/seller/products`, as a caller writes it. */
+export const sellerProductListQuerySchema = z.object({
+  status: productStatusSchema.optional(),
+  categoryId: categoryIdSchema.optional(),
+  stock: sellerStockFilterSchema.optional(),
+  /** Case-insensitive substring of the product name. */
+  q: productSearchSchema.optional(),
+  limit: z.int().min(1).max(PRODUCT_LIST_MAX_LIMIT).optional(),
+  cursor: productIdSchema.optional(),
+})
+
+export type SellerProductListQuery = z.infer<typeof sellerProductListQuerySchema>
+
+/**
+ * The same query as it arrives on the wire, where every value is a string.
+ *
+ * Kept beside the typed form instead of in the controller so that the two
+ * cannot drift: adding a parameter to one without the other stops compiling.
+ */
+export const sellerProductListQueryParamsSchema = z.object({
+  status: productStatusSchema.optional(),
+  categoryId: z.coerce.number().int().positive().optional(),
+  stock: sellerStockFilterSchema.optional(),
+  q: productSearchSchema.optional(),
+  limit: z.coerce.number().int().min(1).max(PRODUCT_LIST_MAX_LIMIT).optional(),
+  cursor: productIdSchema.optional(),
+})
+
+/**
+ * One row of the console's list.
+ *
+ * **No variants.** A page of twenty listings whose variants were loaded is
+ * twenty extra queries and a payload nobody renders — the risk TASK-0035 R1
+ * named. What a row shows about its options is an aggregate: how much stock
+ * they hold between them, and the cheapest of them. The individual rows are one
+ * click away at `GET /seller/products/:id/variants`.
+ */
+export const sellerProductListItemSchema = z.object({
+  id: productIdSchema,
+  name: z.string(),
+  status: productStatusSchema,
+  categoryId: categoryIdSchema,
+  /** Sum of `stock` over the listing's live variants. */
+  totalStock: z.int().min(0),
+  /** Lowest price among orderable variants; `null` when nothing is sellable. */
+  minPrice: priceSchema.nullable(),
+  /**
+   * `0 < totalStock <= LOW_STOCK_THRESHOLD`, decided by the server.
+   *
+   * False for a sold-out listing: 품절 and 품절 임박 are two different things to
+   * tell a seller, and a row that claimed both would make the screen pick one —
+   * which is the rule this flag exists to keep out of the screen.
+   */
+  isLowStock: z.boolean(),
+  /** First image of the gallery, or `null` when there is none. */
+  thumbnailUrl: z.string().nullable(),
+})
+
+export type SellerProductListItem = z.infer<typeof sellerProductListItemSchema>
+
+/**
+ * A page of the console's list.
+ *
+ * `nextCursor` is the id to pass back, or `null` at the end — the same device
+ * {@link productListResponseSchema} uses, and for the same reason: product ids
+ * are UUIDv7, so "newest first" is `ORDER BY id DESC` and a cursor needs no
+ * tie-breaker and no offset that shifts under an insert.
+ */
+export const sellerProductListResponseSchema = z.object({
+  items: z.array(sellerProductListItemSchema),
+  nextCursor: productIdSchema.nullable(),
+})
+
+export type SellerProductListResponse = z.infer<typeof sellerProductListResponseSchema>
+
+/**
+ * One variant, as the console's stock table draws it.
+ *
+ * Not {@link productVariantSchema}: that one is the buyer-facing shape and
+ * carries the combination as ids for an option grid to match against. A stock
+ * table shows a **person** which row it is, so the combination arrives already
+ * spelled out.
+ */
+export const sellerVariantSchema = z.object({
+  id: variantIdSchema,
+  sku: z.string(),
+  /** The combination in axis order — `블랙 / M`. Empty for an optionless product. */
+  optionLabel: z.string(),
+  stock: stockSchema,
+  /** Same judgement as a listing's, applied to this row alone. */
+  isLowStock: z.boolean(),
+  /** This variant's own cap; `null` inherits the product's. */
+  maxPurchaseQuantity: purchaseLimitSchema.nullable(),
+  isActive: z.boolean(),
+})
+
+export type SellerVariant = z.infer<typeof sellerVariantSchema>
+
+/**
+ * Every live variant of one listing.
+ *
+ * Unpaged on purpose: `PRODUCT_MAX_VARIANTS` caps a listing at 200
+ * combinations, which is a table a person scrolls rather than a collection that
+ * grows without limit.
+ */
+export const sellerVariantListResponseSchema = z.object({
+  variants: z.array(sellerVariantSchema),
+})
+
+export type SellerVariantListResponse = z.infer<typeof sellerVariantListResponseSchema>
+
+/**
+ * How many listings one bulk status change may name.
+ *
+ * The same ceiling as a page of the list, because that is where the ids come
+ * from: a console selects rows it can see.
+ */
+export const PRODUCT_BULK_STATUS_MAX = PRODUCT_LIST_MAX_LIMIT
+
+/**
+ * Taking several listings off sale, or putting them back.
+ *
+ * No `version` anywhere, unlike {@link updateProductRequestSchema}. An
+ * optimistic lock exists to stop two people overwriting each other's *edits*,
+ * and a status change is not an edit of a document — it is one field with two
+ * meaningful values, applied to rows the caller just looked at. Requiring a
+ * version per id would make the console read every listing before it could
+ * change any of them, to protect against a conflict whose resolution is "the
+ * later one wins", which is what happens anyway.
+ */
+export const productBulkStatusRequestSchema = z.object({
+  productIds: z.array(productIdSchema).min(1).max(PRODUCT_BULK_STATUS_MAX),
+  status: productStatusSchema,
+})
+
+export type ProductBulkStatusRequest = z.infer<typeof productBulkStatusRequestSchema>
+
+/**
+ * The rows as they now are, in the shape the list draws them.
+ *
+ * The same schema the list returns, so a console replaces the rows it changed
+ * instead of re-reading the page — and so that gate C3 covers both endpoints
+ * with one assertion.
+ */
+export const productBulkStatusResponseSchema = z.object({
+  items: z.array(sellerProductListItemSchema),
+})
+
+export type ProductBulkStatusResponse = z.infer<typeof productBulkStatusResponseSchema>
