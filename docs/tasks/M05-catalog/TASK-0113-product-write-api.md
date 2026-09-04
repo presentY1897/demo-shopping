@@ -397,7 +397,7 @@ TASK-0033 F6 이 넘긴 것은 "행 없는 R2 객체를 없애는 경로"다. **
 | Q1 | `pnpm typecheck` | 워크스페이스 전체 | error 0 | 8개 프로젝트 전부 error 0 | [x] |
 | Q2 | `pnpm lint` | 워크스페이스 전체 | error 0 · warning 0 | 0 · 0 | [x] |
 | Q3 | `pnpm build` | 워크스페이스 전체 | 전 앱 성공 | shared · ui · api-mocks · api · shop · seller · admin 전부 성공 | [x] |
-| Q4 | `pnpm test` | 워크스페이스 전체 | 전부 통과 | `apps/api` **1,565 passed (99 files)** — 착수 시점 1,505. ui 843 · api-mocks 106 · shop 153 · seller 122 · admin 273 전부 통과. **주의**: 이 머신에서 `pnpm test` 를 3회 돌리면 1~2회는 이 TASK 와 무관한 시간 민감 스펙 하나가 부하로 흔들린다 (`src/common/clock.spec.ts`, `apps/shop/test/api-wake-gate.spec.tsx`, `test/api/session-performance.spec.ts` 중 하나). 3회차는 전부 초록이었고, 각 스펙을 단독으로 돌리면 언제나 통과한다 — 7.2 | [x] |
+| Q4 | `pnpm test` | 워크스페이스 전체 | 전부 통과 | `apps/api` **1,565 passed (99 files)** — 착수 시점 1,505. ui 843 · api-mocks 106 · shop 153 · seller 122 · admin 273 전부 통과. `main` 최신(7fd7ee3) 위로 rebase 한 뒤 전체 게이트를 4회 돌려 3회 완전 초록. 1회에 이 브랜치 밖의 시간 민감 스펙 하나가 부하로 흔들렸고, 단독으로는 언제나 통과한다 — 7.2 | [x] |
 | Q5 | 커버리지 | `vitest run --coverage` | 라인 80% / 순수 로직 분기 100% | `apps/api` 라인 **96.04%** · 분기 84.06%. 새 순수 모듈 둘(`product-sku.ts` · `product-image-keys.ts`)에 분기 100% 임계치를 걸었고 통과. `src/catalog` 라인 97.65% | [x] |
 | Q7 | commitlint | 커밋 훅 | 위반 0 | 위반 0 | [x] |
 | A1 | 응답 시간 | Variant 12행 상품 저장 · 발행 p95 | 300ms 이하 | 저장(12조합 + 이미지 5장, 20회) p95 **41.1ms**(중앙값 30.9ms) · 발행(12조합, 20회) p95 **24.5ms**(중앙값 17.2ms) | [x] |
@@ -446,21 +446,27 @@ TASK-0033 F6 이 넘긴 것은 "행 없는 R2 객체를 없애는 경로"다. **
 
 ### 7.2 `pnpm test` 를 반복하면 시간 민감 스펙 하나가 흔들린다
 
-이 머신에서 워크스페이스 전체 테스트를 3회 돌렸을 때 1회차와 2회차에 각각 **이 TASK 와 무관한**
-스펙 하나가 실패했다 — `src/common/clock.spec.ts`(TASK-0106), `apps/shop/test/api-wake-gate.spec.tsx`
-(TASK-0101), `test/api/session-performance.spec.ts`(TASK-0023) 중 하나다. 셋 다 벽시계나 타이머
-임계값을 재고, 셋 다 단독으로 돌리면 언제나 통과한다. 3회차는 전부 초록이었다.
-
-`pnpm test` 는 패키지를 병렬로 돌리므로 `apps/api` 의 워커 4개가 한 PostgreSQL 을 쓰고, 그 옆에서
+`pnpm test` 는 패키지를 병렬로 돌린다. `apps/api` 의 워커 4개가 한 PostgreSQL 을 쓰고, 그 옆에서
 `packages/ui` 의 843개와 세 앱의 jsdom 스펙이 동시에 돈다. 부하가 임계값에 붙어 있는 스펙을 밀어낸다.
+
+**작업 중 네 번 봤고 전부 이 브랜치 밖의 파일이었다** — `src/common/clock.spec.ts`
+(TASK-0106), `apps/shop/test/api-wake-gate.spec.tsx`(TASK-0101), `test/api/session-performance.spec.ts`
+(TASK-0023), `apps/admin/test/attributes-error-contract.spec.tsx`(TASK-0031). 넷 다 벽시계나 타이머
+임계값을 재고, 넷 다 단독으로 돌리면 언제나 통과한다.
+
+**같은 문제를 `main` 도 동시에 고치고 있었다.** 작업 중 `main` 이 두 커밋 앞섰는데
+(`dfa71ca` · `7fd7ee3`) 둘 다 "검사가 실시간 창에 걸려 있었다" 는 같은 종류의 수정이고, 그중 하나가
+위 목록의 `api-wake-gate` 다. rebase 후 전체 게이트를 4회 돌려 3회가 완전히 초록이고 1회에
+`attributes-error-contract.spec.tsx` 하나가 흔들렸다.
 
 **이 TASK 도 한 번 그 부하를 키웠다.** 성능 스펙을 새 파일로 만들었더니 관측용 `PrismaClient` 가
 두 벌이 되어(각자 연결 5개) 기존 `session-performance.spec.ts` 까지 꼬리 지연으로 실패하기
-시작했다. 파일을 합치고 회차를 20으로 줄여 원래대로 되돌렸다 — 합친 뒤 3회 전부 이 TASK 의 성능
-스펙은 실패하지 않았다.
+시작했다. 파일을 합치고 회차를 20으로 줄여 원래대로 되돌렸다 — 합친 뒤로 이 TASK 의 성능 스펙은
+한 번도 실패하지 않았다.
 
-남은 흔들림은 이 브랜치가 만든 것이 아니지만, **주인이 없다.** HANDOFF 5장의 "vitest 두 프로세스"
-항목과 같은 뿌리이고, 임계값을 어디에 두는가는 TASK-0097(성능) 쪽 판단으로 보인다. 7.1 에 적었다.
+남은 흔들림은 이 브랜치가 만든 것이 아니고, 남은 하나도 `main` 이 이미 고치고 있는 종류다. 다만
+**"부하에서 흔들리는 검사를 어떻게 다룰 것인가" 자체에는 주인이 없다** — HANDOFF 5장의 "vitest 두
+프로세스" 항목과 같은 뿌리다. 7.1 에 적었다.
 
 ### 7.3 남긴 것 — 다음 TASK 가 알아야 할 것
 
