@@ -39,7 +39,11 @@ Thumbs.db
 # local data
 *.sqlite
 *.sqlite3
-uploads/
+# 소스 트리 안의 같은 이름을 가리지 않도록 경로를 고정한다. 앵커 없는 `uploads/` 가
+# `apps/seller/src/lib/uploads/` 를 통째로 가려 순수 로직 여섯 파일이 커밋에서 조용히
+# 빠진 적이 있다 — 커밋도 성공하고 로컬 테스트도 전부 초록이었다(워킹 트리에는 있으니까).
+/uploads/
+/apps/*/uploads/
 
 # monorepo / tooling
 .turbo/
