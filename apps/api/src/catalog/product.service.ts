@@ -45,6 +45,7 @@ import { StockService } from '../stock/stock.service.js'
 import type { AttributeIssue, AttributeRule } from './attribute-schema.js'
 import { validateAttributeValues, withoutRequired } from './attribute-schema.js'
 import { AttributeService } from './attribute.service.js'
+import { foreignImageIndexes } from './product-image-keys.js'
 import { defaultSkuPrefix, generatedSku } from './product-sku.js'
 import type { AxisInput, PlanIssue, PlanIssueCode, VariantPlan } from './variant-rules.js'
 import { optionSignatureOf, planVariants, resolvePurchaseLimit } from './variant-rules.js'
@@ -345,6 +346,10 @@ export class ProductService {
     this.assertStatusChange(principal, ownership, 'DRAFT', input.status)
     this.assertStoreMayWrite(principal, seller)
 
+    const images = input.images ?? []
+
+    this.assertOwnImages(images, seller.id)
+
     const axes = axesOf(input.options)
     const plans = this.plan(axes, input.variants ?? [])
     const attributes = await this.validatedAttributes(
@@ -370,7 +375,7 @@ export class ProductService {
           select: { id: true },
         })
 
-        await this.writeImages(tx, created.id, input.images ?? [], now)
+        await this.writeImages(tx, created.id, images, now)
 
         const stored = await this.writeAxes(tx, created.id, axes, now)
 
@@ -434,6 +439,8 @@ export class ProductService {
             ),
           )
         }
+
+        if (input.images !== undefined) this.assertOwnImages(input.images, seller.id)
 
         const now = this.clock.now()
         const categoryId = input.categoryId ?? product.categoryId
@@ -1176,6 +1183,33 @@ export class ProductService {
         'PRODUCT_SELLER_INACTIVE',
         sellerInactiveMessage(seller.status, 'product.write'),
       ),
+    )
+  }
+
+  /**
+   * Refuses a gallery that points into another store's prefix (TASK-0113 4장).
+   *
+   * The orphan sweep TASK-0033 F6 handed over enumerates by prefix — everything
+   * under `products/{sellerId}/` that no live `ProductImage` names is rubbish
+   * and gets deleted. That is only true while a store's objects are referenced
+   * by that store alone, and nothing enforced it: `url` is a string, and the
+   * upload that produced the key is a different request from the save that
+   * records it.
+   *
+   * A URL that is not one of our keys passes untouched. The seeded catalogue
+   * uses stock photography (DECISIONS 13), no sweep will ever consider those,
+   * and refusing them would make most of the demo data unsavable.
+   */
+  private assertOwnImages(images: readonly { readonly url: string }[], sellerId: string): void {
+    const foreign = foreignImageIndexes(images, sellerId)
+
+    if (foreign.length === 0) return
+
+    throw invalid(
+      foreign.map((index) => ({
+        field: `images.${String(index)}.url`,
+        message: '다른 스토어의 이미지는 쓸 수 없어요. 이미지를 다시 올려 주세요.',
+      })),
     )
   }
 
