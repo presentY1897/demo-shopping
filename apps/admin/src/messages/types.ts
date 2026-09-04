@@ -2,6 +2,8 @@ import type { HealthStatus } from '@shopping/shared'
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
+import type { AttributeType } from '@shopping/shared'
+
 import type { ApiFailureReason } from '@/lib/api-failure'
 import type { ErrorMessages } from '@/lib/errors'
 import type { HealthFailureReason } from '@/lib/health'
@@ -50,6 +52,8 @@ export interface Messages {
   readonly routeStates: RouteStateMessages
   /** The category console (TASK-0029). */
   readonly categories: CategoryMessages
+  /** The attribute console (TASK-0031). */
+  readonly attributes: AttributeMessages
   /**
    * One sentence per error code the API can answer with (TASK-0117).
    *
@@ -292,4 +296,188 @@ export interface CategoryToastMessages {
   readonly saveFailed: string
   /** Said with the failure, because the tree just jumped back on its own. */
   readonly restored: string
+}
+
+/**
+ * Everything `/attributes` says.
+ *
+ * One slice for the whole screen, for the reason {@link CategoryMessages} gives:
+ * the picker, the list, the form, the preview and the two dialogs are one task
+ * in an operator's head, and copy split along component boundaries is copy that
+ * stops agreeing with itself.
+ *
+ * `errors` is **not** here. Everything the API answers is keyed by `error.code`
+ * in the top-level `errors` slice, and a second copy per feature is a second
+ * copy that disagrees (TASK-0117 4.2).
+ */
+export interface AttributeMessages {
+  readonly title: string
+  readonly description: string
+  readonly categoryLabel: string
+  readonly categoryPlaceholder: string
+  /** Between the names of a category path: `여성 › 아우터 › 코트`. */
+  readonly categorySeparator: string
+  /** Marks a retired category in the picker; definitions on it are still live. */
+  readonly categoryInactiveSuffix: string
+  readonly loadingLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  /** Names the table and the region that scrolls it. */
+  readonly listLabel: string
+  readonly columns: AttributeColumnMessages
+  /** What each of the five types is called to an operator. */
+  readonly typeLabels: Readonly<Record<AttributeType, string>>
+  /** One line saying what a type is for, shown under the type choice. */
+  readonly typeHints: Readonly<Record<AttributeType, string>>
+  /** Where an inherited definition comes from. `{name}` is the category. */
+  readonly inheritedFrom: string
+  readonly yes: string
+  readonly no: string
+  readonly keyHeadingHint: string
+  readonly actions: AttributeActionMessages
+  readonly form: AttributeFormMessages
+  readonly preview: AttributePreviewMessages
+  readonly retire: AttributeRetireMessages
+  readonly conflict: AttributeConflictMessages
+  readonly toast: AttributeToastMessages
+  /** One line per way a call can fail **before** the API answers. */
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+export interface AttributeColumnMessages {
+  readonly label: string
+  readonly key: string
+  readonly type: string
+  readonly required: string
+  readonly filterable: string
+  readonly source: string
+  readonly actions: string
+}
+
+export interface AttributeActionMessages {
+  readonly add: string
+  readonly edit: string
+  readonly remove: string
+  readonly moveUp: string
+  readonly moveDown: string
+  /**
+   * Takes the picker to the category that owns an inherited definition.
+   *
+   * A disabled 수정 button would be a dead end; this is the way out of it
+   * (TASK-0031 4.2). `{name}` is that category.
+   */
+  readonly goToSource: string
+  /** Accessible name of the per-row filter switch. `{label}` is the attribute. */
+  readonly toggleFilterable: string
+}
+
+export interface AttributeFormMessages {
+  readonly addTitle: string
+  readonly editTitle: string
+  readonly categoryLabel: string
+  readonly keyLabel: string
+  readonly keyPlaceholder: string
+  readonly keyHint: string
+  /** Why `key` cannot be edited. Shown instead of an input. */
+  readonly keyLockedHint: string
+  readonly labelLabel: string
+  readonly labelPlaceholder: string
+  readonly typeLabel: string
+  readonly typePlaceholder: string
+  /** Why `type` cannot be edited. */
+  readonly typeLockedHint: string
+  readonly optionsLabel: string
+  readonly optionsHint: string
+  readonly optionPlaceholder: string
+  /** Accessible name of one choice's input. `{index}` is its position. */
+  readonly optionItemLabel: string
+  readonly optionAddLabel: string
+  /** Accessible name of one choice's delete button. `{index}` is its position. */
+  readonly optionRemoveLabel: string
+  readonly requiredLabel: string
+  readonly requiredHint: string
+  readonly filterableLabel: string
+  readonly filterableHint: string
+  readonly save: string
+  readonly saving: string
+  readonly cancel: string
+  readonly closeLabel: string
+  /** Shown at form level when a refusal named no field this form owns. */
+  readonly submitError: string
+  /**
+   * What this form says about a value before it is sent.
+   *
+   * The **rules** are `packages/shared`'s — `attributeKeySchema`,
+   * `attributeLabelSchema`, `optionIssues` — and only the wording is here
+   * (TASK-0031 4.5). Nothing the API answers belongs in this record.
+   */
+  readonly errors: {
+    readonly keyRequired: string
+    readonly keyFormat: string
+    readonly labelRequired: string
+    readonly labelTooLong: string
+    readonly typeRequired: string
+    readonly optionsRequired: string
+    readonly optionsForbidden: string
+    readonly optionsDuplicate: string
+    readonly optionInvalid: string
+  }
+}
+
+export interface AttributePreviewMessages {
+  readonly title: string
+  readonly description: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  /** Marks the definition that is still open in the form. */
+  readonly draftBadge: string
+  /**
+   * What the generated form says about a value.
+   *
+   * `{label}` is the attribute's own label, so the preview scolds in the same
+   * words the seller's product form will (TASK-0114).
+   */
+  readonly errors: {
+    readonly required: string
+    readonly invalidNumber: string
+    readonly invalidChoice: string
+  }
+}
+
+export interface AttributeRetireMessages {
+  readonly title: string
+  readonly description: string
+  readonly blockedTitle: string
+  readonly blockedDescription: string
+  readonly confirm: string
+  readonly cancel: string
+  readonly closeLabel: string
+}
+
+export interface AttributeConflictMessages {
+  readonly title: string
+  readonly description: string
+  readonly serverLabel: string
+  readonly mineLabel: string
+  readonly reloadLabel: string
+  readonly overwriteLabel: string
+  readonly cancel: string
+  readonly closeLabel: string
+}
+
+export interface AttributeToastMessages {
+  readonly regionLabel: string
+  readonly closeLabel: string
+  readonly created: string
+  readonly updated: string
+  readonly removed: string
+  readonly moved: string
+  readonly filterableOn: string
+  readonly filterableOff: string
+  readonly saveFailed: string
+  readonly moveFailed: string
+  /** Said with a failure, because the list has just been re-read (4.6). */
+  readonly reloaded: string
 }
