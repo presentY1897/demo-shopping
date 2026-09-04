@@ -25,6 +25,8 @@ import { useMemo } from 'react'
 
 import { ConsoleUserMenu } from '@/components/auth/console-user-menu'
 import { useAuthorization } from '@/lib/auth/authorization'
+import { useAuth } from '@/lib/auth/auth-context'
+import { mayEnterConsole } from '@/lib/auth/console-access'
 import type { ConsoleLayoutMessages } from '@/messages'
 import { messagesFor } from '@/messages'
 
@@ -43,26 +45,47 @@ export function SellerShell({
   // its strings by the caller (TASK-0019 4.9).
   const account = messagesFor().auth.menu
   const { can, ready } = useAuthorization()
+  const { state } = useAuth()
+
+  /**
+   * Whether this account may be in the console at all.
+   *
+   * `true` while the session is still unknown, for the same reason the filter
+   * below is skipped then: a sidebar that collapses to one entry and expands a
+   * frame later is a layout that jumps on every load.
+   */
+  const entering = state.status === 'signedIn' ? mayEnterConsole(state.user.roles) : true
 
   /**
    * The sidebar, minus what this account may not reach (TASK-0023 F8).
    *
+   * **Two filters, and they answer different questions.** `mayEnterConsole` asks
+   * whether the account belongs in this console — the same question
+   * `ConsoleGuard` asks — and a `BUYER` who has applied does not, so their
+   * sidebar is the one screen they can use (TASK-0109 4장). Permissions then
+   * narrow what is left.
+   *
+   * The role check has to come first because the permission filter cannot do it:
+   * `BUYER_GRANTS` holds `product.read`, `order.read`, `claim.read`,
+   * `coupon.read` and `seller.read` — the catalogue is public and their own
+   * orders are their own — so filtering an applicant's menu by permission
+   * removes exactly one entry and leaves eight links that bounce off the guard.
+   *
    * **Unfiltered while the session is still unknown.** Every permission answers
-   * `false` in that frame, and an empty sidebar that fills in a moment later is
-   * a layout that jumps on every load. The menu is a navigation aid; what
-   * actually keeps somebody out is `ConsoleGuard` and the API's own guard.
+   * `false` in that frame. The menu is a navigation aid; what actually keeps
+   * somebody out is `ConsoleGuard` and the API's own guard.
    *
    * `isPermission` rather than a cast: the menu's `permission` is a plain string
    * because `packages/ui` knows no contracts, and a typo there must not quietly
    * grant an entry by failing every lookup the same way.
    */
-  const menu = useMemo(
-    () =>
-      ready
-        ? filterConsoleMenu(messages.menu, (name) => isPermission(name) && can(name))
-        : messages.menu,
-    [messages.menu, can, ready],
-  )
+  const menu = useMemo(() => {
+    if (!entering) return messages.onboardingMenu
+
+    return ready
+      ? filterConsoleMenu(messages.menu, (name) => isPermission(name) && can(name))
+      : messages.menu
+  }, [messages.menu, messages.onboardingMenu, can, entering, ready])
 
   return (
     <ConsoleShell
