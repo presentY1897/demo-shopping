@@ -16,7 +16,7 @@
 import '@testing-library/jest-dom/vitest'
 
 import { setupTestServer } from '@shopping/api-mocks/node'
-import { cleanup } from '@testing-library/react'
+import { cleanup, configure } from '@testing-library/react'
 import { afterEach } from 'vitest'
 
 /** Specs import this to override a handler for one test (`server.use(...)`). */
@@ -27,6 +27,24 @@ export const testServer = setupTestServer()
 afterEach(() => {
   cleanup()
 })
+
+/**
+ * How long a `findBy*` or `waitFor` keeps asking before it gives up.
+ *
+ * Testing Library's default is **one second**, and it is not vitest's
+ * `testTimeout` — raising that changes nothing here. One second is a fair
+ * budget for a component that renders from props; it is not one for a console
+ * that mounts, boots a session, fetches through msw and paints a table, with
+ * five other workspaces competing for the machine because `pnpm -r` runs them
+ * in parallel.
+ *
+ * The symptom was a query failing with "Unable to find role=table", which reads
+ * as a rendering bug and is not one — the table arrives, later than a second.
+ * It moved between files (`attributes-page` → `attributes-a11y` →
+ * `attributes-error-contract` → `sellers-page`) as suites grew, which is what
+ * a budget problem looks like from the outside.
+ */
+configure({ asyncUtilTimeout: 5_000 })
 
 function polyfill(target: object, name: string, value: unknown): void {
   if (name in target) return
