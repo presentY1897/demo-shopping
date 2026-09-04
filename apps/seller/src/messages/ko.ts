@@ -821,6 +821,20 @@ export const ko: Messages = {
     },
     errorTitle: '상품 목록을 불러오지 못했습니다.',
     retry: '다시 불러오기',
+    failure: {
+      title: '요청을 처리하지 못했습니다',
+      retryLabel: '다시 시도',
+      requestIdLabel: '문의 번호',
+      requestIdHint: '계속 실패하면 이 번호와 함께 문의해주세요.',
+      copyLabel: '복사',
+      copiedLabel: '복사했습니다',
+    },
+    toast: {
+      regionLabel: '알림',
+      closeLabel: '알림 닫기',
+      failureTitle: '요청을 처리하지 못했습니다',
+    },
+    closeLabel: '닫기',
   },
   productStock: {
     title: '재고 관리',
@@ -884,5 +898,18 @@ export const ko: Messages = {
     errorTitle: '재고를 불러오지 못했습니다.',
     retry: '다시 불러오기',
     adjusted: '재고를 {stock}개로 맞췄습니다.',
+    failure: {
+      title: '재고를 조정하지 못했습니다',
+      retryLabel: '다시 시도',
+      requestIdLabel: '문의 번호',
+      requestIdHint: '계속 실패하면 이 번호와 함께 문의해주세요.',
+      copyLabel: '복사',
+      copiedLabel: '복사했습니다',
+    },
+    toast: {
+      regionLabel: '알림',
+      closeLabel: '알림 닫기',
+      failureTitle: '재고를 조정하지 못했습니다',
+    },
   },
 }

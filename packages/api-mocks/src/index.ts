@@ -30,6 +30,7 @@ export {
   failNextDefaultAssignment,
   failNextDemoIssue,
   failNextRefresh,
+  failNextStockAdjustment,
   healthHandlers,
   mockDemoAccount,
   mockSession,
@@ -43,9 +44,12 @@ export {
   resetDemoStore,
   resetProductStore,
   resetProfileStore,
+  resetSellerConsoleStore,
   resetSellerStore,
   resetSessionStore,
   resetUploadStore,
+  sellerConsoleHandlers,
+  sellerConsoleSnapshot,
   sellerHandlers,
   sellerRequests,
   sellerRowSnapshot,
@@ -54,6 +58,14 @@ export {
   userRolesHandlers,
 } from './handlers'
 export type { SellerRequestRecord } from './handlers'
+export {
+  productId as sellerProductId,
+  SELLER_CATEGORY_IDS,
+  SELLER_PRODUCT_COUNT,
+  sellerProductListItem,
+  sellerVariants,
+  variantId as sellerVariantId,
+} from './handlers/seller-console-catalogue'
 export { mockMethods, mockPaths, MOCK_STORAGE_ORIGIN, MOCK_STORAGE_PUBLIC_ORIGIN } from './paths'
 export type { MockMethod, MockPath } from './paths'
 export { fixtureRegistry } from './registry'

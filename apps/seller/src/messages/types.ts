@@ -746,6 +746,10 @@ export interface ProductListMessages {
   readonly filteredEmpty: EmptyStateMessages
   readonly errorTitle: string
   readonly retry: string
+  /** The refusal panel — the same six labels every screen in this app shows. */
+  readonly failure: StoreFailureMessages
+  readonly toast: ProductToastMessages
+  readonly closeLabel: string
 }
 
 /*
@@ -825,4 +829,6 @@ export interface ProductStockMessages {
   readonly retry: string
   /** `{stock}` */
   readonly adjusted: string
+  readonly failure: StoreFailureMessages
+  readonly toast: ProductToastMessages
 }
