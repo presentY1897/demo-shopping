@@ -54,3 +54,22 @@ export function fill(template: string, values: Readonly<Record<string, string | 
     return value === undefined ? whole : String(value)
   })
 }
+
+/**
+ * When the banner starts insisting (TASK-0025 「만료 임박 알림」).
+ *
+ * An hour, because that is the point where the difference matters: a demo with
+ * six hours left is a fact, and one with twenty minutes left is a **deadline**.
+ * The visitor has data in that account — a store, listings, an address — and
+ * none of it survives the sweep. Telling them in the same tone as "24시간
+ * 남음" is telling them nothing.
+ */
+export const DEMO_ENDING_SOON_MINUTES = 60
+
+/** Whether the account is inside {@link DEMO_ENDING_SOON_MINUTES} of its end. */
+export function isEndingSoon(left: Remaining): boolean {
+  // `expired` is not "ending soon" — it is over, and the copy for it is
+  // different. Folding the two would put "곧 사라집니다" on an account that
+  // already has.
+  return !left.expired && left.hours * 60 + left.minutes <= DEMO_ENDING_SOON_MINUTES
+}

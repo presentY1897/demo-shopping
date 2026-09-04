@@ -16,6 +16,7 @@ export const healthOk = defineFixture(healthResponseSchema, {
   search: 'ok',
   uptime: 12,
   version: '0.0.0',
+  demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
 })
 
 /**
@@ -28,6 +29,7 @@ export const healthDegraded = defineFixture(healthResponseSchema, {
   search: 'down',
   uptime: 12,
   version: '0.0.0',
+  demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
 })
 
 /**
@@ -44,4 +46,5 @@ export const healthSearchIndexing = defineFixture(healthResponseSchema, {
   search: 'degraded',
   uptime: 12,
   version: '0.0.0',
+  demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
 })

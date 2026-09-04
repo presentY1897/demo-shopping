@@ -37,6 +37,20 @@ export const healthResponseSchema = z.object({
   uptime: z.number().nonnegative(),
   /** Version of the deployed API build. */
   version: z.string().min(1),
+  /**
+   * When the demo cleanup sweep last finished (TASK-0025 F5).
+   *
+   * `null` before the first run of a freshly started API, which is a real state
+   * and not a failure — the sweep runs on an interval, not at boot.
+   *
+   * **Not a `HealthDependencyKey`.** The dependency keys are things the API
+   * talks to and whose absence makes it unable to answer; a sweep that has not
+   * run yet does not stop a single request. What it stops is demo data being
+   * collected, and the way to notice that is a timestamp going stale — so the
+   * timestamp is what is published, and the judgement is left to whoever reads
+   * it (요구사항 「스케줄러가 멈추면 헬스체크로 알 수 있다」).
+   */
+  demoCleanup: z.object({ lastRunAt: z.iso.datetime().nullable() }),
 })
 
 export type HealthResponse = z.infer<typeof healthResponseSchema>

@@ -15,6 +15,7 @@ describe('defineFixture', () => {
         // contract is a schema and not an interface.
         uptime: -1,
         version: '0.0.0',
+        demoCleanup: { lastRunAt: null },
       }),
     ).toThrow(/uptime/)
   })
@@ -27,6 +28,7 @@ describe('defineFixture', () => {
         search: 'ok',
         uptime: 12,
         version: '',
+        demoCleanup: { lastRunAt: null },
       }),
     ).toThrow(/version/)
   })
@@ -52,6 +54,7 @@ describe('defineFixture', () => {
       search: 'ok',
       uptime: 12,
       version: '0.0.0',
+      demoCleanup: { lastRunAt: null },
     })
   })
 })

@@ -591,6 +591,7 @@ export const ko: Messages = {
   // 데모 계정 (TASK-0024). 배너는 모든 화면 위에 뜨므로 auth 와 나눠 둔다 —
   // auth 는 "로그인되어 있는가" 이고 이쪽은 "그 계정이 언제까지인가" 다.
   demo: {
+    endingSoonLabel: '체험 종료 임박',
     bannerLabel: '관리자 데모',
     remaining: '{hours}시간 {minutes}분 뒤에 이 계정과 처리한 내용이 사라집니다.',
     remainingMinutes: '{minutes}분 뒤에 이 계정과 처리한 내용이 사라집니다.',

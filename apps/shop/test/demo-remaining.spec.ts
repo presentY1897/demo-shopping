@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { fill, remainingOf } from '@/lib/demo/remaining'
+import { DEMO_ENDING_SOON_MINUTES, fill, isEndingSoon, remainingOf } from '@/lib/demo/remaining'
 
 /**
  * How much of a demo is left, and how the sentence is filled in (TASK-0024 4.6).
@@ -60,5 +60,25 @@ describe('문장 채우기', () => {
     // Visible in the screen rather than silently blank, which is what a reader
     // needs in order to notice that a catalog and a component disagree.
     expect(fill('{hours}시간 {unknown}', { hours: 1 })).toBe('1시간 {unknown}')
+  })
+})
+
+describe('종료 임박 (TASK-0025)', () => {
+  it('한 시간 경계에서 켜진다', () => {
+    // The boundary is the constant, not the number 60 written here — if the
+    // threshold moves, this still describes the rule.
+    expect(isEndingSoon(remainingOf(inMs(0, DEMO_ENDING_SOON_MINUTES), AT))).toBe(true)
+    expect(isEndingSoon(remainingOf(inMs(0, DEMO_ENDING_SOON_MINUTES + 1), AT))).toBe(false)
+  })
+
+  it('여유가 있으면 켜지지 않는다', () => {
+    expect(isEndingSoon(remainingOf(inMs(23, 0), AT))).toBe(false)
+  })
+
+  it('이미 끝난 것은 임박이 아니다', () => {
+    // 「곧 사라집니다」 on an account that already has is a sentence that is
+    // simply untrue, and the copy for the two states is different.
+    expect(isEndingSoon(remainingOf(inMs(-1, 0), AT))).toBe(false)
+    expect(remainingOf(inMs(-1, 0), AT).expired).toBe(true)
   })
 })

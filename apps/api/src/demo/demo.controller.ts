@@ -6,12 +6,15 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
+  Param,
   Post,
   Req,
   Res,
 } from '@nestjs/common'
 import type { AppId, DemoIssueResponse, DemoStatusResponse } from '@shopping/shared'
 import { APP_ID_HEADER, demoIssueRequestSchema, isAppId } from '@shopping/shared'
+import { z } from 'zod'
 
 import { domainFailure } from '../common/domain-failure.js'
 import { parseInput } from '../common/parse-input.js'
@@ -20,8 +23,12 @@ import { PublicEndpoint } from '../auth/public-endpoint.decorator.js'
 import { RequirePermission } from '../auth/require-permission.decorator.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { buildRefreshCookie } from '../auth/session-cookie.js'
+import { DemoCleanupService } from './demo-cleanup.service.js'
 import { demoRoleMatchesApp, DEMO_ROLE_BY_APP } from './demo-persona.js'
 import { DemoService } from './demo.service.js'
+
+/** The path parameter, validated the way every other id on this API is. */
+const demoUserIdSchema = z.uuid()
 
 /**
  * Getting a demo account, and asking how long one has left (TASK-0024).
@@ -42,7 +49,10 @@ import { DemoService } from './demo.service.js'
  */
 @Controller({ path: 'auth/demo', version: '1' })
 export class DemoController {
-  constructor(private readonly demo: DemoService) {}
+  constructor(
+    private readonly demo: DemoService,
+    private readonly cleanup: DemoCleanupService,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.OK)
@@ -81,6 +91,33 @@ export class DemoController {
   @RequirePermission('user.read')
   async status(@Principal() principal: RequestPrincipal): Promise<DemoStatusResponse> {
     return { demo: await this.demo.statusOf(principal.userId) }
+  }
+
+  /**
+   * Brings a demo account's expiry forward to now (TASK-0025 F7).
+   *
+   * It does not delete anything — it makes the account **collectable**, and the
+   * sweep that runs every fifteen minutes does the rest. Two paths into the same
+   * deletion would be two places for the deletion rules to drift, and the rules
+   * are the part of this task that loses data when they are wrong.
+   *
+   * `demo.manage` because this ends somebody else's session. The screen that
+   * calls it is M14; the endpoint exists now because the sweep it feeds does.
+   */
+  @Post(':userId/expire')
+  @HttpCode(HttpStatus.OK)
+  @RequirePermission('demo.manage')
+  async expire(@Param('userId') userId: string): Promise<DemoStatusResponse> {
+    const id = parseInput(demoUserIdSchema, userId, 'userId')
+
+    // A plain 404, the way every other missing row on this API answers: the
+    // status-derived `NOT_FOUND` is what the console's catalog looks up, and a
+    // domain code here would be one nobody branches on.
+    if (!(await this.cleanup.expireNow(id))) {
+      throw new NotFoundException('만료시킬 데모 계정을 찾지 못했습니다.')
+    }
+
+    return { demo: await this.demo.statusOf(id) }
   }
 }
 

@@ -110,6 +110,8 @@ export interface ErrorNoticeMessages {
  * the component, because word order is a property of the language.
  */
 export interface DemoMessages {
+  /** What the banner calls itself inside the last hour (TASK-0025). */
+  readonly endingSoonLabel: string
   /** Names the banner in place of an `aria-label`, so it is read either way. */
   readonly bannerLabel: string
   /** `{hours}` · `{minutes}` */
