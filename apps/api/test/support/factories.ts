@@ -497,3 +497,83 @@ export async function createStorefront(
     category: await createCategory(db),
   }
 }
+
+// ---------------------------------------------------------------------------
+// Stock ledger (TASK-0036)
+// ---------------------------------------------------------------------------
+
+export interface StockLedgerRow {
+  readonly variantId: string
+  readonly seq: number
+  readonly type: string
+  readonly quantity: number
+  readonly balanceAfter: number
+}
+
+export interface StockLedgerOptions {
+  readonly variantId: string
+  readonly seq?: number
+  readonly type?: 'INBOUND' | 'SALE' | 'CANCEL' | 'RETURN_IN' | 'RESERVE_CONFIRM' | 'ADJUST'
+  readonly quantity?: number
+  readonly balanceAfter?: number
+  readonly refType?: 'ORDER_ITEM' | 'STOCK_RESERVATION' | 'CLAIM_ITEM' | null
+  readonly refId?: string | null
+  readonly reason?: string | null
+  readonly actorId?: string | null
+}
+
+/**
+ * One movement, inserted the way the service inserts one.
+ *
+ * An `INBOUND` of 5 at position 1 by default — the shape a variant's history
+ * starts with. Raw SQL like every factory here: a constraint spec has to see
+ * the database's own answer, and `StockService` would answer first.
+ */
+export async function createStockLedgerEntry(
+  db: Database,
+  options: StockLedgerOptions,
+): Promise<StockLedgerRow> {
+  const quantity = options.quantity ?? 5
+
+  return db.one<StockLedgerRow>(
+    `INSERT INTO "StockLedger"
+       ("variantId", "seq", "type", "quantity", "balanceAfter",
+        "refType", "refId", "reason", "actorId")
+     VALUES ($1, $2, $3::"StockLedgerType", $4, $5, $6::"StockRefType", $7, $8, $9)
+     RETURNING "variantId", "seq", "type"::text AS "type", "quantity", "balanceAfter"`,
+    [
+      options.variantId,
+      options.seq ?? 1,
+      options.type ?? 'INBOUND',
+      quantity,
+      options.balanceAfter ?? Math.max(quantity, 0),
+      options.refType ?? null,
+      options.refId ?? null,
+      options.reason ?? null,
+      options.actorId ?? null,
+    ],
+  )
+}
+
+/**
+ * A live variant of a live product in a live store — the fixture every stock
+ * specification starts from.
+ *
+ * The variant is created **without** a ledger row even when `stock` is given,
+ * because a constraint spec needs to be able to build the very inconsistency
+ * `StockService` refuses to create.
+ */
+export async function createSellableVariant(
+  db: Database,
+  options: { readonly stock?: number } = {},
+): Promise<{ seller: SellerRow; product: ProductRow; variant: ProductVariantRow }> {
+  const { seller, category } = await createStorefront(db)
+  const product = await createProduct(db, { sellerId: seller.id, categoryId: category.id })
+  const variant = await createProductVariant(db, {
+    productId: product.id,
+    sellerId: seller.id,
+    stock: options.stock ?? 0,
+  })
+
+  return { seller, product, variant }
+}

@@ -484,16 +484,32 @@ function refusal(issues: readonly MovementIssue[]): BadRequestException {
 function duplicateOrRethrow(error: unknown): unknown {
   if (!(error instanceof Prisma.PrismaClientKnownRequestError)) return error
 
-  const target = (error.meta as { target?: unknown } | undefined)?.target
-  const isRefIndex = typeof target === 'string' ? target.includes(REF_INDEX) : false
-
-  if (error.code === 'P2002' && isRefIndex) {
+  if (error.code === 'P2002' && violatedIndexOf(error) === REF_INDEX) {
     return new ConflictException({
       message: [{ field: 'refId', message: '이미 처리된 재고 변동이에요.' }],
     })
   }
 
   return error
+}
+
+/**
+ * The index a unique violation names, as the driver adapter reports it.
+ *
+ * `meta.target` is empty here: Prisma only fills it for indexes declared in the
+ * schema language, and this one is **partial**, so it lives in the migration
+ * (TASK-0036 4.4). The adapter still carries the database's own answer, which
+ * is what is read — the same route `ProductService.sqlStateOf` takes to the
+ * SQLSTATE, and for the same reason: matching on the message would break the
+ * first time a locale or a version changed it.
+ */
+function violatedIndexOf(error: Prisma.PrismaClientKnownRequestError): string | undefined {
+  const index = (
+    error.meta as
+      { driverAdapterError?: { cause?: { constraint?: { index?: unknown } } } } | undefined
+  )?.driverAdapterError?.cause?.constraint?.index
+
+  return typeof index === 'string' ? index : undefined
 }
 
 /** The stored row, in the shape `@shopping/shared` declares. */
