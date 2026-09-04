@@ -260,12 +260,10 @@ describe('A2 — 입력 검증', () => {
   it('answers 404 for a variant that does not exist', async () => {
     expect(
       await failure(
-        api
-          .clientAs(seller)
-          .adjustVariantStock('0192f0c1-0000-7000-8000-00000000beef', {
-            delta: 1,
-            type: 'INBOUND',
-          }),
+        api.clientAs(seller).adjustVariantStock('0192f0c1-0000-7000-8000-00000000beef', {
+          delta: 1,
+          type: 'INBOUND',
+        }),
       ),
     ).toMatchObject({ status: 404 })
   })
