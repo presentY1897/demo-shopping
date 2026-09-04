@@ -8,10 +8,16 @@
  * asserted here at the point where it is cheap to fix.
  */
 
-import { createProductRequestSchema, PRODUCT_MAX_VARIANTS } from '@shopping/shared'
+import { createProductRequestSchema, PRODUCT_MAX_VARIANTS, skuPrefixSchema } from '@shopping/shared'
 import { describe, expect, it } from 'vitest'
 
-import { attributesFor, planProduct } from './product-plan.js'
+import {
+  attributesFor,
+  planCatalogue,
+  planProduct,
+  SEED_SCALES,
+  seedSkuPrefix,
+} from './product-plan.js'
 import { seededRandom } from './random.js'
 import { effectiveAttributes, leafCategories } from './taxonomy.js'
 
@@ -141,5 +147,106 @@ describe('the shape TASK-0037 F1 asked for', () => {
       .filter((variant) => variant.stock === 0)
 
     expect(soldOut.length).toBeGreaterThan(0)
+  })
+})
+
+describe('where each listing goes', () => {
+  const leaves = leafCategories().map((leaf) => leaf.slug)
+  const full = planCatalogue(SEED_SCALES.full, leaves)
+
+  it('makes the counts F1 asks for', () => {
+    expect(full).toHaveLength(800)
+    expect(new Set(full.map((row) => row.sellerIndex)).size).toBe(15)
+  })
+
+  it('makes the smaller catalogue F8 asks for', () => {
+    const small = planCatalogue(SEED_SCALES.small, leaves)
+
+    expect(small).toHaveLength(50)
+    expect(new Set(small.map((row) => row.sellerIndex)).size).toBe(5)
+  })
+
+  it('places every listing the same way on every run (F2)', () => {
+    // Round-robin, not random. Where a listing sits is the seed's natural key;
+    // if that moved, a rerun could not tell an existing listing from a new one.
+    expect(planCatalogue(SEED_SCALES.full, leaves)).toEqual(full)
+  })
+
+  it('gives every store products across the whole tree, not two categories', () => {
+    for (let seller = 0; seller < 15; seller += 1) {
+      const mine = full.filter((row) => row.sellerIndex === seller)
+
+      expect(new Set(mine.map((row) => row.leafSlug)).size, String(seller)).toBeGreaterThan(10)
+    }
+  })
+
+  it('fills every leaf', () => {
+    expect(new Set(full.map((row) => row.leafSlug)).size).toBe(leaves.length)
+  })
+
+  it('spreads the twenty showcase listings across the tree', () => {
+    const showcase = full.filter((row) => row.showcase)
+
+    expect(showcase).toHaveLength(20)
+    expect(new Set(showcase.map((row) => row.leafSlug)).size).toBeGreaterThan(10)
+  })
+
+  it('refuses to plan against an empty tree', () => {
+    expect(() => planCatalogue(SEED_SCALES.full, [])).toThrow('잎 카테고리가 없습니다')
+  })
+})
+
+describe('seedSkuPrefix', () => {
+  it('is a prefix the API accepts', () => {
+    for (const index of [0, 7, 42, 799]) {
+      expect(skuPrefixSchema.safeParse(seedSkuPrefix(index)).success).toBe(true)
+    }
+  })
+
+  it('sorts and pads, so 800 listings keep one shape', () => {
+    expect(seedSkuPrefix(0)).toBe('SEED0000')
+    expect(seedSkuPrefix(799)).toBe('SEED0799')
+  })
+
+  it('is different for every listing — it is the natural key a rerun looks up', () => {
+    const prefixes = Array.from({ length: 800 }, (_unused, index) => seedSkuPrefix(index))
+
+    expect(new Set(prefixes).size).toBe(800)
+  })
+})
+
+describe('what the database would refuse', () => {
+  it('never prices a combination above its own struck-through price', () => {
+    // `ProductVariant_list_price_check` requires `listPrice >= price`. The
+    // listing-level check is not enough: a per-combination surcharge applied to
+    // the price and not to the list price is a negative discount, and the
+    // failure only shows up at the row that happens to draw one.
+    for (const item of planned) {
+      const listing = item.request.variantDefaults.listPrice
+
+      for (const variant of item.request.variants ?? []) {
+        const list = variant.listPrice ?? listing
+
+        if (list === undefined || list === null) continue
+
+        expect(
+          list,
+          `${item.request.name} / ${variant.optionValues.join('·')}`,
+        ).toBeGreaterThanOrEqual(variant.price ?? item.request.variantDefaults.price)
+      }
+    }
+  })
+
+  it('never leaves a surcharged combination on the listing’s list price', () => {
+    const surcharged = planned
+      .filter((item) => item.request.variantDefaults.listPrice !== undefined)
+      .flatMap((item) =>
+        (item.request.variants ?? []).filter(
+          (variant) => (variant.price ?? 0) > item.request.variantDefaults.price,
+        ),
+      )
+
+    expect(surcharged.length).toBeGreaterThan(0)
+    expect(surcharged.every((variant) => variant.listPrice !== undefined)).toBe(true)
   })
 })

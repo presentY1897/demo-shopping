@@ -156,6 +156,8 @@ function keyFor(image: PendingImage): string {
 export interface ImageUploadReport {
   readonly uploaded: number
   readonly reused: number
+  /** Every key this run put in or found — what the next run should remember. */
+  readonly keys: readonly string[]
   /** Set when the store is unconfigured — the seed then runs without pictures. */
   readonly skipped: string | null
 }
@@ -168,14 +170,26 @@ export interface ImageUploadReport {
  */
 export class SeedImages {
   private readonly pools = new Map<string, readonly SeedImage[]>()
+  private readonly seen = new Set<string>()
   private uploaded = 0
   private reused = 0
   private skipped: string | null = null
 
+  /**
+   * @param known Keys a previous run recorded. **Not** a bucket listing: the
+   *   port has no `list`, and asking the public URL does not answer the question
+   *   either — `R2_PUBLIC_BASE_URL` is a custom domain that may not be bound to
+   *   the bucket yet, in which case every object reads as missing and a rerun
+   *   uploads the whole catalogue again (measured: 156 objects, 160 seconds).
+   *   The trade is explicit: if the bucket is emptied without the database being
+   *   reset, the seed will believe pictures are there that are not. Re-running
+   *   after `pnpm db:reset` fixes it, and nothing else in the seed depends on it.
+   */
   constructor(
     private readonly storage: ObjectStorage,
     private readonly now: () => Date,
     private readonly repoRoot: string | null = findRepoRoot(),
+    private readonly known: ReadonlySet<string> = new Set(),
   ) {}
 
   /** Whether a person has dropped any pictures in — reported, not decided on. */
@@ -184,7 +198,12 @@ export class SeedImages {
   }
 
   report(): ImageUploadReport {
-    return { uploaded: this.uploaded, reused: this.reused, skipped: this.skipped }
+    return {
+      uploaded: this.uploaded,
+      reused: this.reused,
+      keys: [...this.seen],
+      skipped: this.skipped,
+    }
   }
 
   /** The pool for one leaf category, uploading it the first time it is asked for. */
@@ -200,20 +219,28 @@ export class SeedImages {
     return built
   }
 
+  /**
+   * One pool, uploaded together.
+   *
+   * **Concurrently, and that is what makes the seed fit its budget.** Each PUT
+   * is a round trip to Cloudflare and costs about a second; 26 pools of 6 done
+   * one at a time is 156 seconds, which was nearly the whole of a 182-second
+   * full run and put `--scale=small` — 50 listings, but still every pool — at
+   * 161 seconds against F8's 60. A pool is six independent objects, so there is
+   * nothing to serialise them for.
+   *
+   * `Promise.all` keeps the order, which the alt text depends on.
+   */
   private async upload(images: readonly PendingImage[]): Promise<readonly SeedImage[]> {
     if (this.skipped !== null) return []
 
-    const done: SeedImage[] = []
+    const urls = await Promise.all(images.map((image) => this.put(image)))
 
-    for (const image of images) {
-      const url = await this.put(image)
+    // One refusal means the store is unconfigured, which is true for all of
+    // them; a partial gallery would be worse than none.
+    if (urls.some((url) => url === null)) return []
 
-      if (url === null) return []
-
-      done.push({ url, alt: image.alt })
-    }
-
-    return done
+    return images.map((image, index) => ({ url: urls[index] ?? '', alt: image.alt }))
   }
 
   /** One object. `null` once the storage has told us it is not configured. */
@@ -239,10 +266,13 @@ export class SeedImages {
       return null
     }
 
-    // Content-addressed, so an object that is already there is already correct.
-    const head = await fetch(target.publicUrl, { method: 'HEAD' })
+    this.seen.add(key)
 
-    if (head.ok) {
+    // Content-addressed, so an object that is already there is already correct
+    // and there is nothing to compare. A key a previous run recorded is taken on
+    // trust; an unknown one is asked about, which costs one request and only
+    // answers when the public domain is actually serving the bucket.
+    if (this.known.has(key) || (await this.alreadyThere(target.publicUrl))) {
       this.reused += 1
 
       return target.publicUrl
@@ -255,12 +285,31 @@ export class SeedImages {
     })
 
     if (!response.ok) {
-      throw new Error(`이미지 업로드에 실패했습니다 (${String(response.status)}): ${key}`)
+      // S3 puts the reason in the body and nowhere else. Without it the failure
+      // reads as "500", which says the request was made and nothing about why
+      // it was refused.
+      const said = (await response.text()).trim().slice(0, 400)
+
+      throw new Error(
+        `이미지 업로드에 실패했습니다 (${String(response.status)}): ${key}\n  저장소 응답: ${said}`,
+      )
     }
 
     this.uploaded += 1
 
     return target.publicUrl
+  }
+
+  /** Whether the public URL serves this object. `false` when it cannot say. */
+  private async alreadyThere(publicUrl: string): Promise<boolean> {
+    try {
+      return (await fetch(publicUrl, { method: 'HEAD' })).ok
+    } catch {
+      // An unbound custom domain, no network, a private bucket. None of those
+      // mean the object is missing, but none of them mean it is there either,
+      // and uploading again is the safe answer.
+      return false
+    }
   }
 }
 

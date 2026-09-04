@@ -26,6 +26,7 @@
     "db:reset": "pnpm --filter @shopping/api db:reset",
     "db:status": "pnpm --filter @shopping/api db:status",
     "db:seed": "pnpm --filter @shopping/api db:seed",
+    "db:seed:verify": "pnpm --filter @shopping/api db:seed:verify",
     "db:studio": "pnpm --filter @shopping/api db:studio",
     "storybook": "pnpm --filter @shopping/ui storybook",
     "storybook:build": "pnpm --filter @shopping/ui build-storybook",

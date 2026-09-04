@@ -157,15 +157,25 @@ export function planProduct(
     sizes.length === 0 ? [[colour]] : sizes.map((size) => [colour, size]),
   )
 
-  const variants = combinations.map((optionValues) => ({
-    optionValues,
-    price: price + variantSurcharge(random, price),
-    // A tenth of combinations are out of stock. `settle` only requires one
-    // *active* variant for `ACTIVE`, not one in stock, so a sold-out listing is
-    // a state the catalogue can legitimately be in — and the storefront has to
-    // render it.
-    stock: random.chance(0.1) ? 0 : random.int(3, 180),
-  }))
+  const variants = combinations.map((optionValues) => {
+    const surcharge = variantSurcharge(random, price)
+
+    return {
+      optionValues,
+      price: price + surcharge,
+      // The struck-through price moves with the selling price.
+      // `ProductVariant_list_price_check` requires `listPrice >= price`, and a
+      // surcharge applied to one and not the other is a negative discount —
+      // which the database refuses and which a storefront would render as a
+      // positive one with the sign quietly dropped.
+      ...(listPrice === null ? {} : { listPrice: listPrice + surcharge }),
+      // A tenth of combinations are out of stock. `settle` only requires one
+      // *active* variant for `ACTIVE`, not one in stock, so a sold-out listing is
+      // a state the catalogue can legitimately be in — and the storefront has to
+      // render it.
+      stock: random.chance(0.1) ? 0 : random.int(3, 180),
+    }
+  })
 
   return {
     sellerIndex,
@@ -182,4 +192,70 @@ export function planProduct(
       variants,
     },
   }
+}
+
+/** How much of a catalogue a run makes. */
+export interface SeedScale {
+  readonly label: 'small' | 'full'
+  readonly sellers: number
+  readonly products: number
+}
+
+/**
+ * The two sizes (F1 · F8).
+ *
+ * `small` exists because R3 asks for it: a five-minute seed run in the middle of
+ * a change is a five-minute interruption, and a person who is checking one
+ * screen needs 50 listings, not 800.
+ */
+export const SEED_SCALES: Readonly<Record<'small' | 'full', SeedScale>> = {
+  small: { label: 'small', sellers: 5, products: 50 },
+  full: { label: 'full', sellers: 15, products: 800 },
+}
+
+/** How many listings get the full gallery (4장 이미지 2계층 전략). */
+const SHOWCASE_COUNT = 20
+
+/** One listing's place in the catalogue, before anything about it is drawn. */
+export interface CataloguePlacement {
+  /** Stable across runs — the seed's natural key, via the SKU prefix. */
+  readonly index: number
+  readonly leafSlug: string
+  readonly sellerIndex: number
+  readonly showcase: boolean
+}
+
+/**
+ * Where each listing goes, before a word of it is generated.
+ *
+ * Both walks are round-robin rather than random, and that is the point: the
+ * 800th listing has to land in the same category and the same store on every
+ * run, or the seed cannot recognise what it wrote last time (F2). Randomness
+ * belongs to what a listing *is*, not to where it sits.
+ *
+ * Walking the two lists at different rates is what stops the two cycles locking
+ * together — 26 leaves and 15 stores share no factor, so every store ends up
+ * with products across the whole tree instead of the same two categories.
+ */
+export function planCatalogue(
+  scale: SeedScale,
+  leafSlugs: readonly string[],
+): readonly CataloguePlacement[] {
+  if (leafSlugs.length === 0) throw new Error('잎 카테고리가 없습니다.')
+
+  // Spread the showcase across the tree rather than taking the first twenty,
+  // which would put every good gallery in one category.
+  const showcaseStride = Math.max(Math.floor(scale.products / SHOWCASE_COUNT), 1)
+
+  return Array.from({ length: scale.products }, (_unused, index) => ({
+    index,
+    leafSlug: leafSlugs[index % leafSlugs.length] ?? '',
+    sellerIndex: index % scale.sellers,
+    showcase: index % showcaseStride === 0 && index / showcaseStride < SHOWCASE_COUNT,
+  }))
+}
+
+/** The SKU prefix that makes a seeded listing recognisable on the next run. */
+export function seedSkuPrefix(index: number): string {
+  return `SEED${String(index).padStart(4, '0')}`
 }
