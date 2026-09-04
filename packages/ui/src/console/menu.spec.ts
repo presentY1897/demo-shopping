@@ -12,6 +12,7 @@ import {
   activeConsoleMenuItem,
   consoleMenuItemAt,
   consoleMenuItems,
+  filterConsoleMenu,
   isConsoleMenuItemActive,
   type ConsoleMenu,
 } from './menu'
@@ -94,5 +95,41 @@ describe('consoleMenuItemAt', () => {
 
   it('answers nothing when the path is not a menu entry', () => {
     expect(consoleMenuItemAt(MENU, '/orders/returns/3')).toBeNull()
+  })
+})
+
+describe('filterConsoleMenu', () => {
+  const GATED: ConsoleMenu = [
+    { id: 'overview', items: [{ href: '/', label: 'dashboard' }] },
+    {
+      id: 'money',
+      label: 'settlement',
+      items: [
+        { href: '/settlements', label: 'settlements', permission: 'settlement.read' },
+        { href: '/coupons', label: 'coupons', permission: 'coupon.read' },
+      ],
+    },
+  ]
+
+  it('keeps an entry that names no permission', () => {
+    const filtered = filterConsoleMenu(GATED, () => false)
+
+    expect(consoleMenuItems(filtered).map((item) => item.href)).toEqual(['/'])
+  })
+
+  it('drops the entries the reader may not reach', () => {
+    const filtered = filterConsoleMenu(GATED, (permission) => permission === 'coupon.read')
+
+    expect(consoleMenuItems(filtered).map((item) => item.href)).toEqual(['/', '/coupons'])
+  })
+
+  it('drops a section once it has nothing left, rather than leaving a bare heading', () => {
+    const filtered = filterConsoleMenu(GATED, () => false)
+
+    expect(filtered.map((section) => section.id)).toEqual(['overview'])
+  })
+
+  it('changes nothing when every permission is held', () => {
+    expect(filterConsoleMenu(GATED, () => true)).toEqual(GATED)
   })
 })
