@@ -124,6 +124,33 @@ export type {
   VariantDefaults,
 } from './api/products.js'
 export {
+  STOCK_LEDGER_DEFAULT_LIMIT,
+  STOCK_LEDGER_MAX_LIMIT,
+  STOCK_MAX_MOVEMENT,
+  STOCK_REASON_MAX_LENGTH,
+  stockLedgerEntrySchema,
+  stockLedgerQueryParamsSchema,
+  stockLedgerQuerySchema,
+  stockLedgerResponseSchema,
+  stockLedgerTypes,
+  stockLedgerTypeSchema,
+  stockMovementQuantitySchema,
+  stockReasonSchema,
+  stockReconciliationFaults,
+  stockRefTypes,
+  stockRefTypeSchema,
+  variantStockSchema,
+} from './api/stock.js'
+export type {
+  StockLedgerEntry,
+  StockLedgerQuery,
+  StockLedgerResponse,
+  StockLedgerType,
+  StockReconciliationFault,
+  StockRefType,
+  VariantStock,
+} from './api/stock.js'
+export {
   CATEGORY_MAX_DEPTH,
   categoryIdSchema,
   categoryListResponseSchema,

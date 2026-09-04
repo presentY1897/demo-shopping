@@ -44,6 +44,8 @@ import type {
   UpdateProductRequest,
 } from './products.js'
 import { productListResponseSchema, productResponseSchema } from './products.js'
+import type { StockLedgerQuery, StockLedgerResponse } from './stock.js'
+import { stockLedgerResponseSchema } from './stock.js'
 import type { PresignUploadRequest, PresignUploadResponse } from './uploads.js'
 import { presignUploadResponseSchema } from './uploads.js'
 
@@ -175,6 +177,20 @@ export interface ApiClient {
   /** Retires a listing. The row and its variants survive for order history. */
   deleteProduct: (id: string, options?: ApiCallOptions) => Promise<ProductResponse>
   /**
+   * One variant's stock history, newest first (TASK-0036).
+   *
+   * The answer carries the current stock **and** the ledger's own sum, so that
+   * a screen showing both makes a broken ledger visible rather than merely
+   * present. Paging is by `nextCursor`, which is a `seq`: new movements always
+   * take a larger one, so a page the reader has already passed is the only
+   * place an insert can land.
+   */
+  getVariantLedger: (
+    id: string,
+    query?: StockLedgerQuery,
+    options?: ApiCallOptions,
+  ) => Promise<StockLedgerResponse>
+  /**
    * Asks for one presigned upload (TASK-0011).
    *
    * The answer is a URL the caller PUTs the file at directly; nothing here
@@ -221,6 +237,18 @@ function productListSearch(query: ProductListQuery): string {
   if (query.status !== undefined) params.set('status', query.status)
   if (query.limit !== undefined) params.set('limit', String(query.limit))
   if (query.cursor !== undefined) params.set('cursor', query.cursor)
+
+  const search = params.toString()
+
+  return search === '' ? '' : `?${search}`
+}
+
+/** `?limit=20&cursor=7`, or an empty string when nothing is set. */
+function stockLedgerSearch(query: StockLedgerQuery): string {
+  const params = new URLSearchParams()
+
+  if (query.limit !== undefined) params.set('limit', String(query.limit))
+  if (query.cursor !== undefined) params.set('cursor', String(query.cursor))
 
   const search = params.toString()
 
@@ -502,6 +530,13 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         path: `/products/${id}`,
         method: 'DELETE',
         schema: productResponseSchema,
+        ...callOptions,
+      }),
+
+    getVariantLedger: (id, query = {}, callOptions = {}) =>
+      request({
+        path: `/variants/${id}/ledger${stockLedgerSearch(query)}`,
+        schema: stockLedgerResponseSchema,
         ...callOptions,
       }),
 
