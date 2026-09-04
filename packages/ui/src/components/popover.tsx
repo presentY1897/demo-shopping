@@ -101,7 +101,15 @@ export function Popover({
           sideOffset={SIDE_OFFSET}
         >
           {title === undefined && closeLabel === undefined ? null : (
-            <header className="flex items-start justify-between gap-2">
+            // A `div`, not a `<header>`. The panel is portalled straight into
+            // `<body>` and is *not* modal, so nothing hides the page behind it
+            // — and a `<header>` that is not inside `article`/`aside`/`main`/
+            // `nav`/`section` is a `banner` landmark. Beside an app that has a
+            // real one, opening a popover produced two banners
+            // (`landmark-no-duplicate-banner`). Found by the console shell's
+            // axe run in TASK-0019; `Modal` and `Drawer` are unaffected because
+            // Radix hides the rest of the page while they are open.
+            <div className="flex items-start justify-between gap-2">
               {title === undefined ? (
                 <span />
               ) : (
@@ -116,7 +124,7 @@ export function Popover({
                   </IconButton>
                 </PopoverPrimitive.Close>
               )}
-            </header>
+            </div>
           )}
           {children}
           <PopoverPrimitive.Arrow className="fill-surface-raised" />
