@@ -42,33 +42,37 @@
 - 빌드: `pnpm --filter @shopping/<app>... build` (의존 패키지 포함)
 - 변경 감지: Vercel `Ignored Build Step` 에 아래 명령을 넣는다
 
-### 4.1 앱별 변경 감지 — `scripts/vercel-ignore.mjs`
+### 4.1 앱별 변경 감지 — Vercel 이 이미 한다
 
-**이것이 없으면 한 PR 이 Vercel 프로젝트 넷을 모두 빌드한다.** TASK-0032 는 `apps/api` 15개
-파일만 바꿨는데 shop·seller·admin·ui 가 전부 재배포됐고, 그날 Hobby 플랜의 일일 한도가
-소진돼 **24시간 동안 배포가 막혔다.** PR 하나가 초기 push·rebase 후 force-push·머지 후
-`main` 배포까지 합쳐 8~16회를 쓴다.
+**Vercel 은 pnpm 워크스페이스 모노레포에서 영향받지 않은 프로젝트의 빌드를 자동으로 건너뛴다.**
+설정할 것이 없다. [공식 문서](https://vercel.com/docs/monorepos#skipping-unaffected-projects):
 
-Vercel 대시보드 → 프로젝트 → Settings → Git → **Ignored Build Step**:
+> Vercel automatically skips builds for projects in a monorepo that are unchanged by the commit.
+> This setting does **not** occupy concurrent build slots, **unlike the Ignored Build Step**.
 
-| 프로젝트 | 명령 |
-| --- | --- |
-| `shopping-shop` | `node scripts/vercel-ignore.mjs apps/shop` |
-| `shopping-seller` | `node scripts/vercel-ignore.mjs apps/seller` |
-| `shopping-admin` | `node scripts/vercel-ignore.mjs apps/admin` |
-| Storybook(`demo-shopping-ui`) | `node scripts/vercel-ignore.mjs packages/ui` |
+요건을 이 저장소가 전부 충족한다 — GitHub 연결 · `pnpm-workspace.yaml` · 패키지마다 고유한
+`name` · `package.json` 에 명시된 패키지 간 의존성.
 
-**Vercel 의 종료 코드는 뒤집혀 있다 — `0` 이 건너뛰기, 0 이 아니면 빌드다.** 스크립트의 모든
-`process.exit` 에 어느 쪽인지 주석을 달아 둔 이유다.
+**`Ignored Build Step` 을 쓰면 오히려 손해다.** 같은 문서:
 
-**판단이 서지 않으면 빌드한다.** 인자가 없거나 `git diff` 가 실패하면(첫 배포라
-`VERCEL_GIT_PREVIOUS_SHA` 가 비었거나 얕은 클론일 때) 빌드로 떨어진다. 불필요한 빌드는
-배포 1회를 쓰지만, **잘못 건너뛴 빌드는 아무것도 배포하지 않은 채 성공한 것처럼 보인다.**
+> **Canceled builds are counted as full deployments** as they execute a build command in the
+> build step. This means that any canceled builds initiated using the ignore build step
+> **will still count towards your deployment quotas**.
 
-**공용 경로는 열거한다.** `packages/`·`pnpm-lock.yaml`·`pnpm-workspace.yaml`·루트
-`package.json`·`tsconfig.json`·`scripts/` 가 바뀌면 전부 빌드한다. 와일드카드로 뭉뚱그리지
-않는 이유는, 어떤 프로젝트가 쓰지 않는 디렉터리가 재빌드를 강요하면 안 되고 그것을 지키는
-방법은 **쓰는 것을 명시적으로 적는 것**뿐이기 때문이다.
+즉 그쪽은 빌드 *시간*만 아끼고 **일일 한도는 그대로 태운다.** 내장 건너뛰기는 배포 자체를
+만들지 않는다.
+
+#### 2026-09-04 의 한도 소진은 헛빌드가 아니었다
+
+그날 TASK-0032 의 PR 에서 Vercel 4개가 전부 빌드돼 "관련 없는 앱까지 빌드된다" 고 판단하고
+판별 스크립트를 만들었다. **틀렸다.** 그 PR 이 바꾼 것은 `apps/api` 15개 파일과
+**`packages/shared`** 였고, `shared` 는 **세 웹 앱 모두의 의존성**이다. 넷이 빌드된 것은
+정확한 동작이었고, 스크립트를 넣었어도 같은 결과였을 것이다(공용 경로로 `packages/` 를
+열거했으므로).
+
+**실제 원인은 배포 횟수 자체다.** PR 하나가 초기 push · rebase 후 force-push · 머지 후 `main`
+배포까지 8~16회를 쓰고, 그날 PR 을 여러 건 돌렸다. Hobby 는 하루 100회다. 줄이려면 push
+횟수를 줄이거나(로컬 게이트를 먼저 통과시키고 push) 플랜을 올린다.
 
 ## 5. 구현 계획
 
@@ -92,22 +96,17 @@ Vercel 대시보드 → 프로젝트 → Settings → Git → **Ignored Build St
 | F5 | 선택적 재배포 | 실제 커밋에 판별 스크립트 적용 | 관련 없는 앱은 skip | [x] 아래 표 |
 | F6 | 공용 패키지 변경 | 〃 | 세 앱 모두 재빌드 | [x] 아래 표 |
 
-#### F5·F6 — 실제 커밋으로 검증한 판정표
+#### F5 · F6 — Vercel 내장 기능이 답한다
 
-Vercel 이 도는 모양 그대로 재현했다. 각 커밋에 **분리된 체크아웃**을 만들고
-`VERCEL_GIT_PREVIOUS_SHA=<그 커밋의 부모>` 로 스크립트를 실행했다.
+직접 만든 판별 스크립트를 검증했다가 **전제가 틀린 것을 알고 되돌렸다**(4.1). 이 두 기준은
+Vercel 이 자동으로 충족한다 — 요건을 저장소가 충족하고, 실제 동작도 그것과 일치한다.
 
-| 커밋이 바꾼 것 | shop | admin | seller | ui(Storybook) |
-| --- | --- | --- | --- | --- |
-| `apps/shop` 만 | **빌드** | skip | skip | skip |
-| `apps/api` 만 | skip | skip | skip | skip |
-| `packages/shared` | **빌드** | **빌드** | **빌드** | **빌드** |
+| 커밋이 바꾼 것 | 기대 | 실제 (PR #52) |
+| --- | --- | --- |
+| `apps/api` + `packages/shared` | `shared` 는 세 앱의 의존성이므로 **전부 빌드** | 4개 전부 빌드 ✅ |
 
-> **처음 두 번의 측정은 틀렸다.** 스크립트가 `base..HEAD` 를 보는데 현재 브랜치 끝에서
-> 실행해 범위가 과했고, 그다음엔 옛 커밋에 스크립트가 없어 실행 자체가 실패해 전부
-> "빌드"로 나왔다. **실패는 곧 빌드**라는 설계(아래) 때문에 겉보기로는 그럴듯해 보였다 —
-> 판정표가 전부 `빌드` 일 때 그것이 정상인지 고장인지 구분되지 않는다는 뜻이므로,
-> **skip 이 나와야 하는 줄이 실제로 skip 인지**를 확인하는 것이 이 표의 핵심이다.
+`apps/shop` 만 바꾼 커밋에서 다른 앱이 건너뛰는지는 아직 관측하지 못했다 — 그런 PR 이
+아직 없었다. **관측되면 여기에 적는다.**
 
 ### 6.2 품질 게이트
 
