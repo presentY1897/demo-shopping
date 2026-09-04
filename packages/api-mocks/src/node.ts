@@ -10,6 +10,7 @@ import {
   resetAttributeStore,
   resetCategoryStore,
   resetDemoStore,
+  resetProductStore,
   resetSellerStore,
   resetProfileStore,
   resetSessionStore,
@@ -113,6 +114,9 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     resetCategoryStore()
     resetAttributeStore()
     resetAdminSellerStore()
+    // A listing a spec created, published or renamed must not decide what the
+    // next one loads — the editor's whole "수정 모드" branch is keyed on it.
+    resetProductStore()
     resetUploadStore()
     // Back to "this account has never applied", which is the state five of the
     // seller console's faces are told apart from.
