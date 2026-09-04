@@ -66,6 +66,16 @@ export interface ApiAppOptions {
    * having query logging turned on. The spec owns its lifecycle.
    */
   readonly prisma?: object
+  /**
+   * Replaces providers by token, for the dependencies gate 6장 keeps out of the
+   * suite.
+   *
+   * The database is not one of them — A6 forbids mocking it — so this exists for
+   * the external systems: Google today (`GOOGLE_OAUTH`), a payment provider
+   * later. Swapping at the composition root means the service under test is the
+   * one that ships, holding a port whose other side answers on command.
+   */
+  readonly overrides?: readonly { readonly token: unknown; readonly value: unknown }[]
 }
 
 export interface ApiApp {
@@ -148,6 +158,9 @@ export function useApiApp(options: ApiAppOptions = {}): ApiApp {
     }
     if (options.prisma !== undefined) {
       builder.overrideProvider(PrismaService).useValue(options.prisma)
+    }
+    for (const { token, value } of options.overrides ?? []) {
+      builder.overrideProvider(token as never).useValue(value)
     }
 
     const moduleRef = await builder.compile()
