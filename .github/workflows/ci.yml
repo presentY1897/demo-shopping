@@ -91,4 +91,18 @@ jobs:
       # No migration step: the suite's global setup builds a template database,
       # runs `prisma migrate deploy` against it once and clones it per worker.
       # The command is the same one a developer runs locally.
-      - run: pnpm test
+      #
+      # `test:coverage`, not `test`. QUALITY-GATES Q5 states coverage as a gate —
+      # a line floor for services and 100% branches on the pure modules named in
+      # `apps/api/vitest.config.mjs` — and `vitest run` without `--coverage`
+      # evaluates none of it. Until 2026-09-04 every one of those thresholds was
+      # enforced only on the machine of whoever thought to run it, which is a
+      # gate that passes without proving anything.
+      #
+      # **Every package needs the script, even without thresholds.**
+      # `pnpm -r --if-present` *skips* a package that lacks it rather than
+      # falling back to `test` — so the four packages that had no coverage
+      # configuration were given one that simply runs the suite. Without that,
+      # switching this line would have quietly stopped running the shop, seller
+      # and api-mocks tests in CI, which is a worse failure than the one it fixes.
+      - run: pnpm test:coverage
