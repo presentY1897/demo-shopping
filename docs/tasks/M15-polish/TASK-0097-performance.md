@@ -35,13 +35,15 @@ CHROME_PATH=~/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome \
 | --- | --- | --- |
 | `apps/admin` `/orders` | **1,806ms** | 스텁 라우트. 상호작용 번들을 싣지 않는다 |
 | `apps/admin` `/categories` | **2,858ms** | 실제 화면. 스텁 대비 **+1,052ms** |
-| `apps/admin` `/attributes` | (아래 참조) | 실제 화면 |
+| `apps/admin` `/attributes` | **2,859ms** | 실제 화면. `/categories` 와 **1ms 차이** |
 | `apps/shop` `/cart` | 2,036ms | 셸 + 최소 본문 |
 | `apps/shop` `/` | 2,707ms | 셸 + 홈 본문 |
 | `apps/admin` `/` | 2,557ms | 홈. 콜드 스타트 장치 포함 |
 
 **가장 큰 단일 항목은 콘솔 상호작용 번들이다.** admin 의 스텁(1,806ms)과 실제 화면(2,858ms)
-사이 +1,052ms 가 그것이고, 두 실제 화면(`/categories`·`/attributes`)이 그 청크를 공유한다.
+사이 +1,052ms 가 그것이고, 두 실제 화면이 그 청크를 공유한다 — `/categories` 2,858ms 와
+`/attributes` 2,859ms 는 **1ms 차이**다. 화면 내용이 아니라 **공통 번들이 값을 결정한다**는
+뜻이고, 이 표가 게이트가 아니라 자료여야 하는 이유이기도 하다.
 Lighthouse 진단은 두 앱 모두 `unused-javascript` 를 지목한다 — shop 홈 131KiB, admin 230KiB.
 **LCP 요소는 어느 화면에서도 서버가 이미 보낸 텍스트**이고 Render Delay 가 83~84% 다.
 즉 그리는 비용이 아니라 **스크립트를 파싱하느라 그릴 차례가 오지 않는 것**이다.
