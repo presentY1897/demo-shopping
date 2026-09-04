@@ -6,6 +6,7 @@ import { afterAll, afterEach, beforeAll } from 'vitest'
 
 import {
   defaultHandlers,
+  resetAdminSellerStore,
   resetAttributeStore,
   resetCategoryStore,
   resetSellerStore,
@@ -109,6 +110,7 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     server.resetHandlers()
     resetCategoryStore()
     resetAttributeStore()
+    resetAdminSellerStore()
     resetUploadStore()
     // Back to "this account has never applied", which is the state five of the
     // seller console's faces are told apart from.

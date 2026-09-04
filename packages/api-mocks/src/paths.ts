@@ -56,6 +56,19 @@ export const mockPaths = {
   sellerApplications: `*${API_PATH_PREFIX}/sellers/applications`,
   /** `GET ?value=` — whether a brand name is free at the moment of asking. */
   sellerBrandNameAvailability: `*${API_PATH_PREFIX}/sellers/brand-name-availability`,
+  /** `GET` the review queue — status filter and cursor (TASK-0108). */
+  adminSellers: `*${API_PATH_PREFIX}/admin/sellers`,
+  /** `GET` one application, for the review screen. */
+  adminSeller: `*${API_PATH_PREFIX}/admin/sellers/:id`,
+  /**
+   * `POST` a decision: `approve` · `reject` · `suspend` · `reinstate`.
+   *
+   * One pattern rather than four because a path parameter never spans a `/`, so
+   * {@link mockPaths.adminSeller} cannot swallow these and these cannot swallow
+   * each other. The handler refuses an unknown fifth name with a 404, which is
+   * what the real API's router does with a route that does not exist.
+   */
+  adminSellerDecision: `*${API_PATH_PREFIX}/admin/sellers/:id/:action`,
   /** `POST` a request for one presigned upload (TASK-0011). */
   uploadPresign: `*${API_PATH_PREFIX}/uploads/presign`,
   /**
