@@ -101,19 +101,21 @@ export function hasCode(failure: ApiFailure, code: string): boolean {
  * What to tell the shopper.
  *
  * The catalog first, keyed by code; the server's own sentence when this app has
- * no word for it. `codes` is a **partial** record on purpose — see the class
- * comment — so an unlisted code falls through rather than failing to compile.
+ * no word for it. `errors` is a **partial** record on purpose — see the class
+ * comment — so an unlisted code falls through to the server's wording rather
+ * than failing to compile. That is the one difference from the two consoles'
+ * `failureMessage`, which take an exhaustive one.
  */
 export function failureMessage(
   failure: ApiFailure,
   messages: {
-    readonly codes: Readonly<Record<string, string>>
+    readonly errors: Readonly<Record<string, string>>
     readonly failures: Readonly<Record<ApiFailureReason, string>>
   },
 ): string {
   if (failure.kind === 'transport') return messages.failures[failure.reason]
 
-  return messages.codes[failure.code] ?? failure.message
+  return messages.errors[failure.code] ?? failure.message
 }
 
 /**

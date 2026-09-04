@@ -285,6 +285,8 @@ export const ko: Messages = {
         saving: '저장하는 중',
         savedNotice: '프로필을 저장했습니다.',
         submitError: '프로필을 저장하지 못했습니다.',
+        nameError: '이름을 40자 이내로 입력해주세요.',
+        avatarError: 'http 로 시작하는 주소를 입력하거나 비워주세요.',
       },
       density: {
         title: '표시 밀도',

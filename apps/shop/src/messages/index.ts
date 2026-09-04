@@ -1,6 +1,7 @@
 import { ko } from './ko'
 import type {
   AddressBookMessages,
+  AddressFormErrorMessages,
   AddressFormMessages,
   AuthDenialMessages,
   AuthMessages,
@@ -13,6 +14,7 @@ import type {
   LayoutMessages,
   Messages,
   MyPageMessages,
+  MyPageNavMessages,
   NavMessages,
   NotificationSettingMessages,
   PlaceholderMessages,
@@ -41,6 +43,7 @@ export function messagesFor(locale: Locale = DEFAULT_LOCALE): Messages {
 
 export type {
   AddressBookMessages,
+  AddressFormErrorMessages,
   AddressFormMessages,
   AuthDenialMessages,
   AuthMessages,
@@ -53,6 +56,7 @@ export type {
   LayoutMessages,
   Messages,
   MyPageMessages,
+  MyPageNavMessages,
   NavMessages,
   NotificationSettingMessages,
   PlaceholderMessages,
