@@ -1,4 +1,7 @@
 import type { AppConfig } from '../../src/config/app-config.js'
+import type { AppOrigins } from '../../src/config/app-origins.js'
+import { resolveAppOrigins } from '../../src/config/app-origins.js'
+import type { GoogleOAuthConfig } from '../../src/config/google-config.js'
 import type { ObjectStorageConfig } from '../../src/config/storage-config.js'
 
 /**
@@ -15,6 +18,10 @@ export interface TestConfigOptions {
   readonly version?: string
   /** `null` boots the API as if R2 were not configured (TASK-0011 4.5). */
   readonly storage?: ObjectStorageConfig | null
+  /** `null` boots the API as if Google were not configured (TASK-0021 F8). */
+  readonly googleOAuth?: GoogleOAuthConfig | null
+  /** Overrides the derived three-app allow list; `[]` leaves every app unreachable. */
+  readonly corsOrigins?: readonly string[]
 }
 
 /**
@@ -36,6 +43,33 @@ export const testStorageConfig: ObjectStorageConfig = {
 }
 
 /**
+ * Credentials for an OAuth client that does not exist.
+ *
+ * Google is a mocked dependency (QUALITY-GATES 6장) and reaches the suite only
+ * through the `GOOGLE_OAUTH` port, so nothing here is ever sent anywhere. They
+ * are present rather than `null` because most specs exercise the configured
+ * path; F8 is the one that passes `null`.
+ */
+export const testGoogleOAuthConfig: GoogleOAuthConfig = {
+  clientId: 'test-client-id.apps.googleusercontent.com',
+  clientSecret: 'test-client-secret',
+}
+
+/**
+ * Origins for the three apps, spelled the way `derived-env.ts` derives them.
+ *
+ * The ports are the base ports with no offset: a spec asserts on which app a
+ * redirect points at, not on which worktree it ran in.
+ */
+export const testCorsOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3002',
+] as const
+
+const TEST_WEB_PORTS = { shop: 3000, seller: 3001, admin: 3002 } as const
+
+/**
  * A port on the loopback interface that nothing listens on.
  *
  * The search indicator is expected to report `down` in every integration spec:
@@ -50,7 +84,14 @@ export function testAppConfig({
   searchHost = CLOSED_PORT,
   version = '0.0.0-test',
   storage = testStorageConfig,
+  googleOAuth = testGoogleOAuthConfig,
+  corsOrigins = testCorsOrigins,
 }: TestConfigOptions): AppConfig {
+  // Resolved by the same function the loader uses, so a spec that asserts on a
+  // redirect target is exercising the real mapping rather than a hand-written
+  // one that could disagree with it.
+  const appOrigins: AppOrigins = resolveAppOrigins(corsOrigins, TEST_WEB_PORTS)
+
   return {
     nodeEnv: 'test',
     isProduction: false,
@@ -74,6 +115,8 @@ export function testAppConfig({
       timeoutMs: 300,
     },
     storage,
-    corsOrigins: ['http://127.0.0.1:3000'],
+    googleOAuth,
+    corsOrigins,
+    appOrigins,
   }
 }

@@ -1,3 +1,5 @@
+import type { AppOrigins } from './app-origins.js'
+import type { GoogleOAuthConfig } from './google-config.js'
 import type { ObjectStorageConfig } from './storage-config.js'
 
 /** Injection token for {@link AppConfig}; the object itself has no class to key on. */
@@ -47,6 +49,22 @@ export interface AppConfig {
    * (TASK-0011 4.5).
    */
   readonly storage: ObjectStorageConfig | null
+  /**
+   * Google OAuth credentials, or `null` while they are not configured.
+   *
+   * Nullable for the same reason `storage` is, plus one more: CI injects no
+   * Google secrets, so a required value here would fail every job in the
+   * repository. Sign-in answers 503 until it is set (TASK-0021 4장).
+   */
+  readonly googleOAuth: GoogleOAuthConfig | null
   /** Exact origins allowed by CORS. Anything else is rejected. */
   readonly corsOrigins: readonly string[]
+  /**
+   * Which of {@link corsOrigins} belongs to which app.
+   *
+   * Derived rather than configured: the OAuth callback redirects to one of
+   * these, and picking from the list the operator already vetted is what makes
+   * an open redirect unrepresentable (`app-origins.ts`).
+   */
+  readonly appOrigins: AppOrigins
 }

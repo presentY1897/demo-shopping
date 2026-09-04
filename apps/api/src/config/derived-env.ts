@@ -46,9 +46,19 @@ export interface DerivedEnv {
   readonly issues: readonly EnvIssue[]
   /** `null` when nothing could be derived (deployed build, no workspace). */
   readonly offset: number | null
+  /**
+   * Ports the three web apps listen on locally, or `null` when nothing was
+   * derived.
+   *
+   * Exposed rather than folded into {@link values} because the consumer needs
+   * the numbers, not a string: `app-origins.ts` matches an app to one of the
+   * allowed CORS origins by port, and re-parsing them back out of the derived
+   * `CORS_ORIGINS` would make the order of that list load-bearing.
+   */
+  readonly webPorts: Readonly<Record<'shop' | 'seller' | 'admin', number>> | null
 }
 
-const NOTHING_DERIVED: DerivedEnv = { values: {}, issues: [], offset: null }
+const NOTHING_DERIVED: DerivedEnv = { values: {}, issues: [], offset: null, webPorts: null }
 
 /** Treats an empty string as "not set", the way an env file does. */
 function valueOr(value: string | undefined, fallback: string): string {
@@ -142,6 +152,7 @@ export async function deriveEnvFromPortOffset(
   return {
     offset,
     issues: [],
+    webPorts: { shop: ports.shop, seller: ports.seller, admin: ports.admin },
     values: {
       API_PORT: String(ports.api),
       MEILI_HOST: `http://localhost:${ports.meilisearch}`,

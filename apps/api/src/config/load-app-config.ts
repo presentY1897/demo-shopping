@@ -1,5 +1,9 @@
 import type { AppConfig } from './app-config.js'
+import type { AppOrigins } from './app-origins.js'
+import { resolveAppOrigins } from './app-origins.js'
 import { deriveEnvFromPortOffset } from './derived-env.js'
+import type { GoogleOAuthConfig } from './google-config.js'
+import { resolveGoogleOAuthConfig } from './google-config.js'
 import { EnvValidationError } from './env-validation.error.js'
 import type { Env, EnvIssue } from './env.schema.js'
 import { parseEnv } from './env.schema.js'
@@ -22,19 +26,22 @@ export interface LoadedAppConfig {
   }
 }
 
-function toAppConfig(
-  env: Env,
-  version: string,
-  corsOrigins: readonly string[],
-  storage: ObjectStorageConfig | null,
-): AppConfig {
+interface Resolved {
+  readonly version: string
+  readonly corsOrigins: readonly string[]
+  readonly appOrigins: AppOrigins
+  readonly storage: ObjectStorageConfig | null
+  readonly googleOAuth: GoogleOAuthConfig | null
+}
+
+function toAppConfig(env: Env, resolved: Resolved): AppConfig {
   return {
     nodeEnv: env.NODE_ENV,
     isProduction: env.NODE_ENV === 'production',
     host: env.API_HOST,
     port: env.API_PORT,
     logLevel: env.LOG_LEVEL,
-    version,
+    version: resolved.version,
     database: {
       url: env.DATABASE_URL,
       poolSize: env.DATABASE_POOL_SIZE,
@@ -46,8 +53,10 @@ function toAppConfig(
       masterKey: env.MEILI_MASTER_KEY,
       timeoutMs: env.MEILI_HEALTH_TIMEOUT_MS,
     },
-    storage,
-    corsOrigins,
+    storage: resolved.storage,
+    googleOAuth: resolved.googleOAuth,
+    corsOrigins: resolved.corsOrigins,
+    appOrigins: resolved.appOrigins,
   }
 }
 
@@ -71,8 +80,11 @@ export async function loadAppConfig(): Promise<LoadedAppConfig> {
   // set — all of it or none of it — and that rule cannot be stated as six
   // independent field validations (`storage-config.ts`).
   const storage = resolveObjectStorageConfig(merged)
+  // Read from the merged record for the same reason as R2: "both or neither"
+  // is a rule about a set, not about either field on its own.
+  const googleOAuth = resolveGoogleOAuthConfig(merged)
 
-  const issues: EnvIssue[] = [...derived.issues, ...storage.issues]
+  const issues: EnvIssue[] = [...derived.issues, ...storage.issues, ...googleOAuth.issues]
   if (!parsed.ok) issues.push(...parsed.issues)
 
   if (!parsed.ok || issues.length > 0) throw new EnvValidationError(issues)
@@ -85,9 +97,19 @@ export async function loadAppConfig(): Promise<LoadedAppConfig> {
   }
 
   const version = parsed.env.API_VERSION ?? readPackageVersion() ?? UNKNOWN_VERSION
+  // An app with no origin in the list simply cannot start a sign-in; that is a
+  // 400 on one endpoint, not a reason to refuse the whole process. A deployment
+  // that serves only the shop is a legitimate configuration.
+  const appOrigins = resolveAppOrigins(origins, derived.webPorts)
 
   return {
-    config: toAppConfig(parsed.env, version, origins, storage.config),
+    config: toAppConfig(parsed.env, {
+      version,
+      corsOrigins: origins,
+      appOrigins,
+      storage: storage.config,
+      googleOAuth: googleOAuth.config,
+    }),
     sources: { envFiles, portOffset: derived.offset },
   }
 }
