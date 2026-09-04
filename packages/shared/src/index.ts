@@ -205,6 +205,25 @@ export type {
   UploadPurpose,
 } from './api/uploads.js'
 export type { HealthEntry } from './api/health-entries.js'
+export {
+  buildOauthRedirect,
+  googleAuthorizeQuerySchema,
+  LOGIN_PATH,
+  OAUTH_RESULT_PARAMS,
+  oauthFailureReasons,
+  oauthNotices,
+  oauthOutcomes,
+  oauthResultSchema,
+  parseOauthResult,
+} from './api/google-auth.js'
+export type {
+  GoogleAuthorizeQuery,
+  OauthFailureReason,
+  OauthNotice,
+  OauthOutcome,
+  OauthResult,
+} from './api/google-auth.js'
+
 export { grantRoleRequestSchema, userRolesResponseSchema } from './api/user-roles.js'
 export type { GrantRoleRequest, UserRolesResponse } from './api/user-roles.js'
 export {
