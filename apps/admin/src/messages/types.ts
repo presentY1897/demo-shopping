@@ -2,7 +2,7 @@ import type { HealthStatus } from '@shopping/shared'
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
-import type { CategoryFailureReason } from '@/lib/categories/errors'
+import type { ApiFailureReason } from '@/lib/api-failure'
 import type { ErrorMessages } from '@/lib/errors'
 import type { HealthFailureReason } from '@/lib/health'
 
@@ -201,7 +201,7 @@ export interface CategoryMessages {
    * arrive as one reason with the real story in a Korean sentence, and this
    * record was where the screen's vocabulary for "conflict" ended.
    */
-  readonly failures: Readonly<Record<CategoryFailureReason, string>>
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
 }
 
 export interface CategoryActionMessages {

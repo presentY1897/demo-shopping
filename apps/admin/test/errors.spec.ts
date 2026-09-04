@@ -13,18 +13,13 @@ import { ApiClientError } from '@shopping/shared'
 import { describe, expect, it } from 'vitest'
 
 import { ApiConfigurationError } from '@/lib/api'
-import type { CategoryFailure } from '@/lib/categories/errors'
-import {
-  categoryFailure,
-  failureMessage,
-  hasCode,
-  quotableRequestId,
-} from '@/lib/categories/errors'
+import type { ApiFailure } from '@/lib/api-failure'
+import { apiFailure, failureMessage, hasCode, quotableRequestId } from '@/lib/api-failure'
 import { errorMessage, firstFieldError, interpolate, paramsOf } from '@/lib/errors'
 import { messagesFor } from '@/messages'
 
 const messages = messagesFor()
-const catalog = { errors: messages.errors, categories: messages.categories }
+const catalog = { errors: messages.errors, failures: messages.categories.failures }
 
 /** An `ApiClientError` shaped the way `createApiClient` shapes one. */
 function httpError(options: {
@@ -117,32 +112,32 @@ describe('reading the details', () => {
 
 describe('classifying what was thrown', () => {
   it('recognises a missing API URL', () => {
-    expect(categoryFailure(new ApiConfigurationError('no url'))).toEqual({
+    expect(apiFailure(new ApiConfigurationError('no url'))).toEqual({
       kind: 'transport',
       reason: 'configuration',
     })
   })
 
   it('calls anything it does not recognise unknown rather than guessing', () => {
-    expect(categoryFailure(new Error('boom'))).toEqual({ kind: 'transport', reason: 'unknown' })
+    expect(apiFailure(new Error('boom'))).toEqual({ kind: 'transport', reason: 'unknown' })
   })
 
   it('carries a transport kind straight through', () => {
     const error = new ApiClientError({ kind: 'network', message: 'unreachable' })
 
-    expect(categoryFailure(error)).toEqual({ kind: 'transport', reason: 'network' })
+    expect(apiFailure(error)).toEqual({ kind: 'transport', reason: 'network' })
   })
 
   it('treats an unreadable error response as transport, not as an answer', () => {
     // A proxy's HTML error page: the status arrived, the envelope did not, and
     // there is no code to branch on.
-    const failure = categoryFailure(httpError({ status: 502, withBody: false }))
+    const failure = apiFailure(httpError({ status: 502, withBody: false }))
 
     expect(failure).toEqual({ kind: 'transport', reason: 'malformed_response' })
   })
 
   it('keeps everything the envelope carried', () => {
-    const failure = categoryFailure(
+    const failure = apiFailure(
       httpError({
         status: 409,
         code: 'CATEGORY_SLUG_TAKEN',
@@ -167,7 +162,7 @@ describe('classifying what was thrown', () => {
       body: { error: { code: 'CONFLICT', message: 'a', details: [], requestId: 'r' } },
     })
 
-    expect(categoryFailure(error)).toMatchObject({ status: 0 })
+    expect(apiFailure(error)).toMatchObject({ status: 0 })
   })
 })
 
@@ -177,8 +172,8 @@ describe('hasCode', () => {
   })
 
   it('separates two codes that share a status', () => {
-    const slug = categoryFailure(httpError({ status: 409, code: 'CATEGORY_SLUG_TAKEN' }))
-    const version = categoryFailure(httpError({ status: 409, code: 'CATEGORY_VERSION_CONFLICT' }))
+    const slug = apiFailure(httpError({ status: 409, code: 'CATEGORY_SLUG_TAKEN' }))
+    const version = apiFailure(httpError({ status: 409, code: 'CATEGORY_VERSION_CONFLICT' }))
 
     expect(hasCode(slug, 'CATEGORY_SLUG_TAKEN')).toBe(true)
     expect(hasCode(version, 'CATEGORY_SLUG_TAKEN')).toBe(false)
@@ -187,13 +182,13 @@ describe('hasCode', () => {
 
 describe('failureMessage', () => {
   it('uses the transport catalog when nothing arrived', () => {
-    const failure: CategoryFailure = { kind: 'transport', reason: 'timeout' }
+    const failure: ApiFailure = { kind: 'transport', reason: 'timeout' }
 
     expect(failureMessage(failure, catalog)).toBe(messages.categories.failures.timeout)
   })
 
   it('uses this console’s sentence, not the server’s', () => {
-    const failure = categoryFailure(
+    const failure = apiFailure(
       httpError({
         status: 409,
         code: 'CATEGORY_SLUG_TAKEN',
@@ -205,7 +200,7 @@ describe('failureMessage', () => {
   })
 
   it('interpolates from the values the failure carried', () => {
-    const failure = categoryFailure(
+    const failure = apiFailure(
       httpError({
         status: 400,
         code: 'CATEGORY_MAX_DEPTH',
@@ -217,7 +212,7 @@ describe('failureMessage', () => {
   })
 
   it('falls back to the server’s sentence for a code it has never heard of', () => {
-    const failure = categoryFailure(
+    const failure = apiFailure(
       httpError({ status: 409, code: 'CODE_FROM_THE_FUTURE', message: '서버만 아는 문장' }),
     )
 
@@ -232,7 +227,7 @@ describe('quotableRequestId', () => {
   })
 
   it('offers nothing for a failure the reader can act on', () => {
-    const failure = categoryFailure(
+    const failure = apiFailure(
       httpError({ status: 409, code: 'CATEGORY_SLUG_TAKEN', requestId: 'req-7' }),
     )
 
@@ -242,7 +237,7 @@ describe('quotableRequestId', () => {
   })
 
   it('offers the id for a failure only we can fix', () => {
-    const failure = categoryFailure(
+    const failure = apiFailure(
       httpError({ status: 500, code: 'INTERNAL_ERROR', requestId: 'req-7' }),
     )
 
@@ -268,13 +263,13 @@ describe('문구를 바꿔도 화면이 같은 판단을 한다 (F3)', () => {
   ] as const
 
   it.each(wordings)('$label 에서도 코드로 구분한다', (wording) => {
-    const slug = categoryFailure(
+    const slug = apiFailure(
       httpError({ status: 409, code: 'CATEGORY_SLUG_TAKEN', message: wording.slug }),
     )
-    const version = categoryFailure(
+    const version = apiFailure(
       httpError({ status: 409, code: 'CATEGORY_VERSION_CONFLICT', message: wording.version }),
     )
-    const children = categoryFailure(
+    const children = apiFailure(
       httpError({ status: 409, code: 'CATEGORY_HAS_CHILDREN', message: wording.children }),
     )
 

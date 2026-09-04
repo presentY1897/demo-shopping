@@ -3,22 +3,28 @@ import { isApiClientError } from '@shopping/shared'
 import { ApiConfigurationError } from '@/lib/api'
 import type { ErrorMessages } from '@/lib/errors'
 import { errorMessage, paramsOf } from '@/lib/errors'
-import type { CategoryMessages } from '@/messages'
 
 /**
- * Every way a category call can fail **before the API answers**.
+ * Every way a call can fail **before the API answers**.
  *
  * Short, and deliberately so. Until TASK-0117 this list also carried
  * `forbidden`, `not_found`, `conflict`, `invalid` and `server` — the `http` kind
- * split by status, because a status was the most the screen could learn about a
+ * split by status, because a status was the most a screen could learn about a
  * refusal. It could not tell three different 409s apart, so the console read the
  * Korean sentence, or guessed from the HTTP method it had used.
  *
  * Now a refusal carries `error.code`, and the vocabulary for "what the API
  * refused" is `domainErrorCodes` in `@shopping/shared`. What is left here is the
  * set of failures where **there is no answer to read**.
+ *
+ * **This module used to be `lib/categories/errors.ts`** (TASK-0029) and moved
+ * here when the attribute console needed the same four functions (TASK-0031
+ * 4.9). Nothing in it ever knew anything about categories: it reads an envelope,
+ * looks a code up in a catalog, and decides whether a reference is worth
+ * showing. A second copy under `lib/attributes/` would have been two answers to
+ * one question, with only one of them getting fixed.
  */
-export const categoryFailureReasons = [
+export const apiFailureReasons = [
   'network',
   'timeout',
   'aborted',
@@ -27,7 +33,7 @@ export const categoryFailureReasons = [
   'unknown',
 ] as const
 
-export type CategoryFailureReason = (typeof categoryFailureReasons)[number]
+export type ApiFailureReason = (typeof apiFailureReasons)[number]
 
 /**
  * A failed call, in the two shapes a screen has to treat differently.
@@ -39,8 +45,8 @@ export type CategoryFailureReason = (typeof categoryFailureReasons)[number]
  * branches on, `details` is what a form places, and `requestId` is what a person
  * quotes when the failure is not theirs to fix.
  */
-export type CategoryFailure =
-  | { readonly kind: 'transport'; readonly reason: CategoryFailureReason }
+export type ApiFailure =
+  | { readonly kind: 'transport'; readonly reason: ApiFailureReason }
   | {
       readonly kind: 'http'
       readonly status: number
@@ -51,8 +57,8 @@ export type CategoryFailure =
       readonly requestId: string | null
     }
 
-/** Turns anything thrown by a category call into a value the screen can render. */
-export function categoryFailure(error: unknown): CategoryFailure {
+/** Turns anything thrown by an API call into a value a screen can render. */
+export function apiFailure(error: unknown): ApiFailure {
   if (error instanceof ApiConfigurationError) return { kind: 'transport', reason: 'configuration' }
   if (!isApiClientError(error)) return { kind: 'transport', reason: 'unknown' }
 
@@ -78,7 +84,7 @@ export function categoryFailure(error: unknown): CategoryFailure {
 }
 
 /** True when the API answered with this code. */
-export function hasCode(failure: CategoryFailure, code: string): boolean {
+export function hasCode(failure: ApiFailure, code: string): boolean {
   return failure.kind === 'http' && failure.code === code
 }
 
@@ -89,12 +95,19 @@ export function hasCode(failure: CategoryFailure, code: string): boolean {
  * console has never heard of the code. That order is what keeps internal words
  * — 슬러그, orderedIds, 엔드포인트 — off the screen while still guaranteeing
  * that *something* is shown (TASK-0117 4.1).
+ *
+ * The `failures` record is passed in rather than read from a fixed slice: the
+ * screen knows which part of its catalog describes a dead network in *its*
+ * words, and this function has no business knowing there is a category console.
  */
 export function failureMessage(
-  failure: CategoryFailure,
-  messages: { readonly errors: ErrorMessages; readonly categories: CategoryMessages },
+  failure: ApiFailure,
+  messages: {
+    readonly errors: ErrorMessages
+    readonly failures: Readonly<Record<ApiFailureReason, string>>
+  },
 ): string {
-  if (failure.kind === 'transport') return messages.categories.failures[failure.reason]
+  if (failure.kind === 'transport') return messages.failures[failure.reason]
 
   return errorMessage(messages.errors, failure.code, paramsOf(failure.details)) ?? failure.message
 }
@@ -113,6 +126,6 @@ export function failureMessage(
  * 문의 번호 panel there would be an empty ceremony over a failure whose real
  * answer is "try again". Those keep the toast they had.
  */
-export function quotableRequestId(failure: CategoryFailure): string | null {
+export function quotableRequestId(failure: ApiFailure): string | null {
   return failure.kind === 'http' && failure.status >= 500 ? failure.requestId : null
 }

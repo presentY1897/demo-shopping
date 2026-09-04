@@ -12,8 +12,8 @@ import {
 import { serverFieldErrors } from '@shopping/ui/form'
 import { useMemo, useState } from 'react'
 
-import type { CategoryFailure } from '@/lib/categories/errors'
-import { failureMessage, hasCode, quotableRequestId } from '@/lib/categories/errors'
+import type { ApiFailure } from '@/lib/api-failure'
+import { failureMessage, hasCode, quotableRequestId } from '@/lib/api-failure'
 import type { CategoryRow, MoveDirection } from '@/lib/categories/tree'
 import { branchIds, hasChildren, rowById, visibleRows } from '@/lib/categories/tree'
 import { useCategoryTree } from '@/lib/categories/use-category-tree'
@@ -98,7 +98,7 @@ export function CategoryWorkspace({ messages, errors, notice }: CategoryWorkspac
    * thing the reader is being asked to do with the number is copy it somewhere
    * else (TASK-0117 4.4). Failures they *can* act on keep the toast.
    */
-  const [reported, setReported] = useState<CategoryFailure | null>(null)
+  const [reported, setReported] = useState<ApiFailure | null>(null)
 
   /**
    * `null` means "nobody has folded anything yet", which is drawn fully
@@ -113,8 +113,8 @@ export function CategoryWorkspace({ messages, errors, notice }: CategoryWorkspac
   const selected = selectedId === null ? null : (rowById(rows, selectedId) ?? null)
 
   /** The catalog's sentence for this failure. Never the server's, if we have one. */
-  function describe(failure: CategoryFailure): string {
-    return failureMessage(failure, { errors, categories: messages })
+  function describe(failure: ApiFailure): string {
+    return failureMessage(failure, { errors, failures: messages.failures })
   }
 
   /**
@@ -126,7 +126,7 @@ export function CategoryWorkspace({ messages, errors, notice }: CategoryWorkspac
    * including a dead network, which produced no number — keeps the toast,
    * because its answer is already on screen.
    */
-  function report(title: string, failure: CategoryFailure): void {
+  function report(title: string, failure: ApiFailure): void {
     if (quotableRequestId(failure) !== null) {
       setReported(failure)
       return
@@ -141,7 +141,7 @@ export function CategoryWorkspace({ messages, errors, notice }: CategoryWorkspac
    * This is the whole of TASK-0117 on this screen: `details[].field` says which
    * input, `code` says which sentence, and neither is read out of Korean prose.
    */
-  function fieldErrorsFor(failure: CategoryFailure): Record<string, string> {
+  function fieldErrorsFor(failure: ApiFailure): Record<string, string> {
     const placed = serverFieldErrors(failure.kind === 'http' ? failure.details : [], {
       fields: FORM_FIELDS,
       code: failure.kind === 'http' ? failure.code : null,
@@ -159,7 +159,7 @@ export function CategoryWorkspace({ messages, errors, notice }: CategoryWorkspac
    * `exactOptionalPropertyTypes` treats "absent" and "present and undefined" as
    * different things — and here they mean different things too.
    */
-  function requestIdProp(failure: CategoryFailure): { requestId?: string } {
+  function requestIdProp(failure: ApiFailure): { requestId?: string } {
     const id = quotableRequestId(failure)
 
     return id === null ? {} : { requestId: id }
@@ -227,7 +227,7 @@ export function CategoryWorkspace({ messages, errors, notice }: CategoryWorkspac
    * comparison dialog, and anything else is a message.
    */
   function rejectSave(
-    failure: CategoryFailure,
+    failure: ApiFailure,
     values: CategoryFormValues,
     /** The row as the server holds it, when the failure was somebody else's edit. */
     latest?: CategoryRow,

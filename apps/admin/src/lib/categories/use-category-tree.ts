@@ -5,14 +5,14 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { getApiClient } from '@/lib/api'
 
-import type { CategoryFailure } from './errors'
-import { categoryFailure, hasCode } from './errors'
+import type { ApiFailure } from '@/lib/api-failure'
+import { apiFailure, hasCode } from '@/lib/api-failure'
 import type { CategoryRow, MoveDirection } from './tree'
 import { applyPlan, mergeRows, planMove, toRows } from './tree'
 
 export type CategoryTreeState =
   | { readonly status: 'loading' }
-  | { readonly status: 'error'; readonly failure: CategoryFailure }
+  | { readonly status: 'error'; readonly failure: ApiFailure }
   | { readonly status: 'ready'; readonly rows: readonly CategoryRow[] }
 
 /**
@@ -27,7 +27,7 @@ export type CategoryMutationResult =
   | { readonly ok: true }
   | {
       readonly ok: false
-      readonly failure: CategoryFailure
+      readonly failure: ApiFailure
       /**
        * The row as the server now holds it.
        *
@@ -103,7 +103,7 @@ export function useCategoryTree(): CategoryTreeController {
       } catch (error) {
         if (controller.signal.aborted) return
         rowsRef.current = null
-        setState({ status: 'error', failure: categoryFailure(error) })
+        setState({ status: 'error', failure: apiFailure(error) })
       }
     }
 
@@ -151,7 +151,7 @@ export function useCategoryTree(): CategoryTreeController {
 
         return SUCCESS
       } catch (error) {
-        return { ok: false, failure: categoryFailure(error) }
+        return { ok: false, failure: apiFailure(error) }
       }
     },
     [setRows],
@@ -182,7 +182,7 @@ export function useCategoryTree(): CategoryTreeController {
 
         return SUCCESS
       } catch (error) {
-        const failure = categoryFailure(error)
+        const failure = apiFailure(error)
         if (!hasCode(failure, 'CATEGORY_VERSION_CONFLICT')) return { ok: false, failure }
 
         const latest = await refetch(id).catch(() => undefined)
@@ -232,7 +232,7 @@ export function useCategoryTree(): CategoryTreeController {
         // 원위치. The tree goes back to the exact rows the plan was made from.
         setRows(snapshot)
 
-        return { ok: false, failure: categoryFailure(error) }
+        return { ok: false, failure: apiFailure(error) }
       }
     },
     [setRows],
@@ -246,7 +246,7 @@ export function useCategoryTree(): CategoryTreeController {
 
         return SUCCESS
       } catch (error) {
-        return { ok: false, failure: categoryFailure(error) }
+        return { ok: false, failure: apiFailure(error) }
       }
     },
     [setRows],
