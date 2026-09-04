@@ -178,7 +178,12 @@ class ProfileStore {
       if (heir !== undefined) this.replace({ ...heir, isDefault: true })
     }
 
-    return { ...row, isDefault: false }
+    // The row **as it was**, flag included. `AddressService.remove` answers with
+    // what `DELETE` returned, before the promotion it then performs, and the
+    // screen reads that flag to know whether a promotion could have happened at
+    // all. Clearing it here would make the mock answer a question the API
+    // answers differently — the drift gate C2 exists for.
+    return row
   }
 
   makeDefault(id: string): Address {

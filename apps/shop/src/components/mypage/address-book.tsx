@@ -8,7 +8,6 @@ import { useCallback, useState } from 'react'
 import type { ApiFailure } from '@/lib/api-failure'
 import type { AddressFormValues } from '@/lib/profile/address-form-schema'
 import { addressCreateFrom, addressUpdateFrom } from '@/lib/profile/address-form-schema'
-import type { PostcodeSearch } from '@/lib/profile/postcode'
 import { useAddressBook } from '@/lib/profile/use-addresses'
 import type { MyPageMessages } from '@/messages'
 
@@ -45,14 +44,7 @@ type Editor = { readonly mode: 'add' } | { readonly mode: 'edit'; readonly addre
  * before reporting, so by the time this notice appears the list underneath it is
  * already right (F3b).
  */
-export function AddressBook({
-  messages,
-  /** Injected by specs; the form defaults to the real, lazily loaded widget. */
-  search,
-}: {
-  readonly messages: MyPageMessages
-  readonly search?: PostcodeSearch
-}) {
+export function AddressBook({ messages }: { readonly messages: MyPageMessages }) {
   const book = useAddressBook()
   const copy = messages.addresses
 
@@ -163,7 +155,6 @@ export function AddressBook({
             setEditor(null)
           }}
           onSubmit={submit}
-          search={search}
         />
       )}
 

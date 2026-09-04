@@ -1,5 +1,11 @@
 import type { DensityLevel } from '@shopping/ui'
-import type { DenialReason, HealthStatus, OauthFailureReason, OauthNotice } from '@shopping/shared'
+import type {
+  DenialReason,
+  HealthStatus,
+  OauthFailureReason,
+  OauthNotice,
+  UserFacingErrorCode,
+} from '@shopping/shared'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { ApiFailureReason } from '@/lib/api-failure'
@@ -82,15 +88,19 @@ export interface MyPageMessages {
   /**
    * The refusals these screens **branch on**, keyed by `error.code`.
    *
-   * Partial on purpose, and the one place this catalog differs in kind from the
-   * consoles' `Record<UserFacingErrorCode, string>`. TASK-0023 kept an
-   * exhaustive catalog out of `apps/shop` because a storefront with one
-   * reachable sentence in fifteen is a catalog that drifts unnoticed; the
-   * account screens raise that to four, not to fifteen. Anything unlisted keeps
-   * the server's own sentence, which is what `serverFieldErrors` already falls
-   * back to (TASK-0112 4장).
+   * A subset of `UserFacingErrorCode`, and the one place this catalog differs
+   * in kind from the consoles' exhaustive `Record<UserFacingErrorCode, string>`.
+   * TASK-0023 kept an exhaustive one out of `apps/shop` because a storefront
+   * with one reachable sentence in fifteen is a catalog that drifts unnoticed;
+   * the account screens raise that to five, not to fifteen. Anything unlisted
+   * keeps the server's own sentence, which is what `serverFieldErrors` already
+   * falls back to (TASK-0112 4장).
+   *
+   * `satisfies` on the list below is what keeps the subset honest: a code
+   * renamed in `@shopping/shared` fails `pnpm typecheck` here, exactly as it
+   * would in the consoles.
    */
-  readonly errors: Readonly<Record<string, string>>
+  readonly errors: Readonly<Record<MyPageErrorCode, string>>
   readonly loadingLabel: string
   readonly loadErrorTitle: string
   readonly retryLabel: string
@@ -100,6 +110,16 @@ export interface MyPageMessages {
   readonly copyLabel: string
   readonly copiedLabel: string
 }
+
+export const myPageErrorCodes = [
+  'AUTH_REQUIRED',
+  'FORBIDDEN',
+  'NOT_FOUND',
+  'CONFLICT',
+  'INTERNAL_ERROR',
+] as const satisfies readonly UserFacingErrorCode[]
+
+export type MyPageErrorCode = (typeof myPageErrorCodes)[number]
 
 export interface MyPageNavMessages {
   readonly label: string

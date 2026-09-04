@@ -1,4 +1,5 @@
 import { ko } from './ko'
+import { myPageErrorCodes } from './types'
 import type {
   AddressBookMessages,
   AddressFormErrorMessages,
@@ -13,6 +14,7 @@ import type {
   HomeMessages,
   LayoutMessages,
   Messages,
+  MyPageErrorCode,
   MyPageMessages,
   MyPageNavMessages,
   NavMessages,
@@ -41,6 +43,8 @@ export function messagesFor(locale: Locale = DEFAULT_LOCALE): Messages {
   return catalogs[locale]
 }
 
+export { myPageErrorCodes }
+
 export type {
   AddressBookMessages,
   AddressFormErrorMessages,
@@ -55,6 +59,7 @@ export type {
   HomeMessages,
   LayoutMessages,
   Messages,
+  MyPageErrorCode,
   MyPageMessages,
   MyPageNavMessages,
   NavMessages,
