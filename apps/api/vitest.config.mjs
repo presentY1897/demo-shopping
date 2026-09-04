@@ -105,6 +105,20 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // TASK-0036. The ledger's rules: which signs a movement type admits,
+        // what the stock is after one, and which of the four statements a
+        // variant's history breaks. All of them fail silently when they are
+        // wrong — a movement recorded with the wrong sign is a well formed row
+        // that makes every reader of the ledger wrong, and a reconciliation
+        // that never reports a fault looks exactly like a healthy system. A
+        // branch nothing reaches here is a rule nothing checks, and the ledger
+        // is the only thing that can ever answer "재고가 왜 줄었나".
+        'src/stock/stock-ledger.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
         /**
          * TASK-0117. The error contract's decision-making, all of it pure:
          * which code and sentence a status maps to, what a domain failure's
