@@ -39,7 +39,11 @@ Thumbs.db
 # local data
 *.sqlite
 *.sqlite3
-uploads/
+# 런타임에 파일이 떨어지는 자리만 무시한다. 경로 없는 `uploads/` 는 트리
+# 어디에나 걸려서 `apps/seller/src/lib/uploads/` 같은 소스 디렉터리를 조용히
+# 삼킨다 — 커밋은 성공하고, 빠진 파일은 CI 가 처음 빨개질 때까지 아무도 모른다.
+/uploads/
+/apps/*/uploads/
 
 # monorepo / tooling
 .turbo/
