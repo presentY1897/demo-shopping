@@ -189,6 +189,30 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // TASK-0108. Two tables and nothing else: which move is legal from
+        // which state, and what a store in a given state may do. Both fail
+        // silently when they are wrong — a missing transition makes the first
+        // rejection permanent and no test goes red, and a capability cell
+        // written the wrong way round either lets a suspended store keep
+        // listing products or stops a suspended store shipping goods somebody
+        // already paid for. Neither symptom is a failing check; both are a
+        // person finding out later.
+        //
+        // `seller-access.ts` is listed beside it because it is the same
+        // decision with a throw on the end, and its branches *are* the cells of
+        // the table — a branch nothing reaches is a refusal nobody worded.
+        'src/sellers/seller-status.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        'src/sellers/seller-access.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
         // The function that makes an open redirect unrepresentable. A branch
         // nothing reaches here is an app that could be sent somewhere nobody
         // vetted (TASK-0021 F10).
