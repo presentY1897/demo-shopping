@@ -8,9 +8,10 @@
  * afterwards.
  *
  * **Every public entry point that ships components has to be listed below.**
- * TASK-0017 added `@shopping/ui/form` and TASK-0018 added `@shopping/ui/layout`,
- * and until each was named here its components were exactly what this file
- * exists to prevent: shipped, exported, and outside the accessibility sweep.
+ * TASK-0017 added `@shopping/ui/form`, TASK-0018 added `@shopping/ui/layout`
+ * and TASK-0019 added `@shopping/ui/console`, and until each was named here its
+ * components were exactly what this file exists to prevent: shipped, exported,
+ * and outside the accessibility sweep.
  *
  * It is a source check, and `QUALITY-GATES.md` is right that asserting on class
  * names proves nothing about behaviour. This is not asserting a design; it is
@@ -26,6 +27,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
 import * as componentSurface from '../src/components'
+import * as consoleSurface from '../src/console'
 import * as formSurface from '../src/form'
 import * as layoutSurface from '../src/layout'
 
@@ -42,6 +44,7 @@ const STORY_ROOT = join(PACKAGE_ROOT, 'stories', 'components')
  */
 const COMPONENTS = [
   ...Object.entries(componentSurface),
+  ...Object.entries(consoleSurface),
   ...Object.entries(formSurface),
   ...Object.entries(layoutSurface),
 ]

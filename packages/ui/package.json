@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./components": "./src/components/index.ts",
+    "./console": "./src/console/index.ts",
     "./density": "./src/density/index.ts",
     "./form": "./src/form/index.ts",
     "./layout": "./src/layout/index.ts",
