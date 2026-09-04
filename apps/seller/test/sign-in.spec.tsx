@@ -18,6 +18,7 @@ import { messagesFor } from '@/messages'
 import { renderWithAuth } from './support/auth'
 
 const auth = messagesFor().auth
+const demoMessages = messagesFor().demo
 
 const navigation = vi.hoisted(() => ({ query: '' }))
 
@@ -30,7 +31,7 @@ vi.mock('next/navigation', () => ({
 function renderScreen(query = '') {
   navigation.query = query
 
-  return renderWithAuth(<SignInScreen messages={auth} />, { session: null })
+  return renderWithAuth(<SignInScreen demo={demoMessages} messages={auth} />, { session: null })
 }
 
 describe('the seller sign-in screen', () => {
