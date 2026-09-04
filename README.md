@@ -3,6 +3,22 @@
 취업 포트폴리오용 이커머스 서비스. 사용자 / 판매자 / 관리자 3개 역할을 지원하며,
 방문자는 데모 계정을 즉시 발급받아 전체 기능을 체험할 수 있다.
 
+## 지금 열어 볼 수 있는 것
+
+| | 주소 |
+| --- | --- |
+| 디자인 시스템 (Storybook) | <https://presenty1897.github.io/demo-shopping/> |
+| 구매자 앱 | <https://shop.demo-shopping.com> |
+| 판매자 콘솔 | <https://seller.demo-shopping.com> |
+| 관리자 콘솔 | <https://admin.demo-shopping.com> |
+| API 헬스체크 | <https://api.demo-shopping.com/api/v1/health> |
+
+세 앱은 아직 화면을 채우는 중이다. **디자인 시스템은 컴포넌트를 밀도 3단계로 토글하며
+볼 수 있다** — 이 프로젝트가 무엇을 어떤 기준으로 만들고 있는지 가장 빨리 확인할 수 있는 곳이다.
+
+> API 는 Render 무료 인스턴스라 15분 놀면 잠든다. 첫 요청이 최대 90초 걸릴 수 있다
+> (TASK-0101 이 그동안 무엇을 보여 줄지 다룬다).
+
 ## 저장소 구조
 
 `bare + worktree` 레이아웃이다. 자세한 내용은 [CLAUDE.md](./CLAUDE.md) 참조.

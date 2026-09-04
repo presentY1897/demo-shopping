@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M03 디자인 시스템 |
-| 상태 | 완료 (배포 F6 제외 — 사용자 계정·저장소 설정 필요) |
+| 상태 | 완료 |
 | 작성일 | 2026-09-02 |
 | 브랜치 | `feature/storybook` |
 | 선행 작업 | TASK-0015 |
@@ -50,7 +50,7 @@
 - [x] 모든 기본 컴포넌트에 스토리가 있다
 - [x] a11y 애드온이 위반 사항을 표시한다
 - [x] **접근성 검사가 CI 에서 상시 실행된다** — 아래 참조
-- [ ] 배포된 URL 로 접근할 수 있다 — **정적 빌드까지 완료. 배포 대상은 계정·저장소 설정이 필요해 사용자 몫으로 남긴다** (7장 R4)
+- [x] 배포된 URL 로 접근할 수 있다 — <https://presenty1897.github.io/demo-shopping/>
 - [x] 앱 번들 크기에 영향을 주지 않는다
 - [x] **디자인 토큰 문서 페이지에서 색·타이포·간격·밀도 매트릭스·터치 타깃을 확인할 수 있다**
 - [x] **토큰 표의 값이 CSS 변수에서 런타임에 읽힌다** (문서에 값을 복제하지 않는다)
@@ -128,9 +128,9 @@ Storybook 쪽은 `.storybook/preview.css` 가 `@source '../stories'` 로 따로 
 | F1 | 기동 | `pnpm storybook` | 로컬에서 실행 | [x] 6006 + `PORT_OFFSET` |
 | F2 | 밀도 전환 | 툴바에서 3단계 전환 | 전 스토리에 즉시 반영 | [x] `data-density` 1/2/3 → Button md 66.0 / 44.0 / 44.0px |
 | F3 | 스토리 커버 | 컴포넌트 목록 대조 | 기본 컴포넌트 100% 스토리 존재 | [x] `test/story-coverage.spec.ts` 가 공개 export 27개를 CI 에서 강제 |
-| F4 | 4상태 | DataList·Table 스토리 | loading·empty·error·ready 전부 | [ ] **해당 컴포넌트가 아직 없다** — 아래 참조 |
+| F4 | 4상태 | DataList·Table 스토리 | loading·empty·error·ready 전부 | [x] **TASK-0016 이 채웠다.** `data-list.stories.tsx` 가 `Ready`·`Loading`·`Empty`·`Error` 를 각각 두고 `FourStates` 로 나란히 보여 준다. `table.stories.tsx` 도 `FourStates` 를 갖는다 |
 | F5 | a11y | 애드온 패널 + CI | 위반 0건 | [x] 스토리 91개 axe 위반 0 (`test/story-a11y.spec.tsx`) |
-| F6 | 배포 | 배포 URL 접속 | 정상 렌더 | [ ] 워크플로까지. `main` 머지 후 실제 접속으로 확정한다 (R4) |
+| F6 | 배포 | 배포 URL 접속 | 정상 렌더 | [x] <https://presenty1897.github.io/demo-shopping/> **200**, `<title>storybook - Storybook</title>`. `iframe.html` 과 `assets/iframe-*.js` 도 200 — 서브패스에서 자산까지 로드된다. 자격증명 없는 쪽에서 받았으므로 공개 접근이 증명된다 |
 | F7 | 번들 영향 | 앱 빌드 크기 비교 | 증가 0 | [x] `.next/static` admin 761,127B → 761,127B (Popover 수정 전 기준으로 동일) |
 
 **F6 의 배포 대상을 GitHub Pages 로 정한 이유.** Vercel 에도 올려 두었으나, 배포마다 주소가
@@ -140,10 +140,10 @@ Storybook 쪽은 `.storybook/preview.css` 가 `@source '../stories'` 로 따로 
 `/demo-shopping/` 서브패스에서도 그대로 동작한다 — `grep -c 'src="/' storybook-static/*.html`
 이 0 이다.
 
-**F4 를 충족하지 못한 이유.** `packages/ui` 에는 `DataList` 도 `Table` 도 없다. TASK-0015 가 만든 것은
-기본 컨트롤 20종이고, 데이터 표시 컴포넌트는 목록 화면을 만드는 마일스톤에서 들어온다. 이 TASK 에서
-그것을 만드는 것은 범위를 넘고("한 TASK = 하나의 작업 목적"), 4상태를 흉내 낸 가짜 스토리를 두면
-아무것도 검증하지 않으면서 충족된 것처럼 보인다. **해당 컴포넌트를 만드는 TASK 로 이월한다.**
+**F4 는 이월 후 충족됐다.** 이 TASK 시점에는 `packages/ui` 에 `DataList` 도 `Table` 도 없었다.
+4상태를 흉내 낸 가짜 스토리를 두면 아무것도 검증하지 않으면서 충족된 것처럼 보이므로, 해당
+컴포넌트를 만드는 TASK 로 이월했다. **TASK-0016(데이터 표시 컴포넌트)이 컴포넌트와 스토리를
+함께 만들면서 채웠다** — 이월이 실제로 회수된 사례다.
 
 상태가 있는 컴포넌트에 대해서는 지금도 상태별 스토리가 있다 — `Button`(idle/disabled/loading),
 `Input`·`Textarea`·`Select`(invalid/disabled/read-only), `Select`(옵션 0개), `Avatar`(이미지 실패 시 폴백).
