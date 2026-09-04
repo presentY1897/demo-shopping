@@ -33,6 +33,7 @@ import { sellerOwnership, sellerOwnershipSelect } from '../auth/resource-ownersh
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
+import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { StockService } from '../stock/stock.service.js'
 import { AttributeService } from './attribute.service.js'
@@ -92,11 +93,11 @@ interface FieldIssue {
 /**
  * A 400 that names the inputs it is about.
  *
- * `code: 'INVALID'` rather than a product-specific code: adding one to
- * `domainErrorCodes` obliges every app's message catalog to answer for it, and
- * `apps/admin` belongs to another task right now. The envelope and the `field`
- * are what a form needs today; the codes arrive with the screens that render
- * them (TASK-0032 4.10).
+ * `INVALID` stays on the `details` entries and off the envelope, which is what
+ * `docs/design/error-contract.md` 2.2 asks for: on the envelope it would say
+ * nothing a 400 does not already say. The product-specific codes below are the
+ * opposite case — each one changes what the screen *does* — and those do reach
+ * the envelope.
  */
 function invalid(issues: readonly FieldIssue[]): BadRequestException {
   return new BadRequestException({
@@ -104,7 +105,25 @@ function invalid(issues: readonly FieldIssue[]): BadRequestException {
   })
 }
 
+/**
+ * The plan's refusal, with the one case that earns a code of its own.
+ *
+ * Too many combinations is not a typo the caller can see in their own request —
+ * it is a limit only the server knows, and the number is what the sentence
+ * needs. Everything else here (a repeated axis name, a combination that does
+ * not exist) is a request contradicting itself, which `INVALID` at the field
+ * already says.
+ */
 function planRefusal(issues: readonly PlanIssue[]): BadRequestException {
+  if (issues.some((issue) => issue.code === 'too_many_variants')) {
+    return new BadRequestException(
+      domainFailure('PRODUCT_TOO_MANY_VARIANTS', PLAN_ISSUE_MESSAGE.too_many_variants, {
+        field: 'options',
+        params: { max: PRODUCT_MAX_VARIANTS },
+      }),
+    )
+  }
+
   return invalid(
     issues.map((issue) => ({
       field: issue.path.join('.'),
@@ -381,7 +400,13 @@ export class ProductService {
         this.assertStatusChange(principal, ownership, product.status, input.status)
 
         if (product.version !== input.version) {
-          throw new ConflictException('다른 사람이 먼저 저장했어요. 최신 내용을 불러올까요?')
+          throw new ConflictException(
+            domainFailure(
+              'PRODUCT_VERSION_CONFLICT',
+              '다른 사람이 먼저 저장했어요. 최신 내용을 불러올까요?',
+              { field: 'version' },
+            ),
+          )
         }
 
         const now = this.clock.now()
@@ -812,9 +837,13 @@ export class ProductService {
       })
 
       if (sellable === 0) {
-        throw invalid([
-          { field: 'status', message: '판매하려면 주문할 수 있는 옵션이 하나는 있어야 해요.' },
-        ])
+        throw new BadRequestException(
+          domainFailure(
+            'PRODUCT_NOT_SELLABLE',
+            '판매하려면 주문할 수 있는 옵션이 하나는 있어야 해요.',
+            { field: 'status' },
+          ),
+        )
       }
     }
 
@@ -1101,19 +1130,26 @@ export class ProductService {
   /**
    * Turns a unique violation into a 409 the caller can act on.
    *
-   * Four indexes can raise it and all four mean the same thing to a person:
-   * something they named is already taken — a SKU by another of their own
-   * variants, a combination by a variant that already exists, an option name or
-   * an option value by one that is already there. Checking first and writing
-   * afterwards would be a race two concurrent requests both win; the database
-   * decides and this only translates its answer.
+   * Named `PRODUCT_SKU_TAKEN` rather than something vaguer, because by the time
+   * a write runs the SKU index is the only one that can still raise this. A
+   * repeated axis name, a repeated option value and a repeated combination are
+   * all refused by `planVariants` as a 400 before anything is inserted; what is
+   * left is a SKU already held by another live variant of the same store.
+   *
+   * Checking first and writing afterwards would be a race two concurrent
+   * requests both win; the database decides and this only translates its
+   * answer. It is also the 409 that re-reading does **not** fix, which is why
+   * it carries a different code from the optimistic-lock one — a screen has to
+   * know whether to offer "다시 불러오기" (TASK-0113 4장).
    */
   private async uniqueWrite<T>(work: () => Promise<T>): Promise<T> {
     try {
       return await work()
     } catch (error) {
       if (sqlStateOf(error) === UNIQUE_VIOLATION) {
-        throw new ConflictException('이미 쓰고 있는 SKU 나 옵션 값이에요. 다시 확인해 주세요.')
+        throw new ConflictException(
+          domainFailure('PRODUCT_SKU_TAKEN', '이미 쓰고 있는 SKU 예요. 다른 SKU 를 입력해 주세요.'),
+        )
       }
       throw error
     }
