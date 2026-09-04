@@ -76,6 +76,24 @@ export function ChevronRightIcon(props: IconProps) {
   )
 }
 
+/** Reordering a gallery one place at a time (TASK-0033), so these two pair up. */
+export function ChevronUpIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m6 15 6-6 6 6" />
+    </Icon>
+  )
+}
+
+/** "This is the one people see first" — the primary image of a product gallery. */
+export function StarIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m12 3.5 2.6 5.4 5.9.85-4.25 4.15 1 5.9L12 17.02 6.75 19.8l1-5.9L3.5 9.75l5.9-.85z" />
+    </Icon>
+  )
+}
+
 export function CloseIcon(props: IconProps) {
   return (
     <Icon {...props}>
