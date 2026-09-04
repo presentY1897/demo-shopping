@@ -110,6 +110,10 @@ export const ko: Messages = {
         ],
       },
     ],
+    // SELLER_OWNER 이 없는 계정이 보는 사이드바. 퍼미션 필터로는 좁혀지지
+    // 않는다 — 신청자는 BUYER 이고 위 메뉴가 거는 *.read 를 거의 다 가진다
+    // (TASK-0109 4장).
+    onboardingMenu: [{ id: 'onboarding', items: [{ href: '/apply', label: '입점 신청' }] }],
     notifications: {
       label: '알림',
       title: '알림',
@@ -301,6 +305,89 @@ export const ko: Messages = {
       storeLabel: '스토어 ID',
       outputTitle: '상품 저장 요청에 실릴 값',
       outputEmpty: '아직 올린 이미지가 없습니다.',
+    },
+  },
+  // 입점 신청과 스토어 설정 (TASK-0109). 한 화면의 다섯 얼굴이므로 한 슬라이스다.
+  // 배너와 동사만 달라지고 폼은 하나다.
+  store: {
+    applyTitle: '입점 신청',
+    applyDescription: '스토어 정보를 입력하면 관리자 심사를 거쳐 판매를 시작할 수 있습니다.',
+    settingsDescription: '구매자에게 보이는 브랜드명과 소개, 로고를 관리합니다.',
+    loadingLabel: '스토어 정보를 불러오는 중입니다',
+    form: {
+      brandNameLabel: '브랜드명',
+      brandNameHint: '구매자에게 보이는 이름입니다. 2~40자, 앞뒤 공백은 쓸 수 없습니다.',
+      slugLabel: '스토어 주소',
+      slugHint: '영문 소문자·숫자·하이픈만 쓸 수 있습니다. 예: lumiere-seoul',
+      // 신청 뒤에는 바꿀 수 없다. 바뀌면 스토어를 가리키던 링크가 전부 깨지고
+      // 되돌려 줄 리다이렉트 표가 없다 (TASK-0108 R4).
+      slugLockedHint: '스토어 주소는 신청할 때 정한 값을 그대로 씁니다.',
+      introductionLabel: '스토어 소개',
+      introductionHint: '2,000자까지 쓸 수 있습니다. 비워 두어도 됩니다.',
+      logoUrlLabel: '로고 주소',
+      logoUrlHint: '이미지 주소를 붙여넣어 주세요. 파일 업로드는 상품 등록 화면과 함께 열립니다.',
+      errors: {
+        brandNameRequired: '브랜드명을 입력해주세요.',
+        brandNameLength: '브랜드명은 2자 이상 40자 이하로 입력해주세요.',
+        brandNameWhitespace: '브랜드명 앞뒤에 공백을 쓸 수 없습니다.',
+        brandNameTaken: '이미 사용 중인 브랜드명입니다. 다른 이름을 입력해주세요.',
+        slugRequired: '스토어 주소를 입력해주세요.',
+        slugFormat: '스토어 주소는 영문 소문자·숫자·하이픈만 쓸 수 있습니다.',
+        introductionTooLong: '스토어 소개는 2,000자까지 쓸 수 있습니다.',
+        logoUrlTooLong: '로고 주소가 너무 깁니다.',
+      },
+      errorTitle: '저장하지 못했습니다',
+      submitFailed: '저장하지 못했습니다. 잠시 후 다시 시도해주세요.',
+      applyLabel: '입점 신청',
+      reapplyLabel: '재신청',
+      saveLabel: '저장',
+      appliedNotice: '입점 신청을 접수했습니다. 심사 결과는 이 화면에서 확인할 수 있습니다.',
+      savedNotice: '스토어 정보를 저장했습니다.',
+    },
+    availability: {
+      checking: '사용할 수 있는지 확인하는 중입니다',
+      available: '사용할 수 있는 브랜드명입니다',
+      taken: '이미 사용 중인 브랜드명입니다',
+    },
+    status: {
+      // 계약의 유니온으로 키가 잡혀 있어, 상태가 하나 늘면 여기가 typecheck 에서
+      // 걸린다 — 이름 없는 상태가 화면에 나가지 않는다.
+      label: {
+        PENDING: '심사 중',
+        ACTIVE: '운영 중',
+        REJECTED: '반려됨',
+        SUSPENDED: '판매 정지',
+      },
+      pendingTitle: '심사 중입니다',
+      pendingBody:
+        '관리자 심사가 끝나면 판매자 콘솔의 모든 기능이 열립니다. 심사 중에도 아래 내용은 고칠 수 있습니다.',
+      rejectedTitle: '입점 신청이 반려됐습니다',
+      rejectedBody: '아래 사유를 확인하고 내용을 고쳐 다시 신청해주세요.',
+      activeTitle: '운영 중인 스토어입니다',
+      activeBody: '여기서 고친 내용은 구매자에게 바로 보입니다.',
+      suspendedTitle: '판매가 정지된 스토어입니다',
+      suspendedBody:
+        '이미 받은 주문은 계속 처리할 수 있습니다. 상품 등록과 신규 판매만 막혀 있습니다.',
+      reasonLabel: '사유',
+    },
+    conflict: {
+      title: '다른 곳에서 먼저 저장했습니다',
+      body: '이 화면을 연 뒤에 스토어 정보가 바뀌었습니다. 최신 내용을 불러올까요? 지금 입력한 내용은 그대로 두었습니다.',
+      reloadLabel: '최신 내용 불러오기',
+      overwriteLabel: '입력한 내용으로 덮어쓰기',
+    },
+    absent: {
+      title: '아직 입점 신청을 하지 않았습니다',
+      body: '스토어 정보를 설정하려면 먼저 입점 신청을 해주세요.',
+      applyLabel: '입점 신청하러 가기',
+    },
+    failure: {
+      title: '스토어 정보를 불러오지 못했습니다',
+      retryLabel: '다시 시도',
+      requestIdLabel: '문의 번호',
+      requestIdHint: '계속 실패하면 이 번호와 함께 문의해주세요.',
+      copyLabel: '복사',
+      copiedLabel: '복사했습니다',
     },
   },
   routeStates: {
