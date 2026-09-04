@@ -67,11 +67,29 @@ async function openApply(seed?: Seller) {
   return screen.findByRole('form', { name: copy.applyTitle })
 }
 
+/**
+ * Renders `/settings` and waits for `GET /sellers/me` to have been answered.
+ *
+ * **The heading is not that signal.** It is part of the screen's shell and is on
+ * screen before the read resolves, so a helper that waited only for it returned
+ * with the form still a skeleton — and the synchronous `field()` below then
+ * asked for a textbox that did not exist yet. That passes whenever the mocked
+ * fetch settles in the same batch as the first render and fails when the machine
+ * is loaded, which is why it only ever went red in CI.
+ *
+ * The skeleton going away *is* the signal: every branch of this screen — the
+ * form, the empty state, the error — replaces it. `waitFor` rather than
+ * `waitForElementToBeRemoved` because the read sometimes has already answered by
+ * the time we look, and that must not be an error.
+ */
 async function openSettings(seed?: Seller) {
   if (seed !== undefined) resetSellerStore(seed)
   render(<SettingsPage />)
 
   await screen.findByRole('heading', { level: 1, name: screenTitle('/settings') })
+  await waitFor(() => {
+    expect(screen.queryByRole('status', { name: copy.loadingLabel })).toBeNull()
+  })
 }
 
 /** A complete, valid application. Nothing here collides with the fixtures. */
