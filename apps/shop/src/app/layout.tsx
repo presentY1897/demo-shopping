@@ -4,6 +4,8 @@ import { SkipLink } from '@shopping/ui/layout'
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
+import { AuthProvider } from '@/lib/auth/auth-context'
+
 import { ShopFooter } from '@/components/layout/shop-footer'
 import { ShopHeader } from '@/components/layout/shop-header'
 import { DEFAULT_LOCALE, messagesFor } from '@/messages'
@@ -49,22 +51,29 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
         */}
         <DensityScript serverDensity={initial} />
 
-        <DensityProvider serverDensity={initial}>
-          <SkipLink href="#main">{layout.skipToContent}</SkipLink>
+        {/*
+          Above the shell, because the header's account menu reads it and so does
+          every screen inside `main`. One renewal on boot serves all of them
+          (TASK-0023 4장).
+        */}
+        <AuthProvider>
+          <DensityProvider serverDensity={initial}>
+            <SkipLink href="#main">{layout.skipToContent}</SkipLink>
 
-          <ShopHeader brand={messages.app.name} messages={layout} />
+            <ShopHeader brand={messages.app.name} messages={layout} />
 
-          {/*
+            {/*
             `tabIndex={-1}` is what makes the skip link work: without it the
             fragment moves the scroll position but not the focus, and the next
             Tab goes back to the header the visitor just skipped.
           */}
-          <main className="flex-1" id="main" tabIndex={-1}>
-            {children}
-          </main>
+            <main className="flex-1" id="main" tabIndex={-1}>
+              {children}
+            </main>
 
-          <ShopFooter brand={messages.app.name} messages={layout.footer} />
-        </DensityProvider>
+            <ShopFooter brand={messages.app.name} messages={layout.footer} />
+          </DensityProvider>
+        </AuthProvider>
       </body>
     </html>
   )

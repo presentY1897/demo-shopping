@@ -161,6 +161,78 @@ export const ko: Messages = {
     retryLabel: '다시 시도',
     homeLabel: '홈으로',
   },
+  // 로그인과 권한 안내 (TASK-0023). 아래 레코드는 전부 @shopping/shared 가
+  // 소유한 유니온으로 키가 잡혀 있어, 값이 하나 늘면 여기가 typecheck 에서
+  // 걸린다. 사용자가 한 행동의 언어로 쓰고 다음에 무엇을 할지 말한다.
+  auth: {
+    signIn: {
+      title: '로그인',
+      description: 'Google 계정으로 로그인하면 주문 내역과 장바구니가 계정에 저장됩니다.',
+      googleLabel: 'Google 계정으로 계속하기',
+      demoLabel: '데모 계정 받기',
+      demoReason: '데모 계정 발급은 곧 열립니다. 지금은 Google 로그인만 쓸 수 있어요.',
+      checkingLabel: '로그인 상태를 확인하는 중입니다',
+      signedInTitle: '이미 로그인되어 있습니다',
+      signedInBody: '계속 둘러보시려면 아래 버튼을 눌러주세요.',
+      continueLabel: '계속하기',
+      configurationTitle: '로그인을 시작할 수 없습니다',
+      configurationBody: 'API 주소 설정이 없습니다. pnpm dev 로 실행했는지 확인해주세요.',
+    },
+    outcome: {
+      failureTitle: '로그인하지 못했습니다',
+      cancelled: '로그인을 취소했습니다. 언제든 다시 시도할 수 있어요.',
+      generic: '로그인을 끝내지 못했습니다. 다시 시도해주세요.',
+      // 콜백이 실어 보내는 네 가지 사유(TASK-0021). 운영자에게 도움이 되는
+      // 상세는 서버 로그의 requestId 옆에 있고, 여기에는 다음 행동만 적는다.
+      failures: {
+        state_mismatch: '로그인 요청이 만료됐습니다. 다시 시도해주세요.',
+        exchange_failed: 'Google 인증을 마치지 못했습니다. 잠시 후 다시 시도해주세요.',
+        profile_failed: 'Google 계정 정보를 읽지 못했습니다. 다시 시도해주세요.',
+        not_configured: '이 환경에서는 Google 로그인을 쓸 수 없습니다.',
+      },
+      notices: {
+        no_role: '로그인은 됐지만 이 화면에서 쓸 수 있는 권한이 없습니다.',
+      },
+      sessions: {
+        unknown: '로그인이 필요합니다.',
+        expired: '로그인이 만료됐습니다. 다시 로그인해주세요.',
+        reused: '보안을 위해 로그아웃했습니다. 다시 로그인해주세요.',
+        unreachable: '서버에 연결하지 못했습니다. 잠시 후 다시 시도해주세요.',
+      },
+    },
+    // API 403 의 details 와 같은 어휘를 쓴다 — 버튼이 말하는 이유와 호출이
+    // 거절되는 이유가 달라지면 안 된다.
+    denials: {
+      checking: '로그인 상태를 확인하는 중입니다.',
+      signed_out: '로그인이 필요한 기능입니다.',
+      missing_permission: '이 계정으로는 할 수 없는 작업입니다.',
+      out_of_scope: '내 것이 아닌 항목에는 할 수 없는 작업입니다.',
+    },
+    menu: {
+      label: '마이페이지',
+      title: '내 계정',
+      closeLabel: '닫기',
+      signedOutBody: '로그인하면 주문 내역과 장바구니를 계정에 저장할 수 있습니다.',
+      signInLabel: '로그인',
+      signOutLabel: '로그아웃',
+      rolesLabel: '권한',
+      roleNames: {
+        BUYER: '구매자',
+        SELLER_OWNER: '판매자',
+        ADMIN_OPERATOR: '운영자',
+        ADMIN_SUPER: '관리자',
+        DEMO_ADMIN: '데모 관리자',
+      },
+      profileLabel: '프로필 설정',
+      profileReason: '프로필 편집은 곧 열립니다.',
+    },
+    requireSignIn: {
+      title: '로그인이 필요합니다',
+      body: '이 화면은 로그인한 뒤에 볼 수 있습니다.',
+      action: '로그인하러 가기',
+      checkingLabel: '로그인 상태를 확인하는 중입니다',
+    },
+  },
   components: {
     title: '기본 컴포넌트',
     description: 'packages/ui 의 기본 컴포넌트를 한 화면에서 확인하는 개발용 페이지입니다.',

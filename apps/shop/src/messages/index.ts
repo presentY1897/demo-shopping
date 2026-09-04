@@ -1,5 +1,8 @@
 import { ko } from './ko'
 import type {
+  AuthDenialMessages,
+  AuthMessages,
+  AuthOutcomeMessages,
   DensityControlMessages,
   FooterMessages,
   HealthMessages,
@@ -10,7 +13,10 @@ import type {
   PlaceholderMessages,
   RouteStateMessages,
   SearchReadinessMessages,
+  RequireSignInMessages,
   SearchSlotMessages,
+  SignInMessages,
+  UserMenuMessages,
   WakeMessages,
 } from './types'
 
@@ -26,6 +32,9 @@ export function messagesFor(locale: Locale = DEFAULT_LOCALE): Messages {
 }
 
 export type {
+  AuthDenialMessages,
+  AuthMessages,
+  AuthOutcomeMessages,
   DensityControlMessages,
   FooterMessages,
   HealthMessages,
@@ -35,7 +44,10 @@ export type {
   NavMessages,
   PlaceholderMessages,
   RouteStateMessages,
+  RequireSignInMessages,
   SearchReadinessMessages,
   SearchSlotMessages,
+  SignInMessages,
+  UserMenuMessages,
   WakeMessages,
 }
