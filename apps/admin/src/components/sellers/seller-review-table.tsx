@@ -81,7 +81,7 @@ export function SellerReviewTable({
       // Truncated rather than wrapped: a five hundred character rejection would
       // make one row as tall as the page. The whole sentence is on the detail.
       cell: (row) => (
-        <span className="block max-w-[24ch] truncate" title={row.statusReason ?? undefined}>
+        <span className="block max-w-72 truncate" title={row.statusReason ?? undefined}>
           {row.statusReason ?? messages.emptyValue}
         </span>
       ),
