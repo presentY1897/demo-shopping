@@ -147,17 +147,22 @@ export type StoreAvailabilityMessages = Readonly<Record<'checking' | 'available'
  * whose state has no name.
  */
 export interface StoreStatusMessages {
+  /** The badge over the banner. */
   readonly label: Readonly<Record<SellerStatus, string>>
-  readonly pendingTitle: string
-  readonly pendingBody: string
-  readonly rejectedTitle: string
-  readonly rejectedBody: string
-  readonly activeTitle: string
-  readonly activeBody: string
-  readonly suspendedTitle: string
-  readonly suspendedBody: string
+  /**
+   * What the banner says, keyed by the contract's union rather than reached by a
+   * `switch`. A status added to `@shopping/shared` fails `pnpm typecheck` here
+   * instead of rendering a store whose state has no words (TASK-0109 4장 —
+   * 문자열 리터럴을 화면에 적지 않는다).
+   */
+  readonly notice: Readonly<Record<SellerStatus, StoreStatusNoticeMessages>>
   /** Precedes the sentence an operator wrote into `statusReason`. */
   readonly reasonLabel: string
+}
+
+export interface StoreStatusNoticeMessages {
+  readonly title: string
+  readonly body: string
 }
 
 export interface StoreConflictMessages {

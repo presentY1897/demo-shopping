@@ -23,6 +23,7 @@ import type {
   StoreFormMessages,
   StoreMessages,
   StoreStatusMessages,
+  StoreStatusNoticeMessages,
   UserMenuMessages,
   WakeMessages,
 } from './types'
@@ -75,6 +76,7 @@ export type {
   StoreFormMessages,
   StoreMessages,
   StoreStatusMessages,
+  StoreStatusNoticeMessages,
   UserMenuMessages,
   WakeMessages,
 }
