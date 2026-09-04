@@ -188,11 +188,14 @@ function SellerReviewQueue({ messages, errors, notice }: SellerReviewWorkspacePr
       ) : null}
 
       <div className="flex flex-wrap items-center gap-2">
-        <label className="text-fg-muted text-sm" htmlFor={filterId}>
+        {/* `aria-labelledby` over a `<label htmlFor>`: the trigger Radix renders
+            is a button, and naming it from a sibling is the pattern the
+            attribute console's picker already uses. */}
+        <span className="text-fg-muted text-sm" id={filterId}>
           {messages.filterLabel}
-        </label>
+        </span>
         <Select
-          id={filterId}
+          aria-labelledby={filterId}
           onValueChange={(next) => {
             queue.select(next === ALL ? null : (next as SellerStatus))
           }}
