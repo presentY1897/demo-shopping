@@ -314,18 +314,34 @@ export const productListQueryParamsSchema = z.object({
   cursor: productIdSchema.optional(),
 })
 
-const imageInputSchema = z.object({
+/**
+ * One image of the gallery, as a save request states it.
+ *
+ * The order of the array is the display order — `sortOrder` is the index, and
+ * the first entry is the thumbnail. Sending the position as a field instead
+ * would let a request contain two images at position 0, which is a state the
+ * screen has no way to draw.
+ *
+ * Exported by TASK-0113 so that TASK-0114's editor and its mocked requests are
+ * typed against the shape the API accepts rather than a copy of it (gate C1·C2).
+ */
+export const productImageInputSchema = z.object({
   url: z.string().trim().min(1).max(2_048),
   alt: z.string().trim().max(200).optional(),
 })
 
-const optionInputSchema = z.object({
+export type ProductImageInput = z.infer<typeof productImageInputSchema>
+
+/** One axis of a save request: its name and the choices it offers, in order. */
+export const productOptionInputSchema = z.object({
   name: optionNameSchema,
   values: z
     .array(z.object({ value: optionValueSchema, meta: optionValueMetaSchema.optional() }))
     .min(1)
     .max(PRODUCT_MAX_OPTION_VALUES),
 })
+
+export type ProductOptionInput = z.infer<typeof productOptionInputSchema>
 
 /**
  * What a caller may say about one combination.
@@ -341,7 +357,7 @@ const optionInputSchema = z.object({
  * variant is switched off, which is how "일부 조합만 판매" is expressed
  * (TASK-0032 4장).
  */
-const variantInputSchema = z.object({
+export const productVariantInputSchema = z.object({
   optionValues: z.array(optionValueSchema).max(PRODUCT_MAX_OPTIONS),
   sku: skuSchema.optional(),
   price: priceSchema.optional(),
@@ -350,6 +366,8 @@ const variantInputSchema = z.object({
   maxPurchaseQuantity: purchaseLimitSchema.nullable().optional(),
   isActive: z.boolean().optional(),
 })
+
+export type ProductVariantInput = z.infer<typeof productVariantInputSchema>
 
 /** What every generated combination starts from. */
 export const variantDefaultsSchema = z.object({
@@ -382,11 +400,11 @@ export const createProductRequestSchema = z.object({
   status: productStatusSchema.optional(),
   attributes: attributeValuesSchema.optional(),
   maxPurchaseQuantity: purchaseLimitSchema.optional(),
-  images: z.array(imageInputSchema).max(PRODUCT_MAX_IMAGES).optional(),
+  images: z.array(productImageInputSchema).max(PRODUCT_MAX_IMAGES).optional(),
   /** Omitted is a product with no options — which still gets one variant. */
-  options: z.array(optionInputSchema).max(PRODUCT_MAX_OPTIONS).optional(),
+  options: z.array(productOptionInputSchema).max(PRODUCT_MAX_OPTIONS).optional(),
   variantDefaults: variantDefaultsSchema,
-  variants: z.array(variantInputSchema).optional(),
+  variants: z.array(productVariantInputSchema).optional(),
   /** Generated SKUs become `<prefix>-1`, `<prefix>-2`, … */
   skuPrefix: skuPrefixSchema.optional(),
 })
@@ -420,12 +438,29 @@ export const updateProductRequestSchema = z.object({
   /** `null` removes the product-wide cap. */
   maxPurchaseQuantity: purchaseLimitSchema.nullable().optional(),
   /** Replaces the whole gallery. */
-  images: z.array(imageInputSchema).max(PRODUCT_MAX_IMAGES).optional(),
-  options: z.array(optionInputSchema).max(PRODUCT_MAX_OPTIONS).optional(),
+  images: z.array(productImageInputSchema).max(PRODUCT_MAX_IMAGES).optional(),
+  options: z.array(productOptionInputSchema).max(PRODUCT_MAX_OPTIONS).optional(),
   /** What combinations created by a new choice start from. */
   variantDefaults: variantDefaultsSchema.optional(),
-  variants: z.array(variantInputSchema).optional(),
+  variants: z.array(productVariantInputSchema).optional(),
   skuPrefix: skuPrefixSchema.optional(),
 })
 
 export type UpdateProductRequest = z.infer<typeof updateProductRequestSchema>
+
+/**
+ * Flipping a listing between 작성 중 and 판매 중 (TASK-0113).
+ *
+ * Its own endpoint rather than `PATCH { status }`, even though the service does
+ * the same work behind both. Publishing is the moment a listing becomes
+ * something a buyer can see, and it is the moment the whole of the category's
+ * required attributes stop being optional — an editor's 저장 and its 판매 시작
+ * are two different intentions, and a screen that expresses them as one field of
+ * one request cannot tell a person which of the two just failed.
+ *
+ * `version` and nothing else: the caller is not describing the listing, only
+ * saying which one they were looking at (DECISIONS 4).
+ */
+export const productPublishRequestSchema = z.object({ version: z.int().min(0) })
+
+export type ProductPublishRequest = z.infer<typeof productPublishRequestSchema>
