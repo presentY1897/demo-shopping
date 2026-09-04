@@ -421,6 +421,49 @@ describe('saving', () => {
   })
 })
 
+describe('the images a listing already has', () => {
+  it('survives a save that was about something else', async () => {
+    const user = userEvent.setup()
+    renderEdit()
+    await form(copy.editTitle)
+
+    const name = screen.getByRole('textbox', { name: /상품명/ })
+
+    await user.clear(name)
+    await user.type(name, '이름만 고친 코트')
+    await user.click(screen.getByRole('button', { name: copy.actions.saveLabel }))
+    await screen.findAllByText(copy.actions.savedNotice)
+
+    // The upload widget has never heard of the stored gallery, so a screen that
+    // sent its answer straight through would delete both photographs on the
+    // save that renamed the product.
+    expect(
+      productRowsSnapshot()
+        .find((row) => row.id === STORED.id)
+        ?.images.map((image) => image.url),
+    ).toEqual(STORED.images.map((image) => image.url))
+  })
+
+  it('can be taken out one at a time', async () => {
+    const user = userEvent.setup()
+    renderEdit()
+    await form(copy.editTitle)
+
+    await user.click(
+      screen.getByRole('button', {
+        name: copy.gallery.removeLabel.replace(
+          '{index}',
+          copy.gallery.storedLabel.replace('{index}', '1'),
+        ),
+      }),
+    )
+    await user.click(screen.getByRole('button', { name: copy.actions.saveLabel }))
+    await screen.findAllByText(copy.actions.savedNotice)
+
+    expect(productRowsSnapshot().find((row) => row.id === STORED.id)?.images).toHaveLength(1)
+  })
+})
+
 describe('a refusal lands where its repair is', () => {
   it('puts a lost optimistic lock in a banner with a way out (F11)', async () => {
     const user = userEvent.setup()
