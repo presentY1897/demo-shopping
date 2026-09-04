@@ -179,6 +179,34 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // Same reasoning as `storage-config.ts`: the interesting cases are the
+        // ones nothing else exercises. "Neither variable set" is the state CI
+        // runs in, and "one of them set" is a boot refusal no endpoint can
+        // reach — both only ever run here (TASK-0021 4장).
+        'src/config/google-config.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        // The function that makes an open redirect unrepresentable. A branch
+        // nothing reaches here is an app that could be sent somewhere nobody
+        // vetted (TASK-0021 F10).
+        'src/config/app-origins.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        // Cookie attributes and the one-time comparison. `SameSite=Lax` and the
+        // length guard in `statesMatch` are both cases a real browser or a
+        // hostile caller reaches and an endpoint spec does not.
+        'src/auth/oauth-state.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
       },
     },
   },
