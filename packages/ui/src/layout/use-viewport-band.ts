@@ -12,7 +12,9 @@
  *
  * **The bands are the density bands.** `DENSITY_VIEWPORT_MIN_WIDTH` already
  * carries 768 and 1280 because the density matrix is two-dimensional, and a
- * second breakpoint list would be a second place to get them wrong.
+ * second breakpoint list would be a second place to get them wrong. A layout
+ * that turns at some *other* width — the console sidebar at 1024 — asks
+ * `useMinWidth` directly instead of bending a band to fit.
  *
  * The server snapshot is `base`. The server does not know how wide this
  * visitor's window is, `apps/shop` is mobile first (DECISIONS 1장), and the
@@ -22,60 +24,17 @@
  * anything below it (TASK-0018 4.4).
  */
 
-import { useSyncExternalStore } from 'react'
-
 import { DENSITY_VIEWPORT_MIN_WIDTH, type DensityViewport } from '../density/density'
-
-/**
- * Built from the numbers rather than written out, so the breakpoint exists in
- * exactly one place — and so this file contains no CSS length literal, which
- * `test/component-tokens.spec.ts` would reject.
- */
-const QUERIES = {
-  md: `(min-width: ${String(DENSITY_VIEWPORT_MIN_WIDTH.md)}px)`,
-  xl: `(min-width: ${String(DENSITY_VIEWPORT_MIN_WIDTH.xl)}px)`,
-} as const
-
-/** jsdom without the polyfill, and any server render, land here. */
-function unavailable(): boolean {
-  return typeof window === 'undefined' || typeof window.matchMedia !== 'function'
-}
-
-function matches(query: string): boolean {
-  return window.matchMedia(query).matches
-}
-
-/**
- * One subscription per band boundary. `change` rather than a resize listener:
- * the browser fires it only when the answer actually flips, so dragging a window
- * across 900px does not re-render anything.
- */
-function subscribe(onChange: () => void): () => void {
-  if (unavailable()) return () => undefined
-
-  const lists = [window.matchMedia(QUERIES.md), window.matchMedia(QUERIES.xl)]
-  for (const list of lists) list.addEventListener('change', onChange)
-
-  return () => {
-    for (const list of lists) list.removeEventListener('change', onChange)
-  }
-}
-
-/**
- * A string, so `useSyncExternalStore`'s "unchanged between renders" requirement
- * is satisfied by value and there is no cached object to go stale.
- */
-function getSnapshot(): DensityViewport {
-  if (unavailable()) return 'base'
-  if (matches(QUERIES.xl)) return 'xl'
-  if (matches(QUERIES.md)) return 'md'
-  return 'base'
-}
-
-function getServerSnapshot(): DensityViewport {
-  return 'base'
-}
+import { useMinWidth } from './use-min-width'
 
 export function useViewportBand(): DensityViewport {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+  // Two subscriptions rather than one, which is what reading the boundaries
+  // through the shared hook costs. `change` fires only when a boundary is
+  // actually crossed, so the cost is two listeners and no extra renders.
+  const md = useMinWidth(DENSITY_VIEWPORT_MIN_WIDTH.md)
+  const xl = useMinWidth(DENSITY_VIEWPORT_MIN_WIDTH.xl)
+
+  if (xl) return 'xl'
+  if (md) return 'md'
+  return 'base'
 }
