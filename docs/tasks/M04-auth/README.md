@@ -12,7 +12,7 @@ Google 로그인, 앱별 독립 세션, 데모 계정 발급·만료를 구현�
 | [TASK-0105](./TASK-0105-rbac.md) | 퍼미션 기반 권한 체계 (RBAC) | 완료 | 0020 |
 | [TASK-0106](./TASK-0106-backend-test-infra.md) | 백엔드 통합 테스트 기반 | 완료 | 0007, 0020 |
 | [TASK-0107](./TASK-0107-frontend-api-mocking.md) | 프론트 API 모킹 · 계약 고정 | 완료 | 0006, 0106 |
-| [TASK-0021](./TASK-0021-google-oauth.md) | Google OAuth 로그인 | 승인됨 | 0020 |
+| [TASK-0021](./TASK-0021-google-oauth.md) | Google OAuth 로그인 | 완료 | 0020 |
 | [TASK-0022](./TASK-0022-jwt-session.md) | JWT 발급 · 갱신 · 로그아웃 | 승인됨 | 0021 |
 | [TASK-0023](./TASK-0023-auth-guard.md) | 인증 UI · 권한 가드 | 승인됨 | 0022, 0105 |
 | [TASK-0024](./TASK-0024-demo-account.md) | 데모 계정 발급 | 승인됨 | 0023 |
