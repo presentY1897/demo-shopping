@@ -4,8 +4,10 @@ import type { DisplayDensity } from '@shopping/shared'
 import type { DensityLevel } from '@shopping/ui'
 import { DensityProvider, readStoredDensity } from '@shopping/ui/density'
 import type { ReactNode } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
+import type { ApiFailure } from '@/lib/api-failure'
+import { apiFailure } from '@/lib/api-failure'
 import { useAuth } from '@/lib/auth/auth-context'
 import {
   densityLevelOf,
@@ -46,6 +48,40 @@ import { fetchPreference, savePreference } from '@/lib/profile/client'
  * every route, not only the one with the toggle on it, and the promotion has to
  * happen whether or not the shopper ever visits `/mypage/settings`.
  */
+
+/**
+ * How the last save went, for the one screen that is looking at the toggle.
+ *
+ * **There is exactly one writer, and this is how the screen hears from it.**
+ * The alternative — letting `/mypage/settings` save the density itself — would
+ * mean two `PATCH /me/preferences` per click, or a second code path that could
+ * drift from this one. The header's toggle and the settings screen's are the
+ * same control saving through the same function; only one of the two is ever
+ * being *watched*, so only the watcher renders an outcome.
+ */
+export type DensitySyncStatus = 'idle' | 'saving' | 'saved' | 'failed'
+
+export interface DensitySync {
+  readonly status: DensitySyncStatus
+  /** Set only with `failed`, and only when the API answered. */
+  readonly failure: ApiFailure | null
+}
+
+const IDLE: DensitySync = { failure: null, status: 'idle' }
+
+const DensitySyncContext = createContext<DensitySync>(IDLE)
+
+/**
+ * Defaults to idle outside the provider rather than throwing, unlike
+ * `useDensity`.
+ *
+ * A missing provider there means a toggle that silently does nothing, which is
+ * worth failing loudly for. Here it means a notice that never appears beside a
+ * control that still works — not worth taking a screen down for.
+ */
+export function useDensitySync(): DensitySync {
+  return useContext(DensitySyncContext)
+}
 export function AccountDensityProvider({ children }: { readonly children: ReactNode }) {
   const { state } = useAuth()
   const userId = state.status === 'signedIn' ? state.user.id : null
@@ -76,6 +112,8 @@ export function AccountDensityProvider({ children }: { readonly children: ReactN
    * browser's stored step (R2 — 세션당 1회).
    */
   const promotedFor = useRef<string | null>(null)
+
+  const [sync, setSync] = useState<DensitySync>(IDLE)
 
   useEffect(() => {
     if (userId === null) return undefined
@@ -119,19 +157,33 @@ export function AccountDensityProvider({ children }: { readonly children: ReactN
       if (userId === null) return
 
       setAnswered({ userId, density: level })
+      setSync({ failure: null, status: 'saving' })
 
-      void savePreference({ density: displayDensityOf(level) }).catch(() => {
-        // Reported where somebody can see it: the settings screen saves through
-        // its own handler and shows the failure beside the control.
-      })
+      void savePreference({ density: displayDensityOf(level) }).then(
+        () => {
+          setSync({ failure: null, status: 'saved' })
+        },
+        (error: unknown) => {
+          // **Nothing is rolled back.** The step is already applied — the
+          // attribute, localStorage and every subscriber saw it synchronously —
+          // and this is the one setting whose effect the person can see with
+          // their own eyes. Undoing it would be the screen contradicting what is
+          // in front of them; saying "이 기기에는 남아 있습니다" is the truth.
+          setSync({ failure: apiFailure(error), status: 'failed' })
+        },
+      )
     },
     [userId],
   )
 
+  const syncValue = useMemo<DensitySync>(() => sync, [sync])
+
   return (
-    <DensityProvider onPersist={persist} serverDensity={accountDensity}>
-      {children}
-    </DensityProvider>
+    <DensitySyncContext value={syncValue}>
+      <DensityProvider onPersist={persist} serverDensity={accountDensity}>
+        {children}
+      </DensityProvider>
+    </DensitySyncContext>
   )
 }
 
