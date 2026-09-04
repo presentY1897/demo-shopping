@@ -1,7 +1,8 @@
 import type { DensityLevel } from '@shopping/ui'
-import type { HealthStatus } from '@shopping/shared'
+import type { DenialReason, HealthStatus, OauthFailureReason, OauthNotice } from '@shopping/shared'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
+import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'
 
 /**
@@ -48,6 +49,90 @@ export interface Messages {
   readonly placeholder: PlaceholderMessages
   /** Route-level loading, not-found and error states (P5). */
   readonly routeStates: RouteStateMessages
+  /**
+   * Signing in, and being told why something is not allowed (TASK-0023).
+   *
+   * **Every record below is keyed by a union `@shopping/shared` owns**, so a new
+   * outcome, refusal or denial reason added there fails `pnpm typecheck` here
+   * rather than rendering a blank line to whoever hit it. That is the same
+   * device the console catalogs use for `UserFacingErrorCode`, applied to the
+   * vocabulary the sign-in round trip actually speaks.
+   */
+  readonly auth: AuthMessages
+}
+
+export interface AuthMessages {
+  readonly signIn: SignInMessages
+  readonly outcome: AuthOutcomeMessages
+  readonly denials: AuthDenialMessages
+  readonly menu: UserMenuMessages
+  readonly requireSignIn: RequireSignInMessages
+}
+
+export interface SignInMessages {
+  readonly title: string
+  readonly description: string
+  /** The one real sign-in path. Email and password do not exist (TASK-0021). */
+  readonly googleLabel: string
+  /** TASK-0024 fills this. Until then it is shown blocked, with the reason. */
+  readonly demoLabel: string
+  readonly demoReason: string
+  readonly checkingLabel: string
+  readonly signedInTitle: string
+  readonly signedInBody: string
+  readonly continueLabel: string
+  /** `NEXT_PUBLIC_API_URL` is missing, so there is nowhere to send anybody. */
+  readonly configurationTitle: string
+  readonly configurationBody: string
+}
+
+/**
+ * What the callback said, and what a refused renewal said.
+ *
+ * Kept apart from the failures above because these are *results of a round
+ * trip*, not states of this screen — and because both unions are contracts the
+ * API owns.
+ */
+export interface AuthOutcomeMessages {
+  readonly failureTitle: string
+  /** `status=cancelled`. Not an error: somebody pressed 취소 on Google. */
+  readonly cancelled: string
+  /** The query string was unreadable, so there is nothing specific to say. */
+  readonly generic: string
+  readonly failures: Readonly<Record<OauthFailureReason, string>>
+  readonly notices: Readonly<Record<OauthNotice, string>>
+  readonly sessions: Readonly<Record<SessionRefusal, string>>
+}
+
+/**
+ * Why a control is not available.
+ *
+ * `missing_permission` and `out_of_scope` are the API's own two reasons
+ * (`denialReasons`), so a disabled button and a 403 say the same thing. The
+ * other two are states only a browser has.
+ */
+export type AuthDenialMessages = Readonly<Record<DenialReason | 'checking' | 'signed_out', string>>
+
+export interface UserMenuMessages {
+  readonly label: string
+  readonly title: string
+  readonly closeLabel: string
+  readonly signedOutBody: string
+  readonly signInLabel: string
+  readonly signOutLabel: string
+  readonly rolesLabel: string
+  /** One per role, so the menu never shows `SELLER_OWNER` to a person. */
+  readonly roleNames: Readonly<Record<string, string>>
+  readonly profileLabel: string
+  /** Profile editing arrives with TASK-0112; the entry says so until then. */
+  readonly profileReason: string
+}
+
+export interface RequireSignInMessages {
+  readonly title: string
+  readonly body: string
+  readonly action: string
+  readonly checkingLabel: string
 }
 
 export interface LayoutMessages {

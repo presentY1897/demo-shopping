@@ -9,13 +9,14 @@
  */
 
 import { DensityProvider } from '@shopping/ui/density'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { ShopHeader } from '@/components/layout/shop-header'
 import { messagesFor } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
 const messages = messagesFor()
@@ -24,7 +25,7 @@ const layout = messages.layout
 function renderHeader(width: number) {
   stubViewport(width)
 
-  return render(
+  return renderWithAuth(
     <DensityProvider>
       <ShopHeader brand={messages.app.name} messages={layout} />
     </DensityProvider>,
@@ -117,10 +118,10 @@ describe('the header, at every viewport', () => {
         'href',
         '/cart',
       )
-      expect(screen.getByRole('link', { name: layout.account.mypage })).toHaveAttribute(
-        'href',
-        '/mypage',
-      )
+      // The account slot is a menu since TASK-0023 — `/mypage` is its first
+      // entry rather than the header's own link, because a fourth control in
+      // the row overflows a 360px header.
+      expect(screen.getByRole('button', { name: messages.auth.menu.label })).toBeVisible()
     },
   )
 

@@ -7,6 +7,7 @@
  * and that the error state hands back a real retry rather than a dead end.
  */
 
+import { sessionBuyer } from '@shopping/api-mocks'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
@@ -19,6 +20,8 @@ import MyPage from '@/app/mypage/page'
 import NotFound from '@/app/not-found'
 import SearchPage from '@/app/search/page'
 import { messagesFor } from '@/messages'
+
+import { renderWithAuth } from './support/auth'
 
 const messages = messagesFor()
 const states = messages.routeStates
@@ -90,14 +93,43 @@ describe('the category placeholder', () => {
   })
 })
 
-describe('the cart and account placeholders', () => {
-  it.each([
-    [CartPage, placeholder.cart],
-    [MyPage, placeholder.mypage],
-  ])('names itself and the milestone that fills it', (Page, copy) => {
-    render(<Page />)
+describe('the cart placeholder', () => {
+  it('names itself and the milestone that fills it', () => {
+    render(<CartPage />)
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(copy.title)
-    expect(screen.getByText(copy.body)).toBeVisible()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(placeholder.cart.title)
+    expect(screen.getByText(placeholder.cart.body)).toBeVisible()
+  })
+})
+
+describe('the account placeholder', () => {
+  it('invites a signed-out visitor to sign in instead of showing the screen', async () => {
+    renderWithAuth(<MyPage />)
+
+    expect(await screen.findByText(messages.auth.requireSignIn.title)).toBeVisible()
+    expect(screen.queryByRole('heading', { level: 1 })).toBeNull()
+  })
+
+  it('shows the screen once somebody is signed in', async () => {
+    renderWithAuth(<MyPage />, { session: sessionBuyer })
+
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(
+      placeholder.mypage.title,
+    )
+    expect(screen.getByText(placeholder.mypage.body)).toBeVisible()
+  })
+
+  /**
+   * The state that is neither of the two above. A prompt that flashed for every
+   * returning shopper would be the visible cost of collapsing three states into
+   * a boolean (TASK-0023 4장).
+   */
+  it('shows neither while the session is still being checked', () => {
+    renderWithAuth(<MyPage />, { session: sessionBuyer })
+
+    expect(screen.getByRole('status')).toHaveAttribute(
+      'aria-label',
+      messages.auth.requireSignIn.checkingLabel,
+    )
   })
 })

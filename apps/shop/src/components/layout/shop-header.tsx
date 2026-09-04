@@ -22,7 +22,9 @@
 
 import { PageContainer, useViewportBand } from '@shopping/ui/layout'
 
+import { UserMenu } from '@/components/auth/user-menu'
 import type { LayoutMessages } from '@/messages'
+import { messagesFor } from '@/messages'
 
 import { DensityControl } from './density-control'
 import { AccountIcon, CartIcon } from './icons'
@@ -84,13 +86,19 @@ export function ShopHeader({
             <CartIcon className="size-5" />
           </IconLink>
 
-          <IconLink
-            href="/mypage"
-            label={messages.account.mypage}
-            pendingLabel={messages.nav.pendingLabel}
-          >
-            <AccountIcon className="size-5" />
-          </IconLink>
+          {/*
+            Was a plain link to `/mypage` until TASK-0023. It is a menu now
+            because the header has to offer three things — the account screen,
+            signing in, and signing out — and a fourth control would overflow the
+            row at 360px, which is the measurement the `gap-1` comment above
+            records. The destination it used to link to is the menu's first
+            entry, under the same name.
+          */}
+          <UserMenu
+            icon={<AccountIcon className="size-5" />}
+            messages={messagesFor().auth.menu}
+            myPageLabel={messages.account.mypage}
+          />
         </div>
       </PageContainer>
     </header>
