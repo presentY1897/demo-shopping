@@ -778,6 +778,17 @@ export const ko: Messages = {
     CATEGORY_PARENT_MISSING: '선택한 상위 카테고리가 없어졌어요. 목록을 새로고침해 주세요.',
     ATTRIBUTE_KEY_TAKEN: "'{name}' 에 같은 이름의 속성이 이미 있어요.",
     ATTRIBUTE_VERSION_CONFLICT: '다른 관리자가 먼저 저장했어요. 최신 내용을 불러올까요?',
+    ATTRIBUTE_IN_USE: '이 속성을 쓰는 상품이 {count}개 있어요. 상품에서 먼저 값을 지워 주세요.',
+
+    // 상품 쓰기 (TASK-0113). 이 콘솔에는 아직 상품 편집기가 없지만, 코드 목록이
+    // 늘면 문장도 함께 늘어야 한다는 것을 `Record` 가 강제한다 (4.7 J2).
+    PRODUCT_ATTRIBUTES_REQUIRED: '판매를 시작하려면 필수 정보를 모두 채워야 해요.',
+    PRODUCT_TOO_MANY_VARIANTS:
+      '옵션 조합은 최대 {max}개까지 만들 수 있어요. 옵션 값을 줄여 주세요.',
+    PRODUCT_NOT_SELLABLE: '판매하려면 주문할 수 있는 옵션이 하나는 있어야 해요.',
+    PRODUCT_SELLER_INACTIVE: '스토어가 승인된 뒤에 상품을 등록하거나 수정할 수 있어요.',
+    PRODUCT_SKU_TAKEN: '이미 쓰고 있는 상품 코드예요. 다른 코드를 입력해 주세요.',
+    PRODUCT_VERSION_CONFLICT: '다른 곳에서 먼저 저장했어요. 최신 내용을 불러올까요?',
   },
   errorNotice: {
     title: '일시적인 문제가 생겼어요',
