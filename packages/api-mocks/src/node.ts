@@ -11,6 +11,7 @@ import {
   resetCategoryStore,
   resetDemoStore,
   resetProductStore,
+  resetSellerConsoleStore,
   resetSellerStore,
   resetProfileStore,
   resetSessionStore,
@@ -117,6 +118,10 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     // A listing a spec created, published or renamed must not decide what the
     // next one loads — the editor's whole "수정 모드" branch is keyed on it.
     resetProductStore()
+    // The console's catalogue is mutated by every bulk change and every
+    // adjustment; a store that survived would make the next spec's "재고 12" the
+    // previous one's "재고 17".
+    resetSellerConsoleStore()
     resetUploadStore()
     // Back to "this account has never applied", which is the state five of the
     // seller console's faces are told apart from.

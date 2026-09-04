@@ -109,6 +109,12 @@ export const mockPaths = {
    */
   productPublish: `*${API_PATH_PREFIX}/products/:id/publish`,
   productUnpublish: `*${API_PATH_PREFIX}/products/:id/unpublish`,
+  sellerProducts: `*${API_PATH_PREFIX}/seller/products`,
+  sellerProductStatus: `*${API_PATH_PREFIX}/seller/products/status`,
+  sellerProductVariants: `*${API_PATH_PREFIX}/seller/products/:id/variants`,
+  sellerProductDuplicate: `*${API_PATH_PREFIX}/seller/products/:id/duplicate`,
+  variantLedger: `*${API_PATH_PREFIX}/variants/:id/ledger`,
+  variantStockAdjust: `*${API_PATH_PREFIX}/variants/:id/stock-adjustments`,
   /** `POST` a request for one presigned upload (TASK-0011). */
   uploadPresign: `*${API_PATH_PREFIX}/uploads/presign`,
   /**
