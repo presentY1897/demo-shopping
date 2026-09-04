@@ -10,6 +10,7 @@ import { ConfigModule } from './config/config.module.js'
 import type { AppConfig } from './config/app-config.js'
 import { HealthModule } from './health/health.module.js'
 import { PrismaModule } from './prisma/prisma.module.js'
+import { ProfileModule } from './profile/profile.module.js'
 import { SellersModule } from './sellers/sellers.module.js'
 import { StockModule } from './stock/stock.module.js'
 import { StorageModule } from './storage/storage.module.js'
@@ -27,6 +28,7 @@ export class AppModule {
         AuthModule,
         CatalogModule,
         HealthModule,
+        ProfileModule,
         SellersModule,
         StockModule,
         StorageModule,
