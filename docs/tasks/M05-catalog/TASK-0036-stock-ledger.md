@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M05 카탈로그 |
-| 상태 | 승인됨 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-02 |
 | 브랜치 | `feature/stock-ledger` |
 | 선행 작업 | TASK-0032 |
@@ -287,7 +287,7 @@ INITIALLY DEFERRED` 제약 트리거는 집계를 쓸 수 있고**, 커밋 시�
 | Q3 | `pnpm build` 전 앱 성공 | shared · ui · api-mocks · api · admin · shop · seller 전부 성공 | [x] |
 | Q4 | `pnpm test` 전부 통과 | `apps/api` **1,126 passed (66 files)** — 이 TASK 이전 946 (60 files). 워크스페이스 전체 green | [x] |
 | Q5 | 순수 로직 분기 100% / 서비스·API 라인 80% / 실 PostgreSQL | `stock-ledger.ts` **분기 100%** (임계값을 `vitest.config.mjs` 에 파일 단위로 추가하고, 도달 불가 분기를 넣어 **실제로 깨지는 것을 확인**했다). `apps/api` 라인 **94.87%** · 분기 84.08%. Prisma 모킹 0건 | [x] |
-| Q6 | CI 전 job green | (PR 확인 후 기입) | [ ] |
+| Q6 | CI 전 job green | PR [#56](https://github.com/presentY1897/demo-shopping/pull/56) 에서 `typecheck`(47s) · `lint`(1m17s) · `build`(1m7s) · `test`(2m27s) **4개 job 전부 green** | [x] |
 | Q7 | commitlint 위반 0 | 위반 0 | [x] |
 | A1 | p95 300ms 이하 | 이력 조회(원장 61건, 50회) **4.7ms**(중앙값 4.1ms) · 변동 기록(행 잠금 포함, 50회) **6.2ms**(중앙값 5.3ms) · 대사(Variant 1,000개 · 원장 3,000행) **23.8ms** | [x] |
 | A2 | 잘못된 입력 400 + 통일 포맷 | 잘못된 `limit`·`cursor`·Variant id 전부 400 + `{ error: { code, message, details, requestId } }`, `details[].field` 가 `limit`·`id` 를 짚는다. 서비스 거부도 같은 모양으로 `quantity`·`reason`·`refId` 를 짚는다 | [x] |
