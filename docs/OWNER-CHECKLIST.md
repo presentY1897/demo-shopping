@@ -14,9 +14,9 @@
 | --- | --- | --- | --- |
 | 1 | **Neon** | 가입 → 프로젝트 생성 | 연결 문자열 ✅ *완료* |
 | 2 | **Render** | 가입 → Blueprint 배포 | ✅ *완료 (2026-09-03)* — `shopping-api` · `shopping-search` 기동. `/api/v1/health` → `{"status":"ok","database":"ok","search":"ok"}`. 검색은 키 없이 401, CORS 는 프로덕션 오리진만 허용 |
-| 3 | **Vercel** | 가입 → GitHub 연동 → 같은 저장소 접근 허용 | |
-| 4 | **Cloudflare R2** | 대시보드에서 R2 활성화 → API 토큰 발급 | 계정 ID · 액세스 키 · 시크릿 |
-| 5 | **Sentry** | 가입 → 프로젝트 2개(Node / Next.js) | DSN 2개 |
+| 3 | **Vercel** | 가입 → GitHub 연동 → 같은 저장소 접근 허용 | ✅ *완료* — 프로젝트 4개(shop·seller·admin·ui). **`Ignored Build Step` 4곳은 아직 미설정** (TASK-0010 4.1). 안 넣으면 PR 하나가 4개를 전부 빌드해 Hobby 일일 한도를 태운다 — 2026-09-04 에 실제로 24시간 막혔다 |
+| 4 | **Cloudflare R2** | 대시보드에서 R2 활성화 → API 토큰 발급 | ✅ *완료* — 버킷 2개(`shopping-dev`·`shopping-prod`), CORS 양쪽 적용, `cdn.demo-shopping.com` 연결. 실 R2 왕복 6/6 + 브라우저 업로드 확인 |
+| 5 | **Sentry** | 가입 → 프로젝트 2개(Node / Next.js) | DSN 2개. **M04 인증이 붙어 실사용 흐름이 생길 때가 적기** — 지금은 잡을 에러가 없고 Render 로그로 충분하다 |
 | 6 | **Discord** | 채널에 webhook 생성 | webhook URL |
 | 7 | **Google Cloud** | 프로젝트 생성 → OAuth 동의 화면 → 클라이언트 ID 발급 | ✅ *완료 (2026-09-03)* — **테스트 모드 유지**. 게시는 M15 (D-209). **앱 로고를 올리지 말 것** — brand-verification 이 걸린다 |
 | 8 | **토스페이먼츠** | 개발자센터 가입 | 테스트 클라이언트 키 · 시크릿 키 |
