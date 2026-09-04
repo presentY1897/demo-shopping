@@ -9,6 +9,7 @@ import {
   resetAdminSellerStore,
   resetAttributeStore,
   resetCategoryStore,
+  resetDemoStore,
   resetSellerStore,
   resetProfileStore,
   resetSessionStore,
@@ -123,6 +124,9 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     // Back to signed out: a spec that signed in, or borrowed another role, must
     // not decide who the next one is.
     resetSessionStore()
+    // After the session, because issuing a demo signs one in: resetting it
+    // first would leave the store it wrote behind.
+    resetDemoStore()
   })
 
   afterAll(() => {

@@ -32,6 +32,7 @@ export const mockPaths = {
   authRefresh: `*${API_PATH_PREFIX}/auth/refresh`,
   /** `POST` to end this app's session. The other two keep theirs (D-218). */
   authLogout: `*${API_PATH_PREFIX}/auth/logout`,
+  authDemo: `*${API_PATH_PREFIX}/auth/demo`,
   userRoles: `*${API_PATH_PREFIX}/users/:userId/roles`,
   /**
    * One's own account (TASK-0111). `GET` profile + settings, `PATCH` the
