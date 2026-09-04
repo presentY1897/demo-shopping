@@ -1,3 +1,5 @@
+import { PRODUCT_MAX_VARIANTS } from '@shopping/shared'
+
 import type { Messages } from './types'
 
 export const ko: Messages = {
@@ -230,6 +232,16 @@ export const ko: Messages = {
     CATEGORY_PARENT_MISSING: '선택한 상위 분류가 없어졌어요. 목록을 새로고침해 주세요.',
     ATTRIBUTE_KEY_TAKEN: '같은 이름의 속성이 이미 있어요.',
     ATTRIBUTE_VERSION_CONFLICT: '다른 곳에서 먼저 저장했어요. 최신 내용을 불러올까요?',
+    ATTRIBUTE_IN_USE: '이 속성을 쓰는 상품이 있어요.',
+    // 상품 쓰기 (TASK-0113). 여기서부터는 판매자 화면이 실제로 만나는 실패다.
+    PRODUCT_ATTRIBUTES_REQUIRED: '판매를 시작하려면 필수 정보를 모두 채워야 해요.',
+    // 상한값은 서버·화면이 같은 상수를 본다. 문장에 숫자를 적어 두면 상수를 고쳤을
+    // 때 이 문장만 옛날 숫자로 남는다.
+    PRODUCT_TOO_MANY_VARIANTS: `옵션 조합은 최대 ${String(PRODUCT_MAX_VARIANTS)}개까지 만들 수 있어요. 옵션 값을 줄여 주세요.`,
+    PRODUCT_NOT_SELLABLE: '판매하려면 주문할 수 있는 옵션이 하나는 있어야 해요.',
+    PRODUCT_SELLER_INACTIVE: '스토어가 승인된 뒤에 상품을 등록하거나 수정할 수 있어요.',
+    PRODUCT_SKU_TAKEN: '이미 쓰고 있는 SKU 예요. 다른 SKU 를 입력해 주세요.',
+    PRODUCT_VERSION_CONFLICT: '다른 곳에서 먼저 저장했어요. 최신 내용을 불러올까요?',
   },
   // 응답이 아예 오지 않은 실패. 읽을 코드가 없으므로 번호도 보여 주지 않는다.
   apiFailures: {

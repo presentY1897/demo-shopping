@@ -48,6 +48,49 @@ export const domainErrorCodes = [
    * exactly one place — the kind of exception that is never found again.
    */
   'ATTRIBUTE_VERSION_CONFLICT',
+  /**
+   * A definition cannot be retired because live products still carry its key.
+   *
+   * Carries `params.count` — how many. TASK-0031 F5 asked for the number and
+   * could not have it: the refusal was a bare 409 whose only content was a
+   * Korean sentence, and a screen cannot put a number into its own copy from
+   * that. The count is the difference between "고칠 것이 하나쯤 있나 보다" and
+   * "상품 47개를 먼저 손봐야 한다".
+   */
+  'ATTRIBUTE_IN_USE',
+  /**
+   * A listing cannot go on sale while a required attribute of its category is
+   * empty (TASK-0113 4장).
+   *
+   * Distinct from `INVALID`, which is a value that is *wrong*. These are two
+   * different repairs — one is "고쳐 주세요", the other is "아직 안 채우셨어요" —
+   * and a draft is allowed to be in the second state but never the first.
+   */
+  'PRODUCT_ATTRIBUTES_REQUIRED',
+  /** The axes expand past `PRODUCT_MAX_VARIANTS`. Carries `params.max`. */
+  'PRODUCT_TOO_MANY_VARIANTS',
+  /** `ACTIVE` was asked for with no orderable variant behind it. */
+  'PRODUCT_NOT_SELLABLE',
+  /**
+   * The store's own state forbids this, not the caller's grants.
+   *
+   * A 403 like an ownership refusal and the opposite advice: `FORBIDDEN` means
+   * "내 스토어가 맞는지 확인" and this means the store *is* theirs and is not
+   * approved yet. Told apart by the code, because both are 403 and neither has
+   * a field (TASK-0108 4장 · TASK-0113 4장).
+   */
+  'PRODUCT_SELLER_INACTIVE',
+  /**
+   * A SKU is already taken by another live variant of the same seller.
+   *
+   * One of two 409s on the product write path, and the one re-reading does not
+   * fix. Duplicated option names and option values never reach here — the
+   * combination planner refuses those as a 400 before anything is inserted — so
+   * the only index that can still raise it is the seller's SKU one.
+   */
+  'PRODUCT_SKU_TAKEN',
+  /** The other 409: somebody saved first. Re-reading fixes it. */
+  'PRODUCT_VERSION_CONFLICT',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]
