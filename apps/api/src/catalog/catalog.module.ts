@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 
+import { SearchModule } from '../search/search.module.js'
 import { StockModule } from '../stock/stock.module.js'
 
 import { AttributeController } from './attribute.controller.js'
@@ -17,7 +18,7 @@ import { VariantStockController } from './variant-stock.controller.js'
   // Every change to a variant's stock goes through `StockService`, product
   // writes included (TASK-0036 4.7) — so the catalogue imports it rather than
   // writing the column itself.
-  imports: [StockModule],
+  imports: [StockModule, SearchModule],
   controllers: [
     CategoryController,
     AttributeController,

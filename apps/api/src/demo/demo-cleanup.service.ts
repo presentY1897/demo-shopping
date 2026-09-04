@@ -5,6 +5,7 @@ import type { Prisma } from '@prisma/client'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { SearchOutboxService } from '../search/search-outbox.service.js'
 import type { DemoCleanupReport } from './demo-cleanup.js'
 import {
   DEMO_CLEANUP_BATCH,
@@ -46,6 +47,7 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
+    private readonly outbox: SearchOutboxService,
   ) {}
 
   onModuleInit(): void {
@@ -165,6 +167,18 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
     await tx.address.deleteMany({ where: { userId } })
 
     if (seller !== null) {
+      // The listings leave the search index. They are soft-deleted below rather
+      // than removed, so nothing else would ever tell the indexer — and a
+      // findable listing whose store is closed is worse than a missing one.
+      const listings = await tx.product.findMany({
+        where: { sellerId: seller.id, deletedAt: null },
+        select: { id: true },
+      })
+
+      for (const listing of listings) {
+        await this.outbox.publish(tx, listing.id, 'REMOVE')
+      }
+
       await tx.productVariant.updateMany({
         where: { sellerId: seller.id, deletedAt: null },
         data: { deletedAt: now, isActive: false, updatedAt: now },

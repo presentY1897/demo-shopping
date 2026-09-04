@@ -16,6 +16,7 @@ describe('defineFixture', () => {
         uptime: -1,
         version: '0.0.0',
         demoCleanup: { lastRunAt: null },
+        searchIndex: { pending: 0, lastRunAt: null, oldestPendingAt: null },
       }),
     ).toThrow(/uptime/)
   })
@@ -29,6 +30,7 @@ describe('defineFixture', () => {
         uptime: 12,
         version: '',
         demoCleanup: { lastRunAt: null },
+        searchIndex: { pending: 0, lastRunAt: null, oldestPendingAt: null },
       }),
     ).toThrow(/version/)
   })
@@ -55,6 +57,7 @@ describe('defineFixture', () => {
       uptime: 12,
       version: '0.0.0',
       demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
+      searchIndex: { pending: 0, lastRunAt: '2026-09-05T00:00:00.000Z', oldestPendingAt: null },
     })
   })
 })

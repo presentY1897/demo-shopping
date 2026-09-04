@@ -17,6 +17,7 @@ export const healthOk = defineFixture(healthResponseSchema, {
   uptime: 12,
   version: '0.0.0',
   demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
+  searchIndex: { pending: 0, lastRunAt: '2026-09-05T00:00:00.000Z', oldestPendingAt: null },
 })
 
 /**
@@ -30,6 +31,7 @@ export const healthDegraded = defineFixture(healthResponseSchema, {
   uptime: 12,
   version: '0.0.0',
   demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
+  searchIndex: { pending: 0, lastRunAt: '2026-09-05T00:00:00.000Z', oldestPendingAt: null },
 })
 
 /**
@@ -47,4 +49,5 @@ export const healthSearchIndexing = defineFixture(healthResponseSchema, {
   uptime: 12,
   version: '0.0.0',
   demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
+  searchIndex: { pending: 0, lastRunAt: '2026-09-05T00:00:00.000Z', oldestPendingAt: null },
 })
