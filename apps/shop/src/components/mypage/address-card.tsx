@@ -44,9 +44,16 @@ export function AddressCard({
    * What every control on this card is called.
    *
    * "삭제" three times in a list of three addresses is three buttons with the
-   * same accessible name, and a screen-reader user listing the buttons on the
-   * page would have no way to tell them apart. The label — or the recipient,
+   * same accessible name, and somebody listing the page's buttons in a screen
+   * reader would have no way to tell them apart. The label — or the recipient,
    * for an address saved without one — is what makes each unique.
+   *
+   * **`aria-label`, not a visually hidden word inside the button.** The visible
+   * text stays "삭제", and the accessible name starts with it, so WCAG 2.5.3
+   * (Label in Name) holds and voice control still works. A hidden `<span>`
+   * would have read the same in a browser and *not* in the accessibility tree
+   * this project's tests compute — element contributions are trimmed and joined
+   * with nothing between them, so "삭제" + "집" came out as one word.
    */
   const name = address.label ?? address.recipientName
 
@@ -57,7 +64,14 @@ export function AddressCard({
       variant="outline"
     >
       <div className="flex flex-wrap items-center gap-2">
-        <h3 className="text-base font-semibold">{name}</h3>
+        {/*
+          `h2`, not `h3`. The page's only other heading is the shell's `h1`, so
+          a level-three heading here skips a level whenever the add/edit panel
+          is closed — an axe `heading-order` violation, and a real one: an
+          outline with a hole in it is how a screen-reader user loses the shape
+          of a page. The panel's own heading is an `h2` beside these.
+        */}
+        <h2 className="text-base font-semibold">{name}</h2>
         {address.isDefault ? <Badge variant="primary">{copy.defaultBadge}</Badge> : null}
       </div>
 
@@ -80,39 +94,35 @@ export function AddressCard({
       <div className="flex flex-wrap gap-2">
         {/* Absent, not disabled: there is nothing to ask for on this row. */}
         {!address.isDefault && onMakeDefault !== undefined ? (
-          <Button loading={busy} onClick={onMakeDefault} size="sm" variant="outline">
+          <Button
+            aria-label={`${copy.makeDefault} ${name}`}
+            loading={busy}
+            onClick={onMakeDefault}
+            size="sm"
+            variant="outline"
+          >
             {copy.makeDefault}
-            <Owner name={name} />
           </Button>
         ) : null}
 
         {onEdit === undefined ? null : (
-          <Button onClick={onEdit} size="sm" variant="ghost">
+          <Button aria-label={`${copy.edit} ${name}`} onClick={onEdit} size="sm" variant="ghost">
             {copy.edit}
-            <Owner name={name} />
           </Button>
         )}
 
         {onRemove === undefined ? null : (
-          <Button loading={busy} onClick={onRemove} size="sm" variant="ghost">
+          <Button
+            aria-label={`${copy.remove} ${name}`}
+            loading={busy}
+            onClick={onRemove}
+            size="sm"
+            variant="ghost"
+          >
             {copy.remove}
-            <Owner name={name} />
           </Button>
         )}
       </div>
     </Card>
   )
-}
-
-/**
- * Which address a button is about, for the reader who cannot see which card it
- * is on.
- *
- * Visually hidden rather than in the label, because "삭제 · 집" on screen is
- * noise for somebody who can see the heading two lines above it — and "삭제"
- * three times over is three indistinguishable buttons for somebody who cannot.
- * The word joins the button's accessible name; nothing else changes.
- */
-function Owner({ name }: { readonly name: string }) {
-  return <span className="sr-only">{` ${name}`}</span>
 }

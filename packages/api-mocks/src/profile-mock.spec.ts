@@ -216,9 +216,10 @@ describe('the one-default rule', () => {
   it('promotes the newest survivor when the default is deleted', async () => {
     const { address } = await remove(addressHome.id)
 
-    // The row that left is answered without the flag: it is not the default of
-    // anything any more, and a screen that re-rendered it would show two.
-    expect(address.isDefault).toBe(false)
+    // The row that left is answered **as it was**, flag included — that is what
+    // `AddressService.remove` returns, and it is how the screen knows a
+    // promotion was even possible without keeping its own copy of the list.
+    expect(address.isDefault).toBe(true)
     // `회사` was created after `부모님`, so it is the newest of the two left.
     expect(addressRowsSnapshot()[0]?.id).toBe(addressOffice.id)
     expect(addressRowsSnapshot()[0]?.isDefault).toBe(true)
