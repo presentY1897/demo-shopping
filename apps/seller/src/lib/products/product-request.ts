@@ -81,6 +81,7 @@ export function createRequestFrom(
   status: ProductStatus,
 ): CreateProductRequest {
   const description = text(submission.values, 'description')
+  const cap = purchaseCap(submission.values)
 
   return {
     categoryId: submission.categoryId,
@@ -88,9 +89,7 @@ export function createRequestFrom(
     ...(description === '' ? {} : { description }),
     status,
     attributes: attributeValuesFrom(submission.values, submission.fields),
-    ...(purchaseCap(submission.values) === null
-      ? {}
-      : { maxPurchaseQuantity: purchaseCap(submission.values) ?? undefined }),
+    ...(cap === null ? {} : { maxPurchaseQuantity: cap }),
     ...(submission.images.length === 0 ? {} : { images: [...submission.images] }),
     ...(submission.axes.length === 0 ? {} : { options: optionsOf(submission.axes) }),
     variantDefaults: variantDefaultsFrom(submission.bulk),

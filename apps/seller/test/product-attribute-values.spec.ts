@@ -168,6 +168,23 @@ describe('changing category', () => {
     })
   })
 
+  it('empties a multi-select that arrived as a single value', () => {
+    expect(
+      carryOverValues({ 'attributes.season': '간절기' }, attributeFields([SEASON]))[
+        'attributes.season'
+      ],
+    ).toEqual([])
+  })
+
+  it('treats a field that names no choices as having none', () => {
+    // `attributeFields` always sets `options`, but `FieldDef` does not require
+    // it — an admin screen may hand over a text field without one.
+    const bare: readonly FieldDef[] = [{ key: 'attributes.brand', label: '브랜드', type: 'text' }]
+
+    expect(carryOverValues(typed, bare)['attributes.brand']).toBe('루미에르')
+    expect(formValuesFrom({ brand: '루미에르' }, bare)['attributes.brand']).toBe('루미에르')
+  })
+
   it('empties a boolean that arrived as something else', () => {
     const broken = { 'attributes.detachable_liner': 'yes' }
 
@@ -243,6 +260,12 @@ describe('building the bag to send', () => {
     ).toEqual({ wool_ratio: 70, detachable_liner: false })
   })
 
+  it('sends a multi-select as the list it is', () => {
+    expect(attributeValuesFrom({ 'attributes.season': ['간절기', '겨울'] }, COAT_FIELDS)).toEqual({
+      season: ['간절기', '겨울'],
+    })
+  })
+
   it('reads only the keys the current fields ask about', () => {
     // A value left over from a category that has been changed away from must
     // not ride along: the server refuses a key it has no definition for.
@@ -253,5 +276,12 @@ describe('building the bag to send', () => {
 
   it('ignores a base field sitting in the same values object', () => {
     expect(attributeValuesFrom({ name: '코트' }, COAT_FIELDS)).toEqual({})
+  })
+
+  it('leaves out a value of a shape no attribute can hold', () => {
+    // `attributeValueSchema` is a closed union — string, number, boolean, list.
+    // Anything else would be refused by the server, and a form that produced
+    // one is a bug this drops rather than forwards.
+    expect(attributeValuesFrom({ 'attributes.brand': { a: 1 } }, COAT_FIELDS)).toEqual({})
   })
 })
