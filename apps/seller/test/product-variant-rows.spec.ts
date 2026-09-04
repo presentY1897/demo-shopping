@@ -88,6 +88,17 @@ describe('the rows an axis calls for', () => {
     expect(after.find((row) => row.values.join() === '아이보리,M')?.price).toBe('')
   })
 
+  it('keeps the rows when the axes cannot be expanded at all', () => {
+    // An axis with no choices yet, or a grid past the cap. Emptying the table
+    // would take every price the seller typed with it, and the axes are one
+    // keystroke from fitting again — the save is what gets refused (F9).
+    const typed = patchRow(rowsFor([{ name: '사이즈', values: ['S'] }], []), 'S', {
+      price: '9000',
+    })
+
+    expect(rowsFor([{ name: '사이즈', values: [] }], typed)).toBe(typed)
+  })
+
   it('forgets a row whose combination has gone', () => {
     const before = patchRow(rowsFor([{ name: '사이즈', values: ['S', 'M'] }], []), 'M', {
       price: '19000',
@@ -119,6 +130,21 @@ describe('reading a stored listing back into the table', () => {
 
     expect(stored[0]?.values).toEqual(['블랙', 'S'])
     expect(stored.at(-1)?.values).toEqual(['카멜', 'XL'])
+  })
+
+  it('reads a retired choice as a blank rather than as an error', () => {
+    // `productSchema` carries only the live values of an axis, while a variant
+    // that used a retired one keeps pointing at it. That combination is already
+    // switched off; the row exists so an order placed yesterday still resolves.
+    const retired: typeof STORED = {
+      ...STORED,
+      variants: [
+        { ...STORED.variants[0]!, optionValueIds: ['019596d0-1f1c-7c2e-9a0e-999999999999'] },
+      ],
+    }
+
+    expect(storedCombinationsOf(retired)[0]?.values).toEqual([''])
+    expect(rowsFromProduct(retired)[0]?.values).toEqual([''])
   })
 
   it('recovers the axes the option editor starts from', () => {
@@ -185,6 +211,13 @@ describe('the defaults new combinations start from', () => {
     expect(variantDefaultsFrom({ ...EMPTY_BULK, price: '10000', stock: '3.5' })).toEqual({
       price: 10_000,
     })
+  })
+
+  it('is zero when nobody typed a price', () => {
+    // The contract has no way to say "no default price", and a listing may
+    // legitimately be free. Publishing one with nothing orderable behind it is
+    // refused twice over — by the editor and by `PRODUCT_NOT_SELLABLE`.
+    expect(variantDefaultsFrom(EMPTY_BULK)).toEqual({ price: 0 })
   })
 })
 
@@ -260,6 +293,18 @@ describe('the create request', () => {
     expect(request.variants?.map((variant) => variant.maxPurchaseQuantity)).toEqual([2, 2, 2])
   })
 
+  it('carries a product-wide purchase cap, and clears one that is not a number', () => {
+    const capped = submission({ values: { ...submission().values, maxPurchaseQuantity: '2' } })
+    const nonsense = submission({ values: { ...submission().values, maxPurchaseQuantity: '2.5' } })
+
+    expect(createRequestFrom(capped, 'DRAFT').maxPurchaseQuantity).toBe(2)
+    // `null` rather than a rejected request: the form's own schema refuses a
+    // fractional cap first, and a body that carried `2.5` would be refused by
+    // the server with a message about a field the seller cannot see.
+    expect(createRequestFrom(nonsense, 'DRAFT').maxPurchaseQuantity).toBeUndefined()
+    expect(updateRequestFrom(nonsense, 1, 'DRAFT').maxPurchaseQuantity).toBeNull()
+  })
+
   it('drops a blank description rather than sending an empty string', () => {
     expect(createRequestFrom(submission(), 'DRAFT').description).toBeUndefined()
   })
@@ -269,6 +314,24 @@ describe('the create request', () => {
     const request = createRequestFrom(submission({ axes, rows: rowsFor(axes, []) }), 'DRAFT')
 
     expect(request.options?.[0]).toEqual({ name: '색상', values: [{ value: '블랙' }] })
+  })
+
+  it('carries a description that was written', () => {
+    const written = submission({
+      values: { ...submission().values, description: '  울 70% 혼방  ' },
+    })
+
+    expect(createRequestFrom(written, 'DRAFT').description).toBe('울 70% 혼방')
+    expect(updateRequestFrom(written, 1, 'DRAFT').description).toBe('울 70% 혼방')
+  })
+
+  it('reads a value that is not text as no answer', () => {
+    // `values` is `unknown`-valued, because the generated half of the form can
+    // hold a list or a switch. A name that arrived as one of those is not a
+    // name, and sending it would be refused for a field nobody could see.
+    const odd = submission({ values: { ...submission().values, name: ['코트'] } })
+
+    expect(createRequestFrom(odd, 'DRAFT').name).toBe('')
   })
 
   it('carries the attributes the fields ask about', () => {

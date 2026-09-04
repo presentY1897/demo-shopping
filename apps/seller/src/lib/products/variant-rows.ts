@@ -93,18 +93,41 @@ export function rowsFor(
   })
 }
 
-/** The combinations of a stored listing, read back through its option values. */
-export function storedCombinationsOf(product: Product): readonly StoredCombination[] {
-  const valueOf = new Map(
+/**
+ * Option value id → the label a person reads.
+ *
+ * A retired choice is not in it: `productSchema` carries only the live values
+ * of each axis, while a variant that used a retired one keeps pointing at it.
+ * Those combinations read as blank rather than as an error — they are switched
+ * off already, and the row exists so an order placed yesterday still resolves.
+ */
+function valueLabels(product: Product): ReadonlyMap<string, string> {
+  return new Map(
     product.options.flatMap((option) => option.values.map((value) => [value.id, value.value])),
   )
+}
+
+/**
+ * The choices of one variant, in axis order.
+ *
+ * `optionValueIds` is stored that way, and a combination matched as an
+ * unordered set would pair the wrong two on a product whose 색상 and 사이즈 both
+ * offer `F`.
+ */
+function combinationOf(
+  optionValueIds: readonly string[],
+  labels: ReadonlyMap<string, string>,
+): readonly string[] {
+  return optionValueIds.map((id) => labels.get(id) ?? '')
+}
+
+/** The combinations of a stored listing, read back through its option values. */
+export function storedCombinationsOf(product: Product): readonly StoredCombination[] {
+  const labels = valueLabels(product)
 
   return product.variants.map((variant) => ({
     variantId: variant.id,
-    // In axis order: `optionValueIds` is stored that way, and a combination
-    // matched as an unordered set would pair the wrong two on a product whose
-    // 색상 and 사이즈 both offer `F`.
-    values: variant.optionValueIds.map((id) => valueOf.get(id) ?? ''),
+    values: combinationOf(variant.optionValueIds, labels),
     isActive: variant.isActive,
   }))
 }
@@ -129,11 +152,11 @@ function numberText(value: number | null): string {
  * find their labelled stock renamed by a save they thought changed a price.
  */
 export function rowsFromProduct(product: Product): readonly VariantRow[] {
-  const values = storedCombinationsOf(product)
+  const labels = valueLabels(product)
 
-  return product.variants.map((variant, index) => ({
-    key: combinationKeyOf(values[index]?.values ?? []),
-    values: values[index]?.values ?? [],
+  return product.variants.map((variant) => ({
+    key: combinationKeyOf(combinationOf(variant.optionValueIds, labels)),
+    values: combinationOf(variant.optionValueIds, labels),
     sku: variant.sku,
     price: String(variant.price),
     listPrice: numberText(variant.listPrice),
@@ -195,6 +218,9 @@ function optionalInt(value: string): number | undefined {
  */
 export function variantDefaultsFrom(bulk: VariantBulk): VariantDefaults {
   return {
+    // `0` for a price nobody typed, which the contract accepts — a listing may
+    // legitimately be free. The editor refuses to publish one with nothing
+    // orderable behind it, and the server refuses it again (`PRODUCT_NOT_SELLABLE`).
     price: optionalInt(bulk.price) ?? 0,
     ...(optionalInt(bulk.listPrice) === undefined
       ? {}
