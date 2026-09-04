@@ -2,6 +2,9 @@ import { consoleMenuItemAt } from '@shopping/ui/console'
 
 import { ko } from './ko'
 import type {
+  AttributeFormMessages,
+  AttributeMessages,
+  AttributePreviewMessages,
   CategoryMessages,
   ConsoleLayoutMessages,
   ConsolePlaceholderMessages,
@@ -41,6 +44,9 @@ export function screenTitle(href: string, locale: Locale = DEFAULT_LOCALE): stri
 }
 
 export type {
+  AttributeFormMessages,
+  AttributeMessages,
+  AttributePreviewMessages,
   CategoryMessages,
   ConsoleLayoutMessages,
   ConsolePlaceholderMessages,
