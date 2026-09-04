@@ -7,15 +7,27 @@ import { errorMessage } from '@/lib/errors'
 /**
  * A failed API call, as a value a screen can render (TASK-0117 4.1).
  *
- * **`apps/admin/src/lib/api-failure.ts` is the twin of this file**, and the
- * duplication is deliberate rather than overlooked. The two differ in one
- * import — each app's own `ApiConfigurationError` — and the honest fix is to
- * lift both into a place both can import. That change has to edit `apps/admin`,
- * which this branch does not own (TASK-0033 4.9), and shipping a half-move
- * would leave the shared copy and the admin copy free to disagree. So: one more
- * copy now, one removal later, recorded here so the later one is findable.
+ * **There are three of these** — here, `apps/admin/src/lib/api-failure.ts` and
+ * `apps/shop/src/lib/api-failure.ts` — and `docs/HANDOFF.md` 3.3 tracks them as
+ * debt whose merge is a *design decision* rather than a file move. TASK-0114
+ * was named as the point where that decision is made. It was made, and the
+ * answer was **not yet**; the reasoning is in that task's 7.1 and the short
+ * version is:
  *
- * This version carries no `params` interpolation. See `lib/errors.ts`.
+ * - the two open questions are settled — `hasCode` **is** part of the common
+ *   API (this file gains it below, with the signature the other two already
+ *   have), and the seller catalog needs no `params` interpolation because its
+ *   one sentence with a `params` imports the constant instead (`lib/errors.ts`);
+ * - but the only correct home is `packages/shared/src/api/`, which TASK-0114
+ *   does not own — `packages/ui` is ruled out by its own `server-errors.ts`
+ *   header (no REST client in a component library), and a new package would
+ *   have to edit `apps/shop`, which TASK-0024 has open;
+ * - and merging two of the three would leave the third free to diverge, which
+ *   is exactly the half-move this comment used to warn against.
+ *
+ * What is left of the difference: each app's own `ApiConfigurationError`, and
+ * whether `failureMessage` takes an exhaustive catalog or a partial one. Both
+ * are arguments, so the move is mechanical once there is somewhere to move to.
  */
 
 /**
@@ -77,6 +89,19 @@ export function apiFailure(error: unknown): ApiFailure {
     requestId: error.requestId,
     status: error.status ?? 0,
   }
+}
+
+/**
+ * True when the API answered with this code.
+ *
+ * The editor needs it (TASK-0114 4장): a lost optimistic lock goes to a banner
+ * with 「다시 불러오기」, a taken SKU goes above the variant table with no such
+ * offer — re-reading does not fix that one — and the store's own state goes to
+ * a banner with the opposite advice from an ownership 403. Three different
+ * next actions behind three codes and one status apiece.
+ */
+export function hasCode(failure: ApiFailure, code: string): boolean {
+  return failure.kind === 'http' && failure.code === code
 }
 
 /**

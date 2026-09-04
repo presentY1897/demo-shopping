@@ -1,6 +1,7 @@
 import { isApiFieldError } from '@shopping/shared'
 
 import type { ApiFailure } from '@/lib/api-failure'
+import { hasCode } from '@/lib/api-failure'
 
 /**
  * Where a refused save is drawn (TASK-0114 4장 「도메인 오류 코드를 어디에
@@ -112,12 +113,12 @@ export function placementOf(failure: ApiFailure, formFields: readonly string[]):
 
 /** A 409 the seller resolves by reloading rather than by retyping. */
 export function isVersionConflict(failure: ApiFailure): boolean {
-  return failure.kind === 'http' && failure.code === 'PRODUCT_VERSION_CONFLICT'
+  return hasCode(failure, 'PRODUCT_VERSION_CONFLICT')
 }
 
 /** A 403 about the store's own state, not about whose product this is. */
 export function isSellerInactive(failure: ApiFailure): boolean {
-  return failure.kind === 'http' && failure.code === 'PRODUCT_SELLER_INACTIVE'
+  return hasCode(failure, 'PRODUCT_SELLER_INACTIVE')
 }
 
 /**
