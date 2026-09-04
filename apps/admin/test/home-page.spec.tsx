@@ -25,11 +25,11 @@ import { render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import HomePage from '@/app/page'
-import { messagesFor } from '@/messages'
+import { messagesFor, screenTitle } from '@/messages'
 
 import { testServer } from './setup'
 
-const { app, health, wake } = messagesFor()
+const { health, wake } = messagesFor()
 
 const appIdsSeen: string[] = []
 testServer.server.events.on('request:start', ({ request }) => {
@@ -61,7 +61,10 @@ describe('the admin home page', () => {
     testServer.server.use(neverAnswers(mockPaths.health))
     render(<HomePage />)
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(app.name)
+    // The heading is the dashboard's, not the console's: `PageHeader` owns
+    // the `<h1>` on every console screen and the console's name is in the
+    // sidebar (TASK-0019 4.5).
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(screenTitle('/'))
     expect(screen.getByRole('region', { name: health.title })).toHaveAttribute('aria-busy', 'true')
   })
 
