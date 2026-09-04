@@ -8,6 +8,18 @@ import { API_PATH_PREFIX } from '@shopping/shared'
  * stop matching in the other two apps. The version prefix comes from
  * `@shopping/shared` so that `/api/v2` is a one line change here.
  */
+/**
+ * Where the mock's presigned uploads point.
+ *
+ * `.invalid` is reserved and unroutable (RFC 6761), so a PUT that escaped msw
+ * would fail at the resolver rather than reach whatever is listening — the same
+ * reasoning as the `api.test.invalid` base URL the vitest preset sets.
+ */
+export const MOCK_STORAGE_ORIGIN = 'https://storage.test.invalid'
+
+/** The public read domain, which is a different deployment from the bucket. */
+export const MOCK_STORAGE_PUBLIC_ORIGIN = 'https://cdn.test.invalid'
+
 export const mockPaths = {
   health: `*${API_PATH_PREFIX}/health`,
   userRoles: `*${API_PATH_PREFIX}/users/:userId/roles`,
@@ -25,6 +37,17 @@ export const mockPaths = {
   attributes: `*${API_PATH_PREFIX}/attributes`,
   /** `PATCH` the editable fields, `DELETE` to retire. */
   attribute: `*${API_PATH_PREFIX}/attributes/:id`,
+  /** `POST` a request for one presigned upload (TASK-0011). */
+  uploadPresign: `*${API_PATH_PREFIX}/uploads/presign`,
+  /**
+   * The bucket itself — **not our API**.
+   *
+   * A presigned upload goes straight from the browser to object storage, so a
+   * front-end spec that only mocked our own origin would let a real cross-origin
+   * PUT out of the process. It is listed here so that `onUnhandledRequest:
+   * 'error'` covers it like everything else.
+   */
+  storageObject: `${MOCK_STORAGE_ORIGIN}/*`,
 } as const
 
 export type MockPath = (typeof mockPaths)[keyof typeof mockPaths]

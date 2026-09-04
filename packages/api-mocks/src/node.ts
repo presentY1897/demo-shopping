@@ -4,7 +4,12 @@ import type { RequestHandler } from 'msw'
 import { setupServer } from 'msw/node'
 import { afterAll, afterEach, beforeAll } from 'vitest'
 
-import { defaultHandlers, resetAttributeStore, resetCategoryStore } from './handlers'
+import {
+  defaultHandlers,
+  resetAttributeStore,
+  resetCategoryStore,
+  resetUploadStore,
+} from './handlers'
 
 /**
  * How the mock server is started, kept as a value so a spec can assert on it.
@@ -102,6 +107,7 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     server.resetHandlers()
     resetCategoryStore()
     resetAttributeStore()
+    resetUploadStore()
   })
 
   afterAll(() => {
