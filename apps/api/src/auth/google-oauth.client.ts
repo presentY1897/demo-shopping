@@ -35,6 +35,19 @@ const USERINFO_ENDPOINT = 'https://www.googleapis.com/oauth2/v3/userinfo'
  */
 const SCOPES = ['openid', 'email', 'profile'] as const
 
+/**
+ * How long Google gets to answer before the sign-in is treated as failed.
+ *
+ * Without it a slow Google holds the callback request — and a connection — open
+ * for as long as it likes, and the person sees a spinner instead of the
+ * "다시 시도해 주세요" an `exchange_failed` redirect gives them.
+ * `search.health-indicator.ts` takes its deadline from configuration because a
+ * probe's tolerance is an operational choice; this one is not, so it is a
+ * constant: generous enough that a slow-but-working exchange completes, short
+ * enough that nobody is left waiting on a dead endpoint.
+ */
+const REQUEST_TIMEOUT_MS = 10_000
+
 /** What the token endpoint hands back, narrowed to what is used. */
 export interface GoogleTokens {
   readonly accessToken: string
@@ -115,7 +128,7 @@ export class FetchGoogleOAuthClient implements GoogleOAuthClient {
     code: string
     redirectUri: string
   }): Promise<GoogleTokens> {
-    const response = await fetch(TOKEN_ENDPOINT, {
+    const response = await this.call(TOKEN_ENDPOINT, 'exchange', {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
@@ -141,28 +154,55 @@ export class FetchGoogleOAuthClient implements GoogleOAuthClient {
   }
 
   async fetchProfile(accessToken: string): Promise<GoogleProfile> {
-    const response = await fetch(USERINFO_ENDPOINT, {
+    const response = await this.call(USERINFO_ENDPOINT, 'profile', {
       headers: { authorization: `Bearer ${accessToken}` },
     })
 
     if (!response.ok) throw new GoogleOAuthError('profile', `status ${String(response.status)}`)
 
     const body = ((await response.json().catch(() => null)) ?? {}) as Record<string, unknown>
+    // Read in the order the fields are required, so a response missing both
+    // reports the identifier rather than the label.
+    const sub = requireString(body.sub, 'sub', 'profile')
+    const email = requireString(body.email, 'email', 'profile')
 
     return {
-      sub: requireString(body.sub, 'sub', 'profile'),
-      email: requireString(body.email, 'email', 'profile'),
+      sub,
+      email,
       // Falls back to the local part rather than refusing: `name` is a display
       // string and `User.name` is NOT NULL, so an account without one has to be
       // representable. A refusal here would lock somebody out over a label.
-      name: typeof body.name === 'string' && body.name !== '' ? body.name : localPart(body.email),
+      name: typeof body.name === 'string' && body.name !== '' ? body.name : localPart(email),
       picture: typeof body.picture === 'string' && body.picture !== '' ? body.picture : null,
+    }
+  }
+
+  /**
+   * One call to Google, with a deadline.
+   *
+   * A timeout surfaces as the same {@link GoogleOAuthError} a refusal does. From
+   * the caller's side "Google did not answer" and "Google said no" lead to the
+   * same redirect, and splitting them would offer a person a distinction they
+   * cannot act on differently.
+   */
+  private async call(
+    url: string,
+    stage: 'exchange' | 'profile',
+    init: RequestInit,
+  ): Promise<Response> {
+    try {
+      return await fetch(url, { ...init, signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) })
+    } catch (error) {
+      throw new GoogleOAuthError(stage, error instanceof Error ? error.name : 'network')
     }
   }
 }
 
-function localPart(email: unknown): string {
-  return typeof email === 'string' ? (email.split('@')[0] ?? '사용자') : '사용자'
+/** The part of an address before the `@`, or the whole thing when there is none. */
+function localPart(email: string): string {
+  const at = email.indexOf('@')
+
+  return at < 0 ? email : email.slice(0, at)
 }
 
 /**

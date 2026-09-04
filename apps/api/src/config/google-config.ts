@@ -1,4 +1,4 @@
-import { isBlank } from './env-value.js'
+import { isBlank, isSet } from './env-value.js'
 import type { EnvIssue } from './env.schema.js'
 
 /**
@@ -62,13 +62,13 @@ export function resolveGoogleOAuthConfig(source: Source): GoogleOAuthResolution 
     if (isBlank(source[variable])) issues.push({ variable, reason: '설정되지 않았습니다' })
   }
 
-  if (issues.length > 0) return { config: null, issues }
+  const clientId = source.GOOGLE_CLIENT_ID
+  const clientSecret = source.GOOGLE_CLIENT_SECRET
 
-  return {
-    config: {
-      clientId: source.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: source.GOOGLE_CLIENT_SECRET ?? '',
-    },
-    issues: [],
-  }
+  // Re-tested rather than inferred from `issues.length`: the compiler cannot
+  // follow that, and satisfying it with `?? ''` would add a fallback no input
+  // can reach.
+  if (isSet(clientId) && isSet(clientSecret)) return { config: { clientId, clientSecret }, issues }
+
+  return { config: null, issues }
 }

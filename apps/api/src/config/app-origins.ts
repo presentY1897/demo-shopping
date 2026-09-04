@@ -16,12 +16,22 @@ export type WebPorts = Readonly<Record<AppId, number>>
  */
 const LOOPBACK = ['localhost', '127.0.0.1'] as const
 
+/** The first label of an origin's hostname: `seller` of `seller.example.com`. */
 function hostLabel(origin: string): string | null {
+  let hostname: string
+
   try {
-    return new URL(origin).hostname.split('.')[0] ?? null
+    hostname = new URL(origin).hostname
   } catch {
     return null
   }
+
+  const dot = hostname.indexOf('.')
+
+  // Both halves are ordinary: a deployment has subdomains, and `localhost` has
+  // no dot at all. Written with `indexOf` rather than `split(...)[0]` because
+  // that form needs a `?? null` the compiler wants and no input can reach.
+  return dot < 0 ? hostname : hostname.slice(0, dot)
 }
 
 function matchesPort(origin: string, port: number, hostname: string): boolean {
