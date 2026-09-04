@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 
 import { useAuth } from '@/lib/auth/auth-context'
 import { readDemoAccount } from '@/lib/demo/demo-client'
-import { fill, remainingOf } from '@/lib/demo/remaining'
+import { fill, isEndingSoon, remainingOf } from '@/lib/demo/remaining'
 import type { DemoMessages } from '@/messages'
 
 /** How often the sentence is recomputed. Minutes are the unit it shows. */
@@ -41,6 +41,11 @@ export type DemoBannerVariant = keyof typeof SHAPE
  * **`role="status"`, not `role="alert"`.** This is a state that is true for
  * twenty-four hours, not an answer to something the visitor just did; an alert
  * would interrupt a screen reader on every page.
+ *
+ * **Inside an hour it changes colour and changes what it calls itself**
+ * (TASK-0025 「만료 임박 알림」). It stays `role="status"` — an alert that fired
+ * on every page for the last hour would be worse than the countdown it is
+ * interrupting — but the tone and the label say that this is now a deadline.
  *
  * **A failed lookup draws nothing.** The banner is an aid, and an error message
  * where a countdown should be is worse than no countdown — the visitor cannot
@@ -108,13 +113,19 @@ export function DemoBanner({
   if (account === null) return null
 
   const left = remainingOf(account.expiresAt, now)
+  const ending = isEndingSoon(left) || left.expired
 
   return (
     <div
-      className={`border-warning bg-warning-surface text-fg flex flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2 text-sm ${SHAPE[variant]}`}
+      className={`text-fg flex flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2 text-sm ${
+        ending ? 'border-danger bg-danger-surface' : 'border-warning bg-warning-surface'
+      } ${SHAPE[variant]}`}
+      data-ending={ending || undefined}
       role="status"
     >
-      <span className="font-medium">{messages.bannerLabel}</span>
+      <span className="font-medium">
+        {ending ? messages.endingSoonLabel : messages.bannerLabel}
+      </span>
       <span>{sentenceFor(left, messages)}</span>
     </div>
   )

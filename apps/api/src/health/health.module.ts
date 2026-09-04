@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 
 import { DatabaseHealthIndicator } from './database.health-indicator.js'
+import { DemoCleanupReporter } from './demo-cleanup.reporter.js'
 import { HealthController } from './health.controller.js'
 import { HEALTH_INDICATORS } from './health-indicator.js'
 import { HealthService } from './health.service.js'
@@ -13,6 +14,7 @@ import { SearchWarmupService } from './search-warmup.service.js'
   providers: [
     DatabaseHealthIndicator,
     SearchHealthIndicator,
+    DemoCleanupReporter,
     HealthService,
     // Wakes the search engine once at boot. It has no consumer: the class
     // implements OnApplicationBootstrap and Nest calls it (TASK-0101 4.6).
