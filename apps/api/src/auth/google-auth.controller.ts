@@ -127,6 +127,13 @@ export class GoogleAuthController {
     // sign-in and the session are set in the *same* response: a redirect that
     // arrived without a cookie would land the browser on a login page that has
     // no way to tell it already succeeded.
+    //
+    // **Only the refresh cookie travels; the access token is discarded here.**
+    // The alternative is putting it in the redirect URL, where it would land in
+    // browser history, in the `Referer` of the next request, and in any proxy
+    // log along the way. The app exchanges the cookie for an access token on
+    // its first `POST /auth/refresh`, which is one round trip and the same code
+    // path every later renewal takes.
     if (outcome.user !== null) {
       const session = await this.sessions.issue(
         {

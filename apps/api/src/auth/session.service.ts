@@ -143,6 +143,18 @@ export class SessionService {
       return { ok: false, reason: 'unknown' }
     }
 
+    // **Expiry is checked before revocation, and that order is the security
+    // property.** Ending a session — a logout, or theft detection — sets
+    // `expiresAt` to now as well as `revokedAt`, so the grace window below
+    // cannot resurrect it. Without this order the window protects the tokens a
+    // theft *just killed*: the victim's own token would rotate into a fresh one
+    // seconds after the session was supposed to be over, and the detection
+    // would have accomplished nothing.
+    if (existing.expiresAt <= now) {
+      await this.end(existing.id, now)
+      return { ok: false, reason: 'expired' }
+    }
+
     if (existing.revokedAt !== null) {
       // The window is measured from the *original* revocation, never refreshed
       // by another attempt — otherwise a replay could hold it open forever.
@@ -150,12 +162,6 @@ export class SessionService {
         await this.revokeApp(existing.userId, app, now)
         return { ok: false, reason: 'reused' }
       }
-    } else if (existing.expiresAt <= now) {
-      await this.prisma.refreshToken.update({
-        where: { id: existing.id },
-        data: { revokedAt: now },
-      })
-      return { ok: false, reason: 'expired' }
     } else {
       // Conditional on still being live, so two concurrent refreshes cannot both
       // believe they were the one that rotated it.
@@ -214,9 +220,12 @@ export class SessionService {
 
   /** Ends every app's session for one account. */
   async logoutAll(userId: string): Promise<number> {
+    const now = this.clock.now()
     const { count } = await this.prisma.refreshToken.updateMany({
       where: { userId, revokedAt: null },
-      data: { revokedAt: this.clock.now() },
+      // Expired as well as revoked, for the same reason `revokeApp` does it:
+      // a logged-out token must not land inside the retry grace window.
+      data: { revokedAt: now, expiresAt: now },
     })
 
     return count
@@ -274,10 +283,26 @@ export class SessionService {
     }
   }
 
+  /**
+   * Ends every live session of one app.
+   *
+   * Sets `expiresAt` as well as `revokedAt`. A row revoked by *rotation* keeps
+   * its original expiry and is therefore still inside the retry grace window;
+   * a row revoked because the session ended must not be, or the very tokens a
+   * theft just invalidated would rotate into new ones (see `refresh`).
+   */
   private revokeApp(userId: string, app: AppId, now: Date): Promise<unknown> {
     return this.prisma.refreshToken.updateMany({
       where: { userId, app: CLIENT_APP[app], revokedAt: null },
-      data: { revokedAt: now },
+      data: { revokedAt: now, expiresAt: now },
+    })
+  }
+
+  /** Ends one row, for a token that arrived after its own expiry. */
+  private end(id: string, now: Date): Promise<unknown> {
+    return this.prisma.refreshToken.update({
+      where: { id },
+      data: { revokedAt: now, expiresAt: now },
     })
   }
 
