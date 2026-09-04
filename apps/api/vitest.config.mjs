@@ -198,6 +198,26 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // Signing and verification. A branch nothing reaches here is a token
+        // shape nobody decided about — and the reason this module can be
+        // hand-written at all is that every one of them is named by a test
+        // (TASK-0022 4장).
+        'src/auth/jwt.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        // Where the cookie attributes are actually decided. `session-cookie.ts`
+        // is deliberately **not** listed: it has no conditional of its own — its
+        // only one (`secure` → `Secure`) lives here — so a threshold there would
+        // read as a guarantee while enforcing nothing.
+        'src/auth/cookies.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
         // Cookie attributes and the one-time comparison. `SameSite=Lax` and the
         // length guard in `statesMatch` are both cases a real browser or a
         // hostile caller reaches and an endpoint spec does not.

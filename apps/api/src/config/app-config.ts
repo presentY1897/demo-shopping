@@ -57,6 +57,20 @@ export interface AppConfig {
    * repository. Sign-in answers 503 until it is set (TASK-0021 4장).
    */
   readonly googleOAuth: GoogleOAuthConfig | null
+  /**
+   * Secrets and lifetimes for sessions (TASK-0022).
+   *
+   * Not nullable, unlike {@link storage} and {@link googleOAuth}: a process
+   * that cannot sign a token cannot serve an authenticated request at all, so
+   * "unconfigured" is a boot failure rather than one endpoint answering 503.
+   */
+  readonly auth: {
+    readonly jwtSecret: string
+    /** Access token lifetime. Short: there is no revocation list (R4). */
+    readonly accessTokenTtlSeconds: number
+    /** Refresh token lifetime, matching the cookie's `Max-Age`. */
+    readonly refreshTokenTtlSeconds: number
+  }
   /** Exact origins allowed by CORS. Anything else is rejected. */
   readonly corsOrigins: readonly string[]
   /**

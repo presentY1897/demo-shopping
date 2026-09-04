@@ -3,6 +3,8 @@ import { randomBytes, timingSafeEqual } from 'node:crypto'
 import type { AppId } from '@shopping/shared'
 import { isAppId } from '@shopping/shared'
 
+import { expireCookie, serialiseCookie } from './cookies.js'
+
 /**
  * The one-time value that ties a callback to the browser that started it
  * (TASK-0021 4장 「state 는 DB 가 아니라 httpOnly 쿠키에 둔다」).
@@ -91,29 +93,31 @@ export interface CookieOptions {
   readonly secure: boolean
 }
 
-function serialise(value: string, maxAgeSeconds: number, { secure }: CookieOptions): string {
-  const parts = [
-    `${OAUTH_STATE_COOKIE}=${value}`,
-    `Path=${OAUTH_STATE_PATH}`,
-    `Max-Age=${String(maxAgeSeconds)}`,
-    'HttpOnly',
+function attributes({ secure }: CookieOptions): {
+  name: string
+  path: string
+  secure: boolean
+  sameSite: 'Lax'
+} {
+  return {
+    name: OAUTH_STATE_COOKIE,
+    path: OAUTH_STATE_PATH,
+    secure,
     // Lax, not Strict. The callback is a top-level cross-site GET — the browser
     // arrives from accounts.google.com — and `Strict` withholds cookies on
     // exactly that navigation. Every sign-in would then fail as a state
     // mismatch, and it would fail only in a real browser: a spec that sets the
     // header itself would pass (TASK-0021 4장).
-    'SameSite=Lax',
-  ]
-
-  if (secure) parts.push('Secure')
-
-  // No `Domain`: D-028 keeps the three apps' cookies unshareable, and this one
-  // follows the same rule so that nothing on a sibling subdomain can read it.
-  return parts.join('; ')
+    sameSite: 'Lax',
+  }
 }
 
 export function buildStateCookie(value: OauthState, options: CookieOptions): string {
-  return serialise(encodeOauthState(value), OAUTH_STATE_MAX_AGE_SECONDS, options)
+  return serialiseCookie({
+    ...attributes(options),
+    value: encodeOauthState(value),
+    maxAgeSeconds: OAUTH_STATE_MAX_AGE_SECONDS,
+  })
 }
 
 /**
@@ -124,26 +128,5 @@ export function buildStateCookie(value: OauthState, options: CookieOptions): str
  * browser treats it as a different cookie and keeps the original.
  */
 export function clearStateCookie(options: CookieOptions): string {
-  return serialise('', 0, options)
-}
-
-/**
- * Reads one cookie out of a `Cookie` header.
- *
- * Hand-rolled rather than adding `cookie-parser`: the API has no cookie
- * middleware and this is the first thing in the repository that needs to read
- * one. A dependency and a global middleware for a single header, parsed in one
- * place, would be more moving parts than the parsing.
- */
-export function readCookie(header: string | undefined, name: string): string | undefined {
-  if (header === undefined) return undefined
-
-  for (const part of header.split(';')) {
-    const separator = part.indexOf('=')
-    if (separator < 0) continue
-
-    if (part.slice(0, separator).trim() === name) return part.slice(separator + 1).trim()
-  }
-
-  return undefined
+  return expireCookie(attributes(options))
 }

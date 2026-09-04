@@ -8,6 +8,7 @@ const COMPLETE = {
   DATABASE_URL: 'postgresql://shopping:shopping@localhost:5472/shopping',
   MEILI_HOST: 'http://localhost:7740',
   MEILI_MASTER_KEY: 'local_dev_master_key_change_me',
+  JWT_SECRET: 'local_dev_jwt_secret_change_me_0000',
 } as const
 
 function variablesOf(source: Record<string, string | undefined>): string[] {
@@ -34,7 +35,16 @@ describe('parseEnv', () => {
   })
 
   it('names every missing variable rather than only the first', () => {
-    expect(variablesOf({})).toEqual(['API_PORT', 'DATABASE_URL', 'MEILI_HOST', 'MEILI_MASTER_KEY'])
+    expect(variablesOf({})).toEqual([
+      'API_PORT',
+      'DATABASE_URL',
+      'MEILI_HOST',
+      'MEILI_MASTER_KEY',
+      // Required, unlike R2 and Google: a process that cannot sign a token
+      // cannot serve an authenticated request, so booting without one only
+      // moves the discovery to production (TASK-0022 R3).
+      'JWT_SECRET',
+    ])
   })
 
   it('treats an empty value as missing', () => {

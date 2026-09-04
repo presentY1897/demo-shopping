@@ -6,13 +6,15 @@ import { googleAuthorizeQuerySchema } from '@shopping/shared'
 import { parseInput } from '../common/parse-input.js'
 import { requestIdOf } from '../common/request-context.middleware.js'
 import { GoogleAuthService } from './google-auth.service.js'
+import { buildRefreshCookie } from './session-cookie.js'
+import { SessionService } from './session.service.js'
+import { readCookie } from './cookies.js'
 import type { OauthState } from './oauth-state.js'
 import {
   buildStateCookie,
   clearStateCookie,
   decodeOauthState,
   OAUTH_STATE_COOKIE,
-  readCookie,
 } from './oauth-state.js'
 import { PublicEndpoint } from './public-endpoint.decorator.js'
 
@@ -32,7 +34,10 @@ import { PublicEndpoint } from './public-endpoint.decorator.js'
  */
 @Controller({ path: 'auth/google', version: '1' })
 export class GoogleAuthController {
-  constructor(private readonly auth: GoogleAuthService) {}
+  constructor(
+    private readonly auth: GoogleAuthService,
+    private readonly sessions: SessionService,
+  ) {}
 
   /**
    * Sends the browser on.
@@ -118,6 +123,33 @@ export class GoogleAuthController {
       apiOrigin: this.auth.apiOriginOf(request.headers.host),
     })
 
+    // ⑤ of the flow in TASK-0021 4장, which that task left for this one. The
+    // sign-in and the session are set in the *same* response: a redirect that
+    // arrived without a cookie would land the browser on a login page that has
+    // no way to tell it already succeeded.
+    if (outcome.user !== null) {
+      const session = await this.sessions.issue(
+        {
+          userId: outcome.user.userId,
+          roles: outcome.user.roles,
+          sellerId: outcome.user.sellerId,
+        },
+        cookie.app,
+        { userAgent: headerOf(request, 'user-agent') },
+      )
+
+      response.appendHeader(
+        'Set-Cookie',
+        buildRefreshCookie(cookie.app, session.refreshToken, this.sessions.cookieOptions()),
+      )
+    }
+
     GoogleAuthController.redirect(response, outcome.redirectTo)
   }
+}
+
+function headerOf(request: IncomingMessage, name: string): string | undefined {
+  const value = request.headers[name]
+
+  return Array.isArray(value) ? value[0] : value
 }
