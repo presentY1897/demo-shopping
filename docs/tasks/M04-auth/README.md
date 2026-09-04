@@ -20,7 +20,7 @@ Google 로그인, 앱별 독립 세션, 데모 계정 발급·만료를 구현�
 | ~~[TASK-0026](./TASK-0026-seller-onboarding.md)~~ | ~~판매자 입점 신청 · 승인~~ | **폐기** → 0108 · 0109 · 0110 | – |
 | ~~[TASK-0027](./TASK-0027-profile-address.md)~~ | ~~프로필 · 배송지 관리~~ | **폐기** → 0111 · 0112 | – |
 | [TASK-0108](./TASK-0108-seller-onboarding-api.md) | 판매자 입점 상태 머신 · API | 완료 | 0022, 0105, 0106 |
-| [TASK-0109](./TASK-0109-seller-onboarding-page.md) | 판매자 입점 신청 · 스토어 설정 화면 | 승인됨 | 0108, 0023, 0019, 0017, 0107 |
-| [TASK-0110](./TASK-0110-seller-review-admin.md) | 관리자 입점 심사 화면 | 승인됨 | 0108, 0023, 0019, 0016, 0107 |
+| [TASK-0109](./TASK-0109-seller-onboarding-page.md) | 판매자 입점 신청 · 스토어 설정 화면 | 완료 | 0108, 0023, 0019, 0017, 0107 |
+| [TASK-0110](./TASK-0110-seller-review-admin.md) | 관리자 입점 심사 화면 | 완료 | 0108, 0023, 0019, 0016, 0107 |
 | [TASK-0111](./TASK-0111-profile-address-api.md) | 프로필 · 배송지 · 사용자 설정 API | 완료 | 0022, 0105, 0106 |
-| [TASK-0112](./TASK-0112-profile-address-page.md) | 프로필 · 배송지 화면 | 승인됨 | 0111, 0023, 0018, 0017, 0107 |
+| [TASK-0112](./TASK-0112-profile-address-page.md) | 프로필 · 배송지 화면 | 완료 | 0111, 0023, 0018, 0017, 0107 |
