@@ -482,6 +482,41 @@ export class ProductService {
   }
 
   /**
+   * Puts a listing on sale (TASK-0113).
+   *
+   * The same transition `update` performs for `{ status: 'ACTIVE' }`, and
+   * deliberately routed through it rather than reimplemented: publishing has to
+   * take the product row lock, compare the version, revalidate the attributes
+   * against the category and re-derive `minPrice` under the constraint that
+   * refuses a listing on sale with no price. A second path doing four of those
+   * five things is how one of them ends up missing.
+   *
+   * It is a separate **endpoint** all the same, because the two intentions are
+   * different: 저장 may leave a draft incomplete and 판매 시작 may not, and a
+   * screen that sends both as one field of one request cannot tell a person
+   * which of the two was refused.
+   */
+  publish(principal: RequestPrincipal, id: string, version: number): Promise<ProductResponse> {
+    return this.update(principal, id, { version, status: 'ACTIVE' })
+  }
+
+  /**
+   * Takes it back off sale, to 작성 중.
+   *
+   * `DRAFT` and not `INACTIVE`: 발행 취소 is the seller reopening the editor,
+   * and a listing they are working on again is a draft. `INACTIVE` — 판매 중지
+   * without going back to editing — stays available through `update`, which is
+   * where a console's own status control sends it.
+   *
+   * A seller cannot use this to lift a forced hide: `assertStatusChange` refuses
+   * any move out of `SUSPENDED` to a caller whose only scope is `own`, and it
+   * runs inside `update` on the way through (TASK-0032 4.9).
+   */
+  unpublish(principal: RequestPrincipal, id: string, version: number): Promise<ProductResponse> {
+    return this.update(principal, id, { version, status: 'DRAFT' })
+  }
+
+  /**
    * Retires a listing. The rows stay and the ids are never handed out again.
    *
    * Soft, and not as a convention: an order item points at a variant forever
