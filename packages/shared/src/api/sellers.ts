@@ -117,7 +117,14 @@ export const sellerSchema = z.object({
   status: sellerStatusSchema,
   /** The reason behind the current status; `null` while none was given. */
   statusReason: z.string().nullable(),
-  /** When the status last moved; `null` for a store nobody has decided on yet. */
+  /**
+   * When the status last moved — including the move into `PENDING` that
+   * applying is, which is what lets a review queue sort by how long an
+   * application has been waiting.
+   *
+   * Nullable because the column is (`Seller.statusChangedAt`): rows written by
+   * a seed or a fixture rather than by this API carry no decision.
+   */
   statusChangedAt: z.iso.datetime().nullable(),
   /** Optimistic lock (DECISIONS 4). Every write that changes the row raises it. */
   version: z.int().min(0),
