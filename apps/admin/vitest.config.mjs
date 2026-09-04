@@ -12,12 +12,15 @@ const base = nextAppVitestConfig(import.meta.dirname)
  * list rather than a number, on the grounds that a coverage target on UI code
  * buys tests that render and assert nothing.
  *
- * **The two modules below are the 순수 로직 row of that same table** (TASK-0117
- * Q5). They take a failure and return what the screen says and where it puts it:
- * which sentence a code maps to, whether a placeholder could be filled, whether
- * a reference is worth showing. A branch nothing reaches in them is a failure
- * rendered wrongly — and the symptom is never a red test, because the error is
- * still *shown*. That is the exact defect this task exists to remove.
+ * **The modules below are the 순수 로직 row of that same table.** A branch
+ * nothing reaches in them renders the wrong thing rather than failing a test.
+ *
+ * `src/lib/errors.ts` and `src/lib/api-failure.ts` used to be on this list and
+ * are no longer here: they moved to `packages/shared/src/api/` (D-219) and the
+ * threshold went with them — `packages/shared/vitest.config.mjs` holds both to
+ * the same 100%. `test/errors.spec.ts` stays, because what it checks now is this
+ * console's own catalog against those functions, and it is the only catalog with
+ * a placeholder to interpolate.
  */
 export default {
   ...base,
@@ -29,8 +32,6 @@ export default {
       include: ['src/**/*.{ts,tsx}'],
       exclude: ['src/**/*.spec.{ts,tsx}'],
       thresholds: {
-        'src/lib/errors.ts': complete,
-        'src/lib/api-failure.ts': complete,
         // TASK-0031's decisions, taken before anything is drawn: which category
         // is offered, which order a generated form asks in, whether a choice
         // list is acceptable, what a move exchanges. A missed branch in any of

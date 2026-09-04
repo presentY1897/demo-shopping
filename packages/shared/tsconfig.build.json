@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  // The config that decides the shape of `dist`. Specs are not published.
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src"]
+}

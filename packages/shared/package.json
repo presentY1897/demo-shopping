@@ -18,9 +18,12 @@
   ],
   "scripts": {
     "prepare": "pnpm run build",
-    "build": "tsc",
-    "build:watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc -p tsconfig.build.json",
+    "build:watch": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
     "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix --max-warnings 0",
     "typecheck": "tsc --noEmit",
@@ -32,8 +35,10 @@
   },
   "devDependencies": {
     "@shopping/config": "workspace:*",
+    "@vitest/coverage-v8": "^4.1.11",
     "eslint": "^10.9.1",
     "prettier": "^3.9.6",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11"
   }
 }
