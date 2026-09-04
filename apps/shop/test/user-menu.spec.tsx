@@ -100,16 +100,20 @@ describe('signed in', () => {
     expect(await screen.findByText(menu.signedOutBody)).toBeVisible()
   })
 
-  it('shows the profile entry blocked, with the reason, still reachable (P4)', async () => {
+  it('links the profile entry to the settings screen (TASK-0112)', async () => {
     const user = userEvent.setup()
     renderMenu({ session: sessionBuyer })
 
     await user.click(screen.getByRole('button', { name: menu.label }))
 
-    const profile = await screen.findByRole('button', { name: menu.profileLabel })
-
-    expect(profile).toHaveAttribute('aria-disabled', 'true')
-    expect(profile).toHaveAccessibleDescription(menu.profileReason)
+    // It was a blocked `GuardedButton` until the screen existed. The entry kept
+    // its place through that so the menu would not change shape the day it
+    // arrived; this asserts that it did arrive rather than that it is still
+    // waiting.
+    expect(await screen.findByRole('link', { name: menu.profileLabel })).toHaveAttribute(
+      'href',
+      '/mypage/settings',
+    )
   })
 })
 

@@ -1,7 +1,7 @@
 'use client'
 
 import type { Role } from '@shopping/shared'
-import { Button, GuardedButton, IconButton, Popover } from '@shopping/ui/components'
+import { Button, IconButton, Popover } from '@shopping/ui/components'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
@@ -70,12 +70,13 @@ export function UserMenu({
           </Link>
 
           {/*
-            Profile editing is TASK-0112. Shown blocked with the reason rather
-            than hidden, for the same reason every other unavailable action is.
+            A real destination since TASK-0112. It was a blocked `GuardedButton`
+            while the screen did not exist — the entry stayed visible so the menu
+            did not change shape the day it arrived, and this is that day.
           */}
-          <GuardedButton blocked reason={messages.profileReason} size="sm" variant="ghost">
+          <Link className="text-primary text-sm font-medium underline" href="/mypage/settings">
             {messages.profileLabel}
-          </GuardedButton>
+          </Link>
 
           <Button
             loading={busy}
