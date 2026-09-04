@@ -28,6 +28,25 @@ export function nextAppVitestConfig(rootDir) {
       // Specs live in `test/`, not beside the source: `packages/ui`'s hardcoded
       // value checks walk `apps/*/src` and a spec is not style bearing code.
       include: ['test/**/*.spec.{ts,tsx}'],
+      /**
+       * 20 seconds, not vitest's 5 — headroom, not the fix.
+       *
+       * What actually cut these suites short was Testing Library's own
+       * `asyncUtilTimeout`, which is **one second** and which vitest's budget
+       * has no say over (see each app's `test/setup.ts`). Raising only this
+       * changed nothing, which is how that was found.
+       *
+       * It still has to move. A spec here renders a console, drives dozens of
+       * user events through React and often runs axe over the result — the
+       * slowest single test in `apps/admin` measures **1.96s** warm and local,
+       * with four more above a second. `pnpm -r test:coverage` runs the
+       * workspaces **in parallel** and CI's runner is roughly 5.6x slower than
+       * a warm local one, so a test that waits twice at the new five-second
+       * ceiling would hit vitest's five-second one first.
+       *
+       * **A hung test still fails**, fifteen seconds later than it used to.
+       */
+      testTimeout: 20_000,
       // Server Components are called as functions and their result is rendered,
       // so one environment has to hold both a DOM and Node's fetch (4.2).
       environment: 'jsdom',
