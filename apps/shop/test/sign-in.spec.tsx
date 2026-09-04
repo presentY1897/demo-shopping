@@ -25,6 +25,7 @@ import type { MockSession } from './support/auth'
 import { renderWithAuth } from './support/auth'
 
 const auth = messagesFor().auth
+const demoMessages = messagesFor().demo
 
 const navigation = vi.hoisted(() => ({
   query: '',
@@ -41,7 +42,7 @@ vi.mock('next/navigation', () => ({
 function renderScreen(query = '', session: MockSession = null) {
   navigation.query = query
 
-  return renderWithAuth(<SignInScreen messages={auth} />, { session })
+  return renderWithAuth(<SignInScreen demo={demoMessages} messages={auth} />, { session })
 }
 
 beforeEach(() => {
@@ -61,16 +62,17 @@ describe('an ordinary visit', () => {
   })
 
   /**
-   * The demo entry is TASK-0024's. Shown blocked rather than hidden: the point
-   * of a demo is that the feature is visibly there.
+   * The demo entry works now (TASK-0024). It was a blocked `GuardedButton`
+   * until this task; what stays is that it is *visible* — the point of a demo is
+   * that the feature is there — and that a keyboard reaches it.
    */
-  it('shows the demo entry blocked, with the reason, still reachable', async () => {
+  it('offers the demo entry, described and reachable by keyboard', async () => {
     const user = userEvent.setup()
     renderScreen()
 
     const demo = screen.getByRole('button', { name: auth.signIn.demoLabel })
 
-    expect(demo).toHaveAttribute('aria-disabled', 'true')
+    expect(demo).toBeEnabled()
     expect(demo).toHaveAccessibleDescription(auth.signIn.demoReason)
 
     await user.tab()
