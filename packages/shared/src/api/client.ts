@@ -40,6 +40,7 @@ import type {
   CreateProductRequest,
   ProductListQuery,
   ProductListResponse,
+  ProductPublishRequest,
   ProductResponse,
   UpdateProductRequest,
 } from './products.js'
@@ -172,6 +173,26 @@ export interface ApiClient {
   updateProduct: (
     id: string,
     body: UpdateProductRequest,
+    options?: ApiCallOptions,
+  ) => Promise<ProductResponse>
+  /**
+   * Puts a listing on sale, and takes it off again (TASK-0113).
+   *
+   * Separate from `updateProduct` even though the same transition can be
+   * written as `{ status }`, because publishing is where the category's
+   * required attributes stop being optional: a draft may be incomplete and a
+   * listing a buyer can see may not. An editor's 저장 and its 판매 시작 are two
+   * intentions, and a screen that sends them as one request cannot tell a
+   * person which of the two was refused.
+   */
+  publishProduct: (
+    id: string,
+    body: ProductPublishRequest,
+    options?: ApiCallOptions,
+  ) => Promise<ProductResponse>
+  unpublishProduct: (
+    id: string,
+    body: ProductPublishRequest,
     options?: ApiCallOptions,
   ) => Promise<ProductResponse>
   /** Retires a listing. The row and its variants survive for order history. */
@@ -520,6 +541,24 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       request({
         path: `/products/${id}`,
         method: 'PATCH',
+        body,
+        schema: productResponseSchema,
+        ...callOptions,
+      }),
+
+    publishProduct: (id, body, callOptions = {}) =>
+      request({
+        path: `/products/${id}/publish`,
+        method: 'POST',
+        body,
+        schema: productResponseSchema,
+        ...callOptions,
+      }),
+
+    unpublishProduct: (id, body, callOptions = {}) =>
+      request({
+        path: `/products/${id}/unpublish`,
+        method: 'POST',
         body,
         schema: productResponseSchema,
         ...callOptions,
