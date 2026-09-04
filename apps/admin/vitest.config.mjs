@@ -31,6 +31,15 @@ export default {
       thresholds: {
         'src/lib/errors.ts': complete,
         'src/lib/api-failure.ts': complete,
+        // TASK-0031's decisions, taken before anything is drawn: which category
+        // is offered, which order a generated form asks in, whether a choice
+        // list is acceptable, what a move exchanges. A missed branch in any of
+        // them renders a wrong form rather than failing a test.
+        'src/lib/attributes/categories.ts': complete,
+        'src/lib/attributes/options.ts': complete,
+        'src/lib/attributes/order.ts': complete,
+        'src/lib/attributes/preview.ts': complete,
+        'src/lib/attributes/text.ts': complete,
       },
     },
   },
