@@ -1,8 +1,13 @@
 import type { HealthStatus } from '@shopping/shared'
+import type { ImageUploadListLabels } from '@shopping/ui/components'
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
+import type { ApiFailureReason } from '@/lib/api-failure'
+import type { ErrorMessages } from '@/lib/errors'
 import type { HealthFailureReason } from '@/lib/health'
+import type { RejectionReason } from '@/lib/uploads/gallery'
+import type { UploadFailureKey } from '@/lib/uploads/failures'
 
 /**
  * Shape every locale catalog implements.
@@ -46,6 +51,61 @@ export interface Messages {
   readonly placeholder: ConsolePlaceholderMessages
   /** Route-level loading, not-found and error states (P5). */
   readonly routeStates: RouteStateMessages
+  /**
+   * What the API's refusals are called here, keyed by `error.code` (TASK-0117).
+   *
+   * Exhaustive by type: a code added to `@shopping/shared` without a sentence in
+   * this catalog fails `pnpm typecheck` rather than rendering a blank line to
+   * whoever hit it.
+   */
+  readonly errors: ErrorMessages
+  /** Failures where the API never answered, so there is no code to look up. */
+  readonly apiFailures: Readonly<Record<ApiFailureReason, string>>
+  /** The product image widget (TASK-0033). */
+  readonly imageUpload: ImageUploadMessages
+}
+
+/**
+ * Everything the image widget renders.
+ *
+ * `list` is the shape `@shopping/ui` asks for: the component holds no copy, so
+ * the labels of every row control are here, in the app that owns the wording.
+ */
+export interface ImageUploadMessages {
+  readonly title: string
+  readonly description: string
+  /** What is allowed — formats, size cap, how many. Sits under the drop zone. */
+  readonly hint: string
+  readonly pickLabel: string
+  /** Replaces the label while a file is being dragged over the panel. */
+  readonly dropLabel: string
+  readonly fullNotice: string
+  readonly emptyDescription: string
+  readonly retryAllLabel: string
+  readonly rejectedTitle: string
+  readonly rejections: Readonly<Record<RejectionReason, string>>
+  /** Heading of the `ErrorNotice` shown for a failure nobody here can fix. */
+  readonly noticeTitle: string
+  readonly requestIdLabel: string
+  readonly requestIdHint: string
+  readonly copyLabel: string
+  readonly copiedLabel: string
+  readonly list: ImageUploadListLabels
+  /** One sentence per way an upload can fail on its own or at the bucket. */
+  readonly failures: Readonly<Record<UploadFailureKey, string>>
+  /**
+   * The development-only screen the widget can be operated on until TASK-0114
+   * mounts it in the product form (TASK-0033 4.11).
+   */
+  readonly preview: ImageUploadPreviewMessages
+}
+
+export interface ImageUploadPreviewMessages {
+  readonly title: string
+  readonly devOnlyNotice: string
+  readonly storeLabel: string
+  readonly outputTitle: string
+  readonly outputEmpty: string
 }
 
 export interface ConsoleLayoutMessages {
