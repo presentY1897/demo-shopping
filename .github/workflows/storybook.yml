@@ -1,0 +1,68 @@
+# Publishes the `@shopping/ui` Storybook to GitHub Pages.
+#
+# Why Pages and not Vercel: the design system has to be openable by anyone
+# reading the repository. Pages serves it publicly by default at a fixed address
+# tied to the repository name, so there is no deployment-protection setting to
+# get wrong and no per-deploy URL to keep up to date. TASK-0104 F6.
+#
+# Storybook builds with relative asset paths (`./assets/...`), so it runs from
+# the `/demo-shopping/` subpath Pages serves without a Vite `base` override.
+# That is verified, not assumed: `grep -c 'src="/' storybook-static/*.html` is 0.
+name: Storybook
+
+on:
+  push:
+    branches: [main]
+    # The design system is the only thing on this page. `packages/config` is in
+    # the list because the token layer lives there — a colour change there is a
+    # change to every story, and a Storybook built before it would be stale.
+    paths:
+      - 'packages/ui/**'
+      - 'packages/config/**'
+      - '.github/workflows/storybook.yml'
+  # So the site can be republished without an unrelated commit.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  # `deploy-pages` authenticates to the Pages service with an OIDC token rather
+  # than a stored secret.
+  id-token: write
+
+# One deploy at a time. `cancel-in-progress: false` because a half-finished
+# deploy would leave the published site in an unknown state — later pushes
+# queue instead.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Build Storybook
+        run: pnpm --filter @shopping/ui storybook:build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: packages/ui/storybook-static
+
+  deploy:
+    name: deploy
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

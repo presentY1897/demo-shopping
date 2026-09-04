@@ -130,8 +130,15 @@ Storybook 쪽은 `.storybook/preview.css` 가 `@source '../stories'` 로 따로 
 | F3 | 스토리 커버 | 컴포넌트 목록 대조 | 기본 컴포넌트 100% 스토리 존재 | [x] `test/story-coverage.spec.ts` 가 공개 export 27개를 CI 에서 강제 |
 | F4 | 4상태 | DataList·Table 스토리 | loading·empty·error·ready 전부 | [ ] **해당 컴포넌트가 아직 없다** — 아래 참조 |
 | F5 | a11y | 애드온 패널 + CI | 위반 0건 | [x] 스토리 91개 axe 위반 0 (`test/story-a11y.spec.tsx`) |
-| F6 | 배포 | 배포 URL 접속 | 정상 렌더 | [ ] 정적 빌드까지. 배포 대상은 계정·저장소 설정 필요 (R4) |
+| F6 | 배포 | 배포 URL 접속 | 정상 렌더 | [ ] 워크플로까지. `main` 머지 후 실제 접속으로 확정한다 (R4) |
 | F7 | 번들 영향 | 앱 빌드 크기 비교 | 증가 0 | [x] `.next/static` admin 761,127B → 761,127B (Popover 수정 전 기준으로 동일) |
+
+**F6 의 배포 대상을 GitHub Pages 로 정한 이유.** Vercel 에도 올려 두었으나, 배포마다 주소가
+바뀌고 배포별 URL 은 기본적으로 로그인 뒤에 있다. 이 저장소를 읽는 사람 대부분은 소유자가
+아니므로 **열리지 않는 주소는 없는 것과 같다**(D-211 과 같은 판단). Pages 는 공개가 기본이고
+주소가 저장소 이름에 묶여 고정이다. Storybook 이 상대 경로로 빌드하는 것을 확인했으므로
+`/demo-shopping/` 서브패스에서도 그대로 동작한다 — `grep -c 'src="/' storybook-static/*.html`
+이 0 이다.
 
 **F4 를 충족하지 못한 이유.** `packages/ui` 에는 `DataList` 도 `Table` 도 없다. TASK-0015 가 만든 것은
 기본 컨트롤 20종이고, 데이터 표시 컴포넌트는 목록 화면을 만드는 마일스톤에서 들어온다. 이 TASK 에서
@@ -178,7 +185,7 @@ CSS 에만 있고 앱 CSS 세 개 어디에도 없다. `apps/shop` 은 `/tokens`
 | R1 | 스토리가 낡아 실제와 어긋남 | 컴포넌트 TASK 의 완료 기준에 스토리 작성을 포함(`CLAUDE.md` 6장). `test/story-coverage.spec.ts` 가 빠진 컴포넌트를 CI 에서 잡는다 |
 | R2 | 배포 대상이 하나 더 늘어 관리 부담 | 정적 빌드라 배포 비용이 거의 없다. 실패해도 서비스에 영향 없음 |
 | R3 | 모노레포에서 Storybook 이 앱 설정과 충돌 | `packages/ui` 안에 격리하고 앱 설정을 참조하지 않는다 |
-| **R4** | **배포가 사용자 계정에 막힌다** | GitHub Pages 는 저장소 설정에서 Pages 소스를 Actions 로 바꿔야 하고, Vercel 은 프로젝트 생성이 필요하다. 둘 다 에이전트가 할 수 없다. **정적 빌드(`pnpm storybook:build`)까지 완료해 두고 F6 은 미충족으로 남긴다** |
+| **R4** | **배포가 사용자 계정에 막힌다** | **해소됨.** 사용자가 Pages 소스를 Actions 로 설정했으나 저장소에 배포 워크플로가 없어 한 번도 배포되지 않았다(`status: null`, URL 404). `.github/workflows/storybook.yml` 을 추가해 `main` push 시 자동 배포한다. 주소는 <https://presenty1897.github.io/demo-shopping/> 로 고정이다 |
 | **R5** | **jsdom 에서 `color-contrast` 를 잴 수 없다** | 그 규칙만 끄고 `test/color-tokens.spec.ts` 가 계속 강제한다. 브라우저의 애드온 패널에서는 정상 동작 |
 
 ## 8. 확정된 버전
