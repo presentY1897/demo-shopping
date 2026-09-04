@@ -1,6 +1,6 @@
 # Task 인덱스
 
-전체 **117개** TASK — 유효 **113개** + 폐기 4개(D-208 레이어 분할). **27개 완료**, TASK-0009 · TASK-0011 **진행중**(외부 계정 대기), **83개 승인됨**. 승인 대기 0개.
+전체 **117개** TASK — 유효 **113개** + 폐기 4개(D-208 레이어 분할). **28개 완료**, TASK-0009 · TASK-0011 **진행중**(외부 계정 대기), **82개 승인됨**. 승인 대기 0개.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
@@ -8,7 +8,7 @@
 | [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 3/7 |
 | [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, Radix 컴포넌트, 폼, 레이아웃, Storybook | **7/7 완료** |
 | [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점, 테스트 기반 | 4/14 |
-| [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | 6/13 |
+| [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | 7/13 |
 | [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | 0/9 |
 | [M07](./M07-cart-order/) 장바구니·주문 | 장바구니, 금액 계산 엔진, 재고 예약, 주문 2단 분할 | 0/7 |
 | [M08](./M08-payment/) 결제 | 프로바이더 추상화, 가상 카드, 토스 연동, 웹훅, 실패 복구 | 0/7 |
@@ -87,7 +87,7 @@
 
 </details>
 
-<details><summary><b>M05. 카탈로그</b> (6/13)</summary>
+<details><summary><b>M05. 카탈로그</b> (7/13)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -104,7 +104,7 @@
 | [TASK-0114](./M05-catalog/TASK-0114-product-editor-page.md) | 판매자 상품 편집기 화면 | 승인됨 |
 | [TASK-0115](./M05-catalog/TASK-0115-product-list-stock-api.md) | 판매자 상품 목록 · 재고 조정 API | 승인됨 |
 | [TASK-0116](./M05-catalog/TASK-0116-product-list-stock-page.md) | 판매자 상품 목록 · 재고 관리 화면 | 승인됨 |
-| [TASK-0036](./M05-catalog/TASK-0036-stock-ledger.md) | 재고 원장 | 승인됨 |
+| [TASK-0036](./M05-catalog/TASK-0036-stock-ledger.md) | 재고 원장 | 완료 |
 | [TASK-0037](./M05-catalog/TASK-0037-seed-data.md) | 시드 데이터 생성기 | 승인됨 |
 
 </details>

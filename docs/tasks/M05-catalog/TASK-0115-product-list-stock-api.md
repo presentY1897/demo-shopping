@@ -64,12 +64,21 @@
 | --- | --- | --- |
 | `GET /api/v1/seller/products?status=&categoryId=&stock=&q=&cursor=` | 상품 목록 (집계값) | `product.read:own` |
 | `GET /api/v1/seller/products/:id/variants` | Variant 목록 + 현재 재고 | `product.read:own` |
-| `GET /api/v1/seller/variants/:id/ledger?cursor=` | 재고 변동 이력 | `product.read:own` |
-| `POST /api/v1/seller/variants/:id/stock-adjustments` | 재고 조정 (조정량) | `product.write:own` |
+| ~~`GET /api/v1/seller/variants/:id/ledger`~~ → **`GET /api/v1/variants/:id/ledger`** | 재고 변동 이력 | `product.read:own` |
+| `POST /api/v1/variants/:id/stock-adjustments` | 재고 조정 (조정량) | `product.write:own` |
 | `POST /api/v1/seller/products/status` | 일괄 상태 변경 | `product.write:own` |
 | `POST /api/v1/seller/products/:id/duplicate` | 상품 복제 | `product.write:own` |
 
 **새 퍼미션은 없다.** `product.read` · `product.write` 를 `SELLER_OWNER:own` 으로 이미 가진다.
+
+**Variant 경로에서 `/seller` 를 뺐다.** [TASK-0036](./TASK-0036-stock-ledger.md) 이 원장 조회를
+`GET /api/v1/variants/:id/ledger` 로 먼저 열었고, 그것이 이 저장소의 관례와 맞다 — 컨트롤러가
+전부 리소스 이름을 쓴다(`attributes` · `categories` · `products` · `variants` · `uploads`).
+`/seller` 접두사를 쓰는 컨트롤러는 하나도 없다.
+
+**원장은 콘솔의 데이터가 아니라 Variant 의 데이터다.** 누가 읽을 수 있는지는 경로가 아니라
+퍼미션(`product.read:own`)이 정하고, 관리자가 같은 원장을 볼 때 경로가 달라질 이유가 없다.
+`products` 쪽 경로는 판매자 화면 전용 집계라 `/seller` 를 유지한다.
 
 ### 재고는 조정량으로 받는다
 
