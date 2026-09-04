@@ -241,11 +241,21 @@ describe('F4 — 속성 검증 연결', () => {
     expect(fieldsOf(refused.details)).toEqual(['attributes.material'])
   })
 
-  it('refuses a missing required attribute', async () => {
-    const refused = await failure(create({ attributes: {} }))
+  it('refuses a missing required attribute on a listing going on sale', async () => {
+    // TASK-0113 moved this from "every save" to "every save that ends up
+    // `ACTIVE`". A draft may be incomplete; a listing a buyer can see may not.
+    const refused = await failure(create({ attributes: {}, status: 'ACTIVE' }))
 
     expect(refused.status).toBe(400)
+    expect(refused.code).toBe('PRODUCT_ATTRIBUTES_REQUIRED')
     expect(fieldsOf(refused.details)).toEqual(['attributes.material'])
+  })
+
+  it('lets a draft leave a required attribute empty', async () => {
+    const product = await create({ attributes: {} })
+
+    expect(product.status).toBe('DRAFT')
+    expect(product.attributes).toEqual({})
   })
 
   it('refuses an undefined key', async () => {
