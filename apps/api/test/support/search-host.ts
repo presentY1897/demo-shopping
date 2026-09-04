@@ -49,3 +49,14 @@ export function searchHostForTests(): string {
 
   return `http://localhost:${port}`
 }
+
+/**
+ * The index this worker owns.
+ *
+ * One per vitest worker, for the same reason each worker has its own database:
+ * two spec files sharing an index cleared each other's documents mid-assertion,
+ * and the failures read as the search being broken.
+ */
+export function searchIndexForTests(): string {
+  return `products_test_${process.env.VITEST_WORKER_ID ?? '0'}`
+}

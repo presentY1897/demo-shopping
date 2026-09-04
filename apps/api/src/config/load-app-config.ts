@@ -1,3 +1,4 @@
+import { PRODUCTS_INDEX } from '../search/search-index-settings.js'
 import type { AppConfig } from './app-config.js'
 import type { AppOrigins } from './app-origins.js'
 import { resolveAppOrigins } from './app-origins.js'
@@ -63,6 +64,7 @@ function toAppConfig(env: Env, resolved: Resolved): AppConfig {
       host: env.MEILI_HOST,
       masterKey: env.MEILI_MASTER_KEY,
       timeoutMs: env.MEILI_HEALTH_TIMEOUT_MS,
+      productsIndex: PRODUCTS_INDEX,
     },
     storage: resolved.storage,
     googleOAuth: resolved.googleOAuth,

@@ -96,6 +96,37 @@ export const SYNONYMS: Readonly<Record<string, readonly string[]>> = {
   아우터: ['겉옷'],
 }
 
+/**
+ * 오타 허용 기준 (F2).
+ *
+ * **The default is written for English and is nearly inert in Korean.**
+ * Meilisearch allows one typo from five characters and two from nine, counted in
+ * characters — and Korean packs a syllable into one, so a three-syllable word is
+ * three characters and gets no tolerance at all.
+ *
+ * Measured against the fixture, one syllable substituted in each:
+ *
+ * | 질의 | 기본 (5 / 9) | 여기 (2 / 5) |
+ * | --- | --- | --- |
+ * | 레트루 → 레트로 | **0건** | 1건 |
+ * | 러니 → 러너 | **0건** | 1건 |
+ * | 발마간 → 발마칸 | 1건 | 1건 |
+ * | 더불 → 더블 | 1건 | 1건 |
+ *
+ * So the change is load-bearing: two of the four only work once the floor comes
+ * down. `1` was tried too and measured **identical** to `2` on every pair, so
+ * the more conservative number is kept — at one character every word is one edit
+ * from every other word, and nothing was gained by paying that.
+ *
+ * **`코투` → `코트` is not forgiven at any threshold**, which is the example
+ * TASK-0039 F2 happens to name. The task's 6장 records the measurement rather
+ * than the wish.
+ */
+export const TYPO_TOLERANCE = {
+  enabled: true,
+  minWordSizeForTypos: { oneTypo: 2, twoTypos: 5 },
+} as const
+
 /** The full settings body, given the attribute facets that exist today. */
 export function productsIndexSettings(attributeFacets: readonly string[]): Record<string, unknown> {
   return {
@@ -107,5 +138,9 @@ export function productsIndexSettings(attributeFacets: readonly string[]): Recor
     sortableAttributes: [...SORTABLE_ATTRIBUTES],
     rankingRules: [...RANKING_RULES],
     synonyms: SYNONYMS,
+    typoTolerance: {
+      ...TYPO_TOLERANCE,
+      minWordSizeForTypos: { ...TYPO_TOLERANCE.minWordSizeForTypos },
+    },
   }
 }

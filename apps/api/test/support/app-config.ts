@@ -124,6 +124,16 @@ export function testAppConfig({
       host: searchHost,
       masterKey: 'test-master-key',
       timeoutMs: 300,
+      /**
+       * One index per vitest worker.
+       *
+       * The same reasoning as the per-worker databases: two spec files that
+       * shared an index cleared each other's documents mid-assertion, and the
+       * failures read as the search being broken rather than as two tests
+       * standing on each other. Measured — running the two search specs together
+       * failed five assertions that both files pass alone.
+       */
+      productsIndex: `products_test_${process.env.VITEST_WORKER_ID ?? '0'}`,
     },
     storage,
     googleOAuth,

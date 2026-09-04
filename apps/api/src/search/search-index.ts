@@ -3,7 +3,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common'
 import type { AppConfig } from '../config/app-config.js'
 import { APP_CONFIG } from '../config/app-config.js'
 import type { ProductDocument } from './search-document.js'
-import { PRODUCTS_INDEX, PRODUCTS_PRIMARY_KEY } from './search-index-settings.js'
+import { PRODUCTS_PRIMARY_KEY } from './search-index-settings.js'
 
 /**
  * The search engine, behind an interface (TASK-0038 8장).
@@ -22,6 +22,13 @@ import { PRODUCTS_INDEX, PRODUCTS_PRIMARY_KEY } from './search-index-settings.js
  */
 export const SEARCH_INDEX = Symbol('SEARCH_INDEX')
 
+/** What the engine answers one search with. */
+export interface SearchAnswer {
+  readonly hits: readonly Record<string, unknown>[]
+  readonly total: number
+  readonly facets: Readonly<Record<string, Readonly<Record<string, number>>>>
+}
+
 export interface SearchIndex {
   /** Applies the index settings. Idempotent — Meilisearch diffs them itself. */
   configure: (settings: Record<string, unknown>) => Promise<void>
@@ -33,6 +40,15 @@ export interface SearchIndex {
   size: () => Promise<number | null>
   /** Empties the index without dropping its settings. */
   clear: () => Promise<void>
+  /** Runs one query. */
+  search: (request: {
+    readonly q: string
+    readonly filter: string | null
+    readonly sort: readonly string[]
+    readonly offset: number
+    readonly limit: number
+    readonly facets: readonly string[]
+  }) => Promise<SearchAnswer>
 }
 
 /** Meilisearch's own error body, as far as anything here cares. */
@@ -46,8 +62,13 @@ export class MeilisearchIndex implements SearchIndex {
 
   constructor(@Inject(APP_CONFIG) private readonly config: AppConfig) {}
 
+  /** The index this deployment reads and writes. One value in production. */
+  private get index(): string {
+    return this.config.search.productsIndex
+  }
+
   async configure(settings: Record<string, unknown>): Promise<void> {
-    await this.send('PATCH', `/indexes/${PRODUCTS_INDEX}/settings`, settings, {
+    await this.send('PATCH', `/indexes/${this.index}/settings`, settings, {
       // The index may not exist on a cold engine. Creating it first is one more
       // round trip that Meilisearch does for us on any write, so the settings
       // call is preceded by the cheapest write there is.
@@ -60,7 +81,7 @@ export class MeilisearchIndex implements SearchIndex {
 
     await this.send(
       'PUT',
-      `/indexes/${PRODUCTS_INDEX}/documents?primaryKey=${PRODUCTS_PRIMARY_KEY}`,
+      `/indexes/${this.index}/documents?primaryKey=${PRODUCTS_PRIMARY_KEY}`,
       documents,
     )
   }
@@ -68,12 +89,12 @@ export class MeilisearchIndex implements SearchIndex {
   async remove(ids: readonly string[]): Promise<void> {
     if (ids.length === 0) return
 
-    await this.send('POST', `/indexes/${PRODUCTS_INDEX}/documents/delete-batch`, ids)
+    await this.send('POST', `/indexes/${this.index}/documents/delete-batch`, ids)
   }
 
   async size(): Promise<number | null> {
     try {
-      const stats = await this.send('GET', `/indexes/${PRODUCTS_INDEX}/stats`, undefined)
+      const stats = await this.send('GET', `/indexes/${this.index}/stats`, undefined)
 
       if (typeof stats === 'object' && stats !== null && 'numberOfDocuments' in stats) {
         return Number(stats.numberOfDocuments)
@@ -91,12 +112,32 @@ export class MeilisearchIndex implements SearchIndex {
   }
 
   async clear(): Promise<void> {
-    await this.send('DELETE', `/indexes/${PRODUCTS_INDEX}/documents`, undefined)
+    await this.send('DELETE', `/indexes/${this.index}/documents`, undefined)
+  }
+
+  async search(request: {
+    readonly q: string
+    readonly filter: string | null
+    readonly sort: readonly string[]
+    readonly offset: number
+    readonly limit: number
+    readonly facets: readonly string[]
+  }): Promise<SearchAnswer> {
+    const body = await this.send('POST', `/indexes/${this.index}/search`, {
+      q: request.q,
+      offset: request.offset,
+      limit: request.limit,
+      ...(request.filter === null ? {} : { filter: request.filter }),
+      ...(request.sort.length === 0 ? {} : { sort: [...request.sort] }),
+      ...(request.facets.length === 0 ? {} : { facets: [...request.facets] }),
+    })
+
+    return readAnswer(body)
   }
 
   private async ensureIndex(): Promise<void> {
     await this.request('POST', '/indexes', {
-      uid: PRODUCTS_INDEX,
+      uid: this.index,
       primaryKey: PRODUCTS_PRIMARY_KEY,
     }).catch(() => {
       // Already there. Meilisearch answers 409 and there is nothing to do.
@@ -136,4 +177,21 @@ export class MeilisearchIndex implements SearchIndex {
 
     return response.json()
   }
+}
+
+/** Reads the parts of Meilisearch's answer this API uses, defensively. */
+function readAnswer(body: unknown): SearchAnswer {
+  if (typeof body !== 'object' || body === null) return { hits: [], total: 0, facets: {} }
+
+  const record = body as Record<string, unknown>
+  const hits = Array.isArray(record.hits) ? (record.hits as Record<string, unknown>[]) : []
+  // `estimatedTotalHits` is what a plain search answers; `totalHits` appears when
+  // exhaustive counting is on. Whichever came, the caller wants a number.
+  const total = Number(record.totalHits ?? record.estimatedTotalHits ?? hits.length)
+  const facets =
+    typeof record.facetDistribution === 'object' && record.facetDistribution !== null
+      ? (record.facetDistribution as Readonly<Record<string, Readonly<Record<string, number>>>>)
+      : {}
+
+  return { hits, total: Number.isFinite(total) ? total : hits.length, facets }
 }

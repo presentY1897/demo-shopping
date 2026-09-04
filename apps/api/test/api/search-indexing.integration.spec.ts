@@ -15,7 +15,6 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import type { AppConfig } from '../../src/config/app-config.js'
 import { APP_CONFIG } from '../../src/config/app-config.js'
 
-import { PRODUCTS_INDEX } from '../../src/search/search-index-settings.js'
 import type { SearchIndex } from '../../src/search/search-index.js'
 import { SEARCH_INDEX } from '../../src/search/search-index.js'
 import { SearchIndexerService } from '../../src/search/search-indexer.service.js'
@@ -23,7 +22,11 @@ import { SearchOutboxService } from '../../src/search/search-outbox.service.js'
 import { PrismaService } from '../../src/prisma/prisma.service.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
-import { searchHostForTests, searchKeyForTests } from '../support/search-host.js'
+import {
+  searchHostForTests,
+  searchIndexForTests,
+  searchKeyForTests,
+} from '../support/search-host.js'
 import {
   createAttributeDefinition,
   createCategory,
@@ -45,7 +48,12 @@ const db = useDatabase()
 const api = useApiApp({
   database: db,
   config: {
-    search: { host: searchHostForTests(), masterKey: searchKeyForTests(), timeoutMs: 5_000 },
+    search: {
+      host: searchHostForTests(),
+      masterKey: searchKeyForTests(),
+      timeoutMs: 5_000,
+      productsIndex: searchIndexForTests(),
+    },
   },
 })
 
@@ -102,7 +110,7 @@ async function settled(): Promise<void> {
 
 /** A raw search, so the assertions do not depend on TASK-0039's API. */
 async function search(query: string, filter?: string): Promise<readonly string[]> {
-  const response = await fetch(`${searchHost()}/indexes/${PRODUCTS_INDEX}/search`, {
+  const response = await fetch(`${searchHost()}/indexes/${searchIndexForTests()}/search`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', ...authHeaders() },
     body: JSON.stringify({ q: query, limit: 50, ...(filter === undefined ? {} : { filter }) }),

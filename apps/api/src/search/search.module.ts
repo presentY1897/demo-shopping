@@ -3,6 +3,8 @@ import { Module } from '@nestjs/common'
 import { MeilisearchIndex, SEARCH_INDEX } from './search-index.js'
 import { SearchIndexerService } from './search-indexer.service.js'
 import { SearchOutboxService } from './search-outbox.service.js'
+import { SearchController } from './search.controller.js'
+import { SearchService } from './search.service.js'
 
 /**
  * The index and the pipeline that fills it (TASK-0038).
@@ -14,11 +16,13 @@ import { SearchOutboxService } from './search-outbox.service.js'
  * reindex command ask questions of.
  */
 @Module({
+  controllers: [SearchController],
   providers: [
+    SearchService,
     SearchOutboxService,
     SearchIndexerService,
     { provide: SEARCH_INDEX, useClass: MeilisearchIndex },
   ],
-  exports: [SearchOutboxService, SearchIndexerService, SEARCH_INDEX],
+  exports: [SearchOutboxService, SearchIndexerService, SearchService, SEARCH_INDEX],
 })
 export class SearchModule {}
