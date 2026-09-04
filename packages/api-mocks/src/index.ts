@@ -29,12 +29,17 @@ export {
   mockSession,
   resetAttributeStore,
   resetCategoryStore,
+  resetSellerStore,
   resetSessionStore,
   resetUploadStore,
+  sellerHandlers,
+  sellerRequests,
+  sellerRowSnapshot,
   sessionHandlers,
   uploadHandlers,
   userRolesHandlers,
 } from './handlers'
+export type { SellerRequestRecord } from './handlers'
 export { mockMethods, mockPaths, MOCK_STORAGE_ORIGIN, MOCK_STORAGE_PUBLIC_ORIGIN } from './paths'
 export type { MockMethod, MockPath } from './paths'
 export { fixtureRegistry } from './registry'
