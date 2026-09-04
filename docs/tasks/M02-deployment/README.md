@@ -6,7 +6,7 @@
 
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
-| [TASK-0008](./TASK-0008-domain-dns.md) | 도메인 확보 · DNS 구성 | 승인됨 | M01 |
+| [TASK-0008](./TASK-0008-domain-dns.md) | 도메인 확보 · DNS 구성 | 완료 | M01 |
 | [TASK-0009](./TASK-0009-backend-deploy.md) | 백엔드 배포 (API·DB·검색) | 승인됨 | M01 |
 | [TASK-0010](./TASK-0010-frontend-deploy.md) | 프론트 배포 (Vercel × 3) | 승인됨 | 0008, 0009 |
 | [TASK-0011](./TASK-0011-object-storage.md) | 오브젝트 스토리지 (R2) | 진행중 | 0009 |

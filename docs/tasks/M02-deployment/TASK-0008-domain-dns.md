@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M02 배포 파이프라인 |
-| 상태 | 승인됨 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-02 |
 | 브랜치 | `chore/domain-dns` |
 | 선행 작업 | M01 완료 |
@@ -27,9 +27,9 @@
 
 ## 3. 요구사항
 
-- [ ] 네 서브도메인이 DNS 에서 해석된다
-- [ ] 루트 도메인 접속 시 `shop` 으로 리다이렉트된다
-- [ ] 모든 서브도메인이 HTTPS 로 접근된다
+- [x] 네 서브도메인이 DNS 에서 해석된다 — `shop`·`seller`·`admin`(Vercel) · `api`(Render) · `cdn`(Cloudflare)
+- [x] 루트 도메인 접속 시 `shop` 으로 리다이렉트된다 — 302, 경로·쿼리 보존
+- [x] 모든 서브도메인이 HTTPS 로 접근된다 — TLS 1.3, 세 앱 모두 익명 200
 
 ## 4. 설계
 
@@ -108,7 +108,7 @@ R2 도 Cloudflare 이므로 도메인·스토리지·DNS 를 한 계정에서 �
 ## 5. 구현 계획
 
 1. 서브도메인 레코드 생성 (연결 대상은 이후 TASK 에서 지정)
-2. **모든 레코드를 DNS only(회색 구름)로 설정** — Vercel·Render 대상
+2. **Vercel 3건은 DNS only(회색 구름)** — `api`·`cdn` 은 프록시 (4.2)
 3. 루트 리다이렉트 규칙
 4. SSL 확인
 
@@ -120,14 +120,33 @@ R2 도 Cloudflare 이므로 도메인·스토리지·DNS 를 한 계정에서 �
 | --- | --- | --- | --- | --- |
 | F1 | DNS 해석 | `getent hosts <서브도메인>`. **이 머신에 `dig`·`nslookup`·`host` 가 없다** | 전부 응답 | [x] `shop`·`seller` → 64.29.17.65 / `admin` → 64.29.17.1 (Vercel) · `api` → 216.24.57.15 (Render) · `cdn` → Cloudflare AAAA |
 | F2 | HTTPS | 각 서브도메인 익명 `curl` | 인증서 유효, 200 | [x] 세 앱 모두 **200 + 실제 화면** — `구매자 앱` · `판매자 콘솔` · `관리자 콘솔`. TLS 1.3. `api`·`cdn` 의 루트 404 는 해당 경로에 리소스가 없는 것이라 정상 |
-| F3 | 루트 리다이렉트 | 루트 도메인 접속 | `shop` 으로 301/302 | [ ] **미충족.** `demo-shopping.com`·`www` 둘 다 레코드가 없어 해석되지 않는다 |
+| F3 | 루트 리다이렉트 | 루트 도메인 접속 | `shop` 으로 301/302 | [x] **302** → `https://shop.demo-shopping.com/`. 경로·쿼리 보존까지 확인 — `/products/123` → `/products/123`, `/search?q=shirt` → `/search?q=shirt`. 최종 도착 `<title>데모 마켓</title>` |
 | F4 | 프록시 설정 | Cloudflare 대시보드 확인 | **Vercel 3건이 DNS only.** `api` 는 프록시 허용 (4.2) | [x] Vercel 3건은 Vercel IP 로 직접 해석되므로 DNS only 가 맞다. `api`·`cdn` 은 Cloudflare 응답 |
 | F5 | 오리진 구간 암호화 | Cloudflare → SSL/TLS → Overview | **Flexible 이 아님** (4.2) | [x] `Full` — 오리진 구간이 HTTPS 다. `Full (strict)` 상향은 4.2 의 선행 확인 후 |
 
-**F3 만 남았다.** 루트 도메인을 `shop` 으로 보내는 리다이렉트가 없다. Cloudflare 의 **Redirect
-Rules**(무료) 로 `demo-shopping.com/*` → `https://shop.demo-shopping.com/$1` 301 을 만들거나,
-Vercel 의 shop 프로젝트에 루트 도메인을 추가하고 Redirect 로 지정하면 된다. 후자는 루트에
-CNAME 을 걸 수 없어(CNAME flattening 필요) Cloudflare 쪽이 단순하다.
+### F3 — 루트에는 CNAME 을 걸 수 없다
+
+DNS 표준상 루트 도메인(`@`)에는 SOA·NS 레코드가 이미 있어 **CNAME 과 공존할 수 없다.** 그래서
+서브도메인처럼 `CNAME @ → cname.vercel-dns.com` 으로 해결되지 않는다.
+
+Cloudflare 의 **Redirect Rules**(무료)로 처리했다. 규칙이 동작하려면 그 호스트명이 Cloudflare 로
+들어와야 하므로 **프록시된 자리표시자 레코드**가 하나 필요하다.
+
+| 단계 | 설정 |
+| --- | --- |
+| DNS | `A` · `@` · `192.0.2.1` · **프록시 켬(주황)**. RFC 5737 문서용 대역이라 아무 데도 가지 않는다 — 요청은 엣지에서 리다이렉트로 끝난다 |
+| Rules | Wildcard pattern `https://demo-shopping.com/*` → `https://shop.demo-shopping.com/${1}` · **302** · Preserve query string 켬 |
+
+**`302` 를 쓴 이유.** `301` 은 브라우저가 영구 캐시하므로, 나중에 루트를 포트폴리오 랜딩
+페이지로 바꾸면 이미 방문한 사람은 캐시를 지우기 전까지 새 페이지를 못 본다. 랜딩 페이지를
+둘지는 **M15 의 TASK-0100 에서 판단**한다 — 그때 세 앱이 채워져 있어야 무엇을 담을지 정할 수
+있다. 검색 유입을 노리는 서비스가 아니므로 302 로 잃는 SEO 신호는 문제가 되지 않는다.
+
+**`www` 는 하지 않았다.** F3 의 기준은 루트 도메인이고, `www` 는 규칙과 자리표시자 레코드를
+하나씩 더 만들면 같은 방식으로 붙는다. 지금 `www.demo-shopping.com` 은 해석되지 않는다.
+
+> **주의**: 와일드카드를 `https://*demo-shopping.com/*` 로 쓰면 `shop.demo-shopping.com` 까지
+> 매칭되어 무한 리다이렉트가 된다. 호스트마다 규칙을 따로 둔다.
 
 ### 6.2 품질 게이트
 
@@ -139,15 +158,16 @@ CNAME 을 걸 수 없어(CNAME flattening 필요) Cloudflare 쪽이 단순하다
 
 | # | 기준 | 충족 |
 | --- | --- | --- |
-| D1 | 상태 갱신 + 인덱스 2곳 | [ ] |
-| 추가 | `docs/design/pages.md` 의 `<도메인>` 자리표시자를 `demo-shopping.com` 으로 치환 | [ ] |
+| D1 | 상태 갱신 + 인덱스 2곳 | [x] |
+| 추가 | `docs/design/pages.md` 의 `<도메인>` 자리표시자를 `demo-shopping.com` 으로 치환 | [x] 앞선 작업에서 이미 치환됨 — `grep -c '<도메인>' docs/design/*.md` 가 0 |
 
 ## 7. 리스크 / 열린 질문
 
 | # | 내용 | 대응 |
 | --- | --- | --- |
 | R1 | ~~네임서버 전파 지연~~ | Cloudflare 등록이라 해당 없음 |
-| R2 | Cloudflare 프록시를 켜두면 Vercel SSL·캐시가 어긋남 | 레코드 생성 시 **DNS only** 확인. F4 로 검증 |
+| R2 | Cloudflare 프록시를 켜두면 Vercel SSL·캐시가 어긋남 | Vercel 3건만 **DNS only**. F4 로 검증. `api`·`cdn` 은 프록시가 정상이며 이유는 4.2 |
+| R3 | 루트 리다이렉트를 301 로 박으면 되돌리기 어렵다 | **302** 로 둔다. 랜딩 페이지 판단은 M15 TASK-0100 |
 
 ## 8. 확정된 버전
 
@@ -158,3 +178,5 @@ CNAME 을 걸 수 없어(CNAME flattening 필요) Cloudflare 쪽이 단순하다
 | 날짜 | 내용 |
 | --- | --- |
 | 2026-09-02 | 최초 작성 |
+| 2026-09-04 | 4.1·4.2 신설 — 실제 레코드 값과 `api` 프록시 판단 근거. F5(오리진 구간 암호화) 추가 |
+| 2026-09-04 | **완료.** 세 서브도메인 DNS 설정 후 익명 실측으로 F1·F2·F4·F5 충족. 루트 리다이렉트(302)로 F3 충족 |
