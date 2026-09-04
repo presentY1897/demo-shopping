@@ -152,6 +152,12 @@ describe('the call itself', () => {
     render(<HomePage />)
     await screen.findByText(healthOk.version)
 
-    expect(appIdsSeen).toEqual(['shop'])
+    // Asserted as a set: how many calls a screen makes is its own business and
+    // changes with it — the session renewal joined this one on boot in
+    // TASK-0023. What must never change is that every one of them carries the
+    // id, because that is what selects this app's refresh cookie on an API all
+    // three share (D-218).
+    expect(appIdsSeen.length).toBeGreaterThan(0)
+    expect([...new Set(appIdsSeen)]).toEqual(['shop'])
   })
 })
