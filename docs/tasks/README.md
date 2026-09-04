@@ -107,7 +107,7 @@
 | [TASK-0115](./M05-catalog/TASK-0115-product-list-stock-api.md) | 판매자 상품 목록 · 재고 조정 API | 완료 |
 | [TASK-0116](./M05-catalog/TASK-0116-product-list-stock-page.md) | 판매자 상품 목록 · 재고 관리 화면 | 승인됨 |
 | [TASK-0036](./M05-catalog/TASK-0036-stock-ledger.md) | 재고 원장 | 완료 |
-| [TASK-0037](./M05-catalog/TASK-0037-seed-data.md) | 시드 데이터 생성기 | 승인됨 |
+| [TASK-0037](./M05-catalog/TASK-0037-seed-data.md) | 시드 데이터 생성기 | 완료 |
 
 </details>
 

@@ -72,10 +72,11 @@ const SELLER_ROLES: readonly Role[] = ['BUYER', 'SELLER_OWNER']
  * (so it may own a store), and it is still impossible for it to be a person's
  * account by accident.
  *
- * The alternative — `isDemo: true` with a far-future expiry — was rejected: the
- * demo catalogue is *cloned from* these stores, so making them demo stores
- * would have demo accounts copying from demo accounts, and one sweep bug would
- * take the seed catalogue with it.
+ * The alternative — issuing them the way `demo/demo-account.ts` issues a demo
+ * visitor, which the check exempts but which must carry an expiry — was
+ * rejected: the demo catalogue is *cloned from* these stores, so they would be
+ * demo accounts copying from demo accounts, and one sweep bug would take the
+ * seed catalogue with it.
  */
 function seedGoogleSub(slug: string): string {
   return `seed:${slug}`

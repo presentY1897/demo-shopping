@@ -22,4 +22,4 @@
 | [TASK-0115](./TASK-0115-product-list-stock-api.md) | 판매자 상품 목록 · 재고 조정 API | 완료 | 0113, 0036, 0106 |
 | [TASK-0116](./TASK-0116-product-list-stock-page.md) | 판매자 상품 목록 · 재고 관리 화면 | 승인됨 | 0115, 0016, 0019, 0023, 0107 |
 | [TASK-0036](./TASK-0036-stock-ledger.md) | 재고 원장 | 완료 | 0032 |
-| [TASK-0037](./TASK-0037-seed-data.md) | 시드 데이터 생성기 | 승인됨 | **0113**, 0036 |
+| [TASK-0037](./TASK-0037-seed-data.md) | 시드 데이터 생성기 | 완료 | 0113, 0036 |
