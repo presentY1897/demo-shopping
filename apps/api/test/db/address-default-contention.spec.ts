@@ -108,6 +108,15 @@ async function beginAndClear(connection: PoolClient, userId: string): Promise<vo
   )
 }
 
+/** Narrows an already-settled rejection, for a promise handled at creation. */
+function settledRefusal(error: unknown): DatabaseError {
+  if (!(error instanceof DatabaseError)) {
+    throw new Error(`DB 가 거부할 것으로 기대했지만 다른 결과가 나왔습니다: ${String(error)}`)
+  }
+
+  return error
+}
+
 /** Runs `work`, asserting it was the database that refused, and how. */
 async function refusal(work: Promise<unknown>): Promise<DatabaseError> {
   const error: unknown = await work.then(
@@ -146,14 +155,23 @@ describe('A7 — 같은 계정의 배송지 둘을 동시에 기본으로 지정
         // so this **blocks** until A resolves — it cannot fail yet, because A
         // might still roll back. Not awaited for that reason.
         const pid = await backendPidOf(b)
-        const blocked = b.query('UPDATE "Address" SET "isDefault" = true WHERE "id" = $1', [
-          second.id,
-        ])
+        // **The rejection is captured here, not awaited later.** This statement
+        // does not settle until `a` commits, and between that commit resolving
+        // and an `await` on this promise there is a turn of the loop with the
+        // rejection unhandled — Node reports it, and the run fails with an error
+        // no assertion produced. Attaching the handler at creation removes the
+        // window entirely. It appeared only under CI's timing.
+        const blocked = b
+          .query('UPDATE "Address" SET "isDefault" = true WHERE "id" = $1', [second.id])
+          .then(
+            () => null,
+            (error: unknown) => error,
+          )
 
         await awaitBlocked(db.query, pid)
         await a.query('COMMIT')
 
-        const loser = await refusal(blocked)
+        const loser = settledRefusal(await blocked)
         expect(loser.code).toBe(UNIQUE_VIOLATION)
         expect(loser.constraint).toBe(INDEX)
 
@@ -180,14 +198,18 @@ describe('A7 — 같은 계정의 배송지 둘을 동시에 기본으로 지정
         await a.query('UPDATE "Address" SET "isDefault" = true WHERE "id" = $1', [first.id])
 
         const pid = await backendPidOf(b)
-        const blocked = b.query('UPDATE "Address" SET "isDefault" = true WHERE "id" = $1', [
-          second.id,
-        ])
+        // Same reason as above: attach before the statement can settle.
+        const blocked = b
+          .query('UPDATE "Address" SET "isDefault" = true WHERE "id" = $1', [second.id])
+          .then(
+            () => null,
+            (error: unknown) => error,
+          )
 
         await awaitBlocked(db.query, pid)
         await a.query('ROLLBACK')
 
-        await blocked
+        expect(await blocked).toBeNull()
         await b.query('COMMIT')
       })
     })
