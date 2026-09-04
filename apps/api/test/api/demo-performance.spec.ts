@@ -66,6 +66,21 @@ function issue(role: string, app: string, ip: string): Promise<Response> {
  */
 const SAMPLES = 50
 
+/**
+ * How long the whole sampling loop may take, as opposed to one request.
+ *
+ * A p95 needs samples, and fifty of an operation that clones twelve products
+ * with their options, variants and images is **seconds of wall clock even when
+ * every one of them is fast**. Vitest's five-second default is a budget for a
+ * single call, and it cut this file short in CI while the thing being measured
+ * was comfortably inside its own 300ms threshold.
+ *
+ * Generous on purpose: what this guards against is a hang, not slowness — the
+ * assertion below is what fails when the endpoint gets slow, and it names the
+ * number it wants.
+ */
+const SAMPLING_BUDGET_MS = 180_000
+
 function p95Of(durations: readonly number[]): number {
   const sorted = [...durations].sort((left, right) => left - right)
 
@@ -150,7 +165,7 @@ async function catalogueStatementsDuring(work: () => Promise<unknown>): Promise<
 }
 
 describe('발급의 응답 시간', () => {
-  it('구매자 발급이 300ms 안에 끝난다 (A1)', async () => {
+  it('구매자 발급이 300ms 안에 끝난다 (A1)', { timeout: SAMPLING_BUDGET_MS }, async () => {
     const durations: number[] = []
 
     for (let sample = 0; sample < SAMPLES; sample += 1) {
@@ -165,26 +180,30 @@ describe('발급의 응답 시간', () => {
     expect(p95Of(durations)).toBeLessThan(300)
   })
 
-  it('열두 개를 복제하는 판매자 발급도 300ms 안에 끝난다 (A1 · R2)', async () => {
-    await bulkCatalogue(DEMO_PRODUCT_COUNT * 2, 'perf')
+  it(
+    '열두 개를 복제하는 판매자 발급도 300ms 안에 끝난다 (A1 · R2)',
+    { timeout: SAMPLING_BUDGET_MS },
+    async () => {
+      await bulkCatalogue(DEMO_PRODUCT_COUNT * 2, 'perf')
 
-    const durations: number[] = []
+      const durations: number[] = []
 
-    for (let sample = 0; sample < SAMPLES; sample += 1) {
-      const started = performance.now()
-      const response = await issue('SELLER', 'seller', addressFor('198.18', sample))
+      for (let sample = 0; sample < SAMPLES; sample += 1) {
+        const started = performance.now()
+        const response = await issue('SELLER', 'seller', addressFor('198.18', sample))
 
-      durations.push(performance.now() - started)
-      expect(response.status).toBe(200)
-      await response.text()
-    }
+        durations.push(performance.now() - started)
+        expect(response.status).toBe(200)
+        await response.text()
+      }
 
-    expect(p95Of(durations)).toBeLessThan(300)
-  })
+      expect(p95Of(durations)).toBeLessThan(300)
+    },
+  )
 })
 
 describe('복제의 쿼리 수', () => {
-  it('원본이 늘어도 읽기 쿼리 수가 늘지 않는다 (A5)', async () => {
+  it('원본이 늘어도 읽기 쿼리 수가 늘지 않는다 (A5)', { timeout: SAMPLING_BUDGET_MS }, async () => {
     await bulkCatalogue(2, 'few')
 
     const few = await catalogueStatementsDuring(async () => {
