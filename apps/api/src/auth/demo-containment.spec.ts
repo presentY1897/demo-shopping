@@ -42,6 +42,14 @@ const ALLOWED = [
   // each other, so reading the one that a screen actually needs costs nothing
   // and keeps this list one entry long (TASK-0024 4.5).
   'apps/api/src/demo/demo-account.ts',
+  // TASK-0025, and the same review. The sweep has to *find* demo accounts, and
+  // `isDemo` is the guard that keeps a real one out of a `deleteMany` — R1 names
+  // "삭제 범위 오류로 공용 데이터 손실" as the risk and asks that every statement
+  // carry it. Reading the flag here is the point, not an oversight.
+  //
+  // Nothing else in that task names it: the plan is a list of tables, the health
+  // reporter reads a timestamp, and the force-expiry endpoint narrows by id.
+  'apps/api/src/demo/demo-cleanup.service.ts',
 ] as const
 
 const SCANNED = ['apps/api/src', 'packages/shared/src'] as const
