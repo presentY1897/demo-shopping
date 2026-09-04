@@ -182,6 +182,8 @@ export const ko: Messages = {
     emptyTitle: '이 카테고리에는 아직 속성이 없습니다',
     emptyDescription:
       '속성을 추가하면 판매자의 상품 등록 폼에 바로 나타나고, 하위 카테고리도 함께 물려받습니다.',
+    noCategoryTitle: '아직 카테고리가 없습니다',
+    noCategoryDescription: '속성은 카테고리에 붙습니다. 카테고리 관리에서 먼저 하나 만들어주세요.',
     errorTitle: '속성을 불러오지 못했습니다',
     retryLabel: '다시 불러오기',
     listLabel: '이 카테고리에 적용되는 속성',

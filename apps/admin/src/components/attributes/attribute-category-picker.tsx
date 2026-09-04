@@ -33,6 +33,11 @@ export function AttributeCategoryPicker({
 }: AttributeCategoryPickerProps) {
   const labelId = useId()
 
+  // Nothing to offer yet — either the tree is still arriving or the catalogue is
+  // empty. Mounting the control now would also make it uncontrolled for one
+  // render and controlled for the next, which React rightly complains about.
+  if (choices.length === 0) return null
+
   const options = choices.map((choice) => ({
     value: String(choice.id),
     label:

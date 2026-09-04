@@ -120,17 +120,26 @@ export function AttributeFormPanel({
    * `useForm` owns the state, so watching the values object is the one place
    * that cannot miss a change. The `null` on unmount is what takes the draft out
    * of the preview when the panel closes.
+   *
+   * **A definition with no name is not previewed.** The generated control would
+   * take its accessible name from the label and its identity from the key, so an
+   * empty one produces a combobox nothing can address — an axe `button-name`
+   * violation the moment a type is chosen, before a single character of the name
+   * is typed. There is nothing to show until there is something to call it.
    */
   useEffect(() => {
-    if (type === '') {
+    const key = asString(values.key).trim()
+    const label = asString(values.label).trim()
+
+    if (type === '' || key === '' || label === '') {
       onDraftChange(null)
       return
     }
 
     onDraftChange({
       id: editing?.id ?? null,
-      key: asString(values.key),
-      label: asString(values.label),
+      key,
+      label,
       type,
       options: asOptions(values.options),
       isRequired: values.isRequired === true,

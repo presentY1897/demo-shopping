@@ -322,6 +322,9 @@ export interface AttributeMessages {
   readonly loadingLabel: string
   readonly emptyTitle: string
   readonly emptyDescription: string
+  /** There is no category to define anything on yet — a different emptiness. */
+  readonly noCategoryTitle: string
+  readonly noCategoryDescription: string
   readonly errorTitle: string
   readonly retryLabel: string
   /** Names the table and the region that scrolls it. */

@@ -380,6 +380,10 @@ export function useAttributeConsole(): AttributeConsole {
   const state = useMemo<AttributeListState>(() => {
     if (tree.status === 'loading') return { status: 'loading' }
     if (tree.status === 'error') return { status: 'error', failure: tree.failure }
+    // No categories at all: nothing was ever going to be asked for, so this is
+    // an answer rather than a wait. Without it the screen would spin forever on
+    // a catalogue nobody has started yet.
+    if (tree.choices.length === 0) return { status: 'ready', attributes: [] }
 
     return answered.categoryId === categoryId ? answered.state : { status: 'loading' }
   }, [answered, categoryId, tree])
