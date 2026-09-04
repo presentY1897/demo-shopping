@@ -2,10 +2,11 @@
 
 import type { OauthResult } from '@shopping/shared'
 import { parseOauthResult } from '@shopping/shared'
-import { Button, buttonClassName, ErrorNotice, GuardedButton } from '@shopping/ui/components'
+import { Button, buttonClassName, ErrorNotice } from '@shopping/ui/components'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
+import { DemoIssueButton } from '@/components/demo/demo-issue-button'
 import { useAuth } from '@/lib/auth/auth-context'
 import {
   HOME_PATH,
@@ -15,7 +16,7 @@ import {
   takeNextPath,
 } from '@/lib/auth/next-path'
 import { googleSignInHref } from '@/lib/auth/sign-in'
-import type { AuthMessages } from '@/messages'
+import type { AuthMessages, DemoMessages } from '@/messages'
 
 /**
  * The sign-in screen, and the four things it can be told (TASK-0023 4장).
@@ -36,7 +37,13 @@ import type { AuthMessages } from '@/messages'
  * `/login` carries no query at all and also parses to `null`, and treating that
  * as a mangled round trip would greet every visitor with an error.
  */
-export function SignInScreen({ messages }: { readonly messages: AuthMessages }) {
+export function SignInScreen({
+  messages,
+  demo,
+}: {
+  readonly messages: AuthMessages
+  readonly demo: DemoMessages
+}) {
   const params = useSearchParams()
   const router = useRouter()
   const { state } = useAuth()
@@ -80,7 +87,13 @@ export function SignInScreen({ messages }: { readonly messages: AuthMessages }) 
       {state.status === 'signedIn' && !succeeded ? (
         <SignedIn messages={messages} onContinue={() => router.push(next)} />
       ) : (
-        <SignInActions messages={messages} />
+        <SignInActions
+          demo={demo}
+          messages={messages}
+          onSignedIn={() => {
+            router.replace(next)
+          }}
+        />
       )}
     </div>
   )
@@ -160,11 +173,22 @@ function SignedIn({
  * The buttons.
  *
  * Google is an `<a>`, not a `<button>`: the endpoint answers 302 to a consent
- * screen, so the *browser* has to make the trip. The demo entry is a blocked
- * `GuardedButton` rather than a hidden one, because the point of the demo is
- * that the feature exists — TASK-0024 replaces it with a working control.
+ * screen, so the *browser* has to make the trip. The demo entry **is** a button,
+ * because it is one `fetch` and a renewal and the visitor never leaves this page
+ * — TASK-0023 left a blocked `GuardedButton` here and TASK-0024 replaced it.
+ *
+ * A configuration failure hides both: neither can work without an API address,
+ * and offering one of them would be offering a button that throws.
  */
-function SignInActions({ messages }: { readonly messages: AuthMessages }) {
+function SignInActions({
+  messages,
+  demo,
+  onSignedIn,
+}: {
+  readonly messages: AuthMessages
+  readonly demo: DemoMessages
+  readonly onSignedIn: () => void
+}) {
   const href = signInUrl()
 
   if (href === null) {
@@ -182,9 +206,7 @@ function SignInActions({ messages }: { readonly messages: AuthMessages }) {
         {messages.signIn.googleLabel}
       </a>
 
-      <GuardedButton blocked reason={messages.signIn.demoReason} size="lg" variant="outline">
-        {messages.signIn.demoLabel}
-      </GuardedButton>
+      <DemoIssueButton demo={demo} messages={messages} onSignedIn={onSignedIn} />
     </div>
   )
 }
