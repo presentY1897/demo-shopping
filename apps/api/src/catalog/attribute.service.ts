@@ -233,6 +233,8 @@ export class AttributeService {
           })),
         })
       }
+
+      await this.refuseNarrowingInUse(stored, input.options)
     }
 
     const updated = await this.prisma.$queryRaw<AttributeDefinition[]>`
@@ -280,7 +282,9 @@ export class AttributeService {
   async remove(principal: RequestPrincipal, id: number): Promise<AttributeResponse> {
     assertResourceAccess(principal, 'catalog.delete', platformOwnership)
 
-    await this.mustExist(this.prisma, id)
+    const stored = await this.mustExist(this.prisma, id)
+
+    await this.refuseRemovalInUse(stored)
 
     const now = this.now()
     const removed = await this.prisma.$queryRaw<AttributeDefinition[]>`
@@ -466,6 +470,94 @@ export class AttributeService {
     `
 
     return row?.next ?? 0
+  }
+
+  /**
+   * Refuses to retire a definition that live products are still standing on
+   * (TASK-0030 R2).
+   *
+   * TASK-0030 could not write this: `Product` did not exist yet, so no value
+   * could be orphaned and there was nothing to check. It arrives with
+   * TASK-0032, and it is the difference between a soft delete that keeps old
+   * values explainable and one that leaves a `Product.attributes` key nothing
+   * in the database describes.
+   *
+   * "Still standing on" is the definition's own category **and everything
+   * below it**, because that is where the definition applies (TASK-0030 4.3).
+   */
+  private async refuseRemovalInUse(stored: StoredDefinition): Promise<void> {
+    const [row] = await this.prisma.$queryRaw<{ used: boolean }[]>`
+      SELECT EXISTS (
+        SELECT 1
+          FROM "Product" p
+          JOIN "Category" c ON c."id" = p."categoryId"
+         WHERE p."deletedAt" IS NULL
+           AND c."path" LIKE (
+                 SELECT d."path" FROM "Category" d WHERE d."id" = ${stored.categoryId}::int
+               ) || '%'
+           AND jsonb_exists(p."attributes", ${stored.key}::text)
+      ) AS "used"
+    `
+
+    if (row?.used !== true) return
+
+    throw new ConflictException(
+      '이 속성을 쓰고 있는 상품이 있어요. 상품에서 먼저 값을 지운 뒤 삭제해 주세요.',
+    )
+  }
+
+  /**
+   * Refuses to remove a choice that a live product actually carries
+   * (TASK-0030 R5).
+   *
+   * Narrowing the list stays allowed on purpose — an operator has to be able to
+   * delete a typo, and a choice nobody picked can go without ceremony. What is
+   * refused is removing a choice some product is standing on, because the next
+   * save of that product would fail validation against a definition it never
+   * disagreed with.
+   *
+   * `MULTI_SELECT` values are arrays, so the stored value is unwrapped before
+   * comparison; anything else is compared as a single entry.
+   */
+  private async refuseNarrowingInUse(
+    stored: StoredDefinition,
+    options: readonly string[],
+  ): Promise<void> {
+    const removed = stored.options.filter((option) => !options.includes(option))
+
+    if (removed.length === 0) return
+
+    const rows = await this.prisma.$queryRaw<{ value: string }[]>`
+      SELECT DISTINCT entry AS "value"
+        FROM "Product" p
+        JOIN "Category" c ON c."id" = p."categoryId"
+        CROSS JOIN LATERAL (
+          SELECT CASE jsonb_typeof(p."attributes" -> ${stored.key}::text)
+                   WHEN 'array' THEN p."attributes" -> ${stored.key}::text
+                   ELSE jsonb_build_array(p."attributes" -> ${stored.key}::text)
+                 END AS entries
+        ) unwrapped
+        CROSS JOIN LATERAL jsonb_array_elements_text(unwrapped.entries) AS entry
+       WHERE p."deletedAt" IS NULL
+         AND c."path" LIKE (
+               SELECT d."path" FROM "Category" d WHERE d."id" = ${stored.categoryId}::int
+             ) || '%'
+         AND jsonb_exists(p."attributes", ${stored.key}::text)
+    `
+
+    const inUse = removed.filter((option) => rows.some((row) => row.value === option))
+
+    if (inUse.length === 0) return
+
+    throw new BadRequestException({
+      message: [
+        {
+          field: 'options',
+          message: `상품이 쓰고 있는 선택지는 뺄 수 없어요: ${inUse.join(', ')}`,
+          code: 'INVALID',
+        },
+      ],
+    })
   }
 
   private async mustExist(tx: Tx, id: number): Promise<StoredDefinition> {

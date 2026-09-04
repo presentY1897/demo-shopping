@@ -49,27 +49,43 @@ const NODE_FIELDS = [
 ] as const
 
 /**
- * `productCount`, until there is a `Product` table to count (TASK-0032).
+ * How many live products sit in this category (TASK-0117 2장).
  *
- * A literal in the query rather than a `0` added in TypeScript after the rows
- * come back: the column then exists in exactly one place, and the day products
- * arrive this line becomes a subquery without any caller learning about it.
- * Unqualified on purpose — it belongs to no table, so an alias would not parse.
+ * A correlated subquery rather than a count assembled in TypeScript after the
+ * rows come back: the tree is read in one statement and a per-node count done
+ * in the application would be one query per node (gate A5). It was a literal
+ * `0` until TASK-0032 brought the `Product` table, and becoming a subquery is
+ * exactly what that comment promised — no caller learned about it.
+ *
+ * Any status counts, not just `ACTIVE`: the console shows this to warn before a
+ * delete, and a draft is a product the operator would still be surprised to
+ * lose. `Product_category_live_idx` — `(categoryId, status)` restricted to live
+ * rows — is what keeps it an index scan.
+ *
+ * The owner has to be named explicitly because the subquery puts a second table
+ * in scope, and `"id"` would then resolve to `Product`'s own.
  */
-const PRODUCT_COUNT_COLUMN = '0::int AS "productCount"'
+function productCountColumn(owner: string): string {
+  return `(SELECT count(*)::int FROM "Product" pc
+             WHERE pc."categoryId" = ${owner}."id" AND pc."deletedAt" IS NULL) AS "productCount"`
+}
 
 /**
- * The column list, optionally qualified by a table alias.
+ * The column list, qualified by a table alias where there is one.
  *
- * `Prisma.raw` is safe here because the only input is the constant above — and
- * an alias is needed at all because an `UPDATE ... FROM` puts two tables in
+ * `Prisma.raw` is safe here because the only inputs are the constants above —
+ * and an alias is needed at all because an `UPDATE ... FROM` puts two tables in
  * scope and an unqualified `"id"` in `RETURNING` is then ambiguous.
  */
 function nodeColumns(alias?: string): Prisma.Sql {
   const prefix = alias === undefined ? '' : `${alias}.`
 
   return Prisma.raw(
-    [...NODE_FIELDS.map((field) => `${prefix}"${field}"`), PRODUCT_COUNT_COLUMN].join(', '),
+    [
+      ...NODE_FIELDS.map((field) => `${prefix}"${field}"`),
+      // `RETURNING` has no alias to borrow, so the table names itself there.
+      productCountColumn(alias ?? '"Category"'),
+    ].join(', '),
   )
 }
 
@@ -167,7 +183,7 @@ export class CategoryService {
     const includeInactive = query.includeInactive ?? false
 
     const rows = await this.prisma.$queryRaw<CategoryNode[]>`
-      SELECT ${NODE_COLUMNS}
+      SELECT ${nodeColumns('c')}
         FROM "Category" c
        WHERE c."deletedAt" IS NULL
          AND (${includeInactive}::boolean OR c."isActive")
