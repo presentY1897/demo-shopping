@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   ConflictException,
-  ForbiddenException,
   Inject,
   Injectable,
   NotFoundException,
@@ -39,14 +38,13 @@ import { CLOCK } from '../common/clock.js'
 import type { DomainFailurePayload } from '../common/domain-failure.js'
 import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
-import { sellerInactiveMessage } from '../sellers/seller-access.js'
-import { sellerStatusAllows } from '../sellers/seller-status.js'
 import { StockService } from '../stock/stock.service.js'
 import type { AttributeIssue, AttributeRule } from './attribute-schema.js'
 import { validateAttributeValues, withoutRequired } from './attribute-schema.js'
 import { AttributeService } from './attribute.service.js'
 import { foreignImageIndexes } from './product-image-keys.js'
 import { defaultSkuPrefix, generatedSku } from './product-sku.js'
+import { assertStoreMayWrite } from './store-write-gate.js'
 import type { AxisInput, PlanIssue, PlanIssueCode, VariantPlan } from './variant-rules.js'
 import { optionSignatureOf, planVariants, resolvePurchaseLimit } from './variant-rules.js'
 
@@ -344,7 +342,7 @@ export class ProductService {
 
     assertResourceAccess(principal, 'product.write', ownership)
     this.assertStatusChange(principal, ownership, 'DRAFT', input.status)
-    this.assertStoreMayWrite(principal, seller)
+    assertStoreMayWrite(principal, seller)
 
     const images = input.images ?? []
 
@@ -428,7 +426,7 @@ export class ProductService {
 
         assertResourceAccess(principal, 'product.write', ownership)
         this.assertStatusChange(principal, ownership, product.status, input.status)
-        this.assertStoreMayWrite(principal, seller)
+        assertStoreMayWrite(principal, seller)
 
         if (product.version !== input.version) {
           throw new ConflictException(
@@ -1146,44 +1144,6 @@ export class ProductService {
     if (decision.scopes.every((scope) => scope === 'own')) {
       throw accessDenied('product.write', 'out_of_scope')
     }
-  }
-
-  /**
-   * The store's own state gate (TASK-0108 4장), with a code a console can read.
-   *
-   * **Only when the caller is the store.** "지금 이 스토어가 상품을 등록할 수
-   * 있는 상태인가" is a question about the seller acting on their own listing;
-   * an operator editing somebody's product is not that store trading, and
-   * refusing them would make a suspended store's catalogue unmanageable by the
-   * very people who suspended it.
-   *
-   * **Why not `assertSellerActive` itself.** The decision is not repeated here —
-   * the table it consults and the sentence it words are both imported from
-   * TASK-0108's module, and a spec pins this to refuse in exactly the cells
-   * `assertSellerActive` refuses in. What it adds is the domain code: that
-   * function throws a bare `FORBIDDEN`, which a screen cannot tell from "this is
-   * not your product" — and those two 403s need opposite advice. Giving it a
-   * code would mean editing a file this task does not own, for a payload only
-   * this caller needs.
-   *
-   * **403 and not 409**, which is where TASK-0032 had it. A 409 says "try again
-   * once this resolves", and a seller whose application is still pending has
-   * nothing to retry — the state is not a transient collision, it is the
-   * platform saying no for now (TASK-0026 F3 · TASK-0108 F3).
-   */
-  private assertStoreMayWrite(
-    principal: RequestPrincipal,
-    seller: { readonly id: string; readonly status: SellerStatus },
-  ): void {
-    if (principal.sellerId !== seller.id) return
-    if (sellerStatusAllows(seller.status, 'product.write')) return
-
-    throw new ForbiddenException(
-      domainFailure(
-        'PRODUCT_SELLER_INACTIVE',
-        sellerInactiveMessage(seller.status, 'product.write'),
-      ),
-    )
   }
 
   /**
