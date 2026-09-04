@@ -131,6 +131,7 @@
 | 한글 자동완성 | 색인에 자모·초성 보조 필드를 두어 `코ㅌ` → `코트`, `ㅋㅌ` → `코트` 지원 |
 | 이미지 | **Cloudflare R2** (S3 호환, presigned URL 직접 업로드) |
 | 타입 공유 | `packages/shared` 단일 출처 |
+| API 실패 표현 | `packages/shared/src/api/api-failure.ts` **한 벌.** 세 앱이 같은 `ApiFailure` 를 읽고 같은 `failureMessage` 로 문장을 고른다. 카탈로그 문장의 `{자리}` 보간은 **조건 없이** 일어난다 (D-219) |
 | UI 컴포넌트 | **Radix Primitives** 위에 자체 스타일. shadcn 은 토큰 체계가 두 벌이 되어 제외 |
 | 컴포넌트 문서화 | **Storybook** (`packages/ui`, 밀도 3단계 툴바 전환). 새 컴포넌트는 스토리를 함께 작성 |
 | Storybook 배포 | **GitHub Pages** — <https://presenty1897.github.io/demo-shopping/>. 공개가 기본이고 주소가 고정이다. Vercel 은 배포마다 주소가 바뀌고 배포별 URL 이 보호된다 (D-213) |
@@ -143,7 +144,7 @@ apps/api      NestJS
 apps/shop     구매자 (포트 3000)
 apps/seller   판매자 (포트 3001)
 apps/admin    관리자 (포트 3002)
-packages/shared  공용 타입 · zod 스키마 · API 클라이언트
+packages/shared  공용 타입 · zod 스키마 · API 클라이언트 · 실패 표현 · 메시지 카탈로그 조회
 packages/config  eslint / tsconfig / prettier 프리셋
 packages/ui      공통 UI 컴포넌트
 ```
