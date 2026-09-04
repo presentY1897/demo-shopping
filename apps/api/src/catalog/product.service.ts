@@ -10,6 +10,7 @@ import { Prisma } from '@prisma/client'
 import type {
   AttributeValues,
   CreateProductRequest,
+  DomainErrorCode,
   OptionValueMeta,
   Product,
   ProductListQuery,
@@ -35,11 +36,14 @@ import { sellerOwnership, sellerOwnershipSelect } from '../auth/resource-ownersh
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
+import type { DomainFailurePayload } from '../common/domain-failure.js'
 import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { sellerInactiveMessage } from '../sellers/seller-access.js'
 import { sellerStatusAllows } from '../sellers/seller-status.js'
 import { StockService } from '../stock/stock.service.js'
+import type { AttributeIssue, AttributeRule } from './attribute-schema.js'
+import { validateAttributeValues, withoutRequired } from './attribute-schema.js'
 import { AttributeService } from './attribute.service.js'
 import { defaultSkuPrefix, generatedSku } from './product-sku.js'
 import type { AxisInput, PlanIssue, PlanIssueCode, VariantPlan } from './variant-rules.js'
@@ -107,6 +111,22 @@ function invalid(issues: readonly FieldIssue[]): BadRequestException {
   return new BadRequestException({
     message: issues.map((issue) => ({ ...issue, code: 'INVALID' })),
   })
+}
+
+/**
+ * A refusal the product domain named, about several inputs at once.
+ *
+ * {@link domainFailure} covers the one-field case, which is most of them. This
+ * is the same envelope for a refusal that has to name every offending input —
+ * all the empty required attributes together, rather than the first one
+ * repeatedly.
+ */
+function productFailure(
+  code: DomainErrorCode,
+  message: string,
+  issues: readonly FieldIssue[],
+): DomainFailurePayload {
+  return { code, message, details: issues.map((issue) => ({ ...issue, code })) }
 }
 
 /**
@@ -319,6 +339,7 @@ export class ProductService {
   async create(principal: RequestPrincipal, input: CreateProductRequest): Promise<ProductResponse> {
     const seller = await this.store(this.prisma, this.ownStore(principal, 'product.write'))
     const ownership = sellerOwnership(seller)
+    const status = input.status ?? 'DRAFT'
 
     assertResourceAccess(principal, 'product.write', ownership)
     this.assertStatusChange(principal, ownership, 'DRAFT', input.status)
@@ -326,7 +347,11 @@ export class ProductService {
 
     const axes = axesOf(input.options)
     const plans = this.plan(axes, input.variants ?? [])
-    const attributes = await this.validatedAttributes(input.categoryId, input.attributes ?? {})
+    const attributes = await this.validatedAttributes(
+      input.categoryId,
+      input.attributes ?? {},
+      status === 'ACTIVE',
+    )
 
     const id = await this.uniqueWrite(() =>
       this.prisma.$transaction(async (tx) => {
@@ -360,7 +385,7 @@ export class ProductService {
           now,
         })
 
-        await this.settle(tx, created.id, input.status ?? 'DRAFT', 0)
+        await this.settle(tx, created.id, status, 0)
 
         return created.id
       }),
@@ -394,6 +419,7 @@ export class ProductService {
         const product = await this.lock(tx, id)
         const seller = await this.store(tx, product.sellerId)
         const ownership = sellerOwnership(seller)
+        const status = input.status ?? product.status
 
         assertResourceAccess(principal, 'product.write', ownership)
         this.assertStatusChange(principal, ownership, product.status, input.status)
@@ -414,10 +440,19 @@ export class ProductService {
         // Re-validated whenever either half of the pair changes: moving a
         // product to another category can invalidate values nobody edited, and
         // a bag no definition explains is what TASK-0030 exists to prevent.
+        //
+        // And whenever the result is on sale, even if nothing about the
+        // attributes moved: a draft is allowed to be incomplete, so the
+        // completeness check has to happen at the moment it stops being one —
+        // which is a request that says only `status` (TASK-0113 4장).
         const attributes =
-          input.attributes === undefined && input.categoryId === undefined
+          input.attributes === undefined && input.categoryId === undefined && status !== 'ACTIVE'
             ? undefined
-            : await this.validatedAttributes(categoryId, input.attributes ?? product.attributes)
+            : await this.validatedAttributes(
+                categoryId,
+                input.attributes ?? product.attributes,
+                status === 'ACTIVE',
+              )
 
         await tx.product.update({
           where: { id },
@@ -439,7 +474,7 @@ export class ProductService {
         }
 
         await this.reviseVariants(tx, product, input, now, principal.userId)
-        await this.settle(tx, id, input.status ?? product.status, 1)
+        await this.settle(tx, id, status, 1)
       }),
     )
 
@@ -1150,12 +1185,48 @@ export class ProductService {
    * (TASK-0030 4장). A category nobody knows is a 400 about `categoryId` rather
    * than the 404 the attribute service raises — the caller named it in a body,
    * not in a URL.
+   *
+   * **Two passes, and the order is the design.** The rules are asked first with
+   * nothing required: whatever that refuses is a value that is *wrong*, and a
+   * draft may no more hold a wrong value than a published listing may
+   * (TASK-0113 4장). Only if the result is going on sale are the real rules
+   * applied, and the only way the second pass can fail after the first passed
+   * is a required value nobody filled in — so the refusal can be named
+   * `PRODUCT_ATTRIBUTES_REQUIRED` without inspecting a single message.
+   *
+   * The alternative was a discriminator on `AttributeIssue` telling missing
+   * from malformed. That would put the same knowledge in the generator, where
+   * it has no reason to be, and it would be checked by nothing: two rule sets
+   * through one function cannot disagree with each other.
    */
-  private async validatedAttributes(categoryId: number, values: unknown): Promise<AttributeValues> {
-    let verdict
+  private async validatedAttributes(
+    categoryId: number,
+    values: unknown,
+    requireAll: boolean,
+  ): Promise<AttributeValues> {
+    const rules = await this.rules(categoryId)
+    const draft = validateAttributeValues(withoutRequired(rules), values)
 
+    if (!draft.ok) throw invalid(attributeFields(draft.issues))
+    if (!requireAll) return draft.values
+
+    const complete = validateAttributeValues(rules, values)
+
+    if (complete.ok) return complete.values
+
+    throw new BadRequestException(
+      productFailure(
+        'PRODUCT_ATTRIBUTES_REQUIRED',
+        '판매를 시작하려면 필수 정보를 모두 채워야 해요.',
+        attributeFields(complete.issues),
+      ),
+    )
+  }
+
+  /** The definitions that apply, or a 400 about the category the body named. */
+  private async rules(categoryId: number): Promise<readonly AttributeRule[]> {
     try {
-      verdict = await this.attributes.validateAttributes(categoryId, values)
+      return await this.attributes.rulesFor(categoryId)
     } catch (error) {
       if (!(error instanceof NotFoundException)) throw error
 
@@ -1163,15 +1234,6 @@ export class ProductService {
         { field: 'categoryId', message: '선택한 카테고리가 없어졌어요. 목록을 새로고침해 주세요.' },
       ])
     }
-
-    if (verdict.ok) return verdict.values
-
-    throw invalid(
-      verdict.issues.map((issue) => ({
-        field: issue.key === '' ? 'attributes' : `attributes.${issue.key}`,
-        message: issue.message,
-      })),
-    )
   }
 
   /**
@@ -1230,6 +1292,14 @@ function variantChanges(override: VariantOverride): Prisma.ProductVariantUpdateI
       : { maxPurchaseQuantity: override.maxPurchaseQuantity }),
     ...(override.isActive === undefined ? {} : { isActive: override.isActive }),
   }
+}
+
+/** One `details[]` entry per refused attribute, pointing at the key. */
+function attributeFields(issues: readonly AttributeIssue[]): readonly FieldIssue[] {
+  return issues.map((issue) => ({
+    field: issue.key === '' ? 'attributes' : `attributes.${issue.key}`,
+    message: issue.message,
+  }))
 }
 
 /** The request's axes, as the planner wants them. */

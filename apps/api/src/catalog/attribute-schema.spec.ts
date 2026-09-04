@@ -11,6 +11,7 @@ import {
   unknownKeyMessage,
   validateAttributeValues,
   valueSchemaOf,
+  withoutRequired,
 } from './attribute-schema.js'
 
 /**
@@ -322,5 +323,37 @@ describe('the pieces on their own', () => {
 
     expect(before.ok).toBe(true)
     expect(after.ok).toBe(false)
+  })
+})
+
+describe('withoutRequired — 초안이 판정받는 규칙 (TASK-0113)', () => {
+  const rules = [
+    rule({ key: 'material', type: 'SELECT', options: ['면', '울'], isRequired: true }),
+    rule({ key: 'origin', type: 'TEXT', isRequired: false }),
+  ]
+
+  it('lets a required attribute be left empty', () => {
+    expect(validateAttributeValues(rules, {}).ok).toBe(false)
+    expect(accepted(withoutRequired(rules), {})).toEqual({})
+  })
+
+  it('still refuses a value that is wrong rather than missing', () => {
+    // The whole distinction: a draft may be incomplete, never incorrect. A
+    // relaxation that also swallowed this would let a listing be saved with a
+    // colour no definition explains, and nothing downstream could render it.
+    expect(issues(withoutRequired(rules), { material: '가죽' })).toHaveLength(1)
+    expect(issues(withoutRequired(rules), { colour: '검정' })).toEqual([
+      `colour: ${unknownKeyMessage('colour')}`,
+    ])
+  })
+
+  it('leaves rules that were already optional untouched', () => {
+    const relaxed = withoutRequired(rules)
+
+    // Identity, not equality: an optional rule is returned as itself, so the
+    // transformation cannot quietly rewrite anything but the one flag.
+    expect(relaxed[1]).toBe(rules[1])
+    expect(relaxed[0]).not.toBe(rules[0])
+    expect(relaxed[0]?.isRequired).toBe(false)
   })
 })

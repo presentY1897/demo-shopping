@@ -213,6 +213,28 @@ export function buildAttributesSchema(rules: readonly AttributeRule[]): z.ZodTyp
   return z.preprocess(stripAbsent, z.strictObject(shape))
 }
 
+/**
+ * The same rules with nothing required — what a draft is judged by
+ * (TASK-0113 4장).
+ *
+ * A product being written is allowed to be **incomplete**; it is never allowed
+ * to be **wrong**. So the relaxation is exactly this one flag and nothing else:
+ * a value outside its definition's choices, a key nothing defines, a number
+ * where a string belongs — all of them are still refused in a draft. What a
+ * seller may postpone is filling a box in, and that is the only thing this
+ * removes.
+ *
+ * Expressed as a transformation of the rules rather than as a flag threaded
+ * through {@link buildAttributesSchema}, because the schema builder has no
+ * business knowing why it is being asked. It also means the two verdicts a save
+ * needs — "is anything wrong" and "is anything missing" — come from the same
+ * function applied to two rule sets, instead of from two code paths that could
+ * disagree.
+ */
+export function withoutRequired(rules: readonly AttributeRule[]): readonly AttributeRule[] {
+  return rules.map((rule) => (rule.isRequired ? { ...rule, isRequired: false } : rule))
+}
+
 /** The message an undefined key gets. Named so the spec cannot drift from it. */
 export function unknownKeyMessage(key: string): string {
   return `정의되지 않은 속성입니다: ${key}`
