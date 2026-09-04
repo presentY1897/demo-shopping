@@ -25,6 +25,32 @@ export {
   quotableRequestId,
 } from './api/api-failure.js'
 export type { ApiFailure, ApiFailureReason } from './api/api-failure.js'
+export {
+  attributeFilterSchema,
+  facetCountsSchema,
+  SEARCH_QUERY_MAX_LENGTH,
+  SEARCH_SUGGEST_LIMIT,
+  searchFilterSchema,
+  searchFiltersResponseSchema,
+  searchHitSchema,
+  searchQuerySchema,
+  searchResponseSchema,
+  searchSorts,
+  searchSortSchema,
+  searchSuggestResponseSchema,
+  searchTermSchema,
+} from './api/search.js'
+export type {
+  AttributeFilter,
+  FacetCounts,
+  SearchFilter,
+  SearchFiltersResponse,
+  SearchHit,
+  SearchQuery,
+  SearchResponse,
+  SearchSort,
+  SearchSuggestResponse,
+} from './api/search.js'
 export { errorMessage, firstFieldError, interpolate, paramsOf } from './api/error-messages.js'
 export type { ErrorMessages, ErrorParams } from './api/error-messages.js'
 export { APP_ID_HEADER, appIds, isAppId } from './api/app-id.js'

@@ -1085,3 +1085,28 @@ model SearchOutbox {
   /// lookup that never happens.
   @@index([nextAttemptAt])
 }
+
+/// What people searched for (TASK-0039 「검색어 로깅」).
+///
+/// **No account, on purpose.** The task wants this for 인기 검색어 — an
+/// aggregate — and a row that named who typed it would be a search history: a
+/// far more sensitive thing to hold, for a use nobody asked for. What is kept is
+/// the words, how many results they found, and when.
+///
+/// `resultCount` is the half that makes the data worth having. A popular term
+/// that returns nothing is the most useful row in the table — it is a product
+/// the catalogue is missing, or a word the synonym list should know.
+model SearchLog {
+  id BigInt @id @default(autoincrement())
+
+  /// Normalised: trimmed and lowercased, so 「코트」 and 「코트 」 are one term.
+  term String
+
+  resultCount Int
+
+  createdAt DateTime @default(now())
+
+  /// "무엇이 인기인가" is `GROUP BY term`, and "최근 일주일" bounds it.
+  @@index([term])
+  @@index([createdAt])
+}

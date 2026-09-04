@@ -39,6 +39,16 @@ export interface AppConfig {
     readonly host: string
     readonly masterKey: string
     readonly timeoutMs: number
+    /**
+     * Which index the catalogue lives in.
+     *
+     * Configurable for one reason: **tests**. The database harness gives each
+     * vitest worker its own database, and two specs that shared one index would
+     * clear each other's documents mid-assertion the same way two specs sharing
+     * a database would — measured, when they did exactly that. Production has
+     * one value and always will.
+     */
+    readonly productsIndex: string
   }
   /**
    * Object storage for uploaded images, or `null` while R2 is not configured.
