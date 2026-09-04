@@ -291,7 +291,7 @@ A 는 "기존 스펙이 문장에 묶여 있었다"를, B 는 "그때 실제로 
 | Q2 | 린트 | `pnpm lint` | error 0, warning 0 | error 0 · warning 0. `pnpm format:check` 도 통과 | [x] |
 | Q3 | 빌드 | `pnpm build` | 성공 | 전 앱 성공 | [x] |
 | Q4 | 단위 테스트 | `pnpm test` | 전부 통과 | **1,826개 통과 · 1 skip · 0 실패** (ui 752 / api 808 / admin 134 / api-mocks 59 / shop 68+1skip / seller 5) | [x] |
-| Q5 | 커버리지 | 순수 로직(`server-errors`, 코드→문장 조회) **분기 100%** / `apps/api` 라인 80% | 임계값 통과 | 분기 100%: `ui/src/form/server-errors.ts` · `admin/src/lib/errors.ts` · `admin/src/lib/categories/errors.ts` · `api/src/common/{domain-failure,error-response,http-error-code,parse-input}.ts`. `apps/api` 라인 **93.9%**. 임계값은 각 `vitest.config.mjs` 에 고정 | [x] |
+| Q5 | 커버리지 | 순수 로직(`server-errors`, 코드→문장 조회) **분기 100%** / `apps/api` 라인 80% | 임계값 통과 | 분기 100%: `ui/src/form/server-errors.ts` · `admin/src/lib/errors.ts`(**2026-09-05 에 `packages/shared/src/api/error-messages.ts` 로 이동. 임계값도 함께 옮겼다 — D-219**) · `admin/src/lib/categories/errors.ts` · `api/src/common/{domain-failure,error-response,http-error-code,parse-input}.ts`. `apps/api` 라인 **93.9%**. 임계값은 각 `vitest.config.mjs` 에 고정 | [x] |
 | Q6 | CI | PR 4개 job | 전부 green | typecheck · lint · build · test 4개 green (PR 본문 참조) | [x] |
 | Q7 | 커밋 | commitlint | 위반 0 | 훅 통과, 위반 0 | [x] |
 

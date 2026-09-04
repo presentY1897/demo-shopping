@@ -122,53 +122,26 @@ Google 은 와일드카드 리다이렉트 URI 를 허용하지 않는데 프리
 TASK-0021 은 이것을 R3 으로 열어 둔 채 닫혔다. **프리뷰에서 로그인을 시연할 일이 생기면 그때가 정할
 시점**이고, 그때까지는 로컬과 운영에서만 동작한다.
 
-### 3.3 `api-failure.ts` 가 세 벌이고, **놓을 자리가 없다**
+### 3.3 ~~`api-failure.ts` 가 세 벌이다~~ — 닫혔다
 
-> **2026-09-05 — TASK-0114 가 열린 질문 둘을 닫았다.** `hasCode` 는 공통 API 가 맞고(편집기가
-> 필요로 한다 — 세 판을 같은 시그니처로 맞췄다), `params` 보간은 판매자가 필요 없다(유일한
-> `params` 문장이 상수를 import 한다). **그런데 합치지 못했다 — 갈 곳이 없다.**
->
-> | 후보 | 왜 안 되나 |
-> | --- | --- |
-> | `packages/shared/src/api/` | 올바른 자리. **소유자를 정해야 한다** |
-> | `packages/ui` | 자기 `server-errors.ts` 머리말이 거부한다 — 컴포넌트 라이브러리에 REST 클라이언트를 두지 않는다 |
-> | 새 패키지 | 세 앱을 동시에 열어야 한다 |
->
-> **셋 중 둘만 합치면 세 번째가 갈라진다.** 남은 차이는 각 앱의 `ApiConfigurationError` 와 카탈로그
-> 타입뿐이고 **둘 다 인자로 바꿀 수 있어, 자리만 정해지면 이동은 기계적이다.** 즉 이제 남은 것은
-> 코드가 아니라 **소유 결정**이다.
+**2026-09-05, `refactor/shared-api-failure`.** `packages/shared/src/api/api-failure.ts` **한 벌**이
+되었고 세 앱의 `src/lib/api-failure.ts` 는 사라졌다. 근거는 D-219.
 
-> **2026-09-04 — TASK-0112 가 shop 판을 만들었다.** 다만 **전수 카탈로그는 없다** — 판별부만
-> 갖는다. 즉 TASK-0023 이 "shop 은 아직 필요 없다" 고 판단한 근거가 절반만 바뀐 것이고, 세 벌의
-> 차이를 그 파일 머리말에 표로 남겼다. TASK-0113 도 합치지 못했다 — 두 앱의 `src/lib/` 를 동시에
-> 고쳐야 하는데 그 TASK 는 메시지 파일까지만 소유했다. **접점은 여전히 TASK-0114 다.**
+| 무엇 | 어디로 |
+| --- | --- |
+| `apiFailure` · `hasCode` · `failureMessage` · `quotableRequestId` · `ApiFailure` · `ApiFailureReason` | `packages/shared/src/api/api-failure.ts` |
+| `ErrorMessages` · `errorMessage` · `interpolate` · `ErrorParams` · `firstFieldError` · `paramsOf` | `packages/shared/src/api/error-messages.ts` (`apps/{admin,seller}/src/lib/errors.ts` 삭제) |
+| `ApiConfigurationError` | `packages/shared/src/api/api-client-error.ts` (세 앱의 `lib/api.ts` 에 바이트까지 같은 3줄로 있었다) |
 
-> **2026-09-04 — TASK-0023 은 발동 조건이 아니었다.** 세 번째 앱(`apps/shop`)에 인증 화면이 생겼지만
-> 그 화면이 만나는 실패는 갱신 거절(`AUTH_REQUIRED` + `details[].params.reason`)과 미도달 둘뿐이고,
-> 둘 다 `domainErrorCode` 카탈로그가 아니라 별도 `auth` 메시지 슬라이스가 답한다. shop 에
-> `Record<UserFacingErrorCode, string>` 을 들이면 **닿는 문장이 하나뿐인 카탈로그**가 생기는데,
-> 그것이 정확히 TASK-0117 4.7 J6 이 그 슬라이스를 admin 에만 준 이유다. 그래서 합치지 않았고
-> shop 에 들이지도 않았다. **실제 접점은 아래 그대로 TASK-0113 · 0114 다.**
+**TASK-0114 7.1 의 제안과 한 곳이 다르다.** 그쪽은 「보간기는 admin 에 남고 공통 판은 `paramsOf` 를
+넘겨받는다」였다. 그렇게 하지 않았다 — 보간이 **선택 인자**면 호출 24곳 중 하나만 빠뜨려도 컴파일이
+통과하고 화면에는 `카테고리는 {max}단계까지만` 이 그대로 나간다. 무조건 보간해도 shop · seller 는
+오늘과 같다(두 카탈로그에 `{자리}` 가 하나도 없다 — 확인함). D-219 「보간」 절 참조.
 
-`apps/seller/src/lib/api-failure.ts` 와 `apps/admin/src/lib/api-failure.ts` 다. TASK-0033 이 합칠 자리로
-옮기려면 두 앱을 동시에 고쳐야 해서 미뤘고, 양쪽 파일 머리말에 그 사실을 적어 뒀다.
+**검증**: `pnpm typecheck` · `pnpm lint` 오류 0, 세 앱 스펙 938개 전부 통과(admin 348 · seller 336 ·
+shop 254). 동작은 admin 판(상위집합) 그대로다.
 
-**임포트 하나만 다른 것이 아니다.** 실제 차이는 셋이고, 세 번째는 화면에 보이는 차이다.
-
-| | seller (112줄) | admin (131줄) |
-| --- | --- | --- |
-| `ApiConfigurationError` 임포트 | 자기 앱 것 | 자기 앱 것 |
-| `hasCode(failure, code)` | **없다** | export 한다 |
-| 메시지 `params` 보간 | **안 한다** | `paramsOf(failure.details)` 로 한다 |
-
-갈라진 것은 사고가 아니라 **양쪽에 근거가 적힌 의도된 분기**다 — seller 의 `lib/errors.ts` 머리말이
-"No placeholders. `apps/admin` 은 두 메시지에 params 를 보간한다" 고 명시한다.
-
-**그래서 합치는 일의 성격이 다르다.** 파일을 `packages/` 로 옮기는 이동이 아니라, *보간을 할 것인가*
-(하면 seller 메시지 카탈로그에 플레이스홀더가 필요하다) 와 *`hasCode` 를 공통 API 로 둘 것인가* 를
-정하는 **설계 결정**이다. `세 번째 앱이 필요로 할 때` 라는 발동 조건도 그 전제 위에 있었으므로 다시
-본다 — 2절의 도메인 오류 코드 작업(TASK-0113 · 0114)이 양쪽 카탈로그를 함께 건드리므로 **그때가 실제
-접점**이다.
+**남은 것은 3.7 · 3.8 로 옮겼다.**
 
 ### 3.4 ~~판매자 상태를 프론트로 실어 나르는 계약이 없다~~ — 닫혔다
 
@@ -193,6 +166,11 @@ TASK-0023 이 세 앱에 각각 세션 클라이언트 · 인증 컨텍스트 ·
 돌린다면 합치기를 **선행 작업으로 먼저 떼어 머지**하는 편이 낫다 — PR #66 이 퍼미션에 대해 한 것과
 같은 방식이다.
 
+> **2026-09-05 — 선례가 생겼다.** 3.3(`api-failure.ts` 세 벌)을 정확히 그 방식으로 닫았다:
+> 화면 TASK 곁에서 하지 않고 **독립 브랜치 하나가 세 앱을 동시에 열어** `packages/shared` 로 옮겼다.
+> 자리도 같다. 이 항목이 그것보다 어려운 점은 하나뿐이다 — 세션 클라이언트는 `APP_ID` 라는 **앱마다
+> 다른 값**을 갖는다. 그래서 이동이 아니라 **팩토리로 바꾸는 일**이고, 3.7 과 같은 성격이다.
+
 ### 3.6 고아 R2 객체를 지우는 잡의 주인이 없다 — 그리고 하드 삭제가 막혀 있다
 
 > **2026-09-04 추가 (TASK-0024 R7).** 복제한 상품은 **하드 삭제할 수 없다.** `StockLedger` 의
@@ -210,6 +188,44 @@ TASK-0113 이 정리 **방식**을 정했다 — 버킷 스윕이다. 그 전제
 
 **둘 다 이 프로젝트에 아직 없는 종류**라 화면·API TASK 가 곁에서 할 일이 아니다. TASK-0012(배포
 자동화)가 스케줄러를 들이거나, M15 가 정리 작업으로 묶는 것이 후보다. TASK-0113 R7 참조.
+
+### 3.7 `apps/*/src/lib/api.ts` 가 76줄 × 3 이고 **`APP_ID` 한 줄만 다르다**
+
+2026-09-05 에 `ApiConfigurationError` 를 덜어 내면서 확인했다. 세 파일을 `diff` 하면 차이가
+**정확히 한 줄**이다.
+
+```
+16c16
+< export const APP_ID = 'admin' as const
+---
+> export const APP_ID = 'seller' as const
+```
+
+나머지 75줄(`apiBaseUrl` · `getSessionClient` · `getApiClient` 의 싱글턴 세 개)은 글자까지 같다.
+
+**3.3 과 성격이 다르다.** 그쪽은 순수 이동이었지만 이쪽은 **앱마다 다른 값**이 있어서, 합치려면
+`APP_ID` 를 받는 팩토리가 되어야 한다. 그런데 세 파일이 갖는 것은 *모듈 수준 싱글턴*(`let client`)
+이고 그것이 「탭 하나에 클라이언트 하나」를 보장하는 장치다 — 팩토리로 바꾸면 그 보장을 어디서
+할지부터 정해야 한다. 3.5(세션 클라이언트 세 벌)와 **같은 파일을 건드리므로 함께 하는 것이 맞다.**
+
+### 3.8 ~~`packages/shared` 에 테스트가 한 줄도 없다~~ — 자리를 만들었다
+
+2026-09-05 에 실패 표현이 이 패키지로 들어오면서 **게이트가 조용히 사라질 뻔했다.**
+`apps/admin/vitest.config.mjs` 가 삭제될 두 파일을 분기 100% 로 잡고 있었고, **임계값 글롭은
+맞는 파일이 없으면 통과한다**(확인함 — 5장 함정 표에 추가).
+
+그래서 이 패키지에 스펙 자리를 만들고 게이트를 함께 옮겼다.
+
+| 무엇 | 어디 |
+| --- | --- |
+| 스펙 | `packages/shared/test/*.spec.ts` |
+| 빌드 제외 | `tsconfig.build.json` 이 `src` 만 `dist` 로 낸다. `tsconfig.json` 은 `src` + `test` 라 타입 검사·lint 가 스펙까지 본다 (`apps/api` 와 같은 모양) |
+| 임계값 | `packages/shared/vitest.config.mjs` — `api-failure.ts` · `error-messages.ts` 분기 100% |
+
+**나머지 16개 모듈은 여전히 직접 검사가 없다.** 대부분 zod 스키마라 그것이 옳다 — `z.string()` 이
+숫자를 거부하는지 확인하는 스펙은 zod 를 검사한다. 다만 `src/auth/authorize.ts` 와
+`src/auth/permissions.ts` 는 **판단을 하는 코드**이고 `apps/api` 스펙에만 덮여 있다. 그쪽으로
+게이트를 넓힐지는 별도 판단이다.
 
 ## 4. 사용자가 할 일
 
@@ -258,4 +274,5 @@ Render 대시보드 → `shopping-api` → Environment → `JWT_SECRET`. **로�
 | **Postgres 컨테이너가 불결하게 죽으면 데이터 디렉터리 fsync 복구에 갇힌다**(1,000초 이상). 테스트 DB 는 버리는 것이 빠르다 — `pnpm infra:down` 후 볼륨 삭제, `infra:up`, `db:deploy` | 이 표 |
 | **`barrier` 만으로는 경합이 겹치지 않는다.** 둘 다 읽은 뒤에 쓰는 것까지만 보장한다. **뒤 트랜잭션이 앞의 효과를 지우는 모양**(해제 후 지정 등)이면 직렬화됐을 때 결과가 달라지고, 음성 대조군이 조용히 초록이 된다 | `test/support/concurrently.ts` 의 `awaitBlocked` |
 | **vitest 를 두 프로세스로 동시에 돌리면 워커 DB 가 겹친다.** 성능·`EXPLAIN` 스펙이 실행마다 다른 조합으로 실패해 회귀처럼 보인다 — 단독 실행하면 전부 통과한다. 병렬 에이전트에게 테스트 실행을 시킬 때 특히 밟는다 | 이 표 |
+| **커버리지 임계값은 파일 경로로 걸리고, 그 파일이 사라지면 조용히 통과한다.** 모듈을 옮기면서 `vitest.config.mjs` 의 임계값을 함께 옮기지 않으면 게이트가 없어진 것을 **아무것도 알려 주지 않는다** — 빨개지지 않으므로 리뷰에서도 안 보인다. 옮기기 전에 `grep` 으로 그 경로가 설정에 박혀 있는지 본다 | D-219 · `packages/shared/vitest.config.mjs` |
 | **플랫폼이 이미 하는 일을 직접 만들었다** — Vercel 은 pnpm 모노레포의 미영향 프로젝트를 자동으로 건너뛴다. "4개가 다 빌드된다" 를 헛빌드로 단정하고 스크립트를 만들었는데, 그 PR 은 `packages/shared` 를 바꿨으므로 **넷 다 빌드가 맞았다.** 문서를 먼저 읽었으면 안 만들었다 | TASK-0010 4.1 |
