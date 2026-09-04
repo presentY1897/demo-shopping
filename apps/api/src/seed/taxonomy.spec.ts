@@ -16,7 +16,7 @@ import {
 } from '@shopping/shared'
 import { describe, expect, it } from 'vitest'
 
-import { flatten, leafCategories, seedTaxonomy } from './taxonomy.js'
+import { effectiveAttributes, flatten, leafCategories, seedTaxonomy } from './taxonomy.js'
 
 const nodes = flatten()
 
@@ -76,8 +76,11 @@ describe('what the API would refuse', () => {
 })
 
 describe('inheritance — the reason the tree is three deep', () => {
-  /** Every attribute a category effectively has, its own plus its ancestors'. */
-  function effective(slug: string): readonly string[] {
+  const effective = (slug: string): readonly string[] =>
+    effectiveAttributes(slug).map((attribute) => attribute.key)
+
+  /** The same walk without the de-duplication, so a repeat still shows up. */
+  function rawKeys(slug: string): readonly string[] {
     const bySlug = new Map(nodes.map((node) => [node.slug, node]))
     const keys: string[] = []
 
@@ -95,7 +98,7 @@ describe('inheritance — the reason the tree is three deep', () => {
     // `AttributeService` refuses this outright, so a duplicate here is a seed
     // that dies partway through with `ATTRIBUTE_KEY_TAKEN`.
     for (const node of nodes) {
-      const keys = effective(node.slug)
+      const keys = rawKeys(node.slug)
 
       expect(new Set(keys).size, node.slug).toBe(keys.length)
     }

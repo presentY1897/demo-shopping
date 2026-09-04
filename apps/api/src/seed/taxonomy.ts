@@ -354,3 +354,32 @@ export function flatten(
 export function leafCategories(): readonly FlatCategory[] {
   return flatten().filter((node) => (node.children ?? []).length === 0)
 }
+
+/**
+ * Every attribute a category effectively has — its own plus every ancestor's.
+ *
+ * The static mirror of `attribute-inheritance.ts`, which answers the same
+ * question from database rows. It is duplicated rather than reused because the
+ * seed has to know what a product must say **before** the categories exist, and
+ * because the runtime version has to survive a category *move* producing a
+ * duplicate key (see its header) — a situation this tree cannot be in.
+ *
+ * Nearest wins, same as the runtime rule, which is why the walk goes from the
+ * node upward and keeps the first definition it sees for a key.
+ */
+export function effectiveAttributes(slug: string): readonly SeedAttribute[] {
+  const bySlug = new Map(flatten().map((node) => [node.slug, node]))
+  const byKey = new Map<string, SeedAttribute>()
+
+  let cursor = bySlug.get(slug)
+
+  while (cursor !== undefined) {
+    for (const attribute of cursor.attributes ?? []) {
+      if (!byKey.has(attribute.key)) byKey.set(attribute.key, attribute)
+    }
+
+    cursor = cursor.parentSlug === null ? undefined : bySlug.get(cursor.parentSlug)
+  }
+
+  return [...byKey.values()]
+}
