@@ -2,7 +2,6 @@ import { CONSOLE_DENSITY } from '@shopping/ui'
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
-import { DemoBanner } from '@/components/demo/demo-banner'
 import { ConsoleFrame } from '@/components/layout/console-frame'
 import { AuthProvider } from '@/lib/auth/auth-context'
 import { DEFAULT_LOCALE, messagesFor } from '@/messages'
@@ -37,14 +36,6 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
           renewal on boot serves all of them (TASK-0023 4장).
         */}
         <AuthProvider>
-          {/*
-            Outside `ConsoleFrame`, not inside it. The frame draws `/login` and
-            `/no-permission` bare — no shell — so a banner placed within it would
-            vanish on exactly the route somebody lands on right after issuing an
-            account (TASK-0024 4.6).
-          */}
-          <DemoBanner messages={messages.demo} />
-
           <ConsoleFrame>{children}</ConsoleFrame>
         </AuthProvider>
       </body>

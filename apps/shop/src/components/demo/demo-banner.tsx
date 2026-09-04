@@ -12,6 +12,24 @@ import type { DemoMessages } from '@/messages'
 const TICK_MS = 60_000
 
 /**
+ * Where the banner is placed decides how it is drawn.
+ *
+ * `strip` is the storefront: the banner sits above a sticky header, in the page's
+ * own chrome, and a full-bleed bar reads as part of it.
+ *
+ * `card` is a console. The shell's sidebar is `fixed` from the top of the
+ * viewport, so **anything rendered above the shell is covered by it** — found by
+ * opening the console (TASK-0024 9장). The banner therefore goes inside `main`,
+ * where a bordered card is the shape the rest of that column already uses.
+ */
+const SHAPE = {
+  strip: 'border-b',
+  card: 'rounded-md border',
+} as const
+
+export type DemoBannerVariant = keyof typeof SHAPE
+
+/**
  * How long this demo has left, on every page (TASK-0024 4.6 · F5).
  *
  * **It asks the API rather than reading the session.** The banner has to survive
@@ -28,7 +46,13 @@ const TICK_MS = 60_000
  * where a countdown should be is worse than no countdown — the visitor cannot
  * act on it and the console behind it works perfectly.
  */
-export function DemoBanner({ messages }: { readonly messages: DemoMessages }) {
+export function DemoBanner({
+  messages,
+  variant = 'strip',
+}: {
+  readonly messages: DemoMessages
+  readonly variant?: DemoBannerVariant
+}) {
   const { state } = useAuth()
   const userId = state.status === 'signedIn' ? state.user.id : null
 
@@ -87,7 +111,7 @@ export function DemoBanner({ messages }: { readonly messages: DemoMessages }) {
 
   return (
     <div
-      className="border-warning bg-warning-surface text-fg flex flex-wrap items-center gap-x-2 gap-y-1 border-b px-4 py-2 text-sm"
+      className={`border-warning bg-warning-surface text-fg flex flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2 text-sm ${SHAPE[variant]}`}
       role="status"
     >
       <span className="font-medium">{messages.bannerLabel}</span>
