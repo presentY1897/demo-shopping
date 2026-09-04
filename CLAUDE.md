@@ -114,6 +114,41 @@ pnpm install            # 의존성이 바뀌었을 수 있다. 새 워크트리
   `.github/pull_request_template.md` 가 그 뼈대를 준다.
   트레일러가 무엇인지는 README 의 "커밋 이력 읽는 법" 절이 설명한다.
 
+### 게이트를 돌리는 방법 — 개발 중에는 좁게, 마지막에 전체
+
+**게이트가 무엇인지는 안 바뀐다**(`docs/tasks/QUALITY-GATES.md`). 바뀌는 것은 **개발 중에 그것을
+얼마나 자주, 얼마나 넓게 돌리느냐**다.
+
+전체 게이트를 직렬로 돌리면 6분 안팎이고 그중 `test` 가 절반 이상이다. CI 실측:
+
+| | typecheck | lint | build | **test** |
+| --- | --- | --- | --- | --- |
+| 2026-09-04 기준 | 50초 | 72초 | 59초 | **164초** |
+
+`test` 만 128 → 164초로 늘고 있다(테스트 1,930 → 2,300+). 나머지 셋은 평평하다. 구현 중
+이것을 3~6회 반복하면 **30분 이상이 대기**다.
+
+**개발 중 (반복하는 동안)**
+
+```bash
+# 자기 패키지만. apps/api 작업이 packages/ui 의 800개를 돌릴 이유가 없다
+pnpm --filter @shopping/api test
+pnpm --filter @shopping/api exec tsc --noEmit
+
+# 여러 개를 볼 때는 병렬로 — 출력이 섞이므로 실패했을 때만 하나씩 다시 본다
+pnpm typecheck & pnpm lint & wait
+```
+
+**마지막 확인 (PR 올리기 직전 한 번)**
+
+```bash
+pnpm typecheck && pnpm lint && pnpm build && pnpm test
+```
+
+**좁게 돌리는 것이 안전한 이유**: 브랜치가 합쳐지는 지점의 회귀는 **오케스트레이터가 머지 전
+`main` 위에서 전체를 한 번 더 돌려** 잡는다. 실제로 그 단계에서 `@shopping/shared` 의 `dist` 가
+낡아 typecheck 이 깨진 적이 있다. 즉 안전망은 개발 중 반복이 아니라 **그 한 번**이다.
+
 ## 4. 문서 기반 진행 원칙 (중요)
 
 이 프로젝트는 **문서 승인 → 구현** 순서로 진행한다.
