@@ -53,6 +53,27 @@ const FAST: WakePolicy = {
   searchRecheckTimeoutMs: 300,
 }
 
+/**
+ * {@link FAST} with a second threshold no test can reach.
+ *
+ * The staged notice is checked by asking "has the later one appeared yet", and
+ * with {@link FAST} the answer is only false for the 80ms between
+ * `noticeAfterMs` and `longWaitNoticeAfterMs` — of **real** time. `findByText`
+ * polls, so on a loaded machine its first successful poll can already be past
+ * that window, and the assertion fails while the code is correct. It did,
+ * intermittently, on CI and locally.
+ *
+ * Pushing the second threshold out of reach turns the question into the one the
+ * test actually means: *at the first threshold, the second notice is not shown.*
+ * That is a statement about order, and order does not depend on how fast the
+ * machine ran the test.
+ *
+ * Module level for the reason {@link FAST} is: `useApiWake` takes the policy as
+ * an effect dependency, so an object rebuilt per render restarts the sequence
+ * forever.
+ */
+const FIRST_THRESHOLD_ONLY: WakePolicy = { ...FAST, longWaitNoticeAfterMs: 60_000 }
+
 const requests: string[] = []
 
 beforeEach(() => {
@@ -105,8 +126,11 @@ describe('while the API has not answered', () => {
 /** F2 — the notice arrives in two stages, and the screen keeps moving. */
 describe('once the wait stops being ordinary', () => {
   it('explains the wait at the first threshold', async () => {
-    testServer.server.use(slowResponse(mockPaths.health, 260, healthOk))
-    renderGate()
+    // `neverAnswers`, not a slow answer: the first notice then stays put instead
+    // of being replaced the moment the health check succeeds, so the assertion
+    // is not racing the response either.
+    testServer.server.use(neverAnswers(mockPaths.health))
+    renderGate(FIRST_THRESHOLD_ONLY)
 
     expect(await screen.findByText(wake.preparing)).toBeVisible()
     expect(screen.queryByText(wake.coldStartNotice)).toBeNull()
