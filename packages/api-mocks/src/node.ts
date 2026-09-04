@@ -10,6 +10,7 @@ import {
   resetAttributeStore,
   resetCategoryStore,
   resetSellerStore,
+  resetProfileStore,
   resetSessionStore,
   resetUploadStore,
 } from './handlers'
@@ -115,6 +116,10 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     // Back to "this account has never applied", which is the state five of the
     // seller console's faces are told apart from.
     resetSellerStore()
+    // The account screens edit a profile, settings and an address book; a row
+    // that survived into the next test would make specs pass or fail by their
+    // order in the file, exactly as a created category would.
+    resetProfileStore()
     // Back to signed out: a spec that signed in, or borrowed another role, must
     // not decide who the next one is.
     resetSessionStore()
