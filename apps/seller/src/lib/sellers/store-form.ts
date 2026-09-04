@@ -77,15 +77,6 @@ export interface StoreFieldErrorMessages {
 
 export interface StoreSchemaOptions {
   readonly messages: StoreFieldErrorMessages
-  /**
-   * A brand name `GET /sellers/brand-name-availability` reported as taken.
-   *
-   * Checked **inside the schema** rather than beside it so that there is still
-   * exactly one door (TASK-0017 4.2): Enter pressed in a text field reaches the
-   * same validation a click on the submit button does, and a guard written next
-   * to the button would let the keyboard through.
-   */
-  readonly takenBrandName?: string | null
 }
 
 function text(values: Record<string, unknown>, key: string): string {
@@ -132,7 +123,7 @@ function localised<T extends StoreSubmission>(
   contract: z.ZodType<T['request']>,
   wrap: (request: T['request']) => T,
   prepare: (values: Record<string, unknown>) => Record<string, unknown>,
-  { messages, takenBrandName }: StoreSchemaOptions,
+  { messages }: StoreSchemaOptions,
 ): z.ZodType<StoreSubmission> {
   return z.unknown().transform((input, ctx) => {
     const values: Record<string, unknown> =
@@ -156,21 +147,7 @@ function localised<T extends StoreSubmission>(
       })
     }
 
-    // Asked after the contract, so a name that is both too short and taken is
-    // told the thing it can act on first. A `true` from the availability check
-    // is never asserted here — it is a read, and `Seller_brandName_key` is what
-    // actually decides (TASK-0108 4장).
-    const brandName = text(values, 'brandName')
-    if (takenBrandName != null && brandName === takenBrandName) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['brandName'],
-        message: messages.brandNameTaken,
-        input,
-      })
-    }
-
-    if (!parsed.success || ctx.issues.length > 0) return z.NEVER
+    if (!parsed.success) return z.NEVER
 
     return wrap(parsed.data)
   })
