@@ -30,7 +30,7 @@ export default {
       exclude: ['src/**/*.spec.{ts,tsx}'],
       thresholds: {
         'src/lib/errors.ts': complete,
-        'src/lib/categories/errors.ts': complete,
+        'src/lib/api-failure.ts': complete,
       },
     },
   },
