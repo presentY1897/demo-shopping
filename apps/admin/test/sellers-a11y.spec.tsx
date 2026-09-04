@@ -97,7 +97,26 @@ async function startDecision(
   return screen.findByRole('dialog', { name: copy.dialog.titles[action] })
 }
 
-describe('the review queue has no accessibility violations', () => {
+/**
+ * Why this file gets a bigger budget than vitest's five seconds.
+ *
+ * Every test here runs axe over the whole document, and the document is a
+ * twenty-row, seven-column table carrying forty buttons — an accessibility tree
+ * an order of magnitude larger than a form. Measured locally: the slowest is
+ * **733ms** (the reason field with its error), then 652ms and 643ms; the rest
+ * are between 25ms and 600ms.
+ *
+ * CI runs this suite about **5.6x slower** than a warm local machine — the
+ * factor `attributes-page.spec.tsx` measured for the same reason (commit
+ * 65ac82e). 733ms × 5.6 ≈ 4.1s, which clears the default only just, and the
+ * margin disappears the moment CI is busier than usual.
+ *
+ * The budget is raised rather than the sweep trimmed: what makes it slow is the
+ * thing it exists to check, which is a whole screen rather than a component.
+ */
+const A11Y_TIMEOUT = { timeout: 20_000 } as const
+
+describe('the review queue has no accessibility violations', A11Y_TIMEOUT, () => {
   it('while the applications are loading', async () => {
     renderWithAuth(<SellersPage />)
 
@@ -228,7 +247,7 @@ describe('the review queue has no accessibility violations', () => {
   })
 })
 
-describe('one application has no accessibility violations', () => {
+describe('one application has no accessibility violations', A11Y_TIMEOUT, () => {
   function openDetail(seller: Seller): void {
     renderWithAuth(
       <SellerReviewDetailWorkspace
