@@ -134,6 +134,10 @@ model User {
   preference    UserPreference?
   refreshTokens RefreshToken[]
 
+  /// Stock movements this account made (TASK-0036). Withdrawal leaves them
+  /// pointing here, which is why the edge is `Restrict` on the other side.
+  stockMovements StockLedger[]
+
   /// Admin console looks accounts up by email.
   @@index([email])
   /// The expiry sweep: `WHERE "isDemo" AND "demoExpiresAt" < now()`.
@@ -160,14 +164,14 @@ model Seller {
   id     String @id @default(uuid(7)) @db.Uuid
   userId String @unique @db.Uuid
 
-  brandName String @unique
+  brandName    String  @unique
   /// URL identifier for the storefront; separate from `brandName` so renaming
   /// the brand does not have to break every link that points at the store.
   slug         String  @unique
   introduction String?
   logoUrl      String?
 
-  status SellerStatus @default(PENDING)
+  status          SellerStatus @default(PENDING)
   /// Why the store was rejected or suspended, shown back to the seller.
   statusReason    String?
   statusChangedAt DateTime?
@@ -841,6 +845,11 @@ model ProductVariant {
 
   optionValues VariantOptionValue[]
 
+  /// Every movement of this variant's stock (TASK-0036). `stock` above is the
+  /// current value; these rows are what explain it, and `StockService` is the
+  /// only thing that writes either.
+  ledger StockLedger[]
+
   /// Target of `VariantOptionValue`'s composite edge. Reading a product's live
   /// variants is served by `ProductVariant_product_signature_key`, which leads
   /// with `productId` and is already restricted to live rows.
@@ -884,4 +893,139 @@ model VariantOptionValue {
   @@unique([variantId, optionId])
   /// The reverse read: which variants carry 블랙 — the option grid's query.
   @@index([optionValueId])
+}
+
+// ---------------------------------------------------------------------------
+// Stock ledger (TASK-0036)
+//
+// `ProductVariant.stock` is the current value; this table is what explains it.
+// CLAUDE.md 6장 — "잔액이 있는 것은 원장 테이블을 둔다. 현재값은 원장의
+// 결과이며 대사가 가능해야 한다" — turns into four checkable statements
+// (TASK-0036 4.1), and everything below exists to make them hold:
+//
+//   L1  stock = SUM(quantity)                     for every variant
+//   L2  balanceAfter(n) = balanceAfter(n-1) + quantity(n)
+//   L3  the last row's balanceAfter = stock
+//   L4  seq runs 1..n with no gaps
+//
+// What the database is asked to guarantee lives in the migration:
+//
+//   StockLedger_pkey                 (variantId, seq) — one row per position
+//   StockLedger_ref_key              one movement per (variant, type, ref)
+//   StockLedger_direction_check      the type decides the sign
+//   StockLedger_ref_pair_check       refType and refId arrive together
+//   StockLedger_reason_check         an ADJUST states why
+//   StockLedger_append_only          a trigger: rows are never edited or removed
+//
+// **L1 to L4 are not among them.** Each needs an aggregate over other rows and
+// a CHECK may not contain one, so they are held by `StockService` inside the
+// transaction that writes them, under a row lock on the variant (TASK-0036 4.6,
+// 4.12) — which is why those four rules have a concurrency spec and a negative
+// control, and the ones above do not.
+// ---------------------------------------------------------------------------
+
+/// What moved the stock (TASK-0036 4.3).
+///
+/// The type decides the **sign**, and `StockLedger_direction_check` enforces
+/// that: a `SALE` that adds stock is not a mistake to be corrected later, it is
+/// a row that makes every reader of the ledger wrong. `ADJUST` is the only
+/// two-way type, and it is the only one obliged to carry a reason.
+enum StockLedgerType {
+  /// Goods received. Also the opening balance of a newly created variant, which
+  /// is what keeps L1 true from the moment a product is registered (4.1).
+  INBOUND
+  SALE
+  CANCEL
+  RETURN_IN
+  /// A reservation turning into a real decrement (M07).
+  RESERVE_CONFIRM
+  /// A human's correction. Reason required.
+  ADJUST
+}
+
+/// Which table `StockLedger.refId` points at.
+///
+/// An enum rather than free text even though none of these tables exists yet:
+/// the reference is what makes a movement **idempotent**
+/// (`StockLedger_ref_key`), and a typo in a free string would slip past that
+/// index silently — the retry would be recorded a second time and nothing in
+/// the ledger would look wrong. The three names come from `docs/design/erd.md`
+/// 3·4·5, so they are already decided rather than guessed.
+enum StockRefType {
+  ORDER_ITEM
+  STOCK_RESERVATION
+  CLAIM_ITEM
+}
+
+/// One movement of one variant's stock. Append-only.
+///
+/// There is no `id` and no `updatedAt`, and both absences are deliberate. The
+/// identity of a row is **its position in the variant's history**, and a table
+/// that is never updated has no honest use for an update timestamp.
+model StockLedger {
+  variantId String @db.Uuid
+
+  /// This movement's position in the variant's history, starting at 1.
+  ///
+  /// Computed as `previous max + 1` **while holding the variant's row lock**,
+  /// which is what makes it the order the movements really happened in — a
+  /// UUIDv7 would tie randomly inside one millisecond and the balance chain
+  /// would render backwards (TASK-0036 4.2).
+  ///
+  /// It is also the net: a row inserted without the lock either collides with
+  /// the primary key or leaves a gap, and `StockService.reconcile` counts gaps
+  /// (L4). A global sequence could do neither.
+  seq Int
+
+  type StockLedgerType
+
+  /// Signed, never zero. `+5` is five in, `-3` is three out.
+  ///
+  /// The sign is not a caller's choice: `StockLedger_direction_check` ties it to
+  /// {@link StockLedgerType}. Zero is refused because a movement of nothing is
+  /// not a movement, and a row carrying one would occupy a `seq` that L4 then
+  /// counts as history.
+  quantity Int
+
+  /// `ProductVariant.stock` immediately after this movement.
+  ///
+  /// Stored rather than derived so that "how much was on hand at this point"
+  /// costs one row instead of a sum from the beginning of time, and so that
+  /// reconciliation can find *where* a ledger broke rather than only that it
+  /// did (TASK-0036 4.1 L2·L3).
+  balanceAfter Int
+
+  /// What caused it, when something did. Both columns are present or both are
+  /// absent (`StockLedger_ref_pair_check`) — half a reference can neither be
+  /// followed nor used as an idempotency key.
+  refType StockRefType?
+  refId   String?       @db.Uuid
+
+  /// Why, in the operator's words. Required for `ADJUST`
+  /// (`StockLedger_reason_check`): every other type is explained by its own
+  /// name, while a correction is a human judgement and an unexplained one
+  /// cannot be audited.
+  reason String?
+
+  /// Who did it; `null` for a movement the system made on its own.
+  ///
+  /// `Restrict`, like every other edge into `User`: an account is withdrawn
+  /// with `deletedAt` and the row stays behind precisely so that history keeps
+  /// pointing at something.
+  actorId String? @db.Uuid
+
+  createdAt DateTime @default(now())
+
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  actor   User?          @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  /// The position, and the index every read uses.
+  ///
+  /// `variantId = ? ORDER BY seq DESC` is the whole read pattern — the history
+  /// page and its cursor — so no second index is declared. Adding one on
+  /// `(variantId, createdAt)` would put two indexes on the same leading column
+  /// and make every write pay for a read that never happens: `seq` is monotonic
+  /// in time within a variant, so it already orders chronologically (the lesson
+  /// of TASK-0030's removed `(categoryId, sortOrder)`).
+  @@id([variantId, seq])
 }
