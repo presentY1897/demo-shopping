@@ -34,6 +34,7 @@ import type { RequestPrincipal } from '../auth/request-principal.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { StockService } from '../stock/stock.service.js'
 import { AttributeService } from './attribute.service.js'
 import type { AxisInput, PlanIssue, PlanIssueCode, VariantPlan } from './variant-rules.js'
 import { optionSignatureOf, planVariants, resolvePurchaseLimit } from './variant-rules.js'
@@ -167,6 +168,13 @@ interface VariantOverride {
  * **Attribute values go through `AttributeService`.** They live in a JSONB
  * column, so nothing else can judge them (TASK-0030 4장), and this service is
  * the only path that writes them.
+ *
+ * **Stock goes through `StockService`.** Not one statement here writes
+ * `ProductVariant.stock`: a variant's opening balance is an `INBOUND` movement
+ * and an edited level is an `ADJUST` computed under the variant's row lock
+ * (TASK-0036 4.7). Without that, every product created before the ledger
+ * existed would carry stock the ledger cannot explain — which is the whole
+ * invariant, false from the first row.
  */
 @Injectable()
 export class ProductService {
@@ -174,6 +182,7 @@ export class ProductService {
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
     private readonly attributes: AttributeService,
+    private readonly stock: StockService,
   ) {}
 
   /**
@@ -403,7 +412,7 @@ export class ProductService {
           await this.writeImages(tx, id, input.images, now)
         }
 
-        await this.reviseVariants(tx, product, input, now)
+        await this.reviseVariants(tx, product, input, now, principal.userId)
         await this.settle(tx, id, input.status ?? product.status, 1)
       }),
     )
@@ -547,6 +556,11 @@ export class ProductService {
     if (input.plans.length === 0) return
 
     const combinations = input.plans.map((plan) => valueIdsOf(input.axes, plan.combination))
+    // The opening balance is not part of the insert. Every variant is born at
+    // zero and `StockService.open` moves it, so the quantity a seller typed and
+    // the `INBOUND` that explains it are written by the same code in the same
+    // transaction (TASK-0036 4.7).
+    const opening = input.plans.map((plan) => plan.override?.stock ?? input.defaults.stock ?? 0)
     const rows = input.plans.map((plan, index) => {
       const override = plan.override
 
@@ -556,7 +570,6 @@ export class ProductService {
         sku: override?.sku ?? `${input.skuPrefix}-${String(input.skuFrom + index)}`,
         price: override?.price ?? input.defaults.price,
         listPrice: override?.listPrice ?? input.defaults.listPrice ?? null,
-        stock: override?.stock ?? input.defaults.stock ?? 0,
         maxPurchaseQuantity:
           override?.maxPurchaseQuantity ?? input.defaults.maxPurchaseQuantity ?? null,
         isActive: override?.isActive ?? true,
@@ -572,6 +585,14 @@ export class ProductService {
     })
 
     const variantId = new Map(created.map((row) => [row.optionSignature, row.id]))
+
+    await this.stock.open(
+      tx,
+      rows.map((row, index) => ({
+        variantId: variantId.get(row.optionSignature) ?? '',
+        quantity: opening[index] ?? 0,
+      })),
+    )
     const mappings = rows.flatMap((row, index) =>
       (combinations[index] ?? []).map((optionValueId) => ({
         variantId: variantId.get(row.optionSignature) ?? '',
@@ -596,6 +617,7 @@ export class ProductService {
     product: LockedProduct,
     input: UpdateProductRequest,
     now: Date,
+    actorId: string,
   ): Promise<void> {
     const stored = await this.storedAxes(tx, product.id)
 
@@ -633,6 +655,18 @@ export class ProductService {
           where: { id: existing },
           data: { ...variantChanges(plan.override), updatedAt: now },
         })
+
+        // An absolute level, turned into the movement that reaches it. The
+        // difference is computed under the variant's row lock, so whatever sold
+        // in the meantime stays in the history instead of being erased by the
+        // number the seller was looking at (TASK-0036 4.7).
+        if (plan.override.stock !== undefined) {
+          await this.stock.setLevel(tx, {
+            variantId: existing,
+            level: plan.override.stock,
+            actorId,
+          })
+        }
       }
     }
 
@@ -1096,13 +1130,17 @@ export class ProductService {
   }
 }
 
-/** The fields an override actually changes; absent ones are left alone. */
+/**
+ * The fields an override actually changes; absent ones are left alone.
+ *
+ * `stock` is deliberately absent: an edited level is an `ADJUST` recorded under
+ * the variant's row lock, not a column assignment (TASK-0036 4.7).
+ */
 function variantChanges(override: VariantOverride): Prisma.ProductVariantUpdateInput {
   return {
     ...(override.sku === undefined ? {} : { sku: override.sku }),
     ...(override.price === undefined ? {} : { price: override.price }),
     ...(override.listPrice === undefined ? {} : { listPrice: override.listPrice }),
-    ...(override.stock === undefined ? {} : { stock: override.stock }),
     ...(override.maxPurchaseQuantity === undefined
       ? {}
       : { maxPurchaseQuantity: override.maxPurchaseQuantity }),
