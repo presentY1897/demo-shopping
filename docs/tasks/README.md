@@ -2,14 +2,14 @@
 
 > 이어받을 것과 이월된 항목은 [`docs/HANDOFF.md`](../HANDOFF.md) 에 있다.
 
-전체 **117개** TASK — 유효 **113개** + 폐기 4개(D-208 레이어 분할). **30개 완료**, TASK-0009 · TASK-0011 **진행중**(외부 계정 대기), **80개 승인됨**. 승인 대기 0개.
+전체 **117개** TASK — 유효 **113개** + 폐기 4개(D-208 레이어 분할). **31개 완료**, TASK-0009 · TASK-0011 **진행중**(외부 계정 대기), **79개 승인됨**. 승인 대기 0개.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
 | [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | **7/7 완료** |
 | [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 3/7 |
 | [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, Radix 컴포넌트, 폼, 레이아웃, Storybook | **7/7 완료** |
-| [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점, 테스트 기반 | 5/14 |
+| [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점, 테스트 기반 | 6/14 |
 | [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | 8/13 |
 | [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | 0/9 |
 | [M07](./M07-cart-order/) 장바구니·주문 | 장바구니, 금액 계산 엔진, 재고 예약, 주문 2단 분할 | 0/7 |
@@ -66,13 +66,13 @@
 
 </details>
 
-<details><summary><b>M04. 인증·계정</b> (5/14)</summary>
+<details><summary><b>M04. 인증·계정</b> (6/14)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
 | [TASK-0020](./M04-auth/TASK-0020-user-schema.md) | 사용자 · 역할 스키마 | 완료 |
 | [TASK-0021](./M04-auth/TASK-0021-google-oauth.md) | Google OAuth 로그인 | 완료 |
-| [TASK-0022](./M04-auth/TASK-0022-jwt-session.md) | JWT 발급 · 갱신 · 로그아웃 | 승인됨 |
+| [TASK-0022](./M04-auth/TASK-0022-jwt-session.md) | JWT 발급 · 갱신 · 로그아웃 | 완료 |
 | [TASK-0023](./M04-auth/TASK-0023-auth-guard.md) | 인증 UI · 권한 가드 | 승인됨 |
 | [TASK-0024](./M04-auth/TASK-0024-demo-account.md) | 데모 계정 발급 | 승인됨 |
 | [TASK-0025](./M04-auth/TASK-0025-demo-cleanup.md) | 데모 만료 · 정리 스케줄러 | 승인됨 |
