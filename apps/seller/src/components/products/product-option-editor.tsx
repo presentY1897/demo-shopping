@@ -69,6 +69,8 @@ export function ProductOptionEditor({
     onChange(axes.map((axis, at) => (at === index ? next : axis)))
   }
 
+  const globalIssues = issues.filter((issue) => issue.optionIndex === null)
+
   const issuesFor = (optionIndex: number, valueIndex: number | null): readonly OptionIssue[] =>
     issues.filter((issue) => issue.optionIndex === optionIndex && issue.valueIndex === valueIndex)
 
@@ -86,6 +88,26 @@ export function ProductOptionEditor({
           {messages.lockedNotice}
         </p>
       ) : null}
+
+      {/*
+        Problems about the **set** of axes rather than about one of them — too
+        many axes, too many combinations. They have no input to sit under, and
+        the count beside them is what makes them actionable, so they are stated
+        once at the top of the panel where they are read before scrolling.
+      */}
+      {globalIssues.length === 0 ? null : (
+        <div
+          className="border-danger bg-danger-surface text-fg rounded-md border p-3 text-sm"
+          role="alert"
+        >
+          <p className="font-medium">{messages.issueTitle}</p>
+          <ul className="mt-1 flex flex-col gap-1">
+            {globalIssues.map((issue) => (
+              <li key={issue.code}>{messages.issues[issue.code]}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {axes.length === 0 ? (
         <p className="border-border text-fg-muted rounded-lg border border-dashed p-6 text-center text-sm">
