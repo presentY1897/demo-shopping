@@ -221,7 +221,7 @@ Cloudflare R2 는 **전송량 요금이 0원**이고 S3 호환 API 라 이전이
 | --- | --- |
 | `docs/design/pages.md` | 앱별 전체 페이지 목록, 라우팅, 밀도 3단계 |
 | `docs/design/erd.md` | 데이터 모델과 관계, 설계 근거 |
-| `docs/design/state-machines.md` | 주문·재고·결제·클레임·정산·데모 상태 전이 |
+| `docs/design/state-machines.md` | 주문·재고·결제·클레임·정산·세션·데모 상태 전이 |
 | `docs/design/pricing.md` | 금액 계산 순서와 환불 안분 규칙 |
 | `docs/design/error-contract.md` | 오류 봉투, 코드 표, 문장 규칙, 요청 번호 |
 
