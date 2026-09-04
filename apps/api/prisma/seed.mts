@@ -1,60 +1,49 @@
-import { PrismaPg } from '@prisma/adapter-pg'
-import { PrismaClient } from '@prisma/client'
+import { spawnSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 
 /**
- * Seed entry point — skeleton only.
+ * `prisma db seed` — a launcher, because the seed cannot run from source.
  *
- * The actual demo catalogue (fashion products, sellers, categories, orders)
- * arrives in M05. What exists here is the part that has to be right before any
- * data is written: a client that talks to the same database the migrations ran
- * against, an idempotent write, and an exit code the CLI can act on.
+ * Prisma's configured command is `node prisma/seed.mts`, and Node loads a `.mts`
+ * by **stripping** its types. That is enough for a script that only talks to
+ * `@prisma/client`, which is what this file used to be. It is not enough for the
+ * real seed: TASK-0037 writes the catalogue **through `ProductService` and
+ * `StockService`** so that 속성 유효성 and 재고 = 원장 hold by construction, and
+ * a NestJS service cannot be stripped —
  *
- * Run it with `pnpm db:seed`. The connection string is resolved by
- * `prisma.config.ts` — the very code the API uses at boot — and handed to this
- * process through the environment, so seeding can never hit a different
- * database than the one that was just migrated.
+ * ```
+ * SyntaxError [ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX]:
+ *   TypeScript parameter property is not supported in strip-only mode
+ * ```
+ *
+ * — and even past that, the DI container reads `design:paramtypes`, which only
+ * `emitDecoratorMetadata` writes and no stripping mode emits.
+ *
+ * So the seed is compiled with the rest of `apps/api` and this file runs the
+ * output. The build is **always** run rather than checked for staleness: it is
+ * incremental and takes about three seconds, and a seed that quietly used a
+ * stale `dist` would write yesterday's rules into today's database.
  */
-const SEED_MARKER = 'seed.version'
-const SEED_VERSION = '0'
+const ENTRY = fileURLToPath(new URL('../dist/seed/run.js', import.meta.url))
+const API_DIR = fileURLToPath(new URL('..', import.meta.url))
 
-function connectionString(): string {
-  const url = process.env.DATABASE_URL
-
-  if (url === undefined || url.trim() === '') {
-    throw new Error(
-      'DATABASE_URL 이 없습니다. `pnpm db:seed` 로 실행하세요 (prisma.config.ts 가 값을 채웁니다).',
-    )
-  }
-  return url
-}
-
-async function seed(prisma: PrismaClient): Promise<void> {
-  // Upsert rather than create: a seed has to be safe to run twice, otherwise it
-  // is only usable on an empty database and stops being run at all.
-  await prisma.appMeta.upsert({
-    where: { key: SEED_MARKER },
-    update: { value: SEED_VERSION },
-    create: { key: SEED_MARKER, value: SEED_VERSION },
+function build(): void {
+  const result = spawnSync('pnpm', ['exec', 'nest', 'build'], {
+    cwd: API_DIR,
+    stdio: 'inherit',
+    shell: process.platform === 'win32',
   })
 
-  // 실제 데모 데이터는 M05 에서 채운다.
-  console.log(`시드 완료 — ${SEED_MARKER}=${SEED_VERSION} (데모 데이터는 M05 에서 추가됩니다)`)
-}
-
-async function main(): Promise<void> {
-  const prisma = new PrismaClient({
-    adapter: new PrismaPg({ connectionString: connectionString() }),
-  })
-
-  try {
-    await seed(prisma)
-  } finally {
-    await prisma.$disconnect()
+  if (result.status !== 0) {
+    throw new Error('시드를 실행하려면 먼저 apps/api 가 빌드돼야 하는데 빌드가 실패했습니다.')
   }
 }
 
-main().catch((error: unknown) => {
-  console.error('\n시드 실행에 실패했습니다.\n')
-  console.error(error)
-  process.exit(1)
-})
+build()
+
+if (!existsSync(ENTRY)) {
+  throw new Error(`빌드는 됐지만 진입점이 없습니다: ${ENTRY}`)
+}
+
+await import(ENTRY)
