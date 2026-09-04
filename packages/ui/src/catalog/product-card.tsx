@@ -141,6 +141,9 @@ export function ProductCard({
         {image === null ? null : renderImage !== undefined ? (
           renderImage({ src: image, alt: product.name })
         ) : (
+          /* eslint-disable-next-line @next/next/no-img-element -- this package
+             does not depend on Next, and an app that wants `next/image` passes
+             `renderImage` instead of taking this branch. */
           <img
             alt={product.name}
             className="h-full w-full object-cover"

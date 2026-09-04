@@ -39,9 +39,11 @@ describe('F7 — 네 가지 상태', () => {
     )
 
     expect(screen.getByRole('status')).toHaveTextContent(labels.loading)
-    expect(
-      within(screen.getAllByRole('list')[0] as HTMLElement).getAllByRole('listitem'),
-    ).toHaveLength(DENSITY_GRID_COLUMNS[2].xl * 2)
+    const [grid] = screen.getAllByRole('list')
+
+    if (grid === undefined) throw new Error('그리드가 없습니다.')
+
+    expect(within(grid).getAllByRole('listitem')).toHaveLength(DENSITY_GRID_COLUMNS[2].xl * 2)
   })
 
   it('결과가 없으면 조건을 바꾸라고 말한다', () => {
