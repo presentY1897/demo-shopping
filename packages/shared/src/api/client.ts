@@ -36,6 +36,14 @@ import {
   categoryResponseSchema,
   categoryTreeResponseSchema,
 } from './categories.js'
+import type {
+  CreateProductRequest,
+  ProductListQuery,
+  ProductListResponse,
+  ProductResponse,
+  UpdateProductRequest,
+} from './products.js'
+import { productListResponseSchema, productResponseSchema } from './products.js'
 import type { PresignUploadRequest, PresignUploadResponse } from './uploads.js'
 import { presignUploadResponseSchema } from './uploads.js'
 
@@ -144,6 +152,29 @@ export interface ApiClient {
   ) => Promise<AttributeResponse>
   deleteAttribute: (id: number, options?: ApiCallOptions) => Promise<AttributeResponse>
   /**
+   * A page of listings, newest first (TASK-0032).
+   *
+   * Summaries rather than whole products: a console page shows twenty rows and
+   * the variants of twenty products are a payload nobody renders. Paging is by
+   * `nextCursor`, which is the last id — ids are UUIDv7 and therefore already
+   * in creation order.
+   */
+  getProducts: (query?: ProductListQuery, options?: ApiCallOptions) => Promise<ProductListResponse>
+  getProduct: (id: string, options?: ApiCallOptions) => Promise<ProductResponse>
+  /**
+   * Creates a listing whole — product, images, axes, choices and every variant
+   * — because a product without variants has no price and no SKU, and letting
+   * that state exist would put a branch for it in every reader downstream.
+   */
+  createProduct: (body: CreateProductRequest, options?: ApiCallOptions) => Promise<ProductResponse>
+  updateProduct: (
+    id: string,
+    body: UpdateProductRequest,
+    options?: ApiCallOptions,
+  ) => Promise<ProductResponse>
+  /** Retires a listing. The row and its variants survive for order history. */
+  deleteProduct: (id: string, options?: ApiCallOptions) => Promise<ProductResponse>
+  /**
    * Asks for one presigned upload (TASK-0011).
    *
    * The answer is a URL the caller PUTs the file at directly; nothing here
@@ -179,6 +210,21 @@ function attributeListSearch(query: AttributeListQuery): string {
   }
 
   return `?${params.toString()}`
+}
+
+/** `?sellerId=…&status=ACTIVE&limit=20&cursor=…`, or empty when nothing is set. */
+function productListSearch(query: ProductListQuery): string {
+  const params = new URLSearchParams()
+
+  if (query.sellerId !== undefined) params.set('sellerId', query.sellerId)
+  if (query.categoryId !== undefined) params.set('categoryId', String(query.categoryId))
+  if (query.status !== undefined) params.set('status', query.status)
+  if (query.limit !== undefined) params.set('limit', String(query.limit))
+  if (query.cursor !== undefined) params.set('cursor', query.cursor)
+
+  const search = params.toString()
+
+  return search === '' ? '' : `?${search}`
 }
 
 function normaliseBaseUrl(baseUrl: string): string {
@@ -420,6 +466,42 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         path: `/attributes/${String(id)}`,
         method: 'DELETE',
         schema: attributeResponseSchema,
+        ...callOptions,
+      }),
+
+    getProducts: (query = {}, callOptions = {}) =>
+      request({
+        path: `/products${productListSearch(query)}`,
+        schema: productListResponseSchema,
+        ...callOptions,
+      }),
+
+    getProduct: (id, callOptions = {}) =>
+      request({ path: `/products/${id}`, schema: productResponseSchema, ...callOptions }),
+
+    createProduct: (body, callOptions = {}) =>
+      request({
+        path: '/products',
+        method: 'POST',
+        body,
+        schema: productResponseSchema,
+        ...callOptions,
+      }),
+
+    updateProduct: (id, body, callOptions = {}) =>
+      request({
+        path: `/products/${id}`,
+        method: 'PATCH',
+        body,
+        schema: productResponseSchema,
+        ...callOptions,
+      }),
+
+    deleteProduct: (id, callOptions = {}) =>
+      request({
+        path: `/products/${id}`,
+        method: 'DELETE',
+        schema: productResponseSchema,
         ...callOptions,
       }),
 
