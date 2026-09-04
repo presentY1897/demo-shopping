@@ -10,6 +10,7 @@ import { ProductController } from './product.controller.js'
 import { ProductService } from './product.service.js'
 import { SellerProductController } from './seller-product.controller.js'
 import { SellerProductService } from './seller-product.service.js'
+import { VariantStockController } from './variant-stock.controller.js'
 
 /** The catalogue. Prisma and the clock arrive from their global modules. */
 @Module({
@@ -21,8 +22,12 @@ import { SellerProductService } from './seller-product.service.js'
     CategoryController,
     AttributeController,
     ProductController,
-    // The seller console's own list and stock table (TASK-0115).
+    // The seller console's own reads and the stock adjustment (TASK-0115).
+    // `VariantStockController` shares the `variants` prefix with TASK-0036's
+    // `StockController` — a resource path rather than a role path, which is
+    // where the ledger already lives.
     SellerProductController,
+    VariantStockController,
   ],
   providers: [CategoryService, AttributeService, ProductService, SellerProductService],
   // `AttributeService.validateAttributes` is the only sanctioned way to judge a

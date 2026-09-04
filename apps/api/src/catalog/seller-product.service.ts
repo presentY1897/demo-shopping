@@ -1,10 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import type {
+  ProductBulkStatusRequest,
+  ProductBulkStatusResponse,
+  ProductResponse,
   ProductStatus,
   SellerProductListItem,
   SellerProductListQuery,
   SellerProductListResponse,
   SellerVariantListResponse,
+  StockAdjustRequest,
+  StockAdjustResponse,
 } from '@shopping/shared'
 import { PRODUCT_LIST_DEFAULT_LIMIT } from '@shopping/shared'
 
@@ -12,7 +17,11 @@ import { accessDenied, assertResourceAccess } from '../auth/access-denied.js'
 import { sellerOwnership, sellerOwnershipSelect } from '../auth/resource-ownership.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { StockService } from '../stock/stock.service.js'
+import { ProductService } from './product.service.js'
+import { duplicateRequest } from './product-duplicate.js'
 import { isLowStock, nameSearchPattern, stockBoundsOf } from './seller-product-filters.js'
+import { assertStoreMayWrite } from './store-write-gate.js'
 
 /** One row of the console's list, before the badge is decided. */
 interface ListRow {
@@ -65,7 +74,11 @@ interface VariantRow {
  */
 @Injectable()
 export class SellerProductService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly products: ProductService,
+    private readonly stock: StockService,
+  ) {}
 
   /**
    * A page of the caller's own listings, newest first.
@@ -140,16 +153,107 @@ export class SellerProductService {
     }
   }
 
+  /**
+   * Records one movement against a variant's stock.
+   *
+   * Everything about the movement itself — the row lock, the position, the
+   * balance, the refusal when there is not enough — is TASK-0036's, and this
+   * method adds exactly two things: *may this caller move this variant's
+   * stock*, and the shape of the answer. Nothing here writes the column, which
+   * is what keeps the ledger the only explanation of it (F8).
+   *
+   * The store's state gate applies, so a `SUSPENDED` seller is refused with
+   * `PRODUCT_SELLER_INACTIVE` while their list still answers 200 (F10).
+   */
+  async adjust(
+    principal: RequestPrincipal,
+    variantId: string,
+    input: StockAdjustRequest,
+  ): Promise<StockAdjustResponse> {
+    const variant = await this.prisma.productVariant.findUnique({
+      where: { id: variantId },
+      select: {
+        id: true,
+        product: { select: { seller: { select: { ...sellerOwnershipSelect, status: true } } } },
+      },
+    })
+
+    if (variant === null) throw new NotFoundException('상품 옵션을 찾을 수 없습니다.')
+
+    const seller = variant.product.seller
+
+    assertResourceAccess(principal, 'product.write', sellerOwnership(seller))
+    assertStoreMayWrite(principal, seller)
+
+    const entry = await this.stock.adjust({
+      variantId: variant.id,
+      type: input.type,
+      // A delta, straight through. The service refuses zero, refuses a sign the
+      // type does not admit, and refuses an `ADJUST` with no reason — every one
+      // of them naming the field it is about.
+      quantity: input.delta,
+      reason: input.reason ?? null,
+      actorId: principal.userId,
+    })
+
+    return {
+      variantId: variant.id,
+      delta: entry.quantity,
+      balanceAfter: entry.balanceAfter,
+      seq: entry.seq,
+    }
+  }
+
+  /**
+   * Takes several listings off sale, or puts them back.
+   *
+   * The transaction is {@link ProductService.changeStatuses}'s; what happens
+   * here is the read that follows it, so the console gets the rows in the shape
+   * it already draws instead of re-fetching the page.
+   */
+  async changeStatuses(
+    principal: RequestPrincipal,
+    input: ProductBulkStatusRequest,
+  ): Promise<ProductBulkStatusResponse> {
+    const sellerId = this.ownStore(principal, 'product.write')
+    const changed = await this.products.changeStatuses(principal, input)
+    const rows = await this.rows(sellerId, {}, changed.length, [...changed])
+
+    return { items: rows.map(toItem) }
+  }
+
+  /**
+   * Copies a listing as a `DRAFT` with no stock.
+   *
+   * The copy is assembled as a create **request** and handed to the write path
+   * every other listing takes ({@link duplicateRequest} says why at length).
+   * So the category's attributes are revalidated, another store's images are
+   * still refused, the combinations are expanded by the planner, the SKUs are
+   * issued by the generator, and `minPrice` is derived — none of it written
+   * twice.
+   *
+   * Refused for a listing that is not the caller's, and refused for a store
+   * whose state may not write: `create` applies both gates itself, and the
+   * check here is about the **source** rather than the destination. Without it
+   * a caller who may read a listing they do not own could copy it into their
+   * own store.
+   */
+  async duplicate(principal: RequestPrincipal, productId: string): Promise<ProductResponse> {
+    await this.assertOwnProduct(principal, productId, 'product.write')
+
+    const { product } = await this.products.get(principal, productId)
+
+    return this.products.create(principal, duplicateRequest(product))
+  }
+
   // ------------------------------------------------------------- internals
 
   /**
    * The listing rows, with their aggregates, in one statement.
    *
-   * A method rather than an expression inside {@link SellerProductService.list}
-   * because the bulk status change answers with the same rows (TASK-0115 4장),
-   * and two statements describing one row is how the two start to differ.
-   * `ids` narrows it to a known set; the filters do not apply in that case,
-   * because the caller already named the rows.
+   * Shared by the list and by the answer to a bulk status change, so the two
+   * cannot describe a row differently. `ids` narrows it to a known set; the
+   * filters are ignored in that case because the caller already named the rows.
    */
   private rows(
     sellerId: string,
