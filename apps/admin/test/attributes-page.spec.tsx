@@ -553,6 +553,17 @@ describe('deleting a definition (F5)', () => {
   })
 })
 
+/**
+ * How long the save request stays in flight while the clicks land.
+ *
+ * Long enough that three awaited clicks cannot outlast it — `await user.click()`
+ * is not instant, and at the original 40ms the first submit had already settled
+ * before the second click on a loaded machine. Short enough that teardown does
+ * not sit waiting for it: the request is still pending when the test ends, and
+ * that wait is charged to the suite.
+ */
+const IN_FLIGHT_MS = 1_500
+
 describe('the form guards its own submit', () => {
   it('sends one request however many times save is pressed (U3)', async () => {
     const user = userEvent.setup()
@@ -562,7 +573,13 @@ describe('the form guards its own submit', () => {
     testServer.server.events.on('request:start', ({ request }) => {
       if (request.method === 'POST') posts += 1
     })
-    testServer.server.use(networkFailureAfterOn('post', mockPaths.attributes, 40))
+    // The request has to still be in flight while all three clicks land, or the
+    // test is not measuring the guard at all. `await user.click()` is not
+    // instant — on a loaded machine one takes longer than 40ms did, so the
+    // first submit had already settled and released the guard before the second
+    // click, and two requests went out from correct code. The guard itself is a
+    // ref set synchronously (`use-form.ts`), which React batching cannot defeat.
+    testServer.server.use(networkFailureAfterOn('post', mockPaths.attributes, IN_FLIGHT_MS))
 
     await fillNewAttribute(user, { key: 'origin', label: '원산지', type: copy.typeLabels.TEXT })
     const save = screen.getByRole('button', { name: copy.form.save })
