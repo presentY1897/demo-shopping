@@ -1,4 +1,5 @@
 import type { HealthStatus } from '@shopping/shared'
+import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { CategoryFailureReason } from '@/lib/categories/errors'
@@ -34,6 +35,19 @@ export interface Messages {
    * arrives through this shape.
    */
   readonly components: ComponentGalleryMessages
+  /**
+   * The shell every console screen sits inside — sidebar, top bar, page header
+   * (TASK-0019). Its own slice because the root layout renders it on every
+   * route, while everything else here belongs to one screen.
+   */
+  readonly layout: ConsoleLayoutMessages
+  /**
+   * Screens whose route exists so the sidebar has no dead ends, and whose
+   * content arrives with its own milestone (TASK-0019 4.10).
+   */
+  readonly placeholder: ConsolePlaceholderMessages
+  /** Route-level loading, not-found and error states (P5). */
+  readonly routeStates: RouteStateMessages
   /** The category console (TASK-0029). */
   readonly categories: CategoryMessages
   /**
@@ -59,6 +73,52 @@ export interface ErrorNoticeMessages {
   readonly copiedLabel: string
   /** Puts the notice away. A panel with no way out is a panel that stays. */
   readonly dismissLabel: string
+}
+
+export interface ConsoleLayoutMessages {
+  /** The console's name — sidebar heading and the mobile sheet's title. */
+  readonly brand: string
+  /** Every string the shared shell renders. Its shape is the shell's. */
+  readonly shell: ConsoleShellLabels
+  /**
+   * The sidebar, from the route table in `docs/design/pages.md`.
+   *
+   * In the catalog rather than beside the components because the labels are
+   * Korean and the app owns them (TASK-0019 4.9) — the shell renders whatever
+   * it is handed. M04 puts a permission filter in front of this definition.
+   */
+  readonly menu: ConsoleMenu
+  readonly notifications: ConsoleSlotMessages
+  readonly account: ConsoleSlotMessages
+}
+
+/**
+ * A top-bar slot that is reserved but not filled.
+ *
+ * A disabled control would be worse than none (TASK-0018 4.5), so the slot is a
+ * working popover that says which milestone fills it.
+ */
+export interface ConsoleSlotMessages {
+  /** Accessible name of the icon button. */
+  readonly label: string
+  readonly title: string
+  readonly body: string
+  readonly closeLabel: string
+}
+
+export interface ConsolePlaceholderMessages {
+  readonly comingSoon: string
+  readonly body: string
+}
+
+export interface RouteStateMessages {
+  readonly loadingLabel: string
+  readonly notFoundTitle: string
+  readonly notFoundBody: string
+  readonly errorTitle: string
+  readonly errorBody: string
+  readonly retryLabel: string
+  readonly homeLabel: string
 }
 
 export interface HealthMessages {
