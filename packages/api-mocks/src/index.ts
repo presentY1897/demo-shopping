@@ -27,9 +27,11 @@ export {
   healthHandlers,
   resetAttributeStore,
   resetCategoryStore,
+  resetUploadStore,
+  uploadHandlers,
   userRolesHandlers,
 } from './handlers'
-export { mockMethods, mockPaths } from './paths'
+export { mockMethods, mockPaths, MOCK_STORAGE_ORIGIN, MOCK_STORAGE_PUBLIC_ORIGIN } from './paths'
 export type { MockMethod, MockPath } from './paths'
 export { fixtureRegistry } from './registry'
 export type { RegisteredFixture } from './registry'

@@ -3,6 +3,7 @@ import type { RequestHandler } from 'msw'
 import { attributeHandlers } from './attributes'
 import { categoryHandlers } from './categories'
 import { healthHandlers } from './health'
+import { uploadHandlers } from './uploads'
 import { userRolesHandlers } from './user-roles'
 
 /**
@@ -18,8 +19,10 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...userRolesHandlers,
   ...categoryHandlers,
   ...attributeHandlers,
+  ...uploadHandlers,
 ]
 
 export { attributeHandlers, resetAttributeStore } from './attributes'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
+export { resetUploadStore, uploadHandlers } from './uploads'
 export { healthHandlers, userRolesHandlers }
