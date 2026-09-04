@@ -21,12 +21,13 @@ import {
   neverAnswers,
 } from '@shopping/api-mocks'
 import { APP_ID_HEADER, healthEntries } from '@shopping/shared'
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import HomePage from '@/app/page'
 import { messagesFor, screenTitle } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { testServer } from './setup'
 
 const { health, wake } = messagesFor()
@@ -42,24 +43,30 @@ beforeEach(() => {
 
 describe('the admin home page', () => {
   it('renders the mocked health payload', async () => {
-    render(<HomePage />)
+    renderWithAuth(<HomePage />)
 
     expect(await screen.findByText(healthOk.version)).toBeVisible()
     expect(screen.getAllByText(health.statusLabels.ok)).toHaveLength(healthEntries(healthOk).length)
   })
 
-  it('identifies itself as admin on the call', async () => {
-    render(<HomePage />)
+  it('identifies itself as admin on every call', async () => {
+    renderWithAuth(<HomePage />)
     await screen.findByText(healthOk.version)
 
-    expect(appIdsSeen).toEqual(['admin'])
+    // Asserted as a set: how many calls a screen makes is its own business and
+    // changes with it — the session renewal joined this one on boot in
+    // TASK-0023. What must never change is that every one of them carries the
+    // id, because that is what selects this app's refresh cookie on an API all
+    // three share (D-218).
+    expect(appIdsSeen.length).toBeGreaterThan(0)
+    expect([...new Set(appIdsSeen)]).toEqual(['admin'])
   })
 
   it('paints while the API is still asleep', () => {
     // F4 — the server render awaits nothing, so the shell is there before the
     // API has answered anything at all (TASK-0101 4.3).
     testServer.server.use(neverAnswers(mockPaths.health))
-    render(<HomePage />)
+    renderWithAuth(<HomePage />)
 
     // The heading is the dashboard's, not the console's: `PageHeader` owns
     // the `<h1>` on every console screen and the console's name is in the
@@ -70,7 +77,7 @@ describe('the admin home page', () => {
 
   it('shows the failure panel and a retry when the contract is broken', async () => {
     testServer.server.use(malformedResponse(mockPaths.health, driftedHealthPayload))
-    render(<HomePage />)
+    renderWithAuth(<HomePage />)
 
     const alert = await screen.findByRole('alert')
 
@@ -79,7 +86,7 @@ describe('the admin home page', () => {
   })
 
   it('says search is usable when the API reports it ready', async () => {
-    render(<HomePage />)
+    renderWithAuth(<HomePage />)
 
     expect(await screen.findByText(wake.search.ready)).toBeVisible()
   })

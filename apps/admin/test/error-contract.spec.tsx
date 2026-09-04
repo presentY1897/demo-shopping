@@ -17,13 +17,14 @@
 import { httpFailureOn, MOCK_REQUEST_ID, mockPaths, resetCategoryStore } from '@shopping/api-mocks'
 import type { CategoryTreeNode } from '@shopping/shared'
 import { createApiClient } from '@shopping/shared'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import CategoriesPage from '@/app/categories/page'
 import { messagesFor } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { testServer } from './setup'
 
 const { categories: copy, errors: errorCopy, errorNotice } = messagesFor()
@@ -35,7 +36,7 @@ function flatten(nodes: readonly CategoryTreeNode[]): CategoryTreeNode[] {
 }
 
 async function openConsole(): Promise<void> {
-  render(<CategoriesPage />)
+  renderWithAuth(<CategoriesPage />)
   await screen.findByRole('tree', { name: copy.treeLabel })
 }
 
@@ -182,7 +183,7 @@ describe('each code gets its own recovery (F5)', () => {
     testServer.server.use(
       httpFailureOn('get', mockPaths.categories, 500, 'INTERNAL_ERROR', '서버 내부 오류'),
     )
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
 
     const alert = await screen.findByRole('alert')
 
@@ -211,7 +212,7 @@ describe('the number on screen is the number the API sent (F6)', () => {
     testServer.server.use(
       httpFailureOn('get', mockPaths.categories, 500, 'INTERNAL_ERROR', '서버 내부 오류'),
     )
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
 
     const alert = await screen.findByRole('alert')
     const shown = within(alert).getByLabelText(errorNotice.requestIdLabel).textContent
@@ -241,7 +242,7 @@ describe('the number on screen is the number the API sent (F6)', () => {
     testServer.server.use(
       httpFailureOn('get', mockPaths.categories, 403, 'FORBIDDEN', '권한이 없습니다'),
     )
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
 
     const alert = await screen.findByRole('alert')
 

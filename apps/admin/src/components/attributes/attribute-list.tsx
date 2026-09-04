@@ -2,7 +2,7 @@
 
 import type { EffectiveAttribute } from '@shopping/shared'
 import type { TableColumn } from '@shopping/ui/components'
-import { Badge, Button, Switch, Table } from '@shopping/ui/components'
+import { Badge, Button, GuardedButton, Switch, Table } from '@shopping/ui/components'
 
 import type { MoveDirection } from '@/lib/attributes/order'
 import { ownAttributes } from '@/lib/attributes/order'
@@ -16,6 +16,14 @@ interface AttributeListProps {
   readonly categoryName: (categoryId: number) => string
   readonly onEdit: (id: number) => void
   readonly onRemove: (id: number) => void
+  /**
+   * Why this operator may not delete a definition, or `undefined` when they may.
+   *
+   * Passed in rather than read from a hook here, for the same reason the
+   * category toolbar takes it as a prop: this component is handed everything it
+   * renders.
+   */
+  readonly removeDenial: string | undefined
   readonly onMove: (id: number, direction: MoveDirection) => void
   readonly onToggleFilterable: (id: number) => void
   /** Takes the picker to the category that owns an inherited definition. */
@@ -43,6 +51,7 @@ export function AttributeList({
   categoryName,
   onEdit,
   onRemove,
+  removeDenial,
   onMove,
   onToggleFilterable,
   onOpenSource,
@@ -146,15 +155,27 @@ export function AttributeList({
             >
               {messages.actions.edit}
             </Button>
-            <Button
-              onClick={() => {
-                onRemove(row.id)
-              }}
-              size="sm"
-              variant="ghost"
-            >
-              {messages.actions.remove}
-            </Button>
+            {/*
+              `DELETE /attributes/:id` requires `catalog.delete`, which
+              `ADMIN_OPERATOR` and `DEMO_ADMIN` do not hold. Blocked with the
+              reason rather than hidden — the feature exists, and saying so is
+              the point of the demo (TASK-0023 4장).
+            */}
+            {removeDenial === undefined ? (
+              <Button
+                onClick={() => {
+                  onRemove(row.id)
+                }}
+                size="sm"
+                variant="ghost"
+              >
+                {messages.actions.remove}
+              </Button>
+            ) : (
+              <GuardedButton blocked reason={removeDenial} size="sm" variant="ghost">
+                {messages.actions.remove}
+              </GuardedButton>
+            )}
           </div>
         ),
     },

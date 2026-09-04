@@ -337,18 +337,24 @@ export const ko: Messages = {
       navSheetDescription: '콘솔의 모든 화면을 여기에서 엽니다.',
     },
     // 경로와 순서는 docs/design/pages.md 가 유일한 출처다. 절 제목만 이
-    // TASK 의 분류다(TASK-0019 4.9). M04 가 이 정의 앞에 권한 필터를 얹는다.
+    // TASK 의 분류다(TASK-0019 4.9).
+    //
+    // permission 은 그 화면이 API 에 처음 묻는 조회 퍼미션이고, 셸이 그것으로
+    // 메뉴를 거른다(TASK-0023). 오늘의 역할 표에서는 콘솔에 들어올 수 있는
+    // 역할이 모든 *.read 를 가지므로 실제로 가려지는 항목이 없다 — 없는 차이를
+    // 만들어 내지 않고, 필터 자체는 순수 함수 검사가 증명한다. 대응하는
+    // 퍼미션이 아직 없는 화면은 비워 둔다(M12·M13 이 채운다).
     menu: [
       { id: 'overview', items: [{ href: '/', label: '대시보드' }] },
       {
         id: 'operations',
         label: '운영',
         items: [
-          { href: '/users', label: '회원 관리' },
-          { href: '/sellers', label: '판매자 관리' },
-          { href: '/products', label: '상품 관리' },
-          { href: '/orders', label: '주문 관리' },
-          { href: '/claims', label: '클레임 관리' },
+          { href: '/users', label: '회원 관리', permission: 'user.read' },
+          { href: '/sellers', label: '판매자 관리', permission: 'seller.read' },
+          { href: '/products', label: '상품 관리', permission: 'product.read' },
+          { href: '/orders', label: '주문 관리', permission: 'order.read' },
+          { href: '/claims', label: '클레임 관리', permission: 'claim.read' },
           { href: '/reports', label: '신고 처리' },
         ],
       },
@@ -356,8 +362,8 @@ export const ko: Messages = {
         id: 'catalog',
         label: '카탈로그',
         items: [
-          { href: '/categories', label: '카테고리 관리' },
-          { href: '/attributes', label: '속성 관리' },
+          { href: '/categories', label: '카테고리 관리', permission: 'catalog.read' },
+          { href: '/attributes', label: '속성 관리', permission: 'catalog.read' },
         ],
       },
       {
@@ -365,11 +371,15 @@ export const ko: Messages = {
         label: '정산·프로모션',
         items: [
           { href: '/commissions', label: '수수료 설정' },
-          { href: '/settlements', label: '정산 관리' },
-          { href: '/coupons', label: '플랫폼 쿠폰' },
+          { href: '/settlements', label: '정산 관리', permission: 'settlement.read' },
+          { href: '/coupons', label: '플랫폼 쿠폰', permission: 'coupon.read' },
         ],
       },
-      { id: 'system', label: '시스템', items: [{ href: '/demo', label: '데모 계정 관리' }] },
+      {
+        id: 'system',
+        label: '시스템',
+        items: [{ href: '/demo', label: '데모 계정 관리', permission: 'demo.manage' }],
+      },
     ],
     notifications: {
       label: '알림',
@@ -377,11 +387,79 @@ export const ko: Messages = {
       body: '알림함은 M11 에서 이 자리에 들어옵니다.',
       closeLabel: '닫기',
     },
-    account: {
+  },
+  // 로그인과 권한 안내 (TASK-0023). 아래 레코드는 전부 @shopping/shared 가
+  // 소유한 유니온으로 키가 잡혀 있어, 값이 하나 늘면 여기가 typecheck 에서
+  // 걸린다. TASK-0019 가 자리만 잡아 둔 layout.account 팝오버를 대체한다.
+  auth: {
+    signIn: {
+      title: '로그인',
+      description: 'Google 계정으로 로그인하면 관리자 콘솔을 쓸 수 있습니다.',
+      googleLabel: 'Google 계정으로 계속하기',
+      demoLabel: '관리자 데모 계정 받기',
+      demoReason: '데모 계정 발급은 곧 열립니다. 지금은 Google 로그인만 쓸 수 있어요.',
+      checkingLabel: '로그인 상태를 확인하는 중입니다',
+      signedInTitle: '이미 로그인되어 있습니다',
+      signedInBody: '관리자 콘솔로 이동하려면 아래 버튼을 눌러주세요.',
+      continueLabel: '관리자 콘솔로 이동',
+      configurationTitle: '로그인을 시작할 수 없습니다',
+      configurationBody: 'API 주소 설정이 없습니다. pnpm dev 로 실행했는지 확인해주세요.',
+    },
+    outcome: {
+      failureTitle: '로그인하지 못했습니다',
+      cancelled: '로그인을 취소했습니다. 언제든 다시 시도할 수 있어요.',
+      generic: '로그인을 끝내지 못했습니다. 다시 시도해주세요.',
+      // 콜백이 실어 보내는 네 가지 사유(TASK-0021). 운영자에게 도움이 되는
+      // 상세는 서버 로그의 requestId 옆에 있고, 여기에는 다음 행동만 적는다.
+      failures: {
+        state_mismatch: '로그인 요청이 만료됐습니다. 다시 시도해주세요.',
+        exchange_failed: 'Google 인증을 마치지 못했습니다. 잠시 후 다시 시도해주세요.',
+        profile_failed: 'Google 계정 정보를 읽지 못했습니다. 다시 시도해주세요.',
+        not_configured: '이 환경에서는 Google 로그인을 쓸 수 없습니다.',
+      },
+      notices: {
+        no_role: '로그인은 됐지만 관리자 권한이 없습니다.',
+      },
+      sessions: {
+        unknown: '로그인이 필요합니다.',
+        expired: '로그인이 만료됐습니다. 다시 로그인해주세요.',
+        reused: '보안을 위해 로그아웃했습니다. 다시 로그인해주세요.',
+        unreachable: '서버에 연결하지 못했습니다. 잠시 후 다시 시도해주세요.',
+      },
+    },
+    // API 403 의 details 와 같은 어휘를 쓴다 — 버튼이 말하는 이유와 호출이
+    // 거절되는 이유가 달라지면 안 된다.
+    denials: {
+      checking: '로그인 상태를 확인하는 중입니다.',
+      signed_out: '로그인이 필요한 기능입니다.',
+      missing_permission: '이 역할로는 할 수 없는 작업입니다.',
+      out_of_scope: '이 항목에는 적용할 수 없는 작업입니다.',
+    },
+    menu: {
       label: '내 계정',
       title: '내 계정',
-      body: '로그인과 계정 메뉴는 M04 에서 이 자리에 들어옵니다.',
       closeLabel: '닫기',
+      signedOutBody: '관리자 콘솔를 쓰려면 로그인해주세요.',
+      signInLabel: '로그인',
+      signOutLabel: '로그아웃',
+      rolesLabel: '권한',
+      roleNames: {
+        BUYER: '구매자',
+        SELLER_OWNER: '판매자',
+        ADMIN_OPERATOR: '운영자',
+        ADMIN_SUPER: '관리자',
+        DEMO_ADMIN: '데모 관리자',
+      },
+      profileLabel: '프로필 설정',
+      profileReason: '프로필 편집은 곧 열립니다.',
+    },
+    guard: {
+      checkingLabel: '로그인 상태를 확인하는 중입니다',
+      title: '관리자 콘솔을 이용할 수 없습니다',
+      body: '이 계정에는 관리자 권한이 없습니다. 권한은 관리자가 직접 부여합니다.',
+      signInLabel: '다른 계정으로 로그인',
+      signOutLabel: '로그아웃',
+      pendingNote: '데모 관리자 계정 발급은 곧 이 자리에 들어옵니다.',
     },
   },
   placeholder: {

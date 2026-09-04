@@ -10,10 +10,15 @@
  *
  * `usePathname` is the one thing mocked. There is no router in a unit test, and
  * the pathname is exactly the input the highlight rule takes.
+ *
+ * The shell reads the session since TASK-0023 — the account slot is a real menu
+ * and the sidebar is filtered by permission — so it is rendered inside a
+ * provider seeded with the role that opens this console.
  */
 
+import { sessionAdminSuper } from '@shopping/api-mocks'
 import { consoleMenuItems } from '@shopping/ui/console'
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import axe from 'axe-core'
 import type { RunOptions } from 'axe-core'
@@ -24,9 +29,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AdminShell } from '@/components/layout/admin-shell'
 import { messagesFor } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
-const { layout } = messagesFor()
+const { auth, layout } = messagesFor()
 
 const pathname = vi.hoisted(() => ({ current: '/' }))
 
@@ -38,10 +44,11 @@ function renderShell(currentPath: string, width: number = VIEWPORTS.desktop) {
   pathname.current = currentPath
   stubViewport(width)
 
-  return render(
+  return renderWithAuth(
     <AdminShell messages={layout}>
       <h1>{currentPath}</h1>
     </AdminShell>,
+    { session: sessionAdminSuper },
   )
 }
 
@@ -90,21 +97,53 @@ describe('the menu', () => {
   })
 })
 
-describe('the reserved slots', () => {
-  it.each([
-    ['notifications', layout.notifications],
-    ['account', layout.account],
-  ])('%s says which milestone fills it, rather than being disabled', async (_name, slot) => {
+describe('the notification slot', () => {
+  it('says which milestone fills it, rather than being disabled', async () => {
     const user = userEvent.setup()
     renderShell('/')
 
-    const trigger = screen.getByRole('button', { name: slot.label })
+    const trigger = screen.getByRole('button', { name: layout.notifications.label })
 
     expect(trigger).toBeEnabled()
 
     await user.click(trigger)
 
-    expect(await screen.findByText(slot.body)).toBeVisible()
+    expect(await screen.findByText(layout.notifications.body)).toBeVisible()
+  })
+})
+
+describe('the account menu', () => {
+  it('is a working control before the session is even known', () => {
+    renderShell('/')
+
+    expect(screen.getByRole('button', { name: auth.menu.label })).toBeEnabled()
+  })
+
+  it('names the roles the account holds and offers a way out', async () => {
+    const user = userEvent.setup()
+    renderShell('/')
+
+    await user.click(screen.getByRole('button', { name: auth.menu.label }))
+
+    expect(await screen.findByText(new RegExp(auth.menu.rolesLabel))).toBeVisible()
+    expect(screen.getByRole('button', { name: auth.menu.signOutLabel })).toBeVisible()
+  })
+
+  /**
+   * Profile editing is TASK-0112. It is shown blocked rather than hidden, and
+   * `aria-disabled` rather than `disabled` — a control the keyboard cannot reach
+   * cannot tell anybody why it is there.
+   */
+  it('shows the profile entry blocked, with the reason, still reachable', async () => {
+    const user = userEvent.setup()
+    renderShell('/')
+
+    await user.click(screen.getByRole('button', { name: auth.menu.label }))
+
+    const profile = await screen.findByRole('button', { name: auth.menu.profileLabel })
+
+    expect(profile).toHaveAttribute('aria-disabled', 'true')
+    expect(profile).toHaveAccessibleDescription(auth.menu.profileReason)
   })
 })
 
@@ -165,8 +204,8 @@ describe('the shell has no accessibility violations', () => {
     const user = userEvent.setup()
     renderShell('/categories')
 
-    await user.click(screen.getByRole('button', { name: layout.account.label }))
-    await screen.findByText(layout.account.body)
+    await user.click(screen.getByRole('button', { name: auth.menu.label }))
+    await screen.findByRole('button', { name: auth.menu.signOutLabel })
 
     await expectNoViolations()
   })

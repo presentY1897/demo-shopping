@@ -6,6 +6,10 @@ import type {
   AttributeMessages,
   AttributePreviewMessages,
   CategoryMessages,
+  AuthDenialMessages,
+  AuthMessages,
+  AuthOutcomeMessages,
+  ConsoleGuardMessages,
   ConsoleLayoutMessages,
   ConsolePlaceholderMessages,
   ConsoleSlotMessages,
@@ -14,6 +18,8 @@ import type {
   Messages,
   RouteStateMessages,
   SearchReadinessMessages,
+  SignInMessages,
+  UserMenuMessages,
   WakeMessages,
 } from './types'
 
@@ -48,6 +54,10 @@ export type {
   AttributeMessages,
   AttributePreviewMessages,
   CategoryMessages,
+  AuthDenialMessages,
+  AuthMessages,
+  AuthOutcomeMessages,
+  ConsoleGuardMessages,
   ConsoleLayoutMessages,
   ConsolePlaceholderMessages,
   ConsoleSlotMessages,
@@ -56,5 +66,7 @@ export type {
   Messages,
   RouteStateMessages,
   SearchReadinessMessages,
+  SignInMessages,
+  UserMenuMessages,
   WakeMessages,
 }

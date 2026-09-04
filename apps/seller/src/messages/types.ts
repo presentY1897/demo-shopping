@@ -1,10 +1,11 @@
-import type { HealthStatus } from '@shopping/shared'
+import type { DenialReason, HealthStatus, OauthFailureReason, OauthNotice } from '@shopping/shared'
 import type { ImageUploadListLabels } from '@shopping/ui/components'
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { ApiFailureReason } from '@/lib/api-failure'
 import type { ErrorMessages } from '@/lib/errors'
+import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'
 import type { RejectionReason } from '@/lib/uploads/gallery'
 import type { UploadFailureKey } from '@/lib/uploads/failures'
@@ -51,6 +52,13 @@ export interface Messages {
   readonly placeholder: ConsolePlaceholderMessages
   /** Route-level loading, not-found and error states (P5). */
   readonly routeStates: RouteStateMessages
+  /**
+   * Signing in, being kept out, and being told why (TASK-0023).
+   *
+   * Replaces the `layout.account` placeholder slot the shell has carried since
+   * TASK-0019 — that popover said "M04 에서 이 자리에 들어옵니다", and this is M04.
+   */
+  readonly auth: AuthMessages
   /**
    * What the API's refusals are called here, keyed by `error.code` (TASK-0117).
    *
@@ -108,6 +116,89 @@ export interface ImageUploadPreviewMessages {
   readonly outputEmpty: string
 }
 
+export interface AuthMessages {
+  readonly signIn: SignInMessages
+  readonly outcome: AuthOutcomeMessages
+  readonly denials: AuthDenialMessages
+  readonly menu: UserMenuMessages
+  readonly guard: ConsoleGuardMessages
+}
+
+export interface SignInMessages {
+  readonly title: string
+  readonly description: string
+  /** The one real sign-in path. Email and password do not exist (TASK-0021). */
+  readonly googleLabel: string
+  /** TASK-0024 fills this. Until then it is shown blocked, with the reason. */
+  readonly demoLabel: string
+  readonly demoReason: string
+  readonly checkingLabel: string
+  readonly signedInTitle: string
+  readonly signedInBody: string
+  readonly continueLabel: string
+  /** `NEXT_PUBLIC_API_URL` is missing, so there is nowhere to send anybody. */
+  readonly configurationTitle: string
+  readonly configurationBody: string
+}
+
+/**
+ * What the callback said, and what a refused renewal said.
+ *
+ * Both unions are contracts `@shopping/shared` owns, so a value added there
+ * fails `pnpm typecheck` here rather than rendering a blank line.
+ */
+export interface AuthOutcomeMessages {
+  readonly failureTitle: string
+  /** `status=cancelled`. Not an error: somebody pressed 취소 on Google. */
+  readonly cancelled: string
+  /** The query string was unreadable, so there is nothing specific to say. */
+  readonly generic: string
+  readonly failures: Readonly<Record<OauthFailureReason, string>>
+  readonly notices: Readonly<Record<OauthNotice, string>>
+  readonly sessions: Readonly<Record<SessionRefusal, string>>
+}
+
+/**
+ * Why a control is not available.
+ *
+ * `missing_permission` and `out_of_scope` are the API's own two reasons
+ * (`denialReasons`), so a disabled button and a 403 say the same thing.
+ */
+export type AuthDenialMessages = Readonly<Record<DenialReason | 'checking' | 'signed_out', string>>
+
+export interface UserMenuMessages {
+  readonly label: string
+  readonly title: string
+  readonly closeLabel: string
+  readonly signedOutBody: string
+  readonly signInLabel: string
+  readonly signOutLabel: string
+  readonly rolesLabel: string
+  /** One per role, so the menu never shows `SELLER_OWNER` to a person. */
+  readonly roleNames: Readonly<Record<string, string>>
+  readonly profileLabel: string
+  /** Profile editing arrives with TASK-0112; the entry says so until then. */
+  readonly profileReason: string
+}
+
+/**
+ * The console's own two states: still deciding, and decided against.
+ *
+ * `body` deliberately does not name a seller application state. The session
+ * carries no `Seller.status` and the API that will is TASK-0108's, so telling
+ * `PENDING` from `REJECTED` here would be a guess shown to the person it is
+ * wrong about (TASK-0023 4장 · R2).
+ */
+export interface ConsoleGuardMessages {
+  readonly checkingLabel: string
+  readonly title: string
+  readonly body: string
+  readonly signInLabel: string
+  readonly signOutLabel: string
+  /** Says which milestone turns this screen into a real one. */
+  readonly pendingNote: string
+}
+
 export interface ConsoleLayoutMessages {
   /** The console's name — sidebar heading and the mobile sheet's title. */
   readonly brand: string
@@ -122,7 +213,6 @@ export interface ConsoleLayoutMessages {
    */
   readonly menu: ConsoleMenu
   readonly notifications: ConsoleSlotMessages
-  readonly account: ConsoleSlotMessages
 }
 
 /**

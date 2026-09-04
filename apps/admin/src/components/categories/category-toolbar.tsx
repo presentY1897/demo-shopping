@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@shopping/ui/components'
+import { Button, GuardedButton } from '@shopping/ui/components'
 
 import type { CategoryRow, MoveDirection } from '@/lib/categories/tree'
 import { canAddChild, hasChildren, planMove } from '@/lib/categories/tree'
@@ -16,6 +16,14 @@ interface CategoryToolbarProps {
   readonly onMove: (id: number, direction: MoveDirection) => void
   readonly onToggleActive: (id: number) => void
   readonly onRemove: (id: number) => void
+  /**
+   * Why this operator may not delete, or `undefined` when they may.
+   *
+   * Passed in rather than read from a hook here: the toolbar is handed
+   * everything it renders, and a component that reached for the session would
+   * need a provider in every spec that has nothing to do with permissions.
+   */
+  readonly removeDenial: string | undefined
   readonly onExpandAll: () => void
   readonly onCollapseAll: () => void
 }
@@ -43,6 +51,7 @@ export function CategoryToolbar({
   onMove,
   onToggleActive,
   onRemove,
+  removeDenial,
   onExpandAll,
   onCollapseAll,
 }: CategoryToolbarProps) {
@@ -131,16 +140,31 @@ export function CategoryToolbar({
             {selected?.isActive === false ? actions.activate : actions.deactivate}
           </Button>
 
-          <Button
-            disabled={selected === null || blocked}
-            onClick={() => {
-              if (selected !== null) onRemove(selected.id)
-            }}
-            size="sm"
-            variant="danger"
-          >
-            {actions.remove}
-          </Button>
+          {/*
+            Two different reasons a delete cannot happen, and they are not the
+            same kind of thing. "Nothing selected" and "it still has children"
+            are states of this screen, and the button is genuinely `disabled`.
+            "This role cannot delete categories" is a fact about the account —
+            `ADMIN_OPERATOR` and `DEMO_ADMIN` hold `catalog.write` and not
+            `catalog.delete`, and `DELETE /categories/:id` answers 403 — so it
+            stays reachable and says so (TASK-0023 4장).
+          */}
+          {removeDenial === undefined ? (
+            <Button
+              disabled={selected === null || blocked}
+              onClick={() => {
+                if (selected !== null) onRemove(selected.id)
+              }}
+              size="sm"
+              variant="danger"
+            >
+              {actions.remove}
+            </Button>
+          ) : (
+            <GuardedButton blocked reason={removeDenial} size="sm" variant="danger">
+              {actions.remove}
+            </GuardedButton>
+          )}
         </div>
 
         {blocked ? <p className="text-fg-muted text-sm">{actions.removeBlocked}</p> : null}

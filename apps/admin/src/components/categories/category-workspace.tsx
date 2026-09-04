@@ -12,6 +12,7 @@ import {
 import { serverFieldErrors } from '@shopping/ui/form'
 import { useMemo, useState } from 'react'
 
+import { useAuthorization } from '@/lib/auth/authorization'
 import type { ApiFailure } from '@/lib/api-failure'
 import { failureMessage, hasCode, quotableRequestId } from '@/lib/api-failure'
 import type { CategoryRow, MoveDirection } from '@/lib/categories/tree'
@@ -85,6 +86,18 @@ interface CategoryWorkspaceProps {
 export function CategoryWorkspace({ messages, errors, notice }: CategoryWorkspaceProps) {
   const { state, reload, create, update, move, remove } = useCategoryTree()
   const { toast } = useToast()
+
+  /**
+   * Why this account may not delete a category, or `undefined` when it may.
+   *
+   * `catalog.delete` is what `DELETE /categories/:id` requires, and
+   * `ADMIN_OPERATOR` and `DEMO_ADMIN` do not hold it — so the button they see is
+   * blocked with the reason rather than alive until it answers 403. The decision
+   * comes from `@shopping/shared`, which is the same table the API's guard reads
+   * (TASK-0023 4장).
+   */
+  const { reason } = useAuthorization()
+  const removeDenial = reason('catalog.delete')
 
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [dialog, setDialog] = useState<Dialog>({ kind: 'none' })
@@ -465,6 +478,7 @@ export function CategoryWorkspace({ messages, errors, notice }: CategoryWorkspac
           */}
           <div className="lg:sticky lg:top-8 lg:w-96 lg:shrink-0">
             <CategoryToolbar
+              removeDenial={removeDenial}
               messages={messages}
               onAddChild={openCreate}
               onAddRoot={() => {
