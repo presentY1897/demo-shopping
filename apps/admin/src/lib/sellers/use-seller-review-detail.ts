@@ -1,10 +1,8 @@
 'use client'
 
-import type { Seller } from '@shopping/shared'
+import type { ApiFailure, Seller } from '@shopping/shared'
 import { useCallback, useEffect, useRef, useState } from 'react'
-
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure } from '@/lib/api-failure'
+import { apiFailure } from '@shopping/shared'
 
 import { decideSellerReview, fetchSellerReview } from './api'
 import type { SellerDecision } from './decisions'

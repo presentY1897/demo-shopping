@@ -1,6 +1,6 @@
 'use client'
 
-import type { Seller } from '@shopping/shared'
+import type { ApiFailure, ErrorMessages, Seller } from '@shopping/shared'
 import {
   Badge,
   Button,
@@ -15,11 +15,9 @@ import {
 } from '@shopping/ui/components'
 import NextLink from 'next/link'
 import { useCallback, useState } from 'react'
+import { failureMessage, quotableRequestId } from '@shopping/shared'
 
-import type { ApiFailure } from '@/lib/api-failure'
-import { failureMessage, quotableRequestId } from '@/lib/api-failure'
 import { useAuthorization } from '@/lib/auth/authorization'
-import type { ErrorMessages } from '@/lib/errors'
 import type { SellerDecision } from '@/lib/sellers/decisions'
 import { statusVariant } from '@/lib/sellers/decisions'
 import { reviewDate, reviewDateTime } from '@/lib/sellers/format'

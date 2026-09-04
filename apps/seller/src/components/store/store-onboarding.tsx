@@ -1,15 +1,13 @@
 'use client'
 
-import type { Seller } from '@shopping/shared'
+import type { ApiFailure, Seller } from '@shopping/shared'
 import { Button, EmptyState, ErrorNotice, Link, Skeleton } from '@shopping/ui/components'
 import { PageHeader } from '@shopping/ui/console'
 import { Form, FormError, serverFieldErrors, useForm } from '@shopping/ui/form'
 import type { ValidationErrors } from '@shopping/ui/form'
 import { useCallback, useId, useMemo, useState } from 'react'
+import { apiFailure, errorMessage, failureMessage, quotableRequestId } from '@shopping/shared'
 
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure, failureMessage, quotableRequestId } from '@/lib/api-failure'
-import { errorMessage } from '@/lib/errors'
 import type { StoreFormValues } from '@/lib/sellers/store-form'
 import {
   applicationFormSchema,

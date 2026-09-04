@@ -1,5 +1,6 @@
 import type { DensityLevel } from '@shopping/ui'
 import type {
+  ApiFailureReason,
   DenialReason,
   HealthStatus,
   OauthFailureReason,
@@ -8,7 +9,6 @@ import type {
 } from '@shopping/shared'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
-import type { ApiFailureReason } from '@/lib/api-failure'
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'
 

@@ -1,6 +1,7 @@
 'use client'
 
 import type {
+  ApiFailure,
   Profile,
   ProfileUpdateRequest,
   UserPreference,
@@ -8,9 +9,7 @@ import type {
   WithdrawalResponse,
 } from '@shopping/shared'
 import { useCallback, useEffect, useState } from 'react'
-
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure } from '@/lib/api-failure'
+import { apiFailure } from '@shopping/shared'
 
 import { fetchProfile, saveProfile, savePreference, withdraw } from './client'
 

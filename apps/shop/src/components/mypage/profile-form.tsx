@@ -1,6 +1,6 @@
 'use client'
 
-import type { Profile, ProfileUpdateRequest } from '@shopping/shared'
+import type { ApiFailure, Profile, ProfileUpdateRequest } from '@shopping/shared'
 import { profileNameSchema, profileUpdateRequestSchema } from '@shopping/shared'
 import { Avatar, Button, Card, Input } from '@shopping/ui/components'
 import type { ValidationErrors } from '@shopping/ui/form'
@@ -8,7 +8,6 @@ import { Form, FormError, FormField, serverFieldErrors, useForm } from '@shoppin
 import { useMemo, useState } from 'react'
 import { z } from 'zod'
 
-import type { ApiFailure } from '@/lib/api-failure'
 import type { MutationResult } from '@/lib/profile/use-account'
 import type { MyPageMessages, ProfileFormMessages } from '@/messages'
 

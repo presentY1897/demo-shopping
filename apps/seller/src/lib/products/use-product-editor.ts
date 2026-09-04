@@ -1,16 +1,16 @@
 'use client'
 
 import type {
+  ApiFailure,
   CreateProductRequest,
   Product,
   ProductPublishRequest,
   UpdateProductRequest,
 } from '@shopping/shared'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { apiFailure } from '@shopping/shared'
 
 import { getApiClient } from '@/lib/api'
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure } from '@/lib/api-failure'
 
 /**
  * Loading a listing and writing it back (TASK-0114 4장).

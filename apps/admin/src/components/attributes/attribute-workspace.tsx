@@ -1,7 +1,18 @@
 'use client'
 
-import type { AttributeDefinition, EffectiveAttribute } from '@shopping/shared'
-import { attributeTypeHasOptions } from '@shopping/shared'
+import type {
+  ApiFailure,
+  AttributeDefinition,
+  EffectiveAttribute,
+  ErrorMessages,
+} from '@shopping/shared'
+import {
+  attributeTypeHasOptions,
+  errorMessage,
+  failureMessage,
+  hasCode,
+  quotableRequestId,
+} from '@shopping/shared'
 import {
   Button,
   DataList,
@@ -15,16 +26,12 @@ import type { ValidationErrors } from '@shopping/ui/form'
 import { NO_ERRORS, serverFieldErrors } from '@shopping/ui/form'
 import { useCallback, useMemo, useState } from 'react'
 
-import type { ApiFailure } from '@/lib/api-failure'
-import { failureMessage, hasCode, quotableRequestId } from '@/lib/api-failure'
 import { choiceById, choiceName } from '@/lib/attributes/categories'
 import type { AttributeFormValues } from '@/lib/attributes/form-schema'
 import type { MoveDirection } from '@/lib/attributes/order'
 import type { AttributeDraft } from '@/lib/attributes/preview'
 import { previewAttributes } from '@/lib/attributes/preview'
 import { useAttributeConsole } from '@/lib/attributes/use-attributes'
-import type { ErrorMessages } from '@/lib/errors'
-import { errorMessage } from '@/lib/errors'
 import { useAuthorization } from '@/lib/auth/authorization'
 import type { AttributeMessages, ErrorNoticeMessages } from '@/messages'
 

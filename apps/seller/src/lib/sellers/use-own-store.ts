@@ -1,10 +1,13 @@
 'use client'
 
-import type { Seller, SellerApplicationRequest, SellerStoreUpdateRequest } from '@shopping/shared'
+import type {
+  ApiFailure,
+  Seller,
+  SellerApplicationRequest,
+  SellerStoreUpdateRequest,
+} from '@shopping/shared'
 import { useCallback, useEffect, useRef, useState } from 'react'
-
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure } from '@/lib/api-failure'
+import { apiFailure } from '@shopping/shared'
 
 import { fetchOwnStore, saveOwnStore, submitApplication } from './store-api'
 import { isMissingStore, isVersionConflict } from './store-failures'

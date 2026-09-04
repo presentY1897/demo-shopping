@@ -1,12 +1,11 @@
 'use client'
 
-import type { CreateCategoryRequest, UpdateCategoryRequest } from '@shopping/shared'
+import type { ApiFailure, CreateCategoryRequest, UpdateCategoryRequest } from '@shopping/shared'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { apiFailure, hasCode } from '@shopping/shared'
 
 import { getApiClient } from '@/lib/api'
 
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure, hasCode } from '@/lib/api-failure'
 import type { CategoryRow, MoveDirection } from './tree'
 import { applyPlan, mergeRows, planMove, toRows } from './tree'
 

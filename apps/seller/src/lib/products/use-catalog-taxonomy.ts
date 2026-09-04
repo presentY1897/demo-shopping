@@ -1,11 +1,10 @@
 'use client'
 
-import type { CategoryTreeNode, EffectiveAttribute } from '@shopping/shared'
+import type { ApiFailure, CategoryTreeNode, EffectiveAttribute } from '@shopping/shared'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { apiFailure } from '@shopping/shared'
 
 import { getApiClient } from '@/lib/api'
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure } from '@/lib/api-failure'
 
 /**
  * The two reads that decide what the editor asks for: the category tree, and

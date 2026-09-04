@@ -1,9 +1,9 @@
 'use client'
 
 import { ErrorNotice, ErrorState, Skeleton } from '@shopping/ui/components'
+import type { ApiFailure } from '@shopping/shared'
+import { failureMessage, quotableRequestId } from '@shopping/shared'
 
-import type { ApiFailure } from '@/lib/api-failure'
-import { failureMessage, quotableRequestId } from '@/lib/api-failure'
 import type { MyPageMessages } from '@/messages'
 
 /**

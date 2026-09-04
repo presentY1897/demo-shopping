@@ -3,8 +3,7 @@
 import type { ApiClient, UploadContentType } from '@shopping/shared'
 import type { ImageUploadItem } from '@shopping/ui/components'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-
-import { apiFailure } from '@/lib/api-failure'
+import { apiFailure } from '@shopping/shared'
 
 import type { RowFailure, UploadFailureKey, UploadMessages } from './failures'
 import { localFailure, presignFailure, storageFailureKey } from './failures'

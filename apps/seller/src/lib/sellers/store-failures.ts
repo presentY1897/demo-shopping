@@ -1,6 +1,5 @@
 import { isApiFieldError } from '@shopping/shared'
-
-import type { ApiFailure } from '@/lib/api-failure'
+import type { ApiFailure } from '@shopping/shared'
 
 /**
  * Reading a seller refusal, which means reading `details[].field`.

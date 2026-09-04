@@ -1,10 +1,9 @@
 'use client'
 
-import type { UserPreference, UserPreferenceUpdateRequest } from '@shopping/shared'
+import type { ApiFailure, UserPreference, UserPreferenceUpdateRequest } from '@shopping/shared'
 import { Card, Switch } from '@shopping/ui/components'
 import { useState } from 'react'
 
-import type { ApiFailure } from '@/lib/api-failure'
 import type { MutationResult } from '@/lib/profile/use-account'
 import type { MyPageMessages, NotificationSettingMessages } from '@/messages'
 

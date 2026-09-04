@@ -1,5 +1,5 @@
 import type { ApiClient } from '@shopping/shared'
-import { createApiClient } from '@shopping/shared'
+import { ApiConfigurationError, createApiClient } from '@shopping/shared'
 
 import type { SessionClient } from '@/lib/auth/session-client'
 import { authenticatedFetch, createSessionClient } from '@/lib/auth/session-client'
@@ -14,10 +14,6 @@ import { authenticatedFetch, createSessionClient } from '@/lib/auth/session-clie
  * a singleton.
  */
 export const APP_ID = 'admin' as const
-
-export class ApiConfigurationError extends Error {
-  override readonly name = 'ApiConfigurationError'
-}
 
 /**
  * The API origin, resolved lazily.

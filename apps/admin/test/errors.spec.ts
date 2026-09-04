@@ -1,21 +1,38 @@
 /**
  * How this console turns a failure into words, and where it puts them.
  *
- * Pure logic — QUALITY-GATES Q5's 순수 로직 row, and `vitest.config.mjs` holds
- * both modules to 100% branch coverage. The reason is specific to TASK-0117: a
- * missed branch here does not produce a red test, it produces an error rendered
- * with the wrong sentence, in the wrong place, or with a UUID beside a message
- * that told the reader exactly what to do. All three still *look* like a working
- * error screen.
+ * **The functions moved; this file did not.** They were `src/lib/errors.ts` and
+ * `src/lib/api-failure.ts` until D-219 and are now `@shopping/shared`, where
+ * `packages/shared/vitest.config.mjs` holds them to 100% branch coverage against
+ * a fixture catalog. What is left here is the half that could not move: **this
+ * console's Korean catalog**, driven through those functions.
+ *
+ * It is worth its own file because `apps/admin` is the only catalog with a
+ * placeholder in it. `카테고리는 {max}단계까지만` is a sentence that renders
+ * correctly, incorrectly, or not at all depending on values the *server* chose
+ * to send, and no test in `packages/shared` can know that this console has such
+ * a sentence at all. The rest — that a code beats a status, that a 4xx gets no
+ * request id — is checked here as well because a missed branch does not produce
+ * a red test: it produces an error rendered with the wrong sentence, in the
+ * wrong place, or with a UUID beside a message that told the reader exactly what
+ * to do. All three still *look* like a working error screen.
  */
 
-import { ApiClientError } from '@shopping/shared'
+import {
+  ApiClientError,
+  ApiConfigurationError,
+  apiFailure,
+  errorMessage,
+  failureMessage,
+  firstFieldError,
+  hasCode,
+  interpolate,
+  paramsOf,
+  quotableRequestId,
+} from '@shopping/shared'
 import { describe, expect, it } from 'vitest'
+import type { ApiFailure } from '@shopping/shared'
 
-import { ApiConfigurationError } from '@/lib/api'
-import type { ApiFailure } from '@/lib/api-failure'
-import { apiFailure, failureMessage, hasCode, quotableRequestId } from '@/lib/api-failure'
-import { errorMessage, firstFieldError, interpolate, paramsOf } from '@/lib/errors'
 import { messagesFor } from '@/messages'
 
 const messages = messagesFor()
