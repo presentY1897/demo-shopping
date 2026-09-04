@@ -174,7 +174,7 @@ Address_userId_default_key   partial unique index  WHERE "isDefault"
 
 | 스키마 | 내용 | 쓰는 곳 |
 | --- | --- | --- |
-| `profileSchema` | 프로필 1건 (id, email, name, avatarUrl, isDemo, roles) | 0111 · 0112 |
+| `profileSchema` | 프로필 1건 (id, email, name, avatarUrl, roles) — **`isDemo` 제외**, 아래 참조 | 0111 · 0112 |
 | `profileResponseSchema` | **`{ profile, preference }`** — `GET · PATCH /me` 의 응답 | 0111 · 0112 |
 | `profileUpdateRequestSchema` | 이름 · 아바타 수정 본문 | 0111 · 0112 |
 | `addressSchema` | 배송지 1건 (id, label, recipientName, phone, postalCode, addressLine1/2, isDefault) | 0111 · 0112 · (M07 주문서) |
@@ -197,6 +197,14 @@ Address_userId_default_key   partial unique index  WHERE "isDefault"
 않는다) 조회는 행이 없을 때 `DEFAULT_USER_PREFERENCE` 를 답하고, 수정은 `upsert` 한다. **조회가 쓰지
 않는다** — `GET` 이 행을 만들면 읽기 전용 복제나 권한 축소에서 바로 깨진다. 기본값은 `schema.prisma` 의
 컬럼 기본값과 같아야 하며, 그 일치는 실제 DB 로 확인한다(F4b).
+
+**`isDemo` 를 프로필 응답에서 뺐다.** 최초 표에는 있었으나 `apps/api/src/auth/demo-containment.spec.ts`
+(TASK-0105 F8)가 이 컬럼을 이름으로 부르는 파일을 **세 개로 못 박고** 있다 — "데모냐" 를 퍼미션 테이블의
+값 하나로 유지하고 서비스마다 쓰는 조건문으로 번지지 않게 하려는 장치다. 응답 스키마에 넣으면 네 번째
+파일이 된다. 예외 절차(그 허용 목록에 파일을 같은 커밋에서 추가한다)가 있긴 하지만, **이 TASK 에는 그
+값을 읽는 곳이 없다** — 데모 배너는 TASK-0024·0026, 화면은 TASK-0112 다. 읽는 사람이 생기는 TASK 가
+허용 목록을 함께 고치는 편이 이 장치의 의도에 맞는다. 그 파일은 `apps/api/src/auth/**` 이므로 이
+TASK 의 소유 경로도 아니다.
 
 `addressSchema` 는 **M07 주문서(TASK-0050)가 그대로 재사용할 절단면**이기도 하다. 우편번호는 한국식
 5자리 문자열로 스키마에 못 박고, 전화번호 형식도 여기에만 적는다.
