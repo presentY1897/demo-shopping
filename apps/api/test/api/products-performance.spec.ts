@@ -1,6 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
-import type { ApiClient, CreateProductRequest } from '@shopping/shared'
+import type { ApiClient, CreateProductRequest, Product } from '@shopping/shared'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { useApiApp } from '../support/api-app.js'
@@ -101,6 +101,13 @@ const COLOUR_AND_SIZE = [
   { name: '사이즈', values: [{ value: 'S' }, { value: 'M' }, { value: 'L' }, { value: 'XL' }] },
 ]
 
+/** `count` images, none of them one of our storage keys. */
+function gallery(count: number): { url: string }[] {
+  return Array.from({ length: count }, (_unused, index) => ({
+    url: `https://images.unsplash.com/photo-${String(index)}.jpg`,
+  }))
+}
+
 /** `count` listings for this seller, written straight to the tables. */
 async function bulkListings(count: number): Promise<void> {
   await db.execute(
@@ -175,6 +182,41 @@ describe('the detail read is a fixed number of statements (A5)', () => {
     expect(
       catalogueStatements(forGrid).length - catalogueStatements(forSingle).length,
     ).toBeLessThan(5)
+  })
+
+  it('costs the same for a gallery of one image and of ten (TASK-0113)', async () => {
+    const { product: small } = await client().createProduct(
+      request({ options: COLOUR_AND_SIZE, skuPrefix: 'IMG1', images: gallery(1) }),
+    )
+    const { product: large } = await client().createProduct(
+      request({ options: COLOUR_AND_SIZE, skuPrefix: 'IMG10', images: gallery(10) }),
+    )
+
+    const few = await statementsDuring(() => client().getProduct(small.id))
+    const many = await statementsDuring(() => client().getProduct(large.id))
+
+    // The gallery is a nested collection like the variants are, so it is the
+    // second place an `include` inside a loop could hide.
+    expect(catalogueStatements(many)).toHaveLength(catalogueStatements(few).length)
+  })
+
+  it('costs a fixed number of statements to publish, whatever the grid (TASK-0113)', async () => {
+    const single = await client().createProduct(request({ skuPrefix: 'PS1' }))
+    const dozen = await client().createProduct(
+      request({ options: COLOUR_AND_SIZE, skuPrefix: 'PS12' }),
+    )
+
+    const one = await statementsDuring(() =>
+      client().publishProduct(single.product.id, { version: single.product.version }),
+    )
+    const twelve = await statementsDuring(() =>
+      client().publishProduct(dozen.product.id, { version: dozen.product.version }),
+    )
+
+    // Publishing replans the variants. A plan that asked the database per
+    // combination would show up here as twelve extra statements while every
+    // functional test stayed green.
+    expect(catalogueStatements(twelve)).toHaveLength(catalogueStatements(one).length)
   })
 })
 
@@ -333,6 +375,46 @@ describe('response time (A1)', () => {
       await caller.createProduct(
         request({ options: COLOUR_AND_SIZE, skuPrefix: `P${String(index)}` }),
       )
+      durations.push(performance.now() - started)
+    }
+
+    expect(p95Of(durations)).toBeLessThan(300)
+  })
+
+  it('publishes a twelve-variant listing well inside 300ms at p95 (TASK-0113)', async () => {
+    // Worth its own measurement: publishing does more than it looks like it
+    // does — the product row lock, a reload of the category's attribute
+    // definitions, validation of the whole bag against them, a replan of the
+    // variants and a re-derivation of `minPrice`. A p95 taken on `create` says
+    // nothing about that path.
+    //
+    // Twenty rounds and not thirty, unlike the ones above. Every round costs a
+    // create *and* a publish, and this file already runs beside three other
+    // vitest workers on one PostgreSQL: adding thirty more of both made the
+    // whole package's perf specs — including ones this task never touched —
+    // start failing on tail latency (`docs/HANDOFF.md` 5). Twenty rounds put
+    // p95 at the 19th sample, which is the same shape of measurement.
+    const caller = client()
+    const products: Product[] = []
+
+    for (let index = 0; index < 20; index += 1) {
+      const { product } = await caller.createProduct(
+        request({
+          options: COLOUR_AND_SIZE,
+          images: gallery(5),
+          skuPrefix: `PB${String(index)}`,
+        }),
+      )
+
+      products.push(product)
+    }
+
+    const durations: number[] = []
+
+    for (const product of products) {
+      const started = performance.now()
+
+      await caller.publishProduct(product.id, { version: product.version })
       durations.push(performance.now() - started)
     }
 
