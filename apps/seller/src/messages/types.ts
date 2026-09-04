@@ -1,10 +1,17 @@
-import type { DenialReason, HealthStatus, OauthFailureReason, OauthNotice } from '@shopping/shared'
+import type {
+  DenialReason,
+  HealthStatus,
+  OauthFailureReason,
+  OauthNotice,
+  SellerStatus,
+} from '@shopping/shared'
 import type { ImageUploadListLabels } from '@shopping/ui/components'
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { ApiFailureReason } from '@/lib/api-failure'
 import type { ErrorMessages } from '@/lib/errors'
+import type { StoreFieldErrorMessages } from '@/lib/sellers/store-form'
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'
 import type { RejectionReason } from '@/lib/uploads/gallery'
@@ -71,6 +78,108 @@ export interface Messages {
   readonly apiFailures: Readonly<Record<ApiFailureReason, string>>
   /** The product image widget (TASK-0033). */
   readonly imageUpload: ImageUploadMessages
+  /** Applying to sell, and the store settings that are the same form (TASK-0109). */
+  readonly store: StoreMessages
+}
+
+/**
+ * Everything `/apply` and `/settings` render.
+ *
+ * One slice for two routes because they are one screen: the five faces a store
+ * can have are the same form with a different banner and a different verb
+ * (TASK-0109 4장), so splitting the copy would be the first step towards
+ * splitting the screen.
+ */
+export interface StoreMessages {
+  /**
+   * `/apply`'s heading. `/settings` takes its own from the sidebar entry
+   * (`screenTitle`), which is what keeps the label somebody clicked and the
+   * heading they land on the same words.
+   */
+  readonly applyTitle: string
+  readonly applyDescription: string
+  readonly settingsDescription: string
+  /** Announced from the first frame while `GET /sellers/me` is in flight. */
+  readonly loadingLabel: string
+  readonly form: StoreFormMessages
+  /** Result of the live brand name check, shown beside the field. */
+  readonly availability: StoreAvailabilityMessages
+  readonly status: StoreStatusMessages
+  readonly conflict: StoreConflictMessages
+  /** `/settings` reached by somebody who has no store. Points at `/apply`. */
+  readonly absent: StoreAbsentMessages
+  /** `GET /sellers/me` never answered. Not a refusal about the store. */
+  readonly failure: StoreFailureMessages
+}
+
+export interface StoreFormMessages {
+  readonly brandNameLabel: string
+  readonly brandNameHint: string
+  readonly slugLabel: string
+  readonly slugHint: string
+  /** Why the address cannot be edited once the store exists (TASK-0108 R4). */
+  readonly slugLockedHint: string
+  readonly introductionLabel: string
+  readonly introductionHint: string
+  readonly logoUrlLabel: string
+  /** Says that the upload widget replaces this field in TASK-0033's successor. */
+  readonly logoUrlHint: string
+  /** One sentence per way an input can be wrong. Shape is the schema builder's. */
+  readonly errors: StoreFieldErrorMessages
+  /** Heading of the form level error box, above the fields. */
+  readonly errorTitle: string
+  /** Shown when a rejected submit placed nothing anywhere. */
+  readonly submitFailed: string
+  readonly applyLabel: string
+  readonly reapplyLabel: string
+  readonly saveLabel: string
+  readonly appliedNotice: string
+  readonly savedNotice: string
+}
+
+export type StoreAvailabilityMessages = Readonly<Record<'checking' | 'available' | 'taken', string>>
+
+/**
+ * The banner over the form, one per status.
+ *
+ * `label` is keyed by the contract's own union, so a status added to
+ * `@shopping/shared` fails `pnpm typecheck` here rather than rendering a store
+ * whose state has no name.
+ */
+export interface StoreStatusMessages {
+  readonly label: Readonly<Record<SellerStatus, string>>
+  readonly pendingTitle: string
+  readonly pendingBody: string
+  readonly rejectedTitle: string
+  readonly rejectedBody: string
+  readonly activeTitle: string
+  readonly activeBody: string
+  readonly suspendedTitle: string
+  readonly suspendedBody: string
+  /** Precedes the sentence an operator wrote into `statusReason`. */
+  readonly reasonLabel: string
+}
+
+export interface StoreConflictMessages {
+  readonly title: string
+  readonly body: string
+  readonly reloadLabel: string
+  readonly overwriteLabel: string
+}
+
+export interface StoreAbsentMessages {
+  readonly title: string
+  readonly body: string
+  readonly applyLabel: string
+}
+
+export interface StoreFailureMessages {
+  readonly title: string
+  readonly retryLabel: string
+  readonly requestIdLabel: string
+  readonly requestIdHint: string
+  readonly copyLabel: string
+  readonly copiedLabel: string
 }
 
 /**
@@ -212,6 +321,16 @@ export interface ConsoleLayoutMessages {
    * it is handed. M04 puts a permission filter in front of this definition.
    */
   readonly menu: ConsoleMenu
+  /**
+   * The sidebar an account that cannot enter this console gets: the one screen
+   * it can use (TASK-0109 4장).
+   *
+   * Not a filtered {@link ConsoleLayoutMessages.menu}. Filtering is by
+   * permission and an applicant is a `BUYER`, which holds nearly every `*.read`
+   * the menu gates on — so the filter would leave eight links that all bounce
+   * off `ConsoleGuard`.
+   */
+  readonly onboardingMenu: ConsoleMenu
   readonly notifications: ConsoleSlotMessages
 }
 
