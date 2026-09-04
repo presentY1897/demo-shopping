@@ -13,7 +13,12 @@
 - 주문은 **판매자별로 분할**되고 결제·배송·취소·정산이 각각 다른 단위로 동작한다
 - 레퍼런스: 국내외 패션 커머스(무신사, 29CM, SSENSE 등) + 알리익스프레스/아마존/쿠팡 부분 참고
 
-> **작업 전에 반드시 읽을 것**: `docs/decisions/DECISIONS.md` (현재 유효한 모든 결정)
+> **작업 전에 반드시 읽을 것**
+>
+> 1. [`docs/HANDOFF.md`](./docs/HANDOFF.md) — **지금 무엇이 열려 있는지.** 이어받을 것, 이월된 항목,
+>    주인이 정해지지 않은 판단, 이 저장소에서 실제로 물린 함정
+> 2. [`docs/decisions/DECISIONS.md`](./docs/decisions/DECISIONS.md) — 현재 유효한 모든 결정
+>
 > 스펙이 문서와 충돌하면 **문서가 기준**이다.
 
 ## 2. 저장소 구조 (git worktree)
@@ -89,6 +94,41 @@ pnpm install            # 의존성이 바뀌었을 수 있다. 새 워크트리
 - `--delete-branch` 는 **워크트리에 체크아웃된 브랜치를 지우지 못한다.** 원격 브랜치만 지워지고
   `fatal: 'main' is already used by worktree at ...` 로 끝난다. 워크트리를 먼저 제거한다.
 - 자세한 내용과 해제 방법: [`docs/branch-protection.md`](./docs/branch-protection.md)
+
+### 병행 작업의 소유권 — 오케스트레이터와 작업자
+
+여러 TASK 를 동시에 돌릴 때 **누가 어떤 파일을 고치는지**를 착수 전에 갈라 둔다. 겹치면 rebase
+충돌이 아니라 **한쪽이 다른 쪽 작업을 되돌리는 일**이 생긴다.
+
+**작업자(에이전트)가 건드리지 않는 것**
+
+| 파일 | 이유 |
+| --- | --- |
+| `docs/tasks/README.md` · 마일스톤 `README.md` | **`main` 에서 계속 움직인다.** 작업 중 고치면 매번 충돌하고, 그 충돌이 아래 CI 함정을 부른다 |
+| 다른 TASK 가 선언한 소유 경로 | 계약이 부족하면 **지어내지 말고 보고**한다. 없는 계약을 프론트에만 만들면 서버가 절대 안 보내는 죽은 코드가 되고 모킹으로 테스트는 통과한다 |
+| `docs/decisions/` 세션 파일 | 번호가 겹친다. 오케스트레이터가 번호를 배정한다 |
+
+**오케스트레이터가 하는 것**: rebase · 인덱스 두 곳 반영 · 머지 전 `main` 위에서 전체 게이트
+1회 · 머지 · 워크트리 정리.
+
+### ⚠️ CI 가 트리거조차 되지 않는 함정
+
+**브랜치가 `main` 보다 뒤이거나 충돌이 있으면 GitHub 이 머지 커밋을 만들지 못하고, 그러면
+`pull_request` 워크플로가 아예 시작되지 않는다.** 이 저장소에서 **세 번** 겪었다.
+
+무서운 것은 그때 `gh pr checks` 가 **초록으로 보인다**는 점이다 — Vercel 과 GitGuardian 은
+`main` 과 무관하게 돌아 pass 로 뜬다. 게이트 4개는 목록에 **없다**.
+
+그래서 머지 전에 **개수를 센다**:
+
+```bash
+gh pr view <PR> --json statusCheckRollup \
+  -q '[.statusCheckRollup[] | select(.name=="typecheck" or .name=="lint" or .name=="build" or .name=="test")] | length'
+# 4 가 아니면 CI 가 돌지 않은 것이다. rebase 하고 다시 push 한다
+```
+
+`--watch` 로 기다릴 때도 **네 job 이 전부 `COMPLETED` 가 된 뒤** 머지한다. 하나라도
+`IN_PROGRESS` 면 머지가 `BLOCKED` 로 거부된다.
 
 ## 3. 브랜치 / 커밋
 
