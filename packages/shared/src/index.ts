@@ -229,6 +229,45 @@ export type { SessionFailureReason, SessionResponse } from './api/session.js'
 
 export { grantRoleRequestSchema, userRolesResponseSchema } from './api/user-roles.js'
 export type { GrantRoleRequest, UserRolesResponse } from './api/user-roles.js'
+
+export {
+  addressCreateRequestSchema,
+  addressLabelSchema,
+  addressLineSchema,
+  addressListResponseSchema,
+  addressResponseSchema,
+  addressSchema,
+  addressUpdateRequestSchema,
+  DEFAULT_USER_PREFERENCE,
+  displayDensities,
+  displayDensitySchema,
+  phoneSchema,
+  postalCodeSchema,
+  profileNameSchema,
+  profileResponseSchema,
+  profileSchema,
+  profileUpdateRequestSchema,
+  recipientNameSchema,
+  userPreferenceResponseSchema,
+  userPreferenceSchema,
+  userPreferenceUpdateRequestSchema,
+  withdrawalResponseSchema,
+} from './api/profile.js'
+export type {
+  Address,
+  AddressCreateRequest,
+  AddressListResponse,
+  AddressResponse,
+  AddressUpdateRequest,
+  DisplayDensity,
+  Profile,
+  ProfileResponse,
+  ProfileUpdateRequest,
+  UserPreference,
+  UserPreferenceResponse,
+  UserPreferenceUpdateRequest,
+  WithdrawalResponse,
+} from './api/profile.js'
 export {
   brandNameAvailabilityQuerySchema,
   brandNameAvailabilityResponseSchema,
