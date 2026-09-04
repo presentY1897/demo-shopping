@@ -23,13 +23,16 @@ import { createSessionClient } from '@/lib/auth/session-client'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://api.test.invalid'
 
+/** Who a render is signed in as. `null` is a signed-out browser. */
+export type MockSession = SessionResponse | null
+
 export function freshSessionClient(overrides: { readonly now?: () => number } = {}): SessionClient {
   return createSessionClient({ appId: 'shop', baseUrl: BASE_URL, ...overrides })
 }
 
 export function renderWithAuth(
   ui: ReactElement,
-  { session = null }: { readonly session?: SessionResponse | null } = {},
+  { session = null }: { readonly session?: MockSession } = {},
 ): RenderResult {
   resetSessionStore(session)
 
