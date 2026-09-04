@@ -54,7 +54,7 @@ describe('defineFixture', () => {
       search: 'ok',
       uptime: 12,
       version: '0.0.0',
-      demoCleanup: { lastRunAt: null },
+      demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
     })
   })
 })
