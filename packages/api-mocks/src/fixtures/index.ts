@@ -9,4 +9,5 @@
 export * from './attributes'
 export * from './categories'
 export * from './health'
+export * from './session'
 export * from './user-roles'

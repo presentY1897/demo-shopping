@@ -8,6 +8,7 @@ import {
   defaultHandlers,
   resetAttributeStore,
   resetCategoryStore,
+  resetSessionStore,
   resetUploadStore,
 } from './handlers'
 
@@ -108,6 +109,9 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     resetCategoryStore()
     resetAttributeStore()
     resetUploadStore()
+    // Back to whatever this app seeded with `setDefaultMockSession`: a spec that
+    // signed out, or borrowed another role, must not decide who the next one is.
+    resetSessionStore()
   })
 
   afterAll(() => {
