@@ -8,7 +8,7 @@ Meilisearch 인덱싱과 구매자 탐색 화면을 만든다. **밀도 3단계�
 | --- | --- | --- | --- |
 | [TASK-0038](./TASK-0038-search-indexing.md) | Meilisearch 인덱스 · 동기화 파이프라인 | 완료 | M05 |
 | [TASK-0039](./TASK-0039-search-api.md) | 검색 API (필터 · 정렬 · 패싯) | 완료 | 0038 |
-| [TASK-0040](./TASK-0040-product-card.md) | 상품 카드 · 목록 (밀도 3단계) | 승인됨 | M05 |
+| [TASK-0040](./TASK-0040-product-card.md) | 상품 카드 · 목록 (밀도 3단계) | 완료 | M05 |
 | [TASK-0041](./TASK-0041-search-page.md) | 검색 페이지 · 자동완성 · 필터 | 승인됨 | 0039, 0040 |
 | [TASK-0042](./TASK-0042-category-page.md) | 카테고리 페이지 | 승인됨 | 0041 |
 | [TASK-0043](./TASK-0043-product-detail.md) | 상품 상세 (밀도 3단계) | 승인됨 | 0040 |
