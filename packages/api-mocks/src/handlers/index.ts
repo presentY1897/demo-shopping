@@ -3,6 +3,7 @@ import type { RequestHandler } from 'msw'
 import { attributeHandlers } from './attributes'
 import { categoryHandlers } from './categories'
 import { healthHandlers } from './health'
+import { sessionHandlers } from './session'
 import { uploadHandlers } from './uploads'
 import { userRolesHandlers } from './user-roles'
 
@@ -16,6 +17,7 @@ import { userRolesHandlers } from './user-roles'
  */
 export const defaultHandlers: readonly RequestHandler[] = [
   ...healthHandlers,
+  ...sessionHandlers,
   ...userRolesHandlers,
   ...categoryHandlers,
   ...attributeHandlers,
@@ -25,4 +27,11 @@ export const defaultHandlers: readonly RequestHandler[] = [
 export { attributeHandlers, resetAttributeStore } from './attributes'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
 export { resetUploadStore, uploadHandlers } from './uploads'
+export {
+  failNextRefresh,
+  mockSession,
+  resetSessionStore,
+  sessionHandlers,
+  setDefaultMockSession,
+} from './session'
 export { healthHandlers, userRolesHandlers }

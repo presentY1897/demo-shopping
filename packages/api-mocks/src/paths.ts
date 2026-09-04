@@ -22,6 +22,16 @@ export const MOCK_STORAGE_PUBLIC_ORIGIN = 'https://cdn.test.invalid'
 
 export const mockPaths = {
   health: `*${API_PATH_PREFIX}/health`,
+  /**
+   * `POST` to exchange the refresh cookie for an access token (TASK-0022).
+   *
+   * Every app calls it once on boot, so it is in `defaultHandlers` rather than
+   * something a spec opts into — a screen that had to declare it would be a
+   * screen whose sign-in state is decided by whoever remembered.
+   */
+  authRefresh: `*${API_PATH_PREFIX}/auth/refresh`,
+  /** `POST` to end this app's session. The other two keep theirs (D-218). */
+  authLogout: `*${API_PATH_PREFIX}/auth/logout`,
   userRoles: `*${API_PATH_PREFIX}/users/:userId/roles`,
   /** `GET` the tree, `POST` a new node. */
   categories: `*${API_PATH_PREFIX}/categories`,
