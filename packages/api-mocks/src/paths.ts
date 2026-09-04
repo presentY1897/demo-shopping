@@ -21,6 +21,10 @@ export const mockPaths = {
    * first handler that matches, and `:id` would happily read `reorder` as one.
    */
   categoryReorder: `*${API_PATH_PREFIX}/categories/reorder`,
+  /** `GET` the definitions that apply to a category, `POST` a new one. */
+  attributes: `*${API_PATH_PREFIX}/attributes`,
+  /** `PATCH` the editable fields, `DELETE` to retire. */
+  attribute: `*${API_PATH_PREFIX}/attributes/:id`,
 } as const
 
 export type MockPath = (typeof mockPaths)[keyof typeof mockPaths]

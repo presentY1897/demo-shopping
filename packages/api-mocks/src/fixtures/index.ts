@@ -6,6 +6,7 @@
  * nobody wired up is caught rather than silently unchecked.
  */
 
+export * from './attributes'
 export * from './categories'
 export * from './health'
 export * from './user-roles'
