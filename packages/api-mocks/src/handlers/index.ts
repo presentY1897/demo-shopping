@@ -27,11 +27,5 @@ export const defaultHandlers: readonly RequestHandler[] = [
 export { attributeHandlers, resetAttributeStore } from './attributes'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
 export { resetUploadStore, uploadHandlers } from './uploads'
-export {
-  failNextRefresh,
-  mockSession,
-  resetSessionStore,
-  sessionHandlers,
-  setDefaultMockSession,
-} from './session'
+export { failNextRefresh, mockSession, resetSessionStore, sessionHandlers } from './session'
 export { healthHandlers, userRolesHandlers }

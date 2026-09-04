@@ -23,27 +23,18 @@ import { answering, MockApiError } from './refusal'
  * work against a lenient double and fail against the API.
  */
 
-/** Who is signed in until a spec says otherwise. Set by each app's setup. */
-let defaultSession: SessionResponse | null = null
-
-/** Who is signed in right now. */
+/** Who is signed in right now. `null` is a browser holding no session. */
 let current: SessionResponse | null = null
 
 /**
- * Seeds the session every spec in this app starts from.
+ * Says who is signed in for the next render, and clears any pending failure.
  *
- * Called once from an app's `test/setup.ts`: `apps/admin` boots as an
- * administrator and `apps/shop` boots signed out, because that is the state
- * their screens are ordinarily read in. A spec that wants a different role calls
- * {@link resetSessionStore} with it, and the per-test reset puts this back.
+ * Signed out by default, which is what the per-test reset in `node.ts` restores:
+ * a spec that signed in, signed out or borrowed another role must not decide who
+ * the next one is. Each app's `renderWithAuth` names the account its screens are
+ * ordinarily read by.
  */
-export function setDefaultMockSession(session: SessionResponse | null): void {
-  defaultSession = session
-  current = session
-}
-
-/** Back to the seeded session, or to a different one for the current test. */
-export function resetSessionStore(session: SessionResponse | null = defaultSession): void {
+export function resetSessionStore(session: SessionResponse | null = null): void {
   current = session
   nextFailure = null
 }
