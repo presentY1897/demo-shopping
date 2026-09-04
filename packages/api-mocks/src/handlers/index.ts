@@ -5,6 +5,7 @@ import { attributeHandlers } from './attributes'
 import { categoryHandlers } from './categories'
 import { healthHandlers } from './health'
 import { sellerHandlers } from './sellers'
+import { profileHandlers } from './profile'
 import { sessionHandlers } from './session'
 import { uploadHandlers } from './uploads'
 import { userRolesHandlers } from './user-roles'
@@ -21,6 +22,7 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...healthHandlers,
   ...sessionHandlers,
   ...userRolesHandlers,
+  ...profileHandlers,
   ...categoryHandlers,
   ...attributeHandlers,
   ...sellerHandlers,
@@ -33,6 +35,13 @@ export { attributeHandlers, resetAttributeStore } from './attributes'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
 export { resetSellerStore, sellerHandlers, sellerRequests, sellerRowSnapshot } from './sellers'
 export type { SellerRequestRecord } from './sellers'
+export {
+  addressRowsSnapshot,
+  failNextDefaultAssignment,
+  preferenceSnapshot,
+  profileHandlers,
+  resetProfileStore,
+} from './profile'
 export { resetUploadStore, uploadHandlers } from './uploads'
 export { failNextRefresh, mockSession, resetSessionStore, sessionHandlers } from './session'
 export { healthHandlers, userRolesHandlers }

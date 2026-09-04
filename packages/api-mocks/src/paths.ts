@@ -33,6 +33,24 @@ export const mockPaths = {
   /** `POST` to end this app's session. The other two keep theirs (D-218). */
   authLogout: `*${API_PATH_PREFIX}/auth/logout`,
   userRoles: `*${API_PATH_PREFIX}/users/:userId/roles`,
+  /**
+   * One's own account (TASK-0111). `GET` profile + settings, `PATCH` the
+   * profile, `DELETE` to withdraw.
+   *
+   * **No id in any of these paths.** That is the contract, not a shortening:
+   * with no `userId` there is no way to *ask* for somebody else's profile, and
+   * the scope check in the service is a second line of defence rather than the
+   * only one.
+   */
+  me: `*${API_PATH_PREFIX}/me`,
+  /** `GET` and `PATCH` display density, locale, currency and notification switches. */
+  mePreferences: `*${API_PATH_PREFIX}/me/preferences`,
+  /** `GET` the address book, `POST` a new address. */
+  meAddresses: `*${API_PATH_PREFIX}/me/addresses`,
+  /** `PATCH` the fields a person typed, `DELETE` one address. */
+  meAddress: `*${API_PATH_PREFIX}/me/addresses/:id`,
+  /** `POST` to make one address the default — the only door to that change. */
+  meAddressDefault: `*${API_PATH_PREFIX}/me/addresses/:id/default`,
   /** `GET` the tree, `POST` a new node. */
   categories: `*${API_PATH_PREFIX}/categories`,
   /** `PATCH` the fields a person types, `DELETE` to retire. */
