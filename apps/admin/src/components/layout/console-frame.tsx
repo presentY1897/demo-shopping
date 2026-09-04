@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 
 import { ConsoleGuard } from '@/components/auth/console-guard'
+import { DemoBanner } from '@/components/demo/demo-banner'
 import { isOpenRoute } from '@/lib/auth/console-access'
 import { messagesFor } from '@/messages'
 
@@ -32,10 +33,22 @@ export function ConsoleFrame({ children }: { readonly children: ReactNode }) {
   const pathname = usePathname()
   const messages = messagesFor()
 
-  if (isOpenRoute(pathname)) return <>{children}</>
+  // The demo banner is drawn on both sides of the branch and **inside** the
+  // shell on the guarded one. Above the shell it is covered: the sidebar is
+  // `fixed` from the top of the viewport, so a banner in normal flow above it
+  // pushes the content down and slides underneath the navigation (TASK-0024 9장).
+  if (isOpenRoute(pathname)) {
+    return (
+      <>
+        <DemoBanner messages={messages.demo} />
+        {children}
+      </>
+    )
+  }
 
   return (
     <AdminShell messages={messages.layout}>
+      <DemoBanner messages={messages.demo} variant="card" />
       <ConsoleGuard messages={messages.auth.guard}>{children}</ConsoleGuard>
     </AdminShell>
   )
