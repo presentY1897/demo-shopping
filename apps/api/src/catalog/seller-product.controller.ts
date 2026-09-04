@@ -1,6 +1,15 @@
-import { Controller, Get, Param, Query } from '@nestjs/common'
-import type { SellerProductListResponse, SellerVariantListResponse } from '@shopping/shared'
-import { productIdSchema, sellerProductListQueryParamsSchema } from '@shopping/shared'
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common'
+import type {
+  ProductBulkStatusResponse,
+  ProductResponse,
+  SellerProductListResponse,
+  SellerVariantListResponse,
+} from '@shopping/shared'
+import {
+  productBulkStatusRequestSchema,
+  productIdSchema,
+  sellerProductListQueryParamsSchema,
+} from '@shopping/shared'
 
 import { Principal } from '../auth/principal.decorator.js'
 import { RequirePermission } from '../auth/require-permission.decorator.js'
@@ -43,6 +52,23 @@ export class SellerProductController {
     return this.console.list(principal, parseInput(sellerProductListQueryParamsSchema, query))
   }
 
+  /**
+   * Puts several listings on or off sale.
+   *
+   * 200 rather than 201: nothing is created. Declared before `:id/duplicate`
+   * for readability only — the two patterns differ in shape, so no ordering is
+   * required for `status` not to be read as an id.
+   */
+  @Post('status')
+  @HttpCode(HttpStatus.OK)
+  @RequirePermission('product.write')
+  changeStatuses(
+    @Principal() principal: RequestPrincipal,
+    @Body() body: unknown,
+  ): Promise<ProductBulkStatusResponse> {
+    return this.console.changeStatuses(principal, parseInput(productBulkStatusRequestSchema, body))
+  }
+
   /** The listing's live variants, each with its combination already spelled out. */
   @Get(':id/variants')
   @RequirePermission('product.read')
@@ -51,5 +77,21 @@ export class SellerProductController {
     @Param('id') id: string,
   ): Promise<SellerVariantListResponse> {
     return this.console.variants(principal, parseInput(productIdSchema, id, 'id'))
+  }
+
+  /**
+   * Copies a listing as a `DRAFT` with no stock.
+   *
+   * 201 and no body: the request says which listing, and everything about the
+   * copy is decided from the original. A body would be a second way to describe
+   * a product, which is what `POST /products` already is.
+   */
+  @Post(':id/duplicate')
+  @RequirePermission('product.write')
+  duplicate(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+  ): Promise<ProductResponse> {
+    return this.console.duplicate(principal, parseInput(productIdSchema, id, 'id'))
   }
 }

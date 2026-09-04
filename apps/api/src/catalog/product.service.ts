@@ -12,6 +12,7 @@ import type {
   DomainErrorCode,
   OptionValueMeta,
   Product,
+  ProductBulkStatusRequest,
   ProductListQuery,
   ProductListResponse,
   ProductResponse,
@@ -519,6 +520,68 @@ export class ProductService {
    */
   unpublish(principal: RequestPrincipal, id: string, version: number): Promise<ProductResponse> {
     return this.update(principal, id, { version, status: 'DRAFT' })
+  }
+
+  /**
+   * Takes several listings off sale, or puts them back (TASK-0115).
+   *
+   * **One transaction, and every check before the first write.** R4 asks for
+   * "부분 적용 없음", and the two halves of that are different problems. A
+   * request naming somebody else's listing has to change nothing at all, which
+   * is why the ownership and store-state checks run over the whole selection
+   * before any status moves. A listing that turns out to be unpublishable has
+   * to undo the ones already written, which is why the whole thing is one
+   * transaction — the checks alone cannot cover it, because `PRODUCT_NOT_SELLABLE`
+   * is only knowable from inside {@link settle}.
+   *
+   * **The ids are locked in sorted order.** Two consoles changing overlapping
+   * selections take the same row locks in the same sequence and therefore
+   * queue; in request order they would take them in opposite sequences and
+   * deadlock. Duplicates are removed for the same reason — `SELECT … FOR UPDATE`
+   * twice on one row inside one transaction is harmless, and the second
+   * {@link settle} would bump `version` twice for one change.
+   *
+   * **`ACTIVE` is the publish path, not a shortcut past it.** The category's
+   * required attributes are revalidated and `settle` still refuses a listing
+   * with nothing orderable behind it, so ticking checkboxes in a list is not a
+   * back door around the editor (TASK-0113 4장).
+   *
+   * No `version` is compared. A status change is one field with two meaningful
+   * values applied to rows the caller just looked at, not an edit of a document
+   * two people can overwrite; requiring a version per id would mean reading
+   * every listing to change any of them, to protect against a conflict whose
+   * resolution is "the later one wins" either way.
+   */
+  async changeStatuses(
+    principal: RequestPrincipal,
+    input: ProductBulkStatusRequest,
+  ): Promise<readonly string[]> {
+    const ids = [...new Set(input.productIds)].sort()
+
+    await this.prisma.$transaction(async (tx) => {
+      const locked: LockedProduct[] = []
+
+      for (const id of ids) {
+        const product = await this.lock(tx, id)
+        const seller = await this.store(tx, product.sellerId)
+        const ownership = sellerOwnership(seller)
+
+        assertResourceAccess(principal, 'product.write', ownership)
+        this.assertStatusChange(principal, ownership, product.status, input.status)
+        assertStoreMayWrite(principal, seller)
+        locked.push(product)
+      }
+
+      for (const product of locked) {
+        if (input.status === 'ACTIVE') {
+          await this.validatedAttributes(product.categoryId, product.attributes, true)
+        }
+
+        await this.settle(tx, product.id, input.status, 1)
+      }
+    })
+
+    return ids
   }
 
   /**
