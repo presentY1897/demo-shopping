@@ -284,6 +284,39 @@ describe('A7 — 음성 대조군 (락 없는 구현)', () => {
     return rows[0]?.version ?? 0
   }
 
+  /** The backend serving one connection, so its wait state can be watched. */
+  async function backendPidOf(connection: PoolClient): Promise<number> {
+    const { rows } = await connection.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')
+
+    return rows[0]?.pid ?? 0
+  }
+
+  /**
+   * Waits until `pid` is actually blocked on a lock.
+   *
+   * Without this the choreography is a hope rather than a fact: issuing a
+   * statement and committing on the other connection are two round trips that
+   * race, and on a slower machine the commit sometimes lands first — the
+   * blocked statement then takes a **fresh** snapshot and computes the right
+   * minimum, so the control silently stops reproducing anything. It failed
+   * exactly that way in CI (8 of 10) while passing locally, which is the shape
+   * of flakiness that hides a broken assertion rather than a broken system.
+   */
+  async function awaitBlocked(pid: number): Promise<void> {
+    for (let attempt = 0; attempt < 200; attempt += 1) {
+      const [row] = await db.query<{ waiting: number }>(
+        `SELECT count(*)::int AS waiting FROM pg_stat_activity
+          WHERE "pid" = $1 AND "wait_event_type" = 'Lock'`,
+        [pid],
+      )
+
+      if ((row?.waiting ?? 0) > 0) return
+      await new Promise((resolve) => setTimeout(resolve, 10))
+    }
+
+    throw new Error('첫 트랜잭션이 잠금을 기다리는 상태가 되지 않았습니다.')
+  }
+
   /** The cache refresh, exactly as the service writes it — minus the lock. */
   function refresh(connection: PoolClient, productId: string, version: number): Promise<unknown> {
     return connection.query(
@@ -311,6 +344,8 @@ describe('A7 — 음성 대조군 (락 없는 구현)', () => {
           await first.query('BEGIN')
           await second.query('BEGIN')
 
+          const firstPid = await backendPidOf(first)
+
           // Both read the same version and both believe they may proceed —
           // which is exactly what an optimistic lock alone promises.
           const seenByFirst = await readVersion(first, product.id)
@@ -333,6 +368,7 @@ describe('A7 — 음성 대조군 (락 없는 구현)', () => {
           // the second commits.
           const blocked = refresh(first, product.id, seenByFirst + 1)
 
+          await awaitBlocked(firstPid)
           await second.query('COMMIT')
           await blocked
           await first.query('COMMIT')
