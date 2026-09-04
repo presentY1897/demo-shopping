@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common'
 
+import { StockModule } from '../stock/stock.module.js'
+
 import { AttributeController } from './attribute.controller.js'
 import { AttributeService } from './attribute.service.js'
 import { CategoryController } from './category.controller.js'
@@ -9,6 +11,10 @@ import { ProductService } from './product.service.js'
 
 /** The catalogue. Prisma and the clock arrive from their global modules. */
 @Module({
+  // Every change to a variant's stock goes through `StockService`, product
+  // writes included (TASK-0036 4.7) — so the catalogue imports it rather than
+  // writing the column itself.
+  imports: [StockModule],
   controllers: [CategoryController, AttributeController, ProductController],
   providers: [CategoryService, AttributeService, ProductService],
   // `AttributeService.validateAttributes` is the only sanctioned way to judge a
