@@ -170,7 +170,7 @@ export const ko: Messages = {
       description: 'Google 계정으로 로그인하면 주문 내역과 장바구니가 계정에 저장됩니다.',
       googleLabel: 'Google 계정으로 계속하기',
       demoLabel: '데모 계정 받기',
-      demoReason: '데모 계정 발급은 곧 열립니다. 지금은 Google 로그인만 쓸 수 있어요.',
+      demoReason: '가입 없이 24시간 동안 주문·리뷰까지 모든 기능을 체험할 수 있습니다.',
       checkingLabel: '로그인 상태를 확인하는 중입니다',
       signedInTitle: '이미 로그인되어 있습니다',
       signedInBody: '계속 둘러보시려면 아래 버튼을 눌러주세요.',
@@ -231,6 +231,19 @@ export const ko: Messages = {
       action: '로그인하러 가기',
       checkingLabel: '로그인 상태를 확인하는 중입니다',
     },
+  },
+  // 데모 계정 (TASK-0024). 배너는 모든 화면 위에 뜨므로 auth 와 나눠 둔다 —
+  // auth 는 "로그인되어 있는가" 이고 이쪽은 "그 계정이 언제까지인가" 다.
+  demo: {
+    bannerLabel: '데모 계정',
+    remaining: '{hours}시간 {minutes}분 뒤에 이 계정과 만든 데이터가 사라집니다.',
+    remainingMinutes: '{minutes}분 뒤에 이 계정과 만든 데이터가 사라집니다.',
+    expired: '체험 시간이 끝났습니다. 새 데모 계정을 받아주세요.',
+    issuePending: '데모 계정을 만드는 중…',
+    issueFailedTitle: '데모 계정을 받지 못했습니다',
+    issueFailed: '잠시 후 다시 시도해주세요.',
+    rateLimited: '조금 전에 여러 번 발급했습니다. 1분 뒤에 다시 시도해주세요.',
+    unreachable: '서버에 연결하지 못했습니다. 잠시 후 다시 시도해주세요.',
   },
   mypage: {
     title: '마이페이지',

@@ -6,6 +6,7 @@ import type { ReactNode } from 'react'
 
 import { AuthProvider } from '@/lib/auth/auth-context'
 
+import { DemoBanner } from '@/components/demo/demo-banner'
 import { AccountDensityProvider } from '@/components/layout/account-density-provider'
 import { ShopFooter } from '@/components/layout/shop-footer'
 import { ShopHeader } from '@/components/layout/shop-header'
@@ -60,6 +61,13 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
           (TASK-0023 4장).
         */}
         <AuthProvider>
+          {/*
+            Above the shell and outside `main`, so it is the first thing after
+            the session is known and is present on every route — including
+            `/login`, where somebody who just issued an account lands.
+          */}
+          <DemoBanner messages={messages.demo} />
+
           <AccountDensityProvider>
             <SkipLink href="#main">{layout.skipToContent}</SkipLink>
 

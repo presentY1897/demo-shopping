@@ -66,6 +66,8 @@ export interface Messages {
    * TASK-0019 — that popover said "M04 에서 이 자리에 들어옵니다", and this is M04.
    */
   readonly auth: AuthMessages
+  /** The demo account banner and the button that issues one (TASK-0024). */
+  readonly demo: DemoMessages
   /** The category console (TASK-0029). */
   readonly categories: CategoryMessages
   /** The attribute console (TASK-0031). */
@@ -95,6 +97,35 @@ export interface ErrorNoticeMessages {
   readonly copiedLabel: string
   /** Puts the notice away. A panel with no way out is a panel that stays. */
   readonly dismissLabel: string
+}
+
+/**
+ * The demo account: the button that issues one, and the banner that counts it
+ * down (TASK-0024).
+ *
+ * Its own slice rather than more keys under `auth`. `auth` is about *being*
+ * signed in and is read by one screen; this is read by the root layout on every
+ * route, and the banner it draws is about the account rather than the session.
+ *
+ * `remaining` and `remainingMinutes` carry `{hours}` and `{minutes}`
+ * placeholders. The numbers are handed to the catalog rather than assembled in
+ * the component, because word order is a property of the language.
+ */
+export interface DemoMessages {
+  /** Names the banner in place of an `aria-label`, so it is read either way. */
+  readonly bannerLabel: string
+  /** `{hours}` · `{minutes}` */
+  readonly remaining: string
+  /** `{minutes}` — the last hour, where "0시간 12분" would read as a bug. */
+  readonly remainingMinutes: string
+  readonly expired: string
+  /** Replaces the button's label while the request is in flight. */
+  readonly issuePending: string
+  readonly issueFailedTitle: string
+  readonly issueFailed: string
+  /** The one refusal where waiting is the right next action. */
+  readonly rateLimited: string
+  readonly unreachable: string
 }
 
 export interface AuthMessages {

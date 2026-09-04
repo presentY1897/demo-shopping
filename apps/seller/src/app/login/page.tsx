@@ -30,7 +30,7 @@ export default function LoginPage() {
           </div>
         }
       >
-        <SignInScreen messages={messages.auth} />
+        <SignInScreen demo={messages.demo} messages={messages.auth} />
       </Suspense>
     </PageContainer>
   )
