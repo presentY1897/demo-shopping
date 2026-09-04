@@ -375,7 +375,9 @@ describe('F7 — SKU 유일성', () => {
     const refused = await failure(create({ skuPrefix: 'TEE' }))
 
     expect(refused.status).toBe(409)
-    expect(refused.code).toBe('CONFLICT')
+    // TASK-0113 split the two 409s of this path: re-reading fixes the
+    // optimistic-lock one and does nothing at all for this one.
+    expect(refused.code).toBe('PRODUCT_SKU_TAKEN')
   })
 
   it('allows another store the same SKU', async () => {
