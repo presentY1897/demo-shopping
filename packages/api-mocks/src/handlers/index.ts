@@ -1,5 +1,6 @@
 import type { RequestHandler } from 'msw'
 
+import { attributeHandlers } from './attributes'
 import { categoryHandlers } from './categories'
 import { healthHandlers } from './health'
 import { userRolesHandlers } from './user-roles'
@@ -16,7 +17,9 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...healthHandlers,
   ...userRolesHandlers,
   ...categoryHandlers,
+  ...attributeHandlers,
 ]
 
-export { categoryHandlers, resetCategoryStore } from './categories'
+export { attributeHandlers, resetAttributeStore } from './attributes'
+export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
 export { healthHandlers, userRolesHandlers }

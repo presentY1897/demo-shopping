@@ -4,7 +4,7 @@ import type { RequestHandler } from 'msw'
 import { setupServer } from 'msw/node'
 import { afterAll, afterEach, beforeAll } from 'vitest'
 
-import { defaultHandlers, resetCategoryStore } from './handlers'
+import { defaultHandlers, resetAttributeStore, resetCategoryStore } from './handlers'
 
 /**
  * How the mock server is started, kept as a value so a spec can assert on it.
@@ -93,13 +93,15 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
   })
 
   // Per-test overrides (`server.use(...)`) end with the test that declared them,
-  // and so does anything a test wrote into a stateful handler: the category
-  // endpoints keep a tree that a test can create in, move around and delete
-  // from, and a tree that survived into the next test would make specs pass or
-  // fail by their order in the file.
+  // and so does anything a test wrote into a stateful handler: the category and
+  // attribute endpoints keep rows a test can create, move and delete, and rows
+  // that survived into the next test would make specs pass or fail by their
+  // order in the file. Attributes are reset after categories because a
+  // definition only means anything relative to a category that still exists.
   afterEach(() => {
     server.resetHandlers()
     resetCategoryStore()
+    resetAttributeStore()
   })
 
   afterAll(() => {
