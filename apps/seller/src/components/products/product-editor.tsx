@@ -627,6 +627,7 @@ function ProductEditorBody({
         messages={messages}
         onChange={setImages}
         sellerId={product?.sellerId ?? null}
+        stored={product?.images ?? []}
       />
 
       <ProductOptionEditor

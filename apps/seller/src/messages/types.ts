@@ -478,6 +478,8 @@ export interface ProductEditorMessages {
   readonly attributes: ProductAttributeSectionMessages
   readonly options: ProductOptionMessages
   readonly variants: ProductVariantMessages
+  /** The images a stored listing already has, beside the upload widget. */
+  readonly gallery: ProductGalleryMessages
   /** What saving would do to the combinations, shown before it is done (F7). */
   readonly diff: ProductDiffMessages
   readonly preview: ProductPreviewMessages
@@ -578,6 +580,15 @@ export interface ProductVariantMessages {
   readonly emptyBody: string
   /** Heading of the notice above the table, where table-shaped refusals land. */
   readonly noticeTitle: string
+}
+
+export interface ProductGalleryMessages {
+  readonly storedTitle: string
+  /** Says why these sit apart from the widget's own rows. */
+  readonly storedDescription: string
+  /** `이미지 {index}` — names a thumbnail that has no alt text of its own. */
+  readonly storedLabel: string
+  readonly removeLabel: string
 }
 
 export interface ProductDiffMessages {

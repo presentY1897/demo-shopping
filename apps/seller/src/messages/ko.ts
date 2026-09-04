@@ -536,6 +536,13 @@ export const ko: Messages = {
       emptyBody: '옵션 값을 하나 이상 입력하면 조합이 만들어집니다.',
       noticeTitle: '저장하지 못했습니다',
     },
+    gallery: {
+      storedTitle: '등록된 이미지',
+      storedDescription:
+        '이미 저장된 이미지입니다. 새로 올린 이미지는 이 뒤에 붙습니다. 순서 바꾸기는 상품 목록 화면에서 이어집니다.',
+      storedLabel: '이미지 {index}',
+      removeLabel: '{index} 빼기',
+    },
     diff: {
       title: '저장하면 이렇게 바뀝니다',
       unchanged: '조합은 그대로입니다.',
