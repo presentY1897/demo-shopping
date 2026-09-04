@@ -1,3 +1,4 @@
+import { PageHeader } from '@shopping/ui/console'
 import type { Metadata } from 'next'
 
 import { CategoryManager } from '@/components/categories/category-manager'
@@ -19,22 +20,21 @@ export const metadata: Metadata = {
  * all for as long as a cold instance takes to wake, which is up to ninety
  * seconds.
  *
- * **The chrome is deliberately one `<main>`.** The console layout — navigation,
- * header, breadcrumbs — is TASK-0019's, and anything invented here would have to
- * be removed again. This page is written so that adopting it is wrapping the
- * `<main>` and deleting the heading.
+ * **The chrome is now the console's.** TASK-0029 left a temporary `<main>` and
+ * a hand-written heading here, noting that adopting the shell would be wrapping
+ * the one and replacing the other. That is what happened: `<main>` belongs to
+ * `ConsoleShell`, and the heading is `PageHeader`, which every console screen
+ * uses so that titles, actions and filters land in the same place on all of
+ * them (TASK-0019 4.6).
  */
 export default function CategoriesPage() {
   const { categories, errors, errorNotice } = messagesFor()
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col gap-6 p-8">
-      <header>
-        <h1 className="text-primary text-2xl font-bold">{categories.title}</h1>
-        <p className="text-fg-muted mt-1">{categories.description}</p>
-      </header>
+    <>
+      <PageHeader description={categories.description} title={categories.title} />
 
       <CategoryManager errors={errors} messages={categories} notice={errorNotice} />
-    </main>
+    </>
   )
 }
