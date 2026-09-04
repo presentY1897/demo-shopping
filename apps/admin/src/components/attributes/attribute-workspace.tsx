@@ -425,15 +425,22 @@ export function AttributeWorkspace({ messages, errors, notice }: AttributeWorksp
         <div className="min-w-0 grow">
           <DataList
             empty={
-              <EmptyState
-                action={
-                  <Button onClick={openCreate} variant="primary">
-                    {messages.actions.add}
-                  </Button>
-                }
-                description={messages.emptyDescription}
-                title={messages.emptyTitle}
-              />
+              categories.length === 0 ? (
+                <EmptyState
+                  description={messages.noCategoryDescription}
+                  title={messages.noCategoryTitle}
+                />
+              ) : (
+                <EmptyState
+                  action={
+                    <Button onClick={openCreate} variant="primary">
+                      {messages.actions.add}
+                    </Button>
+                  }
+                  description={messages.emptyDescription}
+                  title={messages.emptyTitle}
+                />
+              )
             }
             error={
               loadFailure !== null && quotableRequestId(loadFailure) !== null ? (
