@@ -287,6 +287,40 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // TASK-0024. Three decisions with no I/O, and all three fail quietly.
+        //
+        // `demo-persona.ts` pairs an app with the persona it may issue: get a
+        // cell wrong and a visitor is signed into a cookie their console never
+        // reads — no error, no log line, a demo that simply goes nowhere.
+        //
+        // `demo-identity.ts` names the account and its store. Every value has an
+        // index or a schema behind it (`Seller_brandName_key`,
+        // `ProductVariant_seller_sku_key`, `sellerSlugSchema`), so a branch
+        // nothing reaches is a name nothing refuses — and the refusal lands on
+        // the visitor mid-issue rather than on a test.
+        //
+        // `demo-rate-limit.ts` decides the bucket, the window and the
+        // comparison. Off by one in either direction is invisible: too tight
+        // blocks the three-tab visitor F7 promises, too loose lets ten through
+        // where F6 expects five.
+        'src/demo/demo-persona.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        'src/demo/demo-identity.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        'src/demo/demo-rate-limit.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
         // The function that makes an open redirect unrepresentable. A branch
         // nothing reaches here is an app that could be sent somewhere nobody
         // vetted (TASK-0021 F10).
