@@ -7,6 +7,7 @@ import { CatalogModule } from './catalog/catalog.module.js'
 import { AllExceptionsFilter } from './common/all-exceptions.filter.js'
 import { ClockModule } from './common/clock.module.js'
 import { ConfigModule } from './config/config.module.js'
+import { DemoModule } from './demo/demo.module.js'
 import type { AppConfig } from './config/app-config.js'
 import { HealthModule } from './health/health.module.js'
 import { PrismaModule } from './prisma/prisma.module.js'
@@ -27,6 +28,7 @@ export class AppModule {
         PrismaModule,
         AuthModule,
         CatalogModule,
+        DemoModule,
         HealthModule,
         ProfileModule,
         SellersModule,
