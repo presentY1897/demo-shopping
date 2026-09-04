@@ -162,6 +162,15 @@ export class GoogleAuthService {
 
     if (params.code === undefined) return this.fail(origin, 'exchange_failed', params.requestId)
 
+    // Reachable when the credentials went away between the two hops — a
+    // redeploy that dropped them, or a rotation. `begin` answers 503 in that
+    // state, so this browser started while it was configured and there is a
+    // return address to use; telling it `exchange_failed` would send somebody
+    // to try again at something that cannot work yet.
+    if (this.config.googleOAuth === null) {
+      return this.fail(origin, 'not_configured', params.requestId)
+    }
+
     let profile: GoogleProfile
     try {
       const tokens = await this.google.exchangeCode({
