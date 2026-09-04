@@ -135,6 +135,50 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // TASK-0115. Three decisions the seller console makes with no
+        // database in front of them.
+        //
+        // The **stock band** is the one that matters most, because the boundary
+        // it draws exists twice by necessity: the badge is decided in
+        // TypeScript from a row, the filter by a comparison PostgreSQL makes
+        // over a page. Nothing forces the two to agree, and when they disagree
+        // the symptom is a seller filtering for 품절 임박 and getting rows with
+        // no badge — a bug nobody reports because it looks like a display
+        // preference. The spec holds the two against each other across the
+        // whole range, which only means something if every branch is reached.
+        // The name-search pattern is beside it for the same reason: an
+        // unescaped `%` turns a filter into no filter at all, silently.
+        'src/catalog/seller-product-filters.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        // What a copy of a listing *is* — which fields carry over, which are
+        // deliberately dropped, how a combination is named when its ids are
+        // about to change. Every one of them fails quietly: a copied SKU makes
+        // duplication always answer 409, a copied stock level is stock the
+        // ledger cannot explain, and a combination assembled in join order
+        // rather than axis order names the wrong variant while the request
+        // still validates. Producing a request rather than writing rows is what
+        // makes all of that reachable from a unit test.
+        'src/catalog/product-duplicate.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        // The store's own state gate, now in front of four endpoints. Listed
+        // for the reason `src/sellers/seller-access.ts` is: its branches *are*
+        // the cells of TASK-0108's capability table, and a branch nothing
+        // reaches is a refusal nobody worded — or, worse, a suspended store
+        // that can still change its catalogue.
+        'src/catalog/store-write-gate.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
         // TASK-0036. The ledger's rules: which signs a movement type admits,
         // what the stock is after one, and which of the four statements a
         // variant's history breaks. All of them fail silently when they are
