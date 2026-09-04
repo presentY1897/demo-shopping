@@ -133,6 +133,7 @@
 | 타입 공유 | `packages/shared` 단일 출처 |
 | UI 컴포넌트 | **Radix Primitives** 위에 자체 스타일. shadcn 은 토큰 체계가 두 벌이 되어 제외 |
 | 컴포넌트 문서화 | **Storybook** (`packages/ui`, 밀도 3단계 툴바 전환). 새 컴포넌트는 스토리를 함께 작성 |
+| Storybook 배포 | **GitHub Pages** — <https://presenty1897.github.io/demo-shopping/>. 공개가 기본이고 주소가 고정이다. Vercel 은 배포마다 주소가 바뀌고 배포별 URL 이 보호된다 (D-213) |
 | 디자인 기준 문서 | Storybook 이 **디자인 토큰 문서 페이지**도 담는다 — 색 스케일·타이포·간격·밀도 × 뷰포트 매트릭스·컨트롤 높이. 디자인 기준은 언제든 확인 가능한 형태로 유지한다 |
 | 관측 | Sentry(에러) + **Vercel Analytics**(페이지뷰·웹 바이탈). 제품 분석 도구는 도입하지 않음 |
 | 다크모드 | **M15 이후로 보류.** 색 하드코딩 금지 규칙만 지키면 나중에 토큰 세트 추가로 끝난다 |
@@ -166,7 +167,8 @@ Cloudflare R2 는 **전송량 요금이 0원**이고 S3 호환 API 라 이전이
 | SSH | `~/.ssh/config` 의 `github-presenty` 별칭 (계정별 키 분리) |
 | origin URL | `git@github-presenty:presentY1897/demo-shopping.git` |
 | 도메인 | **`demo-shopping.com`** — Cloudflare 에서 구매 완료, 네임서버 이전 불필요 |
-| DNS | Cloudflare. **Vercel·API 레코드는 프록시 끔(DNS only)** — 이중 CDN 은 캐시·SSL 문제를 만든다 |
+| DNS | Cloudflare. **Vercel 3건만 프록시 끔(DNS only)** — Vercel 은 자체 CDN 에서 도메인 검증·인증서 발급을 하므로 프록시가 끼면 실패한다. `api`(Render)·`cdn`(R2)은 **프록시 켬** (D-214) |
+| SSL/TLS 모드 | **`Flexible` 금지** — Cloudflare↔Render 구간이 평문이 되고 이 API 는 JWT 를 실어 나른다. 현재 `Full`. `Full (strict)` 상향은 Render 의 커스텀 도메인 인증서 발급 확인이 선행 (D-214) |
 | 프론트 배포 | **Vercel** Hobby × 3 프로젝트 (무료) |
 | API · 검색 | **Render 무료** — 15분 sleep, 재기동 약 1분 |
 | PostgreSQL | **Neon 무료** — Render 무료 DB 는 30일 만료라 분리. 0.5GB / 월 100 CU-hours, 만료 없음 |
@@ -196,6 +198,7 @@ Cloudflare R2 는 **전송량 요금이 0원**이고 S3 호환 API 라 이전이
 | TASK 문서 | `docs/tasks/M<NN>-<name>/TASK-<0000>-<slug>.md`. **번호는 전역 4자리 평면** |
 | TASK 작성 시점 | **M01~M15 전량 선작성 완료** (100개). 마일스톤별로 나눠 쓰지 않는다 |
 | 진행 방식 | TASK 문서 작성 → **사용자 승인** → 구현 |
+| 승인 범위 | **이미 작성된 TASK 는 개별 승인 없이 착수**한다 (D-212). 선행 완료 + 파일 미충돌이면 진행. **새 TASK 신설 · 설계 문서 변경 · 외부 계정/비용/비밀값 · 완료 기준 미달 예상**만 착수 전 확인 |
 | 완료 판정 | 각 TASK 의 **정량적 완료 기준**을 모두 충족 |
 | 품질 게이트 | `docs/tasks/QUALITY-GATES.md` 공통 적용, 각 TASK 는 **예외만** 명시 |
 | 테스트 기준 | **레이어별.** 순수 로직 분기 100% / 백엔드 서비스·API 라인 80% / **프론트는 수치 없이 상호작용 목록** / 계약 / E2E 시나리오. M05 부터 적용 |
