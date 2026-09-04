@@ -193,7 +193,7 @@ TASK-0029 의 카테고리 편집은 모달이다. 여기서 같은 선택을 �
 | Q3 | `pnpm build` 전 앱 성공 | shared · api · admin · shop · seller 전부 성공. `/attributes` 는 정적 프리렌더(○) | [x] |
 | Q4 | `pnpm test` 전부 통과 | `apps/admin` **244 passed (11 files)** — 이 TASK 이전 144. `packages/api-mocks` 83 (이전 62). 워크스페이스 전체 green (api 808 · ui 808 · shop 100 · seller 11) | [x] |
 | Q5 | 프론트는 수치 없이 상호작용 목록 / 순수 로직 분기 100% | U1~U6 아래 표. 순수 로직 5개 모듈(`categories`·`options`·`order`·`preview`·`text`)을 **분기 100%** 로 `vitest.config.mjs` 에 임계값 등록 | [x] |
-| Q6 | CI 전 job green | PR [#40](https://github.com/presentY1897/demo-shopping/pull/40) 에서 `typecheck` · `lint` · `build` · `test` **4개 job green** | [x] |
+| Q6 | CI 전 job green | PR [#54](https://github.com/presentY1897/demo-shopping/pull/54) 에서 `typecheck` · `lint` · `build` · `test` **4개 job green**. Vercel 3건은 계정 빌드 한도로 실패했고 코드와 무관하다 | [x] |
 | Q7 | commitlint 위반 0 | 위반 0 | [x] |
 | **P1** | **셸 기준선 대비 +500ms 이내** | **미충족 — +905ms.** `/attributes` LCP **2,709ms**(모바일 프리셋 5회 중앙값: 2716·2709·2707·2707·2861), admin 셸 기준선 1,804ms([TASK-0097](../M15-polish/TASK-0097-performance.md) 1장). 아래 6.4 | [ ] |
 | P1′ | LCP 2.5s 이하 | 2,709ms — 초과. TASK-0097 이관 | [-] |
