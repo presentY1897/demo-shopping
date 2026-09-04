@@ -3,6 +3,7 @@ import type {
   HealthStatus,
   OauthFailureReason,
   OauthNotice,
+  ProductStatus,
   SellerStatus,
 } from '@shopping/shared'
 import type { ImageUploadListLabels } from '@shopping/ui/components'
@@ -14,6 +15,11 @@ import type { ErrorMessages } from '@/lib/errors'
 import type { StoreFieldErrorMessages } from '@/lib/sellers/store-form'
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'
+import type { OptionIssueCode } from '@/lib/products/combinations'
+import type {
+  ProductAttributeErrorMessages,
+  ProductFieldErrorMessages,
+} from '@/lib/products/product-form'
 import type { RejectionReason } from '@/lib/uploads/gallery'
 import type { UploadFailureKey } from '@/lib/uploads/failures'
 
@@ -82,6 +88,8 @@ export interface Messages {
   readonly imageUpload: ImageUploadMessages
   /** Applying to sell, and the store settings that are the same form (TASK-0109). */
   readonly store: StoreMessages
+  /** 상품 등록 · 수정 (TASK-0114). */
+  readonly products: ProductEditorMessages
 }
 
 /**
@@ -442,4 +450,181 @@ export interface SearchReadinessMessages {
   readonly indexing: string
   readonly autoRecheck: string
   readonly recheckLabel: string
+}
+
+/**
+ * The product editor — 상품 등록 · 수정 (TASK-0114).
+ *
+ * One slice for two routes because they are one screen: `/products/new` and
+ * `/products/[id]/edit` differ in a heading, a verb and whether an axis may be
+ * added, and splitting the copy would be the first step towards splitting the
+ * screen (the same reasoning `StoreMessages` gives for 입점 신청 · 스토어 설정).
+ *
+ * The image widget's copy is **not** here — it is `imageUpload`, unchanged from
+ * TASK-0033. The editor mounts that widget rather than a second one.
+ */
+export interface ProductEditorMessages {
+  readonly newTitle: string
+  readonly newDescription: string
+  readonly editTitle: string
+  readonly editDescription: string
+  /** Announced from the first frame while `GET /products/:id` is in flight. */
+  readonly loadingLabel: string
+  /** The id in the URL names no listing. Not an error — a stale link. */
+  readonly missing: ProductMissingMessages
+  /** The read never answered. Not a refusal about the listing. */
+  readonly failure: StoreFailureMessages
+  readonly basics: ProductBasicsMessages
+  readonly attributes: ProductAttributeSectionMessages
+  readonly options: ProductOptionMessages
+  readonly variants: ProductVariantMessages
+  /** What saving would do to the combinations, shown before it is done (F7). */
+  readonly diff: ProductDiffMessages
+  readonly preview: ProductPreviewMessages
+  readonly actions: ProductActionMessages
+  readonly conflict: StoreConflictMessages
+  /** One label per status, so `DRAFT` never reaches a person as a word. */
+  readonly statusLabels: Readonly<Record<ProductStatus, string>>
+  readonly toast: ProductToastMessages
+}
+
+export interface ProductMissingMessages {
+  readonly title: string
+  readonly body: string
+  readonly listLabel: string
+}
+
+export interface ProductBasicsMessages {
+  readonly title: string
+  readonly nameLabel: string
+  readonly nameHint: string
+  readonly descriptionLabel: string
+  readonly descriptionHint: string
+  readonly categoryLabel: string
+  readonly categoryHint: string
+  readonly categoryPlaceholder: string
+  /** Between the names of a category's ancestors: `여성 › 아우터 › 코트`. */
+  readonly categorySeparator: string
+  readonly categoryLoadingLabel: string
+  readonly categoryFailure: string
+  readonly categoryRetryLabel: string
+  readonly purchaseLimitLabel: string
+  readonly purchaseLimitHint: string
+  /** One sentence per way a base input can be wrong. Shape is the schema builder's. */
+  readonly errors: ProductFieldErrorMessages
+}
+
+export interface ProductAttributeSectionMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly failureTitle: string
+  readonly retryLabel: string
+  /** `{label}` is filled with the definition's own label. */
+  readonly errors: ProductAttributeErrorMessages
+}
+
+export interface ProductOptionMessages {
+  readonly title: string
+  readonly description: string
+  readonly addLabel: string
+  /** `옵션 {index}` — the legend that tells one axis's fieldset from the next. */
+  readonly legend: string
+  readonly nameLabel: string
+  readonly namePlaceholder: string
+  readonly removeLabel: string
+  readonly valuesLabel: string
+  readonly valueLabel: string
+  readonly valuePlaceholder: string
+  readonly addValueLabel: string
+  readonly removeValueLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  /** Why 수정 모드 offers no way to add or remove an axis (F7b). */
+  readonly lockedNotice: string
+  readonly issueTitle: string
+  /**
+   * One sentence per refusal the option editor can produce, keyed by the pure
+   * module's own union — a code added there fails `pnpm typecheck` here rather
+   * than rendering a blank line.
+   */
+  readonly issues: Readonly<Record<OptionIssueCode, string>>
+  /** `{count}` combinations, `{max}` allowed. */
+  readonly countLabel: string
+}
+
+export interface ProductVariantMessages {
+  readonly title: string
+  readonly description: string
+  readonly caption: string
+  readonly combinationHeader: string
+  readonly skuHeader: string
+  readonly priceHeader: string
+  readonly listPriceHeader: string
+  readonly stockHeader: string
+  readonly purchaseLimitHeader: string
+  readonly activeHeader: string
+  /** `{combination}` and `{column}` name the cell for a screen reader. */
+  readonly cellLabel: string
+  readonly skuPlaceholder: string
+  readonly bulkTitle: string
+  readonly bulkDescription: string
+  readonly bulkApplyLabel: string
+  /** Announced after 모든 행에 적용, because the rows it changed may be off screen. */
+  readonly bulkAppliedNotice: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  /** Heading of the notice above the table, where table-shaped refusals land. */
+  readonly noticeTitle: string
+}
+
+export interface ProductDiffMessages {
+  readonly title: string
+  readonly unchanged: string
+  /** `{count}` combinations that would be created. */
+  readonly added: string
+  /** `{count}` combinations that would stop being sellable. */
+  readonly deactivated: string
+  /** Says the rows are switched off rather than deleted, and why. */
+  readonly deactivatedHint: string
+  /** `{count}` rows whose stock the save does not touch. */
+  readonly kept: string
+}
+
+export interface ProductPreviewMessages {
+  readonly title: string
+  readonly openLabel: string
+  readonly closeLabel: string
+  /** Says this is a layout rehearsal, not the buyer's screen (R3). */
+  readonly disclaimer: string
+  readonly priceLabel: string
+  readonly listPriceLabel: string
+  readonly optionsLabel: string
+  readonly attributesLabel: string
+  readonly noImages: string
+  readonly noPrice: string
+  readonly soldOut: string
+}
+
+export interface ProductActionMessages {
+  readonly saveDraftLabel: string
+  readonly saveLabel: string
+  readonly publishLabel: string
+  readonly unpublishLabel: string
+  readonly errorTitle: string
+  readonly submitFailed: string
+  /** Why 판매 시작 is available on a draft that is not finished yet. */
+  readonly draftNotice: string
+  readonly createdNotice: string
+  readonly savedNotice: string
+  readonly publishedNotice: string
+  readonly unpublishedNotice: string
+}
+
+export interface ProductToastMessages {
+  readonly regionLabel: string
+  readonly closeLabel: string
+  readonly failureTitle: string
 }

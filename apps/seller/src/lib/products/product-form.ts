@@ -55,11 +55,30 @@ export function attributeFieldMessages(messages: ProductAttributeErrorMessages):
 }
 
 /**
+ * The same fields, with `required` cleared.
+ *
+ * **This is 임시저장, expressed as a schema.** TASK-0113 4장 made a required
+ * attribute required only when the listing ends up `ACTIVE`: a draft is allowed
+ * to be *unfinished* but never *wrong*, so the types and the choice lists still
+ * hold and only the "you must answer this" rule is lifted. A browser that kept
+ * the strict rules would refuse a save the server would have accepted, which is
+ * the one direction a client-side copy of a rule must never fail in.
+ */
+function draftFields(fields: readonly FieldDef[]): readonly FieldDef[] {
+  return fields.map((field) => ({ ...field, required: false }))
+}
+
+/**
  * The whole form's schema.
  *
  * `maxPurchaseQuantity` is text in and a number out, like every numeric input
  * the generator produces: `''` has to stay distinguishable from `0`, and a
  * control that started at `0` would make "no cap" impossible to express.
+ *
+ * `requireAttributes` is what tells 임시저장 from 판매 시작. The form validates
+ * with it `false`, so a draft is never blocked; the editor runs the strict
+ * schema again on the way to publishing and places whatever it refuses on the
+ * same fields the server would have named (F6).
  */
 export function productFormSchema(
   fields: readonly FieldDef[],
@@ -67,8 +86,11 @@ export function productFormSchema(
     readonly base: ProductFieldErrorMessages
     readonly attributes: ProductAttributeErrorMessages
   },
+  options: { readonly requireAttributes?: boolean } = {},
 ): z.ZodObject<Record<string, z.ZodType>> {
-  return schemaForFields(fields, attributeFieldMessages(messages.attributes)).extend({
+  const shape = options.requireAttributes === true ? fields : draftFields(fields)
+
+  return schemaForFields(shape, attributeFieldMessages(messages.attributes)).extend({
     name: z
       .string()
       .trim()
