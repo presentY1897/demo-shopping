@@ -1,8 +1,12 @@
 {
   "extends": "@shopping/config/tsconfig/base.json",
+  // Widened from `src` so the specs are part of the same program — they are
+  // typechecked and linted from here. `tsconfig.build.json` narrows the set back
+  // so they stay out of `dist`; `apps/api/tsconfig.json` is the same shape and
+  // for the same reason.
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist"
+    "rootDir": "."
   },
-  "include": ["src"]
+  "include": ["src", "test"],
+  "exclude": ["node_modules", "dist"]
 }
