@@ -639,7 +639,11 @@ describe('상태와 노출', () => {
 
     const refused = await failure(api.clientAs(pending).createProduct(draft()))
 
-    expect(refused.status).toBe(409)
+    // 403 since TASK-0113, which attached TASK-0108's state gate here. A 409
+    // says "retry once this resolves"; an applicant waiting on a review has
+    // nothing to retry (TASK-0026 F3).
+    expect(refused.status).toBe(403)
+    expect(refused.code).toBe('PRODUCT_SELLER_INACTIVE')
   })
 
   it('refuses a seller who tries to lift their own forced hide', async () => {

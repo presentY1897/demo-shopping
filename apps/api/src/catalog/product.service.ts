@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Inject,
   Injectable,
   NotFoundException,
@@ -17,6 +18,7 @@ import type {
   ProductStatus,
   ProductSummary,
   ResourceOwnership,
+  SellerStatus,
   UpdateProductRequest,
   VariantDefaults,
 } from '@shopping/shared'
@@ -35,6 +37,8 @@ import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { sellerInactiveMessage } from '../sellers/seller-access.js'
+import { sellerStatusAllows } from '../sellers/seller-status.js'
 import { StockService } from '../stock/stock.service.js'
 import { AttributeService } from './attribute.service.js'
 import { defaultSkuPrefix, generatedSku } from './product-sku.js'
@@ -318,13 +322,7 @@ export class ProductService {
 
     assertResourceAccess(principal, 'product.write', ownership)
     this.assertStatusChange(principal, ownership, 'DRAFT', input.status)
-
-    // `docs/design/state-machines.md` — "ACTIVE 가 아니면 상품 등록과 판매가
-    // 불가능하다". A conflict rather than a 403: the caller's permission is
-    // fine, the store's state is not, and reapplying is what resolves it.
-    if (seller.status !== 'ACTIVE') {
-      throw new ConflictException('승인된 스토어만 상품을 등록할 수 있어요.')
-    }
+    this.assertStoreMayWrite(principal, seller)
 
     const axes = axesOf(input.options)
     const plans = this.plan(axes, input.variants ?? [])
@@ -394,10 +392,12 @@ export class ProductService {
     await this.uniqueWrite(() =>
       this.prisma.$transaction(async (tx) => {
         const product = await this.lock(tx, id)
-        const ownership = sellerOwnership(await this.store(tx, product.sellerId))
+        const seller = await this.store(tx, product.sellerId)
+        const ownership = sellerOwnership(seller)
 
         assertResourceAccess(principal, 'product.write', ownership)
         this.assertStatusChange(principal, ownership, product.status, input.status)
+        this.assertStoreMayWrite(principal, seller)
 
         if (product.version !== input.version) {
           throw new ConflictException(
@@ -980,8 +980,17 @@ export class ProductService {
     }
   }
 
-  /** The store a row belongs to, for the permission layer and for its own state. */
-  private async store(client: Client, sellerId: string): Promise<SellerRow & { status: string }> {
+  /**
+   * The store a row belongs to, for the permission layer and for its own state.
+   *
+   * `status` is typed as the shared union rather than `string`: it is read by
+   * TASK-0108's capability table, and a widened type there would make a status
+   * the table has no cell for compile.
+   */
+  private async store(
+    client: Client,
+    sellerId: string,
+  ): Promise<SellerRow & { status: SellerStatus }> {
     const seller = await client.seller.findUnique({
       where: { id: sellerId },
       select: { ...sellerOwnershipSelect, status: true },
@@ -1060,6 +1069,44 @@ export class ProductService {
     if (decision.scopes.every((scope) => scope === 'own')) {
       throw accessDenied('product.write', 'out_of_scope')
     }
+  }
+
+  /**
+   * The store's own state gate (TASK-0108 4장), with a code a console can read.
+   *
+   * **Only when the caller is the store.** "지금 이 스토어가 상품을 등록할 수
+   * 있는 상태인가" is a question about the seller acting on their own listing;
+   * an operator editing somebody's product is not that store trading, and
+   * refusing them would make a suspended store's catalogue unmanageable by the
+   * very people who suspended it.
+   *
+   * **Why not `assertSellerActive` itself.** The decision is not repeated here —
+   * the table it consults and the sentence it words are both imported from
+   * TASK-0108's module, and a spec pins this to refuse in exactly the cells
+   * `assertSellerActive` refuses in. What it adds is the domain code: that
+   * function throws a bare `FORBIDDEN`, which a screen cannot tell from "this is
+   * not your product" — and those two 403s need opposite advice. Giving it a
+   * code would mean editing a file this task does not own, for a payload only
+   * this caller needs.
+   *
+   * **403 and not 409**, which is where TASK-0032 had it. A 409 says "try again
+   * once this resolves", and a seller whose application is still pending has
+   * nothing to retry — the state is not a transient collision, it is the
+   * platform saying no for now (TASK-0026 F3 · TASK-0108 F3).
+   */
+  private assertStoreMayWrite(
+    principal: RequestPrincipal,
+    seller: { readonly id: string; readonly status: SellerStatus },
+  ): void {
+    if (principal.sellerId !== seller.id) return
+    if (sellerStatusAllows(seller.status, 'product.write')) return
+
+    throw new ForbiddenException(
+      domainFailure(
+        'PRODUCT_SELLER_INACTIVE',
+        sellerInactiveMessage(seller.status, 'product.write'),
+      ),
+    )
   }
 
   /** The combination plan, or a 400 naming every input that was wrong. */
