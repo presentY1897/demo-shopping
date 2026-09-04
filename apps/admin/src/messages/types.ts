@@ -1,8 +1,16 @@
-import type { DenialReason, HealthStatus, OauthFailureReason, OauthNotice } from '@shopping/shared'
+import type {
+  DenialReason,
+  HealthStatus,
+  OauthFailureReason,
+  OauthNotice,
+  SellerStatus,
+} from '@shopping/shared'
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { AttributeType } from '@shopping/shared'
+
+import type { SellerDecision } from '@/lib/sellers/decisions'
 
 import type { ApiFailureReason } from '@/lib/api-failure'
 import type { ErrorMessages } from '@/lib/errors'
@@ -62,6 +70,8 @@ export interface Messages {
   readonly categories: CategoryMessages
   /** The attribute console (TASK-0031). */
   readonly attributes: AttributeMessages
+  /** The seller onboarding review console (TASK-0110). */
+  readonly sellers: SellerReviewMessages
   /**
    * One sentence per error code the API can answer with (TASK-0117).
    *
@@ -573,4 +583,152 @@ export interface AttributeToastMessages {
   readonly moveFailed: string
   /** Said with a failure, because the list has just been re-read (4.6). */
   readonly reloaded: string
+}
+
+/**
+ * Everything `/sellers` and `/sellers/[id]` say.
+ *
+ * One slice for both screens, for the reason {@link CategoryMessages} gives —
+ * they are one task in an operator's head, and the same four decisions are taken
+ * from either. Copy split along a route boundary is copy that stops agreeing
+ * with itself.
+ *
+ * **No sentence here interpolates a value.** Every other console slice grew a
+ * `{name}` placeholder and a `fill` helper for it; this one puts the store's
+ * name in its own element instead. It reads better in the dialog (the name gets
+ * a line of its own) and it removes the one thing a placeholder can do wrong,
+ * which is being rendered as `{brandName}` at somebody.
+ */
+export interface SellerReviewMessages {
+  readonly title: string
+  readonly description: string
+  /** Names the table and the region that scrolls it. */
+  readonly listLabel: string
+  readonly loadingLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  /** The queue is empty *because of the filter*, which is a different emptiness. */
+  readonly filteredEmptyTitle: string
+  readonly filteredEmptyDescription: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly filterLabel: string
+  /** The "every status" choice. Sends no `status` at all. */
+  readonly filterAll: string
+  /** One per status, so an operator never reads `SUSPENDED`. */
+  readonly statusLabels: Readonly<Record<SellerStatus, string>>
+  readonly columns: SellerReviewColumnMessages
+  /** Stands in for a column the API answered `null` for. */
+  readonly emptyValue: string
+  readonly pagination: SellerReviewPaginationMessages
+  /** What each decision is called. Also the row button's visible text. */
+  readonly actions: Readonly<Record<SellerDecision, string>>
+  /**
+   * The second half of a blocked button's sentence.
+   *
+   * The first half is TASK-0023's `reason(permission)`, which says *that* the
+   * role cannot; this says *which* capability is missing. Keyed by permission
+   * rather than by decision because that is what the two share.
+   */
+  readonly denials: {
+    readonly approve: string
+    readonly suspend: string
+  }
+  /**
+   * Shown to an account whose `seller.approve` is narrowed to `demo`.
+   *
+   * A standing notice rather than a per-row judgment: the response carries no
+   * `ownerIsDemo`, so this screen cannot tell which application is a demo
+   * account's (TASK-0110 4장 · R4).
+   */
+  readonly demoScopeNotice: string
+  /** Shown instead of the queue when the account may not read it at all. */
+  readonly forbiddenTitle: string
+  readonly detail: SellerReviewDetailMessages
+  readonly dialog: SellerDecisionDialogMessages
+  readonly toast: SellerReviewToastMessages
+  /** One line per way a call can fail **before** the API answers. */
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+export interface SellerReviewColumnMessages {
+  readonly brandName: string
+  readonly slug: string
+  readonly status: string
+  readonly appliedAt: string
+  readonly changedAt: string
+  readonly reason: string
+  readonly actions: string
+}
+
+export interface SellerReviewPaginationMessages {
+  /** Names the `<nav>`; a page may hold more than one. */
+  readonly label: string
+  readonly previous: string
+  readonly next: string
+  /** Composed as `2 페이지 · 20건`, by concatenation rather than a placeholder. */
+  readonly pageUnit: string
+  readonly countUnit: string
+}
+
+export interface SellerReviewDetailMessages {
+  readonly backLabel: string
+  readonly applicationTitle: string
+  readonly statusTitle: string
+  readonly brandNameLabel: string
+  readonly slugLabel: string
+  readonly introductionLabel: string
+  readonly logoLabel: string
+  /** The applicant's account id. The response carries no name (TASK-0108 4장). */
+  readonly ownerLabel: string
+  readonly appliedAtLabel: string
+  readonly statusLabel: string
+  readonly reasonLabel: string
+  readonly changedAtLabel: string
+  readonly loadingLabel: string
+  readonly notFoundTitle: string
+  readonly notFoundDescription: string
+  readonly errorTitle: string
+  /** Alt text for the store's logo. */
+  readonly logoAlt: string
+  /** Said when this status offers nothing to do — `REJECTED` waits on the seller. */
+  readonly noActions: string
+}
+
+export interface SellerDecisionDialogMessages {
+  readonly titles: Readonly<Record<SellerDecision, string>>
+  readonly descriptions: Readonly<Record<SellerDecision, string>>
+  readonly confirms: Readonly<Record<SellerDecision, string>>
+  readonly reasonLabel: string
+  readonly reasonHint: string
+  readonly reasonPlaceholder: string
+  readonly cancel: string
+  readonly closeLabel: string
+  /** Shown at dialog level when a refusal named no field this form owns. */
+  readonly submitError: string
+  /**
+   * What the dialog says about the reason before it is sent.
+   *
+   * The **rules** are `sellerStatusReasonSchema`'s and only the wording is here
+   * — the same arrangement `attributeFormSchema` uses (TASK-0110 4장).
+   */
+  readonly errors: {
+    readonly reasonRequired: string
+    readonly reasonTooLong: string
+  }
+}
+
+export interface SellerReviewToastMessages {
+  readonly regionLabel: string
+  readonly closeLabel: string
+  /** One per decision — "승인했어요" reads better than "처리했어요". */
+  readonly decided: Readonly<Record<SellerDecision, string>>
+  readonly failed: string
+  /**
+   * Somebody else decided first.
+   *
+   * Said with the re-read, because the row has just changed under the operator
+   * and a silent refresh would look like their own click did it.
+   */
+  readonly conflict: string
 }
