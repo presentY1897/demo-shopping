@@ -6,6 +6,7 @@ import { categoryHandlers } from './categories'
 import { demoHandlers } from './demo'
 import { healthHandlers } from './health'
 import { productHandlers } from './products'
+import { sellerConsoleHandlers } from './seller-console'
 import { sellerHandlers } from './sellers'
 import { profileHandlers } from './profile'
 import { sessionHandlers } from './session'
@@ -29,6 +30,7 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...categoryHandlers,
   ...attributeHandlers,
   ...productHandlers,
+  ...sellerConsoleHandlers,
   ...sellerHandlers,
   ...adminSellerHandlers,
   ...uploadHandlers,
@@ -39,6 +41,12 @@ export { attributeHandlers, resetAttributeStore } from './attributes'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
 export { demoHandlers, failNextDemoIssue, mockDemoAccount, resetDemoStore } from './demo'
 export { productHandlers, productRowsSnapshot, resetProductStore } from './products'
+export {
+  failNextStockAdjustment,
+  resetSellerConsoleStore,
+  sellerConsoleHandlers,
+  sellerConsoleSnapshot,
+} from './seller-console'
 export { resetSellerStore, sellerHandlers, sellerRequests, sellerRowSnapshot } from './sellers'
 export type { SellerRequestRecord } from './sellers'
 export {
