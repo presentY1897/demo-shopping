@@ -39,6 +39,11 @@ const BUYER_GRANTS: readonly PermissionGrant[] = [
   grant('claim.read', 'own'),
   grant('coupon.read', 'own'),
   grant('user.read', 'own'),
+  grant('profile.write', 'own'),
+  grant('profile.delete', 'own'),
+  // Applying to sell is done by somebody who is not a seller yet, so the
+  // ability has to sit here rather than on `SELLER_OWNER` (TASK-0108).
+  grant('seller.write', 'own'),
 ]
 
 /**
@@ -71,7 +76,10 @@ const SELLER_OWNER_GRANTS: readonly PermissionGrant[] = [
   grant('coupon.delete', 'own'),
   grant('settlement.read', 'own'),
   grant('seller.read', 'own'),
+  grant('seller.write', 'own'),
   grant('user.read', 'own'),
+  grant('profile.write', 'own'),
+  grant('profile.delete', 'own'),
 ]
 
 /**
