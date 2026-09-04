@@ -182,3 +182,71 @@ export const stockReconciliationFaults = [
 ] as const
 
 export type StockReconciliationFault = (typeof stockReconciliationFaults)[number]
+
+// ---------------------------------------------------------------------------
+// Adjusting a variant's stock from the seller console (TASK-0115)
+// ---------------------------------------------------------------------------
+
+/**
+ * The movements a person may record by hand.
+ *
+ * Two of the six, and the other four are not an oversight. `SALE`, `CANCEL`,
+ * `RETURN_IN` and `RESERVE_CONFIRM` are movements an **order** explains: they
+ * carry `refType`/`refId` pointing at the row that caused them, and that
+ * reference is what makes them idempotent under retry
+ * (`StockLedger_ref_key`). A console entry has no such reference, so allowing
+ * one here would put a sale in the ledger that no order accounts for — a row
+ * that is perfectly well formed, passes reconciliation, and makes every reader
+ * of the history wrong. The order pipeline (M07 · M09) records those through
+ * `StockService` directly.
+ *
+ * `ADJUST` is the two-way one and the only type obliged to say why; `INBOUND`
+ * is 입고. Between them they cover what a seller does at a desk.
+ */
+export const sellerStockAdjustTypes = ['INBOUND', 'ADJUST'] as const
+
+export type SellerStockAdjustType = (typeof sellerStockAdjustTypes)[number]
+
+export const sellerStockAdjustTypeSchema = z.enum(sellerStockAdjustTypes)
+
+/**
+ * One adjustment, as the console states it.
+ *
+ * `delta` and never an absolute level (D-024): "재고를 17로" overwrites whatever
+ * sold between the read and the save, while "+5 입고" is right whenever it is
+ * processed. {@link stockMovementQuantitySchema} already refuses zero, which is
+ * the whole of "a movement of nothing is not a movement".
+ *
+ * `reason` is optional **here** and required for `ADJUST` by the ledger itself
+ * (`movementIssues`, TASK-0036). Repeating that rule in this schema would put
+ * it in two places, and the copies disagree the first time one of them is
+ * edited — the refusal that comes back already names `reason` as its field, so
+ * a form has what it needs either way.
+ */
+export const stockAdjustRequestSchema = z.object({
+  delta: stockMovementQuantitySchema,
+  type: sellerStockAdjustTypeSchema,
+  reason: stockReasonSchema.optional(),
+})
+
+export type StockAdjustRequest = z.infer<typeof stockAdjustRequestSchema>
+
+/**
+ * What the ledger recorded.
+ *
+ * `seq` and not an id: a ledger row's identity is `(variantId, seq)` and there
+ * is no global key, because the order of the rows *is* the data and a UUIDv7
+ * does not order two movements inside one millisecond (TASK-0036 4.2). It is
+ * also the cursor of the history page, so a screen can find the row it just
+ * wrote without a second contract.
+ */
+export const stockAdjustResponseSchema = z.object({
+  variantId: variantIdSchema,
+  /** Echoed back, so a queued request's answer can be matched to it. */
+  delta: z.int(),
+  /** The variant's stock immediately after this movement. */
+  balanceAfter: z.int().min(0),
+  seq: z.int().min(1),
+})
+
+export type StockAdjustResponse = z.infer<typeof stockAdjustResponseSchema>
