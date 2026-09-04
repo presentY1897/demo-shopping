@@ -8,7 +8,7 @@ import { z } from 'zod'
  * is the server's decision and is deliberately not on the wire — the same
  * argument `auth/roles.ts` makes for there being no `DEMO_BUYER` role.
  *
- * **Nothing here carries `isDemo`.** What a screen needs to know is not whether
+ * **Nothing here carries the demo flag.** What a screen needs to know is not whether
  * an account is a demo but **how long it has left**, and `User_demo_expiry_check`
  * makes the two questions the same one anyway. Keeping the expiry as the only
  * value that crosses the wire is what holds the containment guard of TASK-0105
