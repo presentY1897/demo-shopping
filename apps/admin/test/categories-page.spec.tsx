@@ -23,13 +23,14 @@ import {
 } from '@shopping/api-mocks'
 import type { CategoryTreeNode } from '@shopping/shared'
 import { createApiClient } from '@shopping/shared'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import CategoriesPage from '@/app/categories/page'
 import { messagesFor } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { testServer } from './setup'
 
 const { categories: copy, errors: errorCopy } = messagesFor()
@@ -59,7 +60,7 @@ async function otherAdminEdits(id: number, name: string): Promise<void> {
 
 /** Renders the page and waits until the tree has arrived. */
 async function openConsole(): Promise<HTMLElement> {
-  render(<CategoriesPage />)
+  renderWithAuth(<CategoriesPage />)
 
   return screen.findByRole('tree', { name: copy.treeLabel })
 }
@@ -101,7 +102,7 @@ async function idsInApi(includeInactive = true): Promise<number[]> {
 describe('the four states the tree can be in (U1)', () => {
   it('says it is loading while the API has not answered', () => {
     testServer.server.use(neverAnswersOn('get', mockPaths.categories))
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
 
     expect(screen.getByRole('status')).toHaveTextContent(copy.loadingLabel)
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(copy.title)
@@ -109,7 +110,7 @@ describe('the four states the tree can be in (U1)', () => {
 
   it('offers the first category when the tree is empty', async () => {
     resetCategoryStore(categoryTreeEmpty)
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
 
     expect(await screen.findByText(copy.emptyTitle)).toBeVisible()
     expect(screen.getByRole('button', { name: copy.actions.addRoot })).toBeVisible()
@@ -126,7 +127,7 @@ describe('the four states the tree can be in (U1)', () => {
         '이 작업을 수행할 권한이 없습니다.',
       ),
     )
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
 
     const alert = await screen.findByRole('alert')
 
@@ -138,7 +139,7 @@ describe('the four states the tree can be in (U1)', () => {
   it('recovers when the retry succeeds', async () => {
     const user = userEvent.setup()
     testServer.server.use(networkFailureOn('get', mockPaths.categories))
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
 
     const retry = await screen.findByRole('button', { name: copy.retryLabel })
     // The API comes back before the operator presses the button.

@@ -2,6 +2,10 @@ import { consoleMenuItemAt } from '@shopping/ui/console'
 
 import { ko } from './ko'
 import type {
+  AuthDenialMessages,
+  AuthMessages,
+  AuthOutcomeMessages,
+  ConsoleGuardMessages,
   ConsoleLayoutMessages,
   ImageUploadMessages,
   ImageUploadPreviewMessages,
@@ -11,6 +15,8 @@ import type {
   Messages,
   RouteStateMessages,
   SearchReadinessMessages,
+  SignInMessages,
+  UserMenuMessages,
   WakeMessages,
 } from './types'
 
@@ -41,6 +47,10 @@ export function screenTitle(href: string, locale: Locale = DEFAULT_LOCALE): stri
 }
 
 export type {
+  AuthDenialMessages,
+  AuthMessages,
+  AuthOutcomeMessages,
+  ConsoleGuardMessages,
   ConsoleLayoutMessages,
   ImageUploadMessages,
   ImageUploadPreviewMessages,
@@ -50,5 +60,7 @@ export type {
   Messages,
   RouteStateMessages,
   SearchReadinessMessages,
+  SignInMessages,
+  UserMenuMessages,
   WakeMessages,
 }

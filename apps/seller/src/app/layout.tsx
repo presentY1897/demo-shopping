@@ -2,7 +2,8 @@ import { CONSOLE_DENSITY } from '@shopping/ui'
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
-import { SellerShell } from '@/components/layout/seller-shell'
+import { ConsoleFrame } from '@/components/layout/console-frame'
+import { AuthProvider } from '@/lib/auth/auth-context'
 import { DEFAULT_LOCALE, messagesFor } from '@/messages'
 
 import './globals.css'
@@ -29,7 +30,14 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
     // shared ones, so the console gets the design system without the choice.
     <html lang={DEFAULT_LOCALE} data-density={CONSOLE_DENSITY}>
       <body className="bg-surface text-fg antialiased">
-        <SellerShell messages={messages.layout}>{children}</SellerShell>
+        {/*
+          Above the shell: the top bar's account menu reads the session, the
+          guard reads it, and every screen's permission hook reads it. One
+          renewal on boot serves all of them (TASK-0023 4장).
+        */}
+        <AuthProvider>
+          <ConsoleFrame>{children}</ConsoleFrame>
+        </AuthProvider>
       </body>
     </html>
   )

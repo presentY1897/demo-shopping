@@ -19,7 +19,7 @@ import {
   networkFailureOn,
   resetCategoryStore,
 } from '@shopping/api-mocks'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import axe from 'axe-core'
 import type { RunOptions } from 'axe-core'
@@ -28,6 +28,7 @@ import { describe, expect, it } from 'vitest'
 import CategoriesPage from '@/app/categories/page'
 import { messagesFor } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { testServer } from './setup'
 
 const { categories: copy } = messagesFor()
@@ -65,13 +66,13 @@ async function expectNoViolations(): Promise<void> {
 describe('the category console has no accessibility violations', () => {
   it('while the tree is loading', async () => {
     testServer.server.use(networkFailureOn('get', mockPaths.categories))
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
 
     await expectNoViolations()
   })
 
   it('when the tree has arrived', async () => {
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
     await screen.findByRole('tree', { name: copy.treeLabel })
 
     await expectNoViolations()
@@ -79,7 +80,7 @@ describe('the category console has no accessibility violations', () => {
 
   it('when there is nothing to show', async () => {
     resetCategoryStore(categoryTreeEmpty)
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
     await screen.findByText(copy.emptyTitle)
 
     await expectNoViolations()
@@ -87,7 +88,7 @@ describe('the category console has no accessibility violations', () => {
 
   it('when the API refused', async () => {
     testServer.server.use(networkFailureOn('get', mockPaths.categories))
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
     await screen.findByText(copy.errorTitle)
 
     await expectNoViolations()
@@ -95,7 +96,7 @@ describe('the category console has no accessibility violations', () => {
 
   it('with a row selected and the toolbar live', async () => {
     const user = userEvent.setup()
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
     await screen.findByRole('tree', { name: copy.treeLabel })
 
     await user.click(screen.getAllByRole('treeitem')[0]!)
@@ -105,7 +106,7 @@ describe('the category console has no accessibility violations', () => {
 
   it('with the add form open', async () => {
     const user = userEvent.setup()
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
     await screen.findByRole('tree', { name: copy.treeLabel })
 
     await user.click(screen.getByRole('button', { name: copy.actions.addRoot }))
@@ -116,7 +117,7 @@ describe('the category console has no accessibility violations', () => {
 
   it('with a field error showing', async () => {
     const user = userEvent.setup()
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
     await screen.findByRole('tree', { name: copy.treeLabel })
 
     await user.click(screen.getByRole('button', { name: copy.actions.addRoot }))
@@ -128,7 +129,7 @@ describe('the category console has no accessibility violations', () => {
 
   it('with the delete confirmation open', async () => {
     const user = userEvent.setup()
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
     await screen.findByRole('tree', { name: copy.treeLabel })
 
     const leaf = screen
@@ -144,7 +145,7 @@ describe('the category console has no accessibility violations', () => {
 
   it('with a toast announcing a failure', async () => {
     const user = userEvent.setup()
-    render(<CategoriesPage />)
+    renderWithAuth(<CategoriesPage />)
     const tree = await screen.findByRole('tree', { name: copy.treeLabel })
 
     testServer.server.use(networkFailureOn('post', mockPaths.categoryReorder))

@@ -21,7 +21,7 @@ import {
   neverAnswersOn,
 } from '@shopping/api-mocks'
 import { createApiClient } from '@shopping/shared'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { UserEvent } from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
@@ -29,6 +29,7 @@ import { describe, expect, it } from 'vitest'
 import AttributesPage from '@/app/attributes/page'
 import { messagesFor } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { testServer } from './setup'
 
 const { attributes: copy } = messagesFor()
@@ -51,7 +52,7 @@ const PATHS = {
 } as const
 
 async function openConsole(): Promise<HTMLElement> {
-  render(<AttributesPage />)
+  renderWithAuth(<AttributesPage />)
 
   return screen.findByRole('table', { name: copy.listLabel })
 }
@@ -130,7 +131,7 @@ async function fillNewAttribute(
 describe('the four states the list can be in (U1)', () => {
   it('says it is loading while the API has not answered', () => {
     testServer.server.use(neverAnswersOn('get', mockPaths.categories))
-    render(<AttributesPage />)
+    renderWithAuth(<AttributesPage />)
 
     expect(screen.getByRole('status')).toHaveTextContent(copy.loadingLabel)
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(copy.title)
@@ -148,7 +149,7 @@ describe('the four states the list can be in (U1)', () => {
 
   it('shows the failure and a way out when the API refuses (U6)', async () => {
     testServer.server.use(networkFailureOn('get', mockPaths.attributes))
-    render(<AttributesPage />)
+    renderWithAuth(<AttributesPage />)
 
     expect(await screen.findByText(copy.errorTitle)).toBeVisible()
     expect(screen.getByRole('button', { name: copy.retryLabel })).toBeVisible()
@@ -157,7 +158,7 @@ describe('the four states the list can be in (U1)', () => {
   it('recovers when the retry succeeds', async () => {
     const user = userEvent.setup()
     testServer.server.use(networkFailureOn('get', mockPaths.attributes))
-    render(<AttributesPage />)
+    renderWithAuth(<AttributesPage />)
 
     await screen.findByText(copy.errorTitle)
     testServer.server.resetHandlers()

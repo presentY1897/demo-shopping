@@ -25,6 +25,7 @@ import { previewAttributes } from '@/lib/attributes/preview'
 import { useAttributeConsole } from '@/lib/attributes/use-attributes'
 import type { ErrorMessages } from '@/lib/errors'
 import { errorMessage } from '@/lib/errors'
+import { useAuthorization } from '@/lib/auth/authorization'
 import type { AttributeMessages, ErrorNoticeMessages } from '@/messages'
 
 import { AttributeCategoryPicker } from './attribute-category-picker'
@@ -85,6 +86,15 @@ interface AttributeWorkspaceProps {
 export function AttributeWorkspace({ messages, errors, notice }: AttributeWorkspaceProps) {
   const console_ = useAttributeConsole()
   const { toast } = useToast()
+
+  /**
+   * Why this account may not retire a definition, or `undefined` when it may.
+   *
+   * Same table the API's guard reads — `catalog.delete`, which the operator and
+   * demo roles do not hold (TASK-0023 4장).
+   */
+  const { reason } = useAuthorization()
+  const removeDenial = reason('catalog.delete')
 
   const [panel, setPanel] = useState<Panel>({ kind: 'none' })
   const [dialog, setDialog] = useState<Dialog>({ kind: 'none' })
@@ -488,6 +498,7 @@ export function AttributeWorkspace({ messages, errors, notice }: AttributeWorksp
                 closePanel()
                 console_.select(next)
               }}
+              removeDenial={removeDenial}
               onRemove={(id) => {
                 setDialog({ kind: 'retire', id, blocked: false })
               }}

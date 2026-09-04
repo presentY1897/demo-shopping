@@ -16,7 +16,7 @@
 
 import { mockPaths, networkFailureOn } from '@shopping/api-mocks'
 import { createApiClient } from '@shopping/shared'
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { UserEvent } from '@testing-library/user-event'
 import axe from 'axe-core'
@@ -26,6 +26,7 @@ import { describe, expect, it } from 'vitest'
 import AttributesPage from '@/app/attributes/page'
 import { messagesFor } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { testServer } from './setup'
 
 const { attributes: copy } = messagesFor()
@@ -62,7 +63,7 @@ async function expectNoViolations(): Promise<void> {
 }
 
 async function openConsole(): Promise<void> {
-  render(<AttributesPage />)
+  renderWithAuth(<AttributesPage />)
   await screen.findByRole('table', { name: copy.listLabel })
 }
 
@@ -79,7 +80,7 @@ async function openEditor(user: UserEvent): Promise<void> {
 describe('the attribute console has no accessibility violations', () => {
   it('while the definitions are loading', async () => {
     testServer.server.use(networkFailureOn('get', mockPaths.categories))
-    render(<AttributesPage />)
+    renderWithAuth(<AttributesPage />)
 
     await expectNoViolations()
   })
@@ -104,7 +105,7 @@ describe('the attribute console has no accessibility violations', () => {
 
   it('when the API refused', async () => {
     testServer.server.use(networkFailureOn('get', mockPaths.attributes))
-    render(<AttributesPage />)
+    renderWithAuth(<AttributesPage />)
     await screen.findByText(copy.errorTitle)
 
     await expectNoViolations()

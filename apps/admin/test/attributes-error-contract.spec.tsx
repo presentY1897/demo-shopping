@@ -19,7 +19,7 @@
 import { httpFailureOn, MOCK_REQUEST_ID, mockPaths, networkFailureOn } from '@shopping/api-mocks'
 import type { ApiFieldError } from '@shopping/shared'
 import { createApiClient } from '@shopping/shared'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { UserEvent } from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
@@ -27,6 +27,7 @@ import { describe, expect, it } from 'vitest'
 import AttributesPage from '@/app/attributes/page'
 import { messagesFor } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { testServer } from './setup'
 
 const { attributes: copy, errors: errorCopy, errorNotice } = messagesFor()
@@ -39,7 +40,7 @@ const otherAdmin = createApiClient({ appId: 'admin', baseUrl: 'http://api.test.i
 const SERVER_PROSE = '서버가 쓴 문장입니다'
 
 async function openConsole(): Promise<void> {
-  render(<AttributesPage />)
+  renderWithAuth(<AttributesPage />)
   await screen.findByRole('table', { name: copy.listLabel })
 }
 
@@ -281,7 +282,7 @@ describe('a failure nobody on this screen can fix', () => {
     testServer.server.use(
       httpFailureOn('get', mockPaths.attributes, 500, 'INTERNAL_ERROR', SERVER_PROSE),
     )
-    render(<AttributesPage />)
+    renderWithAuth(<AttributesPage />)
 
     expect(await screen.findByText(copy.errorTitle)).toBeVisible()
     expect(screen.getByText(MOCK_REQUEST_ID)).toBeVisible()
