@@ -32,7 +32,6 @@ export {
   resetSessionStore,
   resetUploadStore,
   sessionHandlers,
-  setDefaultMockSession,
   uploadHandlers,
   userRolesHandlers,
 } from './handlers'

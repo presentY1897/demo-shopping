@@ -109,8 +109,8 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     resetCategoryStore()
     resetAttributeStore()
     resetUploadStore()
-    // Back to whatever this app seeded with `setDefaultMockSession`: a spec that
-    // signed out, or borrowed another role, must not decide who the next one is.
+    // Back to signed out: a spec that signed in, or borrowed another role, must
+    // not decide who the next one is.
     resetSessionStore()
   })
 
