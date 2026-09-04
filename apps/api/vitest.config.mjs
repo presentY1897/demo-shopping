@@ -105,6 +105,22 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // TASK-0113. How a generated SKU is named when the seller names none.
+        // The rule it replaces was wrong for a whole minute at a time — eight
+        // hex characters of a UUIDv7 are the top 32 bits of a millisecond, so
+        // every product one seller created inside 65 seconds got the same
+        // prefix and the second one was refused by the SKU index. Nothing about
+        // that failure was visible in a unit test, because the derivation had
+        // no test: it was an expression inside the service. It has one now, and
+        // the properties it has to keep — reproducible from the row, ordered by
+        // creation, legal under the format check — are all properties of a
+        // string function.
+        'src/catalog/product-sku.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
         // TASK-0036. The ledger's rules: which signs a movement type admits,
         // what the stock is after one, and which of the four statements a
         // variant's history breaks. All of them fail silently when they are
