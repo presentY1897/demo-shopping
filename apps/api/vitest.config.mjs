@@ -121,6 +121,20 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // TASK-0113. Whether an image URL is one of our storage keys and, if it
+        // is, whose. The orphan sweep that TASK-0033 F6 handed over enumerates
+        // by `products/{sellerId}/` prefix, so a false "not ours" here is a
+        // cross-store reference the save lets through — and the damage lands
+        // later, somewhere else, as the *other* store's sweep deleting an object
+        // this product displays. A false match is the mirror mistake: a seller
+        // who cannot save a stock photograph. Neither shows up as a failing
+        // test unless every branch is reached.
+        'src/catalog/product-image-keys.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
         // TASK-0036. The ledger's rules: which signs a movement type admits,
         // what the stock is after one, and which of the four statements a
         // variant's history breaks. All of them fail silently when they are

@@ -63,7 +63,12 @@ export function productImageOwner(url: string): string | null {
 
   if (!productImageKeyPattern.test(key)) return null
 
-  return key.slice(KEY_PREFIX.length).split('/')[0] ?? null
+  // `products/{sellerId}/{objectId}.{ext}`, and the pattern has just confirmed
+  // it — so the store is everything between the prefix and the next slash.
+  // Sliced rather than split-and-indexed, because an index would need an
+  // "and if there is no second segment" branch that the match already ruled
+  // out, and an unreachable branch is a rule nothing checks.
+  return key.slice(KEY_PREFIX.length, key.indexOf('/', KEY_PREFIX.length))
 }
 
 /** Positions of the images that name a store other than `sellerId`. */
