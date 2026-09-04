@@ -47,6 +47,15 @@ export const mockPaths = {
   attributes: `*${API_PATH_PREFIX}/attributes`,
   /** `PATCH` the editable fields, `DELETE` to retire. */
   attribute: `*${API_PATH_PREFIX}/attributes/:id`,
+  /**
+   * The caller's own store: `GET` its status and reason, `PATCH` its copy
+   * (TASK-0108). No id in the path — `me` cannot be pointed at anybody.
+   */
+  sellerMe: `*${API_PATH_PREFIX}/sellers/me`,
+  /** `POST` to apply, and to apply again after a rejection. */
+  sellerApplications: `*${API_PATH_PREFIX}/sellers/applications`,
+  /** `GET ?value=` — whether a brand name is free at the moment of asking. */
+  sellerBrandNameAvailability: `*${API_PATH_PREFIX}/sellers/brand-name-availability`,
   /** `POST` a request for one presigned upload (TASK-0011). */
   uploadPresign: `*${API_PATH_PREFIX}/uploads/presign`,
   /**

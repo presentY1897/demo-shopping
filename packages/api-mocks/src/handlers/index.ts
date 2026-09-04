@@ -3,6 +3,7 @@ import type { RequestHandler } from 'msw'
 import { attributeHandlers } from './attributes'
 import { categoryHandlers } from './categories'
 import { healthHandlers } from './health'
+import { sellerHandlers } from './sellers'
 import { sessionHandlers } from './session'
 import { uploadHandlers } from './uploads'
 import { userRolesHandlers } from './user-roles'
@@ -21,11 +22,14 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...userRolesHandlers,
   ...categoryHandlers,
   ...attributeHandlers,
+  ...sellerHandlers,
   ...uploadHandlers,
 ]
 
 export { attributeHandlers, resetAttributeStore } from './attributes'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
+export { resetSellerStore, sellerHandlers, sellerRequests, sellerRowSnapshot } from './sellers'
+export type { SellerRequestRecord } from './sellers'
 export { resetUploadStore, uploadHandlers } from './uploads'
 export { failNextRefresh, mockSession, resetSessionStore, sessionHandlers } from './session'
 export { healthHandlers, userRolesHandlers }
