@@ -29,7 +29,7 @@
 | --- | --- |
 | 앱 분리 | **독립된 Next.js 앱 3개** — `apps/shop` / `apps/seller` / `apps/admin` |
 | 도메인 | 커스텀 도메인 구매 후 `shop.` / `seller.` / `admin.` 서브도메인 |
-| 세션 | **앱별 독립**. 쿠키는 각 서브도메인 한정(`Domain` 미지정) |
+| 세션 | **앱별 독립**. refresh 쿠키 **이름을 앱별로** 나누고(`shopping_refresh_<app>`) API 가 `X-App-Id` 가 말하는 것만 읽는다. `Domain` 미지정은 유지하되 그것만으로는 부족하다 — 쿠키를 발급하는 것이 세 앱 공통의 API 오리진이기 때문 (D-218) |
 | 실계정 로그인 | **Google OAuth 2.0**. 이메일/비밀번호 자체 가입은 구현하지 않음 |
 | 토큰 | JWT (access + refresh), refresh 는 httpOnly 쿠키 |
 | 역할 | **다대다.** `BUYER` / `SELLER_OWNER` / `ADMIN_OPERATOR` / `ADMIN_SUPER` / `DEMO_ADMIN` |
