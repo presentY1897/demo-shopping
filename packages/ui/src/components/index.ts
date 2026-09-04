@@ -49,6 +49,15 @@ export type { AvatarProps, AvatarSize } from './avatar'
 export { ErrorNotice } from '../feedback'
 export type { ErrorNoticeProps } from '../feedback'
 
+export { ImageDropZone, ImageUploadList, IMAGE_UPLOAD_STATUSES } from '../media'
+export type {
+  ImageDropZoneProps,
+  ImageUploadItem,
+  ImageUploadListLabels,
+  ImageUploadListProps,
+  ImageUploadStatus,
+} from '../media'
+
 export { Divider, DIVIDER_ORIENTATIONS } from './divider'
 export type { DividerProps, DividerOrientation } from './divider'
 
@@ -78,8 +87,10 @@ export {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronUpIcon,
   CloseIcon,
   MinusIcon,
+  StarIcon,
 } from './icons'
 
 /* ------------------------------------------------ data display (TASK-0016) -- */

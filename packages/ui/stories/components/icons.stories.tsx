@@ -18,8 +18,10 @@ import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronUpIcon,
   CloseIcon,
   MinusIcon,
+  StarIcon,
 } from '../../src/components'
 import { Row, Specimen, Stack } from '../support/layout'
 
@@ -27,9 +29,11 @@ const GLYPHS = [
   { Glyph: CheckIcon, name: 'CheckIcon' },
   { Glyph: MinusIcon, name: 'MinusIcon' },
   { Glyph: ChevronDownIcon, name: 'ChevronDownIcon' },
+  { Glyph: ChevronUpIcon, name: 'ChevronUpIcon' },
   { Glyph: ChevronLeftIcon, name: 'ChevronLeftIcon' },
   { Glyph: ChevronRightIcon, name: 'ChevronRightIcon' },
   { Glyph: CloseIcon, name: 'CloseIcon' },
+  { Glyph: StarIcon, name: 'StarIcon' },
 ] as const
 
 function IconSet() {
