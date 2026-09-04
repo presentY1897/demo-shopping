@@ -345,6 +345,23 @@ describe('F7 동시 최초 로그인 (A7)', () => {
 describe('F8 Google 이 설정되지 않은 환경', () => {
   const unconfigured = useApiApp({ database: db, config: { googleOAuth: null } })
 
+  it('설정이 사라진 뒤 돌아온 콜백은 not_configured 로 답한다', async () => {
+    // The window a redeploy opens: this browser started while the credentials
+    // were there, so it holds a valid state cookie and has somewhere to go back
+    // to. `exchange_failed` would tell that person to try again.
+    const { cookie, state } = await begin('shop')
+
+    const response = await fetch(
+      `${unconfigured.baseUrl}/api/v1/auth/google/callback?state=${state}&code=c`,
+      { redirect: 'manual', headers: { cookie: `${OAUTH_STATE_COOKIE}=${cookie}` } },
+    )
+
+    expect(response.status).toBe(302)
+    expect(new URL(response.headers.get('location') ?? '').searchParams.get('reason')).toBe(
+      'not_configured',
+    )
+  })
+
   it('기동은 되고 두 엔드포인트만 503 이다', async () => {
     // The state that CI runs in, and the state this repository ran in for two
     // days after the Render deploy. Health has to keep answering.
