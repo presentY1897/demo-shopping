@@ -267,7 +267,7 @@ A 는 "기존 스펙이 문장에 묶여 있었다"를, B 는 "새 스펙이 실
 | --- | --- | --- | --- | --- | --- |
 | F1 | 한 엔드포인트의 서로 다른 실패가 서로 다른 `code` 를 갖는다 | 카테고리 409 3종 통합 스펙 | 세 응답의 `code` 가 모두 다름 | `CATEGORY_SLUG_TAKEN` · `CATEGORY_VERSION_CONFLICT` · `CATEGORY_HAS_CHILDREN` — 서로 다름. 400 두 종(`CATEGORY_MOVE_INTO_SELF` · `CATEGORY_PARENT_MISSING`)도 분리 | [x] |
 | F2 | 필드 실패가 `field` 로 온다 | `POST /categories` 잘못된 slug | `details[0].field === 'slug'` | `{ field: 'slug', code: 'INVALID' }`. 도메인 충돌도 `{ field: 'slug', code: 'CATEGORY_SLUG_TAKEN' }` | [x] |
-| F3 | 문구를 바꿔도 매핑이 유지된다 | **음성 대조군**: 서버 문장을 다른 말로 바꾸고 스펙 재실행 | 필드 매핑·복구 수단 선택 **전부 통과** | **측정 A** 문장 30종 교체 후 전 스펙: 착수 시점(`17fd9ce`) **80건 실패** → 완료 시점 **0건 실패**(1,749개). **측정 B** 같은 4개 단언을 착수 시점 리더에 대고 실행: **3건 실패** → 현재 리더 **0건**. 상세는 6.5 | [x] |
+| F3 | 문구를 바꿔도 매핑이 유지된다 | **음성 대조군**: 서버 문장을 다른 말로 바꾸고 스펙 재실행 | 필드 매핑·복구 수단 선택 **전부 통과** | **측정 A** 문장 30종 교체 후 전 스펙: 착수 시점(`17fd9ce`) **80건 실패** → 완료 시점 **0건 실패**(1,753개). **측정 B** 같은 4개 단언을 착수 시점 리더에 대고 실행: **3건 실패** → 현재 리더 **0건**. 상세는 6.5 | [x] |
 | F4 | 오류가 해당 입력칸 아래 뜨고 포커스가 간다 | `apps/admin` 폼 스펙 | 첫 무효 컨트롤이 `document.activeElement` | 스키마 거부·서버 거부 양쪽에서 해당 `<input>` 이 `toHaveFocus()`. `aria-describedby` 로 메시지가 컨트롤에 묶임 | [x] |
 | F5 | 코드별로 다른 복구 수단이 뜬다 | 409 3종 화면 스펙 | 슬러그=필드오류 / 버전=충돌 다이얼로그 / 하위=안내 | 3종 모두 확인 + 5xx=문의 번호 패널. 전부 `code` 분기이며 HTTP 메서드·재조회 비교는 판별에서 제거 | [x] |
 | F6 | **문의 번호로 서버 로그를 찾을 수 있다** | 500 을 유발하고, 화면의 번호로 로그를 grep | 같은 요청의 로그 1건이 나옴 | 실 HTTP 로 500 3회 유발 → 응답 헤더 = 본문 `requestId` 일치. 그 번호로 실제 로그 파일 grep 시 **해당 요청 2줄**(예외 기록 1 + 종료 기록 1), 다른 요청 0줄, 없는 번호 0줄. 화면 쪽은 `ErrorNotice` 가 `x-request-id` 값을 그대로 표시·복사 | [x] |
@@ -285,7 +285,7 @@ A 는 "기존 스펙이 문장에 묶여 있었다"를, B 는 "새 스펙이 실
 | Q1 | 타입 검사 | `pnpm typecheck` | error 0 | 8개 프로젝트 error 0 | [x] |
 | Q2 | 린트 | `pnpm lint` | error 0, warning 0 | error 0 · warning 0. `pnpm format:check` 도 통과 | [x] |
 | Q3 | 빌드 | `pnpm build` | 성공 | 전 앱 성공 | [x] |
-| Q4 | 단위 테스트 | `pnpm test` | 전부 통과 | **1,822개 통과 · 0 실패** (ui 752 / api 808 / admin 134 / api-mocks 59 / shop 69 / seller 5) | [x] |
+| Q4 | 단위 테스트 | `pnpm test` | 전부 통과 | **1,826개 통과 · 1 skip · 0 실패** (ui 752 / api 808 / admin 134 / api-mocks 59 / shop 68+1skip / seller 5) | [x] |
 | Q5 | 커버리지 | 순수 로직(`server-errors`, 코드→문장 조회) **분기 100%** / `apps/api` 라인 80% | 임계값 통과 | 분기 100%: `ui/src/form/server-errors.ts` · `admin/src/lib/errors.ts` · `admin/src/lib/categories/errors.ts` · `api/src/common/{domain-failure,error-response,http-error-code,parse-input}.ts`. `apps/api` 라인 **93.9%**. 임계값은 각 `vitest.config.mjs` 에 고정 | [x] |
 | Q6 | CI | PR 4개 job | 전부 green | typecheck · lint · build · test 4개 green (PR 본문 참조) | [x] |
 | Q7 | 커밋 | commitlint | 위반 0 | 훅 통과, 위반 0 | [x] |
@@ -321,7 +321,7 @@ A 는 "기존 스펙이 문장에 묶여 있었다"를, B 는 "새 스펙이 실
 | 시점 | `packages/ui` | `packages/api-mocks` | `apps/api` | `apps/admin` | 합계 |
 | --- | --- | --- | --- | --- | --- |
 | 착수 (`17fd9ce`) | 0 실패 | 0 실패 | **80 실패** | 0 실패 | **80 실패** |
-| 완료 | 0 | 0 | 0 | 0 | **0 실패 / 1,749개** |
+| 완료 | 0 | 0 | 0 | 0 | **0 실패 / 1,753개** |
 
 착수 시점에 **프론트가 0 실패인 것이 이 TASK 의 근거다.** 문구를 바꾸면 필드 매핑이
 실제로 깨지는데(측정 B) 스펙은 초록이었다 — 오류가 계속 표시되기 때문이다.
