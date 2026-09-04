@@ -36,6 +36,7 @@ import { messagesFor } from '@/messages'
 import type { MockSession } from './support/auth'
 import { renderWithAuth } from './support/auth'
 import { testServer } from './setup'
+import { stubViewport, VIEWPORTS } from './support/viewport'
 
 const { sellers: copy, errors, errorNotice } = messagesFor()
 
@@ -478,7 +479,53 @@ describe('what each role may do', () => {
   })
 })
 
+describe('at the three verification viewports', () => {
+  /**
+   * jsdom paints nothing, so "레이아웃이 깨지지 않는다" cannot be measured here —
+   * what can be is the structure the console's mobile rule rests on
+   * (`docs/design/pages.md` — admin tables scroll sideways with the first column
+   * pinned). The row header and the named, keyboard-reachable scroll region are
+   * that structure, and they have to be there at every width because the screen
+   * has no width-dependent branch at all.
+   */
+  it.each(Object.entries(VIEWPORTS))('%s (%ipx)', async (_name, width) => {
+    stubViewport(width)
+    await openQueue()
+
+    const region = screen.getByRole('region', { name: copy.listLabel })
+    expect(region).toHaveAttribute('tabindex', '0')
+    // The identifying column is a `<th scope="row">`, which is what keeps a
+    // sideways-scrolled row readable.
+    expect(within(region).getAllByRole('rowheader')).toHaveLength(20)
+  })
+})
+
 describe('the keyboard alone', () => {
+  it('reaches every control of a row by tabbing', async () => {
+    const user = userEvent.setup()
+    const waiting = firstOfStatus('PENDING')
+    await openQueue()
+
+    const wanted = new Set<HTMLElement>([
+      screen.getByRole('link', { name: waiting.brandName }),
+      within(rowOf(waiting)).getByRole('button', {
+        name: `${waiting.brandName} ${copy.actions.approve}`,
+      }),
+      within(rowOf(waiting)).getByRole('button', {
+        name: `${waiting.brandName} ${copy.actions.reject}`,
+      }),
+    ])
+
+    // Bounded: the queue is the filter, a scroll region and twenty rows of three
+    // stops. Anything not reached inside that is not reachable at all.
+    for (let step = 0; step < 12 && wanted.size > 0; step += 1) {
+      await user.tab()
+      if (document.activeElement instanceof HTMLElement) wanted.delete(document.activeElement)
+    }
+
+    expect([...wanted]).toEqual([])
+  })
+
   it('reaches a decision and completes it', async () => {
     const user = userEvent.setup()
     const waiting = firstOfStatus('PENDING')
