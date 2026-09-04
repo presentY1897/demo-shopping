@@ -56,7 +56,10 @@ export function ProductList({
   onRetry,
   errorDescription,
 }: ProductListProps) {
-  const scroll = useInfiniteScroll({
+  // Destructured: read as `scroll.supported` the compiler's lint takes the whole
+  // object for a ref holder — the hook also returns a `…Ref` — and refuses the
+  // access during render. Two plain values say what they are.
+  const { sentinelRef, supported } = useInfiniteScroll({
     hasMore,
     loading: loadingMore,
     onLoadMore: onLoadMore ?? (() => undefined),
@@ -83,8 +86,8 @@ export function ProductList({
 
       {onLoadMore === undefined || !hasMore ? null : (
         <>
-          <div aria-hidden="true" ref={scroll.sentinelRef} />
-          {scroll.supported ? null : (
+          <div aria-hidden="true" ref={sentinelRef} />
+          {supported ? null : (
             <button
               className="border-border text-fg mx-auto rounded-sm border px-4 py-2 text-sm"
               disabled={loadingMore}
