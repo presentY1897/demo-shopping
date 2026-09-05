@@ -18,6 +18,7 @@ import { ProfileModule } from './profile/profile.module.js'
 import { ReservationModule } from './reservation/reservation.module.js'
 import { SearchModule } from './search/search.module.js'
 import { SellersModule } from './sellers/sellers.module.js'
+import { ShipmentModule } from './shipping/shipment.module.js'
 import { StockModule } from './stock/stock.module.js'
 import { StorageModule } from './storage/storage.module.js'
 import { UsersModule } from './users/users.module.js'
@@ -42,6 +43,7 @@ export class AppModule {
         ReservationModule,
         SearchModule,
         SellersModule,
+        ShipmentModule,
         StockModule,
         StorageModule,
         UsersModule,

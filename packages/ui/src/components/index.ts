@@ -149,3 +149,36 @@ export type { PaginationProps } from './pagination'
 
 export { useInfiniteScroll } from './use-infinite-scroll'
 export type { InfiniteScroll, UseInfiniteScrollOptions } from './use-infinite-scroll'
+
+/* --------------------------------------------------- 배송 추적 (TASK-0061) -- */
+
+/*
+ * 도메인 컴포넌트지만 여기서 나간다. `src/catalog` 처럼 자기 진입점을 갖는 편이
+ * 결이 맞지만, 그러려면 `package.json` 의 `exports` 를 고쳐야 하고 그 파일은 이
+ * 작업의 소유 경로 밖이다. 이 배럴은 이미 `../feedback` 과 `../media` 를 같은
+ * 방식으로 싣고 있고, 여기 실리면 `test/story-coverage.spec.ts` 가 스토리를
+ * 강제한다는 이점이 덤으로 붙는다.
+ */
+export { ShipmentProgress, ShipmentTracking, TrackingTimeline } from '../shipment'
+export type {
+  Shipment,
+  ShipmentProgressLabels,
+  ShipmentProgressProps,
+  ShipmentStatus,
+  ShipmentStepState,
+  ShipmentTrackingLabels,
+  ShipmentTrackingProps,
+  TrackingEvent,
+  TrackingEventKind,
+  TrackingTimelineLabels,
+  TrackingTimelineProps,
+} from '../shipment'
+export {
+  latestTrackingEvent,
+  SHIPMENT_STATUSES,
+  SHIPMENT_STEP_STATES,
+  shipmentStepIndex,
+  sortTrackingEvents,
+  stepStateAt,
+  TRACKING_EVENT_KINDS,
+} from '../shipment'

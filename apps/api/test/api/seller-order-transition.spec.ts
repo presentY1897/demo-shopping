@@ -1,8 +1,14 @@
 import { HttpException } from '@nestjs/common'
-import type { ApiClient, OrderStatus, SellerOrderTransitionResponse } from '@shopping/shared'
+import type {
+  ApiClient,
+  DemoCarrierCode,
+  OrderStatus,
+  SellerOrderTransitionResponse,
+} from '@shopping/shared'
 import {
   ApiClientError,
   cartResponseSchema,
+  demoCarrierNames,
   orderResponseSchema,
   orderStatuses,
   sellerOrderActionsResponseSchema,
@@ -70,12 +76,19 @@ const P95_BUDGET_MS = 300
 const PAST_TTL_MS = 20 * 60_000
 
 /**
- * TASK-0061 이 발급할 번호의 자리.
+ * 상태 머신이 「붙어 있다」를 읽을 운송장.
  *
- * 지금 이것을 붙이는 것은 검사뿐이다 — 발송 화면(TASK-0060)과 가상 운송장
- * (TASK-0061)이 오기 전까지, 상태 머신이 보는 것은 「붙어 있는가」 하나다.
+ * **번호의 출처는 이제 `Shipment` 다** (TASK-0061). 그래서 아래 {@link reset} 은 이
+ * 값을 몫에 적어 넣기 전에 **배송 행부터 만든다** — `SellerOrder_trackingNumber_shipment_fkey`
+ * 가 자기 배송의 번호가 아닌 값을 거절하기 때문이고, 그 거절이 곧 「발송했다는데
+ * 운송장이 없다」를 구조적으로 막는 장치다. 상태 머신이 보는 것은 여전히 「붙어
+ * 있는가」 하나이고, 이 파일이 재는 것도 그것 하나다.
+ *
+ * 발급 경로 자체(운송장이 어떻게 만들어지고 첫 추적 이벤트가 언제 남는가)는
+ * `shipment.spec.ts` 가 잰다.
  */
-const TRACKING_NUMBER = 'DEMO-AA-000000000001'
+const TRACKING_CARRIER: DemoCarrierCode = 'GA'
+const TRACKING_NUMBER = `DEMO-${TRACKING_CARRIER}-000000000001`
 
 let buyer: TestCaller
 let addressId: string
@@ -193,14 +206,32 @@ async function place(): Promise<Placed> {
  * 한 문장인 것은 두 문장 사이에 다른 검사가 끼어들 여지를 없애려는 것이 아니라,
  * 288번 도는 루프에서 왕복 하나가 그대로 288번이기 때문이다.
  */
-function reset(status: OrderStatus, tracking: string | null = null): Promise<unknown> {
-  return db.query(
+async function reset(status: OrderStatus, tracking: string | null = null): Promise<void> {
+  await db.query(
     `WITH cleared AS (DELETE FROM "OrderStatusHistory" WHERE "sellerOrderId" = $1)
      UPDATE "SellerOrder"
-        SET "status" = $2::"SellerOrderStatus", "trackingNumber" = $3
+        SET "status" = $2::"SellerOrderStatus", "trackingNumber" = NULL
       WHERE "id" = $1`,
-    [placed.sellerOrderId, status, tracking],
+    [placed.sellerOrderId, status],
   )
+
+  if (tracking === null) return
+
+  // **배송 행이 먼저다.** 몫에 남는 번호는 그 행의 사본이고, 사본을 먼저 적으려 들면
+  // 복합 외래키가 거절한다 (TASK-0061). 발급 경로를 흉내 내는 것이 아니라 상태
+  // 머신이 읽을 사실 하나를 만드는 것이므로 SQL 로 만든다 — 여기서 재는 것은
+  // 「운송장이 붙으면 발송이 열린다」이지 「운송장이 어떻게 만들어지는가」가 아니다.
+  await db.query(`DELETE FROM "Shipment" WHERE "sellerOrderId" = $1`, [placed.sellerOrderId])
+  await db.query(
+    `INSERT INTO "Shipment"
+       ("id", "sellerOrderId", "carrierCode", "carrierName", "trackingNumber", "shippedAt", "updatedAt")
+     VALUES (gen_random_uuid(), $1, $2, $3, $4, now(), now())`,
+    [placed.sellerOrderId, TRACKING_CARRIER, demoCarrierNames[TRACKING_CARRIER], tracking],
+  )
+  await db.query(`UPDATE "SellerOrder" SET "trackingNumber" = $2 WHERE "id" = $1`, [
+    placed.sellerOrderId,
+    tracking,
+  ])
 }
 
 function stateOf(sellerOrderId: string = placed.sellerOrderId): Promise<RowState> {

@@ -547,6 +547,30 @@ export type {
   Refund,
 } from './api/payments.js'
 
+export {
+  demoCarrierCodes,
+  demoCarrierCodeSchema,
+  demoCarrierNames,
+  shipmentResponseSchema,
+  shipmentSchema,
+  shipmentStatuses,
+  shipmentStatusSchema,
+  shipSellerOrderRequestSchema,
+  TRACKING_NUMBER_PREFIX,
+  trackingEventKinds,
+  trackingEventKindSchema,
+  trackingEventSchema,
+} from './api/shipments.js'
+export type {
+  DemoCarrierCode,
+  Shipment,
+  ShipmentResponse,
+  ShipmentStatus,
+  ShipSellerOrderRequest,
+  TrackingEvent,
+  TrackingEventKind,
+} from './api/shipments.js'
+
 export { allocate } from './pricing/allocate.js'
 export type { AllocationShare } from './pricing/allocate.js'
 export { calculateOrder } from './pricing/calculate.js'

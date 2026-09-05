@@ -43,6 +43,10 @@ export default defineConfig({
         'src/form/field-errors.ts': complete,
         'src/form/field-ids.ts': complete,
         'src/form/server-errors.ts': complete,
+        // 배송 진행이 「지금 어디인가」를 세는 자리다 (TASK-0061). 한 칸 어긋나면
+        // 화면이 틀린 단계를 가리키고, 그것은 빨간 테스트가 아니라 **그럴듯한
+        // 화면**으로 나타난다.
+        'src/shipment/shipment.ts': complete,
       },
     },
   },
