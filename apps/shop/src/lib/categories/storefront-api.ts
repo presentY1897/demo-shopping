@@ -10,7 +10,7 @@ import { getPublicApiClient } from '@/lib/api'
  * SSR and a crawler runs no JavaScript.
  */
 export function fetchStorefrontCategories(
-  options: { readonly signal?: AbortSignal } = {},
+  options: { readonly signal?: AbortSignal; readonly revalidate?: number } = {},
 ): Promise<CategoryTreeResponse> {
   return getPublicApiClient().getStorefrontCategoryTree(options)
 }

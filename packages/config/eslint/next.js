@@ -43,5 +43,21 @@ export function nextConfig(rootDir) {
       plugins: { 'react-hooks': reactHooks },
       rules: reactHooks.configs['recommended-latest'].rules,
     },
+    {
+      /**
+       * Open Graph images are drawn by Satori, not by a browser.
+       *
+       * `next/image` has no meaning in an `ImageResponse`: there is no DOM, no
+       * lazy loading and no LCP to protect — the whole file becomes one PNG. The
+       * rule's advice is sound everywhere else and simply does not apply here.
+       *
+       * Scoped to Next's own reserved filenames rather than to a directory, so
+       * the exemption cannot quietly grow to cover an ordinary component. The
+       * token checker exempts the same names for the same kind of reason
+       * (`packages/ui/test/component-tokens.spec.ts`).
+       */
+      files: ['**/{opengraph,twitter}-image.{ts,tsx}'],
+      rules: { '@next/next/no-img-element': 'off' },
+    },
   )
 }

@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation'
 
 import { ProductDetail } from '@/components/products/product-detail'
 import { fetchProductDetail } from '@/lib/products/detail-api'
+import { PRODUCT_REVALIDATE_SECONDS } from '@/lib/seo/revalidate'
+import { indexedMetadata } from '@/lib/seo/page-metadata'
 import { messagesFor } from '@/messages'
 
 /**
@@ -23,9 +25,27 @@ import { messagesFor } from '@/messages'
 /** DECISIONS 1장: 한국어·KRW 우선. */
 const CURRENCY = 'KRW'
 
+/**
+ * ISR (TASK-0102 4장 · F6).
+ *
+ * Price and stock move, but rendering on every request puts the cold start in
+ * front of every visitor. Sixty seconds of staleness is the trade the design
+ * names — and R2's other half covers it: the screen re-reads the listing after
+ * mount, so what a shopper is about to buy is never a minute old.
+ */
+/**
+ * Next requires this to be a **literal** — an imported constant is rejected with
+ * 「Invalid segment configuration export」. So the number is written twice, and
+ * `isr-window.spec.ts` is what keeps the two equal: the page's literal is
+ * compared against {@link PRODUCT_REVALIDATE_SECONDS}, which is the value the fetch below asks for.
+ */
+export const revalidate = 60
+
 async function load(id: string) {
   try {
-    return await fetchProductDetail(id)
+    // The same window the segment exports. Two numbers that must agree and
+    // live apart is how a page ends up caching nothing while claiming to.
+    return await fetchProductDetail(id, { revalidate: PRODUCT_REVALIDATE_SECONDS })
   } catch (error) {
     if (error instanceof ApiClientError && error.status === 404) notFound()
 
@@ -42,13 +62,13 @@ export async function generateMetadata({
   const copy = messagesFor().productDetail
   const { product, seller } = await load(id)
 
-  return {
+  return indexedMetadata({
     title: copy.metaTitle.replace('{name}', product.name),
     description: copy.metaDescription
       .replace('{brand}', seller.brandName)
       .replace('{name}', product.name),
-    alternates: { canonical: `/products/${product.id}` },
-  }
+    path: `/products/${product.id}`,
+  })
 }
 
 export default async function ProductPage({

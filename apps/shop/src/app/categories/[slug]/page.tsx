@@ -6,6 +6,8 @@ import { CategoryBreadcrumb } from '@/components/categories/category-breadcrumb'
 import { CategoryWorkspace } from '@/components/categories/category-workspace'
 import { categoryLineage, findCategoryBySlug } from '@/lib/categories/category-tree'
 import { fetchStorefrontCategories } from '@/lib/categories/storefront-api'
+import { CATALOGUE_REVALIDATE_SECONDS } from '@/lib/seo/revalidate'
+import { canonicalToMetadata } from '@/lib/seo/page-metadata'
 import { messagesFor } from '@/messages'
 import { PageContainer } from '@shopping/ui/layout'
 
@@ -28,7 +30,9 @@ import { PageContainer } from '@shopping/ui/layout'
  */
 
 async function resolve(slug: string) {
-  const { nodes } = await fetchStorefrontCategories()
+  const { nodes } = await fetchStorefrontCategories({
+    revalidate: CATALOGUE_REVALIDATE_SECONDS,
+  })
   const category = findCategoryBySlug(nodes, slug)
 
   if (category === null) notFound()
@@ -46,14 +50,18 @@ export async function generateMetadata({
 
   const { category } = await resolve(slug)
 
-  return {
-    title: copy.metaTitle.replace('{name}', category.name),
-    description: copy.metaDescription.replace('{name}', category.name),
-    // The filter-free URL, as the SEO table requires: every filter combination
-    // is a different address for the same catalogue, and hundreds of them
-    // indexed separately is duplicate content.
-    alternates: { canonical: `/categories/${category.slug}` },
-  }
+  // The canonical is the filter-free URL even when filters are on: every
+  // combination the auto-generated panel can produce is a different address for
+  // the same catalogue, and hundreds of them indexed separately is duplicate
+  // content (TASK-0102 4장).
+  return canonicalToMetadata(
+    {
+      title: copy.metaTitle.replace('{name}', category.name),
+      description: copy.metaDescription.replace('{name}', category.name),
+      path: `/categories/${category.slug}`,
+    },
+    `/categories/${category.slug}`,
+  )
 }
 
 export default async function CategoryPage({

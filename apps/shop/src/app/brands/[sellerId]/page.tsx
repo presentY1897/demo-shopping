@@ -5,8 +5,18 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { BrandProducts } from '@/components/brand/brand-products'
+import { CATALOGUE_REVALIDATE_SECONDS } from '@/lib/seo/revalidate'
 import { fetchStorefrontSeller } from '@/lib/storefront/seller-api'
+import { indexedMetadata } from '@/lib/seo/page-metadata'
 import { messagesFor } from '@/messages'
+
+/**
+ * Next requires this to be a **literal** — an imported constant is rejected with
+ * 「Invalid segment configuration export」. So the number is written twice, and
+ * `isr-window.spec.ts` is what keeps the two equal: the page's literal is
+ * compared against {@link CATALOGUE_REVALIDATE_SECONDS}, which is the value the fetch below asks for.
+ */
+export const revalidate = 300
 
 /**
  * 브랜드관 (TASK-0044).
@@ -25,7 +35,7 @@ import { messagesFor } from '@/messages'
 
 async function load(id: string) {
   try {
-    return await fetchStorefrontSeller(id)
+    return await fetchStorefrontSeller(id, { revalidate: CATALOGUE_REVALIDATE_SECONDS })
   } catch (error) {
     if (error instanceof ApiClientError && error.status === 404) notFound()
 
@@ -42,11 +52,14 @@ export async function generateMetadata({
   const copy = messagesFor().brand
   const { seller } = await load(sellerId)
 
-  return {
+  return indexedMetadata({
     title: copy.metaTitle.replace('{brand}', seller.brandName),
     description: seller.introduction ?? copy.metaDescription.replace('{brand}', seller.brandName),
-    alternates: { canonical: `/brands/${seller.id}` },
-  }
+    // The id, not the slug (TASK-0102 4.2): moving the URL onto `Seller.slug`
+    // would need redirects for the links TASK-0043 already shipped.
+    path: `/brands/${seller.id}`,
+    ...(seller.logoUrl === null ? {} : { images: [seller.logoUrl] }),
+  })
 }
 
 export default async function BrandPage({
