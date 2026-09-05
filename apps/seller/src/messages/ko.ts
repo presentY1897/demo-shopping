@@ -256,6 +256,13 @@ export const ko: Messages = {
     PRODUCT_SELLER_INACTIVE: '스토어가 승인된 뒤에 상품을 등록하거나 수정할 수 있어요.',
     PRODUCT_SKU_TAKEN: '이미 쓰고 있는 SKU 예요. 다른 SKU 를 입력해 주세요.',
     PRODUCT_VERSION_CONFLICT: '다른 곳에서 먼저 저장했어요. 최신 내용을 불러올까요?',
+    // 장바구니 (TASK-0045). 콘솔은 장바구니를 쓰지 않지만 카탈로그가
+    // `Record<UserFacingErrorCode, string>` 이라 문장이 있어야 한다 — 코드를 더하고
+    // 문장을 빠뜨리면 빈 줄을 보여 주는 대신 타입 검사가 막는다.
+    CART_STOCK_EXCEEDED: '재고보다 많은 수량은 담을 수 없어요.',
+    CART_PURCHASE_LIMIT: '1회 구매 가능 수량을 넘었어요.',
+    CART_FULL: '장바구니가 가득 찼어요.',
+    CART_ITEM_UNAVAILABLE: '지금은 판매하지 않는 상품이에요.',
   },
   // 응답이 아예 오지 않은 실패. 읽을 코드가 없으므로 번호도 보여 주지 않는다.
   apiFailures: {
