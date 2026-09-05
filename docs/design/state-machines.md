@@ -43,7 +43,7 @@ stateDiagram-v2
 | `PAYMENT_PENDING → PAID` · `→ PAYMENT_FAILED` | **`SYSTEM` 뿐** | 사람이 「결제됨」을 누르는 화면은 없다. 결제가 끝났다는 사실의 결과다 |
 | `PAID → PREPARING` | 판매자 · `SYSTEM` | |
 | `PREPARING → SHIPPED` | 판매자 | **운송장이 있어야 한다** — 「보냈다」는데 어디 있는지 모르는 상태를 막는다 |
-| `SHIPPED → DELIVERED` | `SYSTEM`(시뮬레이터) · 판매자 | 시뮬레이터가 멈춘 데모에서 판매자가 흐름을 이어 갈 수 있어야 한다 |
+| `SHIPPED → DELIVERED` | `SYSTEM`(시뮬레이터) · 판매자 | 시뮬레이터가 멈춘 데모에서 판매자가 흐름을 이어 갈 수 있어야 한다. **판매자는 전용 라우트로 간다** — 전이 라우트로 직접 찍으면 배송 표가 안 따라온다 (TASK-0060 4.1) |
 | `DELIVERED → CONFIRMED` | 구매자 · `SYSTEM`(D+7) | |
 | `PAID`·`PREPARING → CANCELED` · `DELIVERED → RETURNED` | 판매자 · 관리자 | **구매자가 없다.** 취소·반품은 클레임 절차의 **결론**이고, 신청 화면은 M10 이 만든다 |
 

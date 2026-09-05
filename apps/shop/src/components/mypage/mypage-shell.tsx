@@ -33,8 +33,8 @@ export function MyPageShell({
   readonly title: string
   readonly description: string
   readonly nav: MyPageNavMessages
-  /** Which of the three routes is being shown, so it is not a link to itself. */
-  readonly current: 'settings' | 'addresses' | 'cards'
+  /** Which of the four routes is being shown, so it is not a link to itself. */
+  readonly current: 'orders' | 'settings' | 'addresses' | 'cards'
   readonly children: ReactNode
 }) {
   return (
@@ -46,6 +46,11 @@ export function MyPageShell({
 
       <nav aria-label={nav.label}>
         <ul className="flex flex-wrap gap-4">
+          {/*
+            주문 내역 (TASK-0063). 계정 화면 넷 중 사람이 가장 자주 찾는 것이라 맨
+            앞이다 — 마이페이지에 오는 이유의 대부분이 「내 주문 어디까지 왔나」다.
+          */}
+          <MyPageNavItem current={current === 'orders'} href="/mypage/orders" label={nav.orders} />
           <MyPageNavItem
             current={current === 'settings'}
             href="/mypage/settings"

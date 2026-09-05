@@ -14,6 +14,7 @@ import {
   resetDemoStore,
   resetProductStore,
   resetSellerConsoleStore,
+  resetSellerOrderStore,
   resetSellerStore,
   resetProfileStore,
   resetSessionStore,
@@ -124,6 +125,7 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     // adjustment; a store that survived would make the next spec's "재고 12" the
     // previous one's "재고 17".
     resetSellerConsoleStore()
+    resetSellerOrderStore()
     resetUploadStore()
     // 장바구니와 주문서 (TASK-0046 · 0050). 둘 다 상태를 갖는 목이고, 한 스펙이
     // 지운 줄이나 닫은 주문서가 다음 스펙으로 넘어가면 **파일 안의 순서가 통과

@@ -3,12 +3,15 @@ import type {
   CheckoutResponse,
   OrderListResponse,
   OrderResponse,
+  SellerOrderListResponse,
   SellerOrderResponse,
+  SellerOrderSummaryResponse,
 } from '@shopping/shared'
 import {
   createCheckoutRequestSchema,
   createOrderRequestSchema,
   orderListQueryParamsSchema,
+  sellerOrderListQueryParamsSchema,
 } from '@shopping/shared'
 
 import { Principal } from '../auth/principal.decorator.js'
@@ -17,6 +20,7 @@ import type { RequestPrincipal } from '../auth/request-principal.js'
 import { parseInput } from '../common/parse-input.js'
 import { CheckoutService } from './checkout.service.js'
 import { OrderService } from './order.service.js'
+import { SellerOrderListService } from './seller-order-list.service.js'
 
 /**
  * 주문 (TASK-0049).
@@ -34,6 +38,7 @@ export class OrderController {
   constructor(
     private readonly orders: OrderService,
     private readonly checkouts: CheckoutService,
+    private readonly sellerOrderList: SellerOrderListService,
   ) {}
 
   /**
@@ -99,6 +104,38 @@ export class OrderController {
   @RequirePermission('order.read')
   get(@Principal() principal: RequestPrincipal, @Param('id') id: string): Promise<OrderResponse> {
     return this.orders.get(principal, id)
+  }
+
+  /**
+   * 판매자 콘솔의 주문 목록 (TASK-0060 1장). 상태·기간·검색·커서.
+   *
+   * 산 사람의 `/orders` 와 라우트를 나누는 이유는 그쪽 주석이 말하는 것과 같다 —
+   * 응답의 모양이 다르다. 여기서 한 줄은 **한 판매자의 몫**이고, 주문 단위 합계는
+   * 남의 몫이 섞여 있어 실을 수 없다.
+   */
+  @Get('seller-orders')
+  @RequirePermission('order.read')
+  sellerOrders(
+    @Principal() principal: RequestPrincipal,
+    @Query() query: unknown,
+  ): Promise<SellerOrderListResponse> {
+    return this.sellerOrderList.list(principal, parseInput(sellerOrderListQueryParamsSchema, query))
+  }
+
+  /**
+   * 상태별 건수 — 뱃지와 탭이 읽는다 (TASK-0060 2장).
+   *
+   * **`seller-orders/:id` 보다 위에 있어야 한다.** 라우터는 먼저 선언된 것을 쓰므로
+   * 아래에 두면 `summary` 가 id 로 읽히고, 그 id 는 uuid 가 아니라 조회가 500 으로
+   * 끝난다. 두 라우트를 굳이 같은 컨트롤러에 둔 이유도 그것이다 — 컨트롤러가 다르면
+   * 순서를 정하는 것이 모듈 스캔 순서가 되고, 그것은 이 파일을 읽어서는 알 수 없다.
+   */
+  @Get('seller-orders/summary')
+  @RequirePermission('order.read')
+  sellerOrderSummary(
+    @Principal() principal: RequestPrincipal,
+  ): Promise<SellerOrderSummaryResponse> {
+    return this.sellerOrderList.summary(principal)
   }
 
   /** 판매자가 읽는 자기 몫 하나 (F6). 남의 몫이면 403 이다. */

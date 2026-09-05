@@ -16,10 +16,12 @@ import {
   hasDemoTrackingFormat,
   isKnownCarrierCode,
   pickupHubOf,
+  SELLER_REPORTED_LOCATION,
   shipmentStatusAfter,
   TRACKING_NUMBER_DIGITS,
   TRACKING_NUMBER_PATTERN,
   trackingEventDescriptionOf,
+  trackingEventSources,
   trackingNumberFrom,
 } from './shipment-rules.js'
 
@@ -222,11 +224,44 @@ describe('사건과 상태', () => {
     expect(ladder).toBe('DELIVERED')
   })
 
-  it('writes a sentence for every kind', () => {
+  it('writes a sentence for every kind, from every source', () => {
     // 빈 문장은 `ShipmentTrackingEvent_text_check` 가 거절한다. 종류가 하나 늘고
     // 문장이 빠지면 그 거절은 사용자의 발송 요청 위에서 나타난다.
     for (const kind of trackingEventKinds) {
-      expect(trackingEventDescriptionOf(kind).trim().length).toBeGreaterThan(0)
+      for (const source of trackingEventSources) {
+        expect(trackingEventDescriptionOf(kind, source).trim().length).toBeGreaterThan(0)
+      }
     }
+  })
+
+  it('defaults to the carrier — the simulator is the normal path', () => {
+    for (const kind of trackingEventKinds) {
+      expect(trackingEventDescriptionOf(kind)).toBe(trackingEventDescriptionOf(kind, 'CARRIER'))
+    }
+  })
+
+  /**
+   * TASK-0060 4.3. 판매자가 직접 찍은 줄은 **운송사의 말을 하지 않는다.**
+   *
+   * 문장을 하나하나 단언하지 않는 것은 그것이 카피이기 때문이다. 지켜야 하는 성질은
+   * 「같지 않다」 하나이고, 같아지는 순간 이력은 판매자가 한 일을 운송사가 한 일로
+   * 적는다 — TASK-0061 이 추적 사건 기록을 HTTP 로 열지 않은 이유가 그것이다.
+   */
+  it('never lets a seller-reported line read as the carrier reporting it', () => {
+    for (const kind of trackingEventKinds) {
+      expect(trackingEventDescriptionOf(kind, 'SELLER')).not.toBe(
+        trackingEventDescriptionOf(kind, 'CARRIER'),
+      )
+    }
+  })
+
+  it('names a place that is not a terminal for a seller-reported line', () => {
+    // 지명을 쓰면 운송사가 보고한 것처럼 보인다. 실제로 그 자리에 쓰이는 값이
+    // 어느 운송사의 터미널과도 겹치지 않아야 그 오독이 불가능하다.
+    for (const code of demoCarrierCodes) {
+      expect(SELLER_REPORTED_LOCATION).not.toBe(pickupHubOf(code))
+    }
+
+    expect(SELLER_REPORTED_LOCATION.trim().length).toBeGreaterThan(0)
   })
 })

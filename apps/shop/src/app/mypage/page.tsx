@@ -25,6 +25,11 @@ export default function MyPage() {
         <nav aria-label={nav.label}>
           <ul className="flex flex-wrap gap-4">
             <li>
+              <Link className="text-primary text-sm font-medium underline" href="/mypage/orders">
+                {nav.orders}
+              </Link>
+            </li>
+            <li>
               <Link className="text-primary text-sm font-medium underline" href="/mypage/settings">
                 {nav.settings}
               </Link>

@@ -89,6 +89,47 @@ export const mockPaths = {
    */
   orders: `*${API_PATH_PREFIX}/orders`,
   /**
+   * `GET` 주문 하나 (TASK-0063). 묶음마다 상태와 배송이 실린다.
+   *
+   * 컬렉션 **뒤에** 온다. `:id` 는 `/` 를 넘지 못하므로 둘이 서로를 먹지는 않지만,
+   * 옆의 라우트들이 전부 그 순서로 적혀 있다.
+   */
+  order: `*${API_PATH_PREFIX}/orders/:id`,
+  /**
+   * `GET` 이 묶음에 지금 할 수 있는 것 (TASK-0059 F7).
+   *
+   * **읽기가 아니라 `order.write` 를 요구한다** — 답이 「무엇을 볼 수 있나」가 아니라
+   * 「무엇을 누를 수 있나」이기 때문이다. 구매자에게 돌아오는 것은 배송완료 묶음의
+   * 구매확정 하나뿐이고, 나머지 상태에서는 빈 목록이다.
+   */
+  /**
+   * 판매자 콘솔의 주문 목록 (TASK-0060). `GET` 만 있다.
+   *
+   * 구매자의 `/orders` 와 **다른 라우트**인 것이 계약이다 — 한 줄이 주문이 아니라
+   * 판매자 몫이고, 남의 몫이 섞인 주문 합계는 실리지 않는다.
+   */
+  sellerOrders: `*${API_PATH_PREFIX}/seller-orders`,
+  /**
+   * 상태별 건수. **`sellerOrder` 보다 먼저 등록해야 한다** — msw 는 먼저 맞는 것을
+   * 쓰므로 뒤에 두면 `summary` 가 주문 id 로 읽힌다. 실제 서버에서 라우트 선언 순서가
+   * 같은 함정이다.
+   */
+  sellerOrdersSummary: `*${API_PATH_PREFIX}/seller-orders/summary`,
+  /** 몫 하나 — 항목 · 수령인 · 금액 · 배송 · 이력. */
+  sellerOrder: `*${API_PATH_PREFIX}/seller-orders/:id`,
+  /** `POST` 발송 처리. 운송장 발급 · 전이 · 첫 추적 사건이 한 트랜잭션이다. */
+  sellerOrderShipment: `*${API_PATH_PREFIX}/seller-orders/:id/shipment`,
+  /**
+   * `POST` 배송완료 처리 (TASK-0060 4.3).
+   *
+   * 전이 라우트와 **다른 문**이다. 그쪽으로 가면 주문만 움직이고 배송 표가 그대로
+   * 남아, 구매자의 추적 화면이 「이동 중」인 채로 주문은 배송완료가 된다.
+   */
+  sellerOrderDelivery: `*${API_PATH_PREFIX}/seller-orders/:id/delivery`,
+  sellerOrderActions: `*${API_PATH_PREFIX}/seller-orders/:id/actions`,
+  /** `POST` 이 묶음을 다음 상태로. 구매자에게는 구매확정만 열려 있다. */
+  sellerOrderTransitions: `*${API_PATH_PREFIX}/seller-orders/:id/transitions`,
+  /**
    * 내 카드들 (TASK-0054). `GET` 목록, `POST` 발급 (TASK-0058).
    *
    * 경로에 사용자 id 가 없다. 주인은 토큰이 정한다 — `/cart` · `/me` 와 같은 모양이고,

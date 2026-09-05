@@ -6,15 +6,19 @@ import type {
   HealthStatus,
   OauthFailureReason,
   OauthNotice,
+  OrderStatus,
   SearchSort,
   UserFacingErrorCode,
 } from '@shopping/shared'
 import type { ProductCardLabels, ProductListLabels } from '@shopping/ui/catalog'
+import type { ShipmentTrackingLabels } from '@shopping/ui/components'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { CardTransactionKind } from '@/lib/cards/cards-api'
 import type { HealthFailureReason } from '@/lib/health'
+import type { OrderPeriod, OrderStatusFilter } from '@/lib/orders/order-filters'
+import type { OrderStage, OrderStageState } from '@/lib/orders/order-stages'
 import type { CardBlock } from '@/lib/payment/cards'
 import type { CardStatus } from '@/lib/payment/payment-api'
 import type { TossConfirmFailure, TossFailureKind } from '@/lib/payment/toss-return'
@@ -137,6 +141,10 @@ export interface MyPageMessages {
   readonly addresses: AddressBookMessages
   /** 가상 카드 관리 (TASK-0058). */
   readonly cards: CardWalletMessages
+  /** 주문 내역 목록 (TASK-0063). */
+  readonly orders: OrderHistoryMessages
+  /** 주문 하나 — 판매자별 묶음 (TASK-0063). */
+  readonly orderDetail: OrderDetailMessages
   /** A request that never got an answer. Keyed by the reason it did not. */
   readonly failures: Readonly<Record<ApiFailureReason, string>>
   /**
@@ -189,7 +197,18 @@ export interface MyPageNavMessages {
   readonly settings: string
   readonly addresses: string
   readonly cards: string
+  /** 주문 내역 (TASK-0063). 계정 화면 넷 중 사람이 가장 자주 찾는 것이라 맨 앞이다. */
+  readonly orders: string
 }
+
+/**
+ * 주문 상태의 이름, 아홉 개 전부 (TASK-0063).
+ *
+ * **`Record` 라 상태가 하나 늘면 `pnpm typecheck` 이 깨진다.** 계약이 열거형을 지금
+ * 전부 적어 둔 이유가 이것이다(`api/orders.ts`) — 문장이 빠진 상태로 배지가 그려지면
+ * 화면은 사람에게 「」를 보여 주고, 그것은 아무도 신고하지 않는 종류의 결함이다.
+ */
+export type OrderStatusMessages = Readonly<Record<OrderStatus, string>>
 
 export interface SettingsMessages {
   readonly title: string
@@ -458,6 +477,233 @@ export interface CardLedgerMessages {
   readonly noOrder: string
   /** 주문 링크의 접근성 이름. 표 안에 같은 이름의 링크가 여럿이라 필요하다. `{number}` */
   readonly orderLink: string
+}
+
+/**
+ * 주문 내역 목록 (TASK-0063).
+ *
+ * **필터 문구가 두 벌인 것이 중요하다.** 아무것도 안 산 사람에게 「조건에 맞는
+ * 주문이 없습니다」라고 하면 그 사람은 조건을 찾아 헤매고, 조건을 걸어 둔 사람에게
+ * 「주문한 적이 없습니다」라고 하면 화면이 거짓말을 한다. 그래서 빈 상태가 둘이다.
+ *
+ * 서버가 조건으로 거르게 된 뒤(TASK-0063 2장) **「더 있을 수 있습니다」는 사라졌다.**
+ * 그 문장은 화면이 불러온 것 위에서만 거를 때 참이었다.
+ */
+export interface OrderHistoryMessages {
+  readonly title: string
+  readonly description: string
+  readonly listLabel: string
+  readonly loadingLabel: string
+  /** 정말로 주문이 없다. */
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly emptyAction: string
+  /** 불러온 것 중에 조건에 맞는 것이 없다. 위와 다른 사실이다. */
+  readonly filteredEmptyTitle: string
+  readonly filteredEmptyBody: string
+  readonly resetFilter: string
+  readonly filterLegend: string
+  readonly periodLabel: string
+  readonly periods: Readonly<Record<OrderPeriod, string>>
+  readonly statusLabel: string
+  readonly statusFilters: Readonly<Record<OrderStatusFilter, string>>
+  readonly statuses: OrderStatusMessages
+  /**
+   * `{count}` — 「12건」.
+   *
+   * **숫자가 하나다.** 서버가 조건으로 거른 뒤 페이지를 주므로 「조건에 든 것」과
+   * 「불러온 것」이 같은 집합이고, 둘을 나란히 적으면 언제나 같은 값이 두 번 나온다.
+   *
+   * 여기 있던 「조건에 맞는 주문이 더 있을 수 있습니다」도 같은 이유로 사라졌다 —
+   * 서버가 걸렀으므로 남은 장이 있으면 조건에 맞는 것이 **있는** 것이고, 그 말을
+   * 하는 것은 「더 보기」다.
+   */
+  readonly countLabel: string
+  readonly loadMore: string
+  readonly loadingMore: string
+  readonly loadMoreFailedTitle: string
+  /** `{count}` */
+  readonly itemCountLabel: string
+  readonly orderNumberLabel: string
+  readonly paidAmountLabel: string
+  /** 카드 전체가 링크다. 이름은 주문번호를 싣는다. `{number}` */
+  readonly detailLabel: string
+}
+
+/**
+ * 주문 하나 (TASK-0063).
+ *
+ * **묶음이 이 화면의 주어다.** 라벨이 「판매자별 배송」인 것은 R1 의 대응이다 —
+ * 주문번호는 하나이고 배송이 여럿이라는 사실을, 배지나 색이 아니라 **이름**으로
+ * 말한다.
+ */
+export interface OrderDetailMessages {
+  /** `{number}` */
+  readonly title: string
+  readonly backToList: string
+  readonly loadingLabel: string
+  readonly loadErrorTitle: string
+  readonly orderedAtLabel: string
+  readonly orderNumberLabel: string
+  /** 묶음 목록의 이름. 「판매자별 배송」 */
+  readonly bundlesLabel: string
+  /**
+   * 묶음이 둘 이상일 때 목록 위에 붙는 한 줄 (R1). `{count}`
+   *
+   * 하나뿐인 주문에는 나오지 않는다 — 나뉘지 않은 것을 두고 「나뉘어 배송됩니다」라고
+   * 하면 그 문장이 소음이 되고, 진짜로 나뉜 주문에서 읽히지 않게 된다.
+   */
+  readonly splitNotice: string
+  /** 묶음 하나의 이름. 버튼의 접근성 이름도 이것으로 만든다. `{brand}` */
+  readonly bundleLabel: string
+  readonly statuses: OrderStatusMessages
+  readonly itemsLabel: string
+  /** `{count}` */
+  readonly quantityLabel: string
+  /** 옵션이 없는 줄에 쓰는 말. 빈 문자열을 그대로 그리면 자리만 남는다. */
+  readonly noOption: string
+  readonly unitPriceLabel: string
+  readonly tracking: OrderTrackingMessages
+  readonly timeline: OrderTimelineMessages
+  readonly confirm: OrderConfirmMessages
+  readonly payment: OrderPaymentMessages
+  readonly recipient: OrderRecipientMessages
+  readonly repurchase: OrderRepurchaseMessages
+  readonly upcoming: OrderUpcomingMessages
+  /** 가능 액션을 못 읽었다. 「할 수 있는 것이 없다」와 다른 말이다. */
+  readonly actionsFailed: string
+  readonly actionsLoading: string
+}
+
+/**
+ * 배송 추적 (TASK-0061 의 컴포넌트가 읽는다).
+ *
+ * `ShipmentTrackingLabels` 를 그대로 넓힌다 — 그 컴포넌트가 요구하는 문구는 하나도
+ * 빠질 수 없고(빠지면 컴파일이 멈춘다), 이 화면이 더하는 것은 열고 닫는 버튼의
+ * 글자뿐이다. `copyTrackingNumber` 도 계약상 필수라 값을 채우되, 구매자 화면은
+ * `onCopyTrackingNumber` 를 넘기지 않으므로 버튼이 그려지지 않는다.
+ */
+export interface OrderTrackingMessages extends ShipmentTrackingLabels {
+  /** `{brand}` — 같은 이름의 버튼이 묶음마다 있어서 브랜드로 가른다. */
+  readonly open: string
+  readonly close: string
+}
+
+/**
+ * 주문 상태 타임라인 (TASK-0063).
+ *
+ * **칸은 사다리이고 시각은 이력이다** (`order-stages.ts`). 그래서 칸 이름은 「어디까지
+ * 왔다」로 쓰고, 아직 오지 않은 칸도 이름을 갖는다 — 이력만 늘어놓는 화면이었다면
+ * 준비중인 주문에는 배송이 남았다는 사실이 어디에도 없다.
+ */
+export interface OrderTimelineMessages {
+  readonly label: string
+  readonly stages: Readonly<Record<OrderStage, string>>
+  /** 칸의 자리를 말로. 색 대신 정보를 나르는 쪽이다 (WCAG 1.4.1). */
+  readonly stageState: Readonly<Record<OrderStageState, string>>
+  /**
+   * 사다리를 벗어난 상태의 한 문장. `{status}`
+   *
+   * 취소된 주문에 회색 사다리를 남겨 두면 화면이 아직 그리로 갈 것처럼 말한다.
+   */
+  readonly offLadder: string
+  /**
+   * 시각을 모르는 칸에 붙는 말.
+   *
+   * **비워 두지 않는다.** 빈칸은 「없었다」로도 「모른다」로도 읽히고, 이 화면이
+   * 말해야 하는 것은 뒤쪽이다.
+   *
+   * 묶음이 이력을 함께 싣게 된 뒤로 이 문구가 붙는 칸은 줄었지만 없어지지는
+   * 않았다 — 이력에 그 줄이 없으면 여전히 모르는 것이고(상태 이력이 쌓이기 전의
+   * 주문이 그렇다), 모르는 것을 지어내지 않는 자리가 여기다.
+   */
+  readonly unknownAt: string
+}
+
+/**
+ * 구매확정 (TASK-0063 · `state-machines.md` 1장).
+ *
+ * **이 화면에서 가장 무거운 버튼이다.** 정산과 적립금 지급의 방아쇠이고 되돌릴 수
+ * 없다. 그래서 문구가 셋으로 나뉜다 — 무엇인지(`description`), 무엇이 일어나는지
+ * (`consequences`), 되돌릴 수 없다는 것(`irreversible`). 한 문단으로 뭉치면 사람은
+ * 그것을 안 읽는다.
+ */
+export interface OrderConfirmMessages {
+  /** 버튼의 글자. `{brand}` 가 붙은 접근성 이름은 화면이 만든다. */
+  readonly action: string
+  readonly busy: string
+  readonly title: string
+  readonly description: string
+  readonly consequences: string
+  readonly irreversible: string
+  /** D+7 자동 확정이 있다는 사실 (TASK-0064). 서두를 이유가 없음을 말한다. */
+  readonly automatic: string
+  readonly confirmLabel: string
+  readonly cancelLabel: string
+  readonly closeLabel: string
+  /** `{brand}` */
+  readonly done: string
+  /** 이미 확정돼 있었다 — 서버가 `changed: false` 로 답한 경우. `{brand}` */
+  readonly alreadyDone: string
+  readonly failedTitle: string
+}
+
+/**
+ * 결제 정보 (TASK-0063 2장).
+ *
+ * **수단이 없다.** `GET /orders/:id` 의 응답에 결제수단도 결제 id 도 없고, 주문에서
+ * 결제로 가는 길이 계약에 아예 없다 (TASK-0063 — 보고된 빈자리). 그래서 이 화면은
+ * 금액과 할인만 말하고, 「어떤 카드로 냈나」는 그 답을 실제로 갖고 있는 화면으로
+ * 보낸다 — 없는 것을 지어내는 대신 있는 곳을 가리킨다.
+ */
+export interface OrderPaymentMessages {
+  readonly title: string
+  readonly productAmount: string
+  readonly couponDiscount: string
+  readonly pointDiscount: string
+  readonly shippingFee: string
+  /** 배송비를 낸 적립금. 항목에 안분되지 않는 몫이라 줄이 따로 있다 (TASK-0047). */
+  readonly shippingPoint: string
+  readonly paidAmount: string
+  /** 결제수단이 응답에 없다는 사실과, 그것을 확인할 수 있는 곳. */
+  readonly methodHint: string
+  readonly methodLink: string
+}
+
+export interface OrderRecipientMessages {
+  readonly title: string
+  readonly name: string
+  readonly phone: string
+  readonly address: string
+}
+
+/** 재구매 (F7). 담긴 것과 못 담은 것을 **둘 다** 말한다. */
+export interface OrderRepurchaseMessages {
+  /** `{brand}` 가 붙은 접근성 이름은 화면이 만든다. */
+  readonly action: string
+  readonly busy: string
+  /** `{count}` */
+  readonly added: string
+  /** `{count}` · `{names}` — 일부만 담겼다. */
+  readonly partial: string
+  /** `{names}` — 하나도 못 담았다. */
+  readonly none: string
+  readonly cartLink: string
+}
+
+/**
+ * 아직 없는 화면으로 가는 자리 (M10 · M13).
+ *
+ * **링크도 비활성 버튼도 아니다.** 이 저장소는 껍데기 라우트를 없애면서
+ * (`pages.md`) 「죽은 링크나 비활성 컨트롤 대신 무엇이 언제 열리는지 말한다」로
+ * 갔다. 그래서 여기 있는 것은 목적지가 아니라 **문장**이고, 그 화면을 만드는
+ * TASK 번호가 컴포넌트의 주석에 적혀 있어 그 TASK 가 닫힐 때 `grep` 으로 찾힌다.
+ */
+export interface OrderUpcomingMessages {
+  readonly claimTitle: string
+  readonly claimBody: string
+  readonly reviewTitle: string
+  readonly reviewBody: string
 }
 
 /**

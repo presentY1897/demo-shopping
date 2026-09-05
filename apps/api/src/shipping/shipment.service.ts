@@ -4,6 +4,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import type { Prisma } from '@prisma/client'
 import type {
   DemoCarrierCode,
+  SellerOrderDeliveryResponse,
   Shipment,
   ShipmentResponse,
   ShipmentStatus,
@@ -27,11 +28,13 @@ import type { SellerOrderStatusChanged } from '../orders/seller-order-events.js'
 import type { TransitionCommand } from '../orders/seller-order.service.js'
 import { SellerOrderService } from '../orders/seller-order.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import type { TrackingEventSource } from './shipment-rules.js'
 import {
   carrierFrom,
   carrierNameOf,
   furthestShipmentStatus,
   pickupHubOf,
+  SELLER_REPORTED_LOCATION,
   shipmentStatusAfter,
   TRACKING_NUMBER_DIGITS,
   trackingEventDescriptionOf,
@@ -42,6 +45,30 @@ type Tx = Prisma.TransactionClient
 
 /** 첫 이벤트는 언제나 집화다 — 운송사가 물건을 받은 순간이 발송이다. */
 const FIRST_EVENT: TrackingEventKind = 'PICKED_UP'
+
+/**
+ * 사건을 알려 온 쪽과, 그 사건이 일으키는 전이의 주체 (TASK-0060 4.3).
+ *
+ * **한 값인 이유는 둘이 갈리면 안 되기 때문이다.** 「판매자가 확인했다」고 적힌 추적
+ * 줄 옆에 「`SYSTEM` 이 옮겼다」는 상태 이력이 남으면 두 표가 같은 순간에 대해 서로
+ * 다른 말을 하고, 그 둘 중 어느 쪽이 맞는지는 나중에 아무도 알 수 없다. 인자를
+ * 둘로 두면 부르는 쪽이 그 조합을 틀리게 만들 수 있고, 하나로 두면 만들 수 없다.
+ */
+export interface TrackingEventReporter {
+  readonly source: TrackingEventSource
+  readonly command: TransitionCommand
+}
+
+/**
+ * 운송사가 알려 온 사건 — 이 서비스의 정상 경로다 (TASK-0062 의 시뮬레이터).
+ *
+ * 주체가 `SYSTEM` 인 것이 라우트를 열지 않은 이유였다: 사람이 이 자리를 부르면
+ * 「운송사가 알려 준 사실」을 사람이 주장하게 된다.
+ */
+const CARRIER_REPORTER: TrackingEventReporter = {
+  source: 'CARRIER',
+  command: { actor: 'SYSTEM', actorId: null },
+}
 
 /**
  * 운송사를 고르는 데 쓰는 난수의 길이.
@@ -117,10 +144,12 @@ interface LockedShipment {
 export interface TrackingEventInput {
   readonly shipmentId: string
   readonly kind: TrackingEventKind
-  /** 가상 지명. 생략하면 그 운송사의 집화 터미널이다. */
+  /** 가상 지명. 생략하면 알려 온 쪽에 따라 정해진다. */
   readonly location?: string
   /** 사건이 일어난 시각. 생략하면 지금이다. */
   readonly occurredAt?: Date
+  /** 누가 알려 왔는가. 생략하면 운송사다. */
+  readonly reporter?: TrackingEventReporter
 }
 
 /** 소유권 판정이 보는 모양. 두 갈래가 각각 다른 사람을 통과시킨다. */
@@ -230,9 +259,10 @@ export class ShipmentService {
    * 때 막은 것과 같은 종류의 어긋남이다. 전이가 거절되면(취소된 주문 등) 이벤트도
    * 남지 않는다.
    *
-   * **주체는 `SYSTEM` 이다.** 운송사가 알려 준 사실이지 사람이 누른 것이 아니다.
-   * 판매자가 직접 배송완료를 찍는 길은 전이 라우트로 따로 있고, 그 이력에는
-   * `SELLER` 가 남는다 — 두 사실을 같은 주체로 적으면 이력이 거짓이 된다.
+   * **기본 주체는 `SYSTEM` 이다.** 운송사가 알려 준 사실이지 사람이 누른 것이 아니다.
+   * 판매자가 직접 배송완료를 찍는 길은 {@link markDelivered} 이고, 그쪽은 추적 줄에도
+   * 이력에도 판매자를 남긴다({@link TrackingEventReporter}) — 두 사실을 같은 주체로
+   * 적으면 이력이 거짓이 된다.
    *
    * **순서가 뒤집힌 사건은 기록하되 상태를 되돌리지 않는다.** 사건은 일어난
    * 사실이므로 지우지 않고(TASK-0056 의 판단 — 멱등은 「기록을 막는 것」이 아니라
@@ -240,10 +270,11 @@ export class ShipmentService {
    * 사다리를 지킨다. 같은 사건이 두 번 와도 같다 — 줄은 둘이 되고 상태는 한 번만
    * 움직이며, 주문 전이는 이미 멱등이라 이력이 늘지 않는다.
    *
-   * **HTTP 로 열지 않았다.** 지금 이것을 부르는 것은 우리 코드뿐이고(TASK-0062 의
-   * 시뮬레이터가 이어받는다), 라우트를 열면 사람이 「운송사가 알려 준 사실」을
-   * 주장하게 된다 — 그 순간 이력의 `SYSTEM` 은 거짓이 되고, 배송완료로 가는 길이
-   * 주체가 다른 둘로 갈린다.
+   * **이 자리는 여전히 HTTP 로 열려 있지 않다.** 부르는 것은 우리 코드뿐이고
+   * (TASK-0062 의 시뮬레이터가 이어받는다), 임의의 사건을 받는 라우트를 열면 사람이
+   * 「운송사가 알려 준 사실」을 주장하게 된다 — 그 순간 이력의 `SYSTEM` 은 거짓이
+   * 된다. 판매자에게 연 것은 **사건 하나짜리 문**({@link markDelivered})이고, 그
+   * 문은 주체를 요청이 아니라 서버가 정한다.
    */
   async recordTrackingEvent(input: TrackingEventInput): Promise<ShipmentResponse> {
     const recorded = await this.prisma.$transaction((tx) => this.record(tx, input))
@@ -253,6 +284,75 @@ export class ShipmentService {
     return { shipment: recorded.shipment }
   }
 
+  /**
+   * 판매자의 「배송완료 처리」 (TASK-0060 4.3 · TASK-0061 4.4 가 넘긴 항목).
+   *
+   * ## 왜 전이 라우트가 아닌가
+   *
+   * 전이표는 `SHIPPED → DELIVERED` 를 판매자에게도 허용한다 — 시뮬레이터가 멈춘
+   * 데모에서 흐름을 이어 갈 수 있어야 하기 때문이다(`state-machines.md` 1장). 그런데
+   * `POST /seller-orders/:id/transitions` 로 그 길을 가면 **주문만 움직이고
+   * `Shipment.status` 는 그대로 남는다**: 구매자의 추적 화면이 「이동 중」인 채로
+   * 주문은 배송완료다. 두 표가 갈린 채 남는 그 결말이 TASK-0061 이 넘긴 문제다.
+   *
+   * 반대 방향으로 닫을 수는 없었다. 전이의 문(`applyWithin`) 안에 배송을 아는 코드를
+   * 넣으면 **주문이 배송을 알게 되고**, `SellerOrderModule` 이 `PrismaModule` 하나만
+   * 아는 성질 — 예약 스케줄러와 결제 확정이 순환 없이 그 문을 지나는 이유 — 이
+   * 사라진다. 그래서 문은 그대로 두고, **조건을 갖춘 뒤에 문을 지나는 쪽**을 여기에
+   * 하나 더 만들었다. 발송(`ship`)이 이미 정확히 그 모양이다.
+   *
+   * ## 이 라우트가 지키는 것
+   *
+   * ① 배송 사건 · 배송 상태 · 주문 전이가 **한 트랜잭션**이다. 전이가 거절되면
+   *    (아직 발송 전, 이미 취소됨) 추적 줄도 남지 않는다.
+   * ② **주체는 `SELLER` 다.** 사람이 누른 것이 사실이므로 이력에 그렇게 남고, 추적
+   *    줄의 문장과 지점도 「판매자가 확인했다」로 남는다 — `SYSTEM` 으로 적으면
+   *    TASK-0061 이 라우트를 열지 않은 이유가 그대로 되살아난다.
+   * ③ **멱등이다.** 이미 배송완료인 배송에는 아무것도 적지 않고 그대로 돌려준다.
+   *    {@link recordTrackingEvent} 가 중복 사건을 **줄로 남기는** 것과 반대인데,
+   *    이유는 두 곳이 세는 것이 다르기 때문이다 — 저쪽에서 두 번은 「운송사가 두 번
+   *    알려 왔다」는 조사할 가치가 있는 사실이고, 여기서 두 번은 **버튼을 두 번
+   *    누른 것**이다. 그것을 이력에 남기면 타임라인에 같은 줄이 둘 생긴다.
+   */
+  async markDelivered(
+    principal: RequestPrincipal,
+    sellerOrderId: string,
+  ): Promise<SellerOrderDeliveryResponse> {
+    const row = await this.access(sellerOrderId)
+
+    // 발송과 같은 문이다. 남의 주문에는 「지금 상태에서는 할 수 없다」가 아니라
+    // 「당신 것이 아니다」로 답한다.
+    assertResourceAccess(principal, 'order.write', sellerOwnership(row.seller))
+
+    const reporter: TrackingEventReporter = {
+      source: 'SELLER',
+      command: {
+        actor: principal.sellerId === row.sellerId ? 'SELLER' : 'ADMIN',
+        actorId: principal.userId,
+      },
+    }
+    const delivered = await this.prisma.$transaction((tx) =>
+      this.deliver(tx, sellerOrderId, reporter),
+    )
+
+    await this.sellerOrders.publish(delivered.change === null ? [] : [delivered.change])
+
+    // 커밋 뒤에 버튼을 다시 묻는다. 답의 상태와 버튼은 **지금** 사실이어야 하고,
+    // 그것을 아는 것은 전이의 문이다 — 여기서 버튼 목록을 손으로 만들면 규칙이
+    // 두 곳에 살게 된다.
+    const fresh = await this.sellerOrders.actions(principal, sellerOrderId)
+
+    return {
+      transition: {
+        id: sellerOrderId,
+        status: fresh.status,
+        changed: delivered.change !== null,
+        actions: fresh.actions,
+      },
+      shipment: delivered.shipment,
+    }
+  }
+
   // ---------------------------------------------------------------- internals
 
   /** {@link recordTrackingEvent} 의 트랜잭션 본체. */
@@ -260,6 +360,7 @@ export class ShipmentService {
     // 배송 행을 먼저 잠근다. 두 사건이 겹치면 각자 「지금 상태」를 읽고 둘 다 쓰는데,
     // 그때 나중에 커밋한 쪽이 사다리를 모르고 상태를 되돌릴 수 있다.
     const locked = await this.lockShipment(tx, input.shipmentId)
+    const reporter = input.reporter ?? CARRIER_REPORTER
     const occurredAt = input.occurredAt ?? this.clock.now()
     const carrierCode = locked.carrierCode as DemoCarrierCode
     const status = furthestShipmentStatus(
@@ -271,8 +372,8 @@ export class ShipmentService {
       data: {
         shipmentId: locked.id,
         kind: input.kind,
-        location: input.location ?? pickupHubOf(carrierCode),
-        description: trackingEventDescriptionOf(input.kind),
+        location: input.location ?? locationOf(reporter.source, carrierCode),
+        description: trackingEventDescriptionOf(input.kind, reporter.source),
         occurredAt,
       },
     })
@@ -289,10 +390,12 @@ export class ShipmentService {
 
     const change =
       input.kind === 'DELIVERED'
-        ? await this.sellerOrders.applyWithin(tx, locked.sellerOrderId, 'DELIVERED', {
-            actor: 'SYSTEM',
-            actorId: null,
-          })
+        ? await this.sellerOrders.applyWithin(
+            tx,
+            locked.sellerOrderId,
+            'DELIVERED',
+            reporter.command,
+          )
         : null
     const shipment = await tx.shipment.findUniqueOrThrow({
       where: { id: locked.id },
@@ -321,6 +424,42 @@ export class ShipmentService {
     if (row === undefined) throw new NotFoundException('배송 정보를 찾을 수 없어요.')
 
     return row
+  }
+
+  /**
+   * {@link markDelivered} 의 트랜잭션 본체.
+   *
+   * 배송 행부터 찾는 이유는 그것이 「발송된 적이 있는가」의 답이기 때문이다. 없으면
+   * 이 몫은 아직 `SHIPPED` 일 수 없고(운송장 사본이 복합 외래키로 배송을 가리킨다),
+   * 전이의 문에 물어봤자 「정의되지 않은 전이」로 끝난다 — 그것보다 「아직 발송되지
+   * 않았다」가 판매자에게 할 수 있는 말이다.
+   */
+  private async deliver(
+    tx: Tx,
+    sellerOrderId: string,
+    reporter: TrackingEventReporter,
+  ): Promise<Issued> {
+    const existing = await tx.shipment.findUnique({
+      where: { sellerOrderId },
+      select: { id: true },
+    })
+
+    if (existing === null) throw new NotFoundException('배송 정보를 찾을 수 없어요.')
+
+    const locked = await this.lockShipment(tx, existing.id)
+
+    // ③ 이미 도착해 있으면 아무것도 적지 않는다. 잠근 뒤에 보는 것이 요점이다 —
+    // 잠금 밖에서 읽으면 두 번 눌린 버튼이 둘 다 「아직 아니다」를 읽는다.
+    if (locked.status === 'DELIVERED') {
+      const shipment = await tx.shipment.findUniqueOrThrow({
+        where: { id: locked.id },
+        select: SHIPMENT_SELECT,
+      })
+
+      return { shipment: presentShipment(shipment), change: null }
+    }
+
+    return await this.record(tx, { shipmentId: locked.id, kind: 'DELIVERED', reporter })
   }
 
   /**
@@ -477,6 +616,16 @@ interface Issued {
   readonly shipment: Shipment
   /** 이미 발급돼 있었으면 `null` 이다. 두 번째 요청은 아무 상태도 옮기지 않는다. */
   readonly change: SellerOrderStatusChanged | null
+}
+
+/**
+ * 추적 줄의 「어디서」.
+ *
+ * 판매자가 직접 찍은 줄에 집화 터미널 이름을 넣으면 **운송사가 보고한 것처럼
+ * 보이고**, 그것이 `TrackingEventSource` 를 만든 이유와 정확히 반대다.
+ */
+function locationOf(source: TrackingEventSource, carrierCode: DemoCarrierCode): string {
+  return source === 'SELLER' ? SELLER_REPORTED_LOCATION : pickupHubOf(carrierCode)
 }
 
 /** 운송장 번호가 겹쳤는가. 다른 유니크 위반은 재시도로 고쳐지지 않는다. */
