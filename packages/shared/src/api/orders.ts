@@ -1,0 +1,231 @@
+import { z } from 'zod'
+
+import { addressLineSchema, phoneSchema, recipientNameSchema } from './profile.js'
+import { priceSchema, productIdSchema, variantIdSchema } from './products.js'
+
+/**
+ * 주문의 계약 (TASK-0049).
+ *
+ * **2단이다** (D-023). `Order` 는 결제 단위이고 `SellerOrder` 는 배송·취소·정산의
+ * 단위다. 상태가 뒤쪽에 붙는 것이 이 구조의 전부다 — 판매자 A 는 배송완료인데 B 는
+ * 준비중일 수 있어야 하고, B 만 취소할 수 있어야 한다.
+ *
+ * **항목은 스냅샷을 든다.** 상품이 삭제되거나 데모 판매자가 만료돼도(TASK-0025)
+ * 주문 이력은 온전해야 한다. 그래서 이 응답의 상품명·옵션·이미지는 지금
+ * `Product` 가 뭐라고 하든 **주문한 때의 것**이다.
+ */
+
+/**
+ * 한 판매자 몫의 주문 상태 (`docs/design/state-machines.md` 1장).
+ *
+ * 이 TASK 가 만드는 것은 `PAYMENT_PENDING` 하나뿐이다. 나머지는 결제(M08)와
+ * 상태 전이(M09)가 채운다 — 열거형을 지금 전부 적어 두는 이유는, 화면이
+ * `Record<OrderStatus, string>` 으로 문장을 갖게 하면 상태가 늘 때 **타입 검사가**
+ * 빠진 문장을 잡기 때문이다.
+ */
+export const orderStatuses = [
+  'PAYMENT_PENDING',
+  'PAYMENT_FAILED',
+  'PAID',
+  'PREPARING',
+  'SHIPPED',
+  'DELIVERED',
+  'CONFIRMED',
+  'CANCELED',
+  'RETURNED',
+] as const
+
+export type OrderStatus = (typeof orderStatuses)[number]
+
+export const orderStatusSchema = z.enum(orderStatuses)
+
+/** 주문번호의 형식. `Order_orderNumber_format_check` 가 같은 것을 DB 에서 지킨다. */
+export const ORDER_NUMBER_PATTERN = /^[0-9]{8}-[0-9ABCDEFGHJKMNPQRSTVWXYZ]{8}$/u
+
+export const orderNumberSchema = z.string().regex(ORDER_NUMBER_PATTERN)
+
+/**
+ * 주문한 때의 상품.
+ *
+ * 필요한 것만 담는다 (R2). 이미지는 대표 1장이고, 없으면 `null` 이다 — 「사진이
+ * 없었다」는 사실도 스냅샷의 일부다.
+ */
+export const orderItemSnapshotSchema = z.object({
+  productId: productIdSchema,
+  productName: z.string(),
+  /** `블랙 / M`. 옵션이 없으면 빈 문자열이다. */
+  optionLabel: z.string(),
+  sku: z.string(),
+  thumbnailUrl: z.string().nullable(),
+  brandName: z.string(),
+})
+
+export type OrderItemSnapshot = z.infer<typeof orderItemSnapshotSchema>
+
+export const orderItemSchema = z.object({
+  id: z.uuid(),
+  variantId: variantIdSchema,
+  snapshot: orderItemSnapshotSchema,
+  /** 주문한 때의 단가. 지금 가격이 아니다. */
+  unitPrice: priceSchema,
+  quantity: z.int().min(1),
+  productAmount: priceSchema,
+  /** 이 항목에 안분된 몫 (`pricing.md` 2장). 부분 취소가 읽는 값이다. */
+  couponDiscountAmount: priceSchema,
+  pointDiscountAmount: priceSchema,
+  discountAmount: priceSchema,
+})
+
+export type OrderItem = z.infer<typeof orderItemSchema>
+
+/** 한 판매자 몫. 배송·취소·정산이 이 단위로 일어난다. */
+export const sellerOrderSchema = z.object({
+  id: z.uuid(),
+  sellerId: z.uuid(),
+  /** 주문한 때의 브랜드명. 스토어가 이름을 바꿔도 주문서는 그대로다. */
+  brandName: z.string(),
+  status: orderStatusSchema,
+  items: z.array(orderItemSchema),
+  productAmount: priceSchema,
+  couponDiscountAmount: priceSchema,
+  pointDiscountAmount: priceSchema,
+  /**
+   * 배송비를 낸 적립금 (TASK-0047).
+   *
+   * 항목에 안분되지 **않는** 몫이라 따로 있다. 항목의 안분액을 전부 더해도 이 값이
+   * 빠져 있으므로, 「적립금을 얼마 썼나」는 항목의 합이 아니라 이것을 더한 값이다.
+   */
+  shippingPointAmount: priceSchema,
+  shippingFee: priceSchema,
+  paidAmount: priceSchema,
+})
+
+export type SellerOrder = z.infer<typeof sellerOrderSchema>
+
+/** 수령인. 주문한 때 배송지에서 **복사한** 값이다 (TASK-0049 4.6). */
+export const orderRecipientSchema = z.object({
+  name: z.string(),
+  phone: z.string(),
+  postalCode: z.string(),
+  addressLine1: z.string(),
+  addressLine2: z.string().nullable(),
+})
+
+export type OrderRecipient = z.infer<typeof orderRecipientSchema>
+
+export const orderSchema = z.object({
+  id: z.uuid(),
+  orderNumber: orderNumberSchema,
+  createdAt: z.iso.datetime(),
+  recipient: orderRecipientSchema,
+  sellerOrders: z.array(sellerOrderSchema),
+  totalProductAmount: priceSchema,
+  totalCouponDiscountAmount: priceSchema,
+  totalPointDiscountAmount: priceSchema,
+  totalShippingFee: priceSchema,
+  paidAmount: priceSchema,
+})
+
+export type Order = z.infer<typeof orderSchema>
+
+export const orderResponseSchema = z.object({ order: orderSchema })
+
+export type OrderResponse = z.infer<typeof orderResponseSchema>
+
+/**
+ * 판매자가 읽는 자기 몫 하나.
+ *
+ * `orderResponseSchema` 를 걸러서 주지 않는 이유는 **주문 단위 합계 때문**이다.
+ * 그 숫자는 주문 전체의 것이고, 남의 몫이 섞여 있다. 걸러서 주면 합계가 항목과
+ * 맞지 않고, 합계를 다시 계산해서 주면 그 숫자는 아무 데도 저장된 적이 없는 값이다.
+ * 그래서 판매자에게는 **판매자의 단위**를 준다.
+ */
+export const sellerOrderResponseSchema = z.object({
+  sellerOrder: sellerOrderSchema,
+  /** 어느 주문의 몫인가. 문의를 받는 쪽이 번호로 찾는다. */
+  orderNumber: orderNumberSchema,
+  orderedAt: z.iso.datetime(),
+  recipient: orderRecipientSchema,
+})
+
+export type SellerOrderResponse = z.infer<typeof sellerOrderResponseSchema>
+
+/**
+ * `POST /orders` — 주문 생성.
+ *
+ * **장바구니 줄을 가리킨다.** 상품과 수량을 다시 받지 않는 이유는, 그러면 화면이
+ * 보여 준 것과 다른 것을 주문할 수 있기 때문이다 — 담긴 것이 무엇인지는 서버가
+ * 이미 안다.
+ *
+ * 수량은 여기 없다. 바꾸려면 장바구니에서 바꾼다(`PATCH /cart/items/:id`) — 두
+ * 곳에서 수량을 받으면 어느 쪽이 이기는지를 정해야 하고, 그 규칙은 아무도 기억하지
+ * 못한다.
+ */
+export const createOrderRequestSchema = z.object({
+  /** 주문할 장바구니 줄. 선택한 것만 주문한다 (TASK-0046 F2). */
+  itemIds: z.array(z.uuid()).min(1).max(100),
+  /** 어느 배송지로. 값은 복사되고 이 id 는 주문에 남지 않는다. */
+  addressId: z.uuid(),
+})
+
+export type CreateOrderRequest = z.infer<typeof createOrderRequestSchema>
+
+/** 주문 목록의 한 줄. 상세를 열지 않고도 그릴 수 있을 만큼만. */
+export const orderSummarySchema = z.object({
+  id: z.uuid(),
+  orderNumber: orderNumberSchema,
+  createdAt: z.iso.datetime(),
+  /**
+   * 대표 상품명과 나머지 개수 — 「울 코트 외 2건」.
+   *
+   * 목록이 항목을 전부 싣지 않는 이유는 A5 다: 주문 20건의 항목을 모두 실으면
+   * 한 화면이 수백 줄을 내려받는다.
+   */
+  headline: z.string(),
+  itemCount: z.int().min(0),
+  /**
+   * 판매자별 상태. 하나로 뭉치지 않는다 — 「배송중」과 「준비중」이 섞인 주문이
+   * 이 구조의 정상이고, 하나만 보여 주면 그 사실이 사라진다.
+   */
+  statuses: z.array(orderStatusSchema),
+  paidAmount: priceSchema,
+})
+
+export type OrderSummary = z.infer<typeof orderSummarySchema>
+
+export const orderListResponseSchema = z.object({
+  orders: z.array(orderSummarySchema),
+  /** 다음 페이지의 커서. 없으면 마지막이다. */
+  nextCursor: z.string().nullable(),
+})
+
+export type OrderListResponse = z.infer<typeof orderListResponseSchema>
+
+export const ORDER_LIST_DEFAULT_LIMIT = 20
+
+export const orderListQuerySchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.int().min(1).max(50).optional(),
+})
+
+export type OrderListQuery = z.infer<typeof orderListQuerySchema>
+
+/**
+ * 같은 질의를, 값이 전부 문자열로 도착하는 형태로.
+ *
+ * 타입이 있는 쪽 옆에 두는 이유는 둘이 갈리지 않게 하기 위해서다 — 한쪽에만
+ * 파라미터를 더하면 컴파일이 멈춘다(`stock.ts` 가 같은 이유로 같은 모양이다).
+ */
+export const orderListQueryParamsSchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(50).optional(),
+})
+
+/** 수령인을 만들 때 쓰는 검증 — 배송지 계약과 같은 규칙이다. */
+export const orderRecipientInputSchema = z.object({
+  name: recipientNameSchema,
+  phone: phoneSchema,
+  addressLine1: addressLineSchema,
+})
+
+export type OrderRecipientInput = z.infer<typeof orderRecipientInputSchema>

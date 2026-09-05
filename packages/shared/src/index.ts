@@ -472,6 +472,42 @@ export type {
   UpdateCartItemRequest,
 } from './api/cart.js'
 
+export {
+  createOrderRequestSchema,
+  ORDER_LIST_DEFAULT_LIMIT,
+  ORDER_NUMBER_PATTERN,
+  orderItemSchema,
+  orderItemSnapshotSchema,
+  orderListQueryParamsSchema,
+  orderListQuerySchema,
+  orderListResponseSchema,
+  orderNumberSchema,
+  orderRecipientInputSchema,
+  orderRecipientSchema,
+  orderResponseSchema,
+  orderSchema,
+  orderStatuses,
+  orderStatusSchema,
+  orderSummarySchema,
+  sellerOrderResponseSchema,
+  sellerOrderSchema,
+} from './api/orders.js'
+export type {
+  CreateOrderRequest,
+  Order,
+  OrderItem,
+  OrderItemSnapshot,
+  OrderListQuery,
+  OrderListResponse,
+  OrderRecipient,
+  OrderRecipientInput,
+  OrderResponse,
+  OrderStatus,
+  OrderSummary,
+  SellerOrder,
+  SellerOrderResponse,
+} from './api/orders.js'
+
 export { allocate } from './pricing/allocate.js'
 export type { AllocationShare } from './pricing/allocate.js'
 export { calculateOrder } from './pricing/calculate.js'
