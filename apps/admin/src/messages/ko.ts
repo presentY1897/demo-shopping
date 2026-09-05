@@ -816,6 +816,11 @@ export const ko: Messages = {
     RESERVATION_RELEASED: '주문서에 머무는 시간이 지나 예약이 풀렸어요. 다시 시도해 주세요.',
     RESERVATION_CONFIRMED: '이미 결제가 끝난 주문이에요.',
     RESERVATION_EXPIRED: '예약 시간이 지났어요. 처음부터 다시 진행해 주세요.',
+    // 주문 생성 (TASK-0049). 콘솔은 주문을 만들지 않지만 카탈로그가 전수다.
+    ORDER_ITEM_MISSING: '장바구니에서 사라진 상품이 있어요. 장바구니를 다시 확인해 주세요.',
+    ORDER_ITEM_UNAVAILABLE: '지금은 주문할 수 없는 상품이 있어요.',
+    ORDER_PURCHASE_LIMIT: '1회 구매 가능 수량을 넘었어요.',
+    ORDER_ADDRESS_MISSING: '배송지를 찾을 수 없어요. 다시 선택해 주세요.',
   },
   errorNotice: {
     title: '일시적인 문제가 생겼어요',

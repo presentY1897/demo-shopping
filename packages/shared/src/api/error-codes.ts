@@ -132,6 +132,24 @@ export const domainErrorCodes = [
   'RESERVATION_CONFIRMED',
   /** 만료된 예약을 연장하려 했다. 되살리는 대신 다시 잡아야 한다. */
   'RESERVATION_EXPIRED',
+  /**
+   * 주문하려는 줄이 장바구니에 없다 (TASK-0049).
+   *
+   * 다른 탭에서 지웠거나 이미 주문한 줄이다. **일부만 주문하고 넘어가지 않는다** —
+   * 사람이 보고 있는 화면과 다른 것을 사게 되는 쪽이 훨씬 나쁘다.
+   */
+  'ORDER_ITEM_MISSING',
+  /** 주문하려는 것이 더는 팔리지 않는다 — 내려간 상품이거나 중단된 조합이다. */
+  'ORDER_ITEM_UNAVAILABLE',
+  /**
+   * 1회 구매 수량 상한을 넘었다 (F9). `params.max` 를 싣는다.
+   *
+   * 장바구니가 이미 막지만 여기서 다시 막는다. API 를 직접 부르면 장바구니를 거치지
+   * 않고, 상한이 그 사이에 내려갔을 수도 있다.
+   */
+  'ORDER_PURCHASE_LIMIT',
+  /** 주문할 배송지가 없다 — 지워졌거나 남의 것이다. */
+  'ORDER_ADDRESS_MISSING',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]
