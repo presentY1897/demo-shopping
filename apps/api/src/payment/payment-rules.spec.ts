@@ -32,12 +32,17 @@ describe('상태 전이 표', () => {
 
     const movable = paymentStatuses.filter((status) => paymentTransitions[status].length > 0)
 
-    expect(movable).toEqual(['READY', 'AUTHORIZED', 'PAID', 'PARTIAL_CANCELED'])
+    // `UNRESOLVED` 가 여기 있는 것이 D-220 의 핵심이다. 「모른다」에 종착지를
+    // 주면 그 결제는 영원히 모르는 채로 남고, 대사가 풀 길이 없다.
+    expect(movable).toEqual(['READY', 'AUTHORIZED', 'PAID', 'PARTIAL_CANCELED', 'UNRESOLVED'])
   })
 
   it('lets a new payment be approved or declined, and nothing else', () => {
     expect(canTransition('READY', 'AUTHORIZED')).toBe(true)
     expect(canTransition('READY', 'FAILED')).toBe(true)
+    // 결제사에 닿지 못한 경우다 (D-220). 거절과 **다른 상태**로 가는 이유는
+    // 저쪽에서 승인이 나 있을 수 있기 때문이다.
+    expect(canTransition('READY', 'UNRESOLVED')).toBe(true)
     // 승인을 건너뛴 매입은 「돈을 안 받고 물건을 보내는」 결제다.
     expect(canTransition('READY', 'PAID')).toBe(false)
     expect(canTransition('READY', 'CANCELED')).toBe(false)
@@ -199,10 +204,11 @@ describe('환불 판단 — 거절', () => {
 
   it('refuses a refund in every status that has not taken money', () => {
     // READY·AUTHORIZED 는 아직 우리 쪽으로 온 돈이 없고, CANCELED·FAILED 는
-    // 끝난 결제다. 넷 다 환불이라는 사건 자체를 받지 않는다 (F2 × F4).
+    // 끝난 결제다. `UNRESOLVED` 는 승인됐는지조차 모르는 것이라 환불할 대상이
+    // 있는지를 우리가 모른다 — 다섯 다 환불이라는 사건 자체를 받지 않는다.
     const forbidden = paymentStatuses.filter((status) => !REFUNDABLE_STATUSES.includes(status))
 
-    expect(forbidden).toEqual(['READY', 'AUTHORIZED', 'CANCELED', 'FAILED'])
+    expect(forbidden).toEqual(['READY', 'AUTHORIZED', 'CANCELED', 'FAILED', 'UNRESOLVED'])
 
     for (const status of forbidden) {
       expect(refundDecision(payment({ status }), 10_000)).toEqual({

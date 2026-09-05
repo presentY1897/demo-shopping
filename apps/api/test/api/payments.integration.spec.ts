@@ -101,13 +101,12 @@ class ScriptedProvider implements PaymentProviderPort {
     })
 
     if (!this.approves) {
-      return Promise.resolve({ approved: false, paymentKey: null, reason: this.declineReason })
+      return Promise.resolve({ outcome: 'declined', reason: this.declineReason })
     }
 
     return Promise.resolve({
-      approved: true,
+      outcome: 'approved',
       paymentKey: `${this.name}-${request.paymentId}`,
-      reason: null,
     })
   }
 

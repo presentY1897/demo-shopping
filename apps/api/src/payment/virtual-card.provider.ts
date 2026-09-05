@@ -55,7 +55,7 @@ export class VirtualCardProvider implements PaymentProviderPort {
     const cardId = cardIdOf(request)
 
     if (cardId === null) {
-      return { approved: false, paymentKey: null, reason: '결제할 카드를 고르지 않았어요.' }
+      return { outcome: 'declined', reason: '결제할 카드를 고르지 않았어요.' }
     }
 
     const simulated = await this.simulate()
@@ -68,10 +68,10 @@ export class VirtualCardProvider implements PaymentProviderPort {
       // 카드 쪽 거절은 전부 「승인되지 않았다」로 접힌다. 그 이유가 무엇이었는지는
       // 카드 서비스가 이미 도메인 코드로 답했고, 여기서 다시 해석하면 그 코드가
       // 두 곳에서 조금씩 다르게 번역된다.
-      return { approved: false, paymentKey: null, reason: reasonOf(error) }
+      return { outcome: 'declined', reason: reasonOf(error) }
     }
 
-    return { approved: true, paymentKey: request.paymentId, reason: null }
+    return { outcome: 'approved', paymentKey: request.paymentId }
   }
 
   /**
@@ -131,7 +131,10 @@ export class VirtualCardProvider implements PaymentProviderPort {
 
     this.log.warn('가상 카드 승인이 마감을 넘겨 끊겼습니다.')
 
-    return { approved: false, paymentKey: null, reason: '승인이 시간 안에 끝나지 않았어요.' }
+    // **`declined` 이지 `unknown` 이 아니다** (TASK-0056 4.2). 가상 카드는 우리
+    // 프로세스 안에서 끝나고, 이 갈래는 한도를 쓰기 **전에** 돌아온다 — 즉
+    // 「승인됐는지 모른다」가 성립할 수 없다. 남의 서버가 있어야 생기는 상태다.
+    return { outcome: 'declined', reason: '승인이 시간 안에 끝나지 않았어요.' }
   }
 
   /** 결제키로 카드를 되찾아 한도를 돌려준다. */

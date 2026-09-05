@@ -803,9 +803,9 @@ describe('승인 실패 (F4)', () => {
     expect(await levelsOf(placed.variantId)).toEqual({ stock: 10, reserved: 2 })
   })
 
-  it('keeps the order retryable when the confirm call itself fails', async () => {
+  it('holds the payment as unresolved when the confirm call itself fails, and blocks a second try', async () => {
     // 이번에는 답이 없다 — 저쪽에 닿지 못했다. **거절과 다른 상황이다**: 승인이
-    // 됐는지 안 됐는지를 우리가 모른다.
+    // 됐는지 안 됐는지를 우리가 모른다 (D-220).
     const unreachable = new TossError(TOSS_UNREACHABLE, '토스 승인 API 에 닿지 못했습니다')
 
     toss.confirmFailure = unreachable
@@ -813,41 +813,53 @@ describe('승인 실패 (F4)', () => {
     const placed = await place({ quantity: 2, stock: 10 })
     const paymentId = await startToss(placed)
 
-    const failed = await confirm(paymentId, {
+    const unresolved = await confirm(paymentId, {
       paymentKey: WIDGET_KEY,
       amount: placed.paidAmount,
     })
 
-    // **승인된 것으로 남는 것만은 안 된다.** 낙관적으로 `AUTHORIZED` 로 두면 그
-    // 불일치는 매입할 때가 되어서야 돈으로 나타난다.
-    expect(failed).toMatchObject({ status: 'FAILED', paymentKey: null })
+    // **`AUTHORIZED` 도 `FAILED` 도 아니다.** 앞은 낙관이라 그 불일치가 매입할 때가
+    // 되어서야 돈으로 나타나고, 뒤는 「거절당했다」라는 **틀린 사실**이며 나가는
+    // 화살표가 없어 대사가 찾아내도 옮길 곳이 없다.
+    expect(unresolved).toMatchObject({ status: 'UNRESOLVED', paymentKey: null })
 
+    const events = await eventsOf(paymentId)
+
+    // 상태는 움직였고, 어디로 갔는지가 사건에 적힌다. 사건 종류를 따로 만들지
+    // 않는 이유는 일어난 일이 같기 때문이다 — 승인이 끝나지 않았다.
+    expect(events.map((event) => event.kind)).toEqual(['REQUESTED', 'FAILED'])
+    expect(events[1]).toMatchObject({ fromStatus: 'READY', toStatus: 'UNRESOLVED' })
     // 그리고 **토스가 준 문장이 그대로 남았다.** 다시 쓰면 「한도를 초과했습니다」
     // 같은 것이 두 곳에서 조금씩 달라지고, 사용자에게 그 차이는 그냥 혼란이다.
-    expect((await eventsOf(paymentId))[1]?.reason).toBe(unreachable.message)
+    expect(events[1]?.reason).toBe(unreachable.message)
 
     expect(await sellerOrderStatuses(placed.orderId)).toEqual(['PAYMENT_PENDING'])
 
     const held = await reservationsOf(placed.checkoutId)
 
+    // 예약은 유지된다. 놓아 버리면 대사가 「승인됐다」를 확인해도 팔 물건이 없다.
     expect(held.map((row) => row.status)).toEqual(['HELD'])
     expect(await levelsOf(placed.variantId)).toEqual({ stock: 10, reserved: 2 })
 
-    // 그리고 다시 하면 된다. 실패가 예약을 풀지 않았으므로 **같은 예약 위에서**
-    // 결제가 완결된다 — 그것을 재지 않으면 「상태 일관」은 주석일 뿐이다.
+    // **그리고 다시 결제할 수 없다.** 이것이 이 상태를 만든 값의 절반이다 — 저쪽에
+    // 승인이 나 있었다면 두 번째 시도로 카드에서 두 번 빠지고, 그 두 번째는
+    // 우리가 만든 것이다. 화면 문구만으로는 부족하다: API 를 직접 부르는 길이 있고
+    // 새로고침한 화면은 그 문장을 잊는다.
     toss.confirmFailure = null
 
-    const retried = await startToss(placed)
+    const blocked = await failure(
+      client().request({
+        path: '/payments',
+        method: 'POST',
+        body: { orderId: placed.orderId, provider: 'TOSS' },
+        schema: paymentResponseSchema,
+      }),
+    )
 
-    await confirm(retried, { paymentKey: WIDGET_KEY, amount: placed.paidAmount })
-    await capture(retried)
-
-    const settledHolds = await reservationsOf(placed.checkoutId)
-
-    expect(settledHolds.map((row) => row.id)).toEqual(held.map((row) => row.id))
-    expect(settledHolds.map((row) => row.status)).toEqual(['CONFIRMED'])
-    expect(await sellerOrderStatuses(placed.orderId)).toEqual(['PAID'])
-    expect(await levelsOf(placed.variantId)).toEqual({ stock: 8, reserved: 0 })
+    expect(blocked).toEqual({ status: 409, code: 'PAYMENT_AWAITING_RESULT' })
+    // 막혔을 뿐 아무것도 만들어지지 않았다 — 결제 행은 여전히 그 하나다.
+    expect(await paymentCountOf(placed.orderId)).toBe(1)
+    expect((await readPayment(paymentId)).status).toBe('UNRESOLVED')
   })
 })
 

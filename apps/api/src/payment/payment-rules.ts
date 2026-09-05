@@ -31,6 +31,9 @@ import type { PaymentStatus } from '@shopping/shared'
  * **빈 배열이 곧 종착 상태다** — `CANCELED` 와 `FAILED`. 종착 여부를 따로 적지
  * 않는 이유는 한 사실을 두 벌로 적으면 언젠가 서로 다른 말을 하기 때문이다.
  *
+ * `UNRESOLVED` 는 종착이 아니다. 「모른다」에 종착지를 주면 그 결제는 영원히
+ * 모르는 채로 남고, 그것을 푸는 것이 TASK-0056 의 대사다 (D-220).
+ *
  * 눈여겨 볼 두 줄.
  *
  * - `AUTHORIZED` 에서 나가는 화살표는 `PAID` 하나뿐이다. 승인만 된 건을 무르는
@@ -42,7 +45,10 @@ import type { PaymentStatus } from '@shopping/shared'
  *   전이가 된다.**
  */
 export const paymentTransitions: Readonly<Record<PaymentStatus, readonly PaymentStatus[]>> = {
-  READY: ['AUTHORIZED', 'FAILED'],
+  READY: ['AUTHORIZED', 'FAILED', 'UNRESOLVED'],
+  // 대사만 여는 두 화살표다 (D-220). 매입으로 바로 가지 않고 `AUTHORIZED` 를
+  // 거치는 이유는 「승인된 결제를 매입한다」가 한 곳에만 있게 하기 위해서다.
+  UNRESOLVED: ['AUTHORIZED', 'FAILED'],
   AUTHORIZED: ['PAID'],
   PAID: ['PARTIAL_CANCELED', 'CANCELED'],
   PARTIAL_CANCELED: ['PARTIAL_CANCELED', 'CANCELED'],

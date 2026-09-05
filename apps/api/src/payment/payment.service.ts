@@ -91,6 +91,8 @@ export class PaymentService {
     // 단계에서 터지면 아무도 쓰지 않는 `READY` 행이 남는다.
     this.registry.resolve(provider)
 
+    await this.assertNothingUnresolved(order.id)
+
     const now = this.clock.now()
     const payment = await this.prisma.$transaction(async (tx) => {
       const created = await tx.payment.create({
@@ -135,19 +137,27 @@ export class PaymentService {
     })
     const now = this.clock.now()
 
+    // 승인이 안 된 두 방식이 **다른 상태로** 간다 (D-220). 저쪽이 답한 거절은
+    // `FAILED`, 닿지 못한 것은 `UNRESOLVED` — 뒤쪽은 저쪽에서 승인이 나 있을 수
+    // 있고, 그것을 「실패」로 적으면 되돌릴 길이 없다.
+    const landing: PaymentStatus = result.outcome === 'declined' ? 'FAILED' : 'UNRESOLVED'
+
     await this.prisma.$transaction(async (tx) => {
       const fresh = await this.lock(tx, paymentId)
 
       // 그 사이에 남이 옮겼을 수 있다. 결제사 응답을 들고 있어도 상태가 이미
       // 움직였다면 그것을 덮어쓰면 안 된다.
-      this.assertTransition(fresh.status, result.approved ? 'AUTHORIZED' : 'FAILED')
+      this.assertTransition(fresh.status, result.outcome === 'approved' ? 'AUTHORIZED' : landing)
 
-      if (!result.approved) {
+      if (result.outcome !== 'approved') {
         await tx.payment.update({
           where: { id: paymentId },
-          data: { status: 'FAILED', updatedAt: now },
+          data: { status: landing, updatedAt: now },
         })
-        await this.log(tx, paymentId, 'FAILED', fresh.status, 'FAILED', now, {
+        // 사건의 종류는 둘 다 `FAILED` 다 — 「승인이 끝나지 않았다」가 일어난
+        // 것이고, 그것이 어디에 앉았는지는 `toStatus` 가 말한다. 사건 종류를
+        // 늘리면 같은 사실을 두 벌로 적게 된다.
+        await this.log(tx, paymentId, 'FAILED', fresh.status, landing, now, {
           reason: result.reason,
         })
 
@@ -339,6 +349,33 @@ export class PaymentService {
   }
 
   // ---------------------------------------------------------------- internals
+
+  /**
+   * 결과를 모르는 결제가 있으면 새 결제를 시작하지 않는다 (D-220).
+   *
+   * **이것이 `UNRESOLVED` 를 만든 값의 절반이다.** 저쪽에서 승인이 나 있었다면
+   * 다시 결제한 사람의 카드에서 두 번 빠지고, 그 두 번째는 우리가 만든 것이다.
+   * 화면에 「다시 결제하지 마세요」라고 적는 것만으로는 부족하다 — API 를 직접
+   * 부르는 길이 있고, 새로고침한 화면은 그 문장을 잊는다.
+   *
+   * 막혀 있는 시간은 대사 주기만큼이다. 그 사이 사람이 기다리는 것이 두 번
+   * 결제되는 것보다 낫고, 대사가 풀면 다음 시도는 그냥 지나간다.
+   */
+  private async assertNothingUnresolved(orderId: string): Promise<void> {
+    const pending = await this.prisma.payment.count({
+      where: { orderId, status: 'UNRESOLVED' },
+    })
+
+    if (pending === 0) return
+
+    throw new ConflictException(
+      domainFailure(
+        'PAYMENT_AWAITING_RESULT',
+        '앞선 결제의 결과를 확인하는 중이에요. 잠시 후 다시 시도해 주세요.',
+        { field: 'orderId' },
+      ),
+    )
+  }
 
   private async account(
     principal: RequestPrincipal,

@@ -279,6 +279,7 @@ export const ko: Messages = {
     PAYMENT_REFUND_INVALID: '환불 금액이 올바르지 않아요.',
     PAYMENT_AMOUNT_MISMATCH: '결제 금액이 주문 금액과 달라 승인하지 않았어요.',
     PAYMENT_PROVIDER_MISMATCH: '그 결제수단으로 시작한 결제가 아니에요.',
+    PAYMENT_AWAITING_RESULT: '앞선 결제의 결과를 확인하는 중이에요. 잠시 후 다시 시도해 주세요.',
     PAYMENT_REFUND_EXCEEDS: '환불할 수 있는 금액을 넘었어요.',
     // 가상 카드 (TASK-0053). 콘솔은 카드를 쓰지 않지만 카탈로그가 전수다.
     CARD_AMOUNT_INVALID: '금액이 올바르지 않아요.',

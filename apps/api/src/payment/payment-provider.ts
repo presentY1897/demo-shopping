@@ -35,18 +35,33 @@ export interface AuthorizeRequest {
 }
 
 /**
- * 승인 결과.
+ * 승인 결과 — **셋 중 하나다** (TASK-0056 4.2 · D-220).
  *
  * **거절을 예외가 아니라 값으로 답한다.** 한도 초과는 프로그램의 오류가 아니라
- * 정상적인 대답이고, 그것을 던지면 부르는 쪽이 「진짜 오류」와 구분하려고
- * 예외 타입을 뒤지게 된다. 던지는 것은 결제사에 닿지 못했을 때다.
+ * 정상적인 대답이고, 그것을 던지면 부르는 쪽이 「진짜 오류」와 구분하려고 예외
+ * 타입을 뒤지게 된다.
+ *
+ * **`unknown` 이 세 번째인 이유**는 「거절당했다」와 「승인됐는지 모른다」가 서로
+ * 다른 사실이기 때문이다. 원래 이 타입은 `approved: boolean` 이었고, 그 불리언에는
+ * 답이 오지 않은 경우를 넣을 자리가 없어 거절과 같은 칸에 들어갔다 — 그러면 우리
+ * 장부는 「실패」라고 적는데 저쪽에서는 승인이 나 있을 수 있고, 그 불일치를
+ * 되돌릴 방법이 없어진다.
+ *
+ * 판별 유니온인 덕분에 타입도 정확해졌다. 예전 모양은 `paymentKey` 가 승인됐을
+ * 때만 있는데도 늘 `string | null` 이라, 부르는 쪽이 있을 리 없는 널을 매번 봤다.
  */
-export interface AuthorizeResult {
-  readonly approved: boolean
-  readonly paymentKey: string | null
-  /** 거절 사유. 승인됐으면 `null`. */
-  readonly reason: string | null
-}
+export type AuthorizeResult =
+  /** 승인됐다. 결제키는 취소·환불이 이 승인을 되찾는 열쇠다. */
+  | { readonly outcome: 'approved'; readonly paymentKey: string }
+  /** 저쪽이 **답했고**, 그 답이 아니오였다. 사람에게 보여 줄 문장이 붙는다. */
+  | { readonly outcome: 'declined'; readonly reason: string }
+  /**
+   * 저쪽에 닿지 못했다 — **승인됐는지 우리가 모른다.**
+   *
+   * 결제는 `UNRESOLVED` 로 가고 거기서 꺼내는 것은 대사뿐이다. 이 갈래를 내는
+   * 것은 **남의 서버가 있는 프로바이더**뿐이다.
+   */
+  | { readonly outcome: 'unknown'; readonly reason: string }
 
 export interface PaymentProviderPort {
   readonly name: PaymentProviderName
