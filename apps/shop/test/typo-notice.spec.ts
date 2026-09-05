@@ -17,6 +17,7 @@ function hit(name: string, brandName = '해뜰녘'): SearchHit {
     id: '019596d0-1f1c-7c2e-9a0e-000000000001',
     name,
     brandName,
+    sellerId: '019596d0-1f1c-7c2e-9a0e-000000000002',
     categoryId: 31,
     price: 100_000,
     inStock: true,
