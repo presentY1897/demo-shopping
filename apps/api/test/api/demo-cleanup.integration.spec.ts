@@ -176,6 +176,54 @@ describe('장바구니도 함께 간다 (TASK-0045 F8)', () => {
   })
 })
 
+describe('잡아 둔 재고도 놓아 준다 (TASK-0048)', () => {
+  it('gives the held quantity back to the variant and throws the reservation away', async () => {
+    const { user, variant } = await demoStore({ expiresAt: PAST })
+    const [reservation] = await db.query<{ id: string }>(
+      `INSERT INTO "StockReservation"
+         ("id", "variantId", "userId", "checkoutId", "quantity", "expiresAt", "updatedAt")
+       VALUES (gen_random_uuid(), $1, $2, gen_random_uuid(), 2, now() + interval '15 minutes', now())
+       RETURNING "id"`,
+      [variant.id, user.id],
+    )
+
+    await db.query(`UPDATE "ProductVariant" SET "reserved" = 2 WHERE "id" = $1`, [variant.id])
+
+    await sweeper().sweep()
+
+    // 행만 지우면 `reserved` 에 2가 남아 아무도 살 수 없는 재고가 된다. 실패로
+    // 나타나지 않으므로 판매자는 팔리지 않는 이유를 영원히 알 수 없다.
+    const [after] = await db.query<{ reserved: number }>(
+      `SELECT "reserved" FROM "ProductVariant" WHERE "id" = $1`,
+      [variant.id],
+    )
+
+    expect(after?.reserved).toBe(0)
+    expect(await rowExists('StockReservation', reservation?.id ?? '')).toBe(false)
+  })
+
+  it('leaves the shelf alone for a hold that was already confirmed', async () => {
+    const { user, variant } = await demoStore({ expiresAt: PAST })
+
+    await db.query(
+      `INSERT INTO "StockReservation"
+         ("id", "variantId", "userId", "checkoutId", "quantity", "status", "expiresAt", "settledAt", "updatedAt")
+       VALUES (gen_random_uuid(), $1, $2, gen_random_uuid(), 2, 'CONFIRMED', now(), now(), now())`,
+      [variant.id, user.id],
+    )
+
+    await sweeper().sweep()
+
+    // 확정된 몫은 이미 `reserved` 에서 빠졌고 실제로 팔렸다. 되돌리면 음수가 된다.
+    const [after] = await db.query<{ reserved: number }>(
+      `SELECT "reserved" FROM "ProductVariant" WHERE "id" = $1`,
+      [variant.id],
+    )
+
+    expect(after?.reserved).toBe(0)
+  })
+})
+
 describe('F2 · F3 — what the sweep must not touch', () => {
   it('leaves a demo account that has not expired', async () => {
     const alive = await demoStore({ expiresAt: FUTURE })
