@@ -19,12 +19,19 @@ export interface AuthorizeRequest {
   readonly orderId: string
   readonly amount: number
   /**
-   * 어느 수단으로 낼 것인가 — 가상 카드에서는 카드 id 다 (TASK-0054).
+   * 어느 수단으로 낼 것인가. **프로바이더마다 뜻이 다르다.**
    *
-   * 프로바이더마다 뜻이 달라도 되는 자리라 이름이 구체적이지 않다. 토스는 이것을
-   * 쓰지 않고 결제창이 돌려준 키를 자기 방식으로 받는다.
+   * | 프로바이더 | 이 자리에 들어오는 것 |
+   * | --- | --- |
+   * | 가상 카드 | 카드 id (TASK-0054) |
+   * | 토스 | 결제창이 돌려준 `paymentKey` (TASK-0055 4.6) |
+   *
+   * **원래 이름은 `cardId` 였다.** TASK-0052 는 「프로바이더마다 뜻이 달라도 되는
+   * 자리」라고 적어 두고 첫 구현의 이름을 붙였고, 두 번째 구현이 붙는 순간 그
+   * 이름이 거짓이 됐다 — 토스가 여기 넣는 것은 카드가 아니다. `Payment.methodRef`
+   * 컬럼이 처음부터 이 뜻이었으므로 그 이름으로 맞춘다.
    */
-  readonly cardId?: string
+  readonly methodRef?: string
 }
 
 /**
