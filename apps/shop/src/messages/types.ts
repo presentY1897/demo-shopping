@@ -70,6 +70,14 @@ export interface Messages {
    */
   readonly category: CategoryMessages
   /**
+   * 상품 상세 (TASK-0043) — 갤러리·옵션·구매 영역·정보.
+   *
+   * 밀도가 무엇을 보여 줄지 정하지만 **문구는 한 벌이다.** 단계마다 다른 낱말을
+   * 쓰면 세 벌을 유지해야 하고, 실제로 다른 것은 「얼마나 보여 주는가」이지
+   * 「뭐라고 부르는가」가 아니다.
+   */
+  readonly productDetail: ProductDetailMessages
+  /**
    * Screens whose route exists so the header's links are not dead ends, and
    * whose content arrives with its own milestone (TASK-0018 4.5).
    */
@@ -620,4 +628,99 @@ export interface CategoryMessages {
   /** `{name}` — the link that goes to the parent's own full list. */
   readonly allOfLabel: string
   readonly loadingLabel: string
+}
+
+export interface ProductDetailMessages {
+  /** `{name}` */
+  readonly metaTitle: string
+  /** `{brand}` · `{name}` */
+  readonly metaDescription: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly sellerLabel: string
+  /** `{brand}` — the link to the brand's own page. */
+  readonly brandLink: string
+  readonly gallery: ProductGalleryMessages
+  readonly options: ProductOptionMessages
+  readonly purchase: ProductPurchaseMessages
+  readonly info: ProductInfoMessages
+}
+
+export interface ProductGalleryMessages {
+  readonly label: string
+  readonly thumbnailsLabel: string
+  /** `{index}` — accessible name of one thumbnail. */
+  readonly thumbnailLabel: string
+  readonly previous: string
+  readonly next: string
+  readonly zoomIn: string
+  readonly zoomOut: string
+  /** `{name}` · `{index}` — used when an image carries no alt text of its own. */
+  readonly imageAlt: string
+  readonly empty: string
+  /** `{index}` · `{total}` — announced as the gallery moves. */
+  readonly position: string
+}
+
+export interface ProductOptionMessages {
+  readonly soldOut: string
+  /** A combination the seller never made. **Not** the same word as 품절. */
+  readonly missing: string
+  readonly skuLabel: string
+  /** `{count}` */
+  readonly stockLabel: string
+  readonly chooseNotice: string
+  /** `{option}` · `{value}` — announced when a choice clears another axis. */
+  readonly clearedNotice: string
+}
+
+export interface ProductPurchaseMessages {
+  readonly legend: string
+  readonly addToCart: string
+  readonly buyNow: string
+  readonly wishlist: string
+  /** Said under the two buttons: they are placeholders until M07. */
+  readonly comingSoon: string
+  readonly quantityLabel: string
+  readonly decrease: string
+  readonly increase: string
+  /** `{count}` */
+  readonly limitNotice: string
+  readonly soldOutNotice: string
+  readonly totalLabel: string
+}
+
+export interface ProductInfoMessages {
+  readonly descriptionLabel: string
+  readonly noDescription: string
+  readonly attributesLabel: string
+  /** The minimal step keeps the table folded; this opens it. */
+  readonly attributesToggle: string
+  readonly shippingLabel: string
+  /** One line at minimal, a summary at standard, the full block at maximal. */
+  readonly shippingMinimal: string
+  readonly shippingSummary: string
+  readonly shippingDetailed: string
+  /** `{date}` — maximal only. */
+  readonly estimatedArrival: string
+  readonly reviewsLabel: string
+  /** `{score}` · `{count}` */
+  readonly reviewsSummary: string
+  readonly reviewsLink: string
+  readonly reviewsComingSoon: string
+  readonly inquiriesLabel: string
+  readonly inquiriesComingSoon: string
+  readonly recommendationsLabel: string
+  readonly recommendationsComingSoon: string
+  readonly badges: ProductBadgeMessages
+}
+
+export interface ProductBadgeMessages {
+  /** `{count}` */
+  readonly salesCount: string
+  /** `{score}` */
+  readonly rating: string
+  /** `{count}` */
+  readonly lowStock: string
 }
