@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common'
 import { PrismaModule } from '../prisma/prisma.module.js'
 import { PaymentProviderRegistry } from './payment-registry.js'
 import { PaymentService } from './payment.service.js'
+import { VirtualCardService } from './virtual-card.service.js'
 
 /**
  * 결제 (TASK-0052).
@@ -16,7 +17,7 @@ import { PaymentService } from './payment.service.js'
  */
 @Module({
   imports: [PrismaModule],
-  providers: [PaymentProviderRegistry, PaymentService],
-  exports: [PaymentProviderRegistry, PaymentService],
+  providers: [PaymentProviderRegistry, PaymentService, VirtualCardService],
+  exports: [PaymentProviderRegistry, PaymentService, VirtualCardService],
 })
 export class PaymentModule {}
