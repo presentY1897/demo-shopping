@@ -205,6 +205,31 @@ export default defineConfig({
           statements: 100,
         },
         /**
+         * TASK-0049 (6.2). 「주문 생성 트랜잭션은 분기 커버리지 100%」를 두 순수
+         * 모듈로 받는다 (4.7).
+         *
+         * `await` 가 섞인 파일에 100% 를 걸면 닿을 수 없는 방어 분기가 생기고,
+         * 그것은 게이트를 만족시키려고 코드를 나쁘게 만드는 일이다 — `hangul.ts` 와
+         * `pricing/allocate.ts` 에서 이미 겪었다. 그래서 **판단만** 이 두 파일에
+         * 있고 트랜잭션에는 쓰기만 남는다.
+         *
+         * 여기가 틀리면 조용하다. 계산 결과와 줄이 어긋난 채 저장되면 주문 금액이
+         * 항목 합보다 적어지고 그 차액은 아무 데도 기록되지 않으며, 주문번호의
+         * 형식이 갈라지면 「전화로 불러 줄 수 있는 번호」라는 성질만 사라진다.
+         */
+        'src/orders/order-plan.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        'src/orders/order-number.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        /**
          * TASK-0117. The error contract's decision-making, all of it pure:
          * which code and sentence a status maps to, what a domain failure's
          * payload looks like, which `details` shape one zod issue becomes, and
