@@ -10,7 +10,7 @@ import { http, HttpResponse } from 'msw'
 import { defineFixture } from '../define'
 import { mockPaths } from '../paths'
 import { answering } from './refusal'
-import { SEARCH_CATALOGUE, searchFilters } from './search-catalogue'
+import { categoryLineageIds, SEARCH_CATALOGUE, searchFilters } from './search-catalogue'
 
 /**
  * 검색 (TASK-0039 의 엔드포인트를 TASK-0041 의 화면이 보는 모양대로).
@@ -127,7 +127,11 @@ export const searchHandlers: readonly RequestHandler[] = [
             )
 
       const matched = found
-        .filter((hit) => categoryId === null || hit.categoryId === Number(categoryId))
+        // Membership in the lineage, not equality — see `categoryLineageIds`.
+        .filter(
+          (hit) =>
+            categoryId === null || categoryLineageIds(hit.categoryId).includes(Number(categoryId)),
+        )
         .filter((hit) => url.searchParams.get('inStock') !== 'true' || hit.inStock)
         .filter((hit) => matchesAttributes(hit, chosen))
 

@@ -1,7 +1,8 @@
-import type { SearchFilter, SearchHit } from '@shopping/shared'
+import type { CategoryTreeNode, SearchFilter, SearchHit } from '@shopping/shared'
 import { searchFilterSchema, searchHitSchema } from '@shopping/shared'
 
 import { defineFixture } from '../define'
+import { storefrontCategoryTree } from '../fixtures/categories'
 
 /**
  * The catalogue the search double answers from (TASK-0041).
@@ -12,8 +13,49 @@ import { defineFixture } from '../define'
  * out — a fixture where every option has hits cannot show that.
  */
 
-export const SEARCH_COAT_CATEGORY = 31
-export const SEARCH_SHOE_CATEGORY = 32
+/**
+ * The catalogue's own ids, looked up rather than invented.
+ *
+ * They used to be 31 and 32, which belonged to nothing: the category fixture is
+ * a 40-node tree and the search double answered about two numbers outside it. A
+ * screen that reads both — the category page reads the tree for its lineage and
+ * the search for its list — would have been given two worlds that never met.
+ */
+function every(nodes: readonly CategoryTreeNode[]): readonly CategoryTreeNode[] {
+  return nodes.flatMap((node) => [node, ...every(node.children)])
+}
+
+const BY_SLUG = new Map(every(storefrontCategoryTree.nodes).map((node) => [node.slug, node]))
+
+function idOf(slug: string): number {
+  const node = BY_SLUG.get(slug)
+
+  if (node === undefined) throw new Error(`검색 목 카탈로그가 없는 카테고리를 가리킵니다: ${slug}`)
+
+  return node.id
+}
+
+export const SEARCH_COAT_CATEGORY = idOf('women-outer-coat')
+export const SEARCH_SHOE_CATEGORY = idOf('shoes-sneakers')
+
+/**
+ * Every category a listing hangs under, its own included.
+ *
+ * The API indexes exactly this (`ProductDocument.categoryIds`, TASK-0042 4.1)
+ * and filters against it, so a double that matched the scalar would answer
+ * nothing for a parent category — and a screen tested against it would pass
+ * while the real one showed an empty catalogue.
+ */
+export function categoryLineageIds(categoryId: number): readonly number[] {
+  const node = [...BY_SLUG.values()].find((entry) => entry.id === categoryId)
+
+  return node === undefined
+    ? [categoryId]
+    : node.path
+        .split('/')
+        .filter((part) => part !== '')
+        .map(Number)
+}
 
 /** `key → label`, and every option a panel may draw. */
 const FILTERS: Readonly<Record<number, readonly SearchFilter[]>> = {
