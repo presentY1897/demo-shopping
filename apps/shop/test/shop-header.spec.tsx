@@ -15,6 +15,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { ShopHeader } from '@/components/layout/shop-header'
+import { forgetCartCount, publishCartCount } from '@/lib/cart/cart-count'
 import { resetCategoryMenuCache } from '@/lib/categories/use-category-menu'
 import { messagesFor } from '@/messages'
 
@@ -160,5 +161,43 @@ describe('the header, at every viewport', () => {
     // group's single stop; none of them is reachable only with a pointer.
     expect(reached.length).toBeGreaterThan(0)
     expect(document.querySelectorAll('[tabindex="-1"]:not([role="radio"])')).toHaveLength(0)
+  })
+})
+
+describe('장바구니 배지 (TASK-0046)', () => {
+  beforeEach(() => {
+    forgetCartCount()
+  })
+
+  it('says nothing until the count is known', () => {
+    // `0` 과 「아직 안 읽었다」를 같게 두면 로그인 직후의 한순간에 「0」이 보이고,
+    // 담아 둔 것이 있는 사람에게 그것은 거짓말이다.
+    renderHeader(VIEWPORTS.desktop)
+
+    expect(screen.getByRole('link', { name: layout.account.cart })).toBeVisible()
+  })
+
+  it('puts the count into the link’s own name', async () => {
+    renderHeader(VIEWPORTS.desktop)
+
+    publishCartCount(3)
+
+    // 배지는 `aria-hidden` 이고 수는 링크의 이름에 들어간다 — 아이콘 옆의 작은
+    // 숫자를 따로 읽어 주면 「장바구니」 「3」 두 덩어리로 들린다.
+    expect(await screen.findByRole('link', { name: `${layout.account.cart} 3` })).toHaveAttribute(
+      'href',
+      '/cart',
+    )
+  })
+
+  it('drops the badge again when the cart empties', async () => {
+    renderHeader(VIEWPORTS.desktop)
+
+    publishCartCount(2)
+    await screen.findByRole('link', { name: `${layout.account.cart} 2` })
+
+    publishCartCount(0)
+
+    expect(await screen.findByRole('link', { name: layout.account.cart })).toBeVisible()
   })
 })

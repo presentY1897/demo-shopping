@@ -258,14 +258,29 @@ describe('F5b · F5c — 모바일 구매 바', () => {
     expect(screen.getByRole('button', { name: copy.purchase.increase })).toBeVisible()
   })
 
-  it('keeps the inert buttons reachable and says why they are inert', async () => {
+  it('keeps 바로 구매 reachable and says why it is inert', async () => {
+    // 담기는 이제 실제로 담는다 (TASK-0046 4.5). 남은 것은 「바로 구매」이고,
+    // TASK-0023 4장대로 **보이되 비활성이고 그 이유가 붙어 있다** — `aria-disabled`
+    // 라 탭 순서에 남아서 그 이유를 읽을 수 있다.
+    await renderDetail()
+
+    const buyNow = screen.getByRole('button', { name: copy.purchase.buyNow })
+
+    expect(buyNow).toHaveAttribute('aria-disabled', 'true')
+    expect(buyNow).not.toBeDisabled()
+    expect(screen.getByText(copy.purchase.comingSoon)).toBeVisible()
+  })
+
+  it('refuses 담기 until a combination is chosen, without taking its tab stop', async () => {
+    // 조합이 정해지기 전에는 담을 것이 없다. 그래도 `aria-disabled` 인 이유는
+    // 키보드로 그 자리에 닿을 수 있어야 하기 때문이고 — 이유는 바로 위의 옵션
+    // 영역이 말한다 — 그것이 TASK-0023 4장이 정한 방식이다.
     await renderDetail()
 
     const add = screen.getByRole('button', { name: copy.purchase.addToCart })
 
     expect(add).toHaveAttribute('aria-disabled', 'true')
     expect(add).not.toBeDisabled()
-    expect(screen.getByText(copy.purchase.comingSoon)).toBeVisible()
   })
 })
 

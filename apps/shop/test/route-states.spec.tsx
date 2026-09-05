@@ -16,7 +16,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
-import CartPage from '@/app/cart/page'
+import CheckoutPage from '@/app/checkout/page'
 import RouteError from '@/app/error'
 import Loading from '@/app/loading'
 import MyPage from '@/app/mypage/page'
@@ -60,12 +60,14 @@ describe('the error state', () => {
   })
 })
 
-describe('the cart placeholder', () => {
+describe('the checkout placeholder', () => {
   it('names itself and the milestone that fills it', () => {
-    render(<CartPage />)
+    // 장바구니는 이제 진짜 화면이다 (TASK-0046). 껍데기가 남은 자리는 「주문하기」가
+    // 갈 곳이고, 죽은 링크 대신 실제 라우트를 둔다는 규약은 그대로다.
+    render(<CheckoutPage />)
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(placeholder.cart.title)
-    expect(screen.getByText(placeholder.cart.body)).toBeVisible()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(placeholder.checkout.title)
+    expect(screen.getByText(placeholder.checkout.body)).toBeVisible()
   })
 })
 
