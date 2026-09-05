@@ -120,7 +120,7 @@
 | [TASK-0040](./M06-search/TASK-0040-product-card.md) | 상품 카드 · 목록 (밀도 3단계) | 완료 |
 | [TASK-0041](./M06-search/TASK-0041-search-page.md) | 검색 페이지 · 자동완성 · 필터 | 완료 |
 | [TASK-0042](./M06-search/TASK-0042-category-page.md) | 카테고리 페이지 | 완료 |
-| [TASK-0043](./M06-search/TASK-0043-product-detail.md) | 상품 상세 (밀도 3단계) | 승인됨 |
+| [TASK-0043](./M06-search/TASK-0043-product-detail.md) | 상품 상세 (밀도 3단계) | 완료 |
 | [TASK-0044](./M06-search/TASK-0044-home-brand.md) | 홈 · 브랜드관 | 승인됨 |
 | [TASK-0102](./M06-search/TASK-0102-seo.md) | SEO | 승인됨 |
 | [TASK-0103](./M06-search/TASK-0103-hangul-autocomplete.md) | 한글 자모 · 초성 자동완성 | 승인됨 |

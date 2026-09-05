@@ -11,7 +11,7 @@ Meilisearch 인덱싱과 구매자 탐색 화면을 만든다. **밀도 3단계�
 | [TASK-0040](./TASK-0040-product-card.md) | 상품 카드 · 목록 (밀도 3단계) | 완료 | M05 |
 | [TASK-0041](./TASK-0041-search-page.md) | 검색 페이지 · 자동완성 · 필터 | 완료 | 0039, 0040 |
 | [TASK-0042](./TASK-0042-category-page.md) | 카테고리 페이지 | 완료 | 0041 |
-| [TASK-0043](./TASK-0043-product-detail.md) | 상품 상세 (밀도 3단계) | 승인됨 | 0040 |
+| [TASK-0043](./TASK-0043-product-detail.md) | 상품 상세 (밀도 3단계) | 완료 | 0040 |
 | [TASK-0044](./TASK-0044-home-brand.md) | 홈 · 브랜드관 | 승인됨 | 0040 |
 | [TASK-0102](./TASK-0102-seo.md) | SEO | 승인됨 | 0043, 0044 |
 | [TASK-0103](./TASK-0103-hangul-autocomplete.md) | 한글 자모 · 초성 자동완성 | 승인됨 | 0039 |
