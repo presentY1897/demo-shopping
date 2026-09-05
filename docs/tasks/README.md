@@ -11,7 +11,7 @@
 | [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, Radix 컴포넌트, 폼, 레이아웃, Storybook | **7/7 완료** |
 | [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점, 테스트 기반 | **14/14 완료** |
 | [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | **13/13 완료** |
-| [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | 7/9 |
+| [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | 8/9 |
 | [M07](./M07-cart-order/) 장바구니·주문 | 장바구니, 금액 계산 엔진, 재고 예약, 주문 2단 분할 | 0/7 |
 | [M08](./M08-payment/) 결제 | 프로바이더 추상화, 가상 카드, 토스 연동, 웹훅, 실패 복구 | 0/7 |
 | [M09](./M09-fulfillment/) 배송·주문관리 | 상태 머신, 주문 화면, 가상 배송, 구매확정 | 0/6 |
@@ -111,7 +111,7 @@
 
 </details>
 
-<details><summary><b>M06. 검색·탐색</b> (7/9)</summary>
+<details><summary><b>M06. 검색·탐색</b> (8/9)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -122,7 +122,7 @@
 | [TASK-0042](./M06-search/TASK-0042-category-page.md) | 카테고리 페이지 | 완료 |
 | [TASK-0043](./M06-search/TASK-0043-product-detail.md) | 상품 상세 (밀도 3단계) | 완료 |
 | [TASK-0044](./M06-search/TASK-0044-home-brand.md) | 홈 · 브랜드관 | 완료 |
-| [TASK-0102](./M06-search/TASK-0102-seo.md) | SEO | 승인됨 |
+| [TASK-0102](./M06-search/TASK-0102-seo.md) | SEO | 완료 |
 | [TASK-0103](./M06-search/TASK-0103-hangul-autocomplete.md) | 한글 자모 · 초성 자동완성 | 승인됨 |
 
 </details>
