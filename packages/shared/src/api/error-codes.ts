@@ -110,6 +110,28 @@ export const domainErrorCodes = [
   'CART_FULL',
   /** 팔지 않는 것을 담으려 했다 — 내려간 상품이거나 중단된 조합이다. */
   'CART_ITEM_UNAVAILABLE',
+  /**
+   * 주문서에 들어가려는데 남은 것이 모자란다 (TASK-0048 F2). `params.available` 을
+   * 싣는다.
+   *
+   * `CART_STOCK_EXCEEDED` 와 **다른 코드**다. 장바구니는 실물 재고를 보고 담을 때
+   * 확인만 하지만(D-026) 여기는 **가용재고**를 보고 실제로 잡는다 — 남이 주문서에
+   * 들고 있는 몫은 장바구니에서는 보이지 않고 여기서는 빠진다. 같은 코드로 묶으면
+   * 「담을 땐 됐는데 왜 안 되냐」에 답할 수 없다.
+   */
+  'RESERVATION_SOLD_OUT',
+  /**
+   * 이미 해제된 예약을 확정하려 했다.
+   *
+   * TTL 이 지나 스케줄러가 풀어 준 뒤에 결제가 승인되면 이 모양이 된다. 조용히
+   * 성공시키면 **없는 재고를 판다** — 결제를 되돌리는 것이 옳고, 그러려면 부르는
+   * 쪽이 이 실패를 구분할 수 있어야 한다.
+   */
+  'RESERVATION_RELEASED',
+  /** 이미 확정된 예약을 해제하거나 연장하려 했다 — 팔린 재고를 되돌리는 일이다. */
+  'RESERVATION_CONFIRMED',
+  /** 만료된 예약을 연장하려 했다. 되살리는 대신 다시 잡아야 한다. */
+  'RESERVATION_EXPIRED',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]
