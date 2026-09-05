@@ -2,8 +2,9 @@
  * The three states every screen can be in before it is a screen (P5), plus the
  * placeholder routes that exist so the header's links are not dead ends.
  *
- * 검색은 더 이상 여기에 없다 — TASK-0041 이 자리 표시자를 실제 화면으로 바꿨고,
- * 그 화면은 `search-page.spec.tsx` 가 검증한다.
+ * 검색과 카테고리는 더 이상 여기에 없다 — TASK-0041 · TASK-0042 가 자리 표시자를
+ * 실제 화면으로 바꿨고, `search-page.spec.tsx` 와 `category-page.spec.tsx` 가
+ * 각각 검증한다.
  *
  * They are ordinary components, so they are rendered as such. What is being
  * checked is that each one says what happened in Korean the visitor can act on,
@@ -16,7 +17,6 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
 import CartPage from '@/app/cart/page'
-import CategoryPage from '@/app/categories/[slug]/page'
 import RouteError from '@/app/error'
 import Loading from '@/app/loading'
 import MyPage from '@/app/mypage/page'
@@ -57,24 +57,6 @@ describe('the error state', () => {
     await userEvent.click(screen.getByRole('button', { name: states.retryLabel }))
 
     expect(reset).toHaveBeenCalledOnce()
-  })
-})
-
-describe('the category placeholder', () => {
-  it('is titled with the category the header linked to', async () => {
-    const category = messages.layout.nav.categories[0]!
-
-    render(await CategoryPage({ params: Promise.resolve({ slug: category.slug }) }))
-
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(category.label)
-  })
-
-  it('is a 404 for a slug nothing links to', async () => {
-    // `notFound()` throws; letting the page invent a title from the URL instead
-    // is how a placeholder turns into an accidental open redirect for text.
-    await expect(
-      CategoryPage({ params: Promise.resolve({ slug: 'no-such-thing' }) }),
-    ).rejects.toThrow()
   })
 })
 
