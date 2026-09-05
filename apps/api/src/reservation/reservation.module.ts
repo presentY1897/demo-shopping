@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 
+import { SellerOrderModule } from '../orders/seller-order.module.js'
 import { PrismaModule } from '../prisma/prisma.module.js'
 import { StockModule } from '../stock/stock.module.js'
 import { ReservationController } from './reservation.controller.js'
@@ -16,9 +17,13 @@ import { ReservationSweeperService } from './reservation-sweeper.service.js'
  *
  * `StockModule` 을 들여오는 것은 확정이 원장을 거쳐야 하기 때문이다 —
  * `ProductVariant.stock` 을 쓰는 길은 그 하나뿐이다(TASK-0036).
+ *
+ * `SellerOrderModule` 은 만료 청소가 주문을 `PAYMENT_FAILED` 로 옮길 때 지나는
+ * 문이다 (TASK-0059). 그 문이 `OrderModule` 이 아니라 자기 모듈인 이유가 바로 이
+ * 화살표다 — `OrderModule` 이 이미 여기를 들여오므로, 문을 저쪽에 두면 순환이 된다.
  */
 @Module({
-  imports: [PrismaModule, StockModule],
+  imports: [PrismaModule, StockModule, SellerOrderModule],
   controllers: [ReservationController],
   providers: [ReservationService, ReservationSweeperService],
   exports: [ReservationService, ReservationSweeperService],

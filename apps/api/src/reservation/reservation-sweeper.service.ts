@@ -4,6 +4,8 @@ import type { Prisma } from '@prisma/client'
 
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
+import type { SellerOrderStatusChanged } from '../orders/seller-order-events.js'
+import { SellerOrderService } from '../orders/seller-order.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import type { ReservationDiscrepancy } from './reservation.service.js'
 import { ReservationService } from './reservation.service.js'
@@ -62,6 +64,7 @@ export class ReservationSweeperService implements OnModuleInit, OnModuleDestroy 
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
     private readonly reservations: ReservationService,
+    private readonly transitions: SellerOrderService,
   ) {}
 
   onModuleInit(): void {
@@ -116,22 +119,28 @@ export class ReservationSweeperService implements OnModuleInit, OnModuleDestroy 
 
       for (const hold of expired) await this.release(tx, hold, now)
 
-      return { released: expired.length, failedOrders: await this.failOrders(tx, expired, now) }
+      return { released: expired.length, events: await this.failOrders(tx, expired) }
     })
 
     if (result === null) return { released: 0, failedOrders: 0, skipped: true }
+
+    // 알림은 커밋 **뒤에** 나간다 (TASK-0059 ⑥). 트랜잭션 안에서 발행하면 롤백된
+    // 청소의 「결제 실패」 알림이 나가고, 그 메일은 되돌릴 수 없다.
+    await this.transitions.publish(result.events)
 
     // 기록은 락 **밖에서** 한다. 다음 주기가 이 행을 기다릴 이유가 없고, 기록이
     // 실패해도 이미 푼 것이 되돌아가면 안 된다.
     await this.record(now, result.released)
 
+    const failedOrders = result.events.length
+
     if (result.released > 0) {
       this.log.log(
-        `만료 예약 ${String(result.released)}건을 풀었습니다 (주문 ${String(result.failedOrders)}건 실패 처리).`,
+        `만료 예약 ${String(result.released)}건을 풀었습니다 (주문 ${String(failedOrders)}건 실패 처리).`,
       )
     }
 
-    return { ...result, skipped: false }
+    return { released: result.released, failedOrders, skipped: false }
   }
 
   /** 마지막으로 돈 시각. 헬스체크가 읽는다. */
@@ -218,39 +227,48 @@ export class ReservationSweeperService implements OnModuleInit, OnModuleDestroy 
    * 옮기는 대상은 **아직 `PAYMENT_PENDING` 인 것**뿐이다. 이미 결제된 주문은 그
    * 예약이 확정으로 끝났을 것이고, 여기 걸리지도 않는다.
    *
-   * 이력을 함께 남긴다. `actorId` 는 `null` 이다 — 옮긴 것이 사람이 아니라
+   * **상태 머신의 문을 지난다** (TASK-0059). `updateMany` 한 번이던 것이 몫마다
+   * 「잠그고 · 갱신하고 · 이력을 남기는」 세 문장이 됐고, 그것이 이 잡을 한 주기당
+   * 최대 {@link SWEEP_BATCH_LIMIT} 몫만큼 무겁게 만든다. 그래도 지나는 이유는, 지나지
+   * 않으면 「정의되지 않은 전이는 불가능하다」가 거짓이 되기 때문이다 — 배치가 규칙을
+   * 비켜 가면 그 규칙은 화면에서만 지켜진다.
+   *
+   * 잠금 순서는 바뀌지 않았다. 이 잡은 이미 `ProductVariant` → `StockReservation` 을
+   * 잠근 뒤이고 결제 경로도 같은 순서로 내려오므로, 여기 `SellerOrder` 가 **맨 뒤에**
+   * 붙는 것은 새 교착을 만들지 않는다.
+   *
+   * 주체는 `SYSTEM` 이고 `actorId` 는 `null` 이다 — 옮긴 것이 사람이 아니라
    * 스케줄러이고, 없는 사람을 지어내는 것보다 비어 있는 편이 사실이다.
+   *
+   * 돌려주는 것은 **알릴 거리**다. 그 사이에 결제가 먼저 들어와 몫이 이미 옮겨졌다면
+   * 문이 `null` 을 주므로, 여기 담기는 수는 「이 주기가 실제로 옮긴 수」다.
    */
-  private async failOrders(tx: Tx, expired: readonly ExpiredHold[], now: Date): Promise<number> {
+  private async failOrders(
+    tx: Tx,
+    expired: readonly ExpiredHold[],
+  ): Promise<readonly SellerOrderStatusChanged[]> {
     const checkoutIds = [...new Set(expired.map((hold) => hold.checkoutId))]
 
-    if (checkoutIds.length === 0) return 0
+    if (checkoutIds.length === 0) return []
 
     const stranded = await tx.sellerOrder.findMany({
       where: { status: 'PAYMENT_PENDING', order: { checkoutId: { in: checkoutIds } } },
       select: { id: true },
     })
 
-    if (stranded.length === 0) return 0
+    const events: SellerOrderStatusChanged[] = []
 
-    const ids = stranded.map((row) => row.id)
-
-    await tx.sellerOrder.updateMany({
-      where: { id: { in: ids } },
-      data: { status: 'PAYMENT_FAILED', updatedAt: now },
-    })
-    await tx.orderStatusHistory.createMany({
-      data: ids.map((sellerOrderId) => ({
-        sellerOrderId,
-        fromStatus: 'PAYMENT_PENDING' as const,
-        toStatus: 'PAYMENT_FAILED' as const,
-        reason: '결제 대기 시간이 지나 예약이 해제되었습니다.',
+    for (const row of stranded) {
+      const event = await this.transitions.applyWithin(tx, row.id, 'PAYMENT_FAILED', {
+        actor: 'SYSTEM',
         actorId: null,
-        createdAt: now,
-      })),
-    })
+        reason: '결제 대기 시간이 지나 예약이 해제되었습니다.',
+      })
 
-    return ids.length
+      if (event !== null) events.push(event)
+    }
+
+    return events
   }
 
   /** 돈 사실을 남긴다. 헬스체크가 이 두 행을 읽는다. */

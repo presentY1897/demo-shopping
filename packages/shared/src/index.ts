@@ -493,8 +493,15 @@ export {
   orderStatuses,
   orderStatusSchema,
   orderSummarySchema,
+  SELLER_ORDER_TRANSITION_REASON_MAX_LENGTH,
+  sellerOrderActionSchema,
+  sellerOrderActionsResponseSchema,
+  sellerOrderRequirements,
+  sellerOrderRequirementSchema,
   sellerOrderResponseSchema,
   sellerOrderSchema,
+  sellerOrderTransitionRequestSchema,
+  sellerOrderTransitionResponseSchema,
 } from './api/orders.js'
 export type {
   Checkout,
@@ -512,7 +519,12 @@ export type {
   OrderStatus,
   OrderSummary,
   SellerOrder,
+  SellerOrderAction,
+  SellerOrderActionsResponse,
+  SellerOrderRequirement,
   SellerOrderResponse,
+  SellerOrderTransitionRequest,
+  SellerOrderTransitionResponse,
 } from './api/orders.js'
 
 export {
