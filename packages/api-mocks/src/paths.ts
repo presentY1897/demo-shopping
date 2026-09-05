@@ -89,12 +89,38 @@ export const mockPaths = {
    */
   orders: `*${API_PATH_PREFIX}/orders`,
   /**
-   * 내 카드들 (TASK-0054). `GET` — 결제 화면이 고를 것을 그린다.
+   * 내 카드들 (TASK-0054). `GET` 목록, `POST` 발급 (TASK-0058).
    *
    * 경로에 사용자 id 가 없다. 주인은 토큰이 정한다 — `/cart` · `/me` 와 같은 모양이고,
    * 남의 카드를 가리킬 자리가 애초에 없다.
+   *
+   * 발급이 같은 경로인 것은 봉투가 컬렉션이기 때문이다. `POST /cards/issue` 같은
+   * 동사 경로를 두면 이 저장소의 다른 컬렉션들과 모양이 갈린다.
    */
   cards: `*${API_PATH_PREFIX}/cards`,
+  /**
+   * `POST` 정지, `POST` 해제 (TASK-0058 F5).
+   *
+   * **정지는 삭제가 아니다.** 되살릴 수 있으므로 라우트가 둘이고, 화면도 그 카드를
+   * 목록에서 지우지 않는다 (TASK-0054 4.1).
+   *
+   * 리터럴이 붙은 둘이 `card` 보다 **먼저** 온다. `:id` 는 `/` 를 넘지 못하므로
+   * 서로를 먹지는 않지만, 옆의 라우트들이 전부 그 순서로 적혀 있다.
+   */
+  cardSuspend: `*${API_PATH_PREFIX}/cards/:id/suspend`,
+  cardActivate: `*${API_PATH_PREFIX}/cards/:id/activate`,
+  /**
+   * `GET` 카드 사용 내역 (TASK-0058 4.1).
+   *
+   * **TASK-0053 이 만들지 않은 라우트다.** 0053 이 만든 것은 발급·목록·정지·삭제
+   * 까지이고, 「환불이 잘 됐는지 잔액으로 확인」하는 동선은 원장을 읽어야 완성된다.
+   *
+   * 남의 카드 원장은 **있는지 없는지도** 알려 주지 않는다 — 그 사람이 무엇을 샀는지가
+   * 그 목록에 그대로 적혀 있기 때문이고, 그래서 대역도 모르는 카드에 404 로 답한다.
+   */
+  cardTransactions: `*${API_PATH_PREFIX}/cards/:id/transactions`,
+  /** `DELETE` 카드 삭제. 서버에서는 소프트 삭제다 — 원장이 이 카드를 가리킨다. */
+  card: `*${API_PATH_PREFIX}/cards/:id`,
   /** `POST` 결제를 연다. 몸통은 `{ orderId, provider, cardId }` 다. */
   payments: `*${API_PATH_PREFIX}/payments`,
   /**

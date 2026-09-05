@@ -49,6 +49,17 @@ export { attributeHandlers, resetAttributeStore } from './attributes'
 export { cartHandlers, resetCartStore } from './cart'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
 export { checkoutHandlers, resetCheckoutStore } from './checkout'
+/**
+ * 카드 계약 (TASK-0058). 핸들러가 아니라 **핸들러와 픽스처가 함께 읽는 모양**이고,
+ * 그 파일이 왜 `fixtures/` 밖에 있는지는 거기 적혀 있다.
+ */
+export {
+  CARD_LIMIT_MAX,
+  CARD_LIMIT_MIN,
+  MOCK_CARD_EXPIRES_AT,
+  MOCK_CARDS_PER_USER,
+} from './card-contract'
+export type { CardTransaction, IssuedCard } from './card-contract'
 export { demoHandlers, failNextDemoIssue, mockDemoAccount, resetDemoStore } from './demo'
 export { paymentHandlers, resetPaymentStore } from './payment'
 export { productHandlers, productRowsSnapshot, resetProductStore } from './products'

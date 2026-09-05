@@ -6,8 +6,22 @@ import { z } from 'zod'
 
 import { defineFixture } from '../define'
 import { shopperOrder } from '../fixtures/checkout'
-import { shopperCards } from '../fixtures/payment'
+import {
+  emptyCardLedger,
+  shopperCardLedger,
+  shopperCards,
+  tightCardLedger,
+} from '../fixtures/payment'
 import { mockPaths } from '../paths'
+import type { CardTransaction, IssuedCard } from './card-contract'
+import {
+  cardListResponseSchema,
+  cardResponseSchema,
+  cardTransactionsResponseSchema,
+  issueCardRequestSchema,
+  MOCK_CARD_EXPIRES_AT,
+  MOCK_CARDS_PER_USER,
+} from './card-contract'
 import { answering, MockApiError, readBody } from './refusal'
 
 /**
@@ -28,6 +42,13 @@ import { answering, MockApiError, readBody } from './refusal'
  * 것은 서버 설정(`paymentSimulation`)으로만 존재하는 장치라 브라우저에서 켤 수 있는
  * 것이 아니다 — 흉내 내면 더 약한 두 번째 구현이 된다 (QUALITY-GATES 6장).
  * 브라우저가 관찰할 수 있는 것은 **승인됐거나 안 됐거나** 둘뿐이고, 그것은 여기 있다.
+ *
+ * **원장도 그 선 위에 있다** (TASK-0058 4.1). `GET /cards/:id/transactions` 는 씨앗
+ * 원장을 그대로 내보내지, 이 목을 지난 결제로 줄을 하나 더 만들지 않는다 — 그 계산은
+ * 잠금 아래에서 도는 서버의 것이고, 여기서 다시 쓰면 두 번째 구현이 된다. 관리 화면이
+ * 물어보는 것은 **원장이 어떻게 만들어지는가**가 아니라 「원장이 오면 그것을 읽고
+ * 환불을 알아볼 수 있게 그리는가」이고, 그 질문에는 얼어붙은 원장으로 답할 수 있다.
+ * 반대로 발급·정지·삭제는 **요청이 목록을 바꾸는가**를 묻는 것이라 상태를 갖는다.
  *
  * 모든 응답이 `defineFixture` 를 지나므로 계약에서 벗어난 페이로드는 그것을 잘못
  * 그리는 화면이 아니라 **여기서** 실패한다 (게이트 C2).
@@ -50,13 +71,59 @@ interface PaymentRow {
 }
 
 interface PaymentStore {
-  readonly cards: CardList
+  /**
+   * 살아 있는 카드들.
+   *
+   * 픽스처가 아니라 **배열**인 것은 TASK-0058 이 발급·정지·삭제를 더했기 때문이다 —
+   * 목록이 요청에 따라 바뀌므로 얼어붙은 픽스처를 그대로 돌려줄 수 없고, 대신 나갈
+   * 때마다 `defineFixture` 를 지난다 (게이트 C2).
+   *
+   * `DELETED` 는 여기 남지 않는다. 서버의 `list` 가 살아 있는 카드만 내보내므로,
+   * 지운 카드를 들고 있으면 대역만 아는 상태가 하나 생긴다.
+   */
+  readonly cards: readonly IssuedCard[]
+  /**
+   * 카드별 원장 (TASK-0058 4.1).
+   *
+   * 카드에 딸려 다니는 것이지 따로 서 있는 것이 아니라서 맵이다 — 카드를 지우면
+   * 원장도 같이 사라지고, 그러면 지워진 카드의 원장을 읽는 길이 대역에도 없다.
+   */
+  readonly ledgers: ReadonlyMap<string, readonly CardTransaction[]>
   readonly rows: ReadonlyMap<string, PaymentRow>
   /** 만든 결제의 수. id 를 예측 가능하게 만드는 데 쓴다. */
   readonly serial: number
+  /** 발급한 카드의 수. 결제와 같은 이유로 순번이다. */
+  readonly issued: number
 }
 
-let store: PaymentStore = { cards: shopperCards, rows: new Map(), serial: 0 }
+/**
+ * 씨앗 카드에 딸린 원장.
+ *
+ * 카드 id 로 붙인다 — `noCards` 처럼 다른 씨앗으로 시작하면 아무것도 딸려 오지
+ * 않고, 그것이 맞다: 원장은 카드의 것이지 계정의 것이 아니다. 씨앗에 없는 카드는
+ * 빈 원장을 받는다.
+ */
+function seedLedgers(
+  cards: readonly IssuedCard[],
+): ReadonlyMap<string, readonly CardTransaction[]> {
+  const [first, second] = shopperCards.cards
+  const known = new Map<string, readonly CardTransaction[]>()
+
+  if (first !== undefined) known.set(first.id, shopperCardLedger.transactions)
+  if (second !== undefined) known.set(second.id, tightCardLedger.transactions)
+
+  return new Map(
+    cards.map((card) => [card.id, known.get(card.id) ?? emptyCardLedger.transactions] as const),
+  )
+}
+
+let store: PaymentStore = {
+  cards: shopperCards.cards,
+  issued: 0,
+  ledgers: seedLedgers(shopperCards.cards),
+  rows: new Map(),
+  serial: 0,
+}
 
 /**
  * 결제 id. 순번이라 검사가 응답을 읽지 않고도 다음 id 를 안다.
@@ -99,11 +166,75 @@ function put(row: PaymentRow): Response {
  * 문장을 고르고, 그 갈림을 이 대역이 재현한다.
  */
 function approves(cardId: string | null, amount: number): boolean {
-  const card = store.cards.cards.find((each) => each.id === cardId)
+  const card = store.cards.find((each) => each.id === cardId)
 
   if (card?.status !== 'ACTIVE') return false
 
   return card.creditLimit - card.usedAmount >= amount
+}
+
+/** 지금의 카드 목록, 계약을 지나서. */
+function cardList(): Response {
+  return HttpResponse.json(defineFixture(cardListResponseSchema, { cards: [...store.cards] }))
+}
+
+/** 카드 한 장의 봉투. 발급·정지·해제가 전부 이 모양으로 답한다. */
+function cardAnswer(card: IssuedCard): Response {
+  return HttpResponse.json(defineFixture(cardResponseSchema, { card }))
+}
+
+/**
+ * 내 카드 한 장. 없으면 404.
+ *
+ * **남의 카드도 화면에는 「없다」로 보인다** (3장 A3). 서버가 소유권을 조건에 두고
+ * 찾으므로 「있지만 당신 것이 아니다」라는 대답 자체가 존재하지 않고, 대역이 그것을
+ * 403 으로 바꾸면 화면은 있지도 않은 갈림을 그리게 된다.
+ */
+function cardOf(cardId: string): IssuedCard {
+  const card = store.cards.find((each) => each.id === cardId)
+
+  if (card === undefined) throw new MockApiError(404, '카드를 찾을 수 없어요.')
+
+  return card
+}
+
+/** 이 카드의 상태를 바꿔 저장한다. 정지와 해제가 같은 길을 쓴다. */
+function setCardStatus(cardId: string, status: IssuedCard['status']): Response {
+  const card = cardOf(cardId)
+  const updated: IssuedCard = { ...card, status }
+
+  store = {
+    ...store,
+    cards: store.cards.map((each) => (each.id === cardId ? updated : each)),
+  }
+
+  return cardAnswer(updated)
+}
+
+/**
+ * 발급되는 카드의 브랜드. 순번으로 돌린다.
+ *
+ * 무작위로 뽑지 않는 이유는 검사가 방금 만든 카드를 **이름으로** 찾기 때문이다 —
+ * 매번 다른 이름이 나오면 그 검사는 화면이 아니라 난수를 재게 된다. 실제 상표와
+ * 겹치지 않는 가상 브랜드다.
+ */
+const ISSUED_BRANDS = ['하늘카드', '온새미카드', '가람카드'] as const
+
+/** 새 카드 한 장. 순번이라 검사가 응답을 읽지 않고도 다음 카드를 안다. */
+function mint(serial: number, creditLimit: number): IssuedCard {
+  const brand = ISSUED_BRANDS[(serial - 1) % ISSUED_BRANDS.length] ?? ISSUED_BRANDS[0]
+
+  return {
+    id: `019596d0-1f1c-7c2e-9a0e-6f${String(serial).padStart(10, '0')}`,
+    // 뒤 네 자리만 다르다. 앞은 언제나 `9999` 여야 하고(TASK-0053 R1), 가운데는
+    // 서버도 내보내지 않는다 — 마스킹된 번호가 유일하게 나가는 형태다.
+    maskedNumber: `9999-****-****-${String(3_000 + serial).padStart(4, '0')}`,
+    brand,
+    creditLimit,
+    usedAmount: 0,
+    status: 'ACTIVE',
+    expiresAt: MOCK_CARD_EXPIRES_AT,
+  }
 }
 
 export const paymentHandlers: readonly RequestHandler[] = [
@@ -114,11 +245,107 @@ export const paymentHandlers: readonly RequestHandler[] = [
    * 화면은 그것을 숨기지 않고 비활성으로 그린다 (TASK-0023 4장) — 없는 것처럼
    * 감추면 카드를 정지시킨 사람은 자기 카드가 사라졌다고 믿는다.
    *
-   * 몸통을 다시 감싸지 않는 것은 **그 값이 이미 픽스처**이기 때문이다 —
-   * `fixtures/payment.ts` 에서 `defineFixture` 를 지나며 파싱됐고, 여기서 바꾸는
-   * 것이 없으므로 한 번 더 파싱해도 같은 값이다 (게이트 C2).
+   * 목록이 **씨앗 그대로가 아니게 됐다** (TASK-0058). 발급·정지·삭제가 이 배열을
+   * 바꾸므로 나갈 때마다 `defineFixture` 를 다시 지난다 — 계약에서 벗어난 카드는
+   * 그것을 잘못 그리는 화면이 아니라 여기서 실패한다 (게이트 C2).
    */
-  http.get(mockPaths.cards, () => HttpResponse.json(store.cards)),
+  http.get(mockPaths.cards, () => cardList()),
+
+  /**
+   * 카드 발급 (TASK-0058 F1).
+   *
+   * **한도는 사람이 정한다.** 이 카드가 존재하는 이유가 「한도 초과를 재현해 본다」인
+   * 만큼 낮은 한도를 일부러 고를 수 있어야 하고, 그래서 몸통에 그 숫자가 있다.
+   *
+   * 두 가지로 거절한다. 범위를 벗어난 한도는 **400**이고(`issueCardRequestSchema`),
+   * 장수를 채운 것은 `CARD_COUNT_REACHED` 다 — 이름이 비슷하지만 사람이 할 일이
+   * 정반대라 코드가 다르다: 앞은 숫자를 고치는 것이고 뒤는 카드를 지우는 것이다.
+   */
+  http.post(mockPaths.cards, ({ request }) =>
+    answering(async () => {
+      const body = await readBody(request, issueCardRequestSchema)
+
+      if (store.cards.length >= MOCK_CARDS_PER_USER) {
+        throw new MockApiError(400, `카드는 ${String(MOCK_CARDS_PER_USER)}장까지 만들 수 있어요.`, {
+          code: 'CARD_COUNT_REACHED',
+          field: 'creditLimit',
+          params: { max: MOCK_CARDS_PER_USER },
+        })
+      }
+
+      const issued = store.issued + 1
+      const card = mint(issued, body.creditLimit)
+
+      store = {
+        ...store,
+        cards: [card, ...store.cards],
+        issued,
+        // 갓 만든 카드의 원장은 비어 있다. 「아직 아무 일도 없었다」는 오류가 아니다.
+        ledgers: new Map(store.ledgers).set(card.id, emptyCardLedger.transactions),
+      }
+
+      return cardAnswer(card)
+    }),
+  ),
+
+  /**
+   * 정지와 해제 (F5).
+   *
+   * **목록에서 사라지지 않는다.** 정지는 삭제가 아니고(TASK-0054 4.1), 감추면 카드를
+   * 정지시킨 사람은 자기 카드가 사라졌다고 믿는다 — 화면이 그것을 「보여 주되
+   * 비활성」으로 그리는지가 이 대역으로 확인된다.
+   *
+   * 이미 그 상태인 카드에 다시 걸어도 409 가 아니다. 서버가 상태를 **대입**하지
+   * 전이를 검사하지 않으므로(`setStatus`), 여기서 거절하면 대역만 아는 규칙이 된다.
+   */
+  http.post(mockPaths.cardSuspend, ({ params }) =>
+    answering(() => setCardStatus(String(params.id), 'SUSPENDED')),
+  ),
+
+  http.post(mockPaths.cardActivate, ({ params }) =>
+    answering(() => setCardStatus(String(params.id), 'ACTIVE')),
+  ),
+
+  /**
+   * 카드 사용 내역 (F3 · F4).
+   *
+   * 시간순으로 나간다 — 서버의 `ORDER BY t."createdAt" ASC` 와 같은 순서이고, 그
+   * 순서라야 `balanceAfter` 가 잔액의 **이야기**가 된다. 뒤집어 보내면 화면이 다시
+   * 정렬해야 하고, 그 정렬은 서버와 갈릴 수 있는 두 번째 규칙이다.
+   *
+   * 모르는 카드는 404 다. 남의 카드 원장은 있는지 없는지도 알려 주지 않는다 —
+   * 그 사람이 무엇을 샀는지가 그 목록에 그대로 적혀 있다 (3장 A3).
+   */
+  http.get(mockPaths.cardTransactions, ({ params }) =>
+    answering(() => {
+      const card = cardOf(String(params.id))
+
+      return HttpResponse.json(
+        defineFixture(cardTransactionsResponseSchema, {
+          transactions: [...(store.ledgers.get(card.id) ?? [])],
+        }),
+      )
+    }),
+  ),
+
+  /**
+   * 카드 삭제. **204 이고 몸통이 없다.**
+   *
+   * 서버에서는 소프트 삭제이고(원장이 이 카드를 가리킨다) 목록에서만 빠지므로,
+   * 대역도 배열에서 빼는 것으로 같은 관찰 결과를 만든다. 지운 카드의 원장을 읽는
+   * 길이 남지 않는 것도 서버와 같다 — 목록에 없는 카드는 404 다.
+   */
+  http.delete(mockPaths.card, ({ params }) =>
+    answering(() => {
+      const card = cardOf(String(params.id))
+      const ledgers = new Map(store.ledgers)
+
+      ledgers.delete(card.id)
+      store = { ...store, cards: store.cards.filter((each) => each.id !== card.id), ledgers }
+
+      return new HttpResponse(null, { status: 204 })
+    }),
+  ),
 
   /**
    * 결제를 연다. `READY` 로 시작한다.
@@ -216,7 +443,7 @@ export const paymentHandlers: readonly RequestHandler[] = [
 ]
 
 /**
- * 이 목의 카드와 결제를 처음 상태로.
+ * 이 목의 카드와 원장과 결제를 처음 상태로.
  *
  * 다른 카드로 시작하려면 픽스처를 넘긴다 — 카드가 없는 사람은 `noCards` 다.
  * 「정지된 카드밖에 없다」 같은 조합을 인자로 만들지 않는 이유는, 그것이 씨앗의
@@ -224,5 +451,11 @@ export const paymentHandlers: readonly RequestHandler[] = [
  * 같이 있어야 고를 수 있는 것과 없는 것이 나란히 보인다.
  */
 export function resetPaymentStore(seed: CardList = shopperCards): void {
-  store = { cards: seed, rows: new Map(), serial: 0 }
+  store = {
+    cards: [...seed.cards],
+    issued: 0,
+    ledgers: seedLedgers(seed.cards),
+    rows: new Map(),
+    serial: 0,
+  }
 }

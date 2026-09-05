@@ -44,6 +44,23 @@ export interface IssuedCard {
   readonly expiresAt: string
 }
 
+/**
+ * 사용 내역 한 줄 (TASK-0058).
+ *
+ * `amount` 에 부호가 있다 — 승인은 양수(한도를 쓴다), 취소·환불은 음수(돌려준다).
+ * 화면이 그 부호로 방향을 그리므로, 절댓값만 보내고 종류로 추측하게 두지 않는다.
+ */
+export interface CardTransaction {
+  readonly id: string
+  readonly kind: 'CHARGE' | 'CANCEL' | 'REFUND'
+  readonly amount: number
+  readonly balanceAfter: number
+  readonly createdAt: Date
+  /** 이 사건이 어느 주문의 결제였나. 결제를 거치지 않았으면 `null` 이다 (4.2). */
+  readonly orderNumber: string | null
+  readonly orderId: string | null
+}
+
 /** `usedAmount` 가 원장과 어긋난 카드 (F3). */
 export interface CardDiscrepancy {
   readonly cardId: string
@@ -239,6 +256,54 @@ export class VirtualCardService {
    */
   async remove(principal: RequestPrincipal, cardId: string): Promise<void> {
     await this.setStatus(principal, cardId, 'DELETED')
+  }
+
+  /**
+   * 카드의 사용 내역 (TASK-0058 F3 · F4).
+   *
+   * **주문번호를 함께 싣는다** (4.2). 원장 행이 들고 있는 것은 결제 id 이고, 주문
+   * 번호는 `Payment.orderId` 를 한 번 더 지나야 나온다 — 화면이 줄마다 다시 물어보게
+   * 두면 왕복이 줄 수만큼 붙는다.
+   *
+   * 결제를 거치지 않은 행은 주문번호가 `null` 이다. 원장의 참조는 무엇이든 될 수
+   * 있고, 그때는 **링크가 없는 줄이지 잘못된 줄이 아니다.**
+   *
+   * 질의 둘이다 — 소유권 하나, 원장 하나. **원장이 길어져도 늘지 않는다** (A5):
+   * 주문번호는 조인으로 따라오지 줄마다 다시 묻지 않는다.
+   */
+  async transactions(
+    principal: RequestPrincipal,
+    cardId: string,
+  ): Promise<readonly CardTransaction[]> {
+    const account = await this.account(principal, 'user.read')
+    const card = await this.prisma.virtualCard.findFirst({
+      // 소유권을 조건에 둔다. 남의 카드 원장은 **있는지 없는지도** 알려 주지 않는다 —
+      // 그 사람이 무엇을 샀는지가 그 목록에 그대로 적혀 있다.
+      where: { id: cardId, userId: account.id },
+      select: { id: true },
+    })
+
+    if (card === null) throw new NotFoundException('카드를 찾을 수 없어요.')
+
+    return this.prisma.$queryRaw<readonly CardTransaction[]>`
+      SELECT t."id",
+             t."kind",
+             t."amount",
+             t."balanceAfter",
+             t."createdAt",
+             o."orderNumber",
+             o."id" AS "orderId"
+        FROM "VirtualCardTransaction" t
+        LEFT JOIN "Payment" p ON p."id"::text = t."refId"
+        LEFT JOIN "Order" o ON o."id" = p."orderId"
+       WHERE t."cardId" = ${cardId}::uuid
+       ORDER BY t."createdAt" ASC, t."id" ASC
+    `
+  }
+
+  /** 정지를 푼다. 다시 결제할 수 있게 된다. */
+  activate(principal: RequestPrincipal, cardId: string): Promise<IssuedCard> {
+    return this.setStatus(principal, cardId, 'ACTIVE')
   }
 
   /**

@@ -8,9 +8,9 @@ import { messagesFor } from '@/messages'
  * The account menu's destination.
  *
  * Still a placeholder — the dashboard itself (order summary, points, coupons)
- * belongs to later milestones — but no longer a dead end: the two screens
- * TASK-0112 built are real, and a shopper who lands here from the header has to
- * be able to reach them. The guard is TASK-0023's and stays.
+ * belongs to later milestones — but no longer a dead end: the screens TASK-0112
+ * and TASK-0058 built are real, and a shopper who lands here from the header has
+ * to be able to reach them. The guard is TASK-0023's and stays.
  */
 export default function MyPage() {
   const messages = messagesFor()
@@ -32,6 +32,11 @@ export default function MyPage() {
             <li>
               <Link className="text-primary text-sm font-medium underline" href="/mypage/addresses">
                 {nav.addresses}
+              </Link>
+            </li>
+            <li>
+              <Link className="text-primary text-sm font-medium underline" href="/mypage/cards">
+                {nav.cards}
               </Link>
             </li>
           </ul>
