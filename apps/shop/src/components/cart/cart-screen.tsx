@@ -4,6 +4,7 @@ import { Button, EmptyState, ErrorState } from '@shopping/ui/components'
 import Link from 'next/link'
 
 import { useCart } from '@/lib/cart/use-cart'
+import { useOpenCheckout } from '@/lib/checkout/use-open-checkout'
 import {
   allState,
   groupState,
@@ -34,6 +35,7 @@ export interface CartScreenProps {
  */
 export function CartScreen({ messages }: CartScreenProps) {
   const { state, selection, busy, setSelection, changeQuantity, remove, retry } = useCart()
+  const checkout = useOpenCheckout()
 
   if (state.status === 'loading') {
     return (
@@ -145,7 +147,16 @@ export function CartScreen({ messages }: CartScreenProps) {
       </div>
 
       <div className="lg:w-80 lg:shrink-0">
-        <CartSummary busy={busy} messages={messages} totals={totals} />
+        <CartSummary
+          busy={busy}
+          messages={messages}
+          onCheckout={() => {
+            checkout.open([...selection])
+          }}
+          openFailed={checkout.failed}
+          opening={checkout.opening}
+          totals={totals}
+        />
       </div>
     </div>
   )
