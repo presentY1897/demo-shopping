@@ -162,6 +162,9 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
   private async collect(tx: Tx, userId: string, now: Date): Promise<void> {
     const seller = await tx.seller.findUnique({ where: { userId }, select: { id: true } })
 
+    // 장바구니 먼저 — `CartItem` 이 Cascade 로 함께 간다 (TASK-0045). 남길 이력이
+    // 없다: 주문은 별개의 표이고 자기 스냅샷을 갖는다.
+    await tx.cart.deleteMany({ where: { userId } })
     await tx.refreshToken.deleteMany({ where: { userId } })
     await tx.userPreference.deleteMany({ where: { userId } })
     await tx.address.deleteMany({ where: { userId } })
