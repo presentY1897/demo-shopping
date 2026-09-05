@@ -2,7 +2,12 @@ import { DatabaseError } from 'pg'
 import { describe, expect, it } from 'vitest'
 
 import { useDatabase } from '../support/database.js'
-import { createAddress, createSeller, createUser } from '../support/factories.js'
+import {
+  createAddress,
+  createSellableVariant,
+  createSeller,
+  createUser,
+} from '../support/factories.js'
 
 /**
  * Gate S5, promoted from reading files to asking the database (TASK-0106 4.8).
@@ -187,3 +192,84 @@ describe('Seller_commissionRateBp_check — commission is 0~10000 bp', () => {
     expect(seller.commissionRateBp).toBe(rate)
   })
 })
+
+describe('StockReservation_quantity_check — 예약은 최소 한 개다', () => {
+  it('refuses a reservation of nothing', async () => {
+    const error = await refusal(reserve({ quantity: 0 }))
+
+    expect(error.code).toBe('23514')
+    expect(error.constraint).toBe('StockReservation_quantity_check')
+  })
+
+  it('refuses a negative reservation', async () => {
+    const error = await refusal(reserve({ quantity: -1 }))
+
+    expect(error.code).toBe('23514')
+    expect(error.constraint).toBe('StockReservation_quantity_check')
+  })
+
+  it('allows one', async () => {
+    await expect(reserve({ quantity: 1 })).resolves.toBeDefined()
+  })
+})
+
+describe('ProductVariant_reserved_check — 예약분은 재고를 넘지 못한다', () => {
+  it('refuses reserving more than the shelf holds', async () => {
+    // 여기가 오버셀을 구조적으로 막는 마지막 줄이다 (D-026). 조건부 갱신이 틀리게
+    // 고쳐지더라도 이 제약은 남는다.
+    const { variant } = await createSellableVariant(db, { stock: 3 })
+    const error = await refusal(setReserved(variant.id, 4))
+
+    expect(error.code).toBe('23514')
+    expect(error.constraint).toBe('ProductVariant_reserved_check')
+  })
+
+  it('refuses a negative reserved count', async () => {
+    const { variant } = await createSellableVariant(db, { stock: 3 })
+    const error = await refusal(setReserved(variant.id, -1))
+
+    expect(error.code).toBe('23514')
+    expect(error.constraint).toBe('ProductVariant_reserved_check')
+  })
+
+  it('allows reserving every last one', async () => {
+    // 경계다. 전량 예약을 막으면 마지막 한 개는 아무도 살 수 없다.
+    const { variant } = await createSellableVariant(db, { stock: 3 })
+
+    await expect(setReserved(variant.id, 3)).resolves.toBeDefined()
+  })
+
+  it('refuses taking the shelf below what is already held', async () => {
+    // 반대 방향. 판매자가 재고를 3에서 1로 내리는데 2개가 잡혀 있으면, 그것을
+    // 허용하는 순간 잡힌 사람 둘 중 하나는 살 수 없는 것을 산 셈이 된다.
+    const { variant } = await createSellableVariant(db, { stock: 3 })
+
+    await setReserved(variant.id, 2)
+
+    const error = await refusal(
+      db.query(`UPDATE "ProductVariant" SET "stock" = 1 WHERE "id" = $1`, [variant.id]),
+    )
+
+    expect(error.constraint).toBe('ProductVariant_reserved_check')
+  })
+})
+
+/** 예약 한 줄을 날 SQL 로 넣는다 — 애플리케이션이 먼저 답하지 않게. */
+async function reserve(options: { readonly quantity: number }): Promise<unknown> {
+  const user = await createUser(db)
+  const { variant } = await createSellableVariant(db, { stock: 10 })
+
+  return db.query(
+    `INSERT INTO "StockReservation"
+       ("id", "variantId", "userId", "checkoutId", "quantity", "expiresAt", "updatedAt")
+     VALUES (gen_random_uuid(), $1, $2, gen_random_uuid(), $3, now() + interval '15 minutes', now())`,
+    [variant.id, user.id, options.quantity],
+  )
+}
+
+function setReserved(variantId: string, reserved: number): Promise<unknown> {
+  return db.query(`UPDATE "ProductVariant" SET "reserved" = $2 WHERE "id" = $1`, [
+    variantId,
+    reserved,
+  ])
+}

@@ -22,6 +22,7 @@
 /** Every table an account can own rows in, today. */
 export const ownedTables = [
   'Cart',
+  'StockReservation',
   'RefreshToken',
   'UserPreference',
   'Address',
@@ -69,6 +70,13 @@ export const cleanupPlan: readonly CleanupStep[] = [
     scope: 'user',
     because:
       '온전히 그 사람의 것이고 아무것도 참조하지 않는다. 남길 이력이 없다 — 주문은 별개의 표이고 자기 스냅샷을 갖는다 (TASK-0045)',
+  },
+  {
+    table: 'StockReservation',
+    kind: 'hard',
+    scope: 'user',
+    because:
+      '잡아 둔 재고는 놓아 주어야 한다 — 계정이 사라지면 아무도 결제하지 않는다. `ProductVariant.reserved` 를 함께 되돌린다 (TASK-0048)',
   },
   { table: 'RefreshToken', kind: 'hard', scope: 'user' },
   { table: 'UserPreference', kind: 'hard', scope: 'user' },
@@ -139,6 +147,7 @@ export function orderFault(
     Product: ['Seller'],
     Seller: ['User'],
     Cart: ['User'],
+    StockReservation: ['User', 'ProductVariant'],
     RefreshToken: ['User'],
     UserPreference: ['User'],
     Address: ['User'],

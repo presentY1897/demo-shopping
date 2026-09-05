@@ -165,6 +165,7 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
     // 장바구니 먼저 — `CartItem` 이 Cascade 로 함께 간다 (TASK-0045). 남길 이력이
     // 없다: 주문은 별개의 표이고 자기 스냅샷을 갖는다.
     await tx.cart.deleteMany({ where: { userId } })
+    await this.letHoldsGo(tx, userId, now)
     await tx.refreshToken.deleteMany({ where: { userId } })
     await tx.userPreference.deleteMany({ where: { userId } })
     await tx.address.deleteMany({ where: { userId } })
@@ -207,6 +208,33 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
 
     await tx.userRole.deleteMany({ where: { userId } })
     await tx.user.update({ where: { id: userId }, data: { deletedAt: now, updatedAt: now } })
+  }
+
+  /**
+   * 잡아 둔 재고를 놓아 준다 (TASK-0048).
+   *
+   * 계정이 사라지면 아무도 그 주문서를 끝내지 않는다. 예약 행만 지우면 `reserved`
+   * 캐시에 그 몫이 남아 **아무도 살 수 없는 재고**가 된다 — 실패로 나타나지 않고,
+   * 판매자는 팔리지 않는 이유를 영원히 알 수 없다.
+   *
+   * `HELD` 만 되돌린다. 확정된 예약의 몫은 이미 `reserved` 에서 빠졌고 실제로
+   * 팔렸다. 원장은 그대로 남는다 — `StockLedger.refId` 는 사라진 예약을 가리키게
+   * 되지만 그것이 옳다: 판매 이력은 산 사람이 탈퇴해도 남아야 하는 기록이다.
+   *
+   * variant 마다가 아니라 한 문장이다 (A5). 데모 계정 하나가 주문서 스무 개를 열어
+   * 두었다면 스무 번의 왕복이 된다.
+   */
+  private async letHoldsGo(tx: Tx, userId: string, now: Date): Promise<void> {
+    await tx.$executeRaw`
+      UPDATE "ProductVariant" v
+         SET "reserved" = v."reserved" - r."held", "updatedAt" = ${now}
+        FROM (SELECT "variantId", sum("quantity")::int AS "held"
+                FROM "StockReservation"
+               WHERE "userId" = ${userId}::uuid AND "status" = 'HELD'
+               GROUP BY "variantId") r
+       WHERE v."id" = r."variantId"
+    `
+    await tx.stockReservation.deleteMany({ where: { userId } })
   }
 
   private async recordRun(now: Date): Promise<void> {

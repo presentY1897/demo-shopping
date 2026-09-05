@@ -501,7 +501,15 @@ describe('ProductVariant — the money and quantity checks', () => {
     )
 
     expect(error.code).toBe('23514')
-    expect(error.constraint).toBe('ProductVariant_stock_check')
+    // 이름은 `ProductVariant_reserved_check` 다. TASK-0048 이 더한
+    // `0 <= reserved <= stock` 이 **음수 재고를 함의하기 때문**이다 — 예약이 0이어도
+    // `0 <= -1` 이 거짓이라 그쪽이 먼저 걸린다. 둘 다 위반이고 어느 이름이 나오는지는
+    // Postgres 의 검사 순서이므로, 여기서 재는 것은 「DB 가 거절한다」와 「거절한 규칙이
+    // 재고에 관한 것이다」까지다. `ProductVariant_stock_check` 를 지우지 않는 이유는
+    // 예약 제약이 언젠가 바뀌어도 이 규칙이 남아야 하기 때문이다.
+    expect(['ProductVariant_stock_check', 'ProductVariant_reserved_check']).toContain(
+      error.constraint,
+    )
   })
 
   it('refuses a SKU with a space in it', async () => {
