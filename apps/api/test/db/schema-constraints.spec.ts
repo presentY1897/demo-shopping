@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto'
+
 import { DatabaseError } from 'pg'
 import { describe, expect, it } from 'vitest'
 
@@ -272,4 +274,155 @@ function setReserved(variantId: string, reserved: number): Promise<unknown> {
     variantId,
     reserved,
   ])
+}
+
+describe('Order_orderNumber_format_check — 주문번호의 형식', () => {
+  it('refuses a number a person could not read back', async () => {
+    // 생성기가 하나가 아니게 되는 날 — 시드, 백필, 다른 서비스 — 형식이 조용히
+    // 갈라진다. 그때 「전화로 불러 줄 수 있는 번호」라는 성질이 사라진다.
+    const error = await refusal(order({ orderNumber: '20260905-ILOU0000' }))
+
+    expect(error.code).toBe('23514')
+    expect(error.constraint).toBe('Order_orderNumber_format_check')
+  })
+
+  it('refuses a bare uuid', async () => {
+    const error = await refusal(order({ orderNumber: randomUUID() }))
+
+    expect(error.constraint).toBe('Order_orderNumber_format_check')
+  })
+
+  it('allows the shape the generator makes', async () => {
+    await expect(order({ orderNumber: '20260905-0123456Z' })).resolves.toBeDefined()
+  })
+})
+
+describe('Order_orderNumber_key — 같은 번호는 두 번 쓰이지 않는다', () => {
+  it('refuses the second order with a number already taken', async () => {
+    // 서비스는 겹치면 트랜잭션을 통째로 다시 한다. 다시 할 이유가 실제로
+    // 존재한다는 것이 이 검사다 — 40비트는 넓지만 무한하지 않다.
+    await order({ orderNumber: '20260905-AAAAAAAA' })
+
+    const error = await refusal(order({ orderNumber: '20260905-AAAAAAAA' }))
+
+    expect(error.code).toBe('23505')
+    expect(error.constraint).toBe('Order_orderNumber_key')
+  })
+})
+
+describe('OrderItem_discount_bound_check — 항목의 할인은 그 항목의 값을 넘지 못한다', () => {
+  it('refuses a discount larger than the line it is on', async () => {
+    // TASK-0047 F8 이 무작위 1000회로 잡은 결함이 정확히 이 위반이었다 —
+    // 적립금이 배송비를 낸 몫까지 항목에 안분돼 부분 취소의 환불액이 음수가 됐다.
+    // 그때는 코드로 고쳤고, 여기서는 DB 가 막는다.
+    const error = await refusal(
+      orderItem({ productAmount: 10_000, couponDiscountAmount: 11_000, discountAmount: 11_000 }),
+    )
+
+    expect(error.code).toBe('23514')
+    expect(error.constraint).toBe('OrderItem_discount_bound_check')
+  })
+
+  it('allows a discount that takes the line to zero', async () => {
+    // 경계다. 전액 할인을 막으면 100% 쿠폰이 표현 불가능해진다.
+    await expect(
+      orderItem({ productAmount: 10_000, couponDiscountAmount: 10_000, discountAmount: 10_000 }),
+    ).resolves.toBeDefined()
+  })
+
+  it('refuses a total that is not the sum of its parts', async () => {
+    const error = await refusal(
+      orderItem({ productAmount: 10_000, couponDiscountAmount: 1_000, discountAmount: 2_000 }),
+    )
+
+    expect(error.constraint).toBe('OrderItem_discount_sum_check')
+  })
+})
+
+describe('Seller_shipping_check — 배송 정책의 값', () => {
+  it('refuses a negative shipping fee', async () => {
+    const user = await createUser(db)
+    const seller = await createSeller(db, { userId: user.id })
+    const error = await refusal(
+      db.query(`UPDATE "Seller" SET "shippingFee" = -1 WHERE "id" = $1`, [seller.id]),
+    )
+
+    expect(error.constraint).toBe('Seller_shipping_check')
+  })
+
+  it('allows a threshold of zero and a threshold of none', async () => {
+    // 둘 다 유효하고 **뜻이 다르다** — `0` 은 「언제나 무료」, `NULL` 은 「무료
+    // 조건이 없다」다.
+    const user = await createUser(db)
+    const seller = await createSeller(db, { userId: user.id })
+
+    await expect(
+      db.query(`UPDATE "Seller" SET "freeShippingThreshold" = 0 WHERE "id" = $1`, [seller.id]),
+    ).resolves.toBeDefined()
+    await expect(
+      db.query(`UPDATE "Seller" SET "freeShippingThreshold" = NULL WHERE "id" = $1`, [seller.id]),
+    ).resolves.toBeDefined()
+  })
+})
+
+/** 주문 한 줄을 날 SQL 로. 애플리케이션이 먼저 답하지 않게. */
+async function order(options: { readonly orderNumber: string }): Promise<unknown> {
+  const user = await createUser(db)
+
+  return db.query(
+    `INSERT INTO "Order"
+       ("id", "orderNumber", "userId", "checkoutId", "recipientName", "recipientPhone",
+        "postalCode", "addressLine1", "totalProductAmount", "paidAmount", "updatedAt")
+     VALUES (gen_random_uuid(), $1, $2, gen_random_uuid(), '수령인', '010-0000-0000',
+             '06234', '서울시 강남구', 10000, 10000, now())`,
+    [options.orderNumber, user.id],
+  )
+}
+
+/** 주문 항목 한 줄. 그 위의 주문과 판매자 몫까지 만든다. */
+async function orderItem(amounts: {
+  readonly productAmount: number
+  readonly couponDiscountAmount: number
+  readonly discountAmount: number
+}): Promise<unknown> {
+  const { seller, variant } = await createSellableVariant(db, { stock: 10 })
+  const user = await createUser(db)
+  const created = await db.one<{ id: string }>(
+    `INSERT INTO "Order"
+       ("id", "orderNumber", "userId", "checkoutId", "recipientName", "recipientPhone",
+        "postalCode", "addressLine1", "totalProductAmount", "paidAmount", "updatedAt")
+     VALUES (gen_random_uuid(), $1, $2, gen_random_uuid(), '수령인', '010-0000-0000',
+             '06234', '서울시 강남구', $3, $3, now())
+     RETURNING "id"`,
+    [
+      `20260905-${randomUUID()
+        .replaceAll('-', '')
+        .slice(0, 8)
+        .toUpperCase()
+        .replaceAll(/[ILOU]/gu, 'X')}`,
+      user.id,
+      amounts.productAmount,
+    ],
+  )
+  const sellerOrder = await db.one<{ id: string }>(
+    `INSERT INTO "SellerOrder"
+       ("id", "orderId", "sellerId", "brandName", "productAmount", "paidAmount", "updatedAt")
+     VALUES (gen_random_uuid(), $1, $2, '브랜드', $3, $3, now())
+     RETURNING "id"`,
+    [created.id, seller.id, amounts.productAmount],
+  )
+
+  return db.query(
+    `INSERT INTO "OrderItem"
+       ("id", "sellerOrderId", "variantId", "productSnapshot", "unitPrice", "quantity",
+        "productAmount", "couponDiscountAmount", "discountAmount", "updatedAt")
+     VALUES (gen_random_uuid(), $1, $2, '{}'::jsonb, $3, 1, $3, $4, $5, now())`,
+    [
+      sellerOrder.id,
+      variant.id,
+      amounts.productAmount,
+      amounts.couponDiscountAmount,
+      amounts.discountAmount,
+    ],
+  )
 }

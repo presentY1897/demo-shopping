@@ -128,6 +128,11 @@ export const untouchedTables: Readonly<Record<string, string>> = {
     '검색어 집계다. 계정을 적지 않으므로 소유자가 없다 — 그것이 이 표를 안전하게 만드는 이유다 (TASK-0039)',
   SearchOutbox:
     '큐다. 정리는 여기에 REMOVE 를 **넣는다** — 지우면 자기가 방금 한 일을 되돌린다 (TASK-0038)',
+  Order:
+    '계정이 소유하지만 **지우지 않는다.** 판매자의 판매 이력과 정산이 이 주문을 가리키고, 산 사람이 데모였다는 것은 판 사람의 기록을 지울 이유가 아니다. 계정 행은 툼스톤으로 남으므로 `Order_userId_fkey`(RESTRICT)도 끊기지 않는다 (TASK-0049)',
+  SellerOrder: 'Order 에 Cascade 로 매달려 있다. 주문이 남으므로 함께 남는다',
+  OrderItem: 'SellerOrder 에 매달려 있다',
+  OrderStatusHistory: 'SellerOrder 에 매달려 있다',
 }
 
 /**
