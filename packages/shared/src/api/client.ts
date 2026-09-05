@@ -42,8 +42,8 @@ import type {
   ProductBulkStatusResponse,
   ProductListQuery,
   ProductListResponse,
-  ProductPublishRequest,
   ProductDetailResponse,
+  ProductPublishRequest,
   ProductResponse,
   SellerProductListQuery,
   SellerProductListResponse,
@@ -52,12 +52,14 @@ import type {
 } from './products.js'
 import {
   productBulkStatusResponseSchema,
-  productListResponseSchema,
   productDetailResponseSchema,
+  productListResponseSchema,
   productResponseSchema,
   sellerProductListResponseSchema,
   sellerVariantListResponseSchema,
 } from './products.js'
+import type { StorefrontSellerResponse } from './sellers.js'
+import { storefrontSellerResponseSchema } from './sellers.js'
 import type {
   StockAdjustRequest,
   StockAdjustResponse,
@@ -232,6 +234,14 @@ export interface ApiClient {
    * This one has no caller to answer for.
    */
   getStorefrontProduct: (id: string, options?: ApiCallOptions) => Promise<ProductDetailResponse>
+  /**
+   * One store as a shopper sees it — no sign-in, `ACTIVE` only (TASK-0044 4.2).
+   *
+   * Carries the brand's name, picture and paragraph, and nothing about the
+   * application behind it. A different shape from the review console's, on
+   * purpose: that one is an operator's view of a decision.
+   */
+  getStorefrontSeller: (id: string, options?: ApiCallOptions) => Promise<StorefrontSellerResponse>
   /**
    * The seller console's own catalogue page (TASK-0115).
    *
@@ -548,6 +558,13 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       request({
         path: '/categories/tree',
         schema: categoryTreeResponseSchema,
+        ...callOptions,
+      }),
+
+    getStorefrontSeller: (id, callOptions = {}) =>
+      request({
+        path: `/sellers/${encodeURIComponent(id)}`,
+        schema: storefrontSellerResponseSchema,
         ...callOptions,
       }),
 

@@ -706,6 +706,72 @@ describe('심사 목록과 상세', () => {
   })
 })
 
+describe('손님이 보는 브랜드관 (TASK-0044 4.2)', () => {
+  /**
+   * A4 is inverted here, and that is why the route exists: a brand page is one
+   * a visitor who has not signed in must be able to open, and so must a crawler.
+   */
+  it('answers a caller with no token at all (A4, inverted)', async () => {
+    const { seller } = await approved()
+
+    const answer = await api.client.getStorefrontSeller(seller.id)
+
+    expect(answer.seller.id).toBe(seller.id)
+    expect(answer.seller.brandName).toBe(seller.brandName)
+    expect(answer.seller.slug).toBe(seller.slug)
+  })
+
+  it('carries the brand page and nothing about the application behind it', async () => {
+    const { seller } = await approved()
+
+    const answer = await api.client.getStorefrontSeller(seller.id)
+
+    // The console's shape carries the status, the reason behind it, when it moved
+    // and the owning account. Shipping that to every visitor would publish the
+    // review history of every store.
+    expect(Object.keys(answer.seller).sort()).toEqual([
+      'brandName',
+      'id',
+      'introduction',
+      'logoUrl',
+      'slug',
+    ])
+  })
+
+  it.each(['PENDING', 'SUSPENDED'] as const)('is a 404 for a %s store (F8)', async (status) => {
+    const { seller } = status === 'PENDING' ? await pending() : await approved()
+
+    if (status === 'SUSPENDED') {
+      await decide(callers.superAdmin, seller.id, 'suspend', {
+        version: seller.version,
+        reason: '점검 중',
+      })
+    }
+
+    // 404, not 403: telling a visitor that a store is *under review* publishes
+    // the review state of every application.
+    const refused = await failure(api.client.getStorefrontSeller(seller.id))
+
+    expect(refused.status).toBe(404)
+  })
+
+  it('is a 404 for an id that never existed', async () => {
+    const refused = await failure(
+      api.client.getStorefrontSeller('0192f0c1-0000-7000-8000-00000000dead'),
+    )
+
+    expect(refused.status).toBe(404)
+  })
+
+  it('does not shadow the two literal routes', async () => {
+    // `:id` is declared last for exactly this: Nest takes the first match, and
+    // it would happily read `me` as an id.
+    const { caller } = await approved()
+
+    await expect(meAs(caller)).resolves.toBeDefined()
+  })
+})
+
 describe('A2 — 입력 검증', () => {
   it('refuses a one-character brand name and names the field', async () => {
     const caller = await applicant()

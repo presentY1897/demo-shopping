@@ -1,12 +1,18 @@
-import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common'
-import type { BrandNameAvailabilityResponse, SellerResponse } from '@shopping/shared'
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common'
+import type {
+  BrandNameAvailabilityResponse,
+  SellerResponse,
+  StorefrontSellerResponse,
+} from '@shopping/shared'
 import {
   brandNameAvailabilityQuerySchema,
   sellerApplicationRequestSchema,
+  sellerIdSchema,
   sellerStoreUpdateRequestSchema,
 } from '@shopping/shared'
 
 import { Principal } from '../auth/principal.decorator.js'
+import { PublicEndpoint } from '../auth/public-endpoint.decorator.js'
 import { RequirePermission } from '../auth/require-permission.decorator.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { parseInput } from '../common/parse-input.js'
@@ -69,5 +75,23 @@ export class SellerController {
     const { value } = parseInput(brandNameAvailabilityQuerySchema, query)
 
     return this.sellers.brandNameAvailability(value)
+  }
+
+  /**
+   * One store as a shopper sees it — the brand page (TASK-0044 4.2).
+   *
+   * Public, because a brand page is one a visitor who has not signed in must be
+   * able to open, and so must a crawler. `ACTIVE` only; anything else is a 404,
+   * because telling a visitor that a store is *under review* publishes the
+   * review state of every application.
+   *
+   * **Declared last on purpose.** Nest takes the first route that matches, and
+   * `:id` would happily read `me` and `brand-name-availability` as ids — the
+   * same trap `categoryReorder` carries a comment about.
+   */
+  @Get(':id')
+  @PublicEndpoint()
+  storefront(@Param('id') id: string): Promise<StorefrontSellerResponse> {
+    return this.sellers.storefront(parseInput(sellerIdSchema, id, 'id'))
   }
 }

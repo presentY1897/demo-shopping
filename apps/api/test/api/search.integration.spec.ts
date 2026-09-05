@@ -328,6 +328,59 @@ describe('카테고리 필터는 가지 전체를 뜻한다 (TASK-0042 4.1)', ()
   })
 })
 
+describe('판매자로 좁히기 (TASK-0044 4.2)', () => {
+  it('returns one store’s listings and nobody else’s', async () => {
+    const owner = await createUser(db, {})
+    const other = await createSeller(db, { userId: owner.id })
+    const prisma = api.resolve<PrismaService>(PrismaService)
+    const outbox = api.resolve<SearchOutboxService>(SearchOutboxService)
+
+    const product = await createProduct(db, {
+      sellerId: other.id,
+      categoryId: coats,
+      name: '다른 가게 코트',
+      status: 'ACTIVE',
+      minPrice: 120_000,
+    })
+
+    await createProductVariant(db, {
+      productId: product.id,
+      sellerId: other.id,
+      price: 120_000,
+      stock: 4,
+      isActive: true,
+    })
+    await outbox.publish(prisma, product.id, 'UPSERT')
+    await indexer().drain()
+    await settled()
+
+    // The index has carried `sellerId` as filterable since TASK-0038; what was
+    // missing was a way to ask for it.
+    const answer = await search(`?sellerId=${other.id}`)
+
+    expect(answer.items.map((item) => item.name)).toEqual(['다른 가게 코트'])
+  })
+
+  it('narrows with the other filters rather than replacing them', async () => {
+    // The five listings in `beforeEach` all belong to one store. Adding the
+    // store to a category filter must leave the category filter doing its job.
+    const seller = (await search(`?categoryId=${String(coats)}`)).items[0]?.id
+
+    expect(seller).toBeDefined()
+
+    const owner = await db.one<{ sellerId: string }>(
+      'SELECT "sellerId" FROM "Product" WHERE "id" = $1',
+      [seller],
+    )
+
+    const coatsOnly = await search(`?sellerId=${owner.sellerId}&categoryId=${String(coats)}`)
+    const everything = await search(`?sellerId=${owner.sellerId}`)
+
+    expect(coatsOnly.items).toHaveLength(3)
+    expect(everything.items).toHaveLength(5)
+  })
+})
+
 describe('F4 — the filters are the catalogue’s', () => {
   it('offers different filters for different categories', async () => {
     const forCoats = await client().request({

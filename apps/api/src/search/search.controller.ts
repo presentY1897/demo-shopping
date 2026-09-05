@@ -76,6 +76,7 @@ function readQuery(raw: Record<string, string>): Partial<SearchQuery> {
   return {
     ...(raw.q === undefined ? {} : { q: raw.q.slice(0, SEARCH_QUERY_MAX_LENGTH) }),
     ...(raw.categoryId === undefined ? {} : { categoryId: Number(raw.categoryId) }),
+    ...(raw.sellerId === undefined ? {} : { sellerId: raw.sellerId }),
     ...(raw.priceMin === undefined ? {} : { priceMin: Number(raw.priceMin) }),
     ...(raw.priceMax === undefined ? {} : { priceMax: Number(raw.priceMax) }),
     ...(raw.inStock === undefined ? {} : { inStock: raw.inStock === 'true' }),
