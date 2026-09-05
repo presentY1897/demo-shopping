@@ -22,6 +22,7 @@
 /** Every table an account can own rows in, today. */
 export const ownedTables = [
   'Cart',
+  'VirtualCard',
   'StockReservation',
   'RefreshToken',
   'UserPreference',
@@ -70,6 +71,13 @@ export const cleanupPlan: readonly CleanupStep[] = [
     scope: 'user',
     because:
       '온전히 그 사람의 것이고 아무것도 참조하지 않는다. 남길 이력이 없다 — 주문은 별개의 표이고 자기 스냅샷을 갖는다 (TASK-0045)',
+  },
+  {
+    table: 'VirtualCard',
+    kind: 'hard',
+    scope: 'user',
+    because:
+      '온전히 그 사람의 것이고 실제 결제망에 닿지 않는 가짜다. 원장은 Cascade 로 함께 간다 — 결제 이력은 `Payment` 가 들고 있고, 카드 원장은 그 카드의 잔액을 설명하는 기록이라 카드가 사라지면 설명할 대상이 없다 (TASK-0053)',
   },
   {
     table: 'StockReservation',
@@ -137,6 +145,7 @@ export const untouchedTables: Readonly<Record<string, string>> = {
     '주문에 매달려 있고, 주문이 남으므로 함께 남는다. 결제 이력은 산 사람이 데모였다는 이유로 지울 수 있는 기록이 아니다 — 정산이 그것을 가리킨다 (TASK-0052)',
   PaymentEvent: 'Payment 에 Cascade 로 매달려 있다. 분쟁 조사의 근거이므로 결제가 남는 한 남는다',
   Refund: 'Payment 에 매달려 있다',
+  VirtualCardTransaction: 'VirtualCard 에 Cascade 로 매달려 있다',
 }
 
 /**
@@ -157,6 +166,7 @@ export function orderFault(
     Seller: ['User'],
     Cart: ['User'],
     StockReservation: ['User', 'ProductVariant'],
+    VirtualCard: ['User'],
     RefreshToken: ['User'],
     UserPreference: ['User'],
     Address: ['User'],

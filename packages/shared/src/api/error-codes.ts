@@ -166,6 +166,25 @@ export const domainErrorCodes = [
    * 아무 도움이 안 되기 때문이다 — 「최대 12,000원까지」는 다음 행동을 알려 준다.
    */
   'PAYMENT_REFUND_EXCEEDS',
+  /** 카드 한도나 결제 금액이 0 이하이거나 원 단위가 아니다 (TASK-0053). */
+  'CARD_AMOUNT_INVALID',
+  /**
+   * 가질 수 있는 **장수**를 넘었다. `params.max` 를 싣는다.
+   *
+   * 한도 초과(`CARD_LIMIT_EXCEEDED`)와 **다른 코드**다. 이름이 비슷해서 헷갈리기
+   * 쉬운데, 하나는 카드를 더 만들 수 없다는 것이고 하나는 이 카드로 더 결제할 수
+   * 없다는 것이라 사람이 할 일이 정반대다 — 앞은 카드를 지우는 것이고 뒤는 다른
+   * 카드를 고르는 것이다.
+   */
+  'CARD_COUNT_REACHED',
+  /** 정지·삭제된 카드다. 금액을 고쳐도 소용없다. */
+  'CARD_UNUSABLE',
+  /** 잔여 한도를 넘는 결제다. `params.available` 을 싣는다. */
+  'CARD_LIMIT_EXCEEDED',
+  /** 쓴 것보다 많이 돌려주려 했다. `params.releasable` 을 싣는다. */
+  'CARD_RELEASE_EXCEEDS',
+  /** 유효기간이 지난 카드다. */
+  'CARD_EXPIRED',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]

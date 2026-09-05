@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import type { Prisma } from '@prisma/client'
 import type { DemoRole } from '@shopping/shared'
 
+import { DEMO_CARD_LIMIT, VirtualCardService } from '../payment/virtual-card.service.js'
 import { SellerService } from '../sellers/seller.service.js'
 import { createDemoAccount } from './demo-account.js'
 import { cloneCatalogIntoDemoStore } from './demo-catalog-clone.js'
@@ -45,7 +46,10 @@ export const DEMO_PENDING_APPLICATIONS = 2
 
 @Injectable()
 export class DemoSeedService {
-  constructor(private readonly sellers: SellerService) {}
+  constructor(
+    private readonly sellers: SellerService,
+    private readonly cards: VirtualCardService,
+  ) {}
 
   /**
    * Everything a persona starts with, in order.
@@ -55,7 +59,7 @@ export class DemoSeedService {
    * arrays.
    */
   private readonly seeders: Readonly<Record<DemoRole, readonly DemoSeeder[]>> = {
-    BUYER: [seedShippingAddress, seedPreference],
+    BUYER: [seedShippingAddress, seedPreference, this.seedVirtualCard.bind(this)],
     SELLER: [this.seedStore.bind(this), seedClonedCatalogue],
     ADMIN: [seedPendingApplications],
   }
@@ -64,6 +68,20 @@ export class DemoSeedService {
     for (const seeder of this.seeders[role]) {
       await seeder(context)
     }
+  }
+
+  /**
+   * 카드 한 장 (TASK-0053 F5).
+   *
+   * 데모 계정이 결제를 **끝까지** 해 볼 수 있어야 이 저장소가 보여 주려는 것이
+   * 보인다 — 결제 실패로 재고 예약이 풀리는 것도, 환불이 잔액으로 돌아오는 것도
+   * 카드가 없으면 볼 수 없다. 그래서 발급 때 한 장을 지급한다.
+   *
+   * `VirtualCardService` 를 거치는 이유는 스토어 시드와 같다. 행을 직접 넣으면
+   * 번호 생성 규칙과 개수 제한이 여기 한 벌 더 생기고, 그 사본은 언젠가 갈린다.
+   */
+  private async seedVirtualCard(context: DemoSeedContext): Promise<void> {
+    await this.cards.issueFor(context.userId, DEMO_CARD_LIMIT, context.tx)
   }
 
   /**
