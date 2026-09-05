@@ -91,4 +91,23 @@ export interface AppConfig {
    * an open redirect unrepresentable (`app-origins.ts`).
    */
   readonly appOrigins: AppOrigins
+  /**
+   * 결제 실패 재현 장치 (TASK-0054 4.4 · 4.5).
+   *
+   * | 값 | 무엇이 일어나나 |
+   * | --- | --- |
+   * | `off` | 아무 장치도 없다. 운영의 값이다 |
+   * | `delay` | 승인이 늦게 끝난다. 그러나 **끝난다** (F4) |
+   * | `timeout` | 승인이 마감을 넘겨 **프로바이더가 스스로 끊는다** (F5) |
+   *
+   * 지연과 타임아웃이 **다른 값**인 것이 4.5 다. 지연을 아주 길게 잡는 것으로
+   * 타임아웃을 흉내 내면 재는 것이 프로바이더가 아니라 검사의 인내심이 된다.
+   *
+   * 한도 초과와 카드 정지는 이 값과 무관하게 언제나 일어난다 — 그쪽은 시연 장치가
+   * 아니라 정상 기능이고, 운영에서도 일어나야 한다.
+   */
+  readonly paymentSimulation: PaymentSimulation
 }
+
+/** 결제 실패 재현의 세 가지 모드. */
+export type PaymentSimulation = 'off' | 'delay' | 'timeout'

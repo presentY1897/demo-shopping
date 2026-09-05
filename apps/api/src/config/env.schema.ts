@@ -108,6 +108,24 @@ export const envSchema = z.object({
 
   /** Comma separated. Empty means "reject every cross origin request". */
   CORS_ORIGINS: z.string({ error: '쉼표로 구분된 오리진 목록이어야 합니다' }).default(''),
+
+  /**
+   * 결제 실패 재현 장치를 켠다 (TASK-0054 4.4 · F8 · R1).
+   *
+   * 켜면 가상 카드가 **승인 지연과 랜덤 거절**을 흉내 낸다. 그 둘은 시연 장치이지
+   * 기능이 아니라서, 이 값이 없으면 그 코드 경로가 아예 없다.
+   *
+   * **한도 초과와 카드 정지는 이것과 무관하다.** 그쪽은 정상 기능이고 운영에서도
+   * 일어나야 한다 — 오히려 그 둘만으로 실패 시연의 대부분이 된다.
+   *
+   * 기본값이 꺼짐인 것이 R1 의 답이다. 운영에 「깜빡하고 켜 둔」 상태가 존재하려면
+   * 누군가 명시적으로 켜야 한다.
+   */
+  PAYMENT_SIMULATION: z
+    .enum(['off', 'delay', 'timeout'], {
+      error: "'off' · 'delay' · 'timeout' 중 하나여야 합니다",
+    })
+    .default('off'),
 })
 
 export type Env = z.infer<typeof envSchema>
