@@ -38,6 +38,17 @@ export default defineConfig({
          * they conclude the shop has no coats.
          */
         'src/hangul.ts': complete,
+        /**
+         * TASK-0047 6.2 raises Q5 for the calculator: 「금액이 틀리면 실제 돈이
+         * 틀어진다」.
+         *
+         * And the틀어짐 does not fail — the screen draws whatever number it is
+         * given, and a won that went missing follows the order all the way into
+         * settlement. A branch nothing reaches here is a case where that happens.
+         */
+        'src/pricing/allocate.ts': complete,
+        'src/pricing/calculate.ts': complete,
+        'src/pricing/refund.ts': complete,
       },
     },
   },

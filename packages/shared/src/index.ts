@@ -471,3 +471,30 @@ export type {
   RemoveCartItemsRequest,
   UpdateCartItemRequest,
 } from './api/cart.js'
+
+export { allocate } from './pricing/allocate.js'
+export type { AllocationShare } from './pricing/allocate.js'
+export { calculateOrder } from './pricing/calculate.js'
+export { quoteRefund } from './pricing/refund.js'
+export type { RefundQuote } from './pricing/refund.js'
+export {
+  discountBearers,
+  discountScopes,
+  discountTypes,
+  pricingDiscountSchema,
+  pricingItemSchema,
+  shippingPolicySchema,
+  wonSchema,
+} from './pricing/types.js'
+export type {
+  DiscountBearer,
+  DiscountScope,
+  DiscountType,
+  PricedItem,
+  PricedOrder,
+  PricedSellerOrder,
+  PricingDiscount,
+  PricingInput,
+  PricingItem,
+  ShippingPolicy,
+} from './pricing/types.js'
