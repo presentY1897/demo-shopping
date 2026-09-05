@@ -4,6 +4,7 @@ import { adminSellerHandlers } from './admin-sellers'
 import { attributeHandlers } from './attributes'
 import { cartHandlers } from './cart'
 import { categoryHandlers } from './categories'
+import { checkoutHandlers } from './checkout'
 import { demoHandlers } from './demo'
 import { healthHandlers } from './health'
 import { productHandlers } from './products'
@@ -30,6 +31,7 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...userRolesHandlers,
   ...profileHandlers,
   ...cartHandlers,
+  ...checkoutHandlers,
   ...categoryHandlers,
   ...attributeHandlers,
   ...productHandlers,
@@ -44,6 +46,7 @@ export { adminSellerHandlers, resetAdminSellerStore } from './admin-sellers'
 export { attributeHandlers, resetAttributeStore } from './attributes'
 export { cartHandlers, resetCartStore } from './cart'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
+export { checkoutHandlers, resetCheckoutStore } from './checkout'
 export { demoHandlers, failNextDemoIssue, mockDemoAccount, resetDemoStore } from './demo'
 export { productHandlers, productRowsSnapshot, resetProductStore } from './products'
 export { searchHandlers } from './search'

@@ -65,6 +65,29 @@ export const mockPaths = {
   cartItemsRemove: `*${API_PATH_PREFIX}/cart/items/remove`,
   /** `POST` 담기. `cartItem` 보다 **먼저** 와야 한다 — msw 는 먼저 맞는 것을 쓴다. */
   cartItems: `*${API_PATH_PREFIX}/cart/items`,
+  /**
+   * 주문서 (TASK-0050 4.1). `POST` 로 연다.
+   *
+   * 부르는 것은 **장바구니의 「주문하기」**다. 주문서 화면이 진입과 동시에 부르면
+   * 새로고침 한 번에 예약이 한 벌 더 잡힌다. 경로에 사용자 id 가 없는 것은 `/cart`
+   * 와 같은 이유다 — 주인은 토큰이 정한다.
+   */
+  checkouts: `*${API_PATH_PREFIX}/checkouts`,
+  /**
+   * `GET` 주문서 다시 그리기, `DELETE` 이탈 해제.
+   *
+   * 컬렉션 **뒤에** 온다. `:id` 는 `/` 를 넘지 못하므로 이 둘이 서로를 먹지는
+   * 않지만, 옆의 장바구니·카테고리 라우트가 전부 그 순서로 적혀 있다 — 언젠가
+   * `/checkouts/{리터럴}` 이 붙는 날 순서를 지켜 온 목록만 안전하다.
+   */
+  checkout: `*${API_PATH_PREFIX}/checkouts/:id`,
+  /**
+   * `POST` 주문 생성 (TASK-0049).
+   *
+   * 열린 주문서를 가리키거나(`checkoutId`) 장바구니 줄을 가리킨다(`itemIds`) — 둘 중
+   * 하나다 (TASK-0050 4.3).
+   */
+  orders: `*${API_PATH_PREFIX}/orders`,
   /** `GET` the tree, `POST` a new node. */
   categories: `*${API_PATH_PREFIX}/categories`,
   /**
