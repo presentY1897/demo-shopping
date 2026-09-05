@@ -82,9 +82,8 @@ export function PaymentSection({
 /**
  * 카드가 한 장도 없는 사람.
  *
- * 링크가 `/mypage/cards` 가 아니라 `/mypage` 인 것은 그 화면이 아직 없기 때문이다
- * (TASK-0058). 없는 라우트로 보내면 404 이고, 그것은 TASK-0050 4.6 이 결제 단계에
- * 대해 내린 판단과 같다 — 갈 곳이 없으면 있는 곳으로 보낸다.
+ * 카드를 만드는 화면으로 보낸다 (TASK-0058). 결제하려다 카드가 없다는 것을 안
+ * 사람에게 필요한 것은 「마이페이지 어딘가」가 아니라 **발급 폼 자체**다.
  */
 function NoCards({ messages }: { readonly messages: PaymentMessages }) {
   return (
@@ -92,7 +91,7 @@ function NoCards({ messages }: { readonly messages: PaymentMessages }) {
       <p className="text-fg text-sm font-medium">{messages.noneTitle}</p>
       <p className="text-fg-muted text-sm">
         {messages.noneBody}{' '}
-        <Link className="text-accent underline" href="/mypage">
+        <Link className="text-accent underline" href="/mypage/cards">
           {messages.noneAction}
         </Link>
       </p>

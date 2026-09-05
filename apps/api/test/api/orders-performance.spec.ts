@@ -7,6 +7,7 @@ import {
   orderListResponseSchema,
   orderResponseSchema,
 } from '@shopping/shared'
+import { z } from 'zod'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { useApiApp } from '../support/api-app.js'
@@ -20,6 +21,7 @@ import {
   createUser,
 } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
+import { VirtualCardService } from '../../src/payment/virtual-card.service.js'
 import { recordStatements } from '../support/statements.js'
 
 /**
@@ -314,3 +316,34 @@ async function openAcross(count: number): Promise<string> {
 
   return checkout.id
 }
+
+describe('카드 사용 내역 (TASK-0058 A5)', () => {
+  it(
+    'reads a ledger in the same number of statements whether it holds one row or fifty',
+    { timeout: SAMPLING_BUDGET_MS },
+    async () => {
+      const service = api.resolve<VirtualCardService>(VirtualCardService)
+      const card = await service.issueFor(buyer.userId, 10_000_000)
+      const path = `/cards/${card.id}/transactions`
+      const schema = z.object({ transactions: z.array(z.unknown()) })
+
+      await service.charge(card.id, 1_000, `019596d0-1f1c-7c2e-9a0e-bb${'0'.repeat(10)}`)
+
+      const forOne = await recordStatements(statements, () => client().request({ path, schema }))
+
+      for (let index = 1; index < 50; index += 1) {
+        await service.charge(
+          card.id,
+          1_000,
+          `019596d0-1f1c-7c2e-9a0e-bb${String(index).padStart(10, '0')}`,
+        )
+      }
+
+      const forFifty = await recordStatements(statements, () => client().request({ path, schema }))
+
+      // 주문번호는 조인으로 따라온다. 줄마다 다시 물어보는 모양이었다면 여기서
+      // 마흔아홉 개가 더 나온다.
+      expect(forFifty).toHaveLength(forOne.length)
+    },
+  )
+})

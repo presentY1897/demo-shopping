@@ -196,7 +196,12 @@ describe('카드가 없는 사람', () => {
     await renderCheckout(noCards)
 
     expect(await screen.findByText(pay.noneTitle)).toBeVisible()
-    expect(screen.getByRole('link', { name: pay.noneAction })).toHaveAttribute('href', '/mypage')
+    // 발급 폼 자체로 보낸다 (TASK-0058). 결제하려다 카드가 없다는 것을 안 사람에게
+    // 필요한 것은 「마이페이지 어딘가」가 아니다.
+    expect(screen.getByRole('link', { name: pay.noneAction })).toHaveAttribute(
+      'href',
+      '/mypage/cards',
+    )
   })
 
   it('cannot order, and the reason is under the button', async () => {

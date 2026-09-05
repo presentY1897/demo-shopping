@@ -13,8 +13,10 @@ import type { ProductCardLabels, ProductListLabels } from '@shopping/ui/catalog'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { SessionRefusal } from '@/lib/auth/session-client'
+import type { CardTransactionKind } from '@/lib/cards/cards-api'
 import type { HealthFailureReason } from '@/lib/health'
 import type { CardBlock } from '@/lib/payment/cards'
+import type { CardStatus } from '@/lib/payment/payment-api'
 import type { PaymentRefusal, PaymentStep } from '@/lib/payment/use-payment'
 
 /**
@@ -132,6 +134,8 @@ export interface MyPageMessages {
   readonly nav: MyPageNavMessages
   readonly settings: SettingsMessages
   readonly addresses: AddressBookMessages
+  /** 가상 카드 관리 (TASK-0058). */
+  readonly cards: CardWalletMessages
   /** A request that never got an answer. Keyed by the reason it did not. */
   readonly failures: Readonly<Record<ApiFailureReason, string>>
   /**
@@ -166,6 +170,15 @@ export const myPageErrorCodes = [
   'NOT_FOUND',
   'CONFLICT',
   'INTERNAL_ERROR',
+  /**
+   * 카드를 더 만들 수 없다 (TASK-0058). `params.max` 를 문장에 싣는다.
+   *
+   * 이 둘이 목록에 들어오는 이유는 **화면이 실제로 갈라지기** 때문이다 — 장수를
+   * 채운 사람이 할 일은 카드를 지우는 것이고, 한도가 잘못된 사람이 할 일은 숫자를
+   * 고치는 것이다. 서버 문장을 그대로 흘리면 그 갈림이 화면에서 사라진다.
+   */
+  'CARD_COUNT_REACHED',
+  'CARD_AMOUNT_INVALID',
 ] as const satisfies readonly UserFacingErrorCode[]
 
 export type MyPageErrorCode = (typeof myPageErrorCodes)[number]
@@ -174,6 +187,7 @@ export interface MyPageNavMessages {
   readonly label: string
   readonly settings: string
   readonly addresses: string
+  readonly cards: string
 }
 
 export interface SettingsMessages {
@@ -328,6 +342,121 @@ export interface AddressFormErrorMessages {
   readonly postalCode: string
   readonly addressLine1: string
   readonly addressLine2: string
+}
+
+/**
+ * 가상 카드 관리 (TASK-0058).
+ *
+ * **레코드 셋의 키가 유니온이다** — 카드 상태, 원장의 종류, 발급 폼의 오류. 상태가
+ * 하나 늘거나 원장에 새 종류가 생기면 여기가 비는 것이 아니라 `pnpm typecheck` 이
+ * 깨진다. 이 화면에서 문장이 빠진다는 것은 사람이 「무슨 일이 일어났는지」를 못 듣는
+ * 것이고, 잔액을 확인하러 온 화면에서 그것은 가장 나쁜 실패다.
+ */
+export interface CardWalletMessages {
+  readonly title: string
+  readonly description: string
+  /**
+   * 「이건 진짜 카드가 아니다」 (R1).
+   *
+   * 목록보다 **먼저** 읽히는 자리에 놓인다 — 어디에 놓는지와 그 이유는
+   * `card-wallet.tsx` 에 적혀 있다.
+   */
+  readonly noticeTitle: string
+  readonly noticeBody: string
+  readonly listLabel: string
+  readonly loadingLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  /** 카드 한 장의 이름. 버튼의 접근성 이름도 이것으로 만든다. `{brand}` · `{number}` */
+  readonly cardLabel: string
+  readonly limitLabel: string
+  readonly usedLabel: string
+  readonly availableLabel: string
+  /** 유효기간. `{date}` */
+  readonly expiresLabel: string
+  /**
+   * 상태 배지.
+   *
+   * `DELETED` 도 적는다. 목록에는 나오지 않지만 그것을 「없는 상태」로 두면 서버가
+   * 언젠가 보내는 날 화면이 빈 배지를 그린다.
+   */
+  readonly statuses: Readonly<Record<CardStatus, string>>
+  readonly suspend: string
+  readonly activate: string
+  readonly remove: string
+  readonly openLedger: string
+  readonly closeLedger: string
+  readonly suspendedNotice: string
+  readonly activatedNotice: string
+  readonly removedNotice: string
+  /** 발급이 끝났을 때. 어느 카드가 생겼는지까지 말한다. `{number}` */
+  readonly issuedNotice: string
+  readonly removeTitle: string
+  readonly removeDescription: string
+  readonly removeConfirm: string
+  readonly removeCancel: string
+  readonly removeCloseLabel: string
+  readonly writeFailedTitle: string
+  readonly issue: CardIssueMessages
+  readonly ledger: CardLedgerMessages
+}
+
+/** 발급 폼 — 한도 하나를 받는다. */
+export interface CardIssueMessages {
+  readonly open: string
+  readonly title: string
+  readonly limitLabel: string
+  /** 상·하한을 문장에 싣는다. `{min}` · `{max}` */
+  readonly limitHint: string
+  readonly limitPlaceholder: string
+  /**
+   * 지금 친 숫자를 금액으로 되읽어 준다. `{amount}`
+   *
+   * 0을 하나 더 친 것을 눈으로 잡는 장치다 — 「10000000」은 세기 어렵고
+   * 「₩10,000,000」은 어렵지 않다.
+   */
+  readonly limitEcho: string
+  /** 금액을 치는 자리에서 한 번 더 (R1). */
+  readonly virtualHint: string
+  readonly submit: string
+  readonly submitting: string
+  readonly cancel: string
+  readonly submitError: string
+  readonly errors: CardIssueErrorMessages
+}
+
+export interface CardIssueErrorMessages {
+  readonly notANumber: string
+  /** 두 경계를 자기 안에 싣는다 — 그것을 알아야 고칠 수 있다. `{min}` · `{max}` */
+  readonly outOfRange: string
+}
+
+/**
+ * 사용 내역 (F3 · F4).
+ *
+ * **이 표가 이 화면의 존재 이유다.** 승인과 환불이 시간순으로 놓이고 각 줄이 그
+ * 직후의 잔액을 들고 있어야, 「환불이 정말 돌아왔나」에 눈으로 답할 수 있다.
+ */
+export interface CardLedgerMessages {
+  /** `{brand}` */
+  readonly title: string
+  readonly caption: string
+  readonly loadingLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly failedTitle: string
+  readonly retryLabel: string
+  readonly atColumn: string
+  readonly kindColumn: string
+  readonly amountColumn: string
+  readonly usedColumn: string
+  readonly availableColumn: string
+  readonly orderColumn: string
+  readonly kinds: Readonly<Record<CardTransactionKind, string>>
+  /** 결제를 거치지 않은 줄. 링크가 없는 줄이지 잘못된 줄이 아니다 (4.2). */
+  readonly noOrder: string
+  /** 주문 링크의 접근성 이름. 표 안에 같은 이름의 링크가 여럿이라 필요하다. `{number}` */
+  readonly orderLink: string
 }
 
 /**
