@@ -1,11 +1,21 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
-import type { OrderListResponse, OrderResponse, SellerOrderResponse } from '@shopping/shared'
-import { createOrderRequestSchema, orderListQueryParamsSchema } from '@shopping/shared'
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common'
+import type {
+  CheckoutResponse,
+  OrderListResponse,
+  OrderResponse,
+  SellerOrderResponse,
+} from '@shopping/shared'
+import {
+  createCheckoutRequestSchema,
+  createOrderRequestSchema,
+  orderListQueryParamsSchema,
+} from '@shopping/shared'
 
 import { Principal } from '../auth/principal.decorator.js'
 import { RequirePermission } from '../auth/require-permission.decorator.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { parseInput } from '../common/parse-input.js'
+import { CheckoutService } from './checkout.service.js'
 import { OrderService } from './order.service.js'
 
 /**
@@ -21,7 +31,51 @@ import { OrderService } from './order.service.js'
  */
 @Controller({ version: '1' })
 export class OrderController {
-  constructor(private readonly orders: OrderService) {}
+  constructor(
+    private readonly orders: OrderService,
+    private readonly checkouts: CheckoutService,
+  ) {}
+
+  /**
+   * 주문서를 연다 — 즉 재고를 잡는다 (TASK-0050 4.1).
+   *
+   * 부르는 것은 **장바구니의 「주문하기」**다. 주문서 화면이 진입과 동시에 부르면
+   * 새로고침 한 번에 예약이 한 벌 더 잡힌다.
+   */
+  @Post('checkouts')
+  @RequirePermission('order.write')
+  openCheckout(
+    @Principal() principal: RequestPrincipal,
+    @Body() body: unknown,
+  ): Promise<CheckoutResponse> {
+    return this.checkouts.open(principal, parseInput(createCheckoutRequestSchema, body))
+  }
+
+  /** 열려 있는 주문서. 만료됐거나 풀렸으면 없는 것으로 답한다. */
+  @Get('checkouts/:id')
+  @RequirePermission('order.read')
+  readCheckout(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+  ): Promise<CheckoutResponse> {
+    return this.checkouts.read(principal, id)
+  }
+
+  /**
+   * 이탈. 이 시도의 예약 전부를 푼다.
+   *
+   * 화면은 `sendBeacon` 으로 부른다 — 페이지가 사라지는 중에 보내는 `fetch` 는
+   * 브라우저가 취소한다. 그래도 강제 종료에는 신호가 없고, 그때의 안전망은 만료
+   * 스케줄러(TASK-0051)다.
+   */
+  @Delete('checkouts/:id')
+  @RequirePermission('order.write')
+  closeCheckout(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+  ): Promise<{ released: number }> {
+    return this.checkouts.close(principal, id)
+  }
 
   /** 주문서 생성. 장바구니에서 고른 줄로 만든다. */
   @Post('orders')

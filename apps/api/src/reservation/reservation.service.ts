@@ -128,6 +128,11 @@ export class ReservationService {
         checkoutId: input.checkoutId,
         quantity: input.quantity,
         expiresAt: expiryFrom(now, input.ttlMs),
+        // 시각 둘이 **같은 시계**에서 나와야 한다. `createdAt` 을 `DEFAULT now()`
+        // 에 맡기면 그것만 데이터베이스의 지금이 되고, 주입된 시계 아래서 한 행의
+        // 두 시각이 갈린다 — 아웃박스가 같은 이유로 큐가 영원히 비어 보였다.
+        createdAt: now,
+        updatedAt: now,
       },
       select: RESERVATION_SELECT,
     })
