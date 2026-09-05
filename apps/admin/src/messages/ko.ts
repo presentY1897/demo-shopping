@@ -840,6 +840,19 @@ export const ko: Messages = {
     CARD_LIMIT_EXCEEDED: '카드 한도를 넘었어요.',
     CARD_RELEASE_EXCEEDS: '돌려줄 수 있는 금액을 넘었어요.',
     CARD_EXPIRED: '유효기간이 지난 카드예요.',
+    // 클레임 (TASK-0065). 관리자는 전부에 닿으므로 여섯을 다 만난다 — 그중 하나는
+    // 관리자를 가리킨다(`CLAIM_ORDER_CONFIRMED`)는 점이 콘솔 문장과 다른 자리다.
+    CLAIM_IN_TRANSIT: '배송 중에는 취소도 반품도 할 수 없어요. 도착한 뒤에 처리해 주세요.',
+    CLAIM_ORDER_CONFIRMED: '구매확정한 주문이에요. 일반 반품 절차로는 처리할 수 없어요.',
+    CLAIM_WINDOW_CLOSED: '반품할 수 있는 기간이 지났어요.',
+    CLAIM_NOT_CLAIMABLE: '지금 상태에서는 취소도 반품도 신청할 수 없어요.',
+    // 남은 수량은 서버가 함께 보낸다. 문장에 숫자를 적어 두면 그 숫자만 옛날 값으로 남는다.
+    CLAIM_EXCEEDS_REMAINING: '신청할 수 있는 수량을 넘었어요. {remaining}개까지 가능해요.',
+    CLAIM_INVALID_QUANTITY: '수량은 1개 이상이어야 해요.',
+    CLAIM_ITEM_MISSING: '이 주문에 없는 항목이 섞여 있어요. 다시 확인해 주세요.',
+    // 클레임 상태 전이. 주문 쪽 문장과 따로 있는 이유는 화면이 다르기 때문이다.
+    CLAIM_TRANSITION_UNDEFINED: '클레임 상태가 이미 바뀌었어요. 새로고침한 뒤 다시 확인해 주세요.',
+    CLAIM_TRANSITION_FORBIDDEN: '이 클레임을 그렇게 바꿀 수 있는 권한이 없어요.',
   },
   errorNotice: {
     title: '일시적인 문제가 생겼어요',

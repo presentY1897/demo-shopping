@@ -5,6 +5,7 @@ import { APP_FILTER } from '@nestjs/core'
 import { AuthModule } from './auth/auth.module.js'
 import { CartModule } from './cart/cart.module.js'
 import { CatalogModule } from './catalog/catalog.module.js'
+import { ClaimModule } from './claims/claim.module.js'
 import { AllExceptionsFilter } from './common/all-exceptions.filter.js'
 import { ClockModule } from './common/clock.module.js'
 import { ConfigModule } from './config/config.module.js'
@@ -35,6 +36,7 @@ export class AppModule {
         AuthModule,
         CartModule,
         CatalogModule,
+        ClaimModule,
         DemoModule,
         HealthModule,
         OrderModule,
