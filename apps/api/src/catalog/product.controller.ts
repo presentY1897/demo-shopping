@@ -10,7 +10,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common'
-import type { ProductListResponse, ProductResponse } from '@shopping/shared'
+import type { ProductDetailResponse, ProductListResponse, ProductResponse } from '@shopping/shared'
 import {
   createProductRequestSchema,
   productIdSchema,
@@ -20,6 +20,7 @@ import {
 } from '@shopping/shared'
 
 import { Principal } from '../auth/principal.decorator.js'
+import { PublicEndpoint } from '../auth/public-endpoint.decorator.js'
 import { RequirePermission } from '../auth/require-permission.decorator.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { parseInput } from '../common/parse-input.js'
@@ -63,6 +64,19 @@ export class ProductController {
   @RequirePermission('product.read')
   get(@Principal() principal: RequestPrincipal, @Param('id') id: string): Promise<ProductResponse> {
     return this.products.get(principal, parseInput(productIdSchema, id, 'id'))
+  }
+
+  /**
+   * The storefront's read (TASK-0043 4.1).
+   *
+   * Public, because a shopper who has not signed in still has to see a product —
+   * and so does a crawler; `docs/design/pages.md` has this page indexed with ISR.
+   * `ACTIVE` only, and anything else is a 404.
+   */
+  @Get(':id/detail')
+  @PublicEndpoint()
+  storefrontDetail(@Param('id') id: string): Promise<ProductDetailResponse> {
+    return this.products.storefrontDetail(parseInput(productIdSchema, id, 'id'))
   }
 
   @Post()
