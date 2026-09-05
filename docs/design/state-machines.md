@@ -73,7 +73,10 @@ stateDiagram-v2
 stateDiagram-v2
     [*] --> READY : 결제 요청 생성
     READY --> AUTHORIZED : 승인 (가상카드 즉시 / 토스 결제창)
-    READY --> FAILED : 승인 거절 / 한도 초과 / 타임아웃
+    READY --> FAILED : 승인 거절 / 한도 초과
+    READY --> UNRESOLVED : 결제사에 닿지 못함 (답이 없다)
+    UNRESOLVED --> AUTHORIZED : 대사 — 저쪽은 승인돼 있었다
+    UNRESOLVED --> FAILED : 대사 — 저쪽에도 없었다
     AUTHORIZED --> PAID : 매입 확정
     PAID --> PARTIAL_CANCELED : 부분 취소·환불
     PARTIAL_CANCELED --> PARTIAL_CANCELED : 추가 부분 환불
@@ -84,6 +87,11 @@ stateDiagram-v2
 - 두 프로바이더(`VIRTUAL_CARD`, `TOSS`)는 `PaymentProvider { authorize, capture, cancel, refund }` 인터페이스 뒤에 둔다
 - 모든 상태 변화와 웹훅 원문은 `PaymentEvent` 에 기록한다. **웹훅은 중복 도착을 전제로 멱등 처리**한다
 - 가상 카드는 한도 초과·잔액 부족·승인 거절·승인 지연을 의도적으로 재현할 수 있어야 한다
+- **`UNRESOLVED` 는 「모른다」이지 「실패했다」가 아니다** (D-220). 거절은 답이므로 `FAILED` 이고,
+  이 상태는 **결제사에 닿지 못했을 때만** 들어간다 — 요청이 도착조차 안 했을 수도, 승인까지
+  끝났는데 응답만 못 받았을 수도 있다. 나가는 길은 **대사만 연다**: 사용자의 어떤 조작도 이
+  상태를 옮기지 못하는데, 옮길 근거가 우리에게 없기 때문이다. 그동안 **주문은 완료되지 않고
+  예약은 유지된다** — 놓아 버리면 대사가 「승인됐다」를 확인해도 팔 물건이 없다
 - **결제창 성공은 `AUTHORIZED` 가 아니다.** 토스에서 돌아온 브라우저가 서버 승인
   (`POST /payments/:id/toss/confirm`)을 부르고, 서버가 **주문 금액과 대조한 뒤에야**
   `READY → AUTHORIZED` 가 일어난다. 대조에 진 요청은 상태를 옮기지 않고 사건만 남긴다
