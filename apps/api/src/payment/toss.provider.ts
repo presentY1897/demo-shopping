@@ -102,6 +102,44 @@ export class TossProvider implements PaymentProviderPort {
 
     return paymentStatusFromToss(payment.status)
   }
+
+  /**
+   * 끊긴 승인을 우리 결제 id 로 되찾는다 (TASK-0056 · D-220).
+   *
+   * 토스에게 우리 `Payment.id` 는 「주문번호」다 (4.3). 승인을 보낼 때 그것을
+   * 실어 보냈으므로, 답을 못 받았어도 **그 번호로 다시 물어볼 수 있다.**
+   *
+   * 세 갈래로 접힌다.
+   *
+   * | 저쪽이 아는 것 | 우리 답 |
+   * | --- | --- |
+   * | 없음 (404) | 거절 — 요청이 도착조차 하지 않았다 |
+   * | `DONE` | 승인 — 결제키를 이제야 받는다 |
+   * | 취소·중단·만료 | 거절 — 돈이 남아 있지 않다 |
+   * | 처리 중 · 입금 대기 | **여전히 모른다** — 다음 대사가 다시 묻는다 |
+   */
+  async recover(paymentId: string): Promise<AuthorizeResult> {
+    let payment
+    try {
+      payment = await this.toss.getByOrderId(paymentId)
+    } catch (error: unknown) {
+      // 대사가 저쪽에 닿지 못한 것이다. 우리 결제는 그대로 두고 다음 주기를
+      // 기다린다 — 여기서 실패로 접으면 「모른다」를 「없었다」로 바꾸게 된다.
+      return refusalOf(error)
+    }
+
+    if (payment === null) {
+      return { outcome: 'declined', reason: '결제사에 이 결제 요청이 도착하지 않았어요.' }
+    }
+
+    const mapped = paymentStatusFromToss(payment.status)
+
+    if (mapped === 'PAID') return { outcome: 'approved', paymentKey: payment.paymentKey }
+    // 아직 저쪽도 끝나지 않았다. 우리도 모르는 채로 둔다.
+    if (mapped === 'READY') return { outcome: 'unknown', reason: '결제사가 아직 처리 중이에요.' }
+
+    return { outcome: 'declined', reason: '결제사에서 승인이 완료되지 않았어요.' }
+  }
 }
 
 /**

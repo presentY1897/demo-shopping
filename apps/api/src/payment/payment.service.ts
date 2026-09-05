@@ -31,6 +31,23 @@ import { confirmDecision } from './toss-rules.js'
 
 type Tx = Prisma.TransactionClient
 
+/**
+ * 결과를 모르던 결제 하나를 풀어 본 결과 (TASK-0056).
+ *
+ * 넷을 나눠 두는 이유는 **배치가 세는 것이 달라서**다. `pending` 이 늘어나는 것은
+ * 정상이지만 줄지 않는 것은 저쪽에 물어보지 못한다는 뜻이고, `noop` 이 많은 것은
+ * 웹훅이 이미 일을 하고 있다는 뜻이라 아무 문제가 아니다.
+ */
+export type RecoveryOutcome =
+  /** 승인이 확인돼 매입까지 끝났다. */
+  | 'settled'
+  /** 저쪽에도 없었다. 결제는 실패로 끝난다. */
+  | 'failed'
+  /** 저쪽도 아직 모른다. 다음 주기가 다시 묻는다. */
+  | 'pending'
+  /** 이 결제는 이미 누가 풀었다. */
+  | 'noop'
+
 /** 잠금 아래에서 읽은 결제 한 줄. */
 interface PaymentRow {
   readonly id: string
@@ -234,11 +251,30 @@ export class PaymentService {
   /** 매입 확정. `AUTHORIZED` → `PAID`. */
   async capture(principal: RequestPrincipal, paymentId: string): Promise<PaymentResponse> {
     const account = await this.account(principal, 'order.write')
-    const held = await this.own(account.id, paymentId)
+
+    await this.own(account.id, paymentId)
+    await this.settle(paymentId)
+
+    return this.get(principal, paymentId)
+  }
+
+  /**
+   * 매입하고 주문을 완료시킨다 — **권한을 보지 않는다** (TASK-0056).
+   *
+   * `capture` 에서 떼어 낸 것은 **부르는 쪽이 사람이 아닐 수 있기 때문**이다.
+   * 대사가 끊겼던 승인을 되찾으면 그 결제를 끝까지 보내야 하는데, 그때 화면 앞에
+   * 아무도 없다 — 권한을 볼 주체가 없는 것이지 권한이 없는 것이 아니다.
+   *
+   * 그래서 **부르는 쪽이 자기 방식으로 자격을 먼저 본다.** `capture` 는 소유를
+   * 확인하고, 대사는 자기가 배치라는 사실로 그것을 대신한다. 이 메서드를 라우트에
+   * 직접 붙이면 남의 결제를 매입할 수 있으므로, 붙이지 않는다.
+   */
+  async settle(paymentId: string): Promise<void> {
+    const held = await this.read(paymentId)
 
     this.assertTransition(held.status, 'PAID')
 
-    const provider = await this.providerOf(paymentId)
+    const provider = this.registry.resolve(held.provider)
 
     await provider.capture(this.keyOf(held), held.authorizedAmount)
 
@@ -260,8 +296,77 @@ export class PaymentService {
     // 바뀌고 판매자 몫이 `PAID` 로 간다. **결제가 그 일을 직접 하지 않는다**:
     // 프로바이더가 무엇이든 그 뒤는 같아야 하고, 그 「뒤」를 아는 것은 주문 쪽이다.
     await this.orders.markPaid((await this.contextOf(paymentId)).orderId)
+  }
 
-    return this.get(principal, paymentId)
+  /**
+   * 결과를 모르던 결제 하나를 푼다 (TASK-0056 F9 · D-220).
+   *
+   * **웹훅과 대사 배치가 같은 이 문을 쓴다.** 웹훅은 「지금 확인해 보라」는 신호일
+   * 뿐이고 그 본문을 믿지 않는다 — 상태를 정하는 것은 저쪽에 **우리가 다시 물어본
+   * 답**이다. 신호를 믿는 구현은 중복·순서 역전·위조를 각각 따로 막아야 하지만,
+   * 다시 묻는 구현은 그 셋이 전부 같은 답으로 접힌다.
+   *
+   * 상태를 옮기지 않는 갈래가 둘이고 **이유가 다르다.**
+   *
+   * | 답 | 결과 | 왜 |
+   * | --- | --- | --- |
+   * | 승인 | `AUTHORIZED` → 매입까지 | 저쪽에 돈이 잡혀 있었다 |
+   * | 거절 | `FAILED` | 저쪽에도 없거나 이미 끝났다 |
+   * | 모름 | `pending` | 저쪽도 아직 처리 중이다. 다음 주기가 다시 묻는다 |
+   * | 이미 옮겨짐 | `noop` | 다른 신호가 먼저 도착했다 — 그것이 멱등의 모양이다 |
+   *
+   * **`pending` 은 사건을 남기지 않는다.** 대사가 1분마다 도는데 그때마다 한 줄씩
+   * 쌓으면, 정작 읽어야 할 상태 변화가 그 사이에 묻힌다.
+   */
+  async resolveUnresolved(paymentId: string): Promise<RecoveryOutcome> {
+    const held = await this.read(paymentId)
+
+    if (held.status !== 'UNRESOLVED') return 'noop'
+
+    const result = await this.registry.resolve(held.provider).recover(paymentId)
+
+    if (result.outcome === 'unknown') return 'pending'
+
+    const now = this.clock.now()
+    const landing: PaymentStatus = result.outcome === 'approved' ? 'AUTHORIZED' : 'FAILED'
+    const moved = await this.prisma.$transaction(async (tx) => {
+      const fresh = await this.lock(tx, paymentId)
+
+      // 그 사이에 다른 신호가 이 결제를 풀었다. 던지지 않는 이유는 **이것이
+      // 정상이기 때문**이다 — 웹훅과 배치는 같은 건을 동시에 만나도록 되어 있다.
+      if (fresh.status !== 'UNRESOLVED') return false
+
+      await tx.payment.update({
+        where: { id: paymentId },
+        data: {
+          status: landing,
+          ...(result.outcome === 'approved'
+            ? { paymentKey: result.paymentKey, approvedAt: now }
+            : {}),
+          updatedAt: now,
+        },
+      })
+      await this.log(
+        tx,
+        paymentId,
+        landing === 'AUTHORIZED' ? 'AUTHORIZED' : 'FAILED',
+        'UNRESOLVED',
+        landing,
+        now,
+        {
+          reason: result.outcome === 'approved' ? '대사가 승인을 확인했습니다.' : result.reason,
+        },
+      )
+
+      return true
+    })
+
+    if (!moved) return 'noop'
+    // 승인만 확인하고 멈추면 돈은 잡혀 있는데 주문이 없다 — 이 TASK 가 없애려는
+    // 상태 그대로다. 그래서 여기서 끝까지 보낸다.
+    if (result.outcome === 'approved') await this.settle(paymentId)
+
+    return result.outcome === 'approved' ? 'settled' : 'failed'
   }
 
   /**
@@ -394,6 +499,30 @@ export class PaymentService {
     assertResourceAccess(principal, permission, accountOwnership(account))
 
     return account
+  }
+
+  /**
+   * 결제 한 줄. **소유를 보지 않는다** — 부르는 쪽이 이미 봤거나 배치다.
+   *
+   * `own` 과 나뉜 이유가 그것뿐이라 select 는 같다. 합치고 `userId` 를 선택적으로
+   * 두면 「소유를 안 보는 길」이 기본값 하나 뒤에 숨는다.
+   */
+  private async read(paymentId: string): Promise<PaymentRow> {
+    const row = await this.prisma.payment.findUnique({
+      where: { id: paymentId },
+      select: {
+        id: true,
+        provider: true,
+        status: true,
+        authorizedAmount: true,
+        canceledAmount: true,
+        paymentKey: true,
+      },
+    })
+
+    if (row === null) throw new NotFoundException('결제를 찾을 수 없어요.')
+
+    return row
   }
 
   /** 이 계정의 결제인가. 잠그기 전의 읽기다. */

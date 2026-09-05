@@ -108,6 +108,25 @@ export class VirtualCardProvider implements PaymentProviderPort {
     return charged ? 'PAID' : 'FAILED'
   }
 
+  /**
+   * 끊긴 승인을 되찾는다 — **여기서는 일어나지 않는 일이다** (TASK-0056 4.2).
+   *
+   * 이 프로바이더는 `unknown` 을 내지 않으므로 `UNRESOLVED` 인 가상 카드 결제는
+   * 존재할 수 없고, 대사가 이 메서드에 닿는 일도 없다. 그래도 **구현이 있는 것이
+   * 맞다** — 계약에 구멍을 내면 「이 프로바이더만 예외」를 부르는 쪽이 알아야 하고,
+   * 그 순간 레지스트리로 고르는 의미가 없어진다.
+   *
+   * 답은 원장에서 나온다. 가상 카드에서 결제키는 결제 id 와 같은 값이라, 우리가
+   * 곧 저쪽이다.
+   */
+  async recover(paymentId: string): Promise<AuthorizeResult> {
+    const charged = await this.cards.chargedFor(paymentId)
+
+    return charged
+      ? { outcome: 'approved', paymentKey: paymentId }
+      : { outcome: 'declined', reason: '카드 원장에 이 승인이 없어요.' }
+  }
+
   // ---------------------------------------------------------------- internals
 
   /**
