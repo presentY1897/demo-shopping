@@ -8,7 +8,9 @@ import {
   defaultHandlers,
   resetAdminSellerStore,
   resetAttributeStore,
+  resetCartStore,
   resetCategoryStore,
+  resetCheckoutStore,
   resetDemoStore,
   resetProductStore,
   resetSellerConsoleStore,
@@ -123,6 +125,12 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     // previous one's "재고 17".
     resetSellerConsoleStore()
     resetUploadStore()
+    // 장바구니와 주문서 (TASK-0046 · 0050). 둘 다 상태를 갖는 목이고, 한 스펙이
+    // 지운 줄이나 닫은 주문서가 다음 스펙으로 넘어가면 **파일 안의 순서가 통과
+    // 여부를 정한다.** 각 스펙이 자기 `beforeEach` 에서 부르고 있어 지금은 가려져
+    // 있지만, 부르지 않는 스펙이 하나 생기는 순간 드러난다.
+    resetCartStore()
+    resetCheckoutStore()
     // Back to "this account has never applied", which is the state five of the
     // seller console's faces are told apart from.
     resetSellerStore()
