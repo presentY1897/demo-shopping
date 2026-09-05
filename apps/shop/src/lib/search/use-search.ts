@@ -61,7 +61,7 @@ export interface SearchController {
  * says the category once, in the segment, and every other filter behaves exactly
  * as it does on the search screen because it *is* the same code.
  */
-export type PinnedQuery = Pick<SearchQuery, 'categoryId'>
+export type PinnedQuery = Pick<SearchQuery, 'categoryId' | 'sellerId'>
 
 export function useSearch(pinned: PinnedQuery = {}): SearchController {
   const router = useRouter()
@@ -72,12 +72,14 @@ export function useSearch(pinned: PinnedQuery = {}): SearchController {
   // every render and an effect keyed on it would re-fetch forever.
   const search = params.toString()
   const pinnedCategory = pinned.categoryId
+  const pinnedSeller = pinned.sellerId
   const query = useMemo(
     () => ({
       ...readSearchParams(new URLSearchParams(search)),
       ...(pinnedCategory === undefined ? {} : { categoryId: pinnedCategory }),
+      ...(pinnedSeller === undefined ? {} : { sellerId: pinnedSeller }),
     }),
-    [search, pinnedCategory],
+    [search, pinnedCategory, pinnedSeller],
   )
   const canonical = useMemo(() => writeSearchParams(query), [query])
 
@@ -180,13 +182,15 @@ export function useSearch(pinned: PinnedQuery = {}): SearchController {
       // The pinned part is dropped before writing: it is already in the path, and
       // writing it as well would put the category in the address twice — where
       // the two could then disagree after an edit.
-      const written = writeSearchParams(
-        pinnedCategory === undefined ? next : { ...next, categoryId: undefined },
-      )
+      const written = writeSearchParams({
+        ...next,
+        ...(pinnedCategory === undefined ? {} : { categoryId: undefined }),
+        ...(pinnedSeller === undefined ? {} : { sellerId: undefined }),
+      })
 
       router.push(written === '' ? pathname : `${pathname}?${written}`)
     },
-    [pathname, pinnedCategory, router],
+    [pathname, pinnedCategory, pinnedSeller, router],
   )
 
   const nextCursor = results.status === 'ready' ? results.nextCursor : null

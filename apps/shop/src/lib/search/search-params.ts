@@ -61,12 +61,14 @@ export function readSearchParams(params: URLSearchParams): SearchQuery {
   }
 
   const q = params.get('q')?.trim() ?? ''
+  const sellerId = params.get('sellerId')
 
   return {
     ...(q === '' ? {} : { q }),
     ...(positiveInt(params.get('categoryId')) === undefined
       ? {}
       : { categoryId: positiveInt(params.get('categoryId')) }),
+    ...(sellerId === null || sellerId === '' ? {} : { sellerId }),
     ...(nonNegativeInt(params.get('priceMin')) === undefined
       ? {}
       : { priceMin: nonNegativeInt(params.get('priceMin')) }),
@@ -91,6 +93,7 @@ export function writeSearchParams(query: SearchQuery): string {
 
   if (query.q !== undefined && query.q !== '') params.set('q', query.q)
   if (query.categoryId !== undefined) params.set('categoryId', String(query.categoryId))
+  if (query.sellerId !== undefined) params.set('sellerId', query.sellerId)
   if (query.priceMin !== undefined) params.set('priceMin', String(query.priceMin))
   if (query.priceMax !== undefined) params.set('priceMax', String(query.priceMax))
   if (query.inStock === true) params.set('inStock', 'true')
