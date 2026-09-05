@@ -52,6 +52,19 @@ export const mockPaths = {
   meAddress: `*${API_PATH_PREFIX}/me/addresses/:id`,
   /** `POST` to make one address the default — the only door to that change. */
   meAddressDefault: `*${API_PATH_PREFIX}/me/addresses/:id/default`,
+  /**
+   * 장바구니 (TASK-0045). `GET` 전체, `POST` 담기.
+   *
+   * **경로에 사용자 id 가 없다.** 소유자는 토큰이 정한다 — `/me` 와 같은 모양이고,
+   * 남을 가리킬 자리가 애초에 없다.
+   */
+  cart: `*${API_PATH_PREFIX}/cart`,
+  /** `PATCH` 수량 대입. 담기와 다른 동사이므로 다른 라우트다. */
+  cartItem: `*${API_PATH_PREFIX}/cart/items/:id`,
+  /** `POST` 선택 삭제. 한 줄을 지우는 것도 이쪽이다. */
+  cartItemsRemove: `*${API_PATH_PREFIX}/cart/items/remove`,
+  /** `POST` 담기. `cartItem` 보다 **먼저** 와야 한다 — msw 는 먼저 맞는 것을 쓴다. */
+  cartItems: `*${API_PATH_PREFIX}/cart/items`,
   /** `GET` the tree, `POST` a new node. */
   categories: `*${API_PATH_PREFIX}/categories`,
   /**

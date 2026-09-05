@@ -2,6 +2,7 @@ import type { RequestHandler } from 'msw'
 
 import { adminSellerHandlers } from './admin-sellers'
 import { attributeHandlers } from './attributes'
+import { cartHandlers } from './cart'
 import { categoryHandlers } from './categories'
 import { demoHandlers } from './demo'
 import { healthHandlers } from './health'
@@ -28,6 +29,7 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...demoHandlers,
   ...userRolesHandlers,
   ...profileHandlers,
+  ...cartHandlers,
   ...categoryHandlers,
   ...attributeHandlers,
   ...productHandlers,
@@ -40,6 +42,7 @@ export const defaultHandlers: readonly RequestHandler[] = [
 
 export { adminSellerHandlers, resetAdminSellerStore } from './admin-sellers'
 export { attributeHandlers, resetAttributeStore } from './attributes'
+export { cartHandlers, resetCartStore } from './cart'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
 export { demoHandlers, failNextDemoIssue, mockDemoAccount, resetDemoStore } from './demo'
 export { productHandlers, productRowsSnapshot, resetProductStore } from './products'

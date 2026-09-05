@@ -62,7 +62,12 @@ interface CartLineRow {
       readonly maxPurchaseQuantity: number | null
       readonly images: readonly { readonly url: string }[]
       readonly options: readonly { readonly id: string; readonly sortOrder: number }[]
-      readonly seller: { readonly id: string; readonly brandName: string }
+      readonly seller: {
+        readonly id: string
+        readonly brandName: string
+        readonly shippingFee: number
+        readonly freeShippingThreshold: number | null
+      }
     }
   }
 }
@@ -438,7 +443,16 @@ export class CartService {
                     maxPurchaseQuantity: true,
                     images: { orderBy: { sortOrder: 'asc' }, take: 1, select: { url: true } },
                     options: { select: { id: true, sortOrder: true } },
-                    seller: { select: { id: true, brandName: true } },
+                    seller: {
+                      select: {
+                        id: true,
+                        brandName: true,
+                        // 이미 조인되어 있던 행이다 — 두 컬럼이 늘어도 질의는
+                        // 하나 그대로다 (TASK-0046 4.3).
+                        shippingFee: true,
+                        freeShippingThreshold: true,
+                      },
+                    },
                   },
                 },
               },
@@ -453,12 +467,24 @@ export class CartService {
 }
 
 /** 줄들을 판매자별로 묶는다. 순수 변환이라 서비스 밖에 둔다. */
+interface Bucket {
+  readonly brandName: string
+  readonly shippingFee: number
+  readonly freeShippingThreshold: number | null
+  readonly items: CartItem[]
+}
+
 function present(lines: readonly CartLineRow[]): CartResponse {
-  const groups = new Map<string, { brandName: string; items: CartItem[] }>()
+  const groups = new Map<string, Bucket>()
 
   for (const line of lines) {
     const seller = line.variant.product.seller
-    const bucket = groups.get(seller.id) ?? { brandName: seller.brandName, items: [] }
+    const bucket = groups.get(seller.id) ?? {
+      brandName: seller.brandName,
+      shippingFee: seller.shippingFee,
+      freeShippingThreshold: seller.freeShippingThreshold,
+      items: [],
+    }
 
     bucket.items.push({
       id: line.id,
@@ -492,6 +518,10 @@ function present(lines: readonly CartLineRow[]): CartResponse {
     brandName: bucket.brandName,
     items: bucket.items,
     productAmount: bucket.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    // 정책이지 이 장바구니의 배송비가 아니다 (TASK-0046 4.1). 무엇을 고르느냐에
+    // 따라 달라지는 값이고, 고르는 일은 브라우저에서 일어난다.
+    shippingFee: bucket.shippingFee,
+    freeShippingThreshold: bucket.freeShippingThreshold,
   }))
 
   return {

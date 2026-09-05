@@ -8,10 +8,11 @@ import { priceSchema, productIdSchema, variantIdSchema } from './products.js'
  * 담는 단위는 **Variant** 다. 가격과 재고를 들고 있는 것이 Variant 이고,
  * 「검정 M」과 「검정 L」은 다른 물건이다.
  *
- * **배송비는 여기 없다** (4.1). `pricing.md` 의 배송비는 「SellerOrder 단위로
- * 부과, 조건부 무료」이고 그 조건이 아직 스키마에 없다 — 없는 규칙으로 지어낸
- * 숫자를 실으면 화면이 그대로 그리고, TASK-0047 이 진짜 규칙을 넣는 날 금액이
- * 바뀐다. **응답에 없는 것과 `0` 은 다르다**: `0` 은 「무료다」라는 약속이다.
+ * **배송 정책은 그룹이 든다** (TASK-0046 4.1). TASK-0045 때는 무료 기준도
+ * 판매자별 기본 배송비도 스키마에 없어서 뺐고 — 없는 규칙으로 지어낸 숫자를
+ * 실으면 화면이 그대로 그린다 — TASK-0049 4.1 이 그 컬럼을 만들면서 회수했다.
+ * 다만 싣는 것은 **계산된 배송비가 아니라 정책**이다: 합계는 고른 항목에
+ * 대해서만 내고, 그 선택은 브라우저에 있다.
  */
 
 /** 한 사람이 한 Variant 를 담을 수 있는 절대 상한. 판매자 제한과는 별개다. */
@@ -84,6 +85,17 @@ export const cartGroupSchema = z.object({
   items: z.array(cartItemSchema),
   /** Σ(`price` × `quantity`). 계산 규칙이 아니라 담긴 것 자체다. */
   productAmount: priceSchema,
+  /**
+   * 이 판매자의 배송 **정책** (TASK-0046 4.1).
+   *
+   * 계산된 배송비가 아니라 정책인 이유는 **선택이 브라우저에 있기 때문**이다.
+   * 합계는 고른 항목에 대해서만 내는데, 서버가 계산해 보낸 숫자는 누군가 체크
+   * 하나를 푸는 순간 틀린 값이 된다. 「그때 다시 부른다」는 방법도 있지만
+   * 체크박스 하나에 왕복이 붙는 화면은 쓸 수 없다.
+   */
+  shippingFee: priceSchema,
+  /** 이 금액 이상이면 무료. `null` 이면 무료 조건이 **없다** — `0` 은 언제나 무료다. */
+  freeShippingThreshold: priceSchema.nullable(),
 })
 
 export type CartGroup = z.infer<typeof cartGroupSchema>
