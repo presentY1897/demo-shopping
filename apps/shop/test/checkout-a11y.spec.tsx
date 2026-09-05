@@ -135,7 +135,7 @@ describe('주문서 접근성 (P2)', () => {
 
     const section = await screen.findByRole('region', { name: copy.payment.title })
 
-    await within(section).findByRole('group', { name: copy.payment.chooseCard })
+    await within(section).findByRole('group', { name: copy.payment.chooseMethod })
     await user.click(within(section).getByRole('radio', { name: new RegExp(tight.brand, 'u') }))
 
     const summary = screen.getByRole('complementary', { name: copy.summaryTitle })

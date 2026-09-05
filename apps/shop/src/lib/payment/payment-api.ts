@@ -62,12 +62,63 @@ export function fetchCards(
  *
  * **금액을 보내지 않는다.** 승인액은 주문이 정하고, 보내게 두면 그 숫자가 주문과
  * 다를 수 있으며 그때 어느 쪽이 맞는지를 정해야 한다 — 정할 수 없는 질문이다.
+ *
+ * 이름에 `Card` 가 붙은 것은 TASK-0055 4.6 과 같은 이유다. 두 번째 프로바이더가
+ * 붙는 순간 「결제를 연다」는 이름은 **어느 결제인지 말하지 않는 이름**이 되고,
+ * 카드 id 를 받는 시그니처가 그 거짓을 드러낸다.
  */
-export async function startPayment(orderId: string, cardId: string): Promise<Payment> {
+export async function startCardPayment(orderId: string, cardId: string): Promise<Payment> {
   const { payment } = await getApiClient().request({
     path: '/payments',
     method: 'POST',
     body: { orderId, provider: 'VIRTUAL_CARD', cardId },
+    schema: paymentResponseSchema,
+  })
+
+  return payment
+}
+
+/**
+ * 토스로 결제를 연다 (TASK-0055).
+ *
+ * **`cardId` 를 보내지 않는다.** 어느 카드로 낼지는 결제창 안에서 정해지는 일이고,
+ * 그 결과가 우리에게 오는 것은 승인 뒤의 `paymentKey` 뿐이다 — 그 자리를 서버는
+ * `methodRef` 라 부른다 (4.6).
+ *
+ * 돌아온 결제의 **`id` 가 결제창의 `orderId`** 이고 **`authorizedAmount` 가 결제창에
+ * 넣을 금액**이다. 둘 다 서버가 정한 값을 그대로 쓴다 — 화면이 들고 있던 숫자를
+ * 쓰면 승인 단계의 대조(F2)가 우리 화면의 실수까지 잡아내는 장치가 된다.
+ */
+export async function startTossPayment(orderId: string): Promise<Payment> {
+  const { payment } = await getApiClient().request({
+    path: '/payments',
+    method: 'POST',
+    body: { orderId, provider: 'TOSS' },
+    schema: paymentResponseSchema,
+  })
+
+  return payment
+}
+
+/**
+ * 결제창에서 돌아온 뒤의 승인 (TASK-0055 F1 · F2).
+ *
+ * **`authorize` 와 다른 라우트인 이유**는 이 단계에만 대조할 것이 있기 때문이다.
+ * 서버는 받은 `amount` 를 DB 의 승인액과 맞춰 본 **뒤에야** 토스를 부른다 —
+ * 어긋나면 400 이고, 그때 저쪽에는 아무 승인도 남지 않는다.
+ *
+ * 거절은 여기서도 값이다. 카드사가 받아 주지 않은 것은 200 과 함께 `FAILED` 인
+ * 결제로 오고, 예외로 오는 것은 **우리가 승인을 요청조차 못 한 경우**다.
+ */
+export async function confirmTossPayment(
+  paymentId: string,
+  paymentKey: string,
+  amount: number,
+): Promise<Payment> {
+  const { payment } = await getApiClient().request({
+    path: `/payments/${paymentId}/toss/confirm`,
+    method: 'POST',
+    body: { paymentKey, amount },
     schema: paymentResponseSchema,
   })
 

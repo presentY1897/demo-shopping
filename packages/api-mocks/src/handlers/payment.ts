@@ -62,6 +62,18 @@ const startPaymentRequestSchema = z.object({
   cardId: z.uuid().optional(),
 })
 
+/**
+ * `POST /payments/:id/toss/confirm` 의 몸통 (TASK-0055).
+ *
+ * **금액을 받는 이유는 쓰기 위해서가 아니라 대조하기 위해서다** (F2). 브라우저가
+ * 무엇을 들고 돌아왔는지 알아야 조작을 발견할 수 있고, 받지 않으면 발견할 것
+ * 자체가 없다.
+ */
+const confirmTossRequestSchema = z.object({
+  paymentKey: z.string().min(1).max(200),
+  amount: z.int().nonnegative(),
+})
+
 type CardList = typeof shopperCards
 
 interface PaymentRow {
@@ -116,6 +128,9 @@ function seedLedgers(
     cards.map((card) => [card.id, known.get(card.id) ?? emptyCardLedger.transactions] as const),
   )
 }
+
+/** {@link declineNextTossApproval} 이 세우고, 그것이 만든 거절이 내린다. */
+let declineNextToss = false
 
 let store: PaymentStore = {
   cards: shopperCards.cards,
@@ -440,6 +455,69 @@ export const paymentHandlers: readonly RequestHandler[] = [
       return put({ ...row, payment: { ...row.payment, status: 'PAID' } })
     }),
   ),
+
+  /**
+   * 토스 결제창이 돌아온 뒤의 승인 (TASK-0055 F1 · F2 · F4).
+   *
+   * **이 라우트가 재현하는 것은 우리 쪽 절반이다** (4.2). 토스 HTTP 는 여기에도
+   * 없고, 있는 것은 서버가 저쪽을 부르기 **전에** 내리는 판단 셋 — 프로바이더가
+   * 맞는가, 아직 `READY` 인가, 금액이 우리 DB 의 승인액과 같은가 — 이다.
+   * `apps/api/src/payment/toss-rules.ts` 의 `confirmDecision` 이 같은 순서로
+   * 같은 것을 보고, 순서가 곧 답의 우선순위다.
+   *
+   * **셋의 코드가 다른 이유는 사람이 할 일이 다르기 때문**이다. 금액이 어긋난
+   * 것은 400 이고 저쪽에 아무 승인도 남지 않았지만, 이미 처리된 결제는 409 이고
+   * **다시 결제하라고 말하면 안 된다** — 성공 주소를 새로고침한 사람이 정확히
+   * 그 경우다.
+   *
+   * 거절은 여기서도 **200 이다** (TASK-0052 4.3). 카드사가 받아 주지 않은 것은
+   * 정상적인 대답이고, {@link declineNextTossApproval} 이 그것을 만든다.
+   */
+  http.post(mockPaths.paymentTossConfirm, ({ params, request }) =>
+    answering(async () => {
+      const row = rowOf(String(params.id))
+      const body = await readBody(request, confirmTossRequestSchema)
+
+      if (row.payment.provider !== 'TOSS') {
+        throw new MockApiError(400, '토스로 시작한 결제가 아니에요.', {
+          code: 'PAYMENT_PROVIDER_MISMATCH',
+          field: 'provider',
+        })
+      }
+
+      if (row.payment.status !== 'READY') {
+        throw new MockApiError(409, '이미 처리된 결제예요.', {
+          code: 'PAYMENT_TRANSITION_REFUSED',
+          field: 'status',
+        })
+      }
+
+      if (row.payment.authorizedAmount !== body.amount) {
+        throw new MockApiError(400, '결제 금액이 주문 금액과 달라요.', {
+          code: 'PAYMENT_AMOUNT_MISMATCH',
+          field: 'amount',
+        })
+      }
+
+      if (declineNextToss) {
+        declineNextToss = false
+
+        return put({ ...row, payment: { ...row.payment, status: 'FAILED' } })
+      }
+
+      return put({
+        ...row,
+        payment: {
+          ...row.payment,
+          status: 'AUTHORIZED',
+          // 결제창이 돌려준 키가 이 승인을 되찾는 열쇠가 된다 — 서버는 그것을
+          // `methodRef` 에 쓴다 (4.6).
+          paymentKey: body.paymentKey,
+          approvedAt: new Date().toISOString(),
+        },
+      })
+    }),
+  ),
 ]
 
 /**
@@ -451,6 +529,7 @@ export const paymentHandlers: readonly RequestHandler[] = [
  * 같이 있어야 고를 수 있는 것과 없는 것이 나란히 보인다.
  */
 export function resetPaymentStore(seed: CardList = shopperCards): void {
+  declineNextToss = false
   store = {
     cards: [...seed.cards],
     issued: 0,
@@ -458,4 +537,20 @@ export function resetPaymentStore(seed: CardList = shopperCards): void {
     rows: new Map(),
     serial: 0,
   }
+}
+
+/**
+ * 다음 토스 승인을 **거절로** 답한다. 한 번만.
+ *
+ * 거절이 `server.use(...)` 가 아니라 손잡이인 이유는 **그것이 오류가 아니기**
+ * 때문이다 (TASK-0052 4.3). 카드사가 받아 주지 않은 것은 200 과 함께 `FAILED` 인
+ * 결제로 오고, 그 몸통은 이 저장소의 다른 응답과 똑같이 `defineFixture` 를 지나야
+ * 한다 — 스펙이 직접 만든 페이로드로 대신하면 계약 게이트(C2) 밖으로 새는 응답이
+ * 하나 생기고, 그 스펙은 `msw` 를 직접 임포트하게 된다 (TASK-0107 F3).
+ *
+ * `failNextDefaultAssignment` 와 같은 모양이고 같은 이유다: 화면이 관찰할 수 있는
+ * 결과를 만들되, 그 결과를 만드는 조건까지 흉내 내지는 않는다.
+ */
+export function declineNextTossApproval(): void {
+  declineNextToss = true
 }

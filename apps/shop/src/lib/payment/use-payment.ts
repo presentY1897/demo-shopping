@@ -5,8 +5,16 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { placeOrder } from '@/lib/checkout/checkout-api'
 
 import { availableCredit } from './cards'
+import type { PaymentMethod } from './methods'
 import type { IssuedCard } from './payment-api'
-import { authorizePayment, capturePayment, fetchCards, startPayment } from './payment-api'
+import {
+  authorizePayment,
+  capturePayment,
+  fetchCards,
+  startCardPayment,
+  startTossPayment,
+} from './payment-api'
+import { openTossCheckout, tossClientKey, tossReturnUrls } from './toss'
 
 /**
  * 주문서의 결제 한 번 (TASK-0054).
@@ -25,16 +33,39 @@ import { authorizePayment, capturePayment, fetchCards, startPayment } from './pa
  * `FAILED` 인 결제가 몸통에 담겨 온다. 그래서 `catch` 로 잡히는 것은 「거절당했다」가
  * 아니라 「결과를 모른다」이고, 사람에게 할 말이 다르다 — 앞의 것은 다른 카드를
  * 권하고 뒤의 것은 다시 시도하기를 권한다.
+ *
+ * ## 갈래가 둘이다 (TASK-0055)
+ *
+ * **주문을 만드는 데까지는 같고, 그 뒤가 갈린다.** 가상 카드는 승인과 매입을 우리
+ * 서버에 물어보고 그 자리에서 끝나지만, 토스는 결제를 연 다음 **브라우저를 결제창으로
+ * 보낸다** — 이 훅이 토스 갈래에서 도달할 수 있는 가장 좋은 끝은 `paid` 가 아니라
+ * `leaving` 이고, 승인은 돌아온 화면(`checkout/toss/success`)이 한다.
+ *
+ * 그 구분이 이 TASK 의 핵심이다 (4.2). 결제창이 성공했다고 여기서 완료로 옮기면,
+ * 창을 닫고 돌아온 사람이 「결제 완료」를 본 채로 결제되지 않은 주문을 갖는다.
  */
 
-/** 결제가 지나는 네 걸음. 화면은 지금 어디인지를 문장으로 말한다. */
-export const paymentSteps = ['ordering', 'starting', 'authorizing', 'capturing'] as const
+/**
+ * 결제가 지나는 걸음들. 화면은 지금 어디인지를 문장으로 말한다.
+ *
+ * **두 갈래가 같은 목록을 쓴다.** 가상 카드는 `starting` 다음에 `authorizing` 으로
+ * 가고 토스는 `opening` 으로 간다 — 겹치지 않는 걸음이 섞여 있는 것이 아니라,
+ * 사람이 보는 문장이 「지금 무엇을 기다리는가」 하나이기 때문이다.
+ */
+export const paymentSteps = [
+  'ordering',
+  'starting',
+  'authorizing',
+  'capturing',
+  /** 토스 결제창을 여는 중 (TASK-0055). 이 다음은 이 페이지가 아니다. */
+  'opening',
+] as const
 
 export type PaymentStep = (typeof paymentSteps)[number]
 
 /**
- * 결제가 끝나지 못한 이유. 셋을 나눠 두는 이유는 **다음에 할 일이 서로 다르기**
- * 때문이다 — 하나로 뭉치면 「결제할 수 없습니다」가 되고, 그 문장은 셋 중 어느
+ * 결제가 끝나지 못한 이유. 넷을 나눠 두는 이유는 **다음에 할 일이 서로 다르기**
+ * 때문이다 — 하나로 뭉치면 「결제할 수 없습니다」가 되고, 그 문장은 넷 중 어느
  * 경우에도 다음 행동을 알려 주지 못한다.
  */
 export const paymentRefusals = [
@@ -51,6 +82,14 @@ export const paymentRefusals = [
   'declined',
   /** 요청이 오가지 못했다. 결제가 됐는지 안 됐는지를 **우리도 모른다.** */
   'unreachable',
+  /**
+   * 토스 결제창을 열지 못했다 (TASK-0055).
+   *
+   * 스크립트가 차단됐거나, 뜨지 않았거나, 저쪽이 요청을 되돌린 경우다. **아직
+   * 아무 돈도 움직이지 않았다**는 점에서 위의 셋과 다르고, 그래서 다음에 할 일도
+   * 다르다 — 다시 눌러 보거나 가상 카드로 바꾸는 것이다.
+   */
+  'toss_unavailable',
 ] as const
 
 export type PaymentRefusal = (typeof paymentRefusals)[number]
@@ -66,13 +105,30 @@ export type PaymentState =
     }
   /** 매입까지 끝났다. 주문번호는 이 화면이 마지막으로 보여 줄 것이다. */
   | { readonly status: 'paid'; readonly orderNumber: string }
+  /**
+   * 결제창이 열렸다 — **브라우저가 이 페이지를 떠나는 중**이다 (TASK-0055).
+   *
+   * 끝이 아니라 **넘어감**이다. 여기서 「결제가 완료됐어요」를 그리면 이 TASK 가
+   * 막으려는 바로 그 착각(결제창 성공 = 승인 완료, 4.2)을 화면이 먼저 저지르는
+   * 것이 되고, 창을 닫고 돌아온 사람은 완료 화면을 본 채로 결제되지 않은 주문을
+   * 갖게 된다.
+   */
+  | { readonly status: 'leaving' }
 
 export interface PaymentInput {
   readonly checkoutId: string
   readonly addressId: string
-  readonly card: IssuedCard
+  readonly method: PaymentMethod
   /** 주문서가 보여 준 결제예정금액. 모자란 금액을 세는 데만 쓴다. */
   readonly amount: number
+  /**
+   * 결제창에 뜰 주문 이름 (`checkoutOrderName`).
+   *
+   * 토스만 쓰지만 입력에 늘 있는 이유는, 무엇으로 결제할지가 **누르는 순간**
+   * 정해지기 때문이다. 고른 뒤에 이름을 만들면 그 계산이 결제 경로 안으로 들어오고,
+   * 문구를 아는 곳(화면)과 결제하는 곳(이 훅)이 뒤섞인다.
+   */
+  readonly orderName: string
 }
 
 export interface PaymentStore {
@@ -147,10 +203,25 @@ export function usePayment(
 
         order.current = placed
 
+        if (input.method.kind === 'toss') {
+          await leaveForToss(placed.id, input)
+
+          return
+        }
+
+        await payWithCard(placed, input.method.card, input.amount)
+      }
+
+      /** 가상 카드: 열고 · 승인하고 · 매입한다. 셋 다 우리 서버 안에서 끝난다. */
+      async function payWithCard(
+        placed: { readonly id: string; readonly orderNumber: string },
+        card: IssuedCard,
+        amount: number,
+      ): Promise<void> {
         try {
           setState({ status: 'running', step: 'starting' })
 
-          const opened = await startPayment(placed.id, input.card.id)
+          const opened = await startCardPayment(placed.id, card.id)
 
           setState({ status: 'running', step: 'authorizing' })
 
@@ -158,7 +229,7 @@ export function usePayment(
 
           // 승인이 거절된 것은 값으로 온다. 여기서 끝내되 주문과 예약은 그대로 둔다.
           if (authorized.status === 'FAILED') {
-            setState(refusalOf(input))
+            setState(refusalOf(card, amount))
 
             return
           }
@@ -169,6 +240,62 @@ export function usePayment(
         } catch {
           setState({ status: 'failed', refusal: 'unreachable', shortfall: null })
         }
+      }
+
+      /**
+       * 토스: 결제를 열고 결제창으로 **넘어간다** (TASK-0055 4.2).
+       *
+       * 여기서 끝나는 것은 이 화면이지 결제가 아니다. 승인은 결제창이 돌아온 뒤
+       * `checkout/toss/success` 가 하고, 이 함수의 성공은 「브라우저가 곧 이 페이지를
+       * 떠난다」는 뜻뿐이다.
+       *
+       * **두 실패를 나눈다.** 결제를 열지 못한 것은 요청이 저쪽에 닿았는지조차
+       * 모르는 상태이고, 결제창을 열지 못한 것은 **확실히 아무 일도 일어나지
+       * 않은** 상태다 — 뒤의 사람에게 「가상 카드로 해 보세요」는 맞는 말이지만
+       * 앞의 사람에게는 아니다.
+       */
+      async function leaveForToss(orderId: string, next: PaymentInput): Promise<void> {
+        const clientKey = tossClientKey()
+
+        // 목록에 토스가 있었다는 것은 키가 있었다는 뜻이다. 그래도 다시 묻는 이유는
+        // 이 경로가 화면의 판단에 기대지 않아야 하기 때문이다 — 기대는 순간, 키 없이
+        // 결제창을 여는 코드가 이 안에 조용히 남는다.
+        if (clientKey === null) {
+          setState({ status: 'failed', refusal: 'toss_unavailable', shortfall: null })
+
+          return
+        }
+
+        let opened
+        try {
+          setState({ status: 'running', step: 'starting' })
+          opened = await startTossPayment(orderId)
+        } catch {
+          setState({ status: 'failed', refusal: 'unreachable', shortfall: null })
+
+          return
+        }
+
+        try {
+          setState({ status: 'running', step: 'opening' })
+
+          // 금액도 결제 id 도 **서버가 정한 값**이다 (4.3). 화면이 들고 있던 숫자를
+          // 넣으면 승인 단계의 금액 대조가 사용자의 조작뿐 아니라 우리 화면의
+          // 실수까지 잡아내는 장치가 되고, 그 실수는 사용자에게 결제 실패로 보인다.
+          await openTossCheckout({
+            amount: opened.authorizedAmount,
+            clientKey,
+            orderName: next.orderName,
+            paymentId: opened.id,
+            ...tossReturnUrls(window.location.origin, next.checkoutId),
+          })
+        } catch {
+          setState({ status: 'failed', refusal: 'toss_unavailable', shortfall: null })
+
+          return
+        }
+
+        setState({ status: 'leaving' })
       }
 
       async function place(
@@ -204,8 +331,8 @@ export function usePayment(
  * 금액보다 적었다면 이유는 하나로 좁혀진다. 그 밖의 거절은 이유를 모르는 거절이고,
  * 모르는 것을 아는 척하는 문장보다 「다른 카드로 해 보세요」가 정확하다.
  */
-function refusalOf(input: PaymentInput): PaymentState {
-  const shortfall = input.amount - availableCredit(input.card)
+function refusalOf(card: IssuedCard, amount: number): PaymentState {
+  const shortfall = amount - availableCredit(card)
 
   if (shortfall > 0) return { refusal: 'exceeds_credit', shortfall, status: 'failed' }
 

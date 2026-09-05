@@ -10,7 +10,9 @@ import { PaymentSection } from '@/components/checkout/payment-section'
 import { useAddressBook } from '@/lib/checkout/use-address-book'
 import { formatRemaining } from '@/lib/checkout/remaining'
 import { useCheckout } from '@/lib/checkout/use-checkout'
-import { defaultCard } from '@/lib/payment/cards'
+import { defaultMethod, methodById, methodId, paymentMethods } from '@/lib/payment/methods'
+import { checkoutOrderName } from '@/lib/payment/order-name'
+import { tossClientKey } from '@/lib/payment/toss'
 import { usePayment } from '@/lib/payment/use-payment'
 import type { CheckoutMessages } from '@/messages'
 
@@ -55,6 +57,18 @@ export interface CheckoutScreenProps {
  * 그것을 만들지 않고 **알림만 받는다**(`placed`) — 주문이 생긴 순간부터 그 훅은
  * 떠날 때 예약을 풀지 않는다. 그 알림이 없으면 거절당하고 다른 카드로 다시 하려는
  * 사람의 재고를 우리 손으로 풀어 버린다.
+ *
+ * ## 토스를 골랐으면 이 화면은 **끝나지 않고 떠난다** (TASK-0055 4.2)
+ *
+ * 완료 화면으로 갈아 끼우는 조건은 `paid` 하나 그대로다. 결제창으로 넘어간 상태
+ * (`leaving`)에서는 주문서가 그대로 남아 있고 문장만 하나 바뀐다 — 여기서 완료를
+ * 그리면 창을 닫고 돌아온 사람이 「결제 완료」를 본 채로 결제되지 않은 주문을 갖고,
+ * 그 착각을 막는 것이 이 TASK 의 값이다.
+ *
+ * 승인은 돌아온 화면(`app/checkout/toss/success`)이 한다. 그 화면이 이 주문서로
+ * 돌아오는 길을 갖는 것은 우리가 `successUrl`·`failUrl` 에 주문서 id 를 실어
+ * 보내기 때문이다(`tossReturnUrls`) — 토스가 돌려주는 셋 중 어느 것도 주문서를
+ * 가리키지 않는다.
  */
 export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
   const { state, remaining, placed } = useCheckout(id)
@@ -63,7 +77,7 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
   // 아니고, 떠날 때 풀어서도 안 된다 (TASK-0054 4.3).
   const payment = usePayment(placed)
   const [chosen, setChosen] = useState<string | null>(null)
-  const [chosenCard, setChosenCard] = useState<string | null>(null)
+  const [chosenMethod, setChosenMethod] = useState<string | null>(null)
   const [agreed, setAgreed] = useState(false)
 
   // 결제까지 끝났다. 이 주문서가 할 일은 여기서 끝나므로 화면 전체가 바뀐다 —
@@ -107,11 +121,12 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
 
   const { checkout } = state
   const address = addresses.rows.find((row) => row.id === (chosen ?? defaultOf(addresses.rows)))
-  const card = payment.cards.find(
-    (row) => row.id === (chosenCard ?? defaultCard(payment.cards)?.id),
-  )
-  const paying = payment.state.status === 'running'
-  const ready = address !== undefined && card !== undefined && agreed && !paying
+  // 4.1 — 키가 없으면 토스는 목록에 **없다.** 지금 이 저장소가 그 상태다.
+  const methods = paymentMethods(payment.cards, tossClientKey() !== null)
+  const method = methodById(methods, chosenMethod) ?? defaultMethod(methods)
+  // 결제창으로 넘어가는 중에도 누를 수 없다 — 그 사이에 또 누르면 결제가 두 벌 열린다.
+  const paying = payment.state.status === 'running' || payment.state.status === 'leaving'
+  const ready = address !== undefined && method !== null && agreed && !paying
 
   /**
    * 결제를 건다. 주문이 없으면 만들고, 있으면 그 주문에 다시 건다.
@@ -121,13 +136,19 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
    * 그 판단은 화면이 아니라 그쪽에 있다 — 여기서 나누면 같은 규칙이 두 곳에 산다.
    */
   const start = (): void => {
-    if (address === undefined || card === undefined) return
+    if (address === undefined || method === null) return
 
     payment.pay({
       addressId: address.id,
       amount: checkout.paidAmount,
-      card,
       checkoutId: checkout.id,
+      method,
+      // 결제창에 뜰 한 줄. 토스만 쓰지만 무엇으로 결제할지가 **누르는 순간**
+      // 정해지므로, 문구를 아는 이 화면이 미리 만들어 넘긴다.
+      orderName: checkoutOrderName(checkout, {
+        more: messages.payment.toss.orderNameMore,
+        single: messages.payment.toss.orderNameSingle,
+      }),
     })
   }
 
@@ -147,11 +168,11 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
         <Placeholder body={messages.couponBody} title={messages.couponTitle} />
 
         <PaymentSection
-          cards={payment.cards}
-          chosen={card?.id ?? null}
+          chosen={method === null ? null : methodId(method)}
           loading={payment.loadingCards}
           messages={messages.payment}
-          onChoose={setChosenCard}
+          methods={methods}
+          onChoose={setChosenMethod}
           onRetry={start}
           state={payment.state}
         />
@@ -162,7 +183,7 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
           agreed={agreed}
           checkout={checkout}
           messages={messages}
-          missingCard={card === undefined}
+          missingMethod={method === null}
           missingRecipient={address === undefined}
           onAgree={setAgreed}
           onPlace={start}
@@ -383,7 +404,7 @@ function Summary({
   placing,
   placeFailed,
   missingRecipient,
-  missingCard,
+  missingMethod,
 }: {
   readonly checkout: Checkout
   readonly messages: CheckoutMessages
@@ -394,7 +415,7 @@ function Summary({
   readonly placing: boolean
   readonly placeFailed: boolean
   readonly missingRecipient: boolean
-  readonly missingCard: boolean
+  readonly missingMethod: boolean
 }) {
   const discount = checkout.totalCouponDiscountAmount + checkout.totalPointDiscountAmount
 
@@ -450,7 +471,7 @@ function Summary({
       */}
       {ready ? null : (
         <p className="text-fg-subtle text-xs">
-          {reasonOf({ messages, missingCard, missingRecipient })}
+          {reasonOf({ messages, missingMethod, missingRecipient })}
         </p>
       )}
 
@@ -472,15 +493,15 @@ function Summary({
  */
 function reasonOf({
   missingRecipient,
-  missingCard,
+  missingMethod,
   messages,
 }: {
   readonly missingRecipient: boolean
-  readonly missingCard: boolean
+  readonly missingMethod: boolean
   readonly messages: CheckoutMessages
 }): string {
   if (missingRecipient) return messages.recipientRequired
-  if (missingCard) return messages.payment.cardRequired
+  if (missingMethod) return messages.payment.methodRequired
 
   return messages.termsRequired
 }
