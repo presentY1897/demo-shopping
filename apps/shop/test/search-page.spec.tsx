@@ -147,6 +147,45 @@ describe('F1 자동완성', () => {
   })
 })
 
+describe('한글 자동완성 (TASK-0103 F1 · F2)', () => {
+  it('offers candidates mid-composition: 코ㅌ', async () => {
+    const user = userEvent.setup()
+    renderSearch('/search')
+
+    // 「코ㅌ」는 완성형 `코` 뒤에 호환 자모 `ㅌ` 다. 접두어 검색만으로는 「코트」와
+    // 한 글자도 겹치지 않는다 — 자모로 펴야 만난다.
+    await user.type(screen.getAllByRole('combobox', { name: box.label })[0]!, '코ㅌ')
+
+    const listbox = await screen.findByRole('listbox', { name: box.suggestionsLabel })
+    const options = await within(listbox).findAllByRole('option')
+
+    expect(options.map((option) => option.textContent)).toContain('오버핏 싱글 코트')
+  })
+
+  it('offers candidates from initials alone: ㅋㅌ', async () => {
+    const user = userEvent.setup()
+    renderSearch('/search')
+
+    await user.type(screen.getAllByRole('combobox', { name: box.label })[0]!, 'ㅋㅌ')
+
+    const listbox = await screen.findByRole('listbox', { name: box.suggestionsLabel })
+    const options = await within(listbox).findAllByRole('option')
+
+    expect(options.map((option) => option.textContent)).toContain('오버핏 싱글 코트')
+  })
+
+  it('still offers them for a fully typed word', async () => {
+    const user = userEvent.setup()
+    renderSearch('/search')
+
+    await user.type(screen.getAllByRole('combobox', { name: box.label })[0]!, '코트')
+
+    const listbox = await screen.findByRole('listbox', { name: box.suggestionsLabel })
+
+    expect((await within(listbox).findAllByRole('option')).length).toBeGreaterThan(0)
+  })
+})
+
 describe('F2 필터 자동 생성', () => {
   it('builds the panel from whatever the category declares', async () => {
     renderSearch(`/search?categoryId=${String(SEARCH_COAT_CATEGORY)}`)
