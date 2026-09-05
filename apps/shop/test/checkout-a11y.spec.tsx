@@ -6,14 +6,26 @@
  * 사람은 아무것도 할 수 없다 — 뒤의 것은 `fieldset`/`legend` 없이 두면 「무엇을
  * 고르는 라디오인지」가 접근성 트리에 없다.
  *
+ * 결제수단(TASK-0054)이 그 둘을 하나씩 더 들여왔다: **비활성 라디오**와 **결과를
+ * 알리는 영역**이다. 앞의 것은 이유가 접근성 트리에 없으면 「왜 못 고르는지」를
+ * 아무도 듣지 못하고, 뒤의 것은 실패했을 때에야 나타나면 읽히지 않는다. 아래
+ * 검사가 카드를 고르고 실제로 거절당한 화면까지 재는 이유다.
+ *
  * 규칙 집합은 이 앱의 것을 다시 적는다 — `packages/ui` 의 사본은 `stories/` 까지
  * 닿지 않는 `exports` 맵 뒤에 있다.
  */
 
-import { resetCheckoutStore, sessionBuyer, shopperCheckout } from '@shopping/api-mocks'
+import {
+  resetCheckoutStore,
+  resetPaymentStore,
+  sessionBuyer,
+  shopperCards,
+  shopperCheckout,
+} from '@shopping/api-mocks'
 import { DENSITY_LEVELS } from '@shopping/ui'
 import { DensityProvider } from '@shopping/ui/density'
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import axe from 'axe-core'
 import type { RunOptions } from 'axe-core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -79,6 +91,7 @@ async function renderCheckout(width: number = VIEWPORTS.desktop) {
 beforeEach(() => {
   resetDensity()
   resetCheckoutStore()
+  resetPaymentStore()
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(new Date(new Date(checkout.expiresAt).getTime() - 10 * 60 * 1000))
 })
@@ -107,6 +120,29 @@ describe('주문서 접근성 (P2)', () => {
     vi.setSystemTime(new Date(new Date(checkout.expiresAt).getTime() - 2 * 60 * 1000))
 
     await renderCheckout()
+
+    await expectNoViolations()
+  })
+
+  it('passes with a declined payment on the screen', async () => {
+    const user = userEvent.setup()
+    // 한도가 모자란 카드. 이 화면에서 거절을 만드는 방법이 그것 하나다.
+    const tight = shopperCards.cards.find((card) => card.creditLimit < checkout.paidAmount)
+
+    if (tight === undefined) throw new Error('한도가 모자란 씨앗 카드가 없다')
+
+    await renderCheckout()
+
+    const section = await screen.findByRole('region', { name: copy.payment.title })
+
+    await within(section).findByRole('group', { name: copy.payment.chooseCard })
+    await user.click(within(section).getByRole('radio', { name: new RegExp(tight.brand, 'u') }))
+
+    const summary = screen.getByRole('complementary', { name: copy.summaryTitle })
+
+    await user.click(within(summary).getByRole('checkbox', { name: copy.termsLabel }))
+    await user.click(within(summary).getByRole('button', { name: copy.placeOrder }))
+    await screen.findByText(copy.payment.holdKept)
 
     await expectNoViolations()
   })

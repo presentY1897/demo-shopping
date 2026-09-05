@@ -88,6 +88,25 @@ export const mockPaths = {
    * 하나다 (TASK-0050 4.3).
    */
   orders: `*${API_PATH_PREFIX}/orders`,
+  /**
+   * 내 카드들 (TASK-0054). `GET` — 결제 화면이 고를 것을 그린다.
+   *
+   * 경로에 사용자 id 가 없다. 주인은 토큰이 정한다 — `/cart` · `/me` 와 같은 모양이고,
+   * 남의 카드를 가리킬 자리가 애초에 없다.
+   */
+  cards: `*${API_PATH_PREFIX}/cards`,
+  /** `POST` 결제를 연다. 몸통은 `{ orderId, provider, cardId }` 다. */
+  payments: `*${API_PATH_PREFIX}/payments`,
+  /**
+   * `POST` 승인, `POST` 매입 — **두 라우트인 것이 계약**이다 (D-031).
+   *
+   * 가상 카드는 그 사이에 아무 일도 하지 않지만 토스에는 은행이 있고, 두 구현이 같은
+   * 순서를 따라야 추상화가 값을 한다. 컬렉션 뒤에 오는 것은 옆의 라우트들과 같은
+   * 이유다 — `:id` 는 `/` 를 넘지 못하므로 서로를 먹지 않지만, 순서를 지켜 온
+   * 목록만 리터럴이 하나 붙는 날 안전하다.
+   */
+  paymentAuthorize: `*${API_PATH_PREFIX}/payments/:id/authorize`,
+  paymentCapture: `*${API_PATH_PREFIX}/payments/:id/capture`,
   /** `GET` the tree, `POST` a new node. */
   categories: `*${API_PATH_PREFIX}/categories`,
   /**

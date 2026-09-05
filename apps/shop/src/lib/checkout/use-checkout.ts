@@ -3,7 +3,7 @@
 import type { Checkout } from '@shopping/shared'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { closeCheckoutOnLeave, placeOrder, readCheckout } from './checkout-api'
+import { closeCheckoutOnLeave, readCheckout } from './checkout-api'
 import type { Remaining } from './remaining'
 import { remainingAt } from './remaining'
 import { useNow } from './use-now'
@@ -26,15 +26,19 @@ export type CheckoutState =
   | { readonly status: 'gone' }
   | { readonly status: 'failed' }
   | { readonly status: 'ready'; readonly checkout: Checkout }
-  /** 주문이 만들어졌다. 결제는 M08 이 붙인다 (4.6). */
-  | { readonly status: 'placed'; readonly orderNumber: string }
 
 export interface CheckoutStore {
   readonly state: CheckoutState
   readonly remaining: Remaining | null
-  readonly placing: boolean
-  readonly placeFailed: boolean
-  readonly place: (addressId: string) => void
+  /**
+   * 주문이 만들어졌다고 알려 준다.
+   *
+   * **주문을 만드는 것은 이 훅이 아니다** (TASK-0054). 결제가 주문에 붙으므로
+   * (`POST /payments` 가 `orderId` 를 받는다) 주문 생성과 결제는 한 흐름이어야
+   * 하고, 그 흐름은 결제 쪽이 들고 있다. 여기서 만들면 주문 id 가 두 훅에 나뉘어
+   * 살고, 실제로 그렇게 만들었더니 이 훅의 `place` 가 아무도 안 부르는 코드가 됐다.
+   */
+  readonly placed: () => void
 }
 
 /**
@@ -53,8 +57,6 @@ function useRemaining(expiresAt: string | null): Remaining | null {
 
 export function useCheckout(id: string): CheckoutStore {
   const [state, setState] = useState<CheckoutState>({ status: 'loading' })
-  const [placing, setPlacing] = useState(false)
-  const [placeFailed, setPlaceFailed] = useState(false)
   /** 주문이 만들어졌으면 떠날 때 풀지 않는다 — 그 예약은 이제 주문의 것이다. */
   const keep = useRef(false)
 
@@ -100,32 +102,25 @@ export function useCheckout(id: string): CheckoutStore {
 
   const remaining = useRemaining(state.status === 'ready' ? state.checkout.expiresAt : null)
 
-  const place = useCallback(
-    (addressId: string) => {
-      if (state.status !== 'ready') return
+  /**
+   * 주문이 만들어졌다 — 이 주문서의 예약은 이제 그 주문의 것이다.
+   *
+   * **떠날 때 푸는 것을 멈춘다.** 주문이 생긴 뒤에도 해제 신호를 보내면, 결제가
+   * 거절돼 다른 카드로 다시 하려는 사람의 재고를 우리 손으로 풀어 버린다 — 4.3 이
+   * 지키려는 것이 정확히 그것이다.
+   *
+   * 결제까지 끝나면 예약은 `CONFIRMED` 라 해제가 무해하지만, 거절과 성공을 여기서
+   * 구분하지 않는 이유는 **구분이 필요 없기 때문**이다: 주문이 생긴 순간부터
+   * 이 화면은 그 예약의 주인이 아니다.
+   *
+   * **상태를 바꾸지 않는다.** 주문이 생겼다는 것은 아직 끝이 아니고 — 끝은 결제다 —
+   * 여기서 화면을 완료로 옮기면 결제하는 중에 결제 영역이 사라진다.
+   */
+  const placed = useCallback(() => {
+    keep.current = true
+  }, [])
 
-      setPlacing(true)
-      setPlaceFailed(false)
-
-      async function send(checkoutId: string): Promise<void> {
-        try {
-          const { order } = await placeOrder(checkoutId, addressId)
-
-          keep.current = true
-          setState({ status: 'placed', orderNumber: order.orderNumber })
-        } catch {
-          setPlaceFailed(true)
-        } finally {
-          setPlacing(false)
-        }
-      }
-
-      void send(state.checkout.id)
-    },
-    [state],
-  )
-
-  return { state, remaining, placing, placeFailed, place }
+  return { state, remaining, placed }
 }
 
 /** 없어진 주문서인가 — 만료됐거나 이미 풀렸다. */
