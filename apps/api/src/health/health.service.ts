@@ -7,6 +7,7 @@ import { DemoCleanupReporter } from './demo-cleanup.reporter.js'
 import { SearchIndexReporter } from './search-index.reporter.js'
 import type { HealthIndicator } from './health-indicator.js'
 import { HEALTH_INDICATORS } from './health-indicator.js'
+import { reservationExpiryDetails } from './reservation-expiry.health-indicator.js'
 
 type Reading = readonly [HealthDependencyKey, HealthStatus]
 
@@ -32,7 +33,7 @@ export class HealthService {
    * a dependency means registering one more indicator and reading it here.
    */
   async check(): Promise<HealthResponse> {
-    const [readings, lastRunAt, searchIndex] = await Promise.all([
+    const [readings, lastRunAt, searchIndex, reservationExpiry] = await Promise.all([
       Promise.all(
         this.indicators.map(async (indicator): Promise<Reading> => [
           indicator.key,
@@ -41,6 +42,10 @@ export class HealthService {
       ),
       this.demoCleanup.lastRunAt(),
       this.searchIndex.report(),
+      // 상태는 위의 지표 목록에서 나오고, 여기서는 그 옆에 실릴 시각과 건수만
+      // 가져온다 — 두 값의 출처를 지표 목록 하나로 묶어 두는 이유는
+      // `reservation-expiry.health-indicator.ts` 에 적혀 있다.
+      reservationExpiryDetails(this.indicators),
     ])
 
     return {
@@ -51,6 +56,7 @@ export class HealthService {
       version: this.config.version,
       demoCleanup: { lastRunAt },
       searchIndex,
+      reservationExpiry: { status: statusOf(readings, 'reservationExpiry'), ...reservationExpiry },
     }
   }
 }

@@ -18,6 +18,7 @@ export const healthOk = defineFixture(healthResponseSchema, {
   version: '0.0.0',
   demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
   searchIndex: { pending: 0, lastRunAt: '2026-09-05T00:00:00.000Z', oldestPendingAt: null },
+  reservationExpiry: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', releasedCount: 0 },
 })
 
 /**
@@ -32,6 +33,7 @@ export const healthDegraded = defineFixture(healthResponseSchema, {
   version: '0.0.0',
   demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
   searchIndex: { pending: 0, lastRunAt: '2026-09-05T00:00:00.000Z', oldestPendingAt: null },
+  reservationExpiry: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', releasedCount: 0 },
 })
 
 /**
@@ -50,4 +52,5 @@ export const healthSearchIndexing = defineFixture(healthResponseSchema, {
   version: '0.0.0',
   demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
   searchIndex: { pending: 0, lastRunAt: '2026-09-05T00:00:00.000Z', oldestPendingAt: null },
+  reservationExpiry: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', releasedCount: 0 },
 })
