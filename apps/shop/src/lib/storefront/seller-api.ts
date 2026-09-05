@@ -10,7 +10,7 @@ import { getPublicApiClient } from '@/lib/api'
  */
 export function fetchStorefrontSeller(
   id: string,
-  options: { readonly signal?: AbortSignal } = {},
+  options: { readonly signal?: AbortSignal; readonly revalidate?: number } = {},
 ): Promise<StorefrontSellerResponse> {
   return getPublicApiClient().getStorefrontSeller(id, options)
 }

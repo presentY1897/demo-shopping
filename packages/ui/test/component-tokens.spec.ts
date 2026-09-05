@@ -55,9 +55,20 @@ function walk(directory: string): readonly string[] {
  * the token preview page explains the touch floor to whoever is reading it — and
  * a checker that could not tell a sentence from a declaration would push that
  * copy into a component, which is the outcome the rule exists to prevent.
+ *
+ * **Open Graph images are not app UI.** They are rendered by Satori into a PNG,
+ * which reads neither Tailwind classes nor CSS custom properties — a token there
+ * would come out as the literal string `var(--color-fg)` and paint nothing. So
+ * those files declare colours, and this rule cannot reach them.
+ *
+ * The exemption is by **filename**, not by directory: `opengraph-image` and
+ * `twitter-image` are Next's own reserved names for exactly this kind of file, so
+ * the list cannot quietly grow to cover an ordinary component.
  */
+const OG_IMAGE_FILES = /(?:opengraph|twitter)-image\.tsx?$/
+
 function isStyleBearing(path: string): boolean {
-  return !path.includes(`${sep}messages${sep}`)
+  return !path.includes(`${sep}messages${sep}`) && !OG_IMAGE_FILES.test(path)
 }
 
 /**

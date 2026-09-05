@@ -10,6 +10,7 @@ import { DemoBanner } from '@/components/demo/demo-banner'
 import { AccountDensityProvider } from '@/components/layout/account-density-provider'
 import { ShopFooter } from '@/components/layout/shop-footer'
 import { ShopHeader } from '@/components/layout/shop-header'
+import { metadataBase } from '@/lib/seo/site'
 import { DEFAULT_LOCALE, messagesFor } from '@/messages'
 
 import './globals.css'
@@ -17,7 +18,16 @@ import './globals.css'
 const messages = messagesFor()
 
 export const metadata: Metadata = {
-  title: messages.app.name,
+  /**
+   * Every relative `alternates.canonical` and every relative OG image below is
+   * resolved against this (TASK-0102). Without it Next emits them relative,
+   * which a crawler reading the page from a cache or a feed cannot resolve.
+   */
+  metadataBase: metadataBase(),
+  title: {
+    default: messages.app.name,
+    template: `%s · ${messages.app.name}`,
+  },
   description: messages.app.description,
 }
 

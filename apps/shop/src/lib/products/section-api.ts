@@ -17,7 +17,7 @@ import { writeSearchParams } from '@/lib/search/search-params'
  */
 export function fetchSection(
   query: SearchQuery,
-  options: { readonly signal?: AbortSignal } = {},
+  options: { readonly signal?: AbortSignal; readonly revalidate?: number } = {},
 ): Promise<SearchResponse> {
   const search = writeSearchParams(query)
   const params = new URLSearchParams(search)

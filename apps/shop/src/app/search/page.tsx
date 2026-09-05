@@ -1,6 +1,8 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import { SearchWorkspace } from '@/components/search/search-workspace'
+import { hiddenMetadata } from '@/lib/seo/page-metadata'
 import { messagesFor } from '@/messages'
 
 /**
@@ -16,6 +18,22 @@ import { messagesFor } from '@/messages'
  * client component and importing the catalog from inside it would ship every
  * screen's Korean to the browser.
  */
+/**
+ * 검색 결과는 색인하지 않는다 (TASK-0102 4장).
+ *
+ * The query string is unbounded — every word anybody ever searches for is a
+ * different address for a page whose content is somebody else's catalogue. What
+ * is worth indexing is the categories and the products, and both are in the
+ * sitemap.
+ *
+ * `follow` stays on: the product links here are worth crawling even though the
+ * page around them is not.
+ */
+export const metadata: Metadata = hiddenMetadata({
+  title: messagesFor().search.title,
+  description: messagesFor().search.promptBody,
+})
+
 export default function SearchPage() {
   const messages = messagesFor()
 

@@ -26,6 +26,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 import type { Selection } from '@/lib/products/variant-selection'
+import { useFreshDetail } from '@/lib/products/use-fresh-detail'
 import { choose, displayPrice, selectedVariant } from '@/lib/products/variant-selection'
 import type { ProductDetailMessages } from '@/messages'
 
@@ -41,12 +42,16 @@ const CURRENCY = 'KRW'
 const LOW_STOCK = 10
 
 export function ProductDetail({
-  detail,
+  detail: cached,
   messages,
 }: {
   readonly detail: ProductDetailResponse
   readonly messages: ProductDetailMessages
 }) {
+  // The page is served from a cache up to a minute old (TASK-0102 R2). Price and
+  // stock are the two things a minute is long enough to be wrong about, and the
+  // two a person acts on — so the screen asks again and swaps them in.
+  const detail = useFreshDetail(cached)
   const { product, seller, attributes } = detail
   const { density } = useDensity()
   const band = useViewportBand()
