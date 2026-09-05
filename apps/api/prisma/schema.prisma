@@ -135,6 +135,7 @@ model User {
   refreshTokens RefreshToken[]
   cart          Cart?
   reservations  StockReservation[]
+  orders        Order[]
 
   /// Stock movements this account made (TASK-0036). Withdrawal leaves them
   /// pointing here, which is why the edge is `Restrict` on the other side.
@@ -185,6 +186,19 @@ model Seller {
   /// is held to 0–10000 by `Seller_commissionRateBp_check`.
   commissionRateBp Int?
 
+  /// 이 판매자의 기본 배송비 (TASK-0049 4.1).
+  ///
+  /// 배송비는 `SellerOrder` 단위로 붙는다(D-023 · `pricing.md` 1장 ④). 값이 놓일
+  /// 자리를 여기서 만드는 이유는 주문이 그것 없이 계산될 수 없기 때문이고, 바꾸는
+  /// **화면**은 M09 다. 그때까지는 전부 플랫폼 기본값이다.
+  shippingFee Int @default(3000)
+
+  /// 이 금액 이상이면 무료. `null` 이면 무료 조건이 **없다**.
+  ///
+  /// `0` 과 다르다 — `0` 은 「0원 이상이면 무료」, 즉 언제나 무료다. 판정 기준은
+  /// 상품금액에서 쿠폰 할인을 뺀 값이다(`pricing.md` 1장, 2026-09-05 결정).
+  freeShippingThreshold Int?
+
   /// Optimistic lock (DECISIONS 4). Two people edit this row — the seller
   /// changes brand copy while an operator approves or suspends the store — and
   /// last-write-wins would quietly revert one of them.
@@ -196,8 +210,9 @@ model Seller {
   /// `Restrict`, unlike the personal tables below: a store carries products,
   /// orders and settlements, so removing its owner must fail loudly rather than
   /// cascade through the catalogue.
-  user     User      @relation(fields: [userId], references: [id], onDelete: Restrict)
-  products Product[]
+  user         User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  products     Product[]
+  sellerOrders SellerOrder[]
 
   /// The operator queue: pending applications first.
   @@index([status])
@@ -867,6 +882,7 @@ model ProductVariant {
   cartItems    CartItem[]
   /// 이 Variant 에 걸린 예약들 (TASK-0048).
   reservations StockReservation[]
+  orderItems   OrderItem[]
 
   /// Target of `VariantOptionValue`'s composite edge. Reading a product's live
   /// variants is served by `ProductVariant_product_signature_key`, which leads
@@ -1246,8 +1262,9 @@ model StockReservation {
 
   status ReservationStatus @default(HELD)
 
-  /// 이 시각이 지나면 만료다. 스케줄러가 없어도 **가용재고 계산은 이것을 본다**
-  /// — 스케줄러가 멈춰도 재고가 영원히 잠기지는 않게.
+  /// 이 시각이 지나면 만료다. **가용재고 계산은 이것을 보지 않는다** — 보는 것은
+  /// `ProductVariant.reserved` 이고, 만료분을 거기서 빼 주는 것이 만료
+  /// 스케줄러(TASK-0051)의 일이다. 그래서 그 스케줄러가 멈추면 재고가 잠긴다.
   expiresAt DateTime
 
   /// 확정되거나 풀린 시각. `HELD` 인 동안은 NULL 이다.
@@ -1269,4 +1286,178 @@ model StockReservation {
   @@index([checkoutId])
   /// 정합성 점검이 읽는 것: variant 별 HELD 합계 (F7).
   @@index([variantId, status])
+}
+
+/// 한 판매자 몫의 주문이 지나는 상태 (`docs/design/state-machines.md` 1장).
+///
+/// 상태가 `Order` 가 아니라 여기 붙는 이유가 2단 분할의 전부다 — 판매자 A 는
+/// 배송완료인데 B 는 준비중일 수 있어야 하고, B 만 취소할 수 있어야 하며, 정산도
+/// 판매자별로 나간다. `Order` 에 두면 셋 다 불가능해진다 (D-023).
+enum SellerOrderStatus {
+  /// 주문서가 생겼고 재고는 잡혀 있다. 결제를 기다린다.
+  PAYMENT_PENDING
+  /// 결제가 실패했거나 TTL 이 지났다. 예약은 풀린다 (TASK-0051).
+  PAYMENT_FAILED
+  PAID
+  PREPARING
+  SHIPPED
+  DELIVERED
+  /// 구매확정. 정산과 적립금 지급의 방아쇠다.
+  CONFIRMED
+  CANCELED
+  RETURNED
+}
+
+/// 주문서. **결제 단위**다 (D-023).
+///
+/// 여러 판매자의 물건이 한 주문에 섞이지만 결제는 한 번이다. 그래서 금액의 합계는
+/// 여기 있고, 상태는 여기 없다 — 상태는 `SellerOrder` 가 갖는다.
+model Order {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  /// 사람이 읽고 전달하는 번호. `YYYYMMDD-XXXXXXXX`.
+  ///
+  /// id 가 이미 있는데 따로 두는 이유는 UUID 를 전화로 불러 줄 수 없기 때문이다.
+  /// 유니크는 DB 가 지킨다 — 난수를 쓰므로 충돌 확률은 낮지만 0이 아니고, 「낮다」는
+  /// 것은 애플리케이션이 확인할 수 있는 성질이 아니다.
+  orderNumber String @unique
+
+  userId String @db.Uuid
+
+  /// 이 주문이 잡은 예약을 가리킨다 (TASK-0049 4.3).
+  ///
+  /// 예약 쪽에 `orderId` 를 다는 대신 이 방향인 이유는 **순서** 때문이다. 재고
+  /// 예약이 주문 저장보다 먼저이므로(4장 ③ → ④) 예약을 잡는 시점에 주문 행이
+  /// 아직 없다. 이 값은 주문 서비스가 둘 중 어느 행보다 먼저 만든다.
+  ///
+  /// 유니크: 한 주문서 시도가 두 주문이 되는 것은 재시도의 버그이고, 그때 예약은
+  /// 둘 중 하나만 가리키게 된다.
+  checkoutId String @unique @db.Uuid
+
+  /// 수령인 스냅샷 (TASK-0049 4.6). `Address` 를 가리키지 않는다 — 배송지는
+  /// 지워지고 고쳐지지만 「어디로 보냈나」는 바뀌면 안 된다.
+  recipientName  String
+  recipientPhone String
+  postalCode     String
+  addressLine1   String
+  addressLine2   String?
+
+  /// `pricing.md` 1장의 ① ③ ④ ⑤ 와 실결제금액. 전부 정수 원이다.
+  totalProductAmount        Int
+  totalCouponDiscountAmount Int @default(0)
+  totalPointDiscountAmount  Int @default(0)
+  totalShippingFee          Int @default(0)
+  paidAmount                Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// `Restrict`: 주문이 있는 계정은 지워지지 않는다. 탈퇴는 소프트 삭제이므로
+  /// 이 참조가 끊길 일이 없고, 끊긴다면 그것은 이력을 잃는 일이다.
+  user         User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  sellerOrders SellerOrder[]
+
+  /// 「내 주문」 목록. 최신순이다.
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+/// 판매자별 주문. **배송 · 취소 · 정산의 단위**다 (D-023).
+model SellerOrder {
+  id       String @id @default(uuid(7)) @db.Uuid
+  orderId  String @db.Uuid
+  sellerId String @db.Uuid
+
+  status SellerOrderStatus @default(PAYMENT_PENDING)
+
+  /// 판매자 스냅샷. 데모 판매자가 만료돼도(TASK-0025) 주문 이력에 브랜드명이 남는다.
+  brandName String
+
+  productAmount        Int
+  couponDiscountAmount Int @default(0)
+  pointDiscountAmount  Int @default(0)
+
+  /// 배송비를 낸 적립금 (TASK-0047).
+  ///
+  /// 항목에 안분되지 **않는** 몫이다. 항목에 붙이면 항목의 할인이 상품금액을 넘고
+  /// 부분 취소에서 환불액이 음수가 된다 — 무작위 검사가 실제로 잡은 결함이다.
+  shippingPointAmount Int @default(0)
+
+  shippingFee Int @default(0)
+  paidAmount  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order         Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  /// `Restrict`: 스토어 행은 주문 이력이 가리키므로 지워지지 않는다. 데모 판매자
+  /// 만료는 `SUSPENDED` 이지 삭제가 아니다.
+  seller        Seller               @relation(fields: [sellerId], references: [id], onDelete: Restrict)
+  items         OrderItem[]
+  statusHistory OrderStatusHistory[]
+
+  /// 한 주문에 한 판매자는 한 몫이다. 두 줄이면 그 판매자의 배송비가 두 번 붙는다.
+  @@unique([orderId, sellerId])
+  /// 판매자 콘솔의 주문 목록: 상태로 거르고 최신순.
+  @@index([sellerId, status, createdAt(sort: Desc)])
+}
+
+/// 주문 항목. 상품 스냅샷과 **항목별 안분액**을 든다.
+model OrderItem {
+  id            String @id @default(uuid(7)) @db.Uuid
+  sellerOrderId String @db.Uuid
+  variantId     String @db.Uuid
+
+  /// 상품명 · 옵션 · 대표 이미지 · 판매자명 · SKU (TASK-0049 4장).
+  ///
+  /// 상품이 삭제되거나 데모 판매자가 만료돼도 주문 이력이 온전해야 한다. 필요한
+  /// 필드만 담는다 — 이미지는 대표 1장이다(R2).
+  productSnapshot Json
+
+  /// 주문 시점의 단가. `ProductVariant.price` 는 그 뒤에 바뀐다.
+  unitPrice Int
+  quantity  Int
+
+  /// `unitPrice × quantity`. 저장하는 이유는 환불 때 다시 계산하지 않기
+  /// 위해서다(`pricing.md` 원칙).
+  productAmount Int
+
+  /// 이 항목에 안분된 몫. 부분 취소에서 「이 항목에 얼마가 붙어 있었나」가 이것이다.
+  couponDiscountAmount Int @default(0)
+  pointDiscountAmount  Int @default(0)
+  /// 위 둘의 합.
+  discountAmount       Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sellerOrder SellerOrder    @relation(fields: [sellerOrderId], references: [id], onDelete: Cascade)
+  /// `Restrict`: 팔린 조합은 지워지지 않는다. 스냅샷이 있어도 원장과 클레임이 이
+  /// 참조를 따라간다.
+  variant     ProductVariant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+
+  /// 「이 조합이 얼마나 팔렸나」. M13 의 판매량과 M10 의 클레임이 읽는다.
+  @@index([variantId])
+}
+
+/// 상태 이력. 누가 언제 무엇에서 무엇으로 옮겼는가.
+model OrderStatusHistory {
+  id            String @id @default(uuid(7)) @db.Uuid
+  sellerOrderId String @db.Uuid
+
+  /// 생성 시에는 `null` 이다 — 이전 상태가 없다.
+  fromStatus SellerOrderStatus?
+  toStatus   SellerOrderStatus
+
+  /// 왜 옮겼는가. 취소·실패에는 있고 정상 진행에는 없다.
+  reason String?
+
+  /// 누가 옮겼는가. 스케줄러가 옮긴 것은 `null` 이다 — 사람이 없다.
+  actorId String? @db.Uuid
+
+  createdAt DateTime @default(now())
+
+  sellerOrder SellerOrder @relation(fields: [sellerOrderId], references: [id], onDelete: Cascade)
+
+  /// 한 주문의 이력을 시간순으로.
+  @@index([sellerOrderId, createdAt])
 }

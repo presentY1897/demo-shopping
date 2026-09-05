@@ -224,6 +224,36 @@ describe('잡아 둔 재고도 놓아 준다 (TASK-0048)', () => {
   })
 })
 
+describe('주문은 남는다 (TASK-0049)', () => {
+  it('keeps a demo buyer’s order after the sweep', async () => {
+    const { user, variant } = await demoStore({ expiresAt: PAST })
+    const [order] = await db.query<{ id: string }>(
+      `INSERT INTO "Order"
+         ("id", "orderNumber", "userId", "checkoutId", "recipientName", "recipientPhone",
+          "postalCode", "addressLine1", "totalProductAmount", "paidAmount", "updatedAt")
+       VALUES (gen_random_uuid(), '20260905-KEEPKEEP', $1, gen_random_uuid(), '수령인',
+               '010-0000-0000', '06234', '서울시 강남구', 10000, 10000, now())
+       RETURNING "id"`,
+      [user.id],
+    )
+
+    await db.query(
+      `INSERT INTO "SellerOrder"
+         ("id", "orderId", "sellerId", "brandName", "productAmount", "paidAmount", "updatedAt")
+       SELECT gen_random_uuid(), $1, v."sellerId", '브랜드', 10000, 10000, now()
+         FROM "ProductVariant" v WHERE v."id" = $2`,
+      [order?.id, variant.id],
+    )
+
+    await sweeper().sweep()
+
+    // 산 사람이 데모였다는 것은 **판 사람의 기록을 지울 이유가 아니다.** 정산과
+    // 판매 이력이 이 주문을 가리키고, 계정 행은 툼스톤으로 남으므로 외래키도
+    // 끊기지 않는다.
+    expect(await rowExists('Order', order?.id ?? '')).toBe(true)
+  })
+})
+
 describe('F2 · F3 — what the sweep must not touch', () => {
   it('leaves a demo account that has not expired', async () => {
     const alive = await demoStore({ expiresAt: FUTURE })
