@@ -7,6 +7,8 @@ import { DemoCleanupReporter } from './demo-cleanup.reporter.js'
 import { SearchIndexReporter } from './search-index.reporter.js'
 import type { HealthIndicator } from './health-indicator.js'
 import { HEALTH_INDICATORS } from './health-indicator.js'
+import { paymentReconcileDetails } from './payment-reconcile.health-indicator.js'
+import { PaymentWebhookReporter } from './payment-webhook.reporter.js'
 import { reservationExpiryDetails } from './reservation-expiry.health-indicator.js'
 
 type Reading = readonly [HealthDependencyKey, HealthStatus]
@@ -23,6 +25,7 @@ export class HealthService {
     @Inject(APP_CONFIG) private readonly config: AppConfig,
     private readonly demoCleanup: DemoCleanupReporter,
     private readonly searchIndex: SearchIndexReporter,
+    private readonly paymentWebhook: PaymentWebhookReporter,
   ) {}
 
   /**
@@ -33,7 +36,14 @@ export class HealthService {
    * a dependency means registering one more indicator and reading it here.
    */
   async check(): Promise<HealthResponse> {
-    const [readings, lastRunAt, searchIndex, reservationExpiry] = await Promise.all([
+    const [
+      readings,
+      lastRunAt,
+      searchIndex,
+      reservationExpiry,
+      paymentReconcile,
+      webhookReceivedAt,
+    ] = await Promise.all([
       Promise.all(
         this.indicators.map(async (indicator): Promise<Reading> => [
           indicator.key,
@@ -46,6 +56,10 @@ export class HealthService {
       // 가져온다 — 두 값의 출처를 지표 목록 하나로 묶어 두는 이유는
       // `reservation-expiry.health-indicator.ts` 에 적혀 있다.
       reservationExpiryDetails(this.indicators),
+      paymentReconcileDetails(this.indicators),
+      // 지표 목록이 아니라 보고자에서 온다 — 웹훅이 한 건도 안 온 것은 고장이
+      // 아니라 전체 판정에 실리지 않는다 (`payment-webhook.reporter.ts`).
+      this.paymentWebhook.lastReceivedAt(),
     ])
 
     return {
@@ -57,6 +71,8 @@ export class HealthService {
       demoCleanup: { lastRunAt },
       searchIndex,
       reservationExpiry: { status: statusOf(readings, 'reservationExpiry'), ...reservationExpiry },
+      paymentReconcile: { status: statusOf(readings, 'paymentReconcile'), ...paymentReconcile },
+      paymentWebhook: { lastReceivedAt: webhookReceivedAt },
     }
   }
 }

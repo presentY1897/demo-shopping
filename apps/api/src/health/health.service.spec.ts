@@ -6,6 +6,7 @@ import type { AppConfig } from '../config/app-config.js'
 import type { DemoCleanupReporter } from './demo-cleanup.reporter.js'
 import type { SearchIndexReport, SearchIndexReporter } from './search-index.reporter.js'
 import type { HealthIndicator } from './health-indicator.js'
+import type { PaymentWebhookReporter } from './payment-webhook.reporter.js'
 import { HealthService } from './health.service.js'
 
 const CONFIG = { version: '1.4.2' } as AppConfig
@@ -23,6 +24,11 @@ function queue(report: Partial<SearchIndexReport> = {}): SearchIndexReporter {
   } as SearchIndexReporter
 }
 
+/** 마지막 웹훅 수신 시각, 대역. `null` 이 「기록이 없다」이고 그것이 기본값이다. */
+function webhookAt(lastReceivedAt: string | null = null): PaymentWebhookReporter {
+  return { lastReceivedAt: () => Promise.resolve(lastReceivedAt) } as PaymentWebhookReporter
+}
+
 /**
  * The service, assembled.
  *
@@ -36,6 +42,7 @@ function service(
     readonly config?: AppConfig
     readonly sweep?: DemoCleanupReporter
     readonly search?: SearchIndexReporter
+    readonly webhook?: PaymentWebhookReporter
   } = {},
 ): HealthService {
   return new HealthService(
@@ -43,6 +50,7 @@ function service(
     parts.config ?? CONFIG,
     parts.sweep ?? sweepAt(),
     parts.search ?? queue(),
+    parts.webhook ?? webhookAt(),
   )
 }
 
@@ -171,6 +179,32 @@ describe('the indexing queue (TASK-0038 F7)', () => {
     // feeds it. A pipeline that is behind while the engine is fine is a real
     // state, and a 'degraded' here would send somebody looking at Meilisearch.
     const result = await service(allOk(), { search: queue({ pending: 5_000 }) }).check()
+
+    expect(result.status).toBe('ok')
+    expect(healthResponseSchema.safeParse(result).success).toBe(true)
+  })
+})
+
+describe('the last webhook (TASK-0056 2장)', () => {
+  it('is null when there is no record of one', async () => {
+    const result = await service(allOk()).check()
+
+    expect(result.paymentWebhook.lastReceivedAt).toBeNull()
+  })
+
+  it('carries the last arrival when there has been one', async () => {
+    const at = '2026-09-05T00:20:00.000Z'
+    const result = await service(allOk(), { webhook: webhookAt(at) }).check()
+
+    expect(result.paymentWebhook.lastReceivedAt).toBe(at)
+  })
+
+  it('does not make a quiet hour look like an unhealthy API', async () => {
+    // 웹훅이 한 건도 안 온 배포는 흔하다 — 결제사 키가 없거나, 웹훅 URL 을 아직
+    // 등록하지 않았거나, 아무도 결제하지 않은 것뿐이다. 그것을 `degraded` 로 올리면
+    // 헬스체크가 늘 빨갛고, 늘 빨간 헬스체크는 아무도 안 본다. 웹훅이 **끊긴** 것을
+    // 판정하는 것은 대사 배치 쪽 지표다.
+    const result = await service(allOk()).check()
 
     expect(result.status).toBe('ok')
     expect(healthResponseSchema.safeParse(result).success).toBe(true)

@@ -6,6 +6,8 @@ import { APP_ID_HEADER } from '@shopping/shared'
 import { createNotFoundFallback } from '../common/not-found.middleware.js'
 import { createRequestContextMiddleware } from '../common/request-context.middleware.js'
 import type { AppConfig } from '../config/app-config.js'
+import { createRawBodyCapture } from '../payment/payment-webhook.middleware.js'
+import { TOSS_WEBHOOK_ROUTE } from '../payment/payment-webhook.js'
 
 /**
  * Everything that turns a created Nest application into *this* API, extracted
@@ -59,6 +61,22 @@ export async function configureApp(app: NestExpressApplication, config: AppConfi
 
   // Registered first so that unmatched routes still get an id and a log line.
   app.use(createRequestContextMiddleware(new Logger('HTTP')))
+
+  /*
+   * 결제 웹훅 **한 경로에만** 원문을 남긴다 (TASK-0056 F4).
+   *
+   * 서명은 파싱된 객체가 아니라 **바이트**에 걸려 있는데, `app.init()` 이 등록하는
+   * `express.json()` 은 스트림을 다 읽고 파싱 결과만 남긴다 — 그 시점에 원문은
+   * 사라진다. 그래서 이 미들웨어가 `init()` **앞에** 있고, 그래야 같은 경로에서
+   * 먼저 돌아 바이트를 챙긴다.
+   *
+   * **전역 스위치(`rawBody: true`)를 쓰지 않은 이유**와 다른 라우트가 왜 영향을
+   * 받지 않는지는 `payment-webhook.middleware.ts` 에 적혀 있다. 경로를 여기서 직접
+   * 조립하는 것은 미들웨어가 전역 접두어와 버전을 모르기 때문이고, 그 둘을 아는
+   * 자리가 바로 이 파일이다.
+   */
+  app.use(`${GLOBAL_PREFIX}/v${DEFAULT_VERSION}/${TOSS_WEBHOOK_ROUTE}`, createRawBodyCapture())
+
   app.setGlobalPrefix(GLOBAL_PREFIX)
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: DEFAULT_VERSION })
   app.enableCors(corsOptionsFor(config))
