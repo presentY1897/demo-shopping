@@ -149,7 +149,7 @@
 | [TASK-0053](./M08-payment/TASK-0053-virtual-card.md) | 가상 카드 발급 · 원장 | 완료 |
 | [TASK-0054](./M08-payment/TASK-0054-virtual-card-payment.md) | 가상 카드 결제 · 실패 재현 | 완료 |
 | [TASK-0055](./M08-payment/TASK-0055-toss-integration.md) | 토스페이먼츠 연동 | 완료 |
-| [TASK-0056](./M08-payment/TASK-0056-payment-webhook.md) | 결제 웹훅 (멱등 처리) | 승인됨 |
+| [TASK-0056](./M08-payment/TASK-0056-payment-webhook.md) | 결제 웹훅 (멱등 처리) | 완료 |
 | [TASK-0057](./M08-payment/TASK-0057-payment-failure.md) | 결제 실패 · 복구 처리 | 승인됨 |
 | [TASK-0058](./M08-payment/TASK-0058-card-management.md) | 가상 카드 관리 화면 | 완료 |
 
