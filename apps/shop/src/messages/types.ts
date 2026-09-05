@@ -1,6 +1,7 @@
 import type { DensityLevel } from '@shopping/ui'
 import type {
   ApiFailureReason,
+  CartItemNotice,
   DenialReason,
   HealthStatus,
   OauthFailureReason,
@@ -79,6 +80,13 @@ export interface Messages {
    * 「뭐라고 부르는가」가 아니다.
    */
   readonly productDetail: ProductDetailMessages
+  /**
+   * 장바구니 (TASK-0046) — 판매자별 그룹, 선택, 합계, 빈 상태.
+   *
+   * 숫자가 들어가는 문장은 전부 자리표시자를 갖는다. 어순은 언어의 성질이라
+   * 컴포넌트에서 조립하면 다른 언어를 넣을 수 없다.
+   */
+  readonly cart: CartMessages
   /**
    * Screens whose route exists so the header's links are not dead ends, and
    * whose content arrives with its own milestone (TASK-0018 4.5).
@@ -518,7 +526,8 @@ export interface BrandMessages {
 
 export interface PlaceholderMessages {
   readonly comingSoon: string
-  readonly cart: { readonly title: string; readonly body: string }
+  /** 주문서. 「주문하기」가 갈 곳이고 TASK-0050 이 이 자리를 채운다. */
+  readonly checkout: { readonly title: string; readonly body: string }
   readonly mypage: { readonly title: string; readonly body: string }
 }
 
@@ -753,4 +762,58 @@ export interface ProductBadgeMessages {
   readonly rating: string
   /** `{count}` */
   readonly lowStock: string
+}
+
+/**
+ * 장바구니 화면 (TASK-0046).
+ *
+ * 「품절」과 「판매 중단」이 다른 낱말인 것이 이 슬라이스의 요점이다 — 둘 다 고를
+ * 수 없지만 **사람이 다음에 할 일이 다르다.** 하나는 기다리면 오고 하나는 오지
+ * 않는다.
+ */
+export interface CartMessages {
+  readonly title: string
+  /** 맨 위 체크박스. `{count}` — 고를 수 있는 줄의 수. */
+  readonly selectAll: string
+  /** 한 그룹의 체크박스. `{brand}` */
+  readonly selectGroup: string
+  /** 한 줄의 체크박스. `{name}` */
+  readonly selectItem: string
+  readonly removeSelected: string
+  /** 한 줄을 지우는 버튼. `{name}` */
+  readonly removeItem: string
+  readonly increase: string
+  readonly decrease: string
+  readonly quantityLabel: string
+  /** 그룹 헤더의 배송비. `{amount}` */
+  readonly shippingFee: string
+  readonly freeShipping: string
+  /** 무료배송까지 남은 금액. `{amount}` */
+  readonly freeShippingRemaining: string
+  readonly productAmountLabel: string
+  readonly shippingLabel: string
+  readonly totalLabel: string
+  /** 주문 버튼. `{count}` — 고른 줄의 수. */
+  readonly checkout: string
+  /** 아무것도 고르지 않았을 때 주문 버튼 아래에 나오는 이유. */
+  readonly nothingSelected: string
+  /** 줄에 붙는 알림. `notices` 의 각 값에 하나씩 — 빠지면 타입 검사가 잡는다. */
+  readonly notices: Readonly<Record<CartItemNotice, string>>
+  /** 담을 때 가격과 지금 가격을 나란히 보여 준다. `{amount}` */
+  readonly priceAtAdded: string
+  /** 담기의 결과. 「담김」과 「아직」이 같은 화면이 되지 않게 문장이 셋이다. */
+  readonly addPending: string
+  readonly added: string
+  readonly addFailed: string
+  /** 담긴 뒤 장바구니로 가는 링크. */
+  readonly viewCart: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly emptyAction: string
+  readonly loading: string
+  readonly failedTitle: string
+  readonly failedBody: string
+  readonly retry: string
+  /** 쓰기가 실패했을 때. 화면은 그대로 두고 이 문장만 보여 준다. */
+  readonly changeFailed: string
 }

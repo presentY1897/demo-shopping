@@ -28,7 +28,8 @@ import { useState } from 'react'
 import type { Selection } from '@/lib/products/variant-selection'
 import { useFreshDetail } from '@/lib/products/use-fresh-detail'
 import { choose, displayPrice, selectedVariant } from '@/lib/products/variant-selection'
-import type { ProductDetailMessages } from '@/messages'
+import { useAddToCart } from '@/lib/cart/use-add-to-cart'
+import type { CartMessages, ProductDetailMessages } from '@/messages'
 
 import { OptionPicker } from './option-picker'
 import { ProductGallery } from './product-gallery'
@@ -44,9 +45,11 @@ const LOW_STOCK = 10
 export function ProductDetail({
   detail: cached,
   messages,
+  cartMessages,
 }: {
   readonly detail: ProductDetailResponse
   readonly messages: ProductDetailMessages
+  readonly cartMessages: CartMessages
 }) {
   // The page is served from a cache up to a minute old (TASK-0102 R2). Price and
   // stock are the two things a minute is long enough to be wrong about, and the
@@ -58,6 +61,7 @@ export function ProductDetail({
 
   const [selection, setSelection] = useState<Selection>({})
   const [quantity, setQuantity] = useState(1)
+  const cart = useAddToCart()
 
   const variant = selectedVariant(product, selection)
   const shown = displayPrice(product, variant)
@@ -69,7 +73,10 @@ export function ProductDetail({
 
   const controls = (
     <PurchaseControls
+      addState={cart.state}
+      cartMessages={cartMessages}
       messages={messages.purchase}
+      onAddToCart={cart.add}
       onQuantityChange={(next) => {
         setQuantity(Math.max(1, next))
       }}
@@ -217,8 +224,11 @@ export function ProductDetail({
       {band === 'base' ? (
         <div className="bg-surface border-border sticky bottom-0 z-20 border-t px-4 py-3">
           <PurchaseControls
+            addState={cart.state}
+            cartMessages={cartMessages}
             compact
             messages={messages.purchase}
+            onAddToCart={cart.add}
             onQuantityChange={setQuantity}
             optionMessages={messages.options}
             product={product}

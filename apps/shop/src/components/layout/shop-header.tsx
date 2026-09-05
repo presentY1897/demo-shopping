@@ -24,6 +24,7 @@ import { Popover } from '@shopping/ui/components'
 import { PageContainer, useViewportBand } from '@shopping/ui/layout'
 
 import { UserMenu } from '@/components/auth/user-menu'
+import { useCartCount } from '@/lib/cart/cart-count'
 import { useCategoryMenu } from '@/lib/categories/use-category-menu'
 import type { LayoutMessages } from '@/messages'
 import { messagesFor } from '@/messages'
@@ -80,13 +81,7 @@ export function ShopHeader({
         <div className="flex shrink-0 items-center gap-1">
           <DensityControl messages={messages.density} />
 
-          <IconLink
-            href="/cart"
-            label={messages.account.cart}
-            pendingLabel={messages.nav.pendingLabel}
-          >
-            <CartIcon className="size-5" />
-          </IconLink>
+          <CartLink label={messages.account.cart} pendingLabel={messages.nav.pendingLabel} />
 
           {/*
             Was a plain link to `/mypage` until TASK-0023. It is a menu now
@@ -193,25 +188,42 @@ function CategoryNav({ messages }: { readonly messages: LayoutMessages }) {
  * inside the link keeps its own announcement instead of being flattened into an
  * overriding name.
  */
-function IconLink({
-  href,
+/**
+ * 장바구니 링크와 담긴 줄 수 (TASK-0046).
+ *
+ * **숫자를 모를 때는 그리지 않는다.** `0` 과 「아직 안 읽었다」를 같게 두면 로그인
+ * 직후의 한순간에 「0」이 보이고, 담아 둔 것이 있는 사람에게 그것은 거짓말이다.
+ *
+ * 배지는 `aria-hidden` 이고 링크의 이름에 수를 넣는다 — 아이콘 옆의 작은 숫자를
+ * 따로 읽어 주면 「장바구니 3」이 아니라 「장바구니」 「3」 두 덩어리로 들린다.
+ */
+function CartLink({
   label,
   pendingLabel,
-  children,
 }: {
-  readonly href: string
   readonly label: string
   readonly pendingLabel: string
-  readonly children: React.ReactNode
 }) {
+  const count = useCartCount()
+
   return (
     <NavLink
-      className="size-control-sm touch-target text-fg hover:bg-surface-muted inline-flex items-center justify-center rounded-md"
-      href={href}
+      className="size-control-sm touch-target text-fg hover:bg-surface-muted relative inline-flex items-center justify-center rounded-md"
+      href="/cart"
       pendingLabel={pendingLabel}
     >
-      {children}
-      <span className="sr-only">{label}</span>
+      <CartIcon className="size-5" />
+      {count === null || count === 0 ? null : (
+        <span
+          aria-hidden="true"
+          className="bg-accent text-on-accent absolute top-0 right-0 min-w-4 rounded-full px-1 text-center text-xs leading-4 font-semibold tabular-nums"
+        >
+          {count}
+        </span>
+      )}
+      <span className="sr-only">
+        {count === null || count === 0 ? label : `${label} ${String(count)}`}
+      </span>
     </NavLink>
   )
 }

@@ -8,19 +8,20 @@
  * both with one hidden. The controls are identical because the decision is
  * identical; only the frame around them differs.
  *
- * The two buttons do nothing. M07 owns the basket, and TASK-0023 4장 is explicit
- * that an unavailable action is **shown, disabled, with a reason** rather than
- * hidden — the point of the demo is that the feature is visible. So the buttons
- * are here, they say why they are inert, and `aria-disabled` keeps them on the
- * tab order so a screen reader reaches the reason.
+ * 담기는 이제 실제로 담는다 (TASK-0046 4.5). 「바로 구매」는 아직 아니다 — 주문서로
+ * 곧장 들어가는 길은 TASK-0050 의 것이고, TASK-0023 4장대로 **보이되 비활성이고 그
+ * 이유가 붙어 있다.** `aria-disabled` 라 탭 순서에 남고, 그래서 이유를 읽을 수 있다.
  */
 
 import type { Product, ProductVariant } from '@shopping/shared'
 import { Button, IconButton } from '@shopping/ui/components'
 import { formatMoney } from '@shopping/ui/format'
+import Link from 'next/link'
+
+import type { AddToCartState } from '@/lib/cart/use-add-to-cart'
 
 import { purchaseLimit } from '@/lib/products/variant-selection'
-import type { ProductOptionMessages, ProductPurchaseMessages } from '@/messages'
+import type { CartMessages, ProductOptionMessages, ProductPurchaseMessages } from '@/messages'
 
 /** DECISIONS 1장: 한국어·KRW 우선. */
 const CURRENCY = 'KRW'
@@ -32,6 +33,11 @@ export interface PurchaseControlsProps {
   readonly onQuantityChange: (quantity: number) => void
   readonly messages: ProductPurchaseMessages
   readonly optionMessages: ProductOptionMessages
+  readonly cartMessages: CartMessages
+  /** 담기. 조합이 정해졌을 때만 불린다. */
+  readonly onAddToCart: (variantId: string, quantity: number) => void
+  /** 담기의 결과. 화면이 그것을 말로 옮긴다. */
+  readonly addState: AddToCartState
   /** The bottom bar keeps it to one line; the panel has room for the rest. */
   readonly compact?: boolean
 }
@@ -43,6 +49,9 @@ export function PurchaseControls({
   onQuantityChange,
   messages,
   optionMessages,
+  cartMessages,
+  onAddToCart,
+  addState,
   compact = false,
 }: PurchaseControlsProps) {
   const limit = purchaseLimit(product, variant)
@@ -107,17 +116,24 @@ export function PurchaseControls({
 
       <div className="flex gap-2">
         <Button
-          aria-disabled
+          // 조합을 고르기 전에는 `aria-disabled` 다 (`disabled` 가 아니다).
+          // 탭 순서에 남아야 그 이유 — 바로 위의 옵션 영역 — 에 닿을 수 있고,
+          // 그것이 TASK-0023 4장이 정한 방식이다. 반대로 요청이 도는 동안은 진짜
+          // `disabled` 다: 그때는 읽을 이유가 없고 두 번 눌리면 두 번 담긴다.
+          aria-disabled={!ready}
           className="flex-1"
-          onClick={(event) => {
-            // Inert until M07. `aria-disabled` rather than `disabled` so the
-            // control keeps its tab stop and the reason below is reachable.
-            event.preventDefault()
+          disabled={addState.status === 'adding'}
+          loading={addState.status === 'adding'}
+          onClick={() => {
+            // `aria-disabled` 는 클릭을 막지 않는다 — 막는 것은 여기다. 조합이
+            // 없거나 품절이면 담을 것이 없고, 서버가 거절할 요청을 보내 봐야
+            // 사람이 얻는 것은 오류 문장뿐이다.
+            if (ready && variant !== null) onAddToCart(variant.id, quantity)
           }}
           type="button"
           variant="outline"
         >
-          {messages.addToCart}
+          {addState.status === 'adding' ? cartMessages.addPending : messages.addToCart}
         </Button>
         <Button
           aria-disabled
@@ -131,7 +147,24 @@ export function PurchaseControls({
         </Button>
       </div>
 
-      <p className="text-fg-subtle text-xs">{messages.comingSoon}</p>
+      {/*
+        결과를 말로 옮긴다. `aria-live` 라 화면을 보지 않는 사람도 담겼다는 것을
+        안다 — 헤더의 배지가 움직이는 것만으로는 그 사실이 전해지지 않는다.
+      */}
+      <p aria-live="polite" className="text-fg-subtle text-xs">
+        {addState.status === 'added' ? (
+          <>
+            {cartMessages.added}{' '}
+            <Link className="underline underline-offset-2" href="/cart">
+              {cartMessages.viewCart}
+            </Link>
+          </>
+        ) : addState.status === 'failed' ? (
+          cartMessages.addFailed
+        ) : (
+          messages.comingSoon
+        )}
+      </p>
     </div>
   )
 }
