@@ -195,6 +195,7 @@ export const shopperOrder = defineFixture(orderResponseSchema, {
         sellerId: SELLER_A,
         brandName: '루미에르',
         status: 'PAYMENT_PENDING',
+        shipment: null,
         items: [
           { id: ORDER_ITEM_IDS.coat, ...COAT_LINE },
           { id: ORDER_ITEM_IDS.knit, ...KNIT_LINE },
@@ -211,6 +212,7 @@ export const shopperOrder = defineFixture(orderResponseSchema, {
         sellerId: SELLER_B,
         brandName: '노드스텝',
         status: 'PAYMENT_PENDING',
+        shipment: null,
         items: [{ id: ORDER_ITEM_IDS.scarf, ...SCARF_LINE }],
         productAmount: NODESTEP_PRODUCT_AMOUNT,
         couponDiscountAmount: 0,
