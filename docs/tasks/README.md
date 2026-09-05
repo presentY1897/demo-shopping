@@ -13,7 +13,7 @@
 | [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | **13/13 완료** |
 | [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | **9/9 완료** |
 | [M07](./M07-cart-order/) 장바구니·주문 | 장바구니, 금액 계산 엔진, 재고 예약, 주문 2단 분할 | **7/7 완료** |
-| [M08](./M08-payment/) 결제 | 프로바이더 추상화, 가상 카드, 토스 연동, 웹훅, 실패 복구 | 4/7 |
+| [M08](./M08-payment/) 결제 | 프로바이더 추상화, 가상 카드, 토스 연동, 웹훅, 실패 복구 | **7/7 완료** |
 | [M09](./M09-fulfillment/) 배송·주문관리 | 상태 머신, 주문 화면, 가상 배송, 구매확정 | 0/6 |
 | [M10](./M10-claims/) 취소·반품·환불 | 부분 취소·반품, 환불 안분, 재고 복원, 클레임 처리 | 0/7 |
 | [M11](./M11-discount/) 할인 | 쿠폰(부담 주체), 적립금 원장, 적용·복구 | 0/7 |
@@ -141,7 +141,7 @@
 
 </details>
 
-<details><summary><b>M08. 결제</b> (4/7)</summary>
+<details><summary><b>M08. 결제</b> (7/7 완료)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -150,7 +150,7 @@
 | [TASK-0054](./M08-payment/TASK-0054-virtual-card-payment.md) | 가상 카드 결제 · 실패 재현 | 완료 |
 | [TASK-0055](./M08-payment/TASK-0055-toss-integration.md) | 토스페이먼츠 연동 | 완료 |
 | [TASK-0056](./M08-payment/TASK-0056-payment-webhook.md) | 결제 웹훅 (멱등 처리) | 완료 |
-| [TASK-0057](./M08-payment/TASK-0057-payment-failure.md) | 결제 실패 · 복구 처리 | 승인됨 |
+| [TASK-0057](./M08-payment/TASK-0057-payment-failure.md) | 결제 실패 · 복구 처리 | 완료 |
 | [TASK-0058](./M08-payment/TASK-0058-card-management.md) | 가상 카드 관리 화면 | 완료 |
 
 </details>

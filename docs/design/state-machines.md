@@ -78,6 +78,7 @@ stateDiagram-v2
     UNRESOLVED --> AUTHORIZED : 대사 — 저쪽은 승인돼 있었다
     UNRESOLVED --> FAILED : 대사 — 저쪽에도 없었다
     AUTHORIZED --> PAID : 매입 확정
+    AUTHORIZED --> CANCELED : 승인 취소 (매입 없이 남은 건 — 배치)
     PAID --> PARTIAL_CANCELED : 부분 취소·환불
     PARTIAL_CANCELED --> PARTIAL_CANCELED : 추가 부분 환불
     PARTIAL_CANCELED --> CANCELED : 잔액 전부 환불
@@ -87,6 +88,14 @@ stateDiagram-v2
 - 두 프로바이더(`VIRTUAL_CARD`, `TOSS`)는 `PaymentProvider { authorize, capture, cancel, refund }` 인터페이스 뒤에 둔다
 - 모든 상태 변화와 웹훅 원문은 `PaymentEvent` 에 기록한다. **웹훅은 중복 도착을 전제로 멱등 처리**한다
 - 가상 카드는 한도 초과·잔액 부족·승인 거절·승인 지연을 의도적으로 재현할 수 있어야 한다
+- **`AUTHORIZED → CANCELED` 는 환불이 아니라 승인 취소다** (D-221). 매입 전이라 돈이 아직 우리
+  쪽으로 오지 않았고, 결제사 API(`cancel` 대 `refund`)도 수수료도 다르며 **부분이 없다** — 매입한
+  적이 없으니 나눌 것이 없어 착지점은 `CANCELED` 하나다. **배치만 이 화살표를 연다**: 조건은
+  「승인된 지 오래됐다 + 그 주문에 살아 있는 예약이 없다」 둘을 함께 보는 것이고, 뒤쪽이 곧 「이
+  결제로 살 수 있는 것이 이미 없다」는 뜻이다
+- **보상의 방향은 「돈이 어디까지 왔는가」가 정한다** (D-221). 매입까지 끝났는데 주문이 완료되지
+  않은 건은 되감지 않고 **마저 끝낸다**(`markPaid` 재실행) — 돈은 이미 왔고 사람은 물건을
+  기다리므로, 그것을 취소하는 것은 사고를 두 번째로 만드는 일이다
 - **`UNRESOLVED` 는 「모른다」이지 「실패했다」가 아니다** (D-220). 거절은 답이므로 `FAILED` 이고,
   이 상태는 **결제사에 닿지 못했을 때만** 들어간다 — 요청이 도착조차 안 했을 수도, 승인까지
   끝났는데 응답만 못 받았을 수도 있다. 나가는 길은 **대사만 연다**: 사용자의 어떤 조작도 이
