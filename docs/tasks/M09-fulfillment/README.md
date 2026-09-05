@@ -6,7 +6,7 @@
 
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
-| [TASK-0059](./TASK-0059-order-state-machine.md) | 주문 상태 머신 구현 | 승인됨 | M08 |
+| [TASK-0059](./TASK-0059-order-state-machine.md) | 주문 상태 머신 구현 | 완료 | M08 |
 | [TASK-0060](./TASK-0060-seller-orders.md) | 판매자 주문 관리 화면 | 승인됨 | 0059 |
 | [TASK-0061](./TASK-0061-shipment.md) | 배송 · 운송장 가상 처리 | 승인됨 | 0059 |
 | [TASK-0062](./TASK-0062-delivery-simulator.md) | 배송 상태 자동 진행 시뮬레이터 | 승인됨 | 0061 |
