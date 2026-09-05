@@ -81,7 +81,9 @@ export default async function ProductPage({
   const detail = await load(id)
   const { product, seller } = detail
 
-  const orderable = product.variants.filter((variant) => variant.isActive && variant.stock > 0)
+  const orderable = product.variants.filter(
+    (variant) => variant.isActive && variant.availableStock > 0,
+  )
 
   /**
    * `Product` with an `AggregateOffer` (F7).

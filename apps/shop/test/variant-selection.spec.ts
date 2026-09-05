@@ -48,6 +48,27 @@ describe('선택지의 상태', () => {
     expect(states[size!.id]?.[valueId('사이즈', 'M')]).toBe('available')
   })
 
+  it('calls a combination somebody else is checking out 품절 too (TASK-0048 F6)', () => {
+    // 실물 재고는 그대로인데 남이 주문서에 들고 있다. 화면이 `stock` 을 읽으면
+    // 「구매 가능」으로 보여 준 뒤 주문에서 거절하게 된다 — 가장 나쁜 순서다.
+    const ivory = valueId('색상', '아이보리')
+    const medium = valueId('사이즈', 'M')
+    const reserved = {
+      ...product,
+      variants: product.variants.map((variant) =>
+        variant.optionValueIds.includes(ivory) && variant.optionValueIds.includes(medium)
+          ? { ...variant, availableStock: 0 }
+          : variant,
+      ),
+    }
+
+    // 대조: 같은 조합이 예약 전에는 살 수 있었다.
+    expect(availability(product, { [colour!.id]: ivory })[size!.id]?.[medium]).toBe('available')
+    expect(availability(reserved, { [colour!.id]: ivory })[size!.id]?.[medium]).toBe('sold_out')
+    // 실물 재고는 줄지 않았다. 품절의 근거는 가용재고 쪽이다.
+    expect(selectedVariant(reserved, { [colour!.id]: ivory, [size!.id]: medium })?.stock).toBe(8)
+  })
+
   it('marks a combination nobody made as 없는 조합 (F3)', () => {
     const states = availability(product, { [colour!.id]: valueId('색상', '카멜') })
 
@@ -129,6 +150,16 @@ describe('수량 상한과 가격', () => {
 
     // effectiveMaxPurchaseQuantity 3, 재고 8 → 3.
     expect(purchaseLimit(product, variant)).toBe(3)
+  })
+
+  it('caps at the available stock, not the shelf (TASK-0048 F6)', () => {
+    const variant = selectedVariant(product, {
+      [colour!.id]: valueId('색상', '아이보리'),
+      [size!.id]: valueId('사이즈', 'M'),
+    })
+
+    // 상한 3, 실물 8, 그중 2개만 남았다 → 2. `stock` 을 봤다면 3이 나온다.
+    expect(purchaseLimit(product, { ...variant!, availableStock: 2 })).toBe(2)
   })
 
   it('shows the cheapest orderable price before anything is chosen', () => {

@@ -29,7 +29,7 @@ export interface OgCard {
  */
 export function ogCard(detail: ProductDetailResponse): OgCard {
   const orderable = detail.product.variants.filter(
-    (variant) => variant.isActive && variant.stock > 0,
+    (variant) => variant.isActive && variant.availableStock > 0,
   )
   const priced = orderable.length > 0 ? orderable : detail.product.variants
   const cheapest = [...priced].sort((left, right) => left.price - right.price)[0]

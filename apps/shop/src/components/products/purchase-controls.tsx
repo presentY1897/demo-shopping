@@ -46,7 +46,7 @@ export function PurchaseControls({
   compact = false,
 }: PurchaseControlsProps) {
   const limit = purchaseLimit(product, variant)
-  const soldOut = variant !== null && (variant.stock === 0 || !variant.isActive)
+  const soldOut = variant !== null && (variant.availableStock === 0 || !variant.isActive)
   const ready = variant !== null && !soldOut
   const total = variant === null ? null : variant.price * quantity
 
