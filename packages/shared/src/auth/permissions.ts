@@ -34,6 +34,17 @@ export const permissions = [
   'cart.write',
   'order.read',
   'order.write',
+  /**
+   * 만료 예약 정리를 **손으로** 돌린다 (TASK-0051).
+   *
+   * `order.write` 를 재사용하지 않는 이유는 스코프다. 구매자와 판매자가 그것을
+   * `own` 으로 갖고 있는데, 이 잡은 소유자가 없는 전역 작업이라 `own` 으로 좁힐
+   * 대상이 없다 — 재사용하면 「내 것만」이 아무 뜻이 없는 자리에서 통과한다.
+   *
+   * 손으로 돌릴 수 있어야 하는 이유는 R1 이다: 스케줄러가 멈추면 재고가 잠기고,
+   * 그때 사람이 즉시 복구할 방법이 있어야 한다.
+   */
+  'reservation.sweep',
   'claim.read',
   'claim.handle',
   'coupon.read',

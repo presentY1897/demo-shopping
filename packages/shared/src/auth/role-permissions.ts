@@ -111,6 +111,8 @@ const ADMIN_OPERATOR_GRANTS: readonly PermissionGrant[] = [
   grant('seller.read', 'any'),
   grant('seller.approve', 'any'),
   grant('demo.manage', 'any'),
+  // 스케줄러가 멈췄을 때 즉시 복구하는 것은 일상 운영이다 (TASK-0051 R1).
+  grant('reservation.sweep', 'any'),
 ]
 
 /** The owner of the platform. Everything, everywhere. */
