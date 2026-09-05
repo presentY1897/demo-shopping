@@ -545,17 +545,6 @@ TASK-0113 이 정리 **방식**을 정했다 — 버킷 스윕이다. 그 전제
 **하나가 막고 있다 — A-6 Discord webhook.** 없으면 TASK-0012 를 완료로 끝낼 수 없다(1절). 채널에서
 webhook 을 만들어 URL 을 GitHub Secrets 에 등록하고 **이름만** 알려주면 된다. 설정 5분.
 
-**막고 있다 — Render 에 `JWT_SECRET`.** TASK-0022 가 이것을 **필수**로 만들었다. R2·Google 과 달리
-없으면 API 가 **부팅을 거부한다** — 로그인은 선택 기능이 아니라서, 없는 채로 뜨면 인증된 요청이 전부
-500 이 된다. 이 브랜치가 머지되기 전에 넣어 두는 편이 안전하다.
-
-```bash
-openssl rand -base64 32
-```
-
-Render 대시보드 → `shopping-api` → Environment → `JWT_SECRET`. **로컬과 다른 값을 쓴다** — 같으면
-로컬 키가 새는 순간 운영 토큰을 위조할 수 있다. 로컬 값은 이미 넣어 두었다.
-
 **Google 로그인을 브라우저로 확인하려면 리다이렉트 URI 를 더 등록해야 한다.** 등록된 것은
 `http://localhost:4000/...` 하나인데 워크트리마다 포트를 밀어 쓰므로(`PORT_OFFSET`) 실제로는 4005 ·
 4006 이 나간다. Google 웹 클라이언트는 포트까지 정확히 일치해야 해서 `redirect_uri_mismatch` 가
