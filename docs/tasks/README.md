@@ -118,7 +118,7 @@
 | [TASK-0038](./M06-search/TASK-0038-search-indexing.md) | Meilisearch 인덱스 · 동기화 파이프라인 | 완료 |
 | [TASK-0039](./M06-search/TASK-0039-search-api.md) | 검색 API (필터 · 정렬 · 패싯) | 완료 |
 | [TASK-0040](./M06-search/TASK-0040-product-card.md) | 상품 카드 · 목록 (밀도 3단계) | 완료 |
-| [TASK-0041](./M06-search/TASK-0041-search-page.md) | 검색 페이지 · 자동완성 · 필터 | 승인됨 |
+| [TASK-0041](./M06-search/TASK-0041-search-page.md) | 검색 페이지 · 자동완성 · 필터 | 완료 |
 | [TASK-0042](./M06-search/TASK-0042-category-page.md) | 카테고리 페이지 | 승인됨 |
 | [TASK-0043](./M06-search/TASK-0043-product-detail.md) | 상품 상세 (밀도 3단계) | 승인됨 |
 | [TASK-0044](./M06-search/TASK-0044-home-brand.md) | 홈 · 브랜드관 | 승인됨 |
