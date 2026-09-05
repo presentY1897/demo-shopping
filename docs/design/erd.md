@@ -479,6 +479,53 @@ erDiagram
 
 **할인 안분**: 주문 단위로 적용된 쿠폰·적립금을 `OrderItem` 까지 안분해 저장한다. 부분 취소 시 "이 항목에 할인이 얼마 붙어 있었나"를 그 자리에서 알 수 있어야 한다. 안분 규칙은 `docs/design/pricing.md` 참조.
 
+### 예약과 주문은 `checkoutId` 로 이어진다 (TASK-0049)
+
+`StockReservation` 에 `orderId` 를 달지 않았다. 순서가 막히기 때문이다 — 재고 예약이 주문 저장보다
+먼저라, 예약을 잡는 시점에 주문 행이 아직 없다. `Order.checkoutId` 는 주문 서비스가 **둘 중 어느
+행보다 먼저** 만드는 값이라 그 문제가 없고, 「이 주문이 잡은 예약 전부」를 푸는 일이
+`releaseCheckout(order.checkoutId)` 한 줄이 된다.
+
+유니크다. 한 주문서 시도가 두 주문이 되는 것은 재시도의 버그이고, 그때 예약은 둘 중 하나만
+가리키게 된다.
+
+### 주문 생성은 재고를 **차감하지 않는다**
+
+주문은 `PAYMENT_PENDING` 으로 생기고 예약은 `HELD` 로 남는다. 원장에 아무것도 적히지 않는다.
+확정은 결제 승인(M08)의 일이고, 결제가 오지 않으면 TASK-0051 이 TTL 만료로 푼다. 이상해 보이지만
+그것이 D-026 의 구조다 — **판 것이 아니라 잡아 둔 것이다.**
+
+### 배송 정책은 `Seller` 에 있다 (TASK-0049 4.1)
+
+| 컬럼 | 뜻 |
+| --- | --- |
+| `shippingFee` | 이 판매자의 기본 배송비 |
+| `freeShippingThreshold` | 이 금액 이상이면 무료. `NULL` 이면 무료 조건이 없다 |
+
+`NULL` 과 `0` 은 다르다 — `0` 은 「0원 이상이면 무료」, 즉 **언제나 무료**다. 판정 기준은
+상품금액에서 쿠폰 할인을 뺀 값이다(`pricing.md` 1장). 바꾸는 **화면**은 M09 이고, 그때까지는 전부
+플랫폼 기본값이다.
+
+### 데이터베이스가 지키는 것
+
+| 제약 | 막는 것 |
+| --- | --- |
+| `Order_orderNumber_format_check` | 생성기가 둘이 되는 날 형식이 갈라지는 것. 그러면 「전화로 불러 줄 수 있는 번호」라는 성질만 조용히 사라진다 |
+| `Order_orderNumber_key` | 같은 번호가 두 주문에 붙는 것. 서비스는 겹치면 트랜잭션을 통째로 다시 한다 |
+| `Order_checkoutId_key` | 한 주문서 시도가 두 주문이 되는 것 |
+| `SellerOrder_orderId_sellerId_key` | 한 주문에 한 판매자가 두 몫을 갖는 것 — 그러면 배송비가 두 번 붙는다 |
+| `OrderItem_discount_sum_check` | 안분액 둘과 합계가 어긋나는 것. 부분 취소는 합계 쪽을 읽는다 |
+| `OrderItem_discount_bound_check` | **항목의 할인이 그 항목의 값을 넘는 것.** TASK-0047 F8 이 무작위 검사로 잡은 결함이 정확히 이 위반이었고, 그때는 코드로 고쳤다 |
+| `*_amounts_check` | 음수 금액. 계산이 틀리는 방식은 「조금 다른 값」이 아니라 「음수」이고, 그것은 환불에서 돈이 나가는 방향으로 나타난다 |
+| `ON DELETE RESTRICT` (user · seller · variant) | 주문 이력이 가리키는 것이 사라지는 것 |
+
+| 인덱스 | 쓰임 |
+| --- | --- |
+| `Order(userId, createdAt DESC)` | 「내 주문」 목록 |
+| `SellerOrder(sellerId, status, createdAt DESC)` | 판매자 콘솔의 주문 목록 (M09) |
+| `OrderItem(variantId)` | 「이 조합이 얼마나 팔렸나」 — M13 의 판매량과 M10 의 클레임 |
+| `OrderStatusHistory(sellerOrderId, createdAt)` | 한 주문의 이력을 시간순으로 |
+
 ---
 
 ## 5. 클레임 (취소 · 반품)
