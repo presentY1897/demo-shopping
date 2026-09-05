@@ -78,9 +78,26 @@ function useHref(): string {
   return useSyncExternalStore(subscribe, snapshot, snapshot)
 }
 
-/** The module factory. `vi.mock('next/navigation', () => nextNavigationMock())`. */
+/**
+ * The module factory. `vi.mock('next/navigation', () => nextNavigationMock())`.
+ *
+ * Complete rather than spread over the real module: `vi.mock` factories are
+ * hoisted above every import, so an `importOriginal` here is evaluated before
+ * the modules it depends on exist — which surfaces as
+ * `Cannot access '__vi_import_10__' before initialization` from whichever
+ * component happened to import `next/navigation` first, and reads like a bug in
+ * that component.
+ */
 export function nextNavigationMock(): Record<string, unknown> {
   return {
+    /**
+     * Next's own `notFound()` throws a sentinel its router catches. A plain
+     * throw is the same shape for a test: what a spec asserts is that the page
+     * *refused*, and nothing here renders the 404 boundary.
+     */
+    notFound: () => {
+      throw new Error('NEXT_NOT_FOUND')
+    },
     useSearchParams: () => new URL(useHref(), ORIGIN).searchParams,
     usePathname: () => new URL(useHref(), ORIGIN).pathname,
     useRouter: () => ({

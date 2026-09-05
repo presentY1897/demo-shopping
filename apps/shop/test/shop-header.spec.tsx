@@ -8,12 +8,14 @@
  * pass just as well against the implementation the decision rules out.
  */
 
+import { storefrontCategoryTree } from '@shopping/api-mocks'
 import { DensityProvider } from '@shopping/ui/density'
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { ShopHeader } from '@/components/layout/shop-header'
+import { resetCategoryMenuCache } from '@/lib/categories/use-category-menu'
 import { messagesFor } from '@/messages'
 
 import { renderWithAuth } from './support/auth'
@@ -32,8 +34,13 @@ function renderHeader(width: number) {
   )
 }
 
+/** The first root of the mock catalogue, and one of its grandchildren. */
+const ROOT = storefrontCategoryTree.nodes[0]!
+const LEAF = ROOT.children[0]!.children[0]!
+
 beforeEach(() => {
   localStorage.clear()
+  resetCategoryMenuCache()
 })
 
 afterEach(() => {
@@ -45,7 +52,7 @@ describe('at 360px', () => {
     renderHeader(VIEWPORTS.mobile)
 
     expect(screen.getByRole('button', { name: layout.nav.openMenu })).toBeVisible()
-    expect(screen.queryByRole('link', { name: layout.nav.categories[0]!.label })).toBeNull()
+    expect(screen.queryByRole('button', { name: ROOT.name })).toBeNull()
   })
 
   it('keeps the search field out of the row and in the menu', async () => {
@@ -74,7 +81,7 @@ describe('at 768px', () => {
 
     expect(screen.getByRole('combobox', { name: layout.search.label })).toBeVisible()
     expect(screen.getByRole('button', { name: layout.nav.openMenu })).toBeVisible()
-    expect(screen.queryByRole('link', { name: layout.nav.categories[0]!.label })).toBeNull()
+    expect(screen.queryByRole('button', { name: ROOT.name })).toBeNull()
   })
 
   it('lays the three density steps out in the row', () => {
@@ -86,26 +93,37 @@ describe('at 768px', () => {
 })
 
 describe('at 1440px', () => {
-  it('replaces the menu button with the category list', () => {
+  it('replaces the menu button with the category list', async () => {
     renderHeader(VIEWPORTS.desktop)
 
     expect(screen.queryByRole('button', { name: layout.nav.openMenu })).toBeNull()
+    expect(screen.getByRole('navigation', { name: layout.nav.label })).toBeVisible()
 
-    const nav = screen.getByRole('navigation', { name: layout.nav.label })
-
-    expect(screen.getAllByRole('link', { name: layout.nav.categories[0]!.label })).toHaveLength(1)
-    expect(nav).toBeVisible()
+    // The list arrives from the API rather than from the message catalog
+    // (TASK-0042): the header is on every route, so reading it during the
+    // server render would make the whole storefront dynamic.
+    expect(await screen.findByRole('button', { name: ROOT.name })).toBeVisible()
   })
 
-  it('links every category to its own route', () => {
+  it('opens one root and offers its children and its own page (R1)', async () => {
     renderHeader(VIEWPORTS.desktop)
 
-    for (const category of layout.nav.categories) {
-      expect(screen.getByRole('link', { name: category.label })).toHaveAttribute(
-        'href',
-        `/categories/${category.slug}`,
-      )
-    }
+    await userEvent.click(await screen.findByRole('button', { name: ROOT.name }))
+
+    const panel = await screen.findByRole('dialog', { name: ROOT.name })
+    const all = messagesFor().category.allOfLabel.replace('{name}', ROOT.name)
+
+    expect(within(panel).getByRole('link', { name: all })).toHaveAttribute(
+      'href',
+      `/categories/${ROOT.slug}`,
+    )
+    expect(within(panel).getByRole('link', { name: ROOT.children[0]!.name })).toHaveAttribute(
+      'href',
+      `/categories/${ROOT.children[0]!.slug}`,
+    )
+
+    // Two levels, and no more: 40 categories over three is a menu nobody reads.
+    expect(within(panel).queryByRole('link', { name: LEAF.name })).toBeNull()
   })
 })
 

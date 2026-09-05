@@ -7,17 +7,32 @@
  * — the route changes underneath and Radix has no way to know that happened.
  */
 
+import { storefrontCategoryTree } from '@shopping/api-mocks'
 import { DensityProvider } from '@shopping/ui/density'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 import { MobileMenu } from '@/components/layout/mobile-menu'
+import { resetCategoryMenuCache } from '@/lib/categories/use-category-menu'
 import { messagesFor } from '@/messages'
 
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
 const layout = messagesFor().layout
+
+/**
+ * The first root of the mock catalogue, and a child whose name is unique in it.
+ *
+ * 「아우터」 and 「상의」 hang under both 여성 and 남성, so a query by name alone
+ * finds two links and fails on the ambiguity rather than on the behaviour.
+ */
+const ROOT = storefrontCategoryTree.nodes[0]!
+const CHILD = ROOT.children.find((child) => child.slug === 'women-dress')!
+
+beforeEach(() => {
+  resetCategoryMenuCache()
+})
 
 function renderMenu() {
   stubViewport(VIEWPORTS.mobile)
@@ -38,7 +53,7 @@ describe('the menu sheet', () => {
     renderMenu()
 
     expect(screen.queryByRole('dialog')).toBeNull()
-    expect(screen.queryByRole('link', { name: layout.nav.categories[0]!.label })).toBeNull()
+    expect(screen.queryByRole('link', { name: ROOT.name })).toBeNull()
   })
 
   it('opens with every category and the search field', async () => {
@@ -49,8 +64,19 @@ describe('the menu sheet', () => {
     const sheet = await screen.findByRole('dialog', { name: layout.nav.menuTitle })
 
     expect(sheet).toBeVisible()
-    expect(screen.getAllByRole('link')).toHaveLength(layout.nav.categories.length)
     expect(screen.getByRole('combobox', { name: layout.search.label })).toBeVisible()
+
+    // Two levels on the sheet (TASK-0042 R1): it has the height a header row
+    // does not, and a phone menu that needs two taps to reach 코트 is a menu
+    // people use the search field instead of.
+    expect(await within(sheet).findByRole('link', { name: ROOT.name })).toHaveAttribute(
+      'href',
+      `/categories/${ROOT.slug}`,
+    )
+    expect(within(sheet).getByRole('link', { name: CHILD.name })).toHaveAttribute(
+      'href',
+      `/categories/${CHILD.slug}`,
+    )
   })
 
   it('closes on Escape and gives the focus back to the button', async () => {
@@ -83,9 +109,9 @@ describe('the menu sheet', () => {
     renderMenu()
 
     await userEvent.click(trigger())
-    const link = await screen.findByRole('link', { name: layout.nav.categories[0]!.label })
+    const link = await screen.findByRole('link', { name: ROOT.name })
 
-    expect(link).toHaveAttribute('href', `/categories/${layout.nav.categories[0]!.slug}`)
+    expect(link).toHaveAttribute('href', `/categories/${ROOT.slug}`)
 
     // The click is what a visitor does; jsdom has no router to follow the href,
     // and the assertion is about the sheet, which is this component's own job.
