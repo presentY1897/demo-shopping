@@ -62,6 +62,14 @@ export interface Messages {
    */
   readonly search: SearchMessages
   /**
+   * 카테고리 화면 (TASK-0042) — 브레드크럼·하위 바로가기·헤더 메뉴.
+   *
+   * The filters and the results say nothing here: they are `search`'s, and the
+   * two screens share the component that draws them. What this slice holds is
+   * the frame the category adds around it.
+   */
+  readonly category: CategoryMessages
+  /**
    * Screens whose route exists so the header's links are not dead ends, and
    * whose content arrives with its own milestone (TASK-0018 4.5).
    */
@@ -420,11 +428,6 @@ export interface NavMessages {
   readonly closeMenu: string
   readonly menuTitle: string
   readonly menuDescription: string
-  /**
-   * The category list, fixed for now. TASK-0042 replaces it with the tree the
-   * catalogue API serves; the shape is the same either way.
-   */
-  readonly categories: readonly { readonly slug: string; readonly label: string }[]
   /** Announced inside a link while its route is still loading. */
   readonly pendingLabel: string
 }
@@ -477,7 +480,6 @@ export interface HomeMessages {
 
 export interface PlaceholderMessages {
   readonly comingSoon: string
-  readonly category: { readonly title: string; readonly body: string }
   readonly cart: { readonly title: string; readonly body: string }
   readonly mypage: { readonly title: string; readonly body: string }
 }
@@ -601,4 +603,21 @@ export interface SearchPriceMessages {
   readonly applyLabel: string
   /** Shown when the upper bound is below the lower one. */
   readonly invalid: string
+}
+
+export interface CategoryMessages {
+  /** `{name}` — the document title. */
+  readonly metaTitle: string
+  /** `{name}` — the meta description, and what a search result quotes. */
+  readonly metaDescription: string
+  /** Names the breadcrumb landmark. */
+  readonly breadcrumbLabel: string
+  readonly homeLabel: string
+  /** Heading over the child-category shortcuts. */
+  readonly subcategoriesLabel: string
+  /** Names the header's category navigation. */
+  readonly menuLabel: string
+  /** `{name}` — the link that goes to the parent's own full list. */
+  readonly allOfLabel: string
+  readonly loadingLabel: string
 }

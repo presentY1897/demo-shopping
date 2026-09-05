@@ -72,16 +72,6 @@ export const ko: Messages = {
       closeMenu: '메뉴 닫기',
       menuTitle: '전체 메뉴',
       menuDescription: '카테고리와 검색을 여기에서 엽니다.',
-      // 패션 중심 초기 카테고리(DECISIONS 1장). TASK-0042 에서 카탈로그
-      // API 가 내려주는 트리로 대체된다.
-      categories: [
-        { slug: 'outerwear', label: '아우터' },
-        { slug: 'tops', label: '상의' },
-        { slug: 'bottoms', label: '하의' },
-        { slug: 'shoes', label: '신발' },
-        { slug: 'bags', label: '가방' },
-        { slug: 'accessories', label: '액세서리' },
-      ],
       pendingLabel: '이동 중',
     },
     search: {
@@ -204,12 +194,18 @@ export const ko: Messages = {
       ratingLabel: '평점',
     },
   },
+  category: {
+    metaTitle: '{name} — 데모 마켓',
+    metaDescription: '{name} 카테고리의 상품을 가격·속성으로 좁혀 볼 수 있습니다.',
+    breadcrumbLabel: '현재 위치',
+    homeLabel: '홈',
+    subcategoriesLabel: '하위 카테고리',
+    menuLabel: '카테고리',
+    allOfLabel: '{name} 전체',
+    loadingLabel: '카테고리를 불러오는 중입니다',
+  },
   placeholder: {
     comingSoon: '준비 중',
-    category: {
-      title: '카테고리',
-      body: '카테고리별 상품 목록은 M06 에서 열립니다.',
-    },
     cart: {
       title: '장바구니',
       body: '장바구니는 M07 에서 열립니다.',
