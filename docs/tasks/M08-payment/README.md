@@ -13,5 +13,5 @@
 | [TASK-0054](./TASK-0054-virtual-card-payment.md) | 가상 카드 결제 · 실패 재현 | 완료 | 0053 |
 | [TASK-0055](./TASK-0055-toss-integration.md) | 토스페이먼츠 연동 | 완료 | 0052 |
 | [TASK-0056](./TASK-0056-payment-webhook.md) | 결제 웹훅 (멱등 처리) | 완료 | 0055 |
-| [TASK-0057](./TASK-0057-payment-failure.md) | 결제 실패 · 복구 처리 | 승인됨 | 0054, 0056 |
+| [TASK-0057](./TASK-0057-payment-failure.md) | 결제 실패 · 복구 처리 | 완료 | 0054, 0056 |
 | [TASK-0058](./TASK-0058-card-management.md) | 가상 카드 관리 화면 | 완료 | 0053 |
