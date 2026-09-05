@@ -8,7 +8,7 @@
 
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
-| [TASK-0052](./TASK-0052-payment-abstraction.md) | PaymentProvider 추상화 · 결제 스키마 | 승인됨 | M07 |
+| [TASK-0052](./TASK-0052-payment-abstraction.md) | PaymentProvider 추상화 · 결제 스키마 | 완료 | M07 |
 | [TASK-0053](./TASK-0053-virtual-card.md) | 가상 카드 발급 · 원장 | 승인됨 | 0052 |
 | [TASK-0054](./TASK-0054-virtual-card-payment.md) | 가상 카드 결제 · 실패 재현 | 승인됨 | 0053 |
 | [TASK-0055](./TASK-0055-toss-integration.md) | 토스페이먼츠 연동 | 승인됨 | 0052 |

@@ -571,8 +571,36 @@ erDiagram
 | `VirtualCard` | 가상 카드 | 한도, 사용액, 상태. 데모 계정 발급 시 1장 자동 지급 |
 | `VirtualCardTransaction` | 카드 원장 | 승인/취소/환불 시 잔액 변화 기록 |
 
-두 프로바이더는 `PaymentProvider { authorize, capture, cancel, refund }` 인터페이스 뒤에 둔다.
+두 프로바이더는 `PaymentProvider { authorize, capture, cancel, refund, getStatus }` 인터페이스 뒤에 둔다.
 가상 카드는 한도 초과·잔액 부족·승인 거절을 **의도적으로 재현**할 수 있어야 한다. 결제 실패 시 재고 예약이 제대로 해제되는지 시연하기 위한 장치다.
+
+### 포트는 `apps/api` 에 있다 (TASK-0052 4.1)
+
+인터페이스가 **선을 넘어가지 않기** 때문이다. 브라우저는 결제사와 직접 말하지 않고, 화면이 아는
+것은 `Payment` 의 상태와 금액뿐이다 — 공유 패키지에 두면 브라우저 번들이 서버의 개념을 들고
+다니게 되고, 그것은 「공유」가 아니라 어디에 둘지 안 정했다는 뜻이다.
+
+선을 넘어가는 모양(`Payment` · `Refund` · 상태 · 프로바이더 이름)은 `packages/shared` 에 있다.
+
+### 승인과 매입이 다른 상태인 이유
+
+승인은 「카드가 받아 줬다」이고 매입은 「돈이 우리 쪽으로 온다」다. **그 사이에 취소하면 매입 전
+취소라 수수료가 다르다** — 그것이 `AUTHORIZED` 와 `PAID` 를 나누는 이유이고, 하나로 합치면 그
+구분이 코드 어디에도 남지 않는다.
+
+`PARTIAL_CANCELED` 는 **끝이 아니다.** 부분 환불은 여러 번 오고, 잔액이 0이 되는 순간에만
+`CANCELED` 로 간다.
+
+### 데이터베이스가 지키는 것
+
+| 제약 | 막는 것 |
+| --- | --- |
+| `Payment_canceledAmount_check` (`0 <= canceledAmount <= authorizedAmount`) | **받은 것보다 많이 환불하는 것.** 애플리케이션이 먼저 판단하지만, 동시에 들어온 두 환불이 각자 「아직 여유가 있다」를 읽는 경합에서 지는 쪽을 최종적으로 거절하는 것은 이 줄이다 |
+| `Payment_authorizedAmount_check` (`> 0`) | 0원 결제. 그런 행이 생기면 「승인액을 넘지 않았나」가 늘 참이 되어 검증이 무력해진다 |
+| `Refund_amount_check` (`> 0`) | 0원 환불과, 「환불」이라는 이름으로 돈을 받는 음수 |
+| `Refund_reason_check` | 빈 사유. 환불 행 하나하나가 나중에 「왜 돌려줬나」에 답해야 하는 기록이다 |
+| `PaymentEvent_transition_check` | 전후 상태가 한쪽만 있는 행. 읽는 사람이 「어디서 왔는지 모르겠다」로 끝나는 기록이다 |
+| `Payment_paymentKey_key` | 같은 결제키로 두 행이 생기는 것 — 그러면 웹훅이 어느 쪽을 갱신할지가 도착 순서에 달린다 (TASK-0056) |
 
 ---
 
