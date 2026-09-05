@@ -30,6 +30,7 @@ function variant(overrides: Partial<ProductVariant> = {}): ProductVariant {
     price: 19_000,
     listPrice: null,
     stock: 12,
+    availableStock: 12,
     maxPurchaseQuantity: null,
     effectiveMaxPurchaseQuantity: null,
     isActive: true,

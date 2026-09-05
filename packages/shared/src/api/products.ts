@@ -194,6 +194,18 @@ export const productVariantSchema = z.object({
   /** The struck-through price. `null` means there is no discount to show. */
   listPrice: priceSchema.nullable(),
   stock: stockSchema,
+  /**
+   * 지금 살 수 있는 수 — `stock` 에서 주문서에 잡힌 몫을 뺀 것 (TASK-0048 F6).
+   *
+   * `stock` 과 **이름이 둘인** 이유는 보는 사람이 둘이기 때문이다. 판매자는 창고에
+   * 실제로 몇 개 있는지를 봐야 하고(그것으로 발주한다), 구매자는 지금 살 수 있는
+   * 수를 봐야 한다. 한 이름이 엔드포인트마다 다른 수를 뜻하게 두면, 어느 쪽을 읽고
+   * 있는지 아무도 확신할 수 없다 (TASK-0048 4.2 ④).
+   *
+   * 예약이 하나도 없으면 `stock` 과 같다. 구매자에게 보이는 「품절」·「N개 남음」·
+   * 수량 상한은 전부 이쪽을 본다.
+   */
+  availableStock: stockSchema,
   /** This variant's own cap; `null` inherits the product's. */
   maxPurchaseQuantity: purchaseLimitSchema.nullable(),
   /**

@@ -66,6 +66,7 @@ function listingWith(widths: readonly [number, number, number]): ProductResponse
       price: 10_000,
       listPrice: null,
       stock: 1,
+      availableStock: 1,
       maxPurchaseQuantity: null,
       effectiveMaxPurchaseQuantity: null,
       isActive: true,

@@ -24,7 +24,9 @@ export type ValueAvailability = 'available' | 'sold_out' | 'missing'
 export type Selection = Readonly<Record<string, string>>
 
 function isOrderable(variant: ProductVariant): boolean {
-  return variant.isActive && variant.stock > 0
+  // 실물 재고가 아니라 **가용재고**다 (TASK-0048 F6). 남이 주문서에 들고 있는 몫은
+  // 살 수 없고, 「구매 가능」으로 보여 준 뒤 주문에서 거절하는 것이 가장 나쁘다.
+  return variant.isActive && variant.availableStock > 0
 }
 
 /** Variants whose combination contains every value in `wanted`. */
@@ -132,7 +134,7 @@ export function purchaseLimit(product: Product, variant: ProductVariant | null):
 
   const cap = variant.effectiveMaxPurchaseQuantity
 
-  return cap === null ? variant.stock : Math.min(cap, variant.stock)
+  return cap === null ? variant.availableStock : Math.min(cap, variant.availableStock)
 }
 
 /** The price to show before anything is chosen: the cheapest orderable one. */

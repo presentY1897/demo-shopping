@@ -41,6 +41,7 @@ import { CLOCK } from '../common/clock.js'
 import type { DomainFailurePayload } from '../common/domain-failure.js'
 import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { availableStock } from '../reservation/reservation-rules.js'
 import { StockService } from '../stock/stock.service.js'
 import { SearchOutboxService } from '../search/search-outbox.service.js'
 import type { AttributeIssue, AttributeRule } from './attribute-schema.js'
@@ -1216,6 +1217,9 @@ export class ProductService {
         price: variant.price,
         listPrice: variant.listPrice,
         stock: variant.stock,
+        // 주문서에 잡힌 몫을 뺀 수 (TASK-0048 F6). 여기서 한 번 만든다 — 읽는 쪽이
+        // 각자 빼면 `reserved` 를 빠뜨린 곳이 하나 생기고, 그곳이 오버셀이 된다.
+        availableStock: availableStock(variant.stock, variant.reserved),
         maxPurchaseQuantity: variant.maxPurchaseQuantity,
         // Resolved here rather than by each of the four places that enforce it
         // (TASK-0045 · 0050 · 0048 · 0049).

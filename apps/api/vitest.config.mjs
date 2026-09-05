@@ -193,6 +193,17 @@ export default defineConfig({
           lines: 100,
           statements: 100,
         },
+        // TASK-0048 (6.2, Q5 강화). 예약의 순수 판단: 가용재고가 얼마인지,
+        // 만료가 언제인지, 그리고 확정·해제 요청 하나가 이 상태의 예약에 무엇을
+        // 해야 하는지. 셋 다 틀려도 빨간 테스트로 나타나지 않는다 — 오버셀은
+        // 팔린 뒤에 알고, 잠긴 재고는 아무도 신고하지 않으며, 멱등이 아닌 확정은
+        // 결제 승인 웹훅이 두 번 오는 날에만 드러난다.
+        'src/reservation/reservation-rules.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
         /**
          * TASK-0117. The error contract's decision-making, all of it pure:
          * which code and sentence a status maps to, what a domain failure's

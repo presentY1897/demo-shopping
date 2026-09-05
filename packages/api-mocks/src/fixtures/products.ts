@@ -100,6 +100,8 @@ const variants: ProductVariant[] = COLOURS.flatMap((_colour, colourIndex) =>
       // Deliberately uneven: a fixture where every row held the same number
       // would let a table that renders one row twelve times pass.
       stock: 4 + index,
+      // 목 서버에는 예약이 없다 — 가용재고는 늘 실물 재고와 같다 (TASK-0048 4.2 ④).
+      availableStock: 4 + index,
       maxPurchaseQuantity: null,
       effectiveMaxPurchaseQuantity: 2,
       isActive: true,
@@ -183,6 +185,7 @@ export const productDraft = defineFixture(productResponseSchema, {
         price: 49_000,
         listPrice: null,
         stock: 0,
+        availableStock: 0,
         maxPurchaseQuantity: null,
         effectiveMaxPurchaseQuantity: null,
         isActive: true,
@@ -261,6 +264,7 @@ const storefrontVariants: ProductVariant[] = STOREFRONT_COLOURS.flatMap((colour,
         price: 118_000,
         listPrice: 158_000,
         stock: key === SOLD_OUT ? 0 : 3 + index,
+        availableStock: key === SOLD_OUT ? 0 : 3 + index,
         maxPurchaseQuantity: null,
         effectiveMaxPurchaseQuantity: 3,
         isActive: true,
@@ -363,6 +367,7 @@ export const storefrontProductWithoutOptions = defineFixture(productDetailRespon
         price: 49_000,
         listPrice: null,
         stock: 7,
+        availableStock: 7,
         maxPurchaseQuantity: null,
         effectiveMaxPurchaseQuantity: null,
         isActive: true,

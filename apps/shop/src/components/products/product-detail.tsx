@@ -112,10 +112,15 @@ export function ProductDetail({
                   )}
                 </Tag>
               </li>
-              {variant !== null && variant.stock > 0 && variant.stock <= LOW_STOCK ? (
+              {variant !== null &&
+              variant.availableStock > 0 &&
+              variant.availableStock <= LOW_STOCK ? (
                 <li>
                   <Tag variant="primary">
-                    {messages.info.badges.lowStock.replace('{count}', String(variant.stock))}
+                    {messages.info.badges.lowStock.replace(
+                      '{count}',
+                      String(variant.availableStock),
+                    )}
                   </Tag>
                 </li>
               ) : null}
@@ -153,8 +158,8 @@ export function ProductDetail({
       {variant === null ? null : (
         <p className="text-fg-subtle text-xs">
           {messages.options.skuLabel}: {variant.sku}
-          {variant.stock > 0
-            ? ` · ${messages.options.stockLabel.replace('{count}', String(variant.stock))}`
+          {variant.availableStock > 0
+            ? ` · ${messages.options.stockLabel.replace('{count}', String(variant.availableStock))}`
             : ''}
         </p>
       )}

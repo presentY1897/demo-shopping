@@ -520,13 +520,16 @@ class ProductStore {
     return plan.combinations.map((combination, index) => {
       const override = overrides.get(combinationKey(combination))
       const own = override?.maxPurchaseQuantity ?? plan.defaults.maxPurchaseQuantity ?? null
+      // 목 서버에는 예약이 없다 — 가용재고는 늘 실물 재고와 같다 (TASK-0048 4.2 ④).
+      const stock = override?.stock ?? plan.defaults.stock ?? 0
 
       return {
         id: nextId(),
         sku: override?.sku ?? generatedSku(plan.skuPrefix, plan.skuFrom + index),
         price: override?.price ?? plan.defaults.price,
         listPrice: override?.listPrice ?? plan.defaults.listPrice ?? null,
-        stock: override?.stock ?? plan.defaults.stock ?? 0,
+        stock,
+        availableStock: stock,
         maxPurchaseQuantity: own,
         effectiveMaxPurchaseQuantity: own ?? product.maxPurchaseQuantity,
         isActive: override?.isActive ?? true,
@@ -783,7 +786,11 @@ function applyOverride(variant: ProductVariant, override: ProductVariantInput | 
   if (override.sku !== undefined) variant.sku = override.sku
   if (override.price !== undefined) variant.price = override.price
   if (override.listPrice !== undefined) variant.listPrice = override.listPrice
-  if (override.stock !== undefined) variant.stock = override.stock
+  if (override.stock !== undefined) {
+    // 목 서버에는 예약이 없으므로 둘은 늘 같이 움직인다 (TASK-0048 4.2 ④).
+    variant.stock = override.stock
+    variant.availableStock = override.stock
+  }
   if (override.maxPurchaseQuantity !== undefined) {
     variant.maxPurchaseQuantity = override.maxPurchaseQuantity
   }
