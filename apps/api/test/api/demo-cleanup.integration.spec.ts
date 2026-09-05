@@ -132,6 +132,50 @@ describe('F1 — an expired account is collected', () => {
   })
 })
 
+describe('장바구니도 함께 간다 (TASK-0045 F8)', () => {
+  it('throws the cart away, and its lines with it', async () => {
+    const { user, variant } = await demoStore({ expiresAt: PAST })
+    const [cart] = await db.query<{ id: string }>(
+      `INSERT INTO "Cart" ("id", "userId", "updatedAt") VALUES (gen_random_uuid(), $1, now())
+       RETURNING "id"`,
+      [user.id],
+    )
+
+    await db.query(
+      `INSERT INTO "CartItem"
+         ("id", "cartId", "variantId", "sellerId", "quantity", "priceAtAdded", "updatedAt")
+       SELECT gen_random_uuid(), $1, v."id", v."sellerId", 1, v."price", now()
+         FROM "ProductVariant" v WHERE v."id" = $2`,
+      [cart?.id, variant.id],
+    )
+
+    expect(await rowExists('Cart', cart?.id ?? '')).toBe(true)
+
+    await sweeper().sweep()
+
+    // 온전히 그 사람의 것이고 아무것도 참조하지 않는다. 남길 이력이 없다 — 주문은
+    // 별개의 표이고 자기 스냅샷을 갖는다.
+    expect(await rowExists('Cart', cart?.id ?? '')).toBe(false)
+    expect(await db.query(`SELECT 1 FROM "CartItem" WHERE "cartId" = $1`, [cart?.id])).toHaveLength(
+      0,
+    )
+  })
+
+  it('leaves a real account’s cart alone', async () => {
+    const real = await createUser(db, { isDemo: false })
+    const [cart] = await db.query<{ id: string }>(
+      `INSERT INTO "Cart" ("id", "userId", "updatedAt") VALUES (gen_random_uuid(), $1, now())
+       RETURNING "id"`,
+      [real.id],
+    )
+
+    await demoStore({ expiresAt: PAST })
+    await sweeper().sweep()
+
+    expect(await rowExists('Cart', cart?.id ?? '')).toBe(true)
+  })
+})
+
 describe('F2 · F3 — what the sweep must not touch', () => {
   it('leaves a demo account that has not expired', async () => {
     const alive = await demoStore({ expiresAt: FUTURE })
