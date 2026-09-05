@@ -13,6 +13,7 @@ import type { AppConfig } from './config/app-config.js'
 import { HealthModule } from './health/health.module.js'
 import { PrismaModule } from './prisma/prisma.module.js'
 import { OrderModule } from './orders/order.module.js'
+import { PaymentModule } from './payment/payment.module.js'
 import { ProfileModule } from './profile/profile.module.js'
 import { ReservationModule } from './reservation/reservation.module.js'
 import { SearchModule } from './search/search.module.js'
@@ -36,6 +37,7 @@ export class AppModule {
         DemoModule,
         HealthModule,
         OrderModule,
+        PaymentModule,
         ProfileModule,
         ReservationModule,
         SearchModule,
