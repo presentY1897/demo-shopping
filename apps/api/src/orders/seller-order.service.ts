@@ -29,6 +29,8 @@ import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import type { OrderConfirmedEvents } from './order-confirmed-events.js'
+import { confirmationsOf, ORDER_CONFIRMED_EVENTS } from './order-confirmed-events.js'
 import type { SellerOrderEvents, SellerOrderStatusChanged } from './seller-order-events.js'
 import { SELLER_ORDER_EVENTS } from './seller-order-events.js'
 import type {
@@ -111,6 +113,7 @@ export class SellerOrderService {
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(SELLER_ORDER_EVENTS) private readonly events: SellerOrderEvents,
+    @Inject(ORDER_CONFIRMED_EVENTS) private readonly confirmations: OrderConfirmedEvents,
   ) {}
 
   /**
@@ -220,16 +223,31 @@ export class SellerOrderService {
   }
 
   /**
-   * 옮겨진 사실을 알린다 (⑥ · M13).
+   * 옮겨진 사실을 알린다 (⑥ · M13), 그리고 **확정이면 그 뒤를 잇는다** (M11 · M12).
    *
    * **커밋한 뒤에 부른다.** 트랜잭션 안에서 부르면 롤백된 전이의 알림이 나가고, 그
-   * 메일은 되돌릴 수 없다. 지금 구현은 아무것도 하지 않으며 그것이 무엇을 뜻하는지는
-   * `seller-order-events.ts` 에 적혀 있다.
+   * 메일은 되돌릴 수 없다. 지금 두 구현 다 아무것도 하지 않으며, 그것이 무엇을
+   * 뜻하는지는 각각 `seller-order-events.ts` 와 `order-confirmed-events.ts` 에
+   * 적혀 있다.
+   *
+   * **구매확정의 후속 이벤트가 여기 걸리는 것이 이 메서드의 두 번째 이유다**
+   * (TASK-0064 F4). 확정은 수동(구매자)과 자동(D+7 스케줄러) 두 길로 오지만 **둘 다
+   * 이 자리를 지난다** — 상태를 옮기는 문이 하나이고, 그 문이 돌려준 사실을 커밋 뒤에
+   * 넘기는 곳도 하나이기 때문이다. 부르는 쪽마다 정산 등록을 끼워 넣게 두면 「구매자가
+   * 누른 확정에만 적립금이 붙는」 종류의 어긋남이 생기고, 그것은 한쪽 길을 실제로
+   * 걸어 본 사람만 발견한다.
+   *
+   * 중복 발행은 문이 막는다. 이미 `CONFIRMED` 인 몫에 {@link applyWithin} 은
+   * `null` 을 주므로 여기 목록에 들어오지 않는다 (F7 · R2).
    */
-  publish(events: readonly SellerOrderStatusChanged[]): Promise<void> {
-    if (events.length === 0) return Promise.resolve()
+  async publish(events: readonly SellerOrderStatusChanged[]): Promise<void> {
+    if (events.length === 0) return
 
-    return this.events.statusChanged(events)
+    await this.events.statusChanged(events)
+
+    const confirmed = confirmationsOf(events)
+
+    if (confirmed.length > 0) await this.confirmations.confirmed(confirmed)
   }
 
   // ---------------------------------------------------------------- internals

@@ -199,6 +199,8 @@ function moveTo(row: OrderRow, status: OrderStatus, shipment?: Shipment): void {
       ...row.detail.sellerOrder,
       status,
       shipment: shipment ?? row.detail.sellerOrder.shipment,
+      // 확정된 몫은 더 이상 자동 확정을 기다리지 않는다 (TASK-0064).
+      autoConfirmAt: status === 'DELIVERED' ? row.detail.sellerOrder.autoConfirmAt : null,
       // 상태를 옮기면 이력이 한 줄 자란다. 이력이 묶음 안에 있으므로 이 갱신도
       // 여기서 일어나고, 그래야 상태와 이력이 갈리지 않는다.
       history: [

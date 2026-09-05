@@ -84,6 +84,7 @@ function toAppConfig(env: Env, resolved: Resolved): AppConfig {
     corsOrigins: resolved.corsOrigins,
     appOrigins: resolved.appOrigins,
     paymentSimulation: env.PAYMENT_SIMULATION,
+    fulfillmentPace: env.FULFILLMENT_PACE,
   }
 }
 

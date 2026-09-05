@@ -6,10 +6,11 @@ import { Principal } from '../auth/principal.decorator.js'
 import { RequirePermission } from '../auth/require-permission.decorator.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { parseInput } from '../common/parse-input.js'
+import { DeliverySimulatorService } from './delivery-simulator.service.js'
 import { ShipmentService } from './shipment.service.js'
 
 /**
- * 배송의 세 라우트 (TASK-0061 · TASK-0060).
+ * 배송의 네 라우트 (TASK-0061 · TASK-0060 · TASK-0062).
  *
  * **판매자 몫의 하위 자원이다.** 배송은 `SellerOrder` 당 한 건이라 자기 id 로 찾을
  * 이유가 없고(`/shipments/:id` 였다면 화면이 그 id 를 어디선가 먼저 얻어야 한다),
@@ -21,7 +22,10 @@ import { ShipmentService } from './shipment.service.js'
  */
 @Controller({ version: '1' })
 export class ShipmentController {
-  constructor(private readonly shipments: ShipmentService) {}
+  constructor(
+    private readonly shipments: ShipmentService,
+    private readonly simulator: DeliverySimulatorService,
+  ) {}
 
   /**
    * 발송 처리 (F1).
@@ -74,5 +78,30 @@ export class ShipmentController {
     @Param('id') id: string,
   ): Promise<SellerOrderDeliveryResponse> {
     return this.shipments.markDelivered(principal, id)
+  }
+
+  /**
+   * 수동 진행 — 다음 단계로 즉시 (TASK-0062 4장).
+   *
+   * **시연할 때 2분도 기다리기 어렵다.** 시뮬레이터가 시간에 맞춰 두드리는 문을
+   * 사람이 지금 두드리는 자리이고, 만드는 사건과 그 사건이 일으키는 일은 배치가
+   * 만드는 것과 **같다**.
+   *
+   * **본문이 없다.** 다음 단계는 지금 상태의 함수이므로 요청이 고를 것이 없고,
+   * 고르게 두는 순간 이 라우트는 TASK-0061 이 열지 않기로 한 「사람이 임의의 배송
+   * 사실을 주장하는」 문이 된다 — 바로 위 `markDelivered` 가 본문을 받지 않는 것과
+   * 같은 이유다. 남는 이력이 왜 거짓이 아닌지는 서비스의 주석이 적는다.
+   *
+   * **`order.write` 다.** 배송 표와 (마지막 단계에서는) 주문 상태를 옮기는 요청이라
+   * 발송·배송완료와 같은 문 앞에 선다. 자기 스토어인지는 서비스가 보고, 관리자는
+   * 주체가 `ADMIN` 으로 남는다.
+   */
+  @Post('seller-orders/:id/shipment/advance')
+  @RequirePermission('order.write')
+  advance(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+  ): Promise<ShipmentResponse> {
+    return this.simulator.advance(principal, id)
   }
 }

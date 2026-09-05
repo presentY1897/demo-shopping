@@ -196,6 +196,8 @@ export const shopperOrder = defineFixture(orderResponseSchema, {
         brandName: '루미에르',
         status: 'PAYMENT_PENDING',
         shipment: null,
+        // 결제도 안 된 주문이다. 자동 확정을 기다리는 상태가 아니다 (TASK-0064).
+        autoConfirmAt: null,
         // 방금 만들어진 주문이라 이력이 **한 줄**이다. 실제 서버가 주문을 저장할
         // 때 `null → PAYMENT_PENDING` 을 함께 적고(주체는 `SYSTEM`), 그 줄이 곧
         // 「언제 접수됐나」다.
@@ -226,6 +228,8 @@ export const shopperOrder = defineFixture(orderResponseSchema, {
         brandName: '노드스텝',
         status: 'PAYMENT_PENDING',
         shipment: null,
+        // 결제도 안 된 주문이다. 자동 확정을 기다리는 상태가 아니다 (TASK-0064).
+        autoConfirmAt: null,
         history: [
           {
             id: '019596d0-1f1c-7c2e-9a0e-5e0000000002',

@@ -129,6 +129,10 @@ function withStatus(sellerOrderId: string, status: OrderStatus): OrderStore {
           ? {
               ...bundle,
               status,
+              // 확정된 몫은 더 이상 자동 확정을 기다리지 않는다 — 실제 서버가
+              // 답하는 값과 같게 둔다 (TASK-0064). 목이 옛 예정일을 들고 있으면
+              // 화면은 「확정됐는데 예정일이 남아 있는」 상태를 그리게 된다.
+              autoConfirmAt: status === 'DELIVERED' ? bundle.autoConfirmAt : null,
               history: [
                 ...bundle.history,
                 {

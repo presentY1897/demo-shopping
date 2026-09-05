@@ -133,6 +133,8 @@ function bundle(
     sellerId: '019596d0-1f1c-7c2e-9a0e-5a0000000001',
     brandName: '루미에르',
     status,
+    // 사다리는 이 값을 보지 않는다. 계약이 요구하므로 채운다.
+    autoConfirmAt: null,
     items: [],
     productAmount: 0,
     couponDiscountAmount: 0,

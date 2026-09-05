@@ -4,9 +4,11 @@ import type { HealthDependencyKey, HealthResponse, HealthStatus } from '@shoppin
 import type { AppConfig } from '../config/app-config.js'
 import { APP_CONFIG } from '../config/app-config.js'
 import { DemoCleanupReporter } from './demo-cleanup.reporter.js'
+import { deliverySimulatorDetails } from './delivery-simulator.health-indicator.js'
 import { SearchIndexReporter } from './search-index.reporter.js'
 import type { HealthIndicator } from './health-indicator.js'
 import { HEALTH_INDICATORS } from './health-indicator.js'
+import { orderConfirmDetails } from './order-confirm.health-indicator.js'
 import { paymentReconcileDetails } from './payment-reconcile.health-indicator.js'
 import { paymentStragglerDetails } from './payment-straggler.health-indicator.js'
 import { PaymentWebhookReporter } from './payment-webhook.reporter.js'
@@ -43,7 +45,9 @@ export class HealthService {
       searchIndex,
       reservationExpiry,
       paymentReconcile,
+      orderConfirm,
       paymentStraggler,
+      deliverySimulator,
       webhookReceivedAt,
     ] = await Promise.all([
       Promise.all(
@@ -59,7 +63,9 @@ export class HealthService {
       // `reservation-expiry.health-indicator.ts` 에 적혀 있다.
       reservationExpiryDetails(this.indicators),
       paymentReconcileDetails(this.indicators),
+      orderConfirmDetails(this.indicators),
       paymentStragglerDetails(this.indicators),
+      deliverySimulatorDetails(this.indicators),
       // 지표 목록이 아니라 보고자에서 온다 — 웹훅이 한 건도 안 온 것은 고장이
       // 아니라 전체 판정에 실리지 않는다 (`payment-webhook.reporter.ts`).
       this.paymentWebhook.lastReceivedAt(),
@@ -75,7 +81,12 @@ export class HealthService {
       searchIndex,
       reservationExpiry: { status: statusOf(readings, 'reservationExpiry'), ...reservationExpiry },
       paymentReconcile: { status: statusOf(readings, 'paymentReconcile'), ...paymentReconcile },
+      orderConfirm: { status: statusOf(readings, 'orderConfirm'), ...orderConfirm },
       paymentStraggler: { status: statusOf(readings, 'paymentStraggler'), ...paymentStraggler },
+      deliverySimulator: {
+        status: statusOf(readings, 'deliverySimulator'),
+        ...deliverySimulator,
+      },
       paymentWebhook: { lastReceivedAt: webhookReceivedAt },
     }
   }

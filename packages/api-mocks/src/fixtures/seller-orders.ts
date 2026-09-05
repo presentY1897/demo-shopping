@@ -142,6 +142,8 @@ export const sellerOrderDetail = defineFixture(sellerOrderResponseSchema, {
     shippingFee: 3_000,
     paidAmount: 15_000,
     shipment: null,
+    // 아직 발송 전이라 확정 예정도 없다 (TASK-0064).
+    autoConfirmAt: null,
     // **묶음 안이다.** 이력은 묶음에 붙는 사실이고 상세에만 실린다 —
     // `shipment` 가 바로 위에 있는 것과 같은 이유이며, 그래서 구매자 상세도
     // 같은 이력을 읽는다 (TASK-0063).
