@@ -350,6 +350,24 @@ export default defineConfig({
           statements: 100,
         },
         /**
+         * TASK-0061 (6.2, Q5 강화). 가상 운송장의 순수 판단 — 번호를 어떻게 만들고,
+         * 그것이 우리가 만든 모양인지, 어느 운송사인지, 사건 하나가 배송을 어느
+         * 상태로 옮기는지.
+         *
+         * **이 파일이 지키는 성질은 하나이고, 무너져도 아무 검사가 빨개지지 않는다:
+         * 발급한 번호가 진짜 운송장과 구분된다** (F2 · R1). 접두어가 빠진 번호는 잘
+         * 생긴 문자열이라 스키마도 화면도 반기고, 알아차리는 사람은 그것을 실제
+         * 택배사 조회창에 넣어 본 사람뿐이다. 사건 → 상태 매핑도 같은 종류다 —
+         * 빠진 칸은 「도착했는데 이동 중이라고 적힌 배송」이고, 그것은 오류가 아니라
+         * 이상한 화면으로 나타난다.
+         */
+        'src/shipping/shipment-rules.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        /**
          * TASK-0117. The error contract's decision-making, all of it pure:
          * which code and sentence a status maps to, what a domain failure's
          * payload looks like, which `details` shape one zod issue becomes, and
