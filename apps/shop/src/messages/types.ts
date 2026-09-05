@@ -5,8 +5,10 @@ import type {
   HealthStatus,
   OauthFailureReason,
   OauthNotice,
+  SearchSort,
   UserFacingErrorCode,
 } from '@shopping/shared'
+import type { ProductCardLabels, ProductListLabels } from '@shopping/ui/catalog'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { SessionRefusal } from '@/lib/auth/session-client'
@@ -49,6 +51,16 @@ export interface Messages {
   readonly layout: LayoutMessages
   /** The temporary home screen. TASK-0044 replaces it with the real one. */
   readonly home: HomeMessages
+  /**
+   * 검색 결과 화면 (TASK-0041) — 검색어·필터·정렬·빈 상태.
+   *
+   * The filter *values* are not here and never will be: 「오버사이즈」 is a row
+   * an operator typed into `AttributeDefinition`, and D-005 asks that adding one
+   * take no code change. What this slice holds is the frame around them — the
+   * word for 「필터」, the sentence shown when nothing matched — and the panel
+   * draws whatever `GET /search/filters` names.
+   */
+  readonly search: SearchMessages
   /**
    * Screens whose route exists so the header's links are not dead ends, and
    * whose content arrives with its own milestone (TASK-0018 4.5).
@@ -421,6 +433,15 @@ export interface SearchSlotMessages {
   readonly label: string
   readonly placeholder: string
   readonly submit: string
+  /** Names the candidate listbox. */
+  readonly suggestionsLabel: string
+  /**
+   * Announced when candidates appear. `{count}`.
+   *
+   * A dropdown that opens silently is a dropdown a screen reader user never
+   * learns is there — the arrow keys do something new and nothing said so.
+   */
+  readonly suggestionsHint: string
 }
 
 export interface DensityControlMessages {
@@ -456,7 +477,6 @@ export interface HomeMessages {
 
 export interface PlaceholderMessages {
   readonly comingSoon: string
-  readonly search: { readonly title: string; readonly body: string; readonly queryLabel: string }
   readonly category: { readonly title: string; readonly body: string }
   readonly cart: { readonly title: string; readonly body: string }
   readonly mypage: { readonly title: string; readonly body: string }
@@ -513,4 +533,72 @@ export interface SearchReadinessMessages {
   readonly indexing: string
   readonly autoRecheck: string
   readonly recheckLabel: string
+}
+
+/**
+ * 검색 화면의 문구 (TASK-0041).
+ *
+ * `list` 와 `card` 는 `@shopping/ui/catalog` 가 요구하는 모양 그대로다.
+ * `packages/ui` 는 한국어를 담지 않기로 했으므로(TASK-0015), 카드가 그리는 모든
+ * 낱말은 이 카탈로그를 거쳐 들어간다.
+ */
+export interface SearchMessages {
+  /** `<h1>` before anything has been searched for. */
+  readonly title: string
+  /** `{term}` — the `<h1>` once there is a term. */
+  readonly titleFor: string
+  /** `{count}` */
+  readonly totalLabel: string
+  /** Names the results region. */
+  readonly resultsLabel: string
+  readonly promptTitle: string
+  readonly promptBody: string
+  /** F6 — the results are approximate, and these are the words that were bent. */
+  readonly approximateTitle: string
+  /** `{terms}` */
+  readonly approximateBody: string
+  readonly sort: SearchSortMessages
+  readonly filters: SearchFilterMessages
+  readonly list: ProductListLabels
+  readonly card: ProductCardLabels
+}
+
+export interface SearchSortMessages {
+  readonly label: string
+  readonly names: Readonly<Record<SearchSort, string>>
+}
+
+export interface SearchFilterMessages {
+  readonly title: string
+  /** Opens the bottom sheet on a phone (F9). */
+  readonly openLabel: string
+  readonly closeLabel: string
+  readonly applyLabel: string
+  /** Names the region holding the applied-filter chips. */
+  readonly appliedLabel: string
+  readonly clearAll: string
+  /** `{name}` — accessible name of one chip's × button. */
+  readonly removeLabel: string
+  /** `{count}` — how many results a facet value would leave. */
+  readonly facetCount: string
+  /** Said in place of a panel when the category declares no filters. */
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly loadingLabel: string
+  readonly inStock: string
+  readonly inStockChip: string
+  /** `{min}` · `{max}` — the applied-price chip. `{max}` is empty when open-ended. */
+  readonly priceChip: string
+  readonly price: SearchPriceMessages
+}
+
+export interface SearchPriceMessages {
+  readonly legend: string
+  readonly minLabel: string
+  readonly maxLabel: string
+  readonly placeholderMin: string
+  readonly placeholderMax: string
+  readonly applyLabel: string
+  /** Shown when the upper bound is below the lower one. */
+  readonly invalid: string
 }

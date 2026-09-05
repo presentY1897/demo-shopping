@@ -2,6 +2,9 @@
  * The three states every screen can be in before it is a screen (P5), plus the
  * placeholder routes that exist so the header's links are not dead ends.
  *
+ * 검색은 더 이상 여기에 없다 — TASK-0041 이 자리 표시자를 실제 화면으로 바꿨고,
+ * 그 화면은 `search-page.spec.tsx` 가 검증한다.
+ *
  * They are ordinary components, so they are rendered as such. What is being
  * checked is that each one says what happened in Korean the visitor can act on,
  * and that the error state hands back a real retry rather than a dead end.
@@ -18,7 +21,6 @@ import RouteError from '@/app/error'
 import Loading from '@/app/loading'
 import MyPage from '@/app/mypage/page'
 import NotFound from '@/app/not-found'
-import SearchPage from '@/app/search/page'
 import { messagesFor } from '@/messages'
 
 import { renderWithAuth } from './support/auth'
@@ -55,23 +57,6 @@ describe('the error state', () => {
     await userEvent.click(screen.getByRole('button', { name: states.retryLabel }))
 
     expect(reset).toHaveBeenCalledOnce()
-  })
-})
-
-describe('the search placeholder', () => {
-  it('echoes the query the header submitted', async () => {
-    render(await SearchPage({ searchParams: Promise.resolve({ q: '코트' }) }))
-
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(placeholder.search.title)
-    expect(screen.getByText('코트')).toBeVisible()
-  })
-
-  it('says nothing about a query when there was none', async () => {
-    render(await SearchPage({ searchParams: Promise.resolve({}) }))
-
-    // The label with its colon: the body copy mentions 검색어 in a sentence, and
-    // a substring match on the bare word would find that instead.
-    expect(screen.queryByText(`${placeholder.search.queryLabel}:`, { exact: false })).toBeNull()
   })
 })
 

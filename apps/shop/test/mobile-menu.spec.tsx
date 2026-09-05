@@ -50,7 +50,7 @@ describe('the menu sheet', () => {
 
     expect(sheet).toBeVisible()
     expect(screen.getAllByRole('link')).toHaveLength(layout.nav.categories.length)
-    expect(screen.getByRole('searchbox', { name: layout.search.label })).toBeVisible()
+    expect(screen.getByRole('combobox', { name: layout.search.label })).toBeVisible()
   })
 
   it('closes on Escape and gives the focus back to the button', async () => {

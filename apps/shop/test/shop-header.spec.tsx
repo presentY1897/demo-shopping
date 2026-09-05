@@ -51,11 +51,13 @@ describe('at 360px', () => {
   it('keeps the search field out of the row and in the menu', async () => {
     renderHeader(VIEWPORTS.mobile)
 
-    expect(screen.queryByRole('searchbox', { name: layout.search.label })).toBeNull()
+    // `combobox`, not `searchbox`: TASK-0041 gave the field an autocomplete
+    // list, and the ARIA pattern for that puts `role="combobox"` on the input.
+    expect(screen.queryByRole('combobox', { name: layout.search.label })).toBeNull()
 
     await userEvent.click(screen.getByRole('button', { name: layout.nav.openMenu }))
 
-    expect(await screen.findByRole('searchbox', { name: layout.search.label })).toBeVisible()
+    expect(await screen.findByRole('combobox', { name: layout.search.label })).toBeVisible()
   })
 
   it('collapses the density toggle into a button that names the current step', () => {
@@ -70,7 +72,7 @@ describe('at 768px', () => {
   it('shows the search field but still uses the menu for categories', () => {
     renderHeader(VIEWPORTS.tablet)
 
-    expect(screen.getByRole('searchbox', { name: layout.search.label })).toBeVisible()
+    expect(screen.getByRole('combobox', { name: layout.search.label })).toBeVisible()
     expect(screen.getByRole('button', { name: layout.nav.openMenu })).toBeVisible()
     expect(screen.queryByRole('link', { name: layout.nav.categories[0]!.label })).toBeNull()
   })
