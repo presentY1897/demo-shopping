@@ -259,6 +259,48 @@ describe('F3 — 판매자별 그룹핑', () => {
   })
 })
 
+describe('배송 정책 (TASK-0046 4.1)', () => {
+  it('carries each seller’s policy, not a fee for this basket', async () => {
+    const cheap = await listing({ price: 10_000 })
+
+    await db.query(
+      `UPDATE "Seller" SET "shippingFee" = 4000, "freeShippingThreshold" = 50000 WHERE "id" = $1`,
+      [cheap.sellerId],
+    )
+
+    const answer = await add(cheap.variantId, 1)
+    const group = answer.groups[0]
+
+    // 계산된 배송비가 아니라 **정책**이다. 무엇을 고르느냐에 따라 달라지는 값이고,
+    // 고르는 일은 브라우저에서 일어난다 — 서버가 계산해 보낸 숫자는 누군가 체크
+    // 하나를 푸는 순간 틀린 값이 된다.
+    expect(group).toMatchObject({ shippingFee: 4_000, freeShippingThreshold: 50_000 })
+  })
+
+  it('tells "no free shipping rule" apart from "always free"', async () => {
+    // `null` 과 `0` 은 다르다 — `0` 은 「0원 이상이면 무료」, 즉 언제나 무료다.
+    const none = await listing({ price: 10_000 })
+    const always = await listing({ price: 20_000 })
+
+    await db.query(`UPDATE "Seller" SET "freeShippingThreshold" = NULL WHERE "id" = $1`, [
+      none.sellerId,
+    ])
+    await db.query(`UPDATE "Seller" SET "freeShippingThreshold" = 0 WHERE "id" = $1`, [
+      always.sellerId,
+    ])
+
+    await add(none.variantId, 1)
+
+    const answer = await add(always.variantId, 1)
+    const thresholds = new Map(
+      answer.groups.map((group) => [group.sellerId, group.freeShippingThreshold]),
+    )
+
+    expect(thresholds.get(none.sellerId)).toBeNull()
+    expect(thresholds.get(always.sellerId)).toBe(0)
+  })
+})
+
 describe('F4 · F5 — 담은 뒤에 달라진 것', () => {
   it('reports a price rise and shows both numbers', async () => {
     const item = await listing({ price: 10_000 })
