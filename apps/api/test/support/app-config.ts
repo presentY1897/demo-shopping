@@ -144,5 +144,7 @@ export function testAppConfig({
     },
     corsOrigins,
     appOrigins,
+    // 재현 장치는 기본적으로 꺼져 있다 — 그것을 켜야 하는 스펙이 직접 켠다.
+    paymentSimulation: 'off',
   }
 }
