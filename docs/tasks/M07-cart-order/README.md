@@ -9,7 +9,7 @@
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
 | [TASK-0045](./TASK-0045-cart-api.md) | 장바구니 스키마 · API | 완료 | M06 |
-| [TASK-0046](./TASK-0046-cart-page.md) | 장바구니 화면 (판매자별 그룹) | 승인됨 | 0045 |
+| [TASK-0046](./TASK-0046-cart-page.md) | 장바구니 화면 (판매자별 그룹) | 완료 | 0045 |
 | [TASK-0047](./TASK-0047-pricing-engine.md) | 금액 계산 엔진 | 완료 | 0045 |
 | [TASK-0048](./TASK-0048-stock-reservation.md) | 재고 예약 | 완료 | M05 |
 | [TASK-0049](./TASK-0049-order-create.md) | 주문 생성 API (2단 분할) | 완료 | 0047, 0048 |
