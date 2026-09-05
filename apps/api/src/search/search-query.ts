@@ -51,6 +51,7 @@ export function filterExpression(query: SearchQuery): string | null {
   // (TASK-0042 4.1). A leaf is nobody's ancestor, so it still matches only its
   // own listings.
   if (query.categoryId !== undefined) clauses.push(`categoryIds = ${String(query.categoryId)}`)
+  if (query.sellerId !== undefined) clauses.push(`sellerId = ${quote(query.sellerId)}`)
   if (query.priceMin !== undefined) clauses.push(`price >= ${String(query.priceMin)}`)
   if (query.priceMax !== undefined) clauses.push(`price <= ${String(query.priceMax)}`)
   if (query.inStock === true) clauses.push('inStock = true')

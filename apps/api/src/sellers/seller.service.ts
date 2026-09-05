@@ -16,6 +16,7 @@ import type {
   SellerReviewListResponse,
   SellerStatus,
   SellerStoreUpdateRequest,
+  StorefrontSellerResponse,
 } from '@shopping/shared'
 import { SELLER_REVIEW_LIST_DEFAULT_LIMIT } from '@shopping/shared'
 
@@ -125,6 +126,30 @@ export class SellerService {
   ) {}
 
   // ------------------------------------------------------------- the seller
+
+  /**
+   * One store as a shopper sees it (TASK-0044 4.2).
+   *
+   * A separate method from {@link SellerService.me}, for the reason
+   * `CategoryService.storefrontTree` and `ProductService.storefrontDetail` give:
+   * the difference is not a parameter, it is that **there is no principal to
+   * check**.
+   *
+   * **Anything but `ACTIVE` is a 404.** A store under review or suspended is not
+   * open, and telling a visitor which of those it is publishes the review state
+   * of every application. It is the same rule the product detail follows, and for
+   * the same reason.
+   */
+  async storefront(id: string): Promise<StorefrontSellerResponse> {
+    const seller = await this.prisma.seller.findFirst({
+      where: { id, status: 'ACTIVE' },
+      select: { id: true, brandName: true, slug: true, introduction: true, logoUrl: true },
+    })
+
+    if (seller === null) throw new NotFoundException('판매자를 찾을 수 없습니다.')
+
+    return { seller }
+  }
 
   /**
    * The caller's own store, whatever state it is in.

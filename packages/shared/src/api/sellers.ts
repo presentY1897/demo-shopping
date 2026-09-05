@@ -145,6 +145,34 @@ export const sellerResponseSchema = z.object({ seller: sellerSchema })
 export type SellerResponse = z.infer<typeof sellerResponseSchema>
 
 /**
+ * 상점이 보는 판매자 (TASK-0044 4.2).
+ *
+ * Deliberately **not** {@link sellerSchema}. That shape is the console's: it
+ * carries the status, the reason behind it, when it last moved, the owning
+ * account and the optimistic lock — an operator's view of an application. A
+ * brand page draws a name, a picture and a paragraph, and shipping the rest to
+ * every visitor would publish the review history of every store.
+ *
+ * The status is absent rather than filtered, because there is nothing to filter:
+ * a store that is not `ACTIVE` is a 404 on this route, so every seller a caller
+ * can obtain here has the same one.
+ */
+export const storefrontSellerSchema = z.object({
+  id: sellerIdSchema,
+  brandName: z.string(),
+  /** Kept for TASK-0102, which may move the brand URL onto it. */
+  slug: z.string(),
+  introduction: z.string().nullable(),
+  logoUrl: z.string().nullable(),
+})
+
+export type StorefrontSeller = z.infer<typeof storefrontSellerSchema>
+
+export const storefrontSellerResponseSchema = z.object({ seller: storefrontSellerSchema })
+
+export type StorefrontSellerResponse = z.infer<typeof storefrontSellerResponseSchema>
+
+/**
  * Body of `POST /api/v1/sellers/applications` — applying, and re-applying after
  * a rejection.
  *

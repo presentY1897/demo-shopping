@@ -48,6 +48,15 @@ export type AttributeFilter = z.infer<typeof attributeFilterSchema>
 export const searchQuerySchema = z.object({
   q: searchTermSchema.optional(),
   categoryId: categoryIdSchema.optional(),
+  /**
+   * One store's listings — the brand page (TASK-0044 4.2).
+   *
+   * The index has carried `sellerId` as a filterable field since TASK-0038; what
+   * was missing was a way to ask for it. A brand page is a search with the store
+   * held down, exactly as a category page is a search with the category held
+   * down, so it is a filter here rather than an endpoint of its own.
+   */
+  sellerId: z.uuid().optional(),
   priceMin: priceSchema.optional(),
   priceMax: priceSchema.optional(),
   /** `true` hides sold-out listings. Absent shows everything. */
