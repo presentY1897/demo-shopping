@@ -8,7 +8,7 @@
  */
 
 import type { ApiClient } from '@shopping/shared'
-import { searchResponseSchema } from '@shopping/shared'
+import { searchResponseSchema, searchSuggestResponseSchema } from '@shopping/shared'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { PrismaService } from '../../src/prisma/prisma.service.js'
@@ -151,6 +151,28 @@ describe('A1 — p95 200ms', () => {
       client().request({
         path: `/search?categoryId=${String(categoryId)}&attr.fit=오버사이즈&sort=price_asc&limit=20`,
         schema: searchResponseSchema,
+      }),
+    )
+
+    expect(measured).toBeLessThan(BUDGET_MS)
+  })
+
+  /**
+   * 자모·초성 자동완성도 같은 예산 안이어야 한다 (TASK-0103 F7).
+   *
+   * The whole feature is a thing that happens **while somebody is typing**, so it
+   * is the one path where a hundred milliseconds is felt directly. Two extra
+   * fields per document could have cost something; this is where that would show.
+   */
+  it.each([
+    ['완성형', '코트'],
+    ['조합 중', '코ㅌ'],
+    ['초성', 'ㅋㅌ'],
+  ])('answers a %s autocomplete inside the budget', async (_kind, term) => {
+    const measured = await p95(() =>
+      client().request({
+        path: `/search/suggest?q=${encodeURIComponent(term)}`,
+        schema: searchSuggestResponseSchema,
       }),
     )
 

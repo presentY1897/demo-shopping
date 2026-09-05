@@ -20,11 +20,23 @@ export const PRODUCTS_PRIMARY_KEY = 'id'
  * mentions linen in its description. Putting `description` first would bury
  * every exact name match under whatever paragraph happened to say the word.
  */
+/**
+ * 순서가 곧 가중치다 (TASK-0103 F5).
+ *
+ * Meilisearch's `attribute` ranking rule prefers a match in an earlier field, so
+ * this list *is* 「완성형 매칭 > 자모 매칭 > 초성 매칭」 — the weighting the task
+ * asks for, expressed as an order rather than as a score nobody can read.
+ *
+ * `chosung` sits last of the three because it is the widest: two consonants match
+ * a great many names, and a chosung hit should never outrank somebody who typed
+ * the word out.
+ */
 export const SEARCHABLE_ATTRIBUTES: readonly string[] = [
   'name',
   'brandName',
   'categoryLabel',
   'hangul',
+  'chosung',
   'description',
 ]
 
@@ -129,6 +141,19 @@ export const SYNONYMS: Readonly<Record<string, readonly string[]>> = {
 export const TYPO_TOLERANCE = {
   enabled: true,
   minWordSizeForTypos: { oneTypo: 2, twoTypos: 5 },
+  /**
+   * 자모·초성 필드에서는 오타 보정을 끈다 (TASK-0103 R1).
+   *
+   * 그 필드에 든 것은 사람이 친 낱말이 아니라 **펴 놓은 글자열**이다. 거기서의
+   * 「오타 한 개」는 뜻이 없고, 후보만 넓힌다 — 초성 `ㅋㅌ` 가 `ㄹㅋㅌ` 에 붙는 것이
+   * 그 예다. 실제로 그렇게 붙는 것을 보고 껐다: 「롱코트」가 `ㅋㅌ` 로 나오는 것이
+   * 반가워 보이지만, 그것은 초성이 맞아서가 아니라 한 글자 차이라서이고 — 같은
+   * 이유로 아무 상관 없는 이름도 함께 나온다.
+   *
+   * 완성형 이름(`name`·`brandName`)의 오타 보정은 그대로다. 「레트루 → 레트로」는
+   * TASK-0039 가 실측해서 남긴 기능이다.
+   */
+  disableOnAttributes: ['hangul', 'chosung'],
 } as const
 
 /** The full settings body, given the attribute facets that exist today. */
@@ -145,6 +170,7 @@ export function productsIndexSettings(attributeFacets: readonly string[]): Recor
     typoTolerance: {
       ...TYPO_TOLERANCE,
       minWordSizeForTypos: { ...TYPO_TOLERANCE.minWordSizeForTypos },
+      disableOnAttributes: [...TYPO_TOLERANCE.disableOnAttributes],
     },
   }
 }

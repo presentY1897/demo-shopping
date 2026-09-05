@@ -1,4 +1,5 @@
 import type { AttributeValue } from '@shopping/shared'
+import { hangulIndexFields } from '@shopping/shared'
 
 /**
  * A listing, as the search index holds it (TASK-0038 4장).
@@ -73,8 +74,24 @@ export interface ProductDocument {
   readonly thumbnailUrl: string | null
   /** Epoch seconds. Meilisearch sorts numbers, not ISO strings. */
   readonly createdAt: number
-  /** Placeholder for TASK-0103. Empty until the 자모 · 초성 fields are filled. */
+  /**
+   * 상품명·브랜드명을 자모로 편 것, 낱말 단위 (TASK-0103).
+   *
+   * 「코ㅌ」는 완성형 `코` 뒤에 호환 자모 `ㅌ` 가 붙은 것이라 「코트」와 한 글자도
+   * 겹치지 않는다. 양쪽을 같은 모양으로 펴 두어야 「ㅋㅗㅌ」가 「ㅋㅗㅌㅡ」의
+   * 접두어가 된다.
+   */
   readonly hangul: readonly string[]
+  /**
+   * 같은 것의 초성만, 역시 낱말 단위 (TASK-0103).
+   *
+   * 낱말로 나누는 이유는 4.1 에 있다 — 엔진은 접두어를 찾지 부분 문자열을 찾지
+   * 않으므로, 한 덩어리로 이어 붙이면 「ㅋㅌ」로는 아무것도 못 찾는다.
+   *
+   * **설명 본문에는 쓰지 않는다** (R2). 인덱스가 몇 배가 되고, 설명을 초성으로
+   * 찾는 사람은 없다.
+   */
+  readonly chosung: readonly string[]
   /** `attr_material`, `attr_color`, … — see the class comment. */
   readonly [facet: `attr_${string}`]: unknown
 }
@@ -99,8 +116,9 @@ export const ATTRIBUTE_FACET_PREFIX = 'attr_'
  * | --- | --- |
  * | 1 | TASK-0038 최초 문서 |
  * | 2 | `categoryIds` — 조상 사슬. 카테고리 필터가 이것을 본다 (TASK-0042 4.1) |
+ * | 3 | `hangul` · `chosung` — 자모와 초성. 조합 중 검색과 초성 검색이 이것을 본다 (TASK-0103) |
  */
-export const DOCUMENT_VERSION = 2
+export const DOCUMENT_VERSION = 3
 
 /**
  * Only `ACTIVE` listings belong in the index.
@@ -149,6 +167,11 @@ export function attributeFacets(
  * has no price *and* no stock, so it sorts to the bottom either way.
  */
 export function toDocument(source: ProductSource): ProductDocument {
+  // Name and brand only (TASK-0103 R2). Spreading the result would put it under
+  // `jamo`, and the document's field is `hangul` — the two names are not the same
+  // and a spread would silently produce a field nothing searches.
+  const spelled = hangulIndexFields([source.name, source.brandName])
+
   return {
     ...attributeFacets(source.attributes),
     id: source.id,
@@ -172,6 +195,7 @@ export function toDocument(source: ProductSource): ProductDocument {
     inStock: source.totalStock > 0,
     thumbnailUrl: source.thumbnailUrl,
     createdAt: Math.floor(source.createdAt.getTime() / 1000),
-    hangul: [],
+    hangul: spelled.jamo,
+    chosung: spelled.chosung,
   }
 }
