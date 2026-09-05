@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 import { addressLineSchema, phoneSchema, recipientNameSchema } from './profile.js'
 import { priceSchema, productIdSchema, variantIdSchema } from './products.js'
+import { shipmentSchema } from './shipments.js'
 
 /**
  * 주문의 계약 (TASK-0049).
@@ -98,6 +99,16 @@ export const sellerOrderSchema = z.object({
   shippingPointAmount: priceSchema,
   shippingFee: priceSchema,
   paidAmount: priceSchema,
+  /**
+   * 이 몫의 배송, 아직 발송 전이면 `null` (TASK-0061).
+   *
+   * **목록이 아니라 상세에만 실린다.** 목록은 상태 배지 하나면 되고, 묶음마다
+   * 추적 이력을 딸려 보내면 응답이 몇 배가 된다.
+   *
+   * `null` 은 「배송 정보를 못 읽었다」가 아니라 **「아직 발송되지 않았다」**다 —
+   * 화면은 그 둘을 다르게 그려야 하므로 이 필드를 선택적으로 두지 않는다.
+   */
+  shipment: shipmentSchema.nullable(),
 })
 
 export type SellerOrder = z.infer<typeof sellerOrderSchema>
@@ -338,9 +349,13 @@ export const checkoutSchema = z.object({
   id: z.uuid(),
   /** 이 시각이 지나면 예약이 풀린다. 화면의 타이머가 읽는 값이다. */
   expiresAt: z.iso.datetime(),
-  /** 판매자별 몫. 주문이 저장할 모양 그대로다 — 상태만 아직 없다. */
+  /**
+   * 판매자별 몫. 주문이 저장할 모양 그대로다 — **주문이 된 뒤에 생기는 것들만 빠진다.**
+   *
+   * 상태와 배송이 그것이다. 주문서는 아직 주문이 아니므로 상태가 없고, 발송된 적도 없다.
+   */
   sellerOrders: z.array(
-    sellerOrderSchema.omit({ id: true, status: true }).extend({
+    sellerOrderSchema.omit({ id: true, status: true, shipment: true }).extend({
       items: z.array(orderItemSchema.omit({ id: true })),
     }),
   ),

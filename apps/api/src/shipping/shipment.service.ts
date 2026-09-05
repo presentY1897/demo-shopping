@@ -69,7 +69,7 @@ const EVENT_SELECT = {
  * 기록을 믿지 못한다. `id` 가 UUIDv7 이라 그 자체로 시간순이고 동률의 타이브레이커가
  * 된다 (`PaymentService` 의 `refunds` 가 같은 이유로 같은 모양이다).
  */
-const SHIPMENT_SELECT = {
+export const SHIPMENT_SELECT = {
   id: true,
   sellerOrderId: true,
   carrierCode: true,
@@ -219,7 +219,7 @@ export class ShipmentService {
     // 아무나 알 수 있고, 그것은 403 이 막으려던 것의 절반이다.
     if (row.shipment === null) throw new NotFoundException('배송 정보를 찾을 수 없어요.')
 
-    return { shipment: present(row.shipment) }
+    return { shipment: presentShipment(row.shipment) }
   }
 
   /**
@@ -299,7 +299,7 @@ export class ShipmentService {
       select: SHIPMENT_SELECT,
     })
 
-    return { shipment: present(shipment), change }
+    return { shipment: presentShipment(shipment), change }
   }
 
   /**
@@ -378,7 +378,7 @@ export class ShipmentService {
       select: SHIPMENT_SELECT,
     })
 
-    if (already !== null) return { shipment: present(already), change: null }
+    if (already !== null) return { shipment: presentShipment(already), change: null }
 
     const now = this.clock.now()
     const carrierCode: DemoCarrierCode =
@@ -417,7 +417,7 @@ export class ShipmentService {
       select: SHIPMENT_SELECT,
     })
 
-    return { shipment: present(shipment), change }
+    return { shipment: presentShipment(shipment), change }
   }
 
   /**
@@ -484,7 +484,7 @@ function isTrackingNumberCollision(error: unknown): boolean {
   return isUniqueViolationOn(error, 'trackingNumber')
 }
 
-interface ShipmentRow {
+export interface ShipmentRow {
   readonly id: string
   readonly sellerOrderId: string
   readonly carrierCode: string
@@ -510,7 +510,7 @@ interface ShipmentRow {
  * 같은 자리에서 같은 일을 한다). 값이 갈라지면 마이그레이션이 막고, 계약이 갈라지면
  * 통합 검사의 zod 파싱이 막는다.
  */
-function present(row: ShipmentRow): Shipment {
+export function presentShipment(row: ShipmentRow): Shipment {
   return {
     id: row.id,
     sellerOrderId: row.sellerOrderId,

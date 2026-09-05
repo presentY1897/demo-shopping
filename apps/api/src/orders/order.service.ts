@@ -36,6 +36,8 @@ import { CLOCK } from '../common/clock.js'
 import { domainFailure } from '../common/domain-failure.js'
 import { isUniqueViolationOn } from '../common/unique-violation.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import type { ShipmentRow } from '../shipping/shipment.service.js'
+import { presentShipment, SHIPMENT_SELECT } from '../shipping/shipment.service.js'
 import { ReservationService } from '../reservation/reservation.service.js'
 import { ORDER_NUMBER_SUFFIX_LENGTH, orderNumberOf } from './order-number.js'
 import { CheckoutService } from './checkout.service.js'
@@ -670,6 +672,9 @@ const SELLER_ORDER_SELECT = {
   shippingFee: true,
   paidAmount: true,
   items: { orderBy: { id: 'asc' }, select: ORDER_ITEM_SELECT },
+  // 상세에만 딸려 온다. 목록(`SUMMARY_SELECT`)에는 없다 — 거기서 필요한 것은 상태
+  // 배지 하나이고, 묶음마다 추적 이력을 실으면 응답이 몇 배가 된다 (TASK-0061).
+  shipment: { select: SHIPMENT_SELECT },
 } as const
 
 const ORDER_SELECT = {
@@ -706,6 +711,8 @@ function snapshotFrom(value: unknown): OrderItemSnapshot {
 }
 
 interface SellerOrderRow {
+  /** 발송 전이면 `null`. 계약의 같은 자리와 같은 뜻이다. */
+  readonly shipment: ShipmentRow | null
   readonly id: string
   readonly sellerId: string
   readonly brandName: string
@@ -752,6 +759,9 @@ function presentSellerOrder(row: SellerOrderRow): SellerOrder {
     shippingPointAmount: row.shippingPointAmount,
     shippingFee: row.shippingFee,
     paidAmount: row.paidAmount,
+    // 발송 전이면 `null` 이다. 「못 읽었다」가 아니라 「아직 안 보냈다」이고,
+    // 화면은 그 둘을 다르게 그린다.
+    shipment: row.shipment === null ? null : presentShipment(row.shipment),
   }
 }
 
