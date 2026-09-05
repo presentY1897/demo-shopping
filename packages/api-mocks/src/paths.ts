@@ -80,6 +80,14 @@ export const mockPaths = {
   sellerMe: `*${API_PATH_PREFIX}/sellers/me`,
   /** `POST` to apply, and to apply again after a rejection. */
   sellerApplications: `*${API_PATH_PREFIX}/sellers/applications`,
+  /**
+   * `GET` one store as a shopper sees it — public, `ACTIVE` only (TASK-0044).
+   *
+   * Registered **after** the literal seller paths, the same order the API's
+   * controller declares them in: msw takes the first handler that matches and
+   * `:id` would read `me` as one.
+   */
+  storefrontSeller: `*${API_PATH_PREFIX}/sellers/:id`,
   /** `GET ?value=` — whether a brand name is free at the moment of asking. */
   sellerBrandNameAvailability: `*${API_PATH_PREFIX}/sellers/brand-name-availability`,
   /** `GET` the review queue — status filter and cursor (TASK-0108). */

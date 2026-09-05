@@ -3,6 +3,7 @@ import { searchFilterSchema, searchHitSchema } from '@shopping/shared'
 
 import { defineFixture } from '../define'
 import { storefrontCategoryTree } from '../fixtures/categories'
+import { storefrontSeller } from '../fixtures/sellers'
 
 /**
  * The catalogue the search double answers from (TASK-0041).
@@ -92,6 +93,17 @@ interface CatalogueEntry {
   readonly hit: SearchHit
   readonly attributes: Readonly<Record<string, string>>
 }
+
+/**
+ * Which store the whole catalogue belongs to (TASK-0044 4.2).
+ *
+ * `searchHitSchema` carries no `sellerId` — a card does not draw one — so the
+ * double keeps it here beside the attributes, the same way it keeps the values a
+ * facet filters on. Every listing is 루미에르's, which is what a brand page needs
+ * to be checkable: asking for that store returns them all and asking for any
+ * other returns none.
+ */
+export const SEARCH_CATALOGUE_SELLER_ID = storefrontSeller.seller.id
 
 function entry(
   index: number,

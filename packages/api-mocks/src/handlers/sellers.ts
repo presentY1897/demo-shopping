@@ -10,12 +10,13 @@ import {
   sellerApplicationRequestSchema,
   sellerResponseSchema,
   sellerStoreUpdateRequestSchema,
+  storefrontSellerResponseSchema,
 } from '@shopping/shared'
 import type { RequestHandler } from 'msw'
 import { http, HttpResponse } from 'msw'
 
 import { defineFixture } from '../define'
-import { brandNameTaken, sellerPending } from '../fixtures/sellers'
+import { brandNameTaken, sellerPending, storefrontSeller } from '../fixtures/sellers'
 import { mockPaths } from '../paths'
 import { answering, MockApiError, readBody } from './refusal'
 
@@ -291,6 +292,25 @@ export const sellerHandlers: readonly RequestHandler[] = [
       record('PATCH', '/sellers/me', body)
 
       return HttpResponse.json(defineFixture(sellerResponseSchema, { seller: store.update(body) }))
+    }),
+  ),
+
+  /**
+   * The brand page's read. Last, so it cannot shadow `me`,
+   * `brand-name-availability` or `applications`.
+   */
+  http.get(mockPaths.storefrontSeller, ({ params }) =>
+    answering(() => {
+      const id = typeof params.id === 'string' ? params.id : ''
+
+      // Not `ACTIVE` and not found are one answer, as they are on the API: a
+      // 「심사 중」 that a visitor can read publishes the review state of every
+      // application.
+      if (id !== storefrontSeller.seller.id) {
+        throw new MockApiError(404, '판매자를 찾을 수 없습니다.')
+      }
+
+      return HttpResponse.json(defineFixture(storefrontSellerResponseSchema, storefrontSeller))
     }),
   ),
 ]
