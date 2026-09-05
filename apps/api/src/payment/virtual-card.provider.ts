@@ -155,9 +155,14 @@ export class VirtualCardProvider implements PaymentProviderPort {
   }
 }
 
-/** 어느 카드로 결제하는가. 결제를 시작할 때 정해져 있다. */
+/**
+ * 어느 카드로 결제하는가. 결제를 시작할 때 정해져 있다.
+ *
+ * 포트의 자리 이름은 `methodRef` 다 — 프로바이더마다 뜻이 다른 자리라서 그렇고,
+ * 가상 카드에서 그 뜻이 카드 id 인 것을 이 함수가 말한다 (TASK-0055 4.6).
+ */
 function cardIdOf(request: AuthorizeRequest): string | null {
-  return request.cardId ?? null
+  return request.methodRef ?? null
 }
 
 /** 카드 서비스가 던진 거절의 문장. 사람이 읽을 것이므로 그대로 쓴다. */
