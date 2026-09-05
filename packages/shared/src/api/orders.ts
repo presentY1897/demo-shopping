@@ -151,6 +151,85 @@ export const sellerOrderResponseSchema = z.object({
 export type SellerOrderResponse = z.infer<typeof sellerOrderResponseSchema>
 
 /**
+ * 전이가 요구하는 것 — 상태만으로는 부족한 조건 (TASK-0059 F4).
+ *
+ * 지금은 하나뿐인데도 목록인 이유는, 조건을 불리언 하나로 쓰면 화면이 「무엇이
+ * 모자란가」를 필드 이름으로 알아야 하기 때문이다. 이름으로 오면 화면은 그 이름에
+ * 붙은 입력에 오류를 띄울 수 있다.
+ */
+export const sellerOrderRequirements = ['tracking'] as const
+
+export type SellerOrderRequirement = (typeof sellerOrderRequirements)[number]
+
+export const sellerOrderRequirementSchema = z.enum(sellerOrderRequirements)
+
+/** 사유의 상한. 이력에 남는 한 줄이고, 문서가 아니다. */
+export const SELLER_ORDER_TRANSITION_REASON_MAX_LENGTH = 200
+
+/**
+ * `POST /seller-orders/:id/transitions` — 이 몫을 다음 상태로 옮긴다.
+ *
+ * **주체(`actor`)를 받지 않는다.** 요청한 사람이 그 주문의 판 사람인지 산 사람인지는
+ * 서버가 확인해서 **정한다** — 부르는 쪽이 자기 주체를 주장하게 두면 구매자가
+ * `SYSTEM` 을 주장할 수 있고, 그러면 결제로만 열리는 전이가 HTTP 로 열린다.
+ */
+export const sellerOrderTransitionRequestSchema = z.object({
+  to: orderStatusSchema,
+  /** 왜 옮겼는가. 취소·반품에는 있고 정상 진행에는 없다. */
+  reason: z.string().min(1).max(SELLER_ORDER_TRANSITION_REASON_MAX_LENGTH).optional(),
+})
+
+export type SellerOrderTransitionRequest = z.infer<typeof sellerOrderTransitionRequestSchema>
+
+/**
+ * 지금 이 사람이 누를 수 있는 버튼 하나.
+ *
+ * **조건이 모자란 전이도 목록에 들어온다** (`enabled: false`). 운송장이 없다고 발송
+ * 버튼을 감추면 판매자는 그 버튼을 **찾다가** 포기한다 — 버튼은 보이고, 누르면
+ * 무엇이 필요한지 말해 주는 편이 낫다. `blockedBy` 가 그 「무엇」이다.
+ */
+export const sellerOrderActionSchema = z.object({
+  to: orderStatusSchema,
+  /** 지금 바로 되는가. `false` 면 `blockedBy` 가 채워져 있다. */
+  enabled: z.boolean(),
+  blockedBy: sellerOrderRequirementSchema.nullable(),
+})
+
+export type SellerOrderAction = z.infer<typeof sellerOrderActionSchema>
+
+/**
+ * `GET /seller-orders/:id/actions` — 화면이 상태로 분기하지 않게 하는 답 (F7).
+ *
+ * 「`PAID` 면 발송 버튼」을 화면에 적으면 그 판단이 세 앱에 흩어지고, 규칙이 바뀔 때
+ * 한 곳만 고쳐진다. 서버가 「지금 할 수 있는 것」을 답하면 화면은 그것을 그린다.
+ */
+export const sellerOrderActionsResponseSchema = z.object({
+  status: orderStatusSchema,
+  actions: z.array(sellerOrderActionSchema),
+})
+
+export type SellerOrderActionsResponse = z.infer<typeof sellerOrderActionsResponseSchema>
+
+/**
+ * 전이 요청의 답.
+ *
+ * `changed` 가 따로 있는 이유는 **멱등** 때문이다. 이미 목표 상태인 몫에 다시 요청이
+ * 오면 성공으로 답하지만 아무것도 옮기지 않았고, 화면이 「처리했습니다」와 「이미
+ * 처리돼 있었습니다」를 다르게 말할 수 있어야 한다.
+ *
+ * `actions` 를 함께 싣는 것은 왕복을 하나 줄이기 위해서다 — 상태가 바뀌면 버튼도
+ * 반드시 바뀌므로, 두 번 묻는 화면은 그 사이에 낡은 버튼을 그린다.
+ */
+export const sellerOrderTransitionResponseSchema = z.object({
+  id: z.uuid(),
+  status: orderStatusSchema,
+  changed: z.boolean(),
+  actions: z.array(sellerOrderActionSchema),
+})
+
+export type SellerOrderTransitionResponse = z.infer<typeof sellerOrderTransitionResponseSchema>
+
+/**
  * `POST /orders` — 주문 생성.
  *
  * **장바구니 줄을 가리킨다.** 상품과 수량을 다시 받지 않는 이유는, 그러면 화면이

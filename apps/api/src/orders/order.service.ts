@@ -44,6 +44,8 @@ import type { PlannedSellerOrder } from './order-plan.js'
 import { planOrder } from './order-plan.js'
 import type { OrderSource } from './order-source.js'
 import { priceOf } from './order-source.js'
+import type { SellerOrderStatusChanged } from './seller-order-events.js'
+import { SellerOrderService } from './seller-order.service.js'
 
 type Tx = Prisma.TransactionClient
 
@@ -74,6 +76,7 @@ export class OrderService {
     @Inject(CLOCK) private readonly clock: Clock,
     private readonly reservations: ReservationService,
     private readonly checkouts: CheckoutService,
+    private readonly transitions: SellerOrderService,
   ) {}
 
   // ------------------------------------------------------------------ writes
@@ -329,11 +332,16 @@ export class OrderService {
     // 첫 줄의 `fromStatus` 는 `null` 이다 — 이전 상태가 없다. 생성도 이력에
     // 남기는 이유는, 남기지 않으면 「이 주문이 언제 생겼나」의 답이 이력에 없고
     // `createdAt` 에만 있게 되기 때문이다. 두 곳에 있는 사실은 갈라진다.
+    //
+    // 주체는 `BUYER` 다 — 주문서를 만든 것은 산 사람이다 (TASK-0059). `actorId` 를
+    // 비워 두는 것은 그 사람이 누구인지가 `Order.userId` 에 이미 있기 때문이고,
+    // 같은 사실을 두 벌로 적으면 언젠가 서로 다른 말을 한다.
     await tx.orderStatusHistory.create({
       data: {
         sellerOrderId: sellerOrder.id,
         fromStatus: null,
         toStatus: 'PAYMENT_PENDING',
+        actor: 'BUYER',
         actorId: null,
         createdAt: now,
       },
@@ -353,11 +361,25 @@ export class OrderService {
    *
    * 멱등이다. 이미 `PAID` 인 몫은 건드리지 않고 예약도 다시 확정하지 않는다 —
    * 결제 승인 웹훅은 두 번 온다고 가정해야 한다(TASK-0056).
+   *
+   * **상태는 상태 머신의 문을 지나서만 바뀐다** (TASK-0059). 여기서 `updateMany` 로
+   * 한 번에 옮기던 것을 몫마다 {@link SellerOrderService.applyWithin} 으로 바꾼 것이
+   * 그 뜻이고, 그 대가로 문장이 몫 하나당 세 개가 된다(잠금·갱신·이력). 대가를 치를
+   * 값어치가 있는 이유는, 지나지 않으면 「정의되지 않은 전이는 불가능하다」가 **새
+   * 코드에만 적용되는 규칙**이 되기 때문이다 — 그리고 한 주문의 판매자 수는 데모에서
+   * 한 자리다.
+   *
+   * **바꾸지 않은 것 셋.** ① 옮기는 대상은 여전히 `PAYMENT_PENDING` 인 몫뿐이다 —
+   * 이미 `PREPARING` 까지 간 몫을 `PAID` 로 되돌리려 들면 문이 거절하고, 그것은
+   * 「매입은 끝났는데 주문이 완결되지 않은 건을 마저 끝낸다」(D-221)를 깨뜨린다.
+   * ② 트랜잭션 경계는 그대로다 — 문이 남의 트랜잭션 안에서 도는 이유가 이것이다.
+   * ③ 빈 목록이면 예약도 건드리지 않고 돌아간다.
+   *
+   * 알림만 **커밋 뒤로** 나간다. 트랜잭션 안에서 발행하면 롤백된 결제의 「결제
+   * 완료」 알림이 나가고, 그 메일은 되돌릴 수 없다.
    */
   async markPaid(orderId: string): Promise<void> {
-    const now = this.clock.now()
-
-    await this.prisma.$transaction(async (tx) => {
+    const changes = await this.prisma.$transaction(async (tx) => {
       const order = await tx.order.findUnique({
         where: { id: orderId },
         select: {
@@ -367,7 +389,7 @@ export class OrderService {
       })
 
       if (order === null) throw new NotFoundException('주문을 찾을 수 없어요.')
-      if (order.sellerOrders.length === 0) return
+      if (order.sellerOrders.length === 0) return []
 
       // 예약을 실제 차감으로 바꾼다. 여기서 처음으로 재고가 줄어든다 — 그전까지
       // 주문은 재고를 **잡고만** 있었다 (TASK-0049 4.4).
@@ -381,23 +403,23 @@ export class OrderService {
         await this.reservations.confirm(tx, hold.id)
       }
 
-      const ids = order.sellerOrders.map((row) => row.id)
+      const events: SellerOrderStatusChanged[] = []
 
-      await tx.sellerOrder.updateMany({
-        where: { id: { in: ids } },
-        data: { status: 'PAID', updatedAt: now },
-      })
-      await tx.orderStatusHistory.createMany({
-        data: ids.map((sellerOrderId) => ({
-          sellerOrderId,
-          fromStatus: 'PAYMENT_PENDING' as const,
-          toStatus: 'PAID' as const,
-          reason: null,
+      // 주체는 `SYSTEM` 이다. 사람이 「결제됨」을 누르는 화면은 없다 — 그것은 결제가
+      // 끝났다는 사실의 결과이고, 그 사실을 아는 것은 결제 쪽이다.
+      for (const row of order.sellerOrders) {
+        const event = await this.transitions.applyWithin(tx, row.id, 'PAID', {
+          actor: 'SYSTEM',
           actorId: null,
-          createdAt: now,
-        })),
-      })
+        })
+
+        if (event !== null) events.push(event)
+      }
+
+      return events
     })
+
+    await this.transitions.publish(changes)
   }
 
   // ------------------------------------------------------------------- reads

@@ -821,6 +821,11 @@ export const ko: Messages = {
     ORDER_ITEM_UNAVAILABLE: '지금은 주문할 수 없는 상품이 있어요.',
     ORDER_PURCHASE_LIMIT: '1회 구매 가능 수량을 넘었어요.',
     ORDER_ADDRESS_MISSING: '배송지를 찾을 수 없어요. 다시 선택해 주세요.',
+    // 주문 상태 전이 (TASK-0059). 셋을 나누는 이유는 운영자가 할 일이 다르기
+    // 때문이다 — 다시 읽기 / 포기하기 / **모자란 것 채우기**.
+    ORDER_TRANSITION_UNDEFINED: '주문 상태가 이미 바뀌었어요. 새로고침한 뒤 다시 확인해 주세요.',
+    ORDER_TRANSITION_FORBIDDEN: '이 주문을 그렇게 바꿀 수 있는 권한이 없어요.',
+    ORDER_TRANSITION_REQUIREMENT: '아직 채워지지 않은 것이 있어요. 운송장을 먼저 확인해 주세요.',
     // 결제 (TASK-0052). 콘솔은 결제하지 않지만 카탈로그가 전수다.
     PAYMENT_TRANSITION_REFUSED: '지금은 처리할 수 없는 요청이에요.',
     PAYMENT_REFUND_INVALID: '환불 금액이 올바르지 않아요.',

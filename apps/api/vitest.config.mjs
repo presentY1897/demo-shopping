@@ -330,6 +330,26 @@ export default defineConfig({
           statements: 100,
         },
         /**
+         * TASK-0059 (6.2, Q5 강화). 판매자 몫 주문의 전이 표 — 어느 상태에서
+         * 어디로, 누가, 무엇을 갖추고.
+         *
+         * 여기가 틀리는 방식이 전부 조용하다. 표에 없는 칸이 하나 열리면 발송된
+         * 적 없는 주문이 배송완료로 앉고 D+7 자동 확정이 그것을 정산까지 밀어
+         * 준다. 주체가 한 칸 넓으면 구매자가 남의 물건을 발송 처리하고, 거절
+         * 이유의 순서가 뒤집히면 「권한이 없다」가 애초에 불가능한 요청에 대해
+         * 나가 사용자가 권한을 구하러 간다. 셋 다 빨간 테스트가 아니라 나중에
+         * 주문 하나로 나타난다.
+         *
+         * 닿지 않는 분기는 아무도 거절하지 않는 조합이라는 뜻이고, 그래서
+         * `payment-rules.ts` 와 같은 줄에 선다.
+         */
+        'src/orders/seller-order-transitions.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        /**
          * TASK-0117. The error contract's decision-making, all of it pure:
          * which code and sentence a status maps to, what a domain failure's
          * payload looks like, which `details` shape one zod issue becomes, and
