@@ -1,0 +1,59 @@
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
+import type { OrderListResponse, OrderResponse, SellerOrderResponse } from '@shopping/shared'
+import { createOrderRequestSchema, orderListQueryParamsSchema } from '@shopping/shared'
+
+import { Principal } from '../auth/principal.decorator.js'
+import { RequirePermission } from '../auth/require-permission.decorator.js'
+import type { RequestPrincipal } from '../auth/request-principal.js'
+import { parseInput } from '../common/parse-input.js'
+import { OrderService } from './order.service.js'
+
+/**
+ * 주문 (TASK-0049).
+ *
+ * 라우트가 둘로 갈린다. `/orders` 는 **산 사람의 것**이고 `/seller-orders` 는 **판
+ * 사람의 것**이다. 하나로 두고 역할에 따라 걸러 주지 않는 이유는 응답의 모양이 다르기
+ * 때문이다 — 주문 단위 합계에는 남의 몫이 섞여 있으므로 판매자에게 그대로 줄 수 없고,
+ * 다시 계산해서 주면 그 숫자는 아무 데도 저장된 적이 없는 값이 된다.
+ *
+ * 쿠폰·적립금은 아직 받지 않는다 (4.2). 서비스는 할인 목록을 인자로 받게 되어 있고
+ * 여기서 넘기지 않을 뿐이다 — M11 이 그 목록을 계산해 채운다.
+ */
+@Controller({ version: '1' })
+export class OrderController {
+  constructor(private readonly orders: OrderService) {}
+
+  /** 주문서 생성. 장바구니에서 고른 줄로 만든다. */
+  @Post('orders')
+  @RequirePermission('order.write')
+  create(@Principal() principal: RequestPrincipal, @Body() body: unknown): Promise<OrderResponse> {
+    return this.orders.create(principal, parseInput(createOrderRequestSchema, body))
+  }
+
+  /** 내 주문 목록. 최신순, 커서 페이지네이션. */
+  @Get('orders')
+  @RequirePermission('order.read')
+  list(
+    @Principal() principal: RequestPrincipal,
+    @Query() query: unknown,
+  ): Promise<OrderListResponse> {
+    return this.orders.list(principal, parseInput(orderListQueryParamsSchema, query))
+  }
+
+  /** 주문 하나. 산 사람과 운영자가 읽는다. */
+  @Get('orders/:id')
+  @RequirePermission('order.read')
+  get(@Principal() principal: RequestPrincipal, @Param('id') id: string): Promise<OrderResponse> {
+    return this.orders.get(principal, id)
+  }
+
+  /** 판매자가 읽는 자기 몫 하나 (F6). 남의 몫이면 403 이다. */
+  @Get('seller-orders/:id')
+  @RequirePermission('order.read')
+  sellerOrder(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+  ): Promise<SellerOrderResponse> {
+    return this.orders.sellerOrder(principal, id)
+  }
+}
