@@ -1,4 +1,8 @@
-import { brandNameAvailabilityResponseSchema, sellerSchema } from '@shopping/shared'
+import {
+  brandNameAvailabilityResponseSchema,
+  sellerSchema,
+  storefrontSellerResponseSchema,
+} from '@shopping/shared'
 
 import { defineFixture } from '../define'
 import { sessionSellerOwner } from './session'
@@ -99,4 +103,21 @@ export const brandNameAvailable = defineFixture(brandNameAvailabilityResponseSch
 export const brandNameTaken = defineFixture(brandNameAvailabilityResponseSchema, {
   value: '아틀리에오브',
   available: false,
+})
+
+/**
+ * 상점이 보는 판매자 — 브랜드관의 머리 (TASK-0044 4.2).
+ *
+ * Built from the same `base`, so the brand page and the console cannot disagree
+ * about the store's name. What it is missing is the point: no status, no reason,
+ * no owning account, no lock. A visitor gets the shop window, not the file.
+ */
+export const storefrontSeller = defineFixture(storefrontSellerResponseSchema, {
+  seller: {
+    id: base.id,
+    brandName: base.brandName,
+    slug: base.slug,
+    introduction: base.introduction,
+    logoUrl: base.logoUrl,
+  },
 })

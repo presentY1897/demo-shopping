@@ -10,7 +10,12 @@ import { http, HttpResponse } from 'msw'
 import { defineFixture } from '../define'
 import { mockPaths } from '../paths'
 import { answering } from './refusal'
-import { categoryLineageIds, SEARCH_CATALOGUE, searchFilters } from './search-catalogue'
+import {
+  categoryLineageIds,
+  SEARCH_CATALOGUE,
+  SEARCH_CATALOGUE_SELLER_ID,
+  searchFilters,
+} from './search-catalogue'
 
 /**
  * 검색 (TASK-0039 의 엔드포인트를 TASK-0041 의 화면이 보는 모양대로).
@@ -131,6 +136,13 @@ export const searchHandlers: readonly RequestHandler[] = [
         .filter(
           (hit) =>
             categoryId === null || categoryLineageIds(hit.categoryId).includes(Number(categoryId)),
+        )
+        // Every listing in this catalogue belongs to one store, so the filter is
+        // all-or-nothing — which is exactly what a brand page needs checked.
+        .filter(
+          () =>
+            url.searchParams.get('sellerId') === null ||
+            url.searchParams.get('sellerId') === SEARCH_CATALOGUE_SELLER_ID,
         )
         .filter((hit) => url.searchParams.get('inStock') !== 'true' || hit.inStock)
         .filter((hit) => matchesAttributes(hit, chosen))
