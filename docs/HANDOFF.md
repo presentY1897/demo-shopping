@@ -389,6 +389,7 @@ Domain** → `cdn.demo-shopping.com`.
 | **아웃박스 시각을 `DEFAULT now()` 로 쓰면 주입된 시계와 어긋난다.** 워커는 `Clock` 으로 「이 이벤트가 지금 처리할 것인가」를 판정하는데, 행은 **데이터베이스의 지금**을 갖는다. 운영에서는 같고 고정 시계 아래서는 갈라져 **큐가 영원히 비어 보인다** | `clock-injection.spec.ts` 머리말이 이미 적어 뒀다 · `search-outbox.service.ts` |
 | **주기 작업이 성능 스펙의 문장 수에 섞인다.** 1초마다 `SELECT … FROM "Product"` 를 하는 워커가 앱 안에서 돌면, N+1 게이트를 위해 문장을 세는 스펙이 그것까지 센다 — 13개 만든 자리에서 14개로 보이고 **엔드포인트의 회귀처럼 읽힌다** | `search-indexer.service.ts` 의 `nodeEnv === 'test'` 반환 |
 | **문장 카운터가 앞 측정의 잔여 이벤트를 센다.** 어댑터가 응답 **뒤에** 콜백으로 이벤트를 내므로, 배열을 비우고 20ms 기다리는 측정은 앞 테스트의 늦둥이를 자기 것으로 센다. 부하에서만 나고 단독 실행은 언제나 정확해서 **진짜 회귀처럼 보인다.** 비우기 **전에도** 가라앉히면 된다 | `test/support/statements.ts` |
+| **A1 p95 예산이 CI 러너 부하에서 흔들린다.** `stock-ledger-performance.spec.ts` 의 「1,000 variant 정산」이 445ms 로 300ms 예산을 넘었다 — **`apps/api` 를 한 줄도 건드리지 않은 PR 에서**다. 로컬과 재실행은 통과한다. 자기 변경과 무관한 성능 실패를 보면 먼저 재실행해 보고, 반복되면 그때 예산을 다시 본다 | 이 표 (2026-09-05, PR #89) |
 | **`vi.mock('next/navigation')` 은 `next/form` 에 닿지 않는다.** Next 내부 모듈은 자기 상대 경로로 라우터를 가져오므로 목이 가로채지 못한다 — 폼 제출이 jsdom 의 실제 문서 이동으로 떨어지고 `Not implemented: navigation` 만 남는다. 화면 쪽에 `onSubmit` 이음매를 두고 그쪽을 검사한다 | `search-box.tsx` 의 `onSearch` |
 | **페이지 안의 `<header>` 는 두 번째 `banner` 랜드마크다.** `article`·`section` 밖의 `<header>` 는 배너이고, 셸에 이미 하나 있다. 데스크톱에서는 통과하다가 **모달이 열리는 순간** `landmark-no-duplicate-banner` 로 터진다 | `search-workspace.tsx` 의 제목 영역 주석 |
 | **`role="combobox"` 를 얹으면 `searchbox` 롤이 사라진다.** 자동완성을 붙이면서 입력에 콤보박스 롤을 주면 기존 `getByRole('searchbox')` 가 전부 못 찾는다 — 화면은 멀쩡하고 검사만 빨갛다 | `apps/shop/test/shop-header.spec.tsx` |
