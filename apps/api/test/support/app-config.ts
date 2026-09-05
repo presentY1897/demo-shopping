@@ -3,6 +3,7 @@ import type { AppOrigins } from '../../src/config/app-origins.js'
 import { resolveAppOrigins } from '../../src/config/app-origins.js'
 import type { GoogleOAuthConfig } from '../../src/config/google-config.js'
 import type { ObjectStorageConfig } from '../../src/config/storage-config.js'
+import type { TossConfig } from '../../src/config/toss-config.js'
 
 /**
  * Configuration for an application booted inside a test.
@@ -20,6 +21,17 @@ export interface TestConfigOptions {
   readonly storage?: ObjectStorageConfig | null
   /** `null` boots the API as if Google were not configured (TASK-0021 F8). */
   readonly googleOAuth?: GoogleOAuthConfig | null
+  /**
+   * 토스 자격증명. **기본값이 `null` 이다** — Google·R2 와 반대다.
+   *
+   * 그 둘은 설정된 쪽이 보통이라 기본값이 값이지만, 토스는 설정하는 순간
+   * `TossProvider` 가 레지스트리에 붙고 그 프로바이더는 **바깥으로 HTTP 를 건다.**
+   * 기본으로 켜 두면 `TOSS_CLIENT` 를 대역으로 바꾸는 것을 잊은 스펙이 실제
+   * 토스 서버를 부르게 되고, 그것은 A6(외부 호출 없음)의 위반이자 CI 에서만 깨지는
+   * 종류의 실패다. `null` 이 기본이면 **키와 대역이 항상 같이 온다** — 토스를 켜는
+   * 스펙은 둘 다 넘겨야 하므로 한쪽만 잊을 수 없다 (TASK-0055 4.1).
+   */
+  readonly toss?: TossConfig | null
   /** Overrides the derived three-app allow list; `[]` leaves every app unreachable. */
   readonly corsOrigins?: readonly string[]
   /** Shortens the access token so a spec can watch one expire without waiting. */
@@ -63,6 +75,18 @@ export const testGoogleOAuthConfig: GoogleOAuthConfig = {
  * The ports are the base ports with no offset: a spec asserts on which app a
  * redirect points at, not on which worktree it ran in.
  */
+/**
+ * 존재하지 않는 상점의 키.
+ *
+ * 형식은 실제와 같다 — 접두어 `test_ck_` · `test_sk_` 는 토스가 테스트 키에 붙이는
+ * 것이고, 여기서 그 모양을 지키는 이유는 번들 검사(TASK-0055 4.4)가 `test_sk_` 를
+ * 찾기 때문이다. 값 자체는 아무 데도 닿지 않는다 — `TOSS_CLIENT` 가 대역이다.
+ */
+export const testTossConfig: TossConfig = {
+  clientKey: 'test_ck_0000000000000000000000000000',
+  secretKey: 'test_sk_0000000000000000000000000000',
+}
+
 export const testCorsOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
@@ -95,6 +119,7 @@ export function testAppConfig({
   version = '0.0.0-test',
   storage = testStorageConfig,
   googleOAuth = testGoogleOAuthConfig,
+  toss = null,
   corsOrigins = testCorsOrigins,
   accessTokenTtlSeconds = 15 * 60,
 }: TestConfigOptions): AppConfig {
@@ -137,6 +162,7 @@ export function testAppConfig({
     },
     storage,
     googleOAuth,
+    toss,
     auth: {
       jwtSecret: TEST_JWT_SECRET,
       accessTokenTtlSeconds,

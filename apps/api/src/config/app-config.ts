@@ -1,5 +1,6 @@
 import type { AppOrigins } from './app-origins.js'
 import type { GoogleOAuthConfig } from './google-config.js'
+import type { TossConfig } from './toss-config.js'
 import type { ObjectStorageConfig } from './storage-config.js'
 
 /** Injection token for {@link AppConfig}; the object itself has no class to key on. */
@@ -67,6 +68,14 @@ export interface AppConfig {
    * repository. Sign-in answers 503 until it is set (TASK-0021 4장).
    */
   readonly googleOAuth: GoogleOAuthConfig | null
+  /**
+   * 토스페이먼츠 자격증명, 또는 설정되지 않았으면 `null` (TASK-0055 4.1).
+   *
+   * `null` 이면 `TossProvider` 가 레지스트리에 **등록되지 않는다** — 결제수단
+   * 목록에 나오지 않고, 가상 카드만으로 전체 흐름이 완결된다 (D-031). 자격증명이
+   * 없으면 그 기능만 없는 것이 이 저장소가 R2·Google 에서 이미 두 번 산 성질이다.
+   */
+  readonly toss: TossConfig | null
   /**
    * Secrets and lifetimes for sessions (TASK-0022).
    *
