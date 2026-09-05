@@ -54,6 +54,13 @@ export const mockPaths = {
   meAddressDefault: `*${API_PATH_PREFIX}/me/addresses/:id/default`,
   /** `GET` the tree, `POST` a new node. */
   categories: `*${API_PATH_PREFIX}/categories`,
+  /**
+   * `GET` the storefront's tree — active only, no sign-in (TASK-0042 4.2).
+   *
+   * Before {@link mockPaths.category}, for the same reason `reorder` is: msw
+   * takes the first handler that matches and `:id` would read `tree` as one.
+   */
+  categoryTree: `*${API_PATH_PREFIX}/categories/tree`,
   /** `PATCH` the fields a person types, `DELETE` to retire. */
   category: `*${API_PATH_PREFIX}/categories/:id`,
   categoryMove: `*${API_PATH_PREFIX}/categories/:id/move`,

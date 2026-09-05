@@ -507,6 +507,53 @@ describe('input validation (A2)', () => {
   })
 })
 
+describe('손님이 보는 트리 (TASK-0042 4.2)', () => {
+  /**
+   * A4 is inverted here, and that is the point of the route.
+   *
+   * Every other read in this file answers 401 without a token, which is right
+   * for a console. A storefront is not one: a shopper who has not signed in — and
+   * a crawler, which never will — still has to see the catalogue, and `GET
+   * /categories` refusing them is what made this route necessary.
+   */
+  it('answers a caller with no token at all (A4, inverted)', async () => {
+    await branch()
+
+    const { nodes } = await api.client.getStorefrontCategoryTree()
+
+    expect(ids(nodes)).toHaveLength(3)
+  })
+
+  it('leaves a retired branch out entirely, subtree and all', async () => {
+    const { root, child, leaf } = await branch()
+
+    await operator().updateCategory(child, { isActive: false, version: 0 })
+
+    const { nodes } = await api.client.getStorefrontCategoryTree()
+
+    // Not just the retired node: its children go with it. A storefront that
+    // showed 티셔츠 under a 상의 nobody can reach would offer a dead end.
+    expect(ids(nodes)).toEqual([root])
+    expect(ids(nodes)).not.toContain(child)
+    expect(ids(nodes)).not.toContain(leaf)
+  })
+
+  it('has no way to ask for the retired ones', async () => {
+    const { child } = await branch()
+
+    await operator().updateCategory(child, { isActive: false, version: 0 })
+
+    // The console can ask; this route has no parameter to ask with, and a query
+    // string it does not read cannot change the answer.
+    const { nodes } = await api.client.request({
+      path: '/categories/tree?includeInactive=true',
+      schema: categoryTreeResponseSchema,
+    })
+
+    expect(ids(nodes)).not.toContain(child)
+  })
+})
+
 describe('authorization (A3 · A4)', () => {
   it('answers 401 when nobody could be identified (A4)', async () => {
     // `api.client` sends no caller header at all, which is what a request

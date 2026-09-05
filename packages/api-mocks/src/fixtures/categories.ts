@@ -147,3 +147,22 @@ export const categoryTree = defineFixture(categoryTreeResponseSchema, {
 
 /** Nothing has been created yet. The empty state (U1) has to come from somewhere. */
 export const categoryTreeEmpty = defineFixture(categoryTreeResponseSchema, { nodes: [] })
+
+/**
+ * The same tree as a shopper sees it — active nodes only.
+ *
+ * Pruned rather than filtered: an inactive node takes its whole subtree with it,
+ * which is what the API does (`buildCategoryForest` drops a node whose parent
+ * was filtered out, and its children then find no parent either). A mock that
+ * merely hid the inactive node would leave its children hanging off the root and
+ * offer the storefront a branch the API never serves.
+ */
+function pruneInactive(nodes: readonly CategoryTreeNode[]): CategoryTreeNode[] {
+  return nodes
+    .filter((node) => node.isActive)
+    .map((node) => ({ ...node, children: pruneInactive(node.children) }))
+}
+
+export const storefrontCategoryTree = defineFixture(categoryTreeResponseSchema, {
+  nodes: pruneInactive(categoryTree.nodes),
+})

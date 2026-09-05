@@ -129,6 +129,15 @@ export interface ApiClient {
     query?: CategoryTreeQuery,
     options?: ApiCallOptions,
   ) => Promise<CategoryTreeResponse>
+  /**
+   * The storefront's tree — active categories, no sign-in (TASK-0042 4.2).
+   *
+   * Takes no query at all. `GET /categories` accepts `includeInactive` and this
+   * deliberately cannot: the whole reason the API has two routes is that a
+   * shopper must not be able to ask for retired categories, and a client method
+   * that offered the parameter would invite somebody to add it back.
+   */
+  getStorefrontCategoryTree: (options?: ApiCallOptions) => Promise<CategoryTreeResponse>
   createCategory: (
     body: CreateCategoryRequest,
     options?: ApiCallOptions,
@@ -521,6 +530,13 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     getCategoryTree: (query = {}, callOptions = {}) =>
       request({
         path: `/categories${categoryTreeSearch(query)}`,
+        schema: categoryTreeResponseSchema,
+        ...callOptions,
+      }),
+
+    getStorefrontCategoryTree: (callOptions = {}) =>
+      request({
+        path: '/categories/tree',
         schema: categoryTreeResponseSchema,
         ...callOptions,
       }),
