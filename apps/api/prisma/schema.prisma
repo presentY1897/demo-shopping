@@ -136,6 +136,7 @@ model User {
   cart          Cart?
   reservations  StockReservation[]
   orders        Order[]
+  virtualCards  VirtualCard[]
 
   /// Stock movements this account made (TASK-0036). Withdrawal leaves them
   /// pointing here, which is why the edge is `Restrict` on the other side.
@@ -1581,4 +1582,91 @@ model Refund {
   payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
 
   @@index([paymentId, refundedAt])
+}
+
+/// 가상 카드의 상태.
+enum VirtualCardStatus {
+  ACTIVE
+  /// 사람이 멈춰 세웠다. 되살릴 수 있다.
+  SUSPENDED
+  /// 지웠다. 원장이 가리키므로 행은 남는다 — 소프트 삭제다.
+  DELETED
+}
+
+/// 카드 원장에 남는 사건의 종류.
+enum VirtualCardEntryKind {
+  /// 한도를 쓴다.
+  CHARGE
+  /// 매입 전 취소. 한도를 돌려준다.
+  CANCEL
+  /// 매입 후 환불. 한도를 돌려준다.
+  REFUND
+}
+
+/// 가상 카드 (TASK-0053).
+///
+/// **실제 카드가 아니라는 것이 번호에서 보여야 한다** (R1). 접두어가 `9999` 인
+/// 이유가 그것이고, 실제 BIN 과 겹치지 않으므로 어떤 결제망에도 닿지 않는다.
+///
+/// 환불이 제대로 됐는지를 **잔액으로 눈으로 확인**할 수 있게 하는 것이 이 카드의
+/// 목적이다 — 그래서 잔액이 있는 것은 원장을 둔다는 원칙(재고·적립금과 같다)이
+/// 여기에도 적용된다.
+model VirtualCard {
+  id     String @id @default(uuid(7)) @db.Uuid
+  userId String @db.Uuid
+
+  /// 전문. 마스킹은 읽는 쪽에서 한다 — 저장을 마스킹해 버리면 「뒤 네 자리가
+  /// 같은 두 장」을 구분할 방법이 사라진다.
+  ///
+  /// 유니크다. 난수로 만들지만 충돌이 0은 아니고, 「낮다」는 것은 애플리케이션이
+  /// 확인할 수 있는 성질이 아니다.
+  number String @unique
+
+  brand String
+
+  /// 유효기간. 지난 카드는 쓸 수 없다.
+  expiresAt DateTime
+
+  /// 한도와 쓴 금액. 사용 가능액은 그 차이다.
+  creditLimit Int
+  /// 원장의 합과 같아야 한다. 어긋나면 점검이 찾는다 (F3).
+  usedAmount  Int @default(0)
+
+  status VirtualCardStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries VirtualCardTransaction[]
+
+  /// 「내 카드」 목록. 지운 것은 빼고 최신순.
+  @@index([userId, status, createdAt])
+}
+
+/// 카드 원장. 승인·취소·환불이 한 행씩 남는다.
+///
+/// `balanceAfter` 를 저장하는 이유는 재고 원장과 같다(TASK-0036) — 합계만으로는
+/// 「그때 얼마였나」에 답하지 못하고, 대사가 어디서 깨졌는지도 알 수 없다.
+model VirtualCardTransaction {
+  id     String @id @default(uuid(7)) @db.Uuid
+  cardId String @db.Uuid
+
+  kind VirtualCardEntryKind
+
+  /// 부호가 있다. 승인은 양수(한도를 쓴다), 취소·환불은 음수(돌려준다).
+  amount Int
+
+  /// 이 사건 직후의 `usedAmount`.
+  balanceAfter Int
+
+  /// 무엇 때문인가 — 결제 id 다. 같은 참조로 두 번 쓰이지 않게 하는 것은
+  /// TASK-0054 의 일이고, 여기서는 기록만 한다.
+  refId String
+
+  createdAt DateTime @default(now())
+
+  card VirtualCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId, createdAt])
 }

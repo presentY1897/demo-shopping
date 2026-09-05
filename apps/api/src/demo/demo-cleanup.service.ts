@@ -166,6 +166,10 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
     // 없다: 주문은 별개의 표이고 자기 스냅샷을 갖는다.
     await tx.cart.deleteMany({ where: { userId } })
     await this.letHoldsGo(tx, userId, now)
+    // 가상 카드와 그 원장 (TASK-0053). 실제 결제망에 닿지 않는 가짜이고, 원장은
+    // 그 카드의 잔액을 설명하는 기록이라 카드가 사라지면 설명할 대상이 없다 —
+    // 결제 이력 자체는 `Payment` 가 따로 들고 있고 그쪽은 남는다.
+    await tx.virtualCard.deleteMany({ where: { userId } })
     await tx.refreshToken.deleteMany({ where: { userId } })
     await tx.userPreference.deleteMany({ where: { userId } })
     await tx.address.deleteMany({ where: { userId } })

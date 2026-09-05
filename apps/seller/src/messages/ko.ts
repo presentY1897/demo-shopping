@@ -278,6 +278,13 @@ export const ko: Messages = {
     PAYMENT_TRANSITION_REFUSED: '지금은 처리할 수 없는 요청이에요.',
     PAYMENT_REFUND_INVALID: '환불 금액이 올바르지 않아요.',
     PAYMENT_REFUND_EXCEEDS: '환불할 수 있는 금액을 넘었어요.',
+    // 가상 카드 (TASK-0053). 콘솔은 카드를 쓰지 않지만 카탈로그가 전수다.
+    CARD_AMOUNT_INVALID: '금액이 올바르지 않아요.',
+    CARD_COUNT_REACHED: '카드를 더 만들 수 없어요.',
+    CARD_UNUSABLE: '지금은 사용할 수 없는 카드예요.',
+    CARD_LIMIT_EXCEEDED: '카드 한도를 넘었어요.',
+    CARD_RELEASE_EXCEEDS: '돌려줄 수 있는 금액을 넘었어요.',
+    CARD_EXPIRED: '유효기간이 지난 카드예요.',
   },
   // 응답이 아예 오지 않은 실패. 읽을 코드가 없으므로 번호도 보여 주지 않는다.
   apiFailures: {
