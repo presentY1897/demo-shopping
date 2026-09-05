@@ -34,6 +34,8 @@ const BUYER_GRANTS: readonly PermissionGrant[] = [
   grant('catalog.read', 'any'),
   grant('product.read', 'any'),
   grant('seller.read', 'any'),
+  grant('cart.read', 'own'),
+  grant('cart.write', 'own'),
   grant('order.read', 'own'),
   grant('order.write', 'own'),
   grant('claim.read', 'own'),

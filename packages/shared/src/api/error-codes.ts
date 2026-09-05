@@ -91,6 +91,25 @@ export const domainErrorCodes = [
   'PRODUCT_SKU_TAKEN',
   /** The other 409: somebody saved first. Re-reading fixes it. */
   'PRODUCT_VERSION_CONFLICT',
+  /**
+   * 담으려는 수량이 재고보다 많다 (TASK-0045 F2). `params.stock` 을 싣는다.
+   *
+   * `INVALID` 와 다른 이유: 요청이 틀린 것이 아니라 **세상이 바뀐 것**이다. 고칠
+   * 것은 입력이 아니라 수량이고, 화면이 할 말도 「잘못 입력하셨습니다」가 아니라
+   * 「N개까지 남았습니다」다.
+   */
+  'CART_STOCK_EXCEEDED',
+  /**
+   * 판매자가 정한 1회 최대 구매 수량을 넘었다 (F2b). `params.max` 를 싣는다.
+   *
+   * 재고 초과와 **다른 코드**다. 재고는 기다리면 늘어날 수 있고 이것은 늘어나지
+   * 않는다 — 사람이 할 일이 다르다.
+   */
+  'CART_PURCHASE_LIMIT',
+  /** 장바구니가 담을 수 있는 줄 수를 넘었다. `params.max` 를 싣는다. */
+  'CART_FULL',
+  /** 팔지 않는 것을 담으려 했다 — 내려간 상품이거나 중단된 조합이다. */
+  'CART_ITEM_UNAVAILABLE',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]

@@ -23,6 +23,15 @@ export const permissions = [
   // removing one follows from deleting the row that references it rather than
   // being a capability a role holds. `upload` is the whole surface (TASK-0011).
   'media.upload',
+  /**
+   * 자기 장바구니 (TASK-0045 4.2).
+   *
+   * `order.*` 를 재사용하지 않는다. 운영자가 `order.read` 를 `any` 로 갖고 있고,
+   * 재사용하면 그것이 곧 「아무의 장바구니나 읽는다」가 된다 — 아무도 요구한 적
+   * 없는 사생활 확대다.
+   */
+  'cart.read',
+  'cart.write',
   'order.read',
   'order.write',
   'claim.read',
