@@ -20,11 +20,25 @@ import axe from 'axe-core'
 import type { RunOptions } from 'axe-core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import CartPage from '@/app/cart/page'
+/**
+ * 팩토리가 자기 의존을 스스로 들여온다.
+ *
+ * `vi.mock` 은 모든 import 위로 끌어올려지므로, 최상위 바인딩을 닫아 쓰는 팩토리는
+ * 그 바인딩이 생기기 전에 돈다 — `Cannot access '__vi_import_N__'` 가 애먼
+ * 컴포넌트를 범인으로 지목한다.
+ */
+vi.mock('next/navigation', async () => {
+  const { nextNavigationMock } = await import('./support/navigation')
+
+  return nextNavigationMock()
+})
+
+const { default: CartPage } = await import('@/app/cart/page')
 import { forgetCartCount } from '@/lib/cart/cart-count'
 import { messagesFor } from '@/messages'
 
 import { renderWithAuth } from './support/auth'
+import { navigation } from './support/navigation'
 import { resetDensity } from './support/mypage'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
@@ -66,6 +80,7 @@ async function renderCart(width: number = VIEWPORTS.desktop) {
 beforeEach(() => {
   resetDensity()
   resetCartStore()
+  navigation.start('/cart')
   forgetCartCount()
 })
 

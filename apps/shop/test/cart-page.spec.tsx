@@ -12,11 +12,25 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import CartPage from '@/app/cart/page'
+/**
+ * 팩토리가 자기 의존을 스스로 들여온다.
+ *
+ * `vi.mock` 은 모든 import 위로 끌어올려지므로, 최상위 바인딩을 닫아 쓰는 팩토리는
+ * 그 바인딩이 생기기 전에 돈다 — `Cannot access '__vi_import_N__'` 가 애먼
+ * 컴포넌트를 범인으로 지목한다.
+ */
+vi.mock('next/navigation', async () => {
+  const { nextNavigationMock } = await import('./support/navigation')
+
+  return nextNavigationMock()
+})
+
+const { default: CartPage } = await import('@/app/cart/page')
 import { forgetCartCount } from '@/lib/cart/cart-count'
 import { messagesFor } from '@/messages'
 
 import { renderWithAuth } from './support/auth'
+import { navigation } from './support/navigation'
 import { resetDensity } from './support/mypage'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
@@ -50,6 +64,7 @@ function lineOf(name: string): HTMLElement {
 beforeEach(() => {
   resetDensity()
   resetCartStore()
+  navigation.start('/cart')
   forgetCartCount()
 })
 
@@ -141,15 +156,15 @@ describe('삭제와 빈 상태 (F7)', () => {
 })
 
 describe('주문하기', () => {
-  it('links to the checkout with the number of chosen lines', async () => {
+  it('offers to order the chosen lines, and says how many', async () => {
     await renderCart()
 
-    // 품절 하나를 뺀 셋.
-    const order = await screen.findByRole('link', {
-      name: copy.checkout.replace('{count}', '3'),
-    })
-
-    expect(order).toHaveAttribute('href', '/checkout')
+    // 품절 하나를 뺀 셋. **링크가 아니라 버튼**이다 — 누르는 순간 재고가 잡히므로
+    // (TASK-0050 4.1) 이동이 아니라 요청이고, 링크로 두면 새 탭마다 예약이 한 벌씩
+    // 잡힌다.
+    expect(
+      await screen.findByRole('button', { name: copy.checkout.replace('{count}', '3') }),
+    ).toBeEnabled()
   })
 
   it('refuses and says why when nothing is chosen', async () => {
@@ -160,7 +175,7 @@ describe('주문하기', () => {
     await user.click(screen.getByRole('checkbox', { name: copy.selectAll.replace('{count}', '3') }))
 
     expect(await screen.findByText(copy.nothingSelected)).toBeVisible()
-    expect(screen.queryByRole('link', { name: /주문하기/u })).toBeNull()
+    expect(screen.queryByRole('button', { name: /^3건 주문하기/u })).toBeNull()
   })
 })
 
@@ -182,6 +197,6 @@ describe('F8 아홉 조합', () => {
     expect(screen.getByRole('heading', { level: 1, name: copy.title })).toBeVisible()
     expect(await screen.findByRole('region', { name: '루미에르' })).toBeVisible()
     expect(screen.getByRole('region', { name: '노드스텝' })).toBeVisible()
-    expect(screen.getAllByRole('link', { name: /주문하기/u })).toHaveLength(1)
+    expect(screen.getAllByRole('button', { name: /주문하기/u })).toHaveLength(1)
   })
 })

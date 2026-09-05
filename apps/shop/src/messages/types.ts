@@ -88,6 +88,13 @@ export interface Messages {
    */
   readonly cart: CartMessages
   /**
+   * 주문서 (TASK-0050) — 타이머, 배송지, 금액, 약관, 그리고 아직 안 온 것들의 자리.
+   *
+   * 「자리」의 문구가 여기 있는 이유는 4.5 다 — 빈 상자는 만들다 만 화면으로
+   * 보이고, 이름이 붙은 빈 상자는 아직 안 온 기능으로 보인다.
+   */
+  readonly checkout: CheckoutMessages
+  /**
    * Screens whose route exists so the header's links are not dead ends, and
    * whose content arrives with its own milestone (TASK-0018 4.5).
    */
@@ -526,8 +533,6 @@ export interface BrandMessages {
 
 export interface PlaceholderMessages {
   readonly comingSoon: string
-  /** 주문서. 「주문하기」가 갈 곳이고 TASK-0050 이 이 자리를 채운다. */
-  readonly checkout: { readonly title: string; readonly body: string }
   readonly mypage: { readonly title: string; readonly body: string }
 }
 
@@ -797,6 +802,8 @@ export interface CartMessages {
   readonly checkout: string
   /** 아무것도 고르지 않았을 때 주문 버튼 아래에 나오는 이유. */
   readonly nothingSelected: string
+  /** 주문서를 열지 못했다 — 대부분 그 사이에 품절된 것이다. */
+  readonly checkoutFailed: string
   /** 줄에 붙는 알림. `notices` 의 각 값에 하나씩 — 빠지면 타입 검사가 잡는다. */
   readonly notices: Readonly<Record<CartItemNotice, string>>
   /** 담을 때 가격과 지금 가격을 나란히 보여 준다. `{amount}` */
@@ -816,4 +823,47 @@ export interface CartMessages {
   readonly retry: string
   /** 쓰기가 실패했을 때. 화면은 그대로 두고 이 문장만 보여 준다. */
   readonly changeFailed: string
+}
+
+/** 주문서 화면 (TASK-0050). */
+export interface CheckoutMessages {
+  readonly title: string
+  /** 남은 시간. `{time}` — `12:05`. */
+  readonly remaining: string
+  /** 마지막 3분. 같은 자리에 다른 문장이 들어간다 (R1: 과하게 강조하지 않는다). */
+  readonly remainingUrgent: string
+  readonly itemsTitle: string
+  readonly recipientTitle: string
+  readonly recipientChoose: string
+  readonly recipientAdd: string
+  readonly recipientNone: string
+  readonly noteLabel: string
+  readonly notePlaceholder: string
+  readonly summaryTitle: string
+  readonly productAmountLabel: string
+  readonly discountLabel: string
+  readonly shippingLabel: string
+  readonly totalLabel: string
+  /** 아직 안 온 것들의 자리 (4.5). 「준비 중」이 아니라 무엇이 올지를 적는다. */
+  readonly couponTitle: string
+  readonly couponBody: string
+  readonly paymentTitle: string
+  readonly paymentBody: string
+  readonly termsLabel: string
+  readonly placeOrder: string
+  readonly placing: string
+  readonly placeFailed: string
+  /** 배송지를 안 골랐을 때 주문 버튼 아래에 나오는 이유. */
+  readonly recipientRequired: string
+  readonly termsRequired: string
+  readonly expiredTitle: string
+  readonly expiredBody: string
+  readonly backToCart: string
+  readonly loading: string
+  readonly failedTitle: string
+  readonly failedBody: string
+  /** 주문이 만들어졌다. 결제는 M08 이 붙인다 (4.6). `{number}` */
+  readonly placedTitle: string
+  readonly placedBody: string
+  readonly placedOrderNumber: string
 }
