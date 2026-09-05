@@ -1,27 +1,29 @@
-import { Card, Grid } from '@shopping/ui/components'
 import { PageContainer } from '@shopping/ui/layout'
 
 import { ApiWakeGate } from '@/components/api-wake-gate'
+import { CategoryShortcuts } from '@/components/home/category-shortcuts'
+import { DemoInvite } from '@/components/home/demo-invite'
+import { ProductSection } from '@/components/home/product-section'
 import { messagesFor } from '@/messages'
 
 /**
- * Static. This page awaits nothing.
+ * 홈 (TASK-0044).
  *
- * It used to be `force-dynamic` because it read a live dependency on the server,
- * which meant every visitor waited for the API before receiving any markup at
- * all — and on a cold instance that wait ends in a timeout, not a page
- * (TASK-0101 4.3).
+ * **This page still awaits nothing**, and that is not an accident of how it was
+ * written — TASK-0101 F4 is a completed criterion that says so, measured
+ * structurally: `HomePage()` returns markup rather than a promise, calling it
+ * issues no request, and `/` prerenders as static. The reason is the cold start:
+ * the API can take ninety seconds to wake and a server render would meet that
+ * with a five second timeout, so a visitor would get a failure screen instead of
+ * a page.
  *
- * The liveness read now happens in the browser, so there is no live value in the
- * server render to go stale and the shell can be prerendered. That is what makes
- * the header and the skeleton appear immediately while the API is still booting.
- * **It is also why the density is not read from a cookie** (TASK-0018 4.1): a
- * cookie would put this page back on the dynamic path and undo exactly that.
+ * So the sections read their own data after mount (`useSection`). The shell, the
+ * hero and the category shortcuts are in the markup; the product rows arrive a
+ * moment later, and `ApiWakeGate` is what explains the gap.
  *
- * The real home screen — recommendations, new arrivals, brand rows — is
- * TASK-0044. What is here is the layout, the density preview it needs to be
- * checked against, and the cold-start panel this page has carried since
- * TASK-0101.
+ * TASK-0102 owns SEO. If the product rows have to be in the HTML for a crawler,
+ * that is a change to TASK-0101 F4 and needs a decision, not a quiet rewrite of
+ * this file.
  */
 export default function HomePage() {
   const messages = messagesFor()
@@ -29,61 +31,42 @@ export default function HomePage() {
 
   return (
     <PageContainer className="flex flex-col gap-8 py-6">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold">{home.title}</h1>
-        <p className="text-fg-muted">{home.description}</p>
-      </header>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">{home.previewTitle}</h2>
-        <p className="text-fg-muted text-sm">{home.previewDescription}</p>
-
-        {/*
-          `columns="density"` reads `--density-cols`, so this grid is 1 / 2 / 3
-          columns at minimal and 2 / 4 / 6 at maximal without a breakpoint
-          written here. It is what F5 — three steps × three viewports — is
-          checked against until real product cards arrive in TASK-0040.
-        */}
-        <Grid as="ul" columns="density" gap="md">
-          {home.previewItems.map((name) => (
-            <Card as="li" key={name} variant="outline">
-              <div
-                aria-hidden="true"
-                className="bg-surface-muted text-fg-subtle flex aspect-square w-full items-center justify-center text-xs"
-              >
-                {home.previewImageLabel}
-              </div>
-              <p className="text-fg text-sm font-medium">{name}</p>
-              <p className="text-fg-subtle text-xs">{home.previewPriceLabel}</p>
-            </Card>
-          ))}
-        </Grid>
+      {/*
+        A text-first hero (R1). A large image here would be the LCP element on
+        every first visit, and what this storefront has to say in its first
+        sentence is what makes it different — which is text.
+      */}
+      <section className="flex flex-col gap-2">
+        <h1 className="text-2xl font-bold">{home.heroTitle}</h1>
+        <p className="text-fg-muted">{home.heroBody}</p>
       </section>
 
+      <DemoInvite messages={home.demo} />
+
+      <CategoryShortcuts messages={home} />
+
+      <ProductSection
+        href="/search?sort=newest"
+        messages={home}
+        sort="newest"
+        title={home.newTitle}
+      />
+
+      <ProductSection
+        href="/search?sort=sales"
+        messages={home}
+        sort="sales"
+        title={home.popularTitle}
+      />
+
       {/*
-        The connection panel sits *below* the storefront content, not above it.
-        Measured, not assumed: with it on top, the panel filling in pushed the
-        section below down, Chrome recorded a second LCP candidate at that
-        moment, and the page's LCP went from 0.8s to 2.7s on a throttled mobile
-        profile (TASK-0018 6.2 P1). Nothing above it moves any more.
+        The cold-start panel stays (TASK-0101). It is what turns 「아직 비어 있는
+        홈」 into 「깨우는 중입니다」.
       */}
       <section className="flex flex-col gap-3">
         <ApiWakeGate health={messages.health} wake={messages.wake} />
         <p className="text-fg-subtle text-sm">{messages.health.notice}</p>
       </section>
-
-      {/*
-        The component gallery is a development tool and is not served in
-        production (see app/components/page.tsx), so the way in is too. Without a
-        link it is a page only whoever wrote it knows the URL of.
-      */}
-      {process.env.NODE_ENV === 'production' ? null : (
-        <nav className="flex flex-col gap-1">
-          <a className="text-primary min-h-touch text-sm underline" href="/components">
-            {messages.components.linkLabel}
-          </a>
-        </nav>
-      )}
     </PageContainer>
   )
 }

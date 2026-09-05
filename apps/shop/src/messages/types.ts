@@ -49,8 +49,10 @@ export interface Messages {
    * on every route, while everything above belongs to one screen.
    */
   readonly layout: LayoutMessages
-  /** The temporary home screen. TASK-0044 replaces it with the real one. */
+  /** 홈 (TASK-0044) — 히어로, 신상품·인기 섹션, 카테고리 바로가기, 데모 유도. */
   readonly home: HomeMessages
+  /** 브랜드관 (TASK-0044). */
+  readonly brand: BrandMessages
   /**
    * 검색 결과 화면 (TASK-0041) — 검색어·필터·정렬·빈 상태.
    *
@@ -478,12 +480,40 @@ export interface FooterMessages {
 export interface HomeMessages {
   readonly title: string
   readonly description: string
-  readonly previewTitle: string
-  readonly previewDescription: string
-  /** Names of the placeholder cards. No real brand names anywhere (D-035). */
-  readonly previewItems: readonly string[]
-  readonly previewImageLabel: string
-  readonly previewPriceLabel: string
+  readonly heroTitle: string
+  readonly heroBody: string
+  readonly heroSearchCta: string
+  readonly newTitle: string
+  readonly popularTitle: string
+  readonly categoriesTitle: string
+  readonly loadingLabel: string
+  readonly sectionEmpty: string
+  readonly moreLabel: string
+  /** The first-visit nudge towards a demo account (F5). */
+  readonly demo: HomeDemoMessages
+  readonly card: ProductCardLabels
+  readonly gridLabel: string
+}
+
+export interface HomeDemoMessages {
+  readonly title: string
+  readonly body: string
+  readonly cta: string
+  readonly dismiss: string
+}
+
+export interface BrandMessages {
+  /** `{brand}` */
+  readonly metaTitle: string
+  /** `{brand}` */
+  readonly metaDescription: string
+  readonly logoAlt: string
+  readonly noIntroduction: string
+  readonly follow: string
+  readonly followComingSoon: string
+  readonly productsTitle: string
+  /** `{count}` */
+  readonly productCount: string
 }
 
 export interface PlaceholderMessages {
