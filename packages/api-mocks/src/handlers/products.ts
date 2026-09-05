@@ -14,6 +14,7 @@ import type {
 import {
   createProductRequestSchema,
   PRODUCT_MAX_VARIANTS,
+  productDetailResponseSchema,
   productImageKeyPattern,
   productPublishRequestSchema,
   productResponseSchema,
@@ -24,7 +25,12 @@ import { http, HttpResponse } from 'msw'
 
 import { defineFixture } from '../define'
 import { attributeDefinitions } from '../fixtures/attributes'
-import { productDraft, productWithOptions } from '../fixtures/products'
+import {
+  productDraft,
+  productWithOptions,
+  storefrontProductDetail,
+  storefrontProductWithoutOptions,
+} from '../fixtures/products'
 import { mockPaths } from '../paths'
 import { categoryRowsSnapshot } from './categories'
 import { answering, MockApiError, readBody } from './refusal'
@@ -822,7 +828,34 @@ function answerWith(product: Product, status = 200): Response {
   })
 }
 
+/** The shopper's listings, by id. `ACTIVE` only — everything else is a 404. */
+const STOREFRONT = new Map(
+  [storefrontProductDetail, storefrontProductWithoutOptions].map((entry) => [
+    entry.product.id,
+    entry,
+  ]),
+)
+
 export const productHandlers: readonly RequestHandler[] = [
+  /**
+   * Registered before {@link mockPaths.product}: msw takes the first handler
+   * that matches, and `:id` alone would not match two segments — but the order
+   * is stated anyway, because the day somebody widens that pattern is the day
+   * this stops working for reasons nobody can see from here.
+   */
+  http.get(mockPaths.productDetail, ({ params }) =>
+    answering(() => {
+      const found = STOREFRONT.get(pathProductId(params))
+
+      // A draft, a suspended listing and an id that never existed are one answer
+      // (TASK-0043 4.1): telling them apart tells anybody asking which
+      // unpublished ids exist.
+      if (found === undefined) throw new MockApiError(404, '상품을 찾을 수 없습니다.')
+
+      return HttpResponse.json(defineFixture(productDetailResponseSchema, found))
+    }),
+  ),
+
   http.get(mockPaths.product, ({ params }) =>
     answering(() => answerWith(store.get(pathProductId(params)))),
   ),

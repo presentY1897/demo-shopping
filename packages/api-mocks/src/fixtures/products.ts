@@ -1,5 +1,5 @@
 import type { Product, ProductOption, ProductVariant } from '@shopping/shared'
-import { productResponseSchema } from '@shopping/shared'
+import { productDetailResponseSchema, productResponseSchema } from '@shopping/shared'
 
 import { defineFixture } from '../define'
 import { sessionSellerOwner } from './session'
@@ -190,4 +190,189 @@ export const productDraft = defineFixture(productResponseSchema, {
       },
     ],
   },
+})
+
+/**
+ * 상점이 보는 상품 상세 (TASK-0043).
+ *
+ * A third listing rather than a reuse of {@link productWithOptions}, because the
+ * detail screen has to be checked against two states that a *complete* product
+ * cannot show:
+ *
+ * | | |
+ * | --- | --- |
+ * | **품절 조합** (F2) | 블랙 · S 의 재고가 0이다. SKU 는 있고 살 수만 없다 |
+ * | **없는 조합** (F3) | 카멜 · XL 과 카멜 · L 은 **variant 자체가 없다** |
+ *
+ * The two are different states and the screen has to say so differently — one is
+ * a combination that exists and is out of stock, the other was never made. A
+ * fixture where every combination existed would let a screen that conflated them
+ * pass.
+ *
+ * Three images rather than two, so a gallery has a thumbnail strip worth
+ * drawing, and a `listPrice` above `price` so the discount badge has a number.
+ */
+const STOREFRONT_COLOURS = ['블랙', '아이보리', '카멜'] as const
+const STOREFRONT_SIZES = ['S', 'M', 'L', 'XL'] as const
+
+const storefrontOptions: ProductOption[] = [
+  {
+    id: uuid(30, 1),
+    name: '색상',
+    sortOrder: 0,
+    values: STOREFRONT_COLOURS.map((value, index) => ({
+      id: uuid(31, index + 1),
+      value,
+      meta: null,
+      sortOrder: index,
+    })),
+  },
+  {
+    id: uuid(30, 2),
+    name: '사이즈',
+    sortOrder: 1,
+    values: STOREFRONT_SIZES.map((value, index) => ({
+      id: uuid(32, index + 1),
+      value,
+      meta: null,
+      sortOrder: index,
+    })),
+  },
+]
+
+/** `색상 · 사이즈` pairs that were never made — the F3 case. */
+const MISSING = new Set(['카멜·L', '카멜·XL'])
+
+/** The one that exists and is out of stock — the F2 case. */
+const SOLD_OUT = '블랙·S'
+
+const storefrontVariants: ProductVariant[] = STOREFRONT_COLOURS.flatMap((colour, colourIndex) =>
+  STOREFRONT_SIZES.flatMap((size, sizeIndex) => {
+    const key = `${colour}·${size}`
+
+    if (MISSING.has(key)) return []
+
+    const index = colourIndex * STOREFRONT_SIZES.length + sizeIndex
+
+    return [
+      {
+        id: uuid(33, index + 1),
+        sku: `LUMIKNIT-${String(index + 1)}`,
+        price: 118_000,
+        listPrice: 158_000,
+        stock: key === SOLD_OUT ? 0 : 3 + index,
+        maxPurchaseQuantity: null,
+        effectiveMaxPurchaseQuantity: 3,
+        isActive: true,
+        optionValueIds: [uuid(31, colourIndex + 1), uuid(32, sizeIndex + 1)],
+      },
+    ]
+  }),
+)
+
+// No `export const STOREFRONT_PRODUCT_ID` — `src/fixtures/*` may export nothing
+// but branded fixtures (`registry.spec.ts`), and a caller reads the id off the
+// fixture it already has.
+export const storefrontProductDetail = defineFixture(productDetailResponseSchema, {
+  product: {
+    ...base,
+    id: uuid(10, 3),
+    name: '램스울 라운드넥 니트',
+    description: '램스울 90% 혼방. 안감 없이 한 겹으로 입어도 따뜻합니다.',
+    status: 'ACTIVE',
+    attributes: {
+      brand: '루미에르',
+      fit: '레귤러핏',
+      neckline: '라운드',
+      wool_ratio: 90,
+      detachable_liner: false,
+      season: ['간절기', '겨울'],
+    },
+    maxPurchaseQuantity: 3,
+    minPrice: 118_000,
+    ratingAvg: 460,
+    ratingCount: 128,
+    salesCount: 940,
+    version: 5,
+    images: [
+      {
+        id: uuid(34, 1),
+        url: 'https://images.unsplash.com/photo-lumiere-knit-front',
+        alt: '니트 정면',
+        sortOrder: 0,
+      },
+      {
+        id: uuid(34, 2),
+        url: 'https://images.unsplash.com/photo-lumiere-knit-back',
+        alt: '니트 뒷면',
+        sortOrder: 1,
+      },
+      {
+        id: uuid(34, 3),
+        url: 'https://images.unsplash.com/photo-lumiere-knit-detail',
+        alt: null,
+        sortOrder: 2,
+      },
+    ],
+    options: storefrontOptions,
+    variants: storefrontVariants,
+  },
+  seller: { id: SELLER_ID, brandName: '루미에르' },
+  // Already labelled and ordered — the API resolves it up the category lineage
+  // (TASK-0043 4.3), because the labels live on `AttributeDefinition` and the
+  // route serving those is permissioned. The labels here are
+  // `fixtures/attributes.ts`'s own, so the two fixtures agree.
+  attributes: [
+    { key: 'brand', label: '브랜드', value: '루미에르' },
+    { key: 'fit', label: '핏', value: '레귤러핏' },
+    { key: 'neckline', label: '넥라인', value: '라운드' },
+    { key: 'wool_ratio', label: '울 혼용률', value: 90 },
+    { key: 'detachable_liner', label: '탈부착 내피', value: false },
+    { key: 'season', label: '착용 계절', value: ['간절기', '겨울'] },
+  ],
+})
+
+/** 옵션이 없는 상품 — 축이 하나도 없을 때의 상세 화면. */
+export const storefrontProductWithoutOptions = defineFixture(productDetailResponseSchema, {
+  product: {
+    ...base,
+    id: uuid(10, 4),
+    name: '캐시미어 머플러',
+    description: null,
+    status: 'ACTIVE',
+    attributes: { brand: '루미에르', fit: '레귤러핏' },
+    maxPurchaseQuantity: null,
+    minPrice: 49_000,
+    ratingAvg: 0,
+    ratingCount: 0,
+    salesCount: 12,
+    version: 1,
+    images: [
+      {
+        id: uuid(34, 9),
+        url: 'https://images.unsplash.com/photo-lumiere-scarf',
+        alt: null,
+        sortOrder: 0,
+      },
+    ],
+    options: [],
+    variants: [
+      {
+        id: uuid(33, 101),
+        sku: 'LUMISCARF-9',
+        price: 49_000,
+        listPrice: null,
+        stock: 7,
+        maxPurchaseQuantity: null,
+        effectiveMaxPurchaseQuantity: null,
+        isActive: true,
+        optionValueIds: [],
+      },
+    ],
+  },
+  seller: { id: SELLER_ID, brandName: '루미에르' },
+  attributes: [
+    { key: 'brand', label: '브랜드', value: '루미에르' },
+    { key: 'fit', label: '핏', value: '레귤러핏' },
+  ],
 })
