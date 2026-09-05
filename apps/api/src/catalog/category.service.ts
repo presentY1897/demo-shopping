@@ -207,6 +207,32 @@ export class CategoryService {
   }
 
   /**
+   * The same tree, for a shopper who is not signed in (TASK-0042 4.2).
+   *
+   * A separate method rather than a flag on {@link CategoryService.tree},
+   * because the difference is not a parameter — it is that **there is no
+   * principal to check**, and a method that took `RequestPrincipal | null` would
+   * put the decision of when to skip the check inside the thing doing the
+   * checking.
+   *
+   * **Active only, and no way to ask otherwise.** The console's route can say
+   * `includeInactive`; this cannot, and that is the whole reason it exists as
+   * its own route: a storefront that could be talked into listing retired
+   * categories would be a catalogue leak with a query parameter for a key.
+   */
+  async storefrontTree(): Promise<CategoryTreeResponse> {
+    const rows = await this.prisma.$queryRaw<CategoryNode[]>`
+      SELECT ${nodeColumns('c')}
+        FROM "Category" c
+       WHERE c."deletedAt" IS NULL
+         AND c."isActive"
+       ORDER BY c."depth", c."sortOrder", c."id"
+    `
+
+    return { nodes: buildCategoryForest(rows) }
+  }
+
+  /**
    * Adds a node under `parentId`, or a new root.
    *
    * The insert is a single statement that draws the id from the sequence and

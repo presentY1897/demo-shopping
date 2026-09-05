@@ -339,6 +339,17 @@ export function categoryRowsSnapshot(): readonly CategoryNode[] {
  * `/categories/:id` reads `reorder` as an id perfectly happily.
  */
 export const categoryHandlers: readonly RequestHandler[] = [
+  /**
+   * The storefront's tree. Registered before the `:id` routes — see the path.
+   *
+   * It answers from the store like the console's route does, so a category
+   * created or retired in one spec is visible to the other; what it cannot do is
+   * be asked for inactive nodes.
+   */
+  http.get(mockPaths.categoryTree, () =>
+    answering(() => HttpResponse.json(defineFixture(categoryTreeResponseSchema, store.tree({})))),
+  ),
+
   http.get(mockPaths.categories, ({ request }) =>
     answering(() => {
       const url = new URL(request.url)

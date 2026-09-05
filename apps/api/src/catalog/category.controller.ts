@@ -21,6 +21,7 @@ import {
 } from '@shopping/shared'
 
 import { Principal } from '../auth/principal.decorator.js'
+import { PublicEndpoint } from '../auth/public-endpoint.decorator.js'
 import { RequirePermission } from '../auth/require-permission.decorator.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { parseInput } from '../common/parse-input.js'
@@ -51,6 +52,20 @@ export class CategoryController {
     @Query() query: unknown,
   ): Promise<CategoryTreeResponse> {
     return this.categories.tree(principal, parseInput(categoryTreeQueryParamsSchema, query))
+  }
+
+  /**
+   * The storefront's read (TASK-0042 4.2).
+   *
+   * Public, because a shopper who has not signed in still has to see the
+   * catalogue — and so does a crawler. Registered **before** the `:id` routes
+   * for the reason `reorder` is: Nest takes the first match, and `:id` would
+   * happily read `tree` as one.
+   */
+  @Get('tree')
+  @PublicEndpoint()
+  storefrontTree(): Promise<CategoryTreeResponse> {
+    return this.categories.storefrontTree()
   }
 
   @Post()
