@@ -269,7 +269,7 @@ DB 가 쥔 규칙은 위반 INSERT 를 실제로 시도해 거부되는 것으�
 erDiagram
     ProductVariant ||--o{ StockLedger : records
     ProductVariant ||--o{ StockReservation : holds
-    Order ||--o{ StockReservation : creates
+    User ||--o{ StockReservation : "잡은 사람"
     User ||--o{ StockLedger : "처리자"
 ```
 
@@ -279,8 +279,68 @@ erDiagram
 | `StockReservation` | 주문서 작성 시 15분간 재고 선점. `HELD` → `CONFIRMED` / `RELEASED` |
 
 ```
-가용재고 = ProductVariant.stock − SUM(StockReservation WHERE status='HELD' AND expiresAt > now)
+가용재고 = ProductVariant.stock − ProductVariant.reserved
 ```
+
+### 예약은 주문을 가리키지 않는다 (TASK-0048)
+
+`Order` 가 예약을 만드는 것처럼 그렸던 관계를 지웠다. 예약은 **주문서에 들어갈 때**
+잡히고 주문 행은 결제 준비 단계에서야 생긴다 — 없는 표를 가리키는 컬럼은 외래키를
+걸 수 없고, 외래키 없는 uuid 는 아무것도 지켜 주지 않는다.
+
+그래서 예약이 드는 것은 **누가**(`userId`)와 **어느 주문서 시도**(`checkoutId`)다.
+`checkoutId` 는 주문서에 들어가는 쪽이 발급하는 불투명한 값이고, 그것으로 「이 시도의
+예약 전부」를 한 번에 푼다 — 결제 실패와 이탈이 그 모양이다. 주문과의 연결은
+`Order` 를 만드는 TASK-0049 의 스키마 변경이다.
+
+### `reserved` 는 캐시다 — 합계를 매번 세지 않는다
+
+가용재고 식이 `SUM(...)` 이 아니라 컬럼 하나인 이유는 **상품 조회마다 집계가 붙지
+않게** 하기 위해서다. 대신 캐시가 어긋날 수 있고, 그것을 찾는 것이
+`ReservationService.reconcile()` 이다 — `reserved` 와 `HELD` 합계가 다른 variant 를
+한 문장으로 찾아낸다. TASK-0051 의 점검 배치가 그것을 주기로 부른다.
+
+**「유효한 HELD」가 아니라 「전체 HELD」와 견준다.** 만료된 예약은 스케줄러가
+`RELEASED` 로 바꾸기 전까지 여전히 `HELD` 이고 `reserved` 도 여전히 그것을 세고 있다.
+그 둘의 차이는 어긋남이 아니라 **아직 치우지 않은 것**이고, 치우는 일이 TASK-0051 이다.
+그래서 그 스케줄러가 멈추면 재고가 잠긴다.
+
+### 잡는 일 전체가 한 문장이다
+
+```sql
+UPDATE "ProductVariant" SET "reserved" = "reserved" + $q
+ WHERE "id" = $id AND "stock" - "reserved" >= $q
+```
+
+읽고 판단하고 쓰는 대신 조건부 갱신인 이유는, 읽은 값이 쓰는 순간에도 참이라는 보장이
+없기 때문이다. 재고 1개에 열 명이 동시에 들어오면 열 명 모두 「1개 남았다」를 읽고 열
+명 모두 통과한다. 조건을 `WHERE` 에 두면 판단과 갱신이 한 문장이 되고, 아홉은 **0행
+갱신**으로 진다. 잠금을 따로 잡을 필요도 없다 — 갱신 자신이 잠금이다.
+
+### 확정은 예약을 먼저 줄이고 재고를 나중에 줄인다
+
+`ProductVariant_reserved_check` 가 `reserved <= stock` 을 **문장마다** 검사한다.
+재고 1 · 예약 1 에서 `stock` 을 먼저 0으로 내리면 그 순간 `reserved(1) > stock(0)` 이라
+제약이 확정 자체를 거절한다. 순서는 예약 → 재고다.
+
+원장에 남는 유형은 `SALE` 이 아니라 **`RESERVE_CONFIRM`** 이다. 둘을 묶으면 원장만
+보고서는 예약을 거친 판매와 그렇지 않은 판매를 구분할 수 없고, 예약이 새는지 확인할
+방법이 사라진다.
+
+### 데이터베이스가 지키는 것
+
+| 제약 | 막는 것 |
+| --- | --- |
+| `ProductVariant_reserved_check` (`0 <= reserved <= stock`) | 오버셀. 조건부 갱신이 나중에 틀리게 고쳐지더라도 이 줄은 남는다 |
+| `StockReservation_quantity_check` (`quantity >= 1`) | 0개 예약 같은 뜻 없는 행 |
+| `ON DELETE RESTRICT` (variant) | 남이 잡아 둔 조합을 판매자가 지우는 것 |
+| `ON DELETE CASCADE` (user) | 탈퇴한 계정의 예약이 남아 재고를 영구히 잠그는 것 |
+
+| 인덱스 | 쓰임 |
+| --- | --- |
+| `(status, expiresAt)` | 만료 스케줄러가 풀 것을 고른다 (TASK-0051 ①) |
+| `(checkoutId)` | 한 주문서 시도의 예약 전부를 한 번에 푼다 |
+| `(variantId, status)` | 정합성 점검이 variant 별 `HELD` 합계를 낸다 |
 
 ### 원장이 현재값을 설명한다
 

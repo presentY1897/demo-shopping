@@ -174,6 +174,37 @@
 find-or-create 를 트랜잭션 안에 두면 이 모양이 된다. 만드는 일은 **밖에서**, 잠그는 일은
 안에서. 증상이 「가끔 안 먹는다」라서 A7 검사가 없었으면 못 찾았다.
 
+### 금액 계산과 재고 예약이 붙었다 (2026-09-05, TASK-0047 · TASK-0048)
+
+**오버셀을 막는 자리가 생겼다.** 장바구니는 담을 때 확인만 하고 잠그지 않으므로(D-026),
+「살 수 있다」가 실제로 보장되는 지점은 예약 하나뿐이다. 잡는 일 전체가 **한 문장**이다 —
+`UPDATE ... WHERE "stock" - "reserved" >= $q`. 읽고 판단하고 쓰면 재고 1개에 열 명이 모두
+「1개 남았다」를 읽고 모두 통과한다.
+
+**엔드포인트는 없다.** 부르는 쪽이 주문 생성(TASK-0049)이고 그것은 아직 없다. 부를 화면이 없는
+REST 표면을 먼저 뚫으면 실제로 쓸 때가 되어서야 모양이 안 맞는다는 것을 알게 된다.
+
+**예약은 아직 주문을 가리키지 못한다.** `Order` 표가 없어서다. 대신 `userId` 와 `checkoutId` 를
+들고, 주문과의 연결은 TASK-0049 의 스키마 변경으로 남겼다. 그 TASK 가 `Order` 를 더하는 날
+`demo-cleanup-plan.spec.ts` 가 또 분류를 요구한다 — TASK-0045 때와 같은 일이다.
+
+### 조심할 것 — 확정은 `reserved` 를 먼저 줄인다
+
+`ProductVariant_reserved_check` 가 `reserved <= stock` 을 **문장마다** 검사한다. 재고 1 · 예약 1
+에서 `stock` 을 먼저 0으로 내리면 그 순간 `reserved(1) > stock(0)` 이라 **제약이 확정 자체를
+거절한다.** 순서는 예약 → 재고다.
+
+같은 제약이 기존 검사 하나의 이름도 바꿔 달았다. 음수 재고는 이제 `ProductVariant_stock_check`
+가 아니라 `ProductVariant_reserved_check` 로 거절된다 — `0 <= reserved <= stock` 이
+`stock >= 0` 을 함의하기 때문이고, 둘 다 위반이라 어느 이름이 나오는지는 Postgres 의 검사
+순서다. 제약을 더할 때 **기존 S5 스펙이 이름으로 단언하고 있는지** 먼저 보는 편이 좋다.
+
+### 조심할 것 — 가용재고는 `stock` 이 아니라 새 필드다
+
+`productVariantSchema` 에 `availableStock` 이 생겼고, **구매자 화면은 전부 그쪽을 읽는다** —
+품절 판정, 「N개 남음」 배지, 수량 상한, OG 카드의 가격 범위까지. 판매자 콘솔은 `stock` 을
+그대로 본다. 한 이름이 엔드포인트마다 다른 수를 뜻하게 두지 않으려고 이름을 둘로 나눴다.
+
 ### 화면을 브라우저로 열 수 있게 됐다
 
 TASK-0024 가 그 벽을 뚫었다. 그리고 **열자마자 검사가 못 잡는 결함이 하나 나왔다** — 콘솔
@@ -494,4 +525,5 @@ Domain** → `cdn.demo-shopping.com`.
 | **페이지 안의 `<header>` 는 두 번째 `banner` 랜드마크다.** `article`·`section` 밖의 `<header>` 는 배너이고, 셸에 이미 하나 있다. 데스크톱에서는 통과하다가 **모달이 열리는 순간** `landmark-no-duplicate-banner` 로 터진다 | `search-workspace.tsx` 의 제목 영역 주석 |
 | **`role="combobox"` 를 얹으면 `searchbox` 롤이 사라진다.** 자동완성을 붙이면서 입력에 콤보박스 롤을 주면 기존 `getByRole('searchbox')` 가 전부 못 찾는다 — 화면은 멀쩡하고 검사만 빨갛다 | `apps/shop/test/shop-header.spec.tsx` |
 | **커버리지 임계값은 파일 경로로 걸리고, 그 파일이 사라지면 조용히 통과한다.** 모듈을 옮기면서 `vitest.config.mjs` 의 임계값을 함께 옮기지 않으면 게이트가 없어진 것을 **아무것도 알려 주지 않는다** — 빨개지지 않으므로 리뷰에서도 안 보인다. 옮기기 전에 `grep` 으로 그 경로가 설정에 박혀 있는지 본다 | D-219 · `packages/shared/vitest.config.mjs` |
+| **새 CHECK 제약이 기존 제약의 이름을 빼앗는다.** `0 <= reserved <= stock` 을 더했더니 음수 재고가 `ProductVariant_stock_check` 가 아니라 새 제약 이름으로 거절됐다 — 앞의 것을 함의하고, 둘 다 위반일 때 어느 이름이 나오는지는 Postgres 가 정한다. S5 스펙은 이름으로 단언하므로 **기능은 그대로인데 검사만 빨개진다** | `test/db/product-constraints.spec.ts` 의 「refuses negative stock」 |
 | **플랫폼이 이미 하는 일을 직접 만들었다** — Vercel 은 pnpm 모노레포의 미영향 프로젝트를 자동으로 건너뛴다. "4개가 다 빌드된다" 를 헛빌드로 단정하고 스크립트를 만들었는데, 그 PR 은 `packages/shared` 를 바꿨으므로 **넷 다 빌드가 맞았다.** 문서를 먼저 읽었으면 안 만들었다 | TASK-0010 4.1 |
