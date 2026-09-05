@@ -52,7 +52,18 @@ export interface SearchController {
   readonly retry: () => void
 }
 
-export function useSearch(): SearchController {
+/**
+ * Parts of the query the **route** decides, not the address bar.
+ *
+ * The category page is `/search` with one filter held down (TASK-0042 4장), and
+ * the difference is where that filter lives: in the path, not the query string.
+ * Pinning it here keeps `/categories/코트?attr.fit=슬림` honest — the address
+ * says the category once, in the segment, and every other filter behaves exactly
+ * as it does on the search screen because it *is* the same code.
+ */
+export type PinnedQuery = Pick<SearchQuery, 'categoryId'>
+
+export function useSearch(pinned: PinnedQuery = {}): SearchController {
   const router = useRouter()
   const pathname = usePathname()
   const params = useSearchParams()
@@ -60,7 +71,14 @@ export function useSearch(): SearchController {
   // The string, not the object: `useSearchParams` hands back a fresh instance on
   // every render and an effect keyed on it would re-fetch forever.
   const search = params.toString()
-  const query = useMemo(() => readSearchParams(new URLSearchParams(search)), [search])
+  const pinnedCategory = pinned.categoryId
+  const query = useMemo(
+    () => ({
+      ...readSearchParams(new URLSearchParams(search)),
+      ...(pinnedCategory === undefined ? {} : { categoryId: pinnedCategory }),
+    }),
+    [search, pinnedCategory],
+  )
   const canonical = useMemo(() => writeSearchParams(query), [query])
 
   const [results, setResults] = useState<SearchResultsState>({ status: 'loading' })
@@ -159,11 +177,16 @@ export function useSearch(): SearchController {
 
   const setQuery = useCallback(
     (next: SearchQuery) => {
-      const written = writeSearchParams(next)
+      // The pinned part is dropped before writing: it is already in the path, and
+      // writing it as well would put the category in the address twice — where
+      // the two could then disagree after an edit.
+      const written = writeSearchParams(
+        pinnedCategory === undefined ? next : { ...next, categoryId: undefined },
+      )
 
       router.push(written === '' ? pathname : `${pathname}?${written}`)
     },
-    [pathname, router],
+    [pathname, pinnedCategory, router],
   )
 
   const nextCursor = results.status === 'ready' ? results.nextCursor : null
