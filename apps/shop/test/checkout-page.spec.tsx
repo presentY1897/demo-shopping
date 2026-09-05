@@ -66,6 +66,10 @@ async function renderCheckout(width: number = VIEWPORTS.desktop) {
   )
 
   await screen.findByRole('region', { name: copy.itemsTitle })
+  // 카드 목록은 주문서와 **따로** 온다. 그것이 도착해야 카드 하나가 골라지고,
+  // 골라져야 「주문하기」가 눌린다 (TASK-0054) — 기다리지 않으면 이 파일의 검사가
+  // 어느 쪽이 먼저 도착했는지에 따라 갈린다.
+  await screen.findByRole('group', { name: copy.payment.chooseCard })
 
   return result
 }
@@ -214,9 +218,12 @@ describe('배송지와 주문 (F6 · F7)', () => {
     await user.click(within(summary).getByRole('checkbox', { name: copy.termsLabel }))
     await user.click(within(summary).getByRole('button', { name: copy.placeOrder }))
 
-    // 「결제 단계로 이동」할 곳이 아직 없다 (4.6). 없는 라우트로 보내는 대신
-    // 주문서가 그 자리에서 접수 상태로 바뀐다.
-    expect(await screen.findByText(copy.placedTitle)).toBeVisible()
+    // 4.6 이 「M08 이 그 자리에 결제를 붙이면 된다」고 남겨 둔 자리를 TASK-0054 가
+    // 채웠다. 그래서 이 버튼은 주문을 만든 다음 그 주문에 결제를 걸고, 화면은
+    // 접수가 아니라 **결제 완료**로 끝난다. 결제 자체는
+    // `checkout-payment.spec.tsx` 가 잰다 — 여기서 확인하는 것은 이 버튼이 여전히
+    // 주문을 만들고 주문번호를 말한다는 것이다.
+    expect(await screen.findByText(copy.payment.paidTitle)).toBeVisible()
     expect(screen.getByText(/20260905-7KQ3M2VB/u)).toBeVisible()
   })
 
@@ -233,14 +240,16 @@ describe('배송지와 주문 (F6 · F7)', () => {
   })
 })
 
-describe('아직 안 온 것들의 자리 (4.5)', () => {
+describe('아직 안 온 것의 자리 (4.5)', () => {
   it('names what will go there instead of saying 준비 중', async () => {
     await renderCheckout()
 
     // 빈 상자는 만들다 만 화면으로 보이고, 이름이 붙은 빈 상자는 아직 안 온
-    // 기능으로 보인다.
+    // 기능으로 보인다. **남은 자리는 하나뿐이다** — 결제수단은 TASK-0054 가
+    // 채웠고, 그 영역이 실제로 무엇을 하는지는 `checkout-payment.spec.tsx` 가 잰다.
     expect(screen.getByRole('region', { name: copy.couponTitle })).toBeVisible()
-    expect(screen.getByText(copy.paymentBody)).toBeVisible()
+    expect(screen.getByText(copy.couponBody)).toBeVisible()
+    expect(screen.getByRole('region', { name: copy.payment.title })).toBeVisible()
   })
 })
 

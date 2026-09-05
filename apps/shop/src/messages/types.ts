@@ -14,6 +14,8 @@ import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'
+import type { CardBlock } from '@/lib/payment/cards'
+import type { PaymentRefusal, PaymentStep } from '@/lib/payment/use-payment'
 
 /**
  * Shape every locale catalog implements.
@@ -844,11 +846,16 @@ export interface CheckoutMessages {
   readonly discountLabel: string
   readonly shippingLabel: string
   readonly totalLabel: string
-  /** 아직 안 온 것들의 자리 (4.5). 「준비 중」이 아니라 무엇이 올지를 적는다. */
+  /** 아직 안 온 것의 자리 (4.5). 「준비 중」이 아니라 무엇이 올지를 적는다. */
   readonly couponTitle: string
   readonly couponBody: string
-  readonly paymentTitle: string
-  readonly paymentBody: string
+  /**
+   * 결제수단 (TASK-0054). 4.5 가 자리만 두라고 한 그 자리에 실제 결제가 들어왔다.
+   *
+   * 주문서 안의 한 영역이므로 여기 아래 산다 — 결제 화면이 따로 생기는 것이 아니라
+   * 주문서가 결제까지 한다.
+   */
+  readonly payment: PaymentMessages
   readonly termsLabel: string
   readonly placeOrder: string
   readonly placing: string
@@ -862,8 +869,53 @@ export interface CheckoutMessages {
   readonly loading: string
   readonly failedTitle: string
   readonly failedBody: string
-  /** 주문이 만들어졌다. 결제는 M08 이 붙인다 (4.6). `{number}` */
-  readonly placedTitle: string
-  readonly placedBody: string
+  /**
+   * 주문만 만들어지고 결제로 가지 않은 끝 (TASK-0050 4.6).
+   *
+   * M08 이 그 자리에 결제를 붙였으므로 주문서는 더 이상 여기서 멈추지 않는다. 문구가
+   * 남아 있는 것은 `useCheckout` 이 아직 그 상태를 낼 수 있기 때문이고, 낼 수 있는
+   * 상태를 그리지 않는 화면은 빈 화면을 그린다.
+   */
+  /** 주문번호. 결제가 끝난 화면도 이 문장을 쓴다. `{number}` */
   readonly placedOrderNumber: string
+}
+
+/**
+ * 결제수단 (TASK-0054).
+ *
+ * **레코드 둘의 키가 유니온이다.** 걸음이 하나 늘거나 거절 사유가 하나 늘면 여기가
+ * 비는 것이 아니라 `pnpm typecheck` 이 깨진다 — 사람이 결제 도중에 만나는 문장이
+ * 빠지는 것은 그때 아무 말도 못 듣는다는 뜻이고, 그것이 가장 나쁜 실패다.
+ */
+export interface PaymentMessages {
+  readonly title: string
+  readonly loading: string
+  /** 라디오 그룹의 이름. 화면에는 없고 접근성 트리에만 있다. */
+  readonly chooseCard: string
+  /** 카드 한 장의 이름. `{brand}` · `{number}` */
+  readonly cardLabel: string
+  /** 남은 한도. `{amount}` */
+  readonly available: string
+  /**
+   * 고를 수 없는 카드 옆에 적는 이유. 상태마다 하나씩.
+   *
+   * 숨기지 않고 이유를 붙이는 것이 이 저장소의 규칙이다 (TASK-0023 4장) — 없는
+   * 것처럼 감추면 카드를 정지시킨 사람은 자기 카드가 사라졌다고 믿는다.
+   */
+  readonly blocked: Readonly<Record<CardBlock, string>>
+  /** 카드가 한 장도 없을 때. 만들러 갈 곳까지 말한다. */
+  readonly noneTitle: string
+  readonly noneBody: string
+  readonly noneAction: string
+  /** 카드를 안 골랐을 때 주문 버튼 아래에 나오는 이유. */
+  readonly cardRequired: string
+  /** 지금 무엇을 하는 중인가. 걸음마다 하나씩. */
+  readonly progress: Readonly<Record<PaymentStep, string>>
+  /** 끝나지 못한 이유. `exceeds_credit` 은 모자란 금액 `{amount}` 를 받는다. */
+  readonly refusals: Readonly<Record<PaymentRefusal, string>>
+  /** 실패해도 예약은 유지된다 (4.3). 어느 실패에나 같이 붙는 한 문장이다. */
+  readonly holdKept: string
+  readonly retry: string
+  readonly paidTitle: string
+  readonly paidBody: string
 }

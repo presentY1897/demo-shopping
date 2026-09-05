@@ -6,9 +6,12 @@ import { formatMoney } from '@shopping/ui/format'
 import Link from 'next/link'
 import { useState } from 'react'
 
+import { PaymentSection } from '@/components/checkout/payment-section'
 import { useAddressBook } from '@/lib/checkout/use-address-book'
 import { formatRemaining } from '@/lib/checkout/remaining'
 import { useCheckout } from '@/lib/checkout/use-checkout'
+import { defaultCard } from '@/lib/payment/cards'
+import { usePayment } from '@/lib/payment/use-payment'
 import type { CheckoutMessages } from '@/messages'
 
 const CURRENCY = 'KRW'
@@ -19,7 +22,7 @@ export interface CheckoutScreenProps {
 }
 
 /**
- * 주문서 (TASK-0050).
+ * 주문서 (TASK-0050 · TASK-0054).
  *
  * **진입이 재고를 잡지 않는다** (4.1). 잡은 것은 장바구니의 「주문하기」이고 이
  * 화면은 그 결과를 id 로 읽는다 — 그래서 새로고침은 예약을 한 벌 더 만들지 않고
@@ -28,32 +31,59 @@ export interface CheckoutScreenProps {
  * 만료는 **화면 전체가 바뀌는 사건**이다. 잡아 둔 재고가 풀렸으므로 여기 적힌
  * 금액도 수량도 더는 보장되지 않는다 — 일부만 회색으로 만들면 사람은 남은 것을
  * 살 수 있다고 믿는다.
+ *
+ * ## 「주문하기」가 결제까지 한다 (TASK-0054)
+ *
+ * 4.6 이 M08 에 남겨 둔 자리를 채우면서 이 버튼의 뜻이 정해졌다. **결제는 주문에
+ * 붙는다** — `POST /payments` 가 `orderId` 를 받으므로 결제하려면 주문이 먼저
+ * 있어야 한다. 그래서 고를 수 있는 순서는 둘뿐이었다.
+ *
+ * 1. 「주문하기」로 주문을 만들고, 그다음 「결제」를 한 번 더 누르게 한다.
+ * 2. 「주문하기」가 주문을 만든 다음 그 주문에 결제를 건다.
+ *
+ * **2를 골랐다.** 사는 사람에게 「주문」과 「결제」는 한 가지 마음이고, 1은 주문만
+ * 만들어 두고 결제하지 않은 사람을 화면이 만들어 낸다 — 그 사람의 재고는 잡혀 있고
+ * 주문은 미결이며, 그 상태를 치우는 일이 곧 TASK-0057 이 떠안는 몫이다.
+ *
+ * **다시 눌러야 하는 것은 결제뿐이다.** 거절당했을 때 주문을 한 번 더 만들면 한
+ * 사람이 같은 물건을 두 몫 잠근다. 그래서 재시도 버튼은 결제수단 영역 안에 있고
+ * (`payment-section.tsx`), 이미 만든 주문을 그대로 쓴다 (`use-payment.ts`). 예약이
+ * 유지되는 것이 그 재시도의 전제다 (TASK-0054 4.3).
+ *
+ * **주문을 만드는 자리는 `usePayment` 다.** 결제가 주문 id 를 필요로 하고, 주문
+ * 생성과 결제가 한 흐름이어야 재시도가 「결제만 다시」가 된다. `useCheckout` 은
+ * 그것을 만들지 않고 **알림만 받는다**(`placed`) — 주문이 생긴 순간부터 그 훅은
+ * 떠날 때 예약을 풀지 않는다. 그 알림이 없으면 거절당하고 다른 카드로 다시 하려는
+ * 사람의 재고를 우리 손으로 풀어 버린다.
  */
 export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
-  const { state, remaining, placing, placeFailed, place } = useCheckout(id)
+  const { state, remaining, placed } = useCheckout(id)
   const addresses = useAddressBook()
+  // 주문이 생기는 순간 주문서 훅에게 알린다 — 그때부터 이 화면은 그 예약의 주인이
+  // 아니고, 떠날 때 풀어서도 안 된다 (TASK-0054 4.3).
+  const payment = usePayment(placed)
   const [chosen, setChosen] = useState<string | null>(null)
+  const [chosenCard, setChosenCard] = useState<string | null>(null)
   const [agreed, setAgreed] = useState(false)
+
+  // 결제까지 끝났다. 이 주문서가 할 일은 여기서 끝나므로 화면 전체가 바뀐다 —
+  // 예약은 이제 주문의 것이고, 확정한 것은 방금의 매입이다 (TASK-0054 4.2).
+  if (payment.state.status === 'paid') {
+    return (
+      <Completed
+        body={messages.payment.paidBody}
+        messages={messages}
+        orderNumber={payment.state.orderNumber}
+        title={messages.payment.paidTitle}
+      />
+    )
+  }
 
   if (state.status === 'loading') {
     return (
       <p aria-live="polite" className="text-fg-muted py-16 text-center text-sm">
         {messages.loading}
       </p>
-    )
-  }
-
-  if (state.status === 'placed') {
-    return (
-      <EmptyState
-        action={
-          <Link className="text-accent text-sm font-medium underline" href="/">
-            {messages.backToCart}
-          </Link>
-        }
-        description={`${messages.placedBody} ${messages.placedOrderNumber.replace('{number}', state.orderNumber)}`}
-        title={messages.placedTitle}
-      />
     )
   }
 
@@ -77,7 +107,29 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
 
   const { checkout } = state
   const address = addresses.rows.find((row) => row.id === (chosen ?? defaultOf(addresses.rows)))
-  const ready = address !== undefined && agreed && !placing
+  const card = payment.cards.find(
+    (row) => row.id === (chosenCard ?? defaultCard(payment.cards)?.id),
+  )
+  const paying = payment.state.status === 'running'
+  const ready = address !== undefined && card !== undefined && agreed && !paying
+
+  /**
+   * 결제를 건다. 주문이 없으면 만들고, 있으면 그 주문에 다시 건다.
+   *
+   * 「주문하기」와 실패 뒤의 「다시 결제하기」가 **같은 함수**를 부른다. 두 번째가
+   * 주문을 다시 만들지 않는 것은 `usePayment` 가 만든 주문을 들고 있기 때문이고,
+   * 그 판단은 화면이 아니라 그쪽에 있다 — 여기서 나누면 같은 규칙이 두 곳에 산다.
+   */
+  const start = (): void => {
+    if (address === undefined || card === undefined) return
+
+    payment.pay({
+      addressId: address.id,
+      amount: checkout.paidAmount,
+      card,
+      checkoutId: checkout.id,
+    })
+  }
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
@@ -93,7 +145,16 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
         />
 
         <Placeholder body={messages.couponBody} title={messages.couponTitle} />
-        <Placeholder body={messages.paymentBody} title={messages.paymentTitle} />
+
+        <PaymentSection
+          cards={payment.cards}
+          chosen={card?.id ?? null}
+          loading={payment.loadingCards}
+          messages={messages.payment}
+          onChoose={setChosenCard}
+          onRetry={start}
+          state={payment.state}
+        />
       </div>
 
       <div className="lg:w-80 lg:shrink-0">
@@ -101,17 +162,47 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
           agreed={agreed}
           checkout={checkout}
           messages={messages}
+          missingCard={card === undefined}
           missingRecipient={address === undefined}
           onAgree={setAgreed}
-          onPlace={() => {
-            if (address !== undefined) place(address.id)
-          }}
-          placeFailed={placeFailed}
-          placing={placing}
+          onPlace={start}
+          placeFailed={payment.orderFailed}
+          placing={paying}
           ready={ready}
         />
       </div>
     </div>
+  )
+}
+
+/**
+ * 이 주문서의 끝 — 주문번호가 적힌 화면.
+ *
+ * 결제까지 끝난 경우와 주문만 접수된 경우가 같은 모양인 이유는 **사람이 여기서 하는
+ * 일이 같기** 때문이다: 주문번호를 확인하고 나간다. 다른 것은 문장 둘뿐이라 그것만
+ * 받는다.
+ */
+function Completed({
+  title,
+  body,
+  orderNumber,
+  messages,
+}: {
+  readonly title: string
+  readonly body: string
+  readonly orderNumber: string
+  readonly messages: CheckoutMessages
+}) {
+  return (
+    <EmptyState
+      action={
+        <Link className="text-accent text-sm font-medium underline" href="/">
+          {messages.backToCart}
+        </Link>
+      }
+      description={`${body} ${messages.placedOrderNumber.replace('{number}', orderNumber)}`}
+      title={title}
+    />
   )
 }
 
@@ -292,6 +383,7 @@ function Summary({
   placing,
   placeFailed,
   missingRecipient,
+  missingCard,
 }: {
   readonly checkout: Checkout
   readonly messages: CheckoutMessages
@@ -302,6 +394,7 @@ function Summary({
   readonly placing: boolean
   readonly placeFailed: boolean
   readonly missingRecipient: boolean
+  readonly missingCard: boolean
 }) {
   const discount = checkout.totalCouponDiscountAmount + checkout.totalPointDiscountAmount
 
@@ -357,7 +450,7 @@ function Summary({
       */}
       {ready ? null : (
         <p className="text-fg-subtle text-xs">
-          {missingRecipient ? messages.recipientRequired : messages.termsRequired}
+          {reasonOf({ messages, missingCard, missingRecipient })}
         </p>
       )}
 
@@ -368,4 +461,26 @@ function Summary({
       ) : null}
     </aside>
   )
+}
+
+/**
+ * 왜 아직 주문할 수 없는가.
+ *
+ * 순서가 곧 「무엇을 먼저 말해 줄 것인가」다. 배송지가 먼저인 이유는 그것이 화면
+ * 위쪽에 있어서이고, 동의가 마지막인 이유는 나머지가 다 채워진 사람에게 남는 것이
+ * 그것 하나이기 때문이다.
+ */
+function reasonOf({
+  missingRecipient,
+  missingCard,
+  messages,
+}: {
+  readonly missingRecipient: boolean
+  readonly missingCard: boolean
+  readonly messages: CheckoutMessages
+}): string {
+  if (missingRecipient) return messages.recipientRequired
+  if (missingCard) return messages.payment.cardRequired
+
+  return messages.termsRequired
 }

@@ -7,6 +7,7 @@ import { categoryHandlers } from './categories'
 import { checkoutHandlers } from './checkout'
 import { demoHandlers } from './demo'
 import { healthHandlers } from './health'
+import { paymentHandlers } from './payment'
 import { productHandlers } from './products'
 import { searchHandlers } from './search'
 import { sellerConsoleHandlers } from './seller-console'
@@ -32,6 +33,7 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...profileHandlers,
   ...cartHandlers,
   ...checkoutHandlers,
+  ...paymentHandlers,
   ...categoryHandlers,
   ...attributeHandlers,
   ...productHandlers,
@@ -48,6 +50,7 @@ export { cartHandlers, resetCartStore } from './cart'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
 export { checkoutHandlers, resetCheckoutStore } from './checkout'
 export { demoHandlers, failNextDemoIssue, mockDemoAccount, resetDemoStore } from './demo'
+export { paymentHandlers, resetPaymentStore } from './payment'
 export { productHandlers, productRowsSnapshot, resetProductStore } from './products'
 export { searchHandlers } from './search'
 export {
