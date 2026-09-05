@@ -1,21 +1,16 @@
 'use client'
 
 /**
- * The search field — a real form, an empty destination.
+ * The header's search field.
  *
- * TASK-0018 scopes search out (M06 owns it) and asks for the slot. The slot is
- * a working `GET /search`: a disabled input would be a dead control in the
- * middle of the header, and the submit path is the part the layout is
- * responsible for either way. TASK-0041 replaces the destination.
- *
- * `next/form` rather than a bare `<form>` so submitting navigates on the client
- * — the same route transition as a link, with the same loading treatment —
- * instead of reloading the document.
+ * TASK-0018 asked for the slot and left the destination empty; TASK-0041 fills
+ * it in, and the whole of the change is that the field now suggests. It is still
+ * a `GET /search`, still submits before hydration, and still works with the
+ * keyboard alone — see {@link SearchBox} for why the suggestions are built on
+ * top of a form rather than in place of one.
  */
 
-import { Button, Input } from '@shopping/ui/components'
-import Form from 'next/form'
-
+import { SearchBox } from '@/components/search/search-box'
 import type { SearchSlotMessages } from '@/messages'
 
 export function SearchSlot({
@@ -25,20 +20,5 @@ export function SearchSlot({
   readonly className?: string
   readonly messages: SearchSlotMessages
 }) {
-  return (
-    <Form action="/search" className={className} role="search">
-      <div className="flex w-full items-center gap-2">
-        <Input
-          aria-label={messages.label}
-          className="min-w-0 flex-1"
-          name="q"
-          placeholder={messages.placeholder}
-          type="search"
-        />
-        <Button type="submit" variant="secondary">
-          {messages.submit}
-        </Button>
-      </div>
-    </Form>
-  )
+  return <SearchBox className={className} messages={messages} />
 }
