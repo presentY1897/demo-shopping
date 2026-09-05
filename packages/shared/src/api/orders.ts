@@ -161,12 +161,27 @@ export type SellerOrderResponse = z.infer<typeof sellerOrderResponseSchema>
  * 곳에서 수량을 받으면 어느 쪽이 이기는지를 정해야 하고, 그 규칙은 아무도 기억하지
  * 못한다.
  */
-export const createOrderRequestSchema = z.object({
-  /** 주문할 장바구니 줄. 선택한 것만 주문한다 (TASK-0046 F2). */
-  itemIds: z.array(z.uuid()).min(1).max(100),
-  /** 어느 배송지로. 값은 복사되고 이 id 는 주문에 남지 않는다. */
-  addressId: z.uuid(),
-})
+export const createOrderRequestSchema = z
+  .object({
+    /** 주문할 장바구니 줄. 선택한 것만 주문한다 (TASK-0046 F2). */
+    itemIds: z.array(z.uuid()).min(1).max(100).optional(),
+    /**
+     * 이미 열린 주문서 (TASK-0050 4.3).
+     *
+     * 오면 **그 예약을 그대로 쓴다.** 두 번 잡으면 한 사람이 같은 물건을 두 몫
+     * 잠근다. 지켜야 하는 성질은 「주문에는 그것을 덮는 `HELD` 예약이 있다」이지
+     * 「예약이 어디서 잡혔나」가 아니다.
+     */
+    checkoutId: z.uuid().optional(),
+    /** 어느 배송지로. 값은 복사되고 이 id 는 주문에 남지 않는다. */
+    addressId: z.uuid(),
+  })
+  // 둘 중 정확히 하나. 둘 다 보내면 어느 쪽이 이기는지를 정해야 하고, 그 규칙은
+  // 아무도 기억하지 못한다.
+  .refine(
+    (input) => (input.itemIds === undefined) !== (input.checkoutId === undefined),
+    '주문할 줄이나 주문서 중 하나만 보내 주세요.',
+  )
 
 export type CreateOrderRequest = z.infer<typeof createOrderRequestSchema>
 
@@ -229,3 +244,51 @@ export const orderRecipientInputSchema = z.object({
 })
 
 export type OrderRecipientInput = z.infer<typeof orderRecipientInputSchema>
+
+/**
+ * 주문서 하나 (TASK-0050 4.1).
+ *
+ * **표가 아니다.** 같은 `checkoutId` 를 가진 `HELD` 예약들이 곧 주문서이고, 여기
+ * 실리는 나머지는 그 예약이 가리키는 `ProductVariant` 에서 따라간 것이다. 표를 하나
+ * 더 만들면 같은 사실이 두 곳에 살고, 갈리는 날 어느 쪽이 맞는지 아무도 모른다.
+ *
+ * 금액은 **서버가 계산 엔진으로 낸 값**이다. 장바구니는 같은 엔진을 브라우저에서
+ * 부르므로 두 화면의 숫자가 같고(F5), 주문이 저장할 숫자도 같다.
+ */
+export const checkoutSchema = z.object({
+  id: z.uuid(),
+  /** 이 시각이 지나면 예약이 풀린다. 화면의 타이머가 읽는 값이다. */
+  expiresAt: z.iso.datetime(),
+  /** 판매자별 몫. 주문이 저장할 모양 그대로다 — 상태만 아직 없다. */
+  sellerOrders: z.array(
+    sellerOrderSchema.omit({ id: true, status: true }).extend({
+      items: z.array(orderItemSchema.omit({ id: true })),
+    }),
+  ),
+  totalProductAmount: priceSchema,
+  totalCouponDiscountAmount: priceSchema,
+  totalPointDiscountAmount: priceSchema,
+  totalShippingFee: priceSchema,
+  paidAmount: priceSchema,
+})
+
+export type Checkout = z.infer<typeof checkoutSchema>
+
+export const checkoutResponseSchema = z.object({ checkout: checkoutSchema })
+
+export type CheckoutResponse = z.infer<typeof checkoutResponseSchema>
+
+/**
+ * `POST /checkouts` — 고른 장바구니 줄로 주문서를 연다.
+ *
+ * **부르는 것은 장바구니의 「주문하기」다** (4.1). 주문서 화면이 진입과 동시에
+ * 부르면 새로고침 한 번에 예약이 한 벌 더 잡힌다.
+ */
+export const createCheckoutRequestSchema = z.object({
+  itemIds: z.array(z.uuid()).min(1).max(100),
+})
+
+export type CreateCheckoutRequest = z.infer<typeof createCheckoutRequestSchema>
+
+/** 주문서에서 쓰는 배송 요청사항. 저장되는 곳은 아직 없다 — M09 의 배송이 받는다. */
+export const CHECKOUT_NOTE_MAX_LENGTH = 100

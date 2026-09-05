@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 
 import { PrismaModule } from '../prisma/prisma.module.js'
 import { ReservationModule } from '../reservation/reservation.module.js'
+import { CheckoutService } from './checkout.service.js'
 import { OrderController } from './order.controller.js'
 import { OrderService } from './order.service.js'
 
@@ -14,7 +15,7 @@ import { OrderService } from './order.service.js'
 @Module({
   imports: [PrismaModule, ReservationModule],
   controllers: [OrderController],
-  providers: [OrderService],
-  exports: [OrderService],
+  providers: [CheckoutService, OrderService],
+  exports: [CheckoutService, OrderService],
 })
 export class OrderModule {}

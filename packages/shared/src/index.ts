@@ -473,6 +473,10 @@ export type {
 } from './api/cart.js'
 
 export {
+  CHECKOUT_NOTE_MAX_LENGTH,
+  checkoutResponseSchema,
+  checkoutSchema,
+  createCheckoutRequestSchema,
   createOrderRequestSchema,
   ORDER_LIST_DEFAULT_LIMIT,
   ORDER_NUMBER_PATTERN,
@@ -493,6 +497,9 @@ export {
   sellerOrderSchema,
 } from './api/orders.js'
 export type {
+  Checkout,
+  CheckoutResponse,
+  CreateCheckoutRequest,
   CreateOrderRequest,
   Order,
   OrderItem,

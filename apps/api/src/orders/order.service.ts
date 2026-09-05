@@ -13,9 +13,8 @@ import type {
   PricingDiscount,
   SellerOrder,
   SellerOrderResponse,
-  ShippingPolicy,
 } from '@shopping/shared'
-import { calculateOrder, ORDER_LIST_DEFAULT_LIMIT } from '@shopping/shared'
+import { ORDER_LIST_DEFAULT_LIMIT } from '@shopping/shared'
 
 import { assertResourceAccess } from '../auth/access-denied.js'
 import type { AccountRow } from '../auth/resource-ownership.js'
@@ -26,53 +25,24 @@ import {
   sellerOwnershipSelect,
 } from '../auth/resource-ownership.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
-import { resolvePurchaseLimit } from '../catalog/variant-rules.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { ReservationService } from '../reservation/reservation.service.js'
 import { ORDER_NUMBER_SUFFIX_LENGTH, orderNumberOf } from './order-number.js'
-import type { OrderLine, PlannedSellerOrder } from './order-plan.js'
+import { CheckoutService } from './checkout.service.js'
+import type { CartLineRow } from './order-lines.js'
+import { assertOrderable, policiesOf, toLine } from './order-lines.js'
+import type { PlannedSellerOrder } from './order-plan.js'
 import { planOrder } from './order-plan.js'
+import type { OrderSource } from './order-source.js'
+import { priceOf } from './order-source.js'
 
 type Tx = Prisma.TransactionClient
 
 /** 유니크 위반. 주문번호가 겹쳤을 때만 본다. */
 const UNIQUE_VIOLATION = 'P2002'
-
-/** 장바구니에서 읽어 온 주문될 줄 하나. */
-interface CartLineRow {
-  readonly id: string
-  readonly quantity: number
-  readonly variant: {
-    readonly id: string
-    readonly sku: string
-    readonly price: number
-    readonly isActive: boolean
-    readonly deletedAt: Date | null
-    readonly sellerId: string
-    readonly maxPurchaseQuantity: number | null
-    readonly optionValues: readonly {
-      readonly optionValue: { readonly value: string; readonly optionId: string }
-    }[]
-    readonly product: {
-      readonly id: string
-      readonly name: string
-      readonly status: string
-      readonly deletedAt: Date | null
-      readonly maxPurchaseQuantity: number | null
-      readonly images: readonly { readonly url: string }[]
-      readonly options: readonly { readonly id: string; readonly sortOrder: number }[]
-      readonly seller: {
-        readonly id: string
-        readonly brandName: string
-        readonly shippingFee: number
-        readonly freeShippingThreshold: number | null
-      }
-    }
-  }
-}
 
 /**
  * 주문 생성과 조회 (TASK-0049).
@@ -97,6 +67,7 @@ export class OrderService {
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
     private readonly reservations: ReservationService,
+    private readonly checkouts: CheckoutService,
   ) {}
 
   // ------------------------------------------------------------------ writes
@@ -116,23 +87,26 @@ export class OrderService {
   ): Promise<OrderResponse> {
     const account = await this.account(principal, 'order.write')
     const recipient = await this.recipientOf(account.id, input.addressId)
-    const rows = await this.orderableLines(account.id, input.itemIds)
-    const lines = rows.map((row) => toLine(row))
-    const policies = policiesOf(rows)
-    const priced = calculateOrder({
-      items: lines.map((line) => ({
-        itemId: line.itemId,
-        sellerId: line.sellerId,
-        unitPrice: line.unitPrice,
-        quantity: line.quantity,
-      })),
-      discounts,
-      shippingPolicies: policies,
-    })
-    const plan = planOrder(lines, priced)
-    const orderId = await this.store(account.id, recipient, plan)
+    const source =
+      input.checkoutId === undefined
+        ? await this.fromCart(account.id, input.itemIds ?? [])
+        : await this.checkouts.linesOf(account.id, input.checkoutId)
+    const plan = planOrder(source.lines, priceOf(source, discounts))
+    const orderId = await this.store(account.id, recipient, plan, source.checkoutId)
 
     return this.get(principal, orderId)
+  }
+
+  /** 장바구니에서 온 줄. 이 길에서는 주문이 예약을 **직접** 잡는다. */
+  private async fromCart(userId: string, itemIds: readonly string[]): Promise<OrderSource> {
+    const rows = await this.orderableLines(userId, itemIds)
+
+    return {
+      lines: rows.map((row) => toLine(row)),
+      policies: policiesOf(rows),
+      // 아직 잡힌 것이 없다. `store` 가 트랜잭션 안에서 잡는다.
+      checkoutId: null,
+    }
   }
 
   /**
@@ -150,13 +124,14 @@ export class OrderService {
     userId: string,
     recipient: Recipient,
     plan: ReturnType<typeof planOrder>,
+    held: string | null,
   ): Promise<string> {
     try {
-      return await this.write(userId, recipient, plan)
+      return await this.write(userId, recipient, plan, held)
     } catch (error: unknown) {
       if (!isOrderNumberCollision(error)) throw error
 
-      return this.write(userId, recipient, plan)
+      return this.write(userId, recipient, plan, held)
     }
   }
 
@@ -164,14 +139,17 @@ export class OrderService {
     userId: string,
     recipient: Recipient,
     plan: ReturnType<typeof planOrder>,
+    held: string | null,
   ): Promise<string> {
     const now = this.clock.now()
-    const checkoutId = randomUUID()
+    const checkoutId = held ?? randomUUID()
 
     return this.prisma.$transaction(async (tx) => {
-      // 예약이 먼저다. 저장한 뒤에 잡으면 품절일 때 지울 것이 생기고, 그 지우는
-      // 일이 실패하는 경우를 또 다뤄야 한다.
-      for (const sellerOrder of plan.sellerOrders) {
+      // 이미 잡힌 주문서에서 왔으면 **다시 잡지 않는다** (TASK-0050 4.3). 두 번
+      // 잡으면 한 사람이 같은 물건을 두 몫 잠근다. 그렇지 않은 길에서는 예약이
+      // 먼저다 — 저장한 뒤에 잡으면 품절일 때 지울 것이 생기고, 그 지우는 일이
+      // 실패하는 경우를 또 다뤄야 한다.
+      for (const sellerOrder of held === null ? plan.sellerOrders : []) {
         for (const item of sellerOrder.items) {
           await this.reservations.reserve(tx, {
             variantId: item.line.variantId,
@@ -476,95 +454,6 @@ interface Recipient {
   readonly postalCode: string
   readonly addressLine1: string
   readonly addressLine2: string | null
-}
-
-/** 팔 수 있는가, 그리고 이 수량이 허용되는가 (F9). */
-function assertOrderable(row: CartLineRow): void {
-  const { variant } = row
-
-  if (
-    variant.deletedAt !== null ||
-    !variant.isActive ||
-    variant.product.deletedAt !== null ||
-    variant.product.status !== 'ACTIVE'
-  ) {
-    throw new BadRequestException(
-      domainFailure('ORDER_ITEM_UNAVAILABLE', '지금은 주문할 수 없는 상품이에요.'),
-    )
-  }
-
-  const limit = resolvePurchaseLimit(
-    variant.product.maxPurchaseQuantity,
-    variant.maxPurchaseQuantity,
-  )
-
-  if (limit !== null && row.quantity > limit) {
-    throw new BadRequestException(
-      domainFailure('ORDER_PURCHASE_LIMIT', `1회 ${String(limit)}개까지 구매할 수 있어요.`, {
-        field: 'quantity',
-        params: { max: limit },
-      }),
-    )
-  }
-}
-
-/** 「블랙 / M」. 상품 자신의 축 순서대로다. */
-function optionLabelOf(row: CartLineRow): string {
-  const order = new Map(row.variant.product.options.map((option) => [option.id, option.sortOrder]))
-
-  return [...row.variant.optionValues]
-    .sort(
-      (left, right) =>
-        (order.get(left.optionValue.optionId) ?? 0) - (order.get(right.optionValue.optionId) ?? 0),
-    )
-    .map((entry) => entry.optionValue.value)
-    .join(' / ')
-}
-
-/** 주문한 때의 상품. 여기서 만들어 저장하면 그 뒤로 아무것도 바꾸지 않는다. */
-function snapshotOf(row: CartLineRow): OrderItemSnapshot {
-  return {
-    productId: row.variant.product.id,
-    productName: row.variant.product.name,
-    optionLabel: optionLabelOf(row),
-    sku: row.variant.sku,
-    thumbnailUrl: row.variant.product.images[0]?.url ?? null,
-    brandName: row.variant.product.seller.brandName,
-  }
-}
-
-function toLine(row: CartLineRow): OrderLine {
-  return {
-    itemId: row.id,
-    variantId: row.variant.id,
-    sellerId: row.variant.sellerId,
-    brandName: row.variant.product.seller.brandName,
-    unitPrice: row.variant.price,
-    quantity: row.quantity,
-    snapshot: snapshotOf(row),
-  }
-}
-
-/**
- * 이 주문에 관련된 판매자들의 배송 정책 (4.1).
- *
- * 판매자마다 한 번씩만 넣는다 — 같은 정책을 두 번 넣으면 계산 엔진이 그 판매자의
- * 배송비를 두 번 붙일지 한 번 붙일지가 구현 세부에 달리게 된다.
- */
-function policiesOf(rows: readonly CartLineRow[]): readonly ShippingPolicy[] {
-  const policies = new Map<string, ShippingPolicy>()
-
-  for (const row of rows) {
-    const { seller } = row.variant.product
-
-    policies.set(seller.id, {
-      sellerId: seller.id,
-      fee: seller.shippingFee,
-      freeThreshold: seller.freeShippingThreshold,
-    })
-  }
-
-  return [...policies.values()]
 }
 
 /** 주문번호가 겹쳤는가. 다른 유니크 위반은 재시도로 고쳐지지 않는다. */

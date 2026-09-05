@@ -1,7 +1,12 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
 import type { ApiClient } from '@shopping/shared'
-import { cartResponseSchema, orderListResponseSchema, orderResponseSchema } from '@shopping/shared'
+import {
+  cartResponseSchema,
+  checkoutResponseSchema,
+  orderListResponseSchema,
+  orderResponseSchema,
+} from '@shopping/shared'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { useApiApp } from '../support/api-app.js'
@@ -245,3 +250,67 @@ describe('A5 — 질의 수', () => {
     },
   )
 })
+
+describe('주문서 (TASK-0050)', () => {
+  it(
+    'opens a ten-store checkout well inside 300ms at p95',
+    { timeout: SAMPLING_BUDGET_MS },
+    async () => {
+      const durations: number[] = []
+
+      for (let index = 0; index < SAMPLES; index += 1) {
+        const itemIds = [await add(await variantOf(50)), await add(await variantOf(50))]
+        const started = performance.now()
+
+        await client().request({
+          path: '/checkouts',
+          method: 'POST',
+          body: { itemIds },
+          schema: checkoutResponseSchema,
+        })
+        durations.push(performance.now() - started)
+      }
+
+      expect(p95Of(durations)).toBeLessThan(300)
+    },
+  )
+
+  it(
+    'reads a checkout in the same number of statements whether it holds one line or ten',
+    { timeout: SAMPLING_BUDGET_MS },
+    async () => {
+      const one = await openAcross(1)
+      const ten = await openAcross(10)
+      const caller = client()
+
+      const forOne = await recordStatements(statements, () =>
+        caller.request({ path: `/checkouts/${one}`, schema: checkoutResponseSchema }),
+      )
+      const forTen = await recordStatements(statements, () =>
+        caller.request({ path: `/checkouts/${ten}`, schema: checkoutResponseSchema }),
+      )
+
+      // 주문서는 예약에서 되짚어 그려진다. 줄이 열이면 조회가 열 배가 되는 모양이
+      // 이 응답의 자연스러운 실패다.
+      expect(forTen).toHaveLength(forOne.length)
+    },
+  )
+})
+
+/** 판매자 `count` 곳에서 한 줄씩 담아 주문서를 연다. */
+async function openAcross(count: number): Promise<string> {
+  const itemIds: string[] = []
+
+  for (let index = 0; index < count; index += 1) {
+    itemIds.push(await add(await variantOf(50)))
+  }
+
+  const { checkout } = await client().request({
+    path: '/checkouts',
+    method: 'POST',
+    body: { itemIds },
+    schema: checkoutResponseSchema,
+  })
+
+  return checkout.id
+}
