@@ -25,6 +25,7 @@ function source(overrides: Partial<ProductSource> = {}): ProductSource {
     sellerId: '0192f0c1-0000-7000-8000-000000000002',
     brandName: '해뜰녘',
     categoryId: 12,
+    categoryIds: [1, 5, 12],
     categoryPath: ['여성', '상의', '티셔츠'],
     minPrice: 29_900,
     ratingAvg: 450,

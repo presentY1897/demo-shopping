@@ -33,7 +33,7 @@ describe('filterExpression', () => {
 
   it('ands the scalar filters together', () => {
     expect(filterExpression({ categoryId: 3, priceMin: 10_000, priceMax: 50_000 })).toBe(
-      'categoryId = 3 AND price >= 10000 AND price <= 50000',
+      'categoryIds = 3 AND price >= 10000 AND price <= 50000',
     )
   })
 

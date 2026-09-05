@@ -7,7 +7,12 @@ import type { AppConfig } from '../config/app-config.js'
 import { APP_CONFIG } from '../config/app-config.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import type { ProductDocument } from './search-document.js'
-import { ATTRIBUTE_FACET_PREFIX, isIndexable, toDocument } from './search-document.js'
+import {
+  ATTRIBUTE_FACET_PREFIX,
+  DOCUMENT_VERSION,
+  isIndexable,
+  toDocument,
+} from './search-document.js'
 import { productsIndexSettings } from './search-index-settings.js'
 import type { SearchIndex } from './search-index.js'
 import { SEARCH_INDEX } from './search-index.js'
@@ -33,6 +38,9 @@ export const REINDEX_PAGE = 200
  * one HTTP call per second forever to learn nothing.
  */
 export const POPULATION_CHECK_TICKS = 60
+
+/** Where the shape of the documents in the engine is recorded. */
+export const DOCUMENT_VERSION_KEY = 'search.documentVersion'
 
 /**
  * Applies outbox events to the search index (TASK-0038 4장 · 5장).
@@ -92,7 +100,9 @@ export class SearchIndexerService implements OnApplicationBootstrap, OnModuleDes
     // Settings, then "is there anything in there?". A deployment that has just
     // restarted has an empty engine and a full database, and nobody should have
     // to search once to notice.
-    void this.configure().then(() => this.ensurePopulated())
+    void this.configure()
+      .then(() => this.ensureCurrentShape())
+      .then(() => this.ensurePopulated())
 
     this.timer = setInterval(() => void this.tick(), INDEXER_POLL_MS)
     this.timer.unref()
@@ -210,6 +220,53 @@ export class SearchIndexerService implements OnApplicationBootstrap, OnModuleDes
     if (written > 0) this.logger.log(`인덱스가 비어 있어 ${String(written)}건을 다시 채웠습니다.`)
 
     return written > 0
+  }
+
+  /**
+   * Rebuilds when the documents in the engine are of an older shape.
+   *
+   * The engine has no schema, so an index full of documents that predate a new
+   * field is indistinguishable from a healthy one — it answers every query,
+   * quickly, with nothing. `DOCUMENT_VERSION` is the marker that makes the
+   * difference visible, and this is what acts on it.
+   *
+   * **The version is written only after a rebuild that wrote something.** A
+   * failed rebuild against a sleeping engine must leave the marker alone, or the
+   * next boot would decide the index is current and never try again.
+   */
+  async ensureCurrentShape(): Promise<boolean> {
+    const current = String(DOCUMENT_VERSION)
+
+    try {
+      const held = await this.prisma.appMeta.findUnique({ where: { key: DOCUMENT_VERSION_KEY } })
+
+      if (held?.value === current) return false
+
+      const written = await this.reindexAll()
+
+      // Nothing to rebuild is still the current shape: an empty catalogue has no
+      // stale documents in it, and recording that keeps the check from firing a
+      // full read on every boot of a fresh deployment.
+      await this.prisma.appMeta.upsert({
+        where: { key: DOCUMENT_VERSION_KEY },
+        create: { key: DOCUMENT_VERSION_KEY, value: current },
+        update: { value: current },
+      })
+
+      if (written > 0) {
+        this.logger.log(
+          `문서 형식이 ${held?.value ?? '없음'} → ${current} 이라 ${String(written)}건을 다시 색인했습니다.`,
+        )
+      }
+
+      return true
+    } catch (error) {
+      // Same posture as `configure`: a cold engine or an unreachable database is
+      // the normal state of a booting deployment, and the next boot tries again.
+      this.logger.warn(`문서 형식을 확인하지 못했습니다: ${String(error)}`)
+
+      return false
+    }
   }
 
   private async tick(): Promise<void> {

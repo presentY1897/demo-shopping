@@ -26,6 +26,7 @@ import { useDatabase } from '../support/database.js'
 import {
   createAttributeDefinition,
   createCategory,
+  createCategoryBranch,
   createProduct,
   createProductVariant,
   createSeller,
@@ -243,6 +244,87 @@ describe('F3 — autocomplete', () => {
     })
 
     expect(answer.suggestions).toEqual([])
+  })
+})
+
+describe('카테고리 필터는 가지 전체를 뜻한다 (TASK-0042 4.1)', () => {
+  /**
+   * A branch of its own, built inside the test rather than in `beforeEach`: the
+   * rest of this file uses two flat categories, and a nested one there would
+   * change every count already asserted.
+   *
+   * What is being measured is the thing TASK-0042 F1 asks for and that the
+   * scalar `categoryId` could not do — 최상위 카테고리로 들어가면 하위 상품이
+   * 전부 보인다 — together with the failure it must not turn into (F1b): a leaf
+   * still returns only its own.
+   */
+  async function branchWithListings(): Promise<{
+    root: number
+    child: number
+    leaf: number
+  }> {
+    const { root, child, leaf } = await createCategoryBranch(db, 'search')
+    const owner = await createUser(db, {})
+    const seller = await createSeller(db, { userId: owner.id })
+    const outbox = api.resolve<SearchOutboxService>(SearchOutboxService)
+    const prisma = api.resolve<PrismaService>(PrismaService)
+
+    for (const [categoryId, name] of [
+      [child.id, '중간 가지 상품'],
+      [leaf.id, '잎 상품 하나'],
+      [leaf.id, '잎 상품 둘'],
+    ] as const) {
+      const product = await createProduct(db, {
+        sellerId: seller.id,
+        categoryId,
+        name,
+        status: 'ACTIVE',
+        minPrice: 50_000,
+      })
+
+      await createProductVariant(db, {
+        productId: product.id,
+        sellerId: seller.id,
+        price: 50_000,
+        stock: 3,
+        isActive: true,
+      })
+      await outbox.publish(prisma, product.id, 'UPSERT')
+    }
+
+    await indexer().drain()
+    await settled()
+
+    return { root: root.id, child: child.id, leaf: leaf.id }
+  }
+
+  it('returns everything under a top-level category (F1)', async () => {
+    const { root } = await branchWithListings()
+    const answer = await search(`?categoryId=${String(root)}`)
+
+    // Nothing hangs on the root itself. Filtering the scalar would answer zero
+    // here, which reads as an empty catalogue rather than as a wrong filter.
+    expect(answer.items.map((item) => item.name).sort()).toEqual([
+      '잎 상품 둘',
+      '잎 상품 하나',
+      '중간 가지 상품',
+    ])
+  })
+
+  it('returns only its own from a leaf (F1b)', async () => {
+    const { leaf } = await branchWithListings()
+    const answer = await search(`?categoryId=${String(leaf)}`)
+
+    expect(answer.items.map((item) => item.name).sort()).toEqual(['잎 상품 둘', '잎 상품 하나'])
+  })
+
+  it('reports each hit under its own category, not under the one asked for', async () => {
+    const { root, leaf } = await branchWithListings()
+    const answer = await search(`?categoryId=${String(root)}`)
+
+    // The scalar survives for exactly this: a card links to one category page,
+    // and the lineage cannot say which one.
+    expect(answer.items.filter((item) => item.categoryId === leaf)).toHaveLength(2)
   })
 })
 

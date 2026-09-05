@@ -17,7 +17,11 @@ import { APP_CONFIG } from '../../src/config/app-config.js'
 
 import type { SearchIndex } from '../../src/search/search-index.js'
 import { SEARCH_INDEX } from '../../src/search/search-index.js'
-import { SearchIndexerService } from '../../src/search/search-indexer.service.js'
+import { DOCUMENT_VERSION } from '../../src/search/search-document.js'
+import {
+  DOCUMENT_VERSION_KEY,
+  SearchIndexerService,
+} from '../../src/search/search-indexer.service.js'
 import { SearchOutboxService } from '../../src/search/search-outbox.service.js'
 import { PrismaService } from '../../src/prisma/prisma.service.js'
 import { useApiApp } from '../support/api-app.js'
@@ -312,6 +316,69 @@ describe('F5 · F5b · F5c — rebuilding', () => {
     // The same promise, so the same count — three separate rebuilds would each
     // read the whole catalogue and write it back over the others.
     expect([first, second, third]).toEqual([2, 2, 2])
+  })
+})
+
+describe('문서 형식이 바뀌면 스스로 다시 색인한다 (TASK-0042 4.1)', () => {
+  /**
+   * The failure this guards against is silent and total.
+   *
+   * A search engine has no schema. An index full of documents written before a
+   * field existed answers every query — quickly, and with nothing, because the
+   * filter names a field those documents do not have. `/health` stays green, the
+   * logs stay quiet, and the catalogue simply looks empty to anybody who clicks
+   * a category. Which is how `categoryIds` would have shipped.
+   */
+  async function version(): Promise<string | null> {
+    const held = await api
+      .resolve<PrismaService>(PrismaService)
+      .appMeta.findUnique({ where: { key: DOCUMENT_VERSION_KEY } })
+
+    return held?.value ?? null
+  }
+
+  it('rebuilds and records the shape when nothing has recorded one', async () => {
+    await listing({ name: '형식 갱신' })
+    await indexer().drain()
+    await settled()
+
+    expect(await version()).toBeNull()
+    expect(await indexer().ensureCurrentShape()).toBe(true)
+    await settled()
+
+    expect(await version()).toBe(String(DOCUMENT_VERSION))
+    expect(await search('형식')).toHaveLength(1)
+  })
+
+  it('does nothing the second time, so a boot is not a full read', async () => {
+    await listing()
+    await indexer().ensureCurrentShape()
+
+    expect(await indexer().ensureCurrentShape()).toBe(false)
+  })
+
+  it('rebuilds again when the recorded shape is an older one', async () => {
+    const prisma = api.resolve<PrismaService>(PrismaService)
+
+    await listing({ name: '옛 형식' })
+    await prisma.appMeta.upsert({
+      where: { key: DOCUMENT_VERSION_KEY },
+      create: { key: DOCUMENT_VERSION_KEY, value: '1' },
+      update: { value: '1' },
+    })
+
+    expect(await indexer().ensureCurrentShape()).toBe(true)
+    await settled()
+
+    expect(await version()).toBe(String(DOCUMENT_VERSION))
+    expect(await search('옛')).toHaveLength(1)
+  })
+
+  it('leaves an empty catalogue recorded as current', async () => {
+    // Nothing stale can be in an index with nothing in it, and recording that
+    // keeps a fresh deployment from reading the whole table on every boot.
+    expect(await indexer().ensureCurrentShape()).toBe(true)
+    expect(await version()).toBe(String(DOCUMENT_VERSION))
   })
 })
 
