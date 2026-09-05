@@ -20,6 +20,7 @@ export const healthOk = defineFixture(healthResponseSchema, {
   searchIndex: { pending: 0, lastRunAt: '2026-09-05T00:00:00.000Z', oldestPendingAt: null },
   reservationExpiry: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', releasedCount: 0 },
   paymentReconcile: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', resolvedCount: 0 },
+  paymentStraggler: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', fixedCount: 0 },
   paymentWebhook: { lastReceivedAt: '2026-09-05T00:00:00.000Z' },
 })
 
@@ -37,6 +38,7 @@ export const healthDegraded = defineFixture(healthResponseSchema, {
   searchIndex: { pending: 0, lastRunAt: '2026-09-05T00:00:00.000Z', oldestPendingAt: null },
   reservationExpiry: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', releasedCount: 0 },
   paymentReconcile: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', resolvedCount: 0 },
+  paymentStraggler: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', fixedCount: 0 },
   paymentWebhook: { lastReceivedAt: '2026-09-05T00:00:00.000Z' },
 })
 
@@ -58,5 +60,6 @@ export const healthSearchIndexing = defineFixture(healthResponseSchema, {
   searchIndex: { pending: 0, lastRunAt: '2026-09-05T00:00:00.000Z', oldestPendingAt: null },
   reservationExpiry: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', releasedCount: 0 },
   paymentReconcile: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', resolvedCount: 0 },
+  paymentStraggler: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', fixedCount: 0 },
   paymentWebhook: { lastReceivedAt: '2026-09-05T00:00:00.000Z' },
 })

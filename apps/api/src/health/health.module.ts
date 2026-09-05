@@ -9,6 +9,7 @@ import { HealthController } from './health.controller.js'
 import { HEALTH_INDICATORS } from './health-indicator.js'
 import { HealthService } from './health.service.js'
 import { PaymentReconcileHealthIndicator } from './payment-reconcile.health-indicator.js'
+import { PaymentStragglerHealthIndicator } from './payment-straggler.health-indicator.js'
 import { PaymentWebhookReporter } from './payment-webhook.reporter.js'
 import { ReservationExpiryHealthIndicator } from './reservation-expiry.health-indicator.js'
 import { SearchHealthIndicator } from './search.health-indicator.js'
@@ -23,6 +24,7 @@ import { SearchWarmupService } from './search-warmup.service.js'
     SearchHealthIndicator,
     ReservationExpiryHealthIndicator,
     PaymentReconcileHealthIndicator,
+    PaymentStragglerHealthIndicator,
     DemoCleanupReporter,
     SearchIndexReporter,
     // 지표가 아니라 보고자다 — 웹훅이 한 건도 안 온 것은 고장이 아니라서 전체
@@ -48,12 +50,17 @@ import { SearchWarmupService } from './search-warmup.service.js'
         // 대사가 멈추면 결과를 모르는 결제가 갇히고, 그 사람은 다시 결제할 수도
         // 없다 (TASK-0056 · D-220). 여기서도 아무것도 실패하지 않는 것이 위험이다.
         paymentReconcile: PaymentReconcileHealthIndicator,
-      ) => [database, search, reservationExpiry, paymentReconcile],
+        // 낙오 배치가 멈추면 돈을 낸 사람의 주문이 영원히 「결제 대기」로 남고,
+        // 승인만 된 결제가 그 사람의 카드 한도를 영영 문다 (TASK-0057 · D-221).
+        // 여기서도 아무것도 실패하지 않는 것이 위험이다.
+        paymentStraggler: PaymentStragglerHealthIndicator,
+      ) => [database, search, reservationExpiry, paymentReconcile, paymentStraggler],
       inject: [
         DatabaseHealthIndicator,
         SearchHealthIndicator,
         ReservationExpiryHealthIndicator,
         PaymentReconcileHealthIndicator,
+        PaymentStragglerHealthIndicator,
       ],
     },
   ],

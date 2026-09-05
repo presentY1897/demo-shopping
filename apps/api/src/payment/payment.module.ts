@@ -8,6 +8,7 @@ import { PrismaModule } from '../prisma/prisma.module.js'
 import { PaymentController } from './payment.controller.js'
 import { PaymentProviderRegistry } from './payment-registry.js'
 import { PaymentReconcileService } from './payment-reconcile.service.js'
+import { PaymentStragglerService } from './payment-straggler.service.js'
 import { PaymentService } from './payment.service.js'
 import { PaymentWebhookService } from './payment-webhook.service.js'
 import { createTossClient, TOSS_CLIENT } from './toss.client.js'
@@ -35,6 +36,10 @@ import { VirtualCardService } from './virtual-card.service.js'
     // 웹훅을 놓쳐도 결제는 끝나야 한다 (TASK-0056 F6). 부르는 쪽이 없는 것이
     // 정상이다 — 자기 주기로 돌고, 멈춘 것은 `/health` 가 말한다.
     PaymentReconcileService,
+    // 낙오된 결제를 끝낸다 (TASK-0057 F2 · F6 · D-221). 대사와 나란히 서지만
+    // **찾는 것이 반대 방향으로 둘**이다 — 매입이 끝났는데 주문이 안 끝난 건은
+    // 마저 끝내고, 매입 없이 남은 승인은 되감는다.
+    PaymentStragglerService,
     // 웹훅과 대사는 **같은 문을 쓴다** (`PaymentService.resolveUnresolved`).
     // 둘이 하는 일이 「저쪽에 다시 물어본다」로 같기 때문이고, 다른 것은 계기뿐이다
     // — 이쪽은 신호가 와서, 저쪽은 주기가 돌아서.
@@ -50,7 +55,13 @@ import { VirtualCardService } from './virtual-card.service.js'
       useFactory: (config: AppConfig) => createTossClient(config.toss),
     },
   ],
-  exports: [PaymentProviderRegistry, PaymentService, PaymentReconcileService, VirtualCardService],
+  exports: [
+    PaymentProviderRegistry,
+    PaymentService,
+    PaymentReconcileService,
+    PaymentStragglerService,
+    VirtualCardService,
+  ],
 })
 export class PaymentModule implements OnModuleInit {
   constructor(

@@ -883,6 +883,15 @@ describe('승인 실패 (F4)', () => {
     )
 
     expect(blocked).toEqual({ status: 409, code: 'PAYMENT_AWAITING_RESULT' })
+
+    // **성공 주소를 새로고침해도 같은 답이다.** 「이미 처리된 결제예요」로 접으면
+    // 끝나지도 않은 결제를 끝났다고 말하는 것이고, 그 문장을 읽은 사람은 주문이
+    // 됐다고 믿는다 — 되지 않았다.
+    const refreshed = await failure(
+      confirmCall(paymentId, { paymentKey: WIDGET_KEY, amount: placed.paidAmount }),
+    )
+
+    expect(refreshed).toEqual({ status: 409, code: 'PAYMENT_AWAITING_RESULT' })
     // 막혔을 뿐 아무것도 만들어지지 않았다 — 결제 행은 여전히 그 하나다.
     expect(await paymentCountOf(placed.orderId)).toBe(1)
     expect((await readPayment(paymentId)).status).toBe('UNRESOLVED')

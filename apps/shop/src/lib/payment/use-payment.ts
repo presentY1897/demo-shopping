@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { placeOrder } from '@/lib/checkout/checkout-api'
 
+import { awaitsResult, refusedWhileAwaiting } from './awaiting-result'
 import { availableCredit } from './cards'
 import type { PaymentMethod } from './methods'
 import type { IssuedCard } from './payment-api'
@@ -43,6 +44,20 @@ import { openTossCheckout, tossClientKey, tossReturnUrls } from './toss'
  *
  * 그 구분이 이 TASK 의 핵심이다 (4.2). 결제창이 성공했다고 여기서 완료로 옮기면,
  * 창을 닫고 돌아온 사람이 「결제 완료」를 본 채로 결제되지 않은 주문을 갖는다.
+ *
+ * ## 끝나지 않은 결제가 있다 (TASK-0057 F5 · D-220)
+ *
+ * 승인의 결말은 셋이다 — 승인·거절·**답 없음**. 세 번째가 `UNRESOLVED` 이고, 그것은
+ * 실패가 아니라 **아직 정해지지 않은 상태**다. 여기서 두 가지가 따라온다.
+ *
+ * 1. 매입하지 않는다. 승인됐는지 모르는 결제를 확정할 수는 없다.
+ * 2. 재시도를 권하지 않는다. 서버가 그 주문의 새 결제를 막아 두었고
+ *    (`PAYMENT_AWAITING_RESULT`), 그 막음이 옳다 — 저쪽에 승인이 나 있었다면 다시
+ *    결제한 사람의 카드에서 두 번 빠진다.
+ *
+ * **그 상태가 이 훅에 닿는 길이 둘이다.** 승인 응답이 그렇게 오거나, 새로고침한
+ * 사람이 다시 눌러 `POST /payments` 가 409 로 막히거나 — 둘은 같은 사실의 앞뒤이므로
+ * 화면에서도 같은 자리(`awaiting_result`)로 모인다.
  */
 
 /**
@@ -64,9 +79,14 @@ export const paymentSteps = [
 export type PaymentStep = (typeof paymentSteps)[number]
 
 /**
- * 결제가 끝나지 못한 이유. 넷을 나눠 두는 이유는 **다음에 할 일이 서로 다르기**
- * 때문이다 — 하나로 뭉치면 「결제할 수 없습니다」가 되고, 그 문장은 넷 중 어느
- * 경우에도 다음 행동을 알려 주지 못한다.
+ * 결제가 끝나지 못한 이유. 나눠 두는 이유는 **다음에 할 일이 서로 다르기**
+ * 때문이다 — 하나로 뭉치면 「결제할 수 없습니다」가 되고, 그 문장은 어느 경우에도
+ * 다음 행동을 알려 주지 못한다.
+ *
+ * **하나는 나머지와 종류가 다르다.** `awaiting_result` 를 뺀 넷은 전부 **끝난 일**이라
+ * 다음 차례가 사람에게 있지만, 그것은 아직 끝나지 않았고 다음 차례가 **우리에게**
+ * 있다 (D-220). 그래서 그 하나에만 「다시 결제하기」가 없고, 그 갈림을
+ * {@link offersRetry} 가 쥔다.
  */
 export const paymentRefusals = [
   /** 고른 카드의 사용 가능액이 결제할 금액보다 적었다. 다른 카드면 된다. */
@@ -80,8 +100,31 @@ export const paymentRefusals = [
    * 사람이 할 일은 같다.
    */
   'declined',
-  /** 요청이 오가지 못했다. 결제가 됐는지 안 됐는지를 **우리도 모른다.** */
+  /**
+   * 요청이 오가지 못했다. 결제가 됐는지 안 됐는지를 **우리도 모른다.**
+   *
+   * `awaiting_result` 와 헷갈리기 쉬운데, 갈리는 것은 「누가 모르는가」다. 여기서는
+   * **우리 API 의 대답조차 못 받았다** — 서버가 그 요청을 받았는지도 모르므로 지금
+   * 아는 사람이 아무도 없고, 그래서 다시 눌러 보는 것이 맞는 다음 행동이다. 저쪽이
+   * 답을 못 준 것을 **서버가 알고 있는** 경우가 `awaiting_result` 이고, 그때는 그
+   * 재시도를 서버가 막는다.
+   */
   'unreachable',
+  /**
+   * **승인됐는지 우리가 모른다 — 확인 중이다** (D-220).
+   *
+   * 결제사에 닿지 못해 승인 여부가 정해지지 않은 결제(`UNRESOLVED`)가 이 주문에
+   * 걸려 있다. 위의 셋과 갈리는 것은 **끝났는가**다: 한도 초과도, 거절도, 오가지
+   * 못한 요청도 끝난 일이라 다음 차례가 사람에게 있지만, 이것은 아직 끝나지
+   * 않았고 다음 차례가 **대사에게** 있다. 이름이 「모른다」가 아니라 「결과를
+   * 기다린다」인 이유가 그것이고, 서버가 새 결제를 막을 때 쓰는 코드
+   * (`PAYMENT_AWAITING_RESULT`)와 같은 말이다.
+   *
+   * 그래서 할 말도 반대다. 나머지는 「다시 해 보세요」로 끝나지만 여기서 다시
+   * 하는 것은 **정확히 하지 말아야 할 일**이다 — 저쪽에 승인이 나 있었다면 카드에서
+   * 두 번 빠지고, 그 두 번째는 우리가 만든 것이다.
+   */
+  'awaiting_result',
   /**
    * 토스 결제창을 열지 못했다 (TASK-0055).
    *
@@ -234,11 +277,21 @@ export function usePayment(
             return
           }
 
+          // **`FAILED` 가 아니라고 승인된 것이 아니다** (D-220). 승인됐는지 모르는
+          // 결제는 매입할 수 없고, 걸어 봐야 409 가 하나 더 늘 뿐이다 — 그리고 그
+          // 409 는 `catch` 에서 「잠시 후 다시 결제해 주세요」가 되어, 저쪽에 승인이
+          // 나 있었을지 모르는 사람에게 두 번째 결제를 권하는 문장이 된다.
+          if (awaitsResult(authorized)) {
+            setState({ refusal: 'awaiting_result', shortfall: null, status: 'failed' })
+
+            return
+          }
+
           setState({ status: 'running', step: 'capturing' })
           await capturePayment(authorized.id)
           setState({ status: 'paid', orderNumber: placed.orderNumber })
-        } catch {
-          setState({ status: 'failed', refusal: 'unreachable', shortfall: null })
+        } catch (error: unknown) {
+          setState({ refusal: refusalOfFailure(error), shortfall: null, status: 'failed' })
         }
       }
 
@@ -270,8 +323,8 @@ export function usePayment(
         try {
           setState({ status: 'running', step: 'starting' })
           opened = await startTossPayment(orderId)
-        } catch {
-          setState({ status: 'failed', refusal: 'unreachable', shortfall: null })
+        } catch (error: unknown) {
+          setState({ refusal: refusalOfFailure(error), shortfall: null, status: 'failed' })
 
           return
         }
@@ -337,4 +390,35 @@ function refusalOf(card: IssuedCard, amount: number): PaymentState {
   if (shortfall > 0) return { refusal: 'exceeds_credit', shortfall, status: 'failed' }
 
   return { refusal: 'declined', shortfall: null, status: 'failed' }
+}
+
+/**
+ * 던져진 것을 사람에게 할 말로 옮긴다.
+ *
+ * **알아보는 판단은 `awaiting-result.ts` 의 것이다.** 결제창에서 돌아온 화면도 같은
+ * 코드를 읽어야 하고(`toss-return.ts` 의 `confirmFailureOf`), 그 판단이 두 벌이면
+ * 한쪽의 오타가 아무 데도 드러나지 않는다 — 화면은 조용히 「잠시 후 다시 결제해
+ * 주세요」로 되돌아가고, 그것이 이 갈래에서 하지 말아야 할 바로 그 말이다.
+ *
+ * 여기 남은 것은 **그 사실을 이 화면의 어휘로 옮기는 일**뿐이다. 모르는 거절은
+ * `unreachable` 로 접힌다 — 이름을 아는 것만 이름값을 한다.
+ */
+function refusalOfFailure(error: unknown): PaymentRefusal {
+  return refusedWhileAwaiting(error) ? 'awaiting_result' : 'unreachable'
+}
+
+/**
+ * 이 실패 뒤에 「다시 결제하기」를 줘도 되는가.
+ *
+ * **누르면 409 가 돌아올 버튼은 주지 않는다.** 결과를 확인하는 중인 주문에는 서버가
+ * 새 결제를 막아 두었고(`PAYMENT_AWAITING_RESULT`), 그 버튼이 하는 일은 한 사람을
+ * 두 번 실패시키는 것뿐이다. 그리고 **그 막음이 옳다** — 저쪽에 승인이 나 있었다면
+ * 다시 결제한 사람의 카드에서 두 번 빠진다.
+ *
+ * `toss-return.ts` 에 같은 이름의 함수가 있고 같은 것을 지킨다. 한곳으로 합치지 않은
+ * 이유는 두 화면이 세는 실패의 어휘가 다르기 때문이다 — 합치려면 그 둘을 먼저
+ * 합쳐야 하고, 그것은 「다시 결제해도 되는가」와 상관없는 변경이다.
+ */
+export function offersRetry(refusal: PaymentRefusal): boolean {
+  return refusal !== 'awaiting_result'
 }

@@ -36,10 +36,11 @@ import type { PaymentStatus } from '@shopping/shared'
  *
  * 눈여겨 볼 두 줄.
  *
- * - `AUTHORIZED` 에서 나가는 화살표는 `PAID` 하나뿐이다. 승인만 된 건을 무르는
- *   것은 환불이 아니라 **승인 취소**이고, 프로바이더 API 도 수수료도 다르다
- *   (`packages/shared/src/api/payments.ts` 의 `paymentStatuses` 주석). 설계
- *   문서가 그 화살표를 그리지 않았으므로 여기에도 없다.
+ * - `AUTHORIZED` 에서 `CANCELED` 로 가는 화살표는 **환불이 아니라 승인 취소**다
+ *   (D-221). 매입 전이라 돈이 아직 우리 쪽으로 오지 않았고, 프로바이더 API 도
+ *   (`cancel` 대 `refund`) 수수료도 다르며 **부분이 없다** — 매입한 적이 없으니
+ *   나눌 것이 없어 `PARTIAL_CANCELED` 로는 갈 수 없다. 그래서 `refundDecision` 은
+ *   `AUTHORIZED` 를 여전히 거절한다: 환불할 돈이 아직 우리에게 없다.
  * - `PARTIAL_CANCELED → PARTIAL_CANCELED` 는 오타가 아니다. 부분 환불은 여러 번
  *   일어나고(F3), 자기 자신으로 가는 화살표가 없으면 **두 번째 환불이 정의 밖
  *   전이가 된다.**
@@ -49,7 +50,10 @@ export const paymentTransitions: Readonly<Record<PaymentStatus, readonly Payment
   // 대사만 여는 두 화살표다 (D-220). 매입으로 바로 가지 않고 `AUTHORIZED` 를
   // 거치는 이유는 「승인된 결제를 매입한다」가 한 곳에만 있게 하기 위해서다.
   UNRESOLVED: ['AUTHORIZED', 'FAILED'],
-  AUTHORIZED: ['PAID'],
+  // 매입, 또는 **매입 없이 되감기** (D-221). 뒤쪽은 배치만 연다 — 승인만 받고
+  // 사라진 결제는 예약이 TTL 로 풀린 뒤에도 카드에 돈을 잡아 두고, 그것을 풀
+  // 방법이 없으면 사람의 한도가 영영 물린다.
+  AUTHORIZED: ['PAID', 'CANCELED'],
   PAID: ['PARTIAL_CANCELED', 'CANCELED'],
   PARTIAL_CANCELED: ['PARTIAL_CANCELED', 'CANCELED'],
   CANCELED: [],

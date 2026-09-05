@@ -132,6 +132,9 @@ function seedLedgers(
 /** {@link declineNextTossApproval} 이 세우고, 그것이 만든 거절이 내린다. */
 let declineNextToss = false
 
+/** {@link unresolveNextApproval} 이 세우고, 그것이 만든 `UNRESOLVED` 가 내린다. */
+let unresolveNext = false
+
 let store: PaymentStore = {
   cards: shopperCards.cards,
   issued: 0,
@@ -410,6 +413,11 @@ export const paymentHandlers: readonly RequestHandler[] = [
    * 이미 승인됐거나 실패한 결제를 다시 승인하는 것은 409 다. 정의된 전이가 아니고
    * (`payment-rules.ts` 의 `paymentTransitions`), 그때 화면이 할 일은 새 결제를
    * 여는 것이지 같은 결제를 다시 미는 것이 아니다.
+   *
+   * **결말이 셋이다** (D-220). 승인·거절 말고 **답 없음**(`UNRESOLVED`)이 있고,
+   * {@link unresolveNextApproval} 이 그것을 만든다 — 서버의 `authorize` 가 거절이
+   * 아닌 실패를 전부 그 상태로 보내므로(`landing`), 이 라우트가 그 몸통을 낼 수
+   * 있다는 것 자체가 계약이다.
    */
   http.post(mockPaths.paymentAuthorize, ({ params }) =>
     answering(() => {
@@ -417,6 +425,14 @@ export const paymentHandlers: readonly RequestHandler[] = [
 
       if (row.payment.status !== 'READY') {
         throw new MockApiError(409, '이미 처리된 결제예요.')
+      }
+
+      // 카드 판단보다 **앞**이다. 닿지 못한 요청은 저쪽이 무엇을 볼지 알기 전에
+      // 끊긴 것이라, 한도가 남았는지 여부와 상관없이 결말이 정해지지 않는다.
+      if (unresolveNext) {
+        unresolveNext = false
+
+        return put({ ...row, payment: { ...row.payment, status: 'UNRESOLVED' } })
       }
 
       if (!approves(row.cardId, row.payment.authorizedAmount)) {
@@ -472,6 +488,12 @@ export const paymentHandlers: readonly RequestHandler[] = [
    *
    * 거절은 여기서도 **200 이다** (TASK-0052 4.3). 카드사가 받아 주지 않은 것은
    * 정상적인 대답이고, {@link declineNextTossApproval} 이 그것을 만든다.
+   *
+   * **결말은 여기서도 셋이다** (D-220). 서버의 `confirmToss` 는 대조를 마친 뒤
+   * `authorize` 를 그대로 지나므로, 이 라우트의 응답도 승인·거절·**답 없음**
+   * (`UNRESOLVED`)으로 갈린다 — {@link unresolveNextApproval} 이 그것을 만든다.
+   * 실제로 그 상태를 만드는 프로바이더가 토스뿐이라, 이 라우트가 그 손잡이의
+   * **진짜 자리**다.
    */
   http.post(mockPaths.paymentTossConfirm, ({ params, request }) =>
     answering(async () => {
@@ -482,6 +504,18 @@ export const paymentHandlers: readonly RequestHandler[] = [
         throw new MockApiError(400, '토스로 시작한 결제가 아니에요.', {
           code: 'PAYMENT_PROVIDER_MISMATCH',
           field: 'provider',
+        })
+      }
+
+      // **「모른다」를 「이미 처리됐다」로 접지 않는다** (D-220). 둘 다 409 지만 사람이
+      // 읽을 문장이 반대다 — 앞은 「확인 중이니 기다려 주세요」이고 뒤는 「이미
+      // 끝났어요」다. `confirmDecision` 이 같은 이유로 이 갈래를 앞에 두므로 순서까지
+      // 같게 둔다. 코드는 새 결제를 막을 때와 **같은 것**이다: 화면이 두 자리를 같은
+      // 문장으로 답하게 하려는 것이 그 선택의 값이다.
+      if (row.payment.status === 'UNRESOLVED') {
+        throw new MockApiError(409, '앞선 결제의 결과를 확인하는 중이에요.', {
+          code: 'PAYMENT_AWAITING_RESULT',
+          field: 'status',
         })
       }
 
@@ -503,6 +537,14 @@ export const paymentHandlers: readonly RequestHandler[] = [
         declineNextToss = false
 
         return put({ ...row, payment: { ...row.payment, status: 'FAILED' } })
+      }
+
+      // 승인 라우트와 같은 손잡이를 본다. 서버에서 두 길이 같은 `authorize` 로
+      // 합쳐지므로, 대역에서 손잡이를 둘로 나누면 대역만 아는 구분이 하나 생긴다.
+      if (unresolveNext) {
+        unresolveNext = false
+
+        return put({ ...row, payment: { ...row.payment, status: 'UNRESOLVED' } })
       }
 
       return put({
@@ -530,6 +572,7 @@ export const paymentHandlers: readonly RequestHandler[] = [
  */
 export function resetPaymentStore(seed: CardList = shopperCards): void {
   declineNextToss = false
+  unresolveNext = false
   store = {
     cards: [...seed.cards],
     issued: 0,
@@ -553,4 +596,26 @@ export function resetPaymentStore(seed: CardList = shopperCards): void {
  */
 export function declineNextTossApproval(): void {
   declineNextToss = true
+}
+
+/**
+ * 다음 승인을 **결과를 모르는 것으로** 답한다 — `UNRESOLVED` 다. 한 번만 (D-220).
+ *
+ * {@link declineNextTossApproval} 과 같은 모양이고 같은 이유다: 거절도 답 없음도
+ * 오류가 아니라 **값**이라 200 과 함께 결제 몸통으로 오고, 그 몸통은 다른 응답과
+ * 똑같이 `defineFixture` 를 지나야 한다 (게이트 C2).
+ *
+ * **승인 라우트와 토스 승인 라우트 둘 다에 걸린다.** 서버에서 그 둘이 같은
+ * `authorize` 로 합쳐지기 때문이고(`confirmToss` 가 대조를 마친 뒤 그것을 부른다),
+ * 손잡이를 둘로 나누면 대역만 아는 구분이 하나 생긴다.
+ *
+ * **실제로 이 결말을 내는 것은 토스뿐이다.** `virtual-card.provider.ts` 가 `unknown`
+ * 을 내지 않아서인데 — 우리 프로세스 안에서 끝나므로 「승인됐는지 모른다」가 성립하지
+ * 않는다 — 그래도 가상 카드 쪽 승인 라우트에도 걸어 두는 이유는, 재는 것이
+ * **프로바이더의 사정이 아니라 화면의 가정**이기 때문이다: 「`FAILED` 가 아니면
+ * 승인됐다」로 읽는 화면은 그 상태가 오는 날 매입을 걸고, 그 매입은 409 로 거절되어
+ * 「잠시 후 다시 결제해 주세요」가 된다. 그 가정을 재려면 그 몸통이 있어야 한다.
+ */
+export function unresolveNextApproval(): void {
+  unresolveNext = true
 }

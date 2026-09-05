@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
+import { awaitsResult } from '@/lib/payment/awaiting-result'
 import { capturePayment, confirmTossPayment } from '@/lib/payment/payment-api'
 import type { TossConfirmFailure, TossSuccessReturn } from '@/lib/payment/toss-return'
 import {
@@ -32,6 +33,14 @@ import type { TossSuccessMessages } from '@/messages'
  *
  * **1이 실패하면 2를 부르지 않는다.** 승인되지 않은 결제를 매입하려 들면 409 가
  * 하나 더 늘 뿐이고, 그 두 번째 실패가 로그에서 첫 번째 원인을 덮는다.
+ *
+ * **「승인되지 않았다」에는 거절 말고 하나가 더 있다** (TASK-0057 F5 · D-220).
+ * `confirmToss` 는 서버 안에서 `authorize` 를 지나므로 그 응답이 `UNRESOLVED` —
+ * 승인됐는지 우리가 모르는 상태 — 로 올 수 있고, 이 화면이 실제로 그것을 만나는
+ * 유일한 경로다(가상 카드는 그 결말을 내지 못한다). 그때 매입을 걸면 409 가 돌아와
+ * 「카드 승인은 끝났는데 확정을 마치지 못했어요」가 뜨는데, 그것은 **사실이 아니다** —
+ * 승인이 끝났는지를 우리가 모르고, 그 문장을 읽은 사람은 「결제는 됐구나」로
+ * 이해한다.
  *
  * **`orderId` 는 우리 결제 id 다** (4.3). 토스가 그 이름으로 부르는 값에 우리가
  * `Payment.id` 를 넣어 보냈으므로, 돌아온 것도 결제 id 다 — 주문 id 가 아니다.
@@ -94,6 +103,15 @@ export function TossSuccessScreen({ messages }: TossSuccessScreenProps) {
         return
       }
 
+      // 결말이 정해지지 않은 결제도 매입할 것이 없다 (D-220). 승인됐는지 모르는
+      // 것을 확정할 수는 없고, 걸어 봐야 409 가 하나 더 늘면서 화면이 「승인은
+      // 끝났다」는 틀린 말을 하게 된다.
+      if (awaitsResult(confirmed)) {
+        setState({ failure: 'awaiting_result', status: 'failed' })
+
+        return
+      }
+
       setState({ status: 'capturing' })
 
       try {
@@ -132,6 +150,21 @@ export function TossSuccessScreen({ messages }: TossSuccessScreenProps) {
         }
         description={messages.doneBody}
         title={messages.doneTitle}
+      />
+    )
+  }
+
+  // **확인 중은 사고가 아니다** (D-220). `ErrorState` 는 `role="alert"` 로 가로채
+  // 읽고 위험 색을 쓰는데, 그 둘이 여기서는 사실과 다른 말을 한다 — 결제가 실패한
+  // 것이 아니라 결말이 아직 정해지지 않은 것이고, 「실패했다」로 읽은 사람이 다음에
+  // 하는 일이 정확히 우리가 막으려는 것(다시 결제)이다. 실패 주소가 「창을 닫은
+  // 것」을 따로 그리는 것과 같은 판단이다.
+  if (state.status === 'failed' && state.failure === 'awaiting_result') {
+    return (
+      <EmptyState
+        action={<Escape checkoutId={checkoutId} failure={state.failure} messages={messages} />}
+        description={messages.failures.awaiting_result}
+        title={messages.awaitingTitle}
       />
     )
   }

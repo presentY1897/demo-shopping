@@ -20,6 +20,7 @@ import {
   sessionBuyer,
   shopperCheckout,
   shopperOrder,
+  unresolveNextApproval,
 } from '@shopping/api-mocks'
 import { DensityProvider } from '@shopping/ui/density'
 import { screen } from '@testing-library/react'
@@ -208,6 +209,108 @@ describe('승인이 안 되면 확정하지 않는다 (F4)', () => {
     expect(captured()).toBe(false)
     // **「다시 결제하기」를 주지 않는다.** 그 결제는 이미 끝났을 수 있고, 우리는 이
     // 응답만으로 성공인지 실패인지를 모른다 — 권하면 한 사람이 두 번 낸다.
+    expect(screen.queryByRole('link', { name: done.backToCheckout })).toBeNull()
+    expect(screen.getByRole('link', { name: done.backHome })).toBeVisible()
+  })
+
+  it('does not capture a payment whose approval never came back (D-220)', async () => {
+    const payment = await openTossPayment()
+
+    // **이 화면이 `UNRESOLVED` 를 만나는 진짜 경로다.** 서버의 `confirmToss` 는
+    // 대조를 마친 뒤 `authorize` 를 그대로 지나므로, 그 응답이 「답 없음」으로 올
+    // 수 있다 — 가상 카드는 그 결말을 내지 못하므로 토스만의 자리다.
+    unresolveNextApproval()
+
+    renderReturn(
+      TossSuccessPage,
+      returnUrl('/checkout/toss/success', {
+        amount: String(payment.authorizedAmount),
+        checkout: checkout.id,
+        orderId: payment.id,
+        paymentKey: PAYMENT_KEY,
+      }),
+    )
+
+    expect(await screen.findByText(done.awaitingTitle)).toBeVisible()
+    // 승인됐는지 모르는 결제를 확정할 수는 없다. 걸면 409 가 돌아오고, 그 409 가
+    // 화면에 「카드 승인은 끝났는데」라는 **틀린 말**을 시킨다.
+    expect(captured()).toBe(false)
+  })
+
+  it('does not claim the approval finished, because it does not know that', async () => {
+    const payment = await openTossPayment()
+
+    unresolveNextApproval()
+
+    renderReturn(
+      TossSuccessPage,
+      returnUrl('/checkout/toss/success', {
+        amount: String(payment.authorizedAmount),
+        checkout: checkout.id,
+        orderId: payment.id,
+        paymentKey: PAYMENT_KEY,
+      }),
+    )
+
+    expect(await screen.findByText(done.failures.awaiting_result)).toBeVisible()
+    // 「카드 승인은 끝났는데 확정을 마치지 못했어요」를 읽은 사람은 「결제는
+    // 됐구나」로 이해한다. 그것이 사실인지 우리는 모른다.
+    expect(screen.queryByText(done.failures.unsettled)).toBeNull()
+    expect(screen.queryByText(done.failedTitle)).toBeNull()
+  })
+
+  it('offers no way back to the checkout — that link would be refused', async () => {
+    const payment = await openTossPayment()
+
+    unresolveNextApproval()
+
+    renderReturn(
+      TossSuccessPage,
+      returnUrl('/checkout/toss/success', {
+        amount: String(payment.authorizedAmount),
+        checkout: checkout.id,
+        orderId: payment.id,
+        paymentKey: PAYMENT_KEY,
+      }),
+    )
+
+    await screen.findByText(done.awaitingTitle)
+
+    // 서버가 그 주문의 새 결제를 막아 두었다 (`PAYMENT_AWAITING_RESULT`). 돌아가는
+    // 길을 주는 것은 한 번 더 실패시키는 일이다.
+    expect(screen.queryByRole('link', { name: done.backToCheckout })).toBeNull()
+    expect(screen.getByRole('link', { name: done.backHome })).toBeVisible()
+  })
+
+  it('answers a refreshed return the same way, because the server names it (D-220)', async () => {
+    const payment = await openTossPayment()
+
+    // 승인이 끊긴 결제를 하나 만들어 두고, 성공 주소를 **다시 연다** — 새로고침이나
+    // 뒤로 가기가 정확히 이 경우다. 서버는 그것을 「이미 처리됐다」로 접지 않고
+    // 409 `PAYMENT_AWAITING_RESULT` 로 답한다: 새 결제를 막을 때와 같은 코드라,
+    // 화면은 두 자리를 같은 문장으로 답한다.
+    unresolveNextApproval()
+    await confirmTossPayment(payment.id, PAYMENT_KEY, payment.authorizedAmount)
+    sent = []
+
+    renderReturn(
+      TossSuccessPage,
+      returnUrl('/checkout/toss/success', {
+        amount: String(payment.authorizedAmount),
+        checkout: checkout.id,
+        orderId: payment.id,
+        paymentKey: PAYMENT_KEY,
+      }),
+    )
+
+    expect(await screen.findByText(done.awaitingTitle)).toBeVisible()
+    expect(screen.getByText(done.failures.awaiting_result)).toBeVisible()
+
+    // **「이미 처리된 결제예요」가 아니다.** 그 결제는 끝나지 않았고, 그 문장을 읽은
+    // 사람은 결제가 끝났다고 이해한다.
+    expect(screen.queryByText(done.failures.already_settled)).toBeNull()
+    expect(captured()).toBe(false)
+    // 서버가 그 주문의 다음 결제를 막아 두었다. 돌아가는 길을 주면 한 번 더 실패한다.
     expect(screen.queryByRole('link', { name: done.backToCheckout })).toBeNull()
     expect(screen.getByRole('link', { name: done.backHome })).toBeVisible()
   })

@@ -1057,8 +1057,21 @@ export interface PaymentMessages {
   readonly progress: Readonly<Record<PaymentStep, string>>
   /** 끝나지 못한 이유. `exceeds_credit` 은 모자란 금액 `{amount}` 를 받는다. */
   readonly refusals: Readonly<Record<PaymentRefusal, string>>
-  /** 실패해도 예약은 유지된다 (4.3). 어느 실패에나 같이 붙는 한 문장이다. */
+  /** 실패해도 예약은 유지된다 (4.3). **다시 결제할 수 있는** 실패에 붙는다. */
   readonly holdKept: string
+  /**
+   * 「확인 중」에 붙는 한 문장 (TASK-0057 F5 · D-220).
+   *
+   * **{@link holdKept} 와 나눈 것은 뒤 절반이 정반대이기 때문이다.** 저쪽은 「카드를
+   * 바꿔 다시 결제할 수 있어요」로 끝나는데, 결과를 확인하는 중인 주문에서 다시
+   * 결제하는 것은 정확히 하지 말아야 할 일이다 — 문장 하나로 붙여 두면 화면은 재고가
+   * 남아 있다는 참말과 다시 결제하라는 거짓말을 함께 하게 된다.
+   *
+   * 그래서 이 문장이 답할 것은 셋이다: **얼마나 기다리는가**(대사가 1분마다 돈다),
+   * **그동안 재고는 어떻게 되는가**(그대로다), **그다음 무엇을 하는가**(새로고침).
+   * 버튼을 주지 않는 화면일수록 다음 행동을 문장이 말해야 한다.
+   */
+  readonly awaitingHoldKept: string
   readonly retry: string
   readonly paidTitle: string
   readonly paidBody: string
@@ -1100,6 +1113,12 @@ export interface TossOptionMessages {
  * **`failures` 의 키가 유니온이다.** 승인이 끝나지 못하는 경우가 하나 늘면 여기가
  * 비는 것이 아니라 `pnpm typecheck` 이 깨진다 — 결제 도중에 아무 말도 못 듣는 것이
  * 가장 나쁜 실패이고, 하필 그 자리가 돈이 오간 뒤다.
+ *
+ * **`awaiting_result` 의 문장은 주문서의 것과 같은 사실을 말하되 끝이 다르다**
+ * (TASK-0057 F5). 다시 결제하지 말 것 · 1분마다 자동 확인 · 늦어도 2분 · 재고는
+ * 그대로 — 여기까지는 같다. 다른 것은 **사람이 서 있는 자리**다: 주문서에 있는
+ * 사람에게는 「잠시 뒤 새로고침」이 다음 행동이지만, 이 화면을 새로고침하면 승인이
+ * 다시 걸려 409 로 끝난다. 그래서 이쪽의 다음 행동은 주문 내역이다.
  */
 export interface TossSuccessMessages {
   readonly title: string
@@ -1109,6 +1128,15 @@ export interface TossSuccessMessages {
   readonly doneTitle: string
   readonly doneBody: string
   readonly failedTitle: string
+  /**
+   * 「확인 중」의 제목 (TASK-0057 F5 · D-220).
+   *
+   * **{@link failedTitle} 을 쓰지 않는다.** 「결제를 마치지 못했어요」는 끝난 일을
+   * 가리키는데 이 결제는 끝나지 않았고, 실패로 읽은 사람이 다음에 하는 일이 정확히
+   * 우리가 막으려는 것(다시 결제)이다. 실패 주소가 「창을 닫은 것」에 다른 제목을
+   * 주는 것과 같은 판단이다 ({@link TossFailureMessages.titles}).
+   */
+  readonly awaitingTitle: string
   readonly failures: Readonly<Record<TossConfirmFailure, string>>
   /** 다시 결제하러 주문서로. 그럴 수 있는 실패에만 나온다 (`offersRetry`). */
   readonly backToCheckout: string

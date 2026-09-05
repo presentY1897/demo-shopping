@@ -17,6 +17,7 @@ import {
   sessionBuyer,
   shopperCheckout,
   shopperOrder,
+  unresolveNextApproval,
 } from '@shopping/api-mocks'
 import { DENSITY_LEVELS } from '@shopping/ui'
 import { DensityProvider } from '@shopping/ui/density'
@@ -103,8 +104,12 @@ async function renderCheckoutWithToss(width: number = VIEWPORTS.desktop): Promis
   await screen.findByText(pay.toss.noticeTitle)
 }
 
-function renderReturn(page: () => React.ReactNode, href: string): void {
-  stubViewport(VIEWPORTS.desktop)
+function renderReturn(
+  page: () => React.ReactNode,
+  href: string,
+  width: number = VIEWPORTS.desktop,
+): void {
+  stubViewport(width)
   navigation.start(href)
 
   renderWithAuth(<DensityProvider>{page()}</DensityProvider>, { session: sessionBuyer })
@@ -196,6 +201,38 @@ describe('돌아온 화면 (P2 · P5)', () => {
 
     await screen.findByText(copy.tossSuccess.failures.amount_mismatch)
     await expectNoViolations()
+  })
+
+  /**
+   * 확인 중 — **실패가 아닌 끝** (TASK-0057 F5 · D-220).
+   *
+   * 이 상태가 새로 들여오는 것은 그리는 **껍데기가 다르다**는 점이다. 나머지
+   * 실패는 `ErrorState`(`role="alert"`, 위험 색)로 그려지는데 이것만 `EmptyState`
+   * (`role="status"`)로 그려진다 — 사고가 아니므로 가로채 읽을 이유가 없고, 그
+   * 갈림이 접근성 트리에서 실제로 보이는지를 밀도 3단계와 좁은 뷰포트에서 잰다.
+   */
+  describe('확인 중인 결제가 떠 있는 화면', () => {
+    async function awaitingResult(width: number = VIEWPORTS.desktop): Promise<void> {
+      const href = await successHref()
+
+      // 토스만 이 결말을 낸다 — 서버의 `confirmToss` 가 `authorize` 를 지나기 때문이다.
+      unresolveNextApproval()
+      renderReturn(TossSuccessPage, href, width)
+
+      await screen.findByText(copy.tossSuccess.awaitingTitle)
+    }
+
+    it.each(DENSITY_LEVELS)('passes at density %s', async (density) => {
+      window.localStorage.setItem('shopping.density', String(density))
+
+      await awaitingResult()
+      await expectNoViolations()
+    })
+
+    it('passes on a phone (P3)', async () => {
+      await awaitingResult(VIEWPORTS.mobile)
+      await expectNoViolations()
+    })
   })
 
   it('passes on the closed-window screen', async () => {

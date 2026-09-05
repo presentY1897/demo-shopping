@@ -53,7 +53,12 @@ export function paymentStatusFromToss(status: TossStatus): PaymentStatus {
   return STATUS_MAP[status]
 }
 
-export type TossConfirmRefusal = 'provider_mismatch' | 'status_forbidden' | 'amount_mismatch'
+export type TossConfirmRefusal =
+  | 'provider_mismatch'
+  | 'status_forbidden'
+  | 'amount_mismatch'
+  /** 앞선 승인의 결과를 아직 모른다 (D-220). 「이미 처리됐다」와 **다른 사실**이다. */
+  | 'awaiting_result'
 
 export type TossConfirmDecision =
   | { readonly outcome: 'confirm' }
@@ -80,9 +85,14 @@ export interface ConfirmCandidate {
  */
 export function confirmDecision(payment: ConfirmCandidate, received: number): TossConfirmDecision {
   if (payment.provider !== 'TOSS') return { outcome: 'refused', reason: 'provider_mismatch' }
-  // `READY` 아닌 것은 이미 승인됐거나 실패한 것이다. 같은 리다이렉트가 두 번 열리는
-  // 것(뒤로 가기·새로고침)이 정확히 이 경우라, 여기서 막지 않으면 토스에 같은 승인을
-  // 두 번 보낸다.
+  // **「모른다」를 「이미 처리됐다」로 접지 않는다** (D-220). 둘 다 거절이지만 사람이
+  // 읽을 문장이 다르다 — 앞은 「확인 중이니 기다려 주세요」이고 뒤는 「이미 끝났어요」다.
+  // 접어 버리면 승인이 끊긴 사람이 새로고침했을 때 **끝나지도 않은 결제를 끝났다고**
+  // 듣는다. 이 갈래가 `status_forbidden` 보다 앞에 있는 이유가 그것이다.
+  if (payment.status === 'UNRESOLVED') return { outcome: 'refused', reason: 'awaiting_result' }
+  // 나머지 `READY` 아닌 것은 이미 승인됐거나 실패한 것이다. 같은 리다이렉트가 두 번
+  // 열리는 것(뒤로 가기·새로고침)이 정확히 이 경우라, 여기서 막지 않으면 토스에 같은
+  // 승인을 두 번 보낸다.
   if (payment.status !== 'READY') return { outcome: 'refused', reason: 'status_forbidden' }
   if (payment.authorizedAmount !== received)
     return { outcome: 'refused', reason: 'amount_mismatch' }

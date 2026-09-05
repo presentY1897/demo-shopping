@@ -21,6 +21,7 @@ import {
   sessionBuyer,
   shopperCards,
   shopperCheckout,
+  unresolveNextApproval,
 } from '@shopping/api-mocks'
 import { DENSITY_LEVELS } from '@shopping/ui'
 import { DensityProvider } from '@shopping/ui/density'
@@ -145,6 +146,51 @@ describe('주문서 접근성 (P2)', () => {
     await screen.findByText(copy.payment.holdKept)
 
     await expectNoViolations()
+  })
+
+  /**
+   * 확인 중 — 버튼 없이 문장만 남는 화면 (TASK-0057 F5 · D-220).
+   *
+   * **이 상태가 새로 들여오는 것은 「사라진 버튼」이다.** 다른 실패에는 `aria-live`
+   * 영역 뒤에 초점을 받는 버튼이 하나 따라오는데 여기에는 없고, 그러면 화면을 보지
+   * 않는 사람이 듣는 것은 그 문장 하나뿐이다 — 그 문장이 실제로 읽히는 자리에
+   * 있는지, 그리고 버튼이 빠진 자리가 순회를 끊지 않는지를 밀도 3단계와 좁은
+   * 뷰포트에서 각각 확인한다.
+   */
+  describe('확인 중인 결제가 떠 있는 화면', () => {
+    async function awaitingResult(width: number = VIEWPORTS.desktop): Promise<void> {
+      const user = userEvent.setup()
+
+      await renderCheckout(width)
+
+      const section = await screen.findByRole('region', { name: copy.payment.title })
+
+      await within(section).findByRole('group', { name: copy.payment.chooseMethod })
+
+      // 이 화면에서 「확인 중」을 만드는 방법은 이것 하나다 — 가상 카드는 한도로
+      // 거절할 수는 있어도 「답이 안 왔다」를 만들지 못한다.
+      unresolveNextApproval()
+
+      const summary = screen.getByRole('complementary', { name: copy.summaryTitle })
+
+      await user.click(within(summary).getByRole('checkbox', { name: copy.termsLabel }))
+      await user.click(within(summary).getByRole('button', { name: copy.placeOrder }))
+      await screen.findByText(copy.payment.awaitingHoldKept)
+    }
+
+    it.each(DENSITY_LEVELS)('passes at density %s', async (density) => {
+      window.localStorage.setItem('shopping.density', String(density))
+
+      await awaitingResult()
+
+      await expectNoViolations()
+    })
+
+    it('passes on a phone', async () => {
+      await awaitingResult(VIEWPORTS.mobile)
+
+      await expectNoViolations()
+    })
   })
 
   it('passes on the expiry screen', async () => {

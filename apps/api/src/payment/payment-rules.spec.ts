@@ -48,13 +48,14 @@ describe('상태 전이 표', () => {
     expect(canTransition('READY', 'CANCELED')).toBe(false)
   })
 
-  it('lets an authorization only be captured', () => {
-    // 승인만 된 건을 무르는 것은 환불이 아니라 승인 취소이고, 설계 문서 3장이
-    // 그 화살표를 그리지 않았다. 여기에 몰래 그려 두면 프로바이더가 거절하는
-    // 요청을 우리 쪽 상태만 성공으로 적는다.
+  it('lets an authorization be captured or unwound, but not partly', () => {
     expect(canTransition('AUTHORIZED', 'PAID')).toBe(true)
-    expect(canTransition('AUTHORIZED', 'CANCELED')).toBe(false)
+    // **승인 취소**다 (D-221). 환불과 다른 길이고 배치만 연다 — 매입 없이 남은
+    // 승인은 예약이 풀린 뒤에도 카드에 돈을 잡아 둔다.
+    expect(canTransition('AUTHORIZED', 'CANCELED')).toBe(true)
+    // 부분은 없다. 매입한 적이 없으니 나눌 것이 없고, 그래서 착지점이 하나다.
     expect(canTransition('AUTHORIZED', 'PARTIAL_CANCELED')).toBe(false)
+    // 승인이 난 것을 「거절당했다」로 적을 수는 없다. 그 결제는 실패한 적이 없다.
     expect(canTransition('AUTHORIZED', 'FAILED')).toBe(false)
   })
 
