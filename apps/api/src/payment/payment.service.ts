@@ -22,6 +22,7 @@ import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { OrderService } from '../orders/order.service.js'
 import { PaymentProviderRegistry } from './payment-registry.js'
 import type { RefundRefusal } from './payment-rules.js'
 import { canTransition, refundDecision } from './payment-rules.js'
@@ -58,6 +59,7 @@ export class PaymentService {
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
     private readonly registry: PaymentProviderRegistry,
+    private readonly orders: OrderService,
   ) {}
 
   /**
@@ -70,6 +72,8 @@ export class PaymentService {
     principal: RequestPrincipal,
     orderId: string,
     provider: PaymentProviderName,
+    /** 어느 수단으로 — 가상 카드에서는 카드 id 다 (TASK-0054). */
+    options: { readonly methodRef?: string } = {},
   ): Promise<PaymentResponse> {
     const account = await this.account(principal, 'order.write')
     const order = await this.prisma.order.findFirst({
@@ -89,6 +93,7 @@ export class PaymentService {
         data: {
           orderId: order.id,
           provider,
+          methodRef: options.methodRef ?? null,
           authorizedAmount: order.paidAmount,
           createdAt: now,
           updatedAt: now,
@@ -117,10 +122,12 @@ export class PaymentService {
     this.assertTransition(held.status, 'AUTHORIZED')
 
     const provider = await this.providerOf(paymentId)
+    const context = await this.contextOf(paymentId)
     const result = await provider.authorize({
       paymentId: held.id,
-      orderId: await this.orderIdOf(paymentId),
+      orderId: context.orderId,
       amount: held.authorizedAmount,
+      ...(context.methodRef === null ? {} : { cardId: context.methodRef }),
     })
     const now = this.clock.now()
 
@@ -182,6 +189,11 @@ export class PaymentService {
       })
       await this.log(tx, paymentId, 'CAPTURED', fresh.status, 'PAID', now)
     })
+
+    // 결제가 확정됐으니 주문이 완료된다 (TASK-0054 4.2) — 예약이 실제 차감으로
+    // 바뀌고 판매자 몫이 `PAID` 로 간다. **결제가 그 일을 직접 하지 않는다**:
+    // 프로바이더가 무엇이든 그 뒤는 같아야 하고, 그 「뒤」를 아는 것은 주문 쪽이다.
+    await this.orders.markPaid((await this.contextOf(paymentId)).orderId)
 
     return this.get(principal, paymentId)
   }
@@ -353,15 +365,18 @@ export class PaymentService {
     return this.registry.resolve(row.provider)
   }
 
-  private async orderIdOf(paymentId: string): Promise<string> {
+  /** 이 결제가 어느 주문의 것이고 어느 수단으로 내는가. */
+  private async contextOf(
+    paymentId: string,
+  ): Promise<{ readonly orderId: string; readonly methodRef: string | null }> {
     const row = await this.prisma.payment.findUnique({
       where: { id: paymentId },
-      select: { orderId: true },
+      select: { orderId: true, methodRef: true },
     })
 
     if (row === null) throw new NotFoundException('결제를 찾을 수 없어요.')
 
-    return row.orderId
+    return row
   }
 
   /**
