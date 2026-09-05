@@ -821,6 +821,10 @@ export const ko: Messages = {
     ORDER_ITEM_UNAVAILABLE: '지금은 주문할 수 없는 상품이 있어요.',
     ORDER_PURCHASE_LIMIT: '1회 구매 가능 수량을 넘었어요.',
     ORDER_ADDRESS_MISSING: '배송지를 찾을 수 없어요. 다시 선택해 주세요.',
+    // 결제 (TASK-0052). 콘솔은 결제하지 않지만 카탈로그가 전수다.
+    PAYMENT_TRANSITION_REFUSED: '지금은 처리할 수 없는 요청이에요.',
+    PAYMENT_REFUND_INVALID: '환불 금액이 올바르지 않아요.',
+    PAYMENT_REFUND_EXCEEDS: '환불할 수 있는 금액을 넘었어요.',
   },
   errorNotice: {
     title: '일시적인 문제가 생겼어요',

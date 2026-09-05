@@ -133,6 +133,10 @@ export const untouchedTables: Readonly<Record<string, string>> = {
   SellerOrder: 'Order 에 Cascade 로 매달려 있다. 주문이 남으므로 함께 남는다',
   OrderItem: 'SellerOrder 에 매달려 있다',
   OrderStatusHistory: 'SellerOrder 에 매달려 있다',
+  Payment:
+    '주문에 매달려 있고, 주문이 남으므로 함께 남는다. 결제 이력은 산 사람이 데모였다는 이유로 지울 수 있는 기록이 아니다 — 정산이 그것을 가리킨다 (TASK-0052)',
+  PaymentEvent: 'Payment 에 Cascade 로 매달려 있다. 분쟁 조사의 근거이므로 결제가 남는 한 남는다',
+  Refund: 'Payment 에 매달려 있다',
 }
 
 /**

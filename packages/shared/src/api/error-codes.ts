@@ -150,6 +150,22 @@ export const domainErrorCodes = [
   'ORDER_PURCHASE_LIMIT',
   /** 주문할 배송지가 없다 — 지워졌거나 남의 것이다. */
   'ORDER_ADDRESS_MISSING',
+  /**
+   * 지금 상태에서는 할 수 없는 결제 요청이다 (TASK-0052 F2).
+   *
+   * `params` 에 `from`·`to` 를 싣는다. 상태 이름을 사람에게 그대로 보여 주지는
+   * 않지만, 문의를 받는 쪽이 「승인 전인데 매입을 눌렀다」를 알아야 한다.
+   */
+  'PAYMENT_TRANSITION_REFUSED',
+  /** 환불 금액이 0 이하이거나 원 단위가 아니다. */
+  'PAYMENT_REFUND_INVALID',
+  /**
+   * 환불 누계가 승인액을 넘는다 (F4). `params.refundable` 을 싣는다.
+   *
+   * 금액을 함께 보내는 이유는 「환불할 수 없습니다」로 끝나는 화면이 상담원에게
+   * 아무 도움이 안 되기 때문이다 — 「최대 12,000원까지」는 다음 행동을 알려 준다.
+   */
+  'PAYMENT_REFUND_EXCEEDS',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]

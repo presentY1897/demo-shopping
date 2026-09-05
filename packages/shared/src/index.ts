@@ -515,6 +515,26 @@ export type {
   SellerOrderResponse,
 } from './api/orders.js'
 
+export {
+  paymentEventKinds,
+  paymentEventKindSchema,
+  paymentProviders,
+  paymentProviderSchema,
+  paymentResponseSchema,
+  paymentSchema,
+  paymentStatuses,
+  paymentStatusSchema,
+  refundSchema,
+} from './api/payments.js'
+export type {
+  Payment,
+  PaymentEventKind,
+  PaymentProviderName,
+  PaymentResponse,
+  PaymentStatus,
+  Refund,
+} from './api/payments.js'
+
 export { allocate } from './pricing/allocate.js'
 export type { AllocationShare } from './pricing/allocate.js'
 export { calculateOrder } from './pricing/calculate.js'
