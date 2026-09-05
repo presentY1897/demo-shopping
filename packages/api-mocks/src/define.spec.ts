@@ -17,6 +17,7 @@ describe('defineFixture', () => {
         version: '0.0.0',
         demoCleanup: { lastRunAt: null },
         searchIndex: { pending: 0, lastRunAt: null, oldestPendingAt: null },
+        reservationExpiry: { status: 'ok', lastRunAt: null, releasedCount: 0 },
       }),
     ).toThrow(/uptime/)
   })
@@ -31,6 +32,7 @@ describe('defineFixture', () => {
         version: '',
         demoCleanup: { lastRunAt: null },
         searchIndex: { pending: 0, lastRunAt: null, oldestPendingAt: null },
+        reservationExpiry: { status: 'ok', lastRunAt: null, releasedCount: 0 },
       }),
     ).toThrow(/version/)
   })
@@ -58,6 +60,7 @@ describe('defineFixture', () => {
       version: '0.0.0',
       demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
       searchIndex: { pending: 0, lastRunAt: '2026-09-05T00:00:00.000Z', oldestPendingAt: null },
+      reservationExpiry: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', releasedCount: 0 },
     })
   })
 })
