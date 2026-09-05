@@ -21,6 +21,7 @@
 
 /** Every table an account can own rows in, today. */
 export const ownedTables = [
+  'Cart',
   'RefreshToken',
   'UserPreference',
   'Address',
@@ -62,6 +63,13 @@ export interface CleanupStep {
  * the ledger points at it".
  */
 export const cleanupPlan: readonly CleanupStep[] = [
+  {
+    table: 'Cart',
+    kind: 'hard',
+    scope: 'user',
+    because:
+      '온전히 그 사람의 것이고 아무것도 참조하지 않는다. 남길 이력이 없다 — 주문은 별개의 표이고 자기 스냅샷을 갖는다 (TASK-0045)',
+  },
   { table: 'RefreshToken', kind: 'hard', scope: 'user' },
   { table: 'UserPreference', kind: 'hard', scope: 'user' },
   { table: 'Address', kind: 'hard', scope: 'user' },
@@ -102,6 +110,7 @@ export const cleanupPlan: readonly CleanupStep[] = [
 export const untouchedTables: Readonly<Record<string, string>> = {
   StockLedger: 'append-only. 사라진 상품의 재고 이력이 남는 것이 옳다',
   ProductImage: 'Product 에 Cascade 로 매달려 있고, 상품이 소프트 삭제라 함께 숨는다',
+  CartItem: 'Cart 에 Cascade 로 매달려 있다. 장바구니가 지워지면 함께 간다 (TASK-0045)',
   ProductOptionValue: 'ProductOption 에 매달려 있다',
   VariantOptionValue: 'ProductVariant 에 매달려 있다',
   Category: '공용이다. 데모 계정은 카테고리를 만들지 않는다',
@@ -129,6 +138,7 @@ export function orderFault(
     ProductOption: ['Product'],
     Product: ['Seller'],
     Seller: ['User'],
+    Cart: ['User'],
     RefreshToken: ['User'],
     UserPreference: ['User'],
     Address: ['User'],

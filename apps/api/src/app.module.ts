@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common'
 import { APP_FILTER } from '@nestjs/core'
 
 import { AuthModule } from './auth/auth.module.js'
+import { CartModule } from './cart/cart.module.js'
 import { CatalogModule } from './catalog/catalog.module.js'
 import { AllExceptionsFilter } from './common/all-exceptions.filter.js'
 import { ClockModule } from './common/clock.module.js'
@@ -28,6 +29,7 @@ export class AppModule {
         ClockModule,
         PrismaModule,
         AuthModule,
+        CartModule,
         CatalogModule,
         DemoModule,
         HealthModule,
