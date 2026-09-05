@@ -20,9 +20,11 @@
  * a layout shift on every first load (TASK-0018 4.4).
  */
 
+import { Popover } from '@shopping/ui/components'
 import { PageContainer, useViewportBand } from '@shopping/ui/layout'
 
 import { UserMenu } from '@/components/auth/user-menu'
+import { useCategoryMenu } from '@/lib/categories/use-category-menu'
 import type { LayoutMessages } from '@/messages'
 import { messagesFor } from '@/messages'
 
@@ -105,21 +107,79 @@ export function ShopHeader({
   )
 }
 
+/**
+ * The catalogue, two levels deep (TASK-0042 R1).
+ *
+ * A dropdown per root rather than a flat row: 40 categories over three levels is
+ * a menu nobody reads, and the third level is listed on the category page itself
+ * where there is a heading to say what it belongs to.
+ *
+ * The trigger is a **button**, not a link — a control that both navigates and
+ * opens a panel does one of them by accident on every keyboard. The root's own
+ * page is the first entry inside, under 「{name} 전체」, so nothing is
+ * unreachable.
+ *
+ * The list is empty until the tree arrives; see `useCategoryMenu` for why it is
+ * fetched in the browser rather than rendered on the server.
+ */
 function CategoryNav({ messages }: { readonly messages: LayoutMessages }) {
+  const categories = useCategoryMenu()
+  const copy = messagesFor().category
+
   return (
     <nav aria-label={messages.nav.label} className="min-w-0">
       <ul className="flex items-center">
-        {messages.nav.categories.map((category) => (
-          <li key={category.slug}>
-            <NavLink
-              className="min-h-touch text-fg-muted hover:text-fg hover:bg-surface-muted flex items-center rounded-md px-3 text-sm whitespace-nowrap"
-              href={`/categories/${category.slug}`}
-              pendingLabel={messages.nav.pendingLabel}
-            >
-              {category.label}
-            </NavLink>
-          </li>
-        ))}
+        {categories.map((category) =>
+          category.children.length === 0 ? (
+            <li key={category.id}>
+              <NavLink
+                className="min-h-touch text-fg-muted hover:text-fg hover:bg-surface-muted flex items-center rounded-md px-3 text-sm whitespace-nowrap"
+                href={`/categories/${category.slug}`}
+                pendingLabel={messages.nav.pendingLabel}
+              >
+                {category.name}
+              </NavLink>
+            </li>
+          ) : (
+            <li key={category.id}>
+              <Popover
+                align="start"
+                title={category.name}
+                trigger={
+                  <button
+                    className="min-h-touch text-fg-muted hover:text-fg hover:bg-surface-muted flex items-center rounded-md px-3 text-sm whitespace-nowrap"
+                    type="button"
+                  >
+                    {category.name}
+                  </button>
+                }
+              >
+                <ul className="flex min-w-48 flex-col">
+                  <li>
+                    <NavLink
+                      className="min-h-touch text-fg hover:bg-surface-muted flex items-center rounded-md px-3 text-sm font-medium"
+                      href={`/categories/${category.slug}`}
+                      pendingLabel={messages.nav.pendingLabel}
+                    >
+                      {copy.allOfLabel.replace('{name}', category.name)}
+                    </NavLink>
+                  </li>
+                  {category.children.map((child) => (
+                    <li key={child.id}>
+                      <NavLink
+                        className="min-h-touch text-fg-muted hover:text-fg hover:bg-surface-muted flex items-center rounded-md px-3 text-sm"
+                        href={`/categories/${child.slug}`}
+                        pendingLabel={messages.nav.pendingLabel}
+                      >
+                        {child.name}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              </Popover>
+            </li>
+          ),
+        )}
       </ul>
     </nav>
   )

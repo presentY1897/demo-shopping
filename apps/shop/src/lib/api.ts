@@ -70,3 +70,24 @@ export function getApiClient(): ApiClient {
 
   return client
 }
+
+let publicClient: ApiClient | null = null
+
+/**
+ * A client with **no session attached** — for the endpoints that have none.
+ *
+ * `getApiClient` wires in `authenticatedFetch`, which reaches for the access
+ * token and, failing that, for the refresh cookie. Neither exists during a
+ * server render, and asking for them there would either throw or quietly send a
+ * request as nobody while pretending otherwise.
+ *
+ * The storefront category tree is public by design (TASK-0042 4.2), so a server
+ * component can read it with plain `fetch` and no credentials at all. That is
+ * what lets the category page be SSR — which `docs/design/pages.md` requires of
+ * it, because the page is indexed and a crawler runs no JavaScript.
+ */
+export function getPublicApiClient(): ApiClient {
+  publicClient ??= createApiClient({ appId: APP_ID, baseUrl: apiBaseUrl() })
+
+  return publicClient
+}
