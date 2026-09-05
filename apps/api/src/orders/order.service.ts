@@ -11,6 +11,7 @@ import type { Prisma } from '@prisma/client'
 import type {
   CreateOrderRequest,
   Order,
+  OrderActor,
   OrderItemSnapshot,
   OrderListQuery,
   OrderListResponse,
@@ -18,6 +19,7 @@ import type {
   OrderStatus,
   PricingDiscount,
   SellerOrder,
+  SellerOrderHistoryEntry,
   SellerOrderResponse,
 } from '@shopping/shared'
 import { ORDER_LIST_DEFAULT_LIMIT } from '@shopping/shared'
@@ -438,7 +440,29 @@ export class OrderService {
     return { order: present(row) }
   }
 
-  /** 내 주문 목록. 최신순, 커서 페이지네이션. */
+  /**
+   * 내 주문 목록. 최신순, 커서 페이지네이션, **상태·기간 필터** (TASK-0063 2장).
+   *
+   * ## 상태 필터가 `some` 인 것이 이 메서드의 판단이다
+   *
+   * 한 주문에 판매자별 묶음이 여럿이고 상태가 서로 다르다 (D-023). 그래서 「이
+   * 주문의 상태」라는 것이 없고, 「이 상태인 묶음이 **하나라도** 있는 주문」과
+   * 「묶음이 **전부** 그 상태인 주문」 중 하나를 골라야 한다.
+   *
+   * **앞쪽이다.** 화면의 탭이 무엇을 뜻해야 하는지로 정했다 — 「배송중」 탭을
+   * 누르는 사람이 찾는 것은 지금 오고 있는 물건이고, 배송완료·배송중·준비중이
+   * 섞인 주문은 그 사람이 찾는 바로 그 주문이다. 「전부」로 치면 그 주문은 어느
+   * 탭에도 걸리지 않아 「전체」에서만 보이는데, 하필 이 저장소의 구조가 사용자에게
+   * 드러나는 자리가 거기다. 화면(`order-filters.ts`)이 불러온 것 위에서 거를 때도
+   * 같은 뜻이었고, 그 뜻을 그대로 서버로 옮긴다.
+   *
+   * `some` 은 `EXISTS (...)` 하나로 번역되므로 주문마다 묶음을 세지 않는다 (A5).
+   *
+   * ## 기간은 주문 접수 시각이다
+   *
+   * `Order.createdAt` 이고 경계는 **양쪽 다 포함**이다 — 판매자 목록의 `from`·`to`
+   * 와 같은 규약이라, 두 화면이 같은 날짜를 골랐을 때 같은 경계를 얻는다.
+   */
   async list(principal: RequestPrincipal, query: OrderListQuery): Promise<OrderListResponse> {
     const account = await this.account(principal, 'order.read')
     const limit = query.limit ?? ORDER_LIST_DEFAULT_LIMIT
@@ -446,6 +470,17 @@ export class OrderService {
       where: {
         userId: account.id,
         ...(query.cursor === undefined ? {} : { id: { lt: query.cursor } }),
+        ...(query.status === undefined
+          ? {}
+          : { sellerOrders: { some: { status: { in: [...query.status] } } } }),
+        ...(query.from === undefined && query.to === undefined
+          ? {}
+          : {
+              createdAt: {
+                ...(query.from === undefined ? {} : { gte: new Date(query.from) }),
+                ...(query.to === undefined ? {} : { lte: new Date(query.to) }),
+              },
+            }),
       },
       // id 가 UUIDv7 이라 시간순이다. `createdAt` 으로 정렬하면 같은 밀리초의 두
       // 주문에서 커서가 한 건을 건너뛰거나 두 번 보여 준다.
@@ -502,6 +537,7 @@ export class OrderService {
         addressLine1: row.order.addressLine1,
         addressLine2: row.order.addressLine2,
       },
+      // 이력은 여기 없다 — `sellerOrder.history` 에 실린다 (`SELLER_ORDER_SELECT`).
     }
   }
 
@@ -660,6 +696,38 @@ const ORDER_ITEM_SELECT = {
   discountAmount: true,
 } as const
 
+/**
+ * 이력 한 줄이 나가는 데 필요한 열 (TASK-0060).
+ *
+ * `actorId` 는 **빠져 있다.** 「누가」는 종류로 충분하고, 사람의 id 를 화면에
+ * 흘리면 그것으로 할 수 있는 일이 아무것도 없는 대신 알 수 있는 것만 늘어난다.
+ * 구매자도 같은 이력을 읽게 된 뒤로(`sellerOrderSchema.history`) 이 판단은 더
+ * 중요해졌다 — 여기 `actorId` 가 있었다면 판매자 계정의 id 가 구매자에게 갔다.
+ */
+const HISTORY_SELECT = {
+  id: true,
+  fromStatus: true,
+  toStatus: true,
+  reason: true,
+  actor: true,
+  createdAt: true,
+} as const
+
+/**
+ * 오래된 것부터. 계약이 그 순서를 요구한다.
+ *
+ * `id` 가 동점을 가른다 — 같은 밀리초에 두 줄이 적히면(전이와 배송을 한
+ * 트랜잭션에서 옮기는 경로가 그렇다) `createdAt` 만으로는 순서가 정해지지 않고,
+ * 그때 화면은 실행할 때마다 다른 이력을 그린다.
+ *
+ * `as const` 를 붙이지 않는다: Prisma 의 `orderBy` 는 **변경 가능한** 배열을 받고,
+ * readonly 튜플을 주면 그 자리에서 타입이 깨진다.
+ */
+const HISTORY_ORDER: Prisma.OrderStatusHistoryOrderByWithRelationInput[] = [
+  { createdAt: 'asc' },
+  { id: 'asc' },
+]
+
 const SELLER_ORDER_SELECT = {
   id: true,
   sellerId: true,
@@ -675,6 +743,14 @@ const SELLER_ORDER_SELECT = {
   // 상세에만 딸려 온다. 목록(`SUMMARY_SELECT`)에는 없다 — 거기서 필요한 것은 상태
   // 배지 하나이고, 묶음마다 추적 이력을 실으면 응답이 몇 배가 된다 (TASK-0061).
   shipment: { select: SHIPMENT_SELECT },
+  /**
+   * 이력도 상세에만, **그리고 두 화면에 함께** (TASK-0063).
+   *
+   * 이 select 를 구매자·판매자 상세가 공유하므로 한 문장 안에서 함께 온다. 따로
+   * 읽으면 상세 하나가 왕복 둘이 되고, 그 둘 사이에 상태가 움직이면 화면이 서로
+   * 다른 두 사실을 나란히 그린다.
+   */
+  statusHistory: { orderBy: HISTORY_ORDER, select: HISTORY_SELECT },
 } as const
 
 const ORDER_SELECT = {
@@ -710,9 +786,21 @@ function snapshotFrom(value: unknown): OrderItemSnapshot {
   return value as OrderItemSnapshot
 }
 
+/** 이력 한 줄이 데이터베이스에서 나오는 모양. `HISTORY_SELECT` 가 고른 것들이다. */
+interface HistoryRow {
+  readonly id: string
+  readonly fromStatus: string | null
+  readonly toStatus: string
+  readonly reason: string | null
+  readonly actor: string
+  readonly createdAt: Date
+}
+
 interface SellerOrderRow {
   /** 발송 전이면 `null`. 계약의 같은 자리와 같은 뜻이다. */
   readonly shipment: ShipmentRow | null
+  /** 오래된 것부터. 계약의 `history` 가 그 순서를 요구한다. */
+  readonly statusHistory: readonly HistoryRow[]
   readonly id: string
   readonly sellerId: string
   readonly brandName: string
@@ -734,6 +822,25 @@ interface SellerOrderRow {
     readonly pointDiscountAmount: number
     readonly discountAmount: number
   }[]
+}
+
+/**
+ * 이력 행을 계약의 모양으로.
+ *
+ * 열거형을 `as` 로 좁히는 것은 Prisma 가 만든 타입과 `@shopping/shared` 의 문자열
+ * 유니온이 **같은 값을 다른 타입으로** 부르기 때문이다 (`presentShipment` 가 같은
+ * 자리에서 같은 일을 한다). 값이 갈라지면 마이그레이션이 막고, 계약이 갈라지면
+ * 통합 검사의 zod 파싱이 막는다.
+ */
+function presentHistory(row: HistoryRow): SellerOrderHistoryEntry {
+  return {
+    id: row.id,
+    fromStatus: row.fromStatus === null ? null : (row.fromStatus as OrderStatus),
+    toStatus: row.toStatus as OrderStatus,
+    actor: row.actor as OrderActor,
+    reason: row.reason,
+    occurredAt: row.createdAt.toISOString(),
+  }
 }
 
 function presentSellerOrder(row: SellerOrderRow): SellerOrder {
@@ -762,6 +869,9 @@ function presentSellerOrder(row: SellerOrderRow): SellerOrder {
     // 발송 전이면 `null` 이다. 「못 읽었다」가 아니라 「아직 안 보냈다」이고,
     // 화면은 그 둘을 다르게 그린다.
     shipment: row.shipment === null ? null : presentShipment(row.shipment),
+    // 묶음에 붙는 사실이라 묶음 안에 있다. 구매자 상세와 판매자 상세가 **같은
+    // 이력**을 읽는 것이 이 자리의 요점이다 (TASK-0063).
+    history: row.statusHistory.map((entry) => presentHistory(entry)),
   }
 }
 

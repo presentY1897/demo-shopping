@@ -14,7 +14,7 @@
 | [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | **9/9 완료** |
 | [M07](./M07-cart-order/) 장바구니·주문 | 장바구니, 금액 계산 엔진, 재고 예약, 주문 2단 분할 | **7/7 완료** |
 | [M08](./M08-payment/) 결제 | 프로바이더 추상화, 가상 카드, 토스 연동, 웹훅, 실패 복구 | **7/7 완료** |
-| [M09](./M09-fulfillment/) 배송·주문관리 | 상태 머신, 주문 화면, 가상 배송, 구매확정 | 2/6 |
+| [M09](./M09-fulfillment/) 배송·주문관리 | 상태 머신, 주문 화면, 가상 배송, 구매확정 | 4/6 |
 | [M10](./M10-claims/) 취소·반품·환불 | 부분 취소·반품, 환불 안분, 재고 복원, 클레임 처리 | 0/7 |
 | [M11](./M11-discount/) 할인 | 쿠폰(부담 주체), 적립금 원장, 적용·복구 | 0/7 |
 | [M12](./M12-settlement/) 정산 | 수수료 정책, 정산서 배치, 승인·지급, 매출 대시보드 | 0/4 |
@@ -155,15 +155,15 @@
 
 </details>
 
-<details><summary><b>M09. 배송·주문관리</b> (2/6)</summary>
+<details><summary><b>M09. 배송·주문관리</b> (4/6)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
 | [TASK-0059](./M09-fulfillment/TASK-0059-order-state-machine.md) | 주문 상태 머신 구현 | 완료 |
-| [TASK-0060](./M09-fulfillment/TASK-0060-seller-orders.md) | 판매자 주문 관리 화면 | 승인됨 |
+| [TASK-0060](./M09-fulfillment/TASK-0060-seller-orders.md) | 판매자 주문 관리 화면 | 완료 |
 | [TASK-0061](./M09-fulfillment/TASK-0061-shipment.md) | 배송 · 운송장 가상 처리 | 완료 |
 | [TASK-0062](./M09-fulfillment/TASK-0062-delivery-simulator.md) | 배송 상태 자동 진행 시뮬레이터 | 승인됨 |
-| [TASK-0063](./M09-fulfillment/TASK-0063-buyer-orders.md) | 구매자 주문 내역 · 상세 | 승인됨 |
+| [TASK-0063](./M09-fulfillment/TASK-0063-buyer-orders.md) | 구매자 주문 내역 · 상세 | 완료 |
 | [TASK-0064](./M09-fulfillment/TASK-0064-order-confirm.md) | 구매확정 (수동 · 자동) | 승인됨 |
 
 </details>

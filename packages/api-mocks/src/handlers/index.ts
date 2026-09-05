@@ -7,10 +7,12 @@ import { categoryHandlers } from './categories'
 import { checkoutHandlers } from './checkout'
 import { demoHandlers } from './demo'
 import { healthHandlers } from './health'
+import { orderHandlers } from './orders'
 import { paymentHandlers } from './payment'
 import { productHandlers } from './products'
 import { searchHandlers } from './search'
 import { sellerConsoleHandlers } from './seller-console'
+import { sellerOrderHandlers } from './seller-orders'
 import { sellerHandlers } from './sellers'
 import { profileHandlers } from './profile'
 import { sessionHandlers } from './session'
@@ -33,12 +35,14 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...profileHandlers,
   ...cartHandlers,
   ...checkoutHandlers,
+  ...orderHandlers,
   ...paymentHandlers,
   ...categoryHandlers,
   ...attributeHandlers,
   ...productHandlers,
   ...searchHandlers,
   ...sellerConsoleHandlers,
+  ...sellerOrderHandlers,
   ...sellerHandlers,
   ...adminSellerHandlers,
   ...uploadHandlers,
@@ -61,6 +65,14 @@ export {
 } from './card-contract'
 export type { CardTransaction, IssuedCard } from './card-contract'
 export { demoHandlers, failNextDemoIssue, mockDemoAccount, resetDemoStore } from './demo'
+/**
+ * 구매자의 주문 (TASK-0063). 목록·상세·가능 액션·전이가 한 저장소를 본다.
+ *
+ * `MOCK_ORDER_NOW` 와 id 들은 픽스처와 핸들러가 **함께** 읽는 값이라 핸들러 쪽
+ * 파일에 산다 — 카드가 같은 이유로 `card-contract.ts` 를 갖는다.
+ */
+export { MOCK_ORDER_PAGE_SIZE, orderHandlers, resetOrderStore } from './orders'
+export { MOCK_ORDER_IDS, MOCK_ORDER_NOW, MOCK_SELLER_ORDER_IDS } from './order-contract'
 export {
   declineNextTossApproval,
   paymentHandlers,
@@ -75,6 +87,20 @@ export {
   sellerConsoleHandlers,
   sellerConsoleSnapshot,
 } from './seller-console'
+/**
+ * 판매자 콘솔의 주문 (TASK-0060).
+ *
+ * 구매자의 `orders` **뒤에** 등록된다. `/seller-orders/:id/actions` 와
+ * `…/transitions` 는 두 화면이 함께 쓰는 라우트이고, 기본 목록에서 먼저 맞는 쪽이
+ * 이기기 때문이다 — 판매자 화면의 검사는 `server.use(...sellerOrderHandlers)` 로
+ * 자기 저장소를 앞에 세운다.
+ */
+export {
+  failNextShipment,
+  resetSellerOrderStore,
+  sellerOrderHandlers,
+  sellerOrderSnapshot,
+} from './seller-orders'
 export { resetSellerStore, sellerHandlers, sellerRequests, sellerRowSnapshot } from './sellers'
 export type { SellerRequestRecord } from './sellers'
 export {

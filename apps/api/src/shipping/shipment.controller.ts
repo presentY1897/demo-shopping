@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common'
-import type { ShipmentResponse } from '@shopping/shared'
+import type { SellerOrderDeliveryResponse, ShipmentResponse } from '@shopping/shared'
 import { shipSellerOrderRequestSchema } from '@shopping/shared'
 
 import { Principal } from '../auth/principal.decorator.js'
@@ -9,7 +9,7 @@ import { parseInput } from '../common/parse-input.js'
 import { ShipmentService } from './shipment.service.js'
 
 /**
- * 배송의 두 라우트 (TASK-0061).
+ * 배송의 세 라우트 (TASK-0061 · TASK-0060).
  *
  * **판매자 몫의 하위 자원이다.** 배송은 `SellerOrder` 당 한 건이라 자기 id 로 찾을
  * 이유가 없고(`/shipments/:id` 였다면 화면이 그 id 를 어디선가 먼저 얻어야 한다),
@@ -54,5 +54,25 @@ export class ShipmentController {
     @Param('id') id: string,
   ): Promise<ShipmentResponse> {
     return this.shipments.get(principal, id)
+  }
+
+  /**
+   * 배송완료 처리 — 판매자가 흐름을 직접 이어 간다 (TASK-0060 4.3).
+   *
+   * **전이 라우트가 아니라 여기인 이유는 배송 표 때문이다.** 전이만 찍으면 주문은
+   * `DELIVERED` 인데 `Shipment.status` 는 그대로라 구매자의 추적 화면이 「이동 중」에
+   * 남는다 — TASK-0061 4.4 가 넘긴 문제이고, 서비스의 주석이 그 판단을 자세히 적는다.
+   *
+   * **본문이 없다.** 이 라우트가 일으키는 사건은 하나뿐이고, 종류를 요청이 고르게
+   * 두면 그것은 곧 TASK-0061 이 열지 않기로 한 「사람이 배송 사실을 주장하는」
+   * 라우트가 된다.
+   */
+  @Post('seller-orders/:id/delivery')
+  @RequirePermission('order.write')
+  markDelivered(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+  ): Promise<SellerOrderDeliveryResponse> {
+    return this.shipments.markDelivered(principal, id)
   }
 }

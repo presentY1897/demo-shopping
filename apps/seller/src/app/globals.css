@@ -14,3 +14,47 @@
   --color-primary-strong: var(--color-teal-600);
   --color-primary-surface: var(--color-teal-100);
 }
+
+/*
+ * 인쇄용 주문서 (TASK-0060 2장).
+ *
+ * **화면에서는 접근성 트리에 남긴 채 눈에서만 치운다.** `display: none` 으로 감추면
+ * 인쇄에서 되살릴 수 없고(`visibility` 는 `display` 를 이기지 못한다), `hidden` 속성도
+ * 같다. 그래서 `sr-only` 와 같은 방식으로 잘라 두고, 인쇄에서 그 잘라 둔 것만 되돌린다.
+ *
+ * 별도 라우트를 만들지 않은 이유는 설계서의 「모바일은 별도 페이지를 만들지 않는다」와
+ * 같은 결이다 — 인쇄는 같은 화면의 **다른 매체**이고, 라우트를 나누면 그 화면이 무엇을
+ * 알아야 하는지를 두 번 정하게 된다.
+ */
+[data-print-document] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+@media print {
+  /*
+   * 콘솔 셸은 종이에 아무 일도 하지 않는다. 사이드바와 탭을 그대로 인쇄하면 주문서가
+   * 페이지의 절반으로 밀린다.
+   */
+  body * {
+    visibility: hidden;
+  }
+
+  [data-print-document] {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    visibility: visible;
+  }
+
+  [data-print-document] * {
+    visibility: visible;
+  }
+}

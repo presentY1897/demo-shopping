@@ -1,6 +1,12 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 
-import type { ApiClient, OrderListResponse, OrderResponse, PricingDiscount } from '@shopping/shared'
+import type {
+  ApiClient,
+  OrderListResponse,
+  OrderResponse,
+  OrderStatus,
+  PricingDiscount,
+} from '@shopping/shared'
 import {
   ApiClientError,
   calculateOrder,
@@ -635,14 +641,217 @@ describe('목록', () => {
   })
 })
 
-function list(query: { limit?: number; cursor?: string }): Promise<OrderListResponse> {
+function list(query: {
+  limit?: number
+  cursor?: string
+  status?: readonly OrderStatus[]
+  from?: string
+  to?: string
+}): Promise<OrderListResponse> {
   const search = new URLSearchParams()
 
   if (query.limit !== undefined) search.set('limit', String(query.limit))
   if (query.cursor !== undefined) search.set('cursor', query.cursor)
+  // 쉼표 하나. 쿼리스트링에 배열이 없어 반복 키를 쓰면 프레임워크마다 다르게
+  // 파싱되기 때문이고, 판매자 목록이 같은 이유로 같은 문법을 쓴다.
+  if (query.status !== undefined) search.set('status', query.status.join(','))
+  if (query.from !== undefined) search.set('from', query.from)
+  if (query.to !== undefined) search.set('to', query.to)
 
   return client().request({
     path: `/orders${search.size > 0 ? `?${search.toString()}` : ''}`,
     schema: orderListResponseSchema,
   })
 }
+
+/** 한 몫의 상태를 표에서 바로 옮긴다. 전이의 문을 지나는 것은 다른 스펙의 일이다. */
+function setStatus(sellerOrderId: string, status: OrderStatus): Promise<unknown> {
+  return db.execute(`UPDATE "SellerOrder" SET "status" = $2::"SellerOrderStatus" WHERE "id" = $1`, [
+    sellerOrderId,
+    status,
+  ])
+}
+
+/** 주문 접수 시각을 옮긴다. 기간 필터의 경계를 값으로 고르려면 이것이 필요하다. */
+function setOrderedAt(orderId: string, at: string): Promise<unknown> {
+  return db.execute(`UPDATE "Order" SET "createdAt" = $2::timestamptz WHERE "id" = $1`, [
+    orderId,
+    at,
+  ])
+}
+
+describe('상세가 싣는 상태 이력 (TASK-0063)', () => {
+  it('carries the history inside each bundle', async () => {
+    const stores = await Promise.all([listing(), listing()])
+    const itemIds = await Promise.all(stores.map((store) => add(store.variantId)))
+    const { order } = await place(itemIds)
+
+    const detail = await client().request({
+      path: `/orders/${order.id}`,
+      schema: orderResponseSchema,
+    })
+
+    // **묶음마다 자기 이력이다.** 주문 하나에 몫이 둘이고 상태가 따로 움직이므로
+    // (D-023) 「이 주문의 이력」이라는 것이 없다 — 응답 최상위에 두면 그 사실이
+    // 사라진다.
+    expect(detail.order.sellerOrders).toHaveLength(2)
+    for (const bundle of detail.order.sellerOrders) {
+      expect(bundle.history).toEqual([
+        // 주문을 만든 사람이 주체다. 결제가 옮기는 뒤의 두 전이가 `SYSTEM` 이고,
+        // 이 첫 줄은 그렇지 않다.
+        expect.objectContaining({ fromStatus: null, toStatus: 'PAYMENT_PENDING', actor: 'BUYER' }),
+      ])
+    }
+  })
+
+  it('gives the buyer and the seller the same history', async () => {
+    const store = await listing()
+    const { order } = await place([await add(store.variantId)])
+    const sellerOrderId = order.sellerOrders[0]?.id ?? ''
+
+    const mine = await client().request({
+      path: `/orders/${order.id}`,
+      schema: orderResponseSchema,
+    })
+    const theirs = await client(store.sellerOwner).request({
+      path: `/seller-orders/${sellerOrderId}`,
+      schema: sellerOrderResponseSchema,
+    })
+
+    // 한 표를 두 응답이 읽는다. 두 곳에 담아 두면 언젠가 다른 말을 한다.
+    expect(mine.order.sellerOrders[0]?.history).toEqual(theirs.sellerOrder.history)
+  })
+
+  it('carries no actor id into either answer', async () => {
+    const store = await listing()
+    const { order } = await place([await add(store.variantId)])
+
+    const detail = await client().request({
+      path: `/orders/${order.id}`,
+      schema: orderResponseSchema,
+    })
+
+    // 구매자가 판매자 계정의 id 를 알 수 있는 자리가 생기면 안 된다 — 이력이
+    // 구매자에게도 나가게 된 뒤로 이 단언이 더 중요해졌다.
+    expect(JSON.stringify(detail)).not.toContain(store.sellerOwner.userId)
+  })
+
+  it('leaves the history out of the list', async () => {
+    const store = await listing()
+
+    await place([await add(store.variantId)])
+
+    const answer = await list({})
+
+    // 목록의 한 줄에 이력을 실으면 스무 줄짜리 응답이 몇 배가 된다 (A5).
+    // `shipment` 가 상세에만 있는 것과 같은 판단이고, 계약이 그것을 강제한다 —
+    // `orderSummarySchema` 에는 이 필드 자체가 없다.
+    expect(JSON.stringify(answer)).not.toContain('history')
+    expect(JSON.stringify(answer)).not.toContain('toStatus')
+  })
+})
+
+describe('목록 필터 (TASK-0063 2장)', () => {
+  it('keeps an order when **any** bundle is in the status', async () => {
+    const stores = await Promise.all([listing(), listing()])
+    const itemIds = await Promise.all(stores.map((store) => add(store.variantId)))
+    const { order } = await place(itemIds)
+
+    await setStatus(order.sellerOrders[0]?.id ?? '', 'SHIPPED')
+    await setStatus(order.sellerOrders[1]?.id ?? '', 'PREPARING')
+
+    // 「배송중」 탭이 찾는 것은 **지금 오고 있는 물건**이다. 「전부 배송중」으로
+    // 쳤다면 상태가 섞인 이 주문이 어느 탭에도 걸리지 않고, 하필 그 주문이 이
+    // 저장소의 구조가 사용자에게 드러나는 자리다.
+    expect((await list({ status: ['SHIPPED'] })).orders.map((row) => row.id)).toEqual([order.id])
+    expect((await list({ status: ['PREPARING'] })).orders.map((row) => row.id)).toEqual([order.id])
+    expect((await list({ status: ['DELIVERED'] })).orders).toEqual([])
+  })
+
+  it('takes several statuses at once, comma separated', async () => {
+    const store = await listing({ stock: 50 })
+    const canceled = await place([await add(store.variantId)])
+    const shipped = await place([await add(store.variantId)])
+
+    await setStatus(canceled.order.sellerOrders[0]?.id ?? '', 'CANCELED')
+    await setStatus(shipped.order.sellerOrders[0]?.id ?? '', 'SHIPPED')
+
+    // 탭 하나가 상태 여럿일 수 있다 — 「취소 · 반품」이 그렇다. 서버가 받는 것은
+    // 탭 이름이 아니라 상태 목록이라 어느 화면에서 불려도 같은 뜻이다.
+    const answer = await list({ status: ['CANCELED', 'RETURNED'] })
+
+    expect(answer.orders.map((row) => row.id)).toEqual([canceled.order.id])
+  })
+
+  it('includes both ends of the period', async () => {
+    const store = await listing({ stock: 50 })
+    const older = await place([await add(store.variantId)])
+    const newer = await place([await add(store.variantId)])
+
+    await setOrderedAt(older.order.id, '2026-06-01T00:00:00.000Z')
+    await setOrderedAt(newer.order.id, '2026-06-30T00:00:00.000Z')
+
+    // 경계 **위**의 주문은 든다. 판매자 목록의 `from`·`to` 와 같은 규약이라, 두
+    // 화면이 같은 날짜를 골랐을 때 같은 경계를 얻는다.
+    const inclusive = await list({
+      from: '2026-06-01T00:00:00.000Z',
+      to: '2026-06-30T00:00:00.000Z',
+    })
+
+    expect([...inclusive.orders].map((row) => row.id).sort()).toEqual(
+      [older.order.id, newer.order.id].sort(),
+    )
+
+    // 한 밀리초 안쪽으로 좁히면 각각 하나씩 빠진다.
+    expect((await list({ from: '2026-06-01T00:00:00.001Z' })).orders.map((row) => row.id)).toEqual([
+      newer.order.id,
+    ])
+    expect((await list({ to: '2026-06-29T23:59:59.999Z' })).orders.map((row) => row.id)).toEqual([
+      older.order.id,
+    ])
+  })
+
+  it('filters before it pages', async () => {
+    const store = await listing({ stock: 50 })
+    const kept: string[] = []
+
+    for (let index = 0; index < 3; index += 1) {
+      const { order } = await place([await add(store.variantId)])
+
+      // 하나 걸러 하나씩 취소한다. 걸러 낸 뒤에 자르지 않으면 첫 장이 한 건만
+      // 담고 「다음 장이 있다」고 말하게 된다.
+      if (index % 2 === 0) kept.push(order.id)
+      else await setStatus(order.sellerOrders[0]?.id ?? '', 'CANCELED')
+    }
+
+    const first = await list({ status: ['PAYMENT_PENDING'], limit: 1 })
+
+    expect(first.orders).toHaveLength(1)
+    expect(first.nextCursor).not.toBeNull()
+
+    const second = await list({
+      status: ['PAYMENT_PENDING'],
+      limit: 1,
+      cursor: first.nextCursor ?? '',
+    })
+
+    expect(second.orders).toHaveLength(1)
+    // 걸러진 것이 둘뿐이므로 여기서 끝이다.
+    expect(second.nextCursor).toBeNull()
+    expect([first.orders[0]?.id, second.orders[0]?.id].sort()).toEqual([...kept].sort())
+  })
+
+  it('refuses a status it does not know (A2)', async () => {
+    expect(await failure(list({ status: ['SHIPPED', 'MOVING'] as never }))).toEqual({
+      status: 400,
+      code: 'BAD_REQUEST',
+    })
+  })
+
+  it('refuses a period that is not a timestamp (A2)', async () => {
+    expect(await failure(list({ from: '2026-06-01' }))).toEqual({
+      status: 400,
+      code: 'BAD_REQUEST',
+    })
+  })
+})

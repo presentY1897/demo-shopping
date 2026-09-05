@@ -171,20 +171,62 @@ export function pickupHubOf(code: DemoCarrierCode): string {
 }
 
 /**
+ * 이 사건을 **누가 알려 왔는가** (TASK-0060 4.3).
+ *
+ * 사건의 종류와 다른 축이다. 「배송 완료」라는 사실은 하나지만 그것을 말한 것이
+ * 운송사인지 판매자인지는 다른 사실이고, 이력이 답해야 하는 것은 둘 다다.
+ *
+ * 이 축이 생긴 이유는 판매자 콘솔의 「배송완료 처리」 때문이다. 시뮬레이터가 멈춘
+ * 데모에서 판매자가 흐름을 이어 갈 수 있어야 하는데(`state-machines.md` 1장), 그때
+ * 남는 줄이 「운송사가 알려 준 사실」의 문장이면 **이력이 거짓이 된다** — TASK-0061
+ * 이 추적 사건 기록을 HTTP 로 열지 않은 것과 같은 이유이고, 그 판단을 지키면서 길을
+ * 여는 방법이 이것이다.
+ */
+export const trackingEventSources = ['CARRIER', 'SELLER'] as const
+
+export type TrackingEventSource = (typeof trackingEventSources)[number]
+
+/**
  * 이력 한 줄에 적히는 문장.
  *
  * 서버가 만드는 이유는 이것이 UI 문구가 아니라 **기록**이기 때문이다. 실제 택배에서도
  * 이 칸은 운송사가 적어 보내는 값이고, 앱의 메시지 파일로 옮기면 **지난 이벤트의
  * 문장이 앱을 고칠 때마다 바뀐다** — 그때 추적 이력은 「그때 무슨 일이 있었나」에
  * 답하지 못하게 된다.
+ *
+ * 출처별로 **표 전체를 적는다.** 「판매자면 배송완료만 다른 문장」으로 두면 나머지
+ * 세 칸에서 판매자가 운송사의 말을 하게 되고, 그 조합은 지금 부르는 데가 없다는
+ * 이유로만 안전하다 — 나중에 생기는 호출자는 그 사실을 모른다.
  */
-const EVENT_DESCRIPTION: Readonly<Record<TrackingEventKind, string>> = {
-  PICKED_UP: '판매자로부터 상품을 인수했어요.',
-  IN_TRANSIT: '다음 터미널로 이동하고 있어요.',
-  OUT_FOR_DELIVERY: '배송기사가 상품을 가지고 출발했어요.',
-  DELIVERED: '상품이 배송 완료됐어요.',
+const EVENT_DESCRIPTION: Readonly<
+  Record<TrackingEventSource, Readonly<Record<TrackingEventKind, string>>>
+> = {
+  CARRIER: {
+    PICKED_UP: '판매자로부터 상품을 인수했어요.',
+    IN_TRANSIT: '다음 터미널로 이동하고 있어요.',
+    OUT_FOR_DELIVERY: '배송기사가 상품을 가지고 출발했어요.',
+    DELIVERED: '상품이 배송 완료됐어요.',
+  },
+  SELLER: {
+    PICKED_UP: '판매자가 상품을 발송했어요.',
+    IN_TRANSIT: '판매자가 배송 중임을 확인했어요.',
+    OUT_FOR_DELIVERY: '판매자가 배송 출발을 확인했어요.',
+    DELIVERED: '판매자가 배송 완료를 확인했어요.',
+  },
 }
 
-export function trackingEventDescriptionOf(kind: TrackingEventKind): string {
-  return EVENT_DESCRIPTION[kind]
+export function trackingEventDescriptionOf(
+  kind: TrackingEventKind,
+  source: TrackingEventSource = 'CARRIER',
+): string {
+  return EVENT_DESCRIPTION[source][kind]
 }
+
+/**
+ * 판매자가 직접 찍은 줄의 「어디서」.
+ *
+ * 지명이 아니다. 그 자리에 터미널 이름을 넣으면 **운송사가 보고한 것처럼 보이고**,
+ * 그것이 이 축을 만든 이유와 정확히 반대다. 칸을 비울 수는 없으므로(`location` 은
+ * NOT NULL) 사실을 적는다 — 이 줄의 출처는 장소가 아니라 사람이다.
+ */
+export const SELLER_REPORTED_LOCATION = '판매자 직접 확인'

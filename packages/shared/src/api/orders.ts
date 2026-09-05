@@ -40,6 +40,19 @@ export type OrderStatus = (typeof orderStatuses)[number]
 
 export const orderStatusSchema = z.enum(orderStatuses)
 
+/**
+ * 목록을 상태로 좁힐 때 보내는 것 — **목록이다.**
+ *
+ * 탭 하나가 상태 하나라는 보장이 없기 때문이다: 판매자 콘솔의 「취소·반품」 탭은
+ * `CANCELED` 와 `RETURNED` 둘이고, 구매자의 「결제 대기」는 `PAYMENT_PENDING` 과
+ * `PAYMENT_FAILED` 둘이다. 서버에 탭 이름을 주는 대신 상태 목록을 주면 탭의 정의는
+ * 화면에 남고(설계서가 그것을 소유한다), API 는 어느 화면에서 불려도 같은 뜻을 갖는다.
+ *
+ * **두 목록(`/orders` · `/seller-orders`)이 같은 스키마를 쓴다.** 문법이 갈리면 —
+ * 한쪽은 쉼표, 한쪽은 반복 키 — 그 차이를 설명할 수 있는 사람이 아무도 없다.
+ */
+export const orderStatusFilterSchema = z.array(orderStatusSchema).min(1).max(orderStatuses.length)
+
 /** 주문번호의 형식. `Order_orderNumber_format_check` 가 같은 것을 DB 에서 지킨다. */
 export const ORDER_NUMBER_PATTERN = /^[0-9]{8}-[0-9ABCDEFGHJKMNPQRSTVWXYZ]{8}$/u
 
@@ -79,6 +92,39 @@ export const orderItemSchema = z.object({
 
 export type OrderItem = z.infer<typeof orderItemSchema>
 
+/**
+ * 전이를 일으킨 주체 — **역할이 아니다** (`state-machines.md` 1장).
+ *
+ * `SYSTEM` 이 그 차이를 만든다: 배송 시뮬레이터와 D+7 자동 확정에는 사람이 없다.
+ * 서버(`seller-order-transitions.ts`)와 이 계약이 **같은 목록**을 쓰는 이유는,
+ * 이력이 화면까지 나가는 순간 그 값이 두 곳에 적히기 때문이다 — 갈라지면 콘솔이
+ * 자기가 모르는 주체를 만나 아무 문장도 못 고른다.
+ */
+export const orderActors = ['BUYER', 'SELLER', 'ADMIN', 'SYSTEM'] as const
+
+export type OrderActor = (typeof orderActors)[number]
+
+export const orderActorSchema = z.enum(orderActors)
+
+/**
+ * 상태 이력 한 줄 (TASK-0059 가 적고 TASK-0060 이 처음 읽는다).
+ *
+ * **누가 옮겼는지가 이 줄의 값이다.** 분쟁에서 근거가 되는 것은 「언제 배송중이
+ * 됐나」가 아니라 「누가 그렇게 적었나」이고, 그래서 `actor` 는 선택이 아니다.
+ * 사람이 없는 전이는 `actorId` 가 `null` 이지 `actor` 가 비는 것이 아니다.
+ */
+export const sellerOrderHistoryEntrySchema = z.object({
+  id: z.uuid(),
+  /** 주문이 처음 생긴 줄에는 이전 상태가 없다. */
+  fromStatus: orderStatusSchema.nullable(),
+  toStatus: orderStatusSchema,
+  actor: orderActorSchema,
+  reason: z.string().nullable(),
+  occurredAt: z.iso.datetime(),
+})
+
+export type SellerOrderHistoryEntry = z.infer<typeof sellerOrderHistoryEntrySchema>
+
 /** 한 판매자 몫. 배송·취소·정산이 이 단위로 일어난다. */
 export const sellerOrderSchema = z.object({
   id: z.uuid(),
@@ -109,6 +155,22 @@ export const sellerOrderSchema = z.object({
    * 화면은 그 둘을 다르게 그려야 하므로 이 필드를 선택적으로 두지 않는다.
    */
   shipment: shipmentSchema.nullable(),
+  /**
+   * 이 몫이 지나온 상태들, 오래된 것부터 (TASK-0059 가 적고 TASK-0060 이 처음 읽는다).
+   *
+   * **`shipment` 바로 옆에 있는 이유가 이 필드의 정의다.** 둘 다 *묶음*에 붙는
+   * 사실이고 둘 다 *상세에만* 실린다 — 상태가 판매자 몫마다 따로 움직이므로
+   * (D-023) 「이 주문의 이력」이라는 것은 없고, 목록의 스무 줄마다 딸려 보내면
+   * 응답이 몇 배가 된다.
+   *
+   * 여기 있으면 **판매자와 구매자가 같은 이력을 읽는다.** 응답 최상위에 두었을
+   * 때는 판매자 상세에만 닿았고, 그래서 구매자의 「주문 상태 타임라인」은 이력이
+   * 아니라 사다리였다 — 근거가 있는데 못 쓰는 상태였다.
+   *
+   * 주문서(`checkoutSchema`)에는 없다. 주문이 된 뒤에 생기는 것이라, `status`·
+   * `shipment` 와 함께 `omit` 된다.
+   */
+  history: z.array(sellerOrderHistoryEntrySchema),
 })
 
 export type SellerOrder = z.infer<typeof sellerOrderSchema>
@@ -143,6 +205,8 @@ export const orderResponseSchema = z.object({ order: orderSchema })
 
 export type OrderResponse = z.infer<typeof orderResponseSchema>
 
+/* ------------------------------------------ 판매자 콘솔의 주문 (TASK-0060) -- */
+
 /**
  * 판매자가 읽는 자기 몫 하나.
  *
@@ -157,6 +221,9 @@ export const sellerOrderResponseSchema = z.object({
   orderNumber: orderNumberSchema,
   orderedAt: z.iso.datetime(),
   recipient: orderRecipientSchema,
+  // 이력은 여기 없다. **`sellerOrder.history` 다** — 묶음에 붙는 사실이라 묶음
+  // 안에 있고, 그래야 구매자 상세(`orderSchema.sellerOrders`)에서도 같은 이력이
+  // 읽힌다. 두 곳에 두면 언젠가 다른 말을 한다.
 })
 
 export type SellerOrderResponse = z.infer<typeof sellerOrderResponseSchema>
@@ -308,9 +375,44 @@ export type OrderListResponse = z.infer<typeof orderListResponseSchema>
 
 export const ORDER_LIST_DEFAULT_LIMIT = 20
 
+export const ORDER_LIST_MAX_LIMIT = 50
+
+/**
+ * `GET /api/v1/orders` 의 질의 — 상태·기간·커서 (TASK-0063 2장).
+ *
+ * **판매자 목록(`sellerOrderListQuerySchema`)과 같은 문법이다.** 상태는 쉼표로
+ * 이어진 목록, 기간은 `from`·`to` 의 ISO 시각, 경계는 양쪽 다 포함. 두 목록이 서로
+ * 다른 문법을 쓰면 그 차이를 설명할 수 있는 사람이 아무도 없다.
+ *
+ * ## 상태 필터의 뜻: 「이 상태인 묶음이 **하나라도** 있는 주문」
+ *
+ * 한 주문에 판매자별 묶음이 여럿이고 상태가 서로 다르다 (D-023). 그래서 「이
+ * 주문의 상태」라는 것이 없고, 필터의 뜻을 둘 중에서 골라야 한다 — **하나라도**
+ * (합집합)인가, **전부**(교집합)인가.
+ *
+ * 화면의 탭이 무엇을 뜻해야 하는지로 정했다. 「배송중」 탭을 누르는 사람이 찾는
+ * 것은 **지금 오고 있는 물건**이다. 배송완료·배송중·상품준비중이 섞인 주문은
+ * 「전부」로 치면 어느 탭에도 걸리지 않아 「전체」에서만 보이는데, 그 주문이야말로
+ * 이 저장소의 구조가 사용자에게 드러나는 자리다 — 사람은 그것을 「배송중」에서
+ * 찾고, 거기 없으면 화면이 고장난 줄 안다.
+ *
+ * 서버가 이 뜻을 갖는다: `SellerOrder` 에 `some` 조건을 건다 (`order.service.ts`).
+ *
+ * ## 검색(`q`)은 받지 않는다
+ *
+ * 판매자 쪽 `q` 가 찾는 것은 주문번호와 **수령인 이름**인데, 구매자에게 수령인은
+ * 언제나 자기 자신이라 절반이 뜻을 잃는다. 그리고 이 화면에는 검색 입력이 없다
+ * (TASK-0063 2장은 기간·상태만 요구한다) — 아무도 부르지 않는 파라미터를 서버에
+ * 두면 그것은 검증된 적 없는 코드가 된다. 필요해지면 그때 같은 문법으로 더한다.
+ */
 export const orderListQuerySchema = z.object({
+  status: orderStatusFilterSchema.optional(),
+  /** 이 시각 **이후**에 접수된 주문만. 화면이 고른 기간의 시작을 ISO 로 보낸다. */
+  from: z.iso.datetime().optional(),
+  /** 이 시각 **이전**. 경계는 양쪽 다 포함이다. */
+  to: z.iso.datetime().optional(),
   cursor: z.string().optional(),
-  limit: z.int().min(1).max(50).optional(),
+  limit: z.int().min(1).max(ORDER_LIST_MAX_LIMIT).optional(),
 })
 
 export type OrderListQuery = z.infer<typeof orderListQuerySchema>
@@ -320,10 +422,22 @@ export type OrderListQuery = z.infer<typeof orderListQuerySchema>
  *
  * 타입이 있는 쪽 옆에 두는 이유는 둘이 갈리지 않게 하기 위해서다 — 한쪽에만
  * 파라미터를 더하면 컴파일이 멈춘다(`stock.ts` 가 같은 이유로 같은 모양이다).
+ *
+ * `status` 만 변환이 붙는다. 쿼리스트링에는 배열이 없고, 반복 키
+ * (`?status=a&status=b`)는 프레임워크마다 다른 것으로 파싱되기 때문에 **쉼표
+ * 하나**로 정했다 — `sellerOrderListQueryParamsSchema` 가 같은 이유로 같은 모양이고,
+ * 두 목록이 같은 문법을 쓰는 것이 그 자체로 계약이다.
  */
 export const orderListQueryParamsSchema = z.object({
+  status: z
+    .string()
+    .transform((value) => value.split(','))
+    .pipe(orderStatusFilterSchema)
+    .optional(),
+  from: z.iso.datetime().optional(),
+  to: z.iso.datetime().optional(),
   cursor: z.string().optional(),
-  limit: z.coerce.number().int().min(1).max(50).optional(),
+  limit: z.coerce.number().int().min(1).max(ORDER_LIST_MAX_LIMIT).optional(),
 })
 
 /** 수령인을 만들 때 쓰는 검증 — 배송지 계약과 같은 규칙이다. */
@@ -352,10 +466,11 @@ export const checkoutSchema = z.object({
   /**
    * 판매자별 몫. 주문이 저장할 모양 그대로다 — **주문이 된 뒤에 생기는 것들만 빠진다.**
    *
-   * 상태와 배송이 그것이다. 주문서는 아직 주문이 아니므로 상태가 없고, 발송된 적도 없다.
+   * 상태와 배송과 이력이 그것이다. 주문서는 아직 주문이 아니므로 상태가 없고,
+   * 발송된 적도 없으며, 지나온 상태도 없다.
    */
   sellerOrders: z.array(
-    sellerOrderSchema.omit({ id: true, status: true, shipment: true }).extend({
+    sellerOrderSchema.omit({ id: true, status: true, shipment: true, history: true }).extend({
       items: z.array(orderItemSchema.omit({ id: true })),
     }),
   ),
@@ -386,3 +501,155 @@ export type CreateCheckoutRequest = z.infer<typeof createCheckoutRequestSchema>
 
 /** 주문서에서 쓰는 배송 요청사항. 저장되는 곳은 아직 없다 — M09 의 배송이 받는다. */
 export const CHECKOUT_NOTE_MAX_LENGTH = 100
+
+/**
+ * 판매자 목록의 한 줄.
+ *
+ * 상세를 열지 않고도 그릴 수 있을 만큼만 담는다 — `orderSummarySchema` 가 구매자
+ * 쪽에서 하는 일과 같고, 담기는 것이 다른 이유는 **보는 사람이 다르기** 때문이다.
+ * 판매자에게 필요한 것은 「내가 다음에 무엇을 해야 하나」이므로 상태·운송장이 있고,
+ * 남의 몫이 섞인 주문 합계는 없다.
+ *
+ * **수령인 이름은 서버가 가린다** (`홍*동`). 화면이 가리는 구조로 두면 전체 이름이
+ * 이미 브라우저에 도착해 있고, 그때 가림은 표시 취향이지 보호가 아니다 —
+ * 개발자도구·확장·오류 보고가 전부 원본을 본다. 전체 이름이 필요한 자리는 상세
+ * 하나뿐이고(`sellerOrderResponseSchema.recipient`), 그 요청은 한 건을 연 사람만
+ * 보낸다.
+ */
+export const sellerOrderListItemSchema = z.object({
+  id: z.uuid(),
+  orderNumber: orderNumberSchema,
+  orderedAt: z.iso.datetime(),
+  status: orderStatusSchema,
+  /** 「울 코트 외 2건」의 앞부분. 문장은 서버가 만든다. */
+  headline: z.string(),
+  itemCount: z.int().min(0),
+  /** 항목 수량의 합. 「2건 3개」를 그리는 데 쓴다. */
+  totalQuantity: z.int().min(0),
+  paidAmount: priceSchema,
+  /** 가려진 수령인 이름. 원본은 이 응답 어디에도 없다. */
+  maskedRecipientName: z.string(),
+  thumbnailUrl: z.string().nullable(),
+  /** 발송 전이면 `null`. 배송 상세는 목록에 싣지 않는다. */
+  trackingNumber: z.string().nullable(),
+})
+
+export type SellerOrderListItem = z.infer<typeof sellerOrderListItemSchema>
+
+export const sellerOrderListResponseSchema = z.object({
+  sellerOrders: z.array(sellerOrderListItemSchema),
+  /** 다음 페이지의 커서. 없으면 마지막이다. */
+  nextCursor: z.string().nullable(),
+})
+
+export type SellerOrderListResponse = z.infer<typeof sellerOrderListResponseSchema>
+
+export const SELLER_ORDER_LIST_DEFAULT_LIMIT = 20
+
+export const SELLER_ORDER_LIST_MAX_LIMIT = 100
+
+/**
+ * 검색어의 상한.
+ *
+ * `productSearchSchema` 와 같은 이유로 묶여 있다 — 이 문자열은 PostgreSQL 에
+ * `ILIKE` 패턴으로 도착하고, 길이가 없는 패턴은 한 판매자의 목록을 모두의 비용으로
+ * 만드는 방법이다.
+ */
+export const SELLER_ORDER_SEARCH_MAX_LENGTH = 100
+
+export const sellerOrderSearchSchema = z.string().trim().min(1).max(SELLER_ORDER_SEARCH_MAX_LENGTH)
+
+/**
+ * 판매자 목록의 상태 필터 — 구매자 목록과 **같은 스키마**다.
+ *
+ * 두 목록이 다른 문법을 쓰면 그 차이를 아무도 설명할 수 없다. 이름이 둘인 것은
+ * 부르는 쪽의 읽기를 위해서이고, 값은 하나다 ({@link orderStatusFilterSchema} 가
+ * 왜 목록인지를 설명한다).
+ */
+export const sellerOrderStatusFilterSchema = orderStatusFilterSchema
+
+/** `GET /api/v1/seller-orders` 의 질의, 부르는 쪽이 쓰는 모양. */
+export const sellerOrderListQuerySchema = z.object({
+  status: sellerOrderStatusFilterSchema.optional(),
+  /** 이 시각 **이후**에 접수된 주문만. 화면이 고른 날의 시작을 ISO 로 보낸다. */
+  from: z.iso.datetime().optional(),
+  /** 이 시각 **이전**. 경계는 양쪽 다 포함이다. */
+  to: z.iso.datetime().optional(),
+  /** 주문번호 또는 수령인 이름의 부분 일치. */
+  q: sellerOrderSearchSchema.optional(),
+  limit: z.int().min(1).max(SELLER_ORDER_LIST_MAX_LIMIT).optional(),
+  cursor: z.uuid().optional(),
+})
+
+export type SellerOrderListQuery = z.infer<typeof sellerOrderListQuerySchema>
+
+/**
+ * 같은 질의를, 값이 전부 문자열로 도착하는 형태로.
+ *
+ * 타입이 있는 쪽 옆에 두는 이유는 둘이 갈리지 않게 하기 위해서다 — 한쪽에만
+ * 파라미터를 더하면 컴파일이 멈춘다(`orderListQueryParamsSchema` 와 같은 모양).
+ *
+ * `status` 만 변환이 붙는다. 쿼리스트링에는 배열이 없고, 반복 키(`?status=a&status=b`)는
+ * 프레임워크마다 다른 것으로 파싱되기 때문에 **쉼표 하나**로 정했다 — 검색의
+ * `attr.<키>` 가 같은 이유로 같은 모양이다.
+ */
+export const sellerOrderListQueryParamsSchema = z.object({
+  status: z
+    .string()
+    .transform((value) => value.split(','))
+    .pipe(sellerOrderStatusFilterSchema)
+    .optional(),
+  from: z.iso.datetime().optional(),
+  to: z.iso.datetime().optional(),
+  q: sellerOrderSearchSchema.optional(),
+  limit: z.coerce.number().int().min(1).max(SELLER_ORDER_LIST_MAX_LIMIT).optional(),
+  cursor: z.uuid().optional(),
+})
+
+/**
+ * `GET /api/v1/seller-orders/summary` — 뱃지와 탭이 읽는 숫자.
+ *
+ * **목록과 다른 요청인 것이 이 계약의 요점이다.** 같은 응답에 실으면 숫자가 필터를
+ * 따라 움직이거나(그러면 뱃지가 아니다) 한 응답이 서로 다른 두 질문에 답하게 되고,
+ * 페이지를 넘길 때마다 표 전체를 다시 센다. 뱃지가 필요한 자리는 목록이 아닌
+ * 곳에도 있다 — 대시보드가 그렇고, 거기서 스무 줄을 받아 하나의 수를 얻는 것은
+ * 낭비다.
+ */
+export const sellerOrderSummarySchema = z.object({
+  /** 상태별 건수. **전 상태가 들어 있다** — 0건인 탭도 0을 받아야 그린다. */
+  counts: z.record(orderStatusSchema, z.int().min(0)),
+  /**
+   * 신규 주문 — 결제는 끝났고 판매자가 아직 확인하지 않은 건.
+   *
+   * 어느 상태가 여기 세어지는지는 **서버가 정한다.** 화면이 `counts` 를 더해 만들면
+   * 그 규칙이 대시보드·사이드바·목록 셋에 흩어지고, 상태가 하나 늘 때 한 곳만
+   * 고쳐진다 — 「가능한 액션은 서버가 답한다」와 같은 판단이다.
+   */
+  newOrders: z.int().min(0),
+  /** 처리 대기 — 판매자가 다음 행동을 해야 하는 건 전부. */
+  actionRequired: z.int().min(0),
+})
+
+export type SellerOrderSummary = z.infer<typeof sellerOrderSummarySchema>
+
+export const sellerOrderSummaryResponseSchema = z.object({ summary: sellerOrderSummarySchema })
+
+export type SellerOrderSummaryResponse = z.infer<typeof sellerOrderSummaryResponseSchema>
+
+/**
+ * `POST /api/v1/seller-orders/:id/delivery` — 판매자의 「배송완료 처리」 (TASK-0060 4.3).
+ *
+ * **전이 라우트로 같은 일을 하면 배송 표가 따라오지 않는다** (TASK-0061 4.4):
+ * 주문만 `DELIVERED` 로 가고 구매자의 추적 화면은 「이동 중」에 남는다. 그래서 이
+ * 라우트가 따로 있고, 둘을 **한 트랜잭션**에서 옮긴다.
+ *
+ * 답이 둘인 것은 화면이 둘 다 그리기 때문이다 — 상태 배지와 버튼 목록은 전이의
+ * 것이고, 추적 타임라인은 배송의 것이다. 한 번 더 물으면 그 사이의 화면이 낡은
+ * 짝을 그린다.
+ */
+export const sellerOrderDeliveryResponseSchema = z.object({
+  transition: sellerOrderTransitionResponseSchema,
+  shipment: shipmentSchema,
+})
+
+export type SellerOrderDeliveryResponse = z.infer<typeof sellerOrderDeliveryResponseSchema>

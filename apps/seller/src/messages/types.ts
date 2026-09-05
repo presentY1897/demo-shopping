@@ -1,20 +1,26 @@
 import type {
   ApiFailureReason,
+  DemoCarrierCode,
   DenialReason,
   ErrorMessages,
   HealthStatus,
   OauthFailureReason,
   OauthNotice,
+  OrderActor,
+  OrderStatus,
   ProductStatus,
+  SellerOrderRequirement,
   SellerStatus,
   SellerStockAdjustType,
   SellerStockFilter,
   StockLedgerType,
+  TrackingEventKind,
 } from '@shopping/shared'
-import type { ImageUploadListLabels } from '@shopping/ui/components'
+import type { ImageUploadListLabels, ShipmentTrackingLabels } from '@shopping/ui/components'
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
+import type { SellerOrderTab } from '@/lib/orders/order-console'
 import type { StoreFieldErrorMessages } from '@/lib/sellers/store-form'
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'
@@ -105,6 +111,20 @@ export interface Messages {
   readonly productList: ProductListMessages
   /** Variant 별 재고 조정과 그 이력 (TASK-0116). */
   readonly productStock: ProductStockMessages
+  /**
+   * 주문 관리 목록 (TASK-0060). 상태 탭 · 기간 · 검색 · 일괄 발송 · 내보내기.
+   */
+  readonly orderList: OrderListMessages
+  /** 주문 하나 — 항목 · 수령인 · 금액 · 이력 · 배송, 그리고 액션 버튼. */
+  readonly orderDetail: OrderDetailMessages
+  /**
+   * 상태와 주체의 이름.
+   *
+   * 화면의 어휘가 아니라 **주문의** 어휘라 두 화면이 나눠 쓴다 —
+   * `products.statusLabels` 가 같은 이유로 목록과 편집기 밖에 있다. 두 벌을 두면
+   * 목록에서는 「배송중」이고 상세에서는 「배송 중」인 날이 온다.
+   */
+  readonly orders: OrderVocabularyMessages
 }
 
 /**
@@ -833,4 +853,261 @@ export interface ProductStockMessages {
   readonly adjusted: string
   readonly failure: StoreFailureMessages
   readonly toast: ProductToastMessages
+}
+
+/* ------------------------------------------------ 주문 관리 (TASK-0060) -- */
+
+/**
+ * 주문의 어휘 — 상태 · 주체 · 배송 단계.
+ *
+ * `Record<OrderStatus, string>` 인 것이 요점이다. 상태가 하나 늘면 **타입 검사가**
+ * 빠진 문장을 잡고, 화면은 「알 수 없음」을 그릴 일이 없다.
+ */
+export interface OrderVocabularyMessages {
+  readonly statusLabels: Readonly<Record<OrderStatus, string>>
+  /** 이력의 「누가」. `SYSTEM` 이 사람이 아니라는 사실이 여기서 문장이 된다. */
+  readonly actorLabels: Readonly<Record<OrderActor, string>>
+  /** 액션 버튼의 이름 — 「어느 상태로」가 아니라 **무엇을 하는지**로 읽힌다. */
+  readonly actionLabels: Readonly<Record<OrderStatus, string>>
+  /** 조건이 모자란 버튼 옆의 사유. `blockedBy` 가 고른다. */
+  readonly requirementLabels: Readonly<Record<SellerOrderRequirement, string>>
+  readonly carrierLabels: Readonly<Record<DemoCarrierCode, string>>
+  readonly trackingEventLabels: Readonly<Record<TrackingEventKind, string>>
+}
+
+/** 상태 탭. 이름은 설계서 4장이 정한 여섯이다. */
+export interface OrderTabMessages {
+  readonly label: string
+  readonly names: Readonly<Record<SellerOrderTab, string>>
+  /** `{name}` `{count}` — 탭 이름 뒤에 붙는 건수의 접근성 문장. */
+  readonly countLabel: string
+}
+
+export interface OrderFilterMessages {
+  readonly legend: string
+  readonly fromLabel: string
+  readonly toLabel: string
+  readonly searchLabel: string
+  readonly searchPlaceholder: string
+  readonly reset: string
+  /** 기간이 거꾸로일 때. 서버에 보내기 전에 화면이 말한다 (U2). */
+  readonly rangeReversed: string
+}
+
+/** 목록 표의 열과 줄마다의 조작. */
+export interface OrderTableMessages {
+  readonly caption: string
+  readonly orderNumber: string
+  readonly orderedAt: string
+  readonly status: string
+  readonly recipient: string
+  readonly items: string
+  readonly paidAmount: string
+  readonly tracking: string
+  readonly actions: string
+  /** `{orderNumber}` — 보이는 라벨이 없는 체크박스의 이름. */
+  readonly selectRow: string
+  readonly selectAll: string
+  readonly open: string
+  readonly noTracking: string
+  /** `{headline}` `{rest}` — 「울 코트 외 2건」. 개수는 서버가 세고 문장은 여기서 만든다. */
+  readonly headlineWithRest: string
+  /** `{count}` */
+  readonly quantity: string
+}
+
+/** 처리 대기 · 신규 주문 뱃지. */
+export interface OrderBadgeMessages {
+  /** `{count}` */
+  readonly actionRequired: string
+  /** `{count}` */
+  readonly newOrders: string
+  readonly none: string
+}
+
+/** 발송 처리 — 한 건이든 여러 건이든 같은 대화상자다. */
+export interface OrderShipMessages {
+  readonly title: string
+  /** `{count}` */
+  readonly bulkTitle: string
+  readonly carrierLabel: string
+  readonly carrierAuto: string
+  readonly notice: string
+  readonly confirm: string
+  readonly cancel: string
+  /** `{count}` */
+  readonly done: string
+  /** `{done}` `{failed}` — 일부만 성공했을 때. 전체를 되돌리지 않는다 (R1). */
+  readonly partial: string
+  readonly failedHeading: string
+  readonly nothingShippable: string
+}
+
+/**
+ * 내보내기 파일의 열 이름.
+ *
+ * 화면의 열 이름을 그대로 쓰지 않는다. 표에서는 「상품」한 칸이 대표 상품명과 개수를
+ * 함께 말하지만 파일에서는 두 칸이고, 두 칸에 같은 이름을 적으면 그 파일을 여는
+ * 사람이 어느 쪽이 무엇인지 알 수 없다.
+ */
+export interface OrderExportColumnMessages {
+  readonly orderNumber: string
+  readonly orderedAt: string
+  readonly status: string
+  readonly recipient: string
+  readonly headline: string
+  readonly itemCount: string
+  readonly totalQuantity: string
+  readonly paidAmount: string
+  readonly trackingNumber: string
+}
+
+/** 일괄 선택 막대. */
+export interface OrderBulkMessages {
+  /** `{count}` */
+  readonly selected: string
+  readonly clear: string
+  readonly ship: string
+  readonly print: string
+  readonly export: string
+  readonly exporting: string
+  /** `{count}` */
+  readonly exported: string
+  readonly exportEmpty: string
+  readonly exportColumns: OrderExportColumnMessages
+}
+
+export interface OrderListMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly tabs: OrderTabMessages
+  readonly filters: OrderFilterMessages
+  readonly table: OrderTableMessages
+  readonly badges: OrderBadgeMessages
+  readonly bulk: OrderBulkMessages
+  readonly ship: OrderShipMessages
+  readonly pagination: PaginationMessages
+  readonly empty: EmptyStateMessages
+  readonly filteredEmpty: EmptyStateMessages
+  readonly errorTitle: string
+  readonly retry: string
+  readonly failure: StoreFailureMessages
+  readonly toast: ProductToastMessages
+  readonly closeLabel: string
+}
+
+/** 상태 이력 표. */
+export interface OrderHistoryMessages {
+  readonly title: string
+  readonly caption: string
+  readonly at: string
+  readonly change: string
+  readonly actor: string
+  readonly reason: string
+  readonly noReason: string
+  /** `{from}` `{to}` — 「상품준비중 → 배송중」. 최초 생성에는 앞이 없다. */
+  readonly step: string
+  readonly created: string
+  readonly empty: string
+}
+
+/** 인쇄용 주문서. 화면이 아니라 **종이**의 문구다. */
+export interface OrderPrintMessages {
+  readonly action: string
+  readonly documentTitle: string
+  readonly orderNumber: string
+  readonly orderedAt: string
+  readonly recipient: string
+  readonly address: string
+  readonly phone: string
+  readonly items: string
+  readonly option: string
+  readonly quantity: string
+  readonly unitPrice: string
+  readonly amount: string
+  readonly total: string
+  readonly shippingFee: string
+  readonly paidAmount: string
+  readonly tracking: string
+  readonly notice: string
+}
+
+export interface OrderDetailMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly backToList: string
+  /** `{orderNumber}` */
+  readonly subtitle: string
+  readonly sections: {
+    readonly items: string
+    readonly recipient: string
+    readonly amounts: string
+    readonly shipment: string
+  }
+  readonly recipient: {
+    readonly name: string
+    readonly phone: string
+    readonly address: string
+  }
+  readonly items: {
+    readonly caption: string
+    readonly product: string
+    readonly option: string
+    readonly quantity: string
+    readonly unitPrice: string
+    readonly amount: string
+    readonly noOption: string
+  }
+  readonly amounts: {
+    readonly productAmount: string
+    readonly couponDiscountAmount: string
+    readonly pointDiscountAmount: string
+    readonly shippingFee: string
+    readonly paidAmount: string
+  }
+  readonly actions: {
+    readonly legend: string
+    /** `{requirement}` — 왜 지금 누를 수 없는지. */
+    readonly blocked: string
+    /**
+     * 서버가 막았는데 이유를 말하지 않은 경우.
+     *
+     * 지금 그런 답은 없다(`blockedBy` 는 `enabled: false` 와 짝이다). 그래도 문장이
+     * 필요한 이유는 `GuardedButton` 이 **사유 없는 비활성을 컴파일로 막기** 때문이고,
+     * 그 자리를 「이대로 처리할까요?」 같은 아무 문장으로 메우면 판매자는 읽고도
+     * 아무것도 알지 못한다.
+     */
+    readonly blockedUnknown: string
+    readonly reasonLabel: string
+    readonly reasonPlaceholder: string
+    readonly reasonRequired: string
+    readonly confirmTitle: string
+    /** `{action}` */
+    readonly confirmBody: string
+    readonly confirm: string
+    readonly cancel: string
+    /** `{status}` */
+    readonly done: string
+    readonly unchanged: string
+  }
+  /**
+   * 배송 추적 컴포넌트가 받는 문구 전부 (`packages/ui`).
+   *
+   * `ShipmentTrackingLabels` 를 그대로 받는 이유는 그 컴포넌트가 **한국어를 하나도
+   * 모르기** 때문이다. 앱이 문구를 넘기고, 빠뜨리면 컴파일이 멈춘다 — 「가상 배송
+   * 정보입니다」가 필수 prop 인 것이 그 장치의 요점이다 (TASK-0061 R1).
+   */
+  readonly tracking: ShipmentTrackingLabels
+  readonly copiedTrackingNumber: string
+  readonly history: OrderHistoryMessages
+  readonly print: OrderPrintMessages
+  readonly ship: OrderShipMessages
+  readonly errorTitle: string
+  readonly retry: string
+  readonly notFound: EmptyStateMessages
+  readonly failure: StoreFailureMessages
+  readonly toast: ProductToastMessages
+  readonly closeLabel: string
 }
