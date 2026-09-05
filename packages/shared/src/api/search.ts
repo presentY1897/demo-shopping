@@ -81,6 +81,14 @@ export const searchHitSchema = z.object({
   id: productIdSchema,
   name: z.string(),
   brandName: z.string(),
+  /**
+   * The store, so anything holding a hit can link to its brand page.
+   *
+   * The name alone was not enough: a card could print it and nothing could
+   * follow it. The index has carried `sellerId` since TASK-0038 — this is the
+   * field that lets it out (TASK-0102, where the sitemap needs the brand URLs).
+   */
+  sellerId: z.uuid(),
   categoryId: categoryIdSchema,
   price: priceSchema,
   inStock: z.boolean(),
