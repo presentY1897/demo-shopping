@@ -1356,6 +1356,7 @@ model Order {
   /// 이 참조가 끊길 일이 없고, 끊긴다면 그것은 이력을 잃는 일이다.
   user         User          @relation(fields: [userId], references: [id], onDelete: Restrict)
   sellerOrders SellerOrder[]
+  payments     Payment[]
 
   /// 「내 주문」 목록. 최신순이다.
   @@index([userId, createdAt(sort: Desc)])
@@ -1460,4 +1461,124 @@ model OrderStatusHistory {
 
   /// 한 주문의 이력을 시간순으로.
   @@index([sellerOrderId, createdAt])
+}
+
+/// 누가 결제를 처리했나 (D-031).
+///
+/// `VIRTUAL_CARD` 는 우리가 만든 것이고 `TOSS` 는 남이 만든 것이다. 둘을 같은
+/// 인터페이스 뒤에 두는 것이 M08 의 전부이고, 프로바이더가 둘이어야 추상화가
+/// 장식이 아닌 실제 설계가 된다.
+enum PaymentProviderName {
+  VIRTUAL_CARD
+  TOSS
+}
+
+/// 결제가 지나는 상태 (`docs/design/state-machines.md` 3장).
+enum PaymentStatus {
+  /// 요청이 만들어졌다. 아직 아무 돈도 움직이지 않았다.
+  READY
+  /// 카드가 받아 줬다. 아직 우리 쪽으로 오지는 않았다.
+  AUTHORIZED
+  /// 매입 확정. 돈이 온다.
+  PAID
+  /// 일부가 환불됐고 남은 금액이 있다. **끝이 아니다** — 부분 환불은 여러 번 온다.
+  PARTIAL_CANCELED
+  CANCELED
+  /// 승인 거절 · 한도 초과 · 타임아웃.
+  FAILED
+}
+
+/// 무슨 일이 있었나. 상태를 바꾼 사건도, 안 바꾼 사건도 남는다.
+enum PaymentEventKind {
+  REQUESTED
+  AUTHORIZED
+  CAPTURED
+  CANCELED
+  REFUNDED
+  FAILED
+  /// 웹훅이 도착했다. 상태를 바꿨는지와 무관하게 남는다 (TASK-0056).
+  WEBHOOK
+}
+
+/// 한 주문의 결제.
+///
+/// **결제 단위는 `Order` 다** (D-023). 판매자가 셋이어도 사는 사람은 한 번 결제한다.
+model Payment {
+  id      String @id @default(uuid(7)) @db.Uuid
+  orderId String @db.Uuid
+
+  provider PaymentProviderName
+  status   PaymentStatus       @default(READY)
+
+  /// 승인된 금액. 주문의 실결제금액과 같아야 한다.
+  authorizedAmount Int
+
+  /// 지금까지 취소·환불된 누계.
+  ///
+  /// 환불 행을 매번 합산하지 않고 들고 있는 이유는, **넘지 않았는지를 판단하는
+  /// 자리가 쓰는 자리와 같아야** 하기 때문이다 — 합산해서 판단하고 따로 쓰면 그
+  /// 사이에 다른 환불이 들어온다 (F6). 합계와 어긋나지 않는 것은 점검이 본다.
+  canceledAmount Int @default(0)
+
+  /// 프로바이더가 부르는 이름. 대사와 조회의 열쇠다.
+  ///
+  /// 승인 전에는 없다. 유니크인 이유는 **웹훅의 멱등** 때문이다(TASK-0056) — 같은
+  /// 결제키로 두 행이 생기면 어느 쪽을 갱신할지가 도착 순서에 달린다.
+  paymentKey String? @unique
+
+  approvedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order   Order          @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  events  PaymentEvent[]
+  refunds Refund[]
+
+  /// 「이 주문의 결제」. 한 주문에 결제 시도가 여러 번 있을 수 있다 — 실패하면
+  /// 다시 하므로 유니크가 아니다.
+  @@index([orderId, createdAt])
+  /// 대사 배치가 읽는 것: 특정 상태로 오래 남아 있는 결제.
+  @@index([status, createdAt])
+}
+
+/// 결제에 무슨 일이 있었나. **분쟁과 불일치 조사의 유일한 근거다.**
+///
+/// 상태 이름과 종류를 따로 둔 이유는 **상태를 안 바꾸는 사건**이 있기 때문이다 —
+/// 같은 웹훅이 두 번 오면 두 번째는 아무것도 바꾸지 않지만, 그것이 왔다는 사실은
+/// 남아야 한다.
+model PaymentEvent {
+  id        String @id @default(uuid(7)) @db.Uuid
+  paymentId String @db.Uuid
+
+  kind PaymentEventKind
+
+  /// 이 사건이 상태를 바꿨다면 그 전후. 안 바꿨으면 둘 다 같다.
+  fromStatus PaymentStatus?
+  toStatus   PaymentStatus?
+
+  /// 외부에서 온 원문 그대로 (TASK-0056). 우리가 해석하기 **전**의 것이라야
+  /// 나중에 「그때 뭐라고 왔었나」에 답할 수 있다.
+  payload Json?
+
+  createdAt DateTime @default(now())
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId, createdAt])
+}
+
+/// 환불 한 건. 부분 환불이 여러 번 일어나므로 별도 표다.
+model Refund {
+  id        String @id @default(uuid(7)) @db.Uuid
+  paymentId String @db.Uuid
+
+  amount Int
+  reason String
+
+  refundedAt DateTime @default(now())
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId, refundedAt])
 }
