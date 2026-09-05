@@ -20,23 +20,41 @@ import {
   neverAnswers,
 } from '@shopping/api-mocks'
 import { APP_ID_HEADER, healthEntries } from '@shopping/shared'
-import { render, screen, within } from '@testing-library/react'
+import { DensityProvider } from '@shopping/ui/density'
+import { screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import HomePage from '@/app/page'
 import { messagesFor } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { testServer } from './setup'
 
 const { health, home, wake } = messagesFor()
 
 /**
+ * The page inside the two providers the real layout gives it.
+ *
+ * TASK-0044 put a demo nudge and two product sections on this page: the first
+ * asks who is signed in, the second two ask which density step is chosen. A bare
+ * `render` would throw on either, which reads as a page bug and is a missing
+ * provider.
+ */
+function renderHome() {
+  return renderWithAuth(
+    <DensityProvider>
+      <HomePage />
+    </DensityProvider>,
+  )
+}
+
+/**
  * The liveness rows, and only those.
  *
- * The home screen grew a second list in TASK-0018 — the density preview grid,
- * which is a `<ul>` of placeholder cards — so a bare `getAllByRole('listitem')`
- * now counts nine things. Scoping to the panel is what keeps this assertion
- * about the payload rather than about whatever else the page happens to render.
+ * The home screen has several lists on it — category chips and two product
+ * sections — so a bare `getAllByRole('listitem')` counts all of them. Scoping to
+ * the panel is what keeps this assertion about the payload rather than about
+ * whatever else the page happens to render.
  */
 function healthRows(): readonly HTMLElement[] {
   const panel = screen.getByRole('heading', { name: health.title }).closest('section')
@@ -74,15 +92,22 @@ describe('the server render', () => {
   it('makes no API call of its own', () => {
     HomePage()
 
+    // Still true after TASK-0044 put product rows on this page. They read their
+    // own data from the browser (`useSection`) precisely so that this stays
+    // true — a server render that waited would meet a ninety second cold start
+    // with a five second timeout.
     expect(requests).toEqual([])
   })
 
   it('paints the page while the API is still asleep', () => {
     testServer.server.use(neverAnswers(mockPaths.health))
-    render(<HomePage />)
+    renderHome()
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(home.title)
-    expect(screen.getByText(home.description)).toBeVisible()
+    // The hero, not a section: TASK-0044 gave the page product rows, and those
+    // arrive after mount. What is in the markup is what a visitor can read while
+    // the API is still waking.
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(home.heroTitle)
+    expect(screen.getByText(home.heroBody)).toBeVisible()
     expect(screen.getByText(health.notice)).toBeVisible()
     expect(screen.getByRole('region', { name: health.title })).toHaveAttribute('aria-busy', 'true')
   })
@@ -90,14 +115,14 @@ describe('the server render', () => {
 
 describe('the mocked payload reaches the screen', () => {
   it('shows the version and uptime the mock API answered', async () => {
-    render(<HomePage />)
+    renderHome()
 
     expect(await screen.findByText(healthOk.version)).toBeVisible()
     expect(screen.getByText(`${healthOk.uptime}${health.uptimeUnit}`)).toBeVisible()
   })
 
   it('shows one labelled row per liveness field', async () => {
-    render(<HomePage />)
+    renderHome()
     await screen.findByText(healthOk.version)
 
     const rows = healthRows()
@@ -108,7 +133,7 @@ describe('the mocked payload reaches the screen', () => {
   })
 
   it('does not render the failure panel while the API answers', async () => {
-    render(<HomePage />)
+    renderHome()
     await screen.findByText(healthOk.version)
 
     expect(screen.queryByRole('alert')).toBeNull()
@@ -125,7 +150,7 @@ describe('the mocked payload reaches the screen', () => {
 describe('a payload that no longer matches the schema', () => {
   it('is reported instead of rendered', async () => {
     testServer.server.use(malformedResponse(mockPaths.health, driftedHealthPayload))
-    render(<HomePage />)
+    renderHome()
 
     const alert = await screen.findByRole('alert')
 
@@ -134,7 +159,7 @@ describe('a payload that no longer matches the schema', () => {
 
   it('keeps the rest of the page up', async () => {
     testServer.server.use(malformedResponse(mockPaths.health, driftedHealthPayload))
-    render(<HomePage />)
+    renderHome()
 
     expect(await screen.findByText(wake.failureTitle)).toBeVisible()
     expect(screen.getByRole('heading', { level: 1 })).toBeVisible()
@@ -149,7 +174,7 @@ describe('the call itself', () => {
       appIdsSeen.push(request.headers.get(APP_ID_HEADER) ?? '(none)')
     })
 
-    render(<HomePage />)
+    renderHome()
     await screen.findByText(healthOk.version)
 
     // Asserted as a set: how many calls a screen makes is its own business and
