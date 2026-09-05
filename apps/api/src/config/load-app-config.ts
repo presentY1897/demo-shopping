@@ -5,6 +5,8 @@ import { resolveAppOrigins } from './app-origins.js'
 import { deriveEnvFromPortOffset } from './derived-env.js'
 import type { GoogleOAuthConfig } from './google-config.js'
 import { resolveGoogleOAuthConfig } from './google-config.js'
+import type { TossConfig } from './toss-config.js'
+import { resolveTossConfig } from './toss-config.js'
 import { EnvValidationError } from './env-validation.error.js'
 import type { Env, EnvIssue } from './env.schema.js'
 import { parseEnv } from './env.schema.js'
@@ -44,6 +46,7 @@ interface Resolved {
   readonly appOrigins: AppOrigins
   readonly storage: ObjectStorageConfig | null
   readonly googleOAuth: GoogleOAuthConfig | null
+  readonly toss: TossConfig | null
 }
 
 function toAppConfig(env: Env, resolved: Resolved): AppConfig {
@@ -68,6 +71,7 @@ function toAppConfig(env: Env, resolved: Resolved): AppConfig {
     },
     storage: resolved.storage,
     googleOAuth: resolved.googleOAuth,
+    toss: resolved.toss,
     auth: {
       jwtSecret: env.JWT_SECRET,
       accessTokenTtlSeconds: ACCESS_TOKEN_TTL_SECONDS,
@@ -102,8 +106,17 @@ export async function loadAppConfig(): Promise<LoadedAppConfig> {
   // Read from the merged record for the same reason as R2: "both or neither"
   // is a rule about a set, not about either field on its own.
   const googleOAuth = resolveGoogleOAuthConfig(merged)
+  // Toss is the third of these, and the client key is the reason it cannot be a
+  // field validation either: `NEXT_PUBLIC_TOSS_CLIENT_KEY` is read by the shop
+  // at build time, so the API only ever sees it as one half of a pair.
+  const toss = resolveTossConfig(merged)
 
-  const issues: EnvIssue[] = [...derived.issues, ...storage.issues, ...googleOAuth.issues]
+  const issues: EnvIssue[] = [
+    ...derived.issues,
+    ...storage.issues,
+    ...googleOAuth.issues,
+    ...toss.issues,
+  ]
   if (!parsed.ok) issues.push(...parsed.issues)
 
   if (!parsed.ok || issues.length > 0) throw new EnvValidationError(issues)
@@ -128,6 +141,7 @@ export async function loadAppConfig(): Promise<LoadedAppConfig> {
       appOrigins,
       storage: storage.config,
       googleOAuth: googleOAuth.config,
+      toss: toss.config,
     }),
     sources: { envFiles, portOffset: derived.offset },
   }
