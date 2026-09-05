@@ -46,7 +46,11 @@ export function quote(value: string): string {
 export function filterExpression(query: SearchQuery): string | null {
   const clauses: string[] = []
 
-  if (query.categoryId !== undefined) clauses.push(`categoryId = ${String(query.categoryId)}`)
+  // `categoryIds`, not `categoryId`: the document carries its whole lineage, so
+  // membership is what makes a parent category include everything under it
+  // (TASK-0042 4.1). A leaf is nobody's ancestor, so it still matches only its
+  // own listings.
+  if (query.categoryId !== undefined) clauses.push(`categoryIds = ${String(query.categoryId)}`)
   if (query.priceMin !== undefined) clauses.push(`price >= ${String(query.priceMin)}`)
   if (query.priceMax !== undefined) clauses.push(`price <= ${String(query.priceMax)}`)
   if (query.inStock === true) clauses.push('inStock = true')

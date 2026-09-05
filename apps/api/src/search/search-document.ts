@@ -27,6 +27,8 @@ export interface ProductSource {
   readonly categoryId: number
   /** Root first: `['여성', '상의', '티셔츠']`. */
   readonly categoryPath: readonly string[]
+  /** The same lineage as ids, root first: `[1, 5, 12]`. */
+  readonly categoryIds: readonly number[]
   readonly minPrice: number | null
   readonly ratingAvg: number
   readonly ratingCount: number
@@ -45,6 +47,20 @@ export interface ProductDocument {
   readonly description: string
   readonly brandName: string
   readonly categoryId: number
+  /**
+   * Every category this listing hangs under, its own included (TASK-0042 4.1).
+   *
+   * **This is what `categoryId` filters against**, not the scalar above.
+   * Meilisearch reads `categoryIds = 3` as membership, so one equality answers
+   * 「3번 가지 아래 전부」 — and a leaf still matches only itself, because a leaf
+   * is nobody's ancestor. Filtering the scalar instead would make a top-level
+   * category show the handful of listings hung directly on it and nothing else,
+   * which reads as the catalogue being empty.
+   *
+   * The scalar stays: it is what a hit reports as *its own* category, and the
+   * screen needs that to link to one page rather than to three.
+   */
+  readonly categoryIds: readonly number[]
   readonly categoryPath: readonly string[]
   /** `'여성 > 상의 > 티셔츠'` — one searchable string for the whole lineage. */
   readonly categoryLabel: string
@@ -65,6 +81,26 @@ export interface ProductDocument {
 
 /** The prefix every flattened attribute carries. */
 export const ATTRIBUTE_FACET_PREFIX = 'attr_'
+
+/**
+ * The shape of {@link ProductDocument}, as a number to compare against.
+ *
+ * **Bump it whenever a field is added, removed or given a new meaning.**
+ * `SearchIndexerService` reads the value it last wrote and rebuilds the whole
+ * index when it differs, which is what makes a document change safe to deploy.
+ *
+ * Without it the failure is silent and total: the engine keeps answering, the
+ * documents it holds simply lack the new field, and every filter on that field
+ * matches nothing. Nothing logs, `/health` stays green, and the catalogue looks
+ * empty to anyone who clicks a category. That is worse than an outage, because
+ * an outage is noticed.
+ *
+ * | # | 무엇이 바뀌었나 |
+ * | --- | --- |
+ * | 1 | TASK-0038 최초 문서 |
+ * | 2 | `categoryIds` — 조상 사슬. 카테고리 필터가 이것을 본다 (TASK-0042 4.1) |
+ */
+export const DOCUMENT_VERSION = 2
 
 /**
  * Only `ACTIVE` listings belong in the index.
@@ -123,6 +159,7 @@ export function toDocument(source: ProductSource): ProductDocument {
     description: source.description ?? '',
     brandName: source.brandName,
     categoryId: source.categoryId,
+    categoryIds: [...source.categoryIds],
     categoryPath: [...source.categoryPath],
     categoryLabel: source.categoryPath.join(' > '),
     sellerId: source.sellerId,

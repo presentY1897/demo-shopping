@@ -13,6 +13,7 @@ interface SourceRow {
   readonly brandName: string
   readonly categoryId: number
   readonly categoryPath: readonly string[] | null
+  readonly categoryIds: readonly number[] | null
   readonly minPrice: number | null
   readonly ratingAvg: number
   readonly ratingCount: number
@@ -45,6 +46,12 @@ const SOURCE_SQL = `
          (SELECT array_agg(a."name" ORDER BY length(a."path"))
             FROM "Category" a
            WHERE c."path" LIKE a."path" || '%')            AS "categoryPath",
+         -- The same lineage as ids. It is what makes 「하위 포함」 a filter rather
+         -- than a second query: a document tagged with every ancestor answers
+         -- 「이 가지 아래 전부」 with one equality (TASK-0042 4.1).
+         (SELECT array_agg(a."id" ORDER BY length(a."path"))
+            FROM "Category" a
+           WHERE c."path" LIKE a."path" || '%')            AS "categoryIds",
          p."minPrice",
          p."ratingAvg",
          p."ratingCount",
@@ -82,6 +89,7 @@ function toSource(row: SourceRow): ProductSource {
     brandName: row.brandName,
     categoryId: row.categoryId,
     categoryPath: row.categoryPath ?? [],
+    categoryIds: row.categoryIds ?? [],
     minPrice: row.minPrice,
     ratingAvg: row.ratingAvg,
     ratingCount: row.ratingCount,

@@ -38,6 +38,10 @@ export const SEARCHABLE_ATTRIBUTES: readonly string[] = [
  */
 export const FILTERABLE_ATTRIBUTES: readonly string[] = [
   'categoryId',
+  // The lineage, which is what a category filter actually matches — see
+  // `ProductDocument.categoryIds`. `categoryId` stays filterable because the
+  // facet counts are keyed on it.
+  'categoryIds',
   'sellerId',
   'price',
   'inStock',
