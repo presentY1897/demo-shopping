@@ -6,7 +6,7 @@ import type {
   SearchQuery,
   SearchResponse,
 } from '@shopping/shared'
-import { SEARCH_SUGGEST_LIMIT } from '@shopping/shared'
+import { classifyHangulQuery, hangulQueryFor, SEARCH_SUGGEST_LIMIT } from '@shopping/shared'
 
 import { PrismaService } from '../prisma/prisma.service.js'
 import { ATTRIBUTE_FACET_PREFIX } from './search-document.js'
@@ -111,8 +111,20 @@ export class SearchService {
   async suggest(term: string): Promise<readonly string[]> {
     if (term.trim() === '') return []
 
+    /**
+     * 검색어를 색인과 같은 모양으로 바꾼다 (TASK-0103 F1 · F2 · F4).
+     *
+     * 「코ㅌ」는 완성형 `코` 뒤에 호환 자모 `ㅌ` 라 「코트」와 한 글자도 겹치지
+     * 않는다. 색인에 자모를 펴 둔 것과 **같은 함수**로 검색어도 펴야 둘이 만난다 —
+     * 그래서 그 함수는 `packages/shared` 에 있다.
+     *
+     * 판별에 실패하면 완성형으로 보낸다 (R3). 자모 필드에 완성형을 던지면 아무것도
+     * 안 나오지만, 이름 필드에 완성형을 던지는 것은 그냥 평소의 검색이다.
+     */
+    const kind = classifyHangulQuery(term)
+
     const answer = await this.index.search({
-      q: term,
+      q: hangulQueryFor(term, kind),
       filter: 'inStock = true',
       sort: [],
       offset: 0,

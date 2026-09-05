@@ -119,7 +119,81 @@ describe('toDocument', () => {
     expect(document.attr_name).toBe('속성이 이긴다면 버그')
   })
 
-  it('leaves the hangul field for TASK-0103', () => {
-    expect(toDocument(source()).hangul).toEqual([])
+  it('spreads the name and the brand into jamo and initials (TASK-0103)', () => {
+    const document = toDocument(source())
+
+    // 「데일리 코튼 티셔츠」 · 「해뜰녘」, one entry per word: the engine matches
+    // prefixes and token sequences, and one run-on string would find nothing.
+    expect(document.hangul).toContain('ㅋㅗㅌㅡㄴ')
+    expect(document.chosung).toContain('ㅋㅌ')
+    expect(document.chosung).toContain('ㅎㄸㄴ')
+  })
+
+  it('leaves the description out of them (R2)', () => {
+    // 설명까지 펴면 인덱스가 몇 배가 되고, 설명을 초성으로 찾는 사람은 없다.
+    const document = toDocument(source({ description: '아주 긴 설명입니다' }))
+
+    expect(document.chosung).not.toContain('ㅇㅈ')
+  })
+})
+
+describe('F8 — 보조 필드가 문서를 얼마나 키우나', () => {
+  /**
+   * 「증가분이 운영 한도 내」를 예산이 아니라 **실측으로** 적는다.
+   *
+   * 문서 **전체** 대비 비율은 쓸모가 없다 — 그 값은 설명이 얼마나 긴지에 달렸고,
+   * 설명 길이는 상품마다 다르다. 안정적인 관계는 **이름 대비**다: 자모는 음절 하나를
+   * 두세 글자로 펴고 초성은 한 글자로 줄이므로, 두 필드의 크기는 이름의 길이를 따라
+   * 움직이지 문서의 크기를 따라 움직이지 않는다.
+   */
+  const NAMES = [
+    '오버핏 울 발마칸 코트',
+    '램스울 라운드넥 니트',
+    '나이키 에어맥스 270',
+    '캐시미어 머플러',
+  ]
+
+  it('grows with the title and stays a small multiple of it', () => {
+    const measured = NAMES.map((name) => {
+      const { hangul, chosung } = toDocument(source({ name }))
+
+      return {
+        name,
+        added: JSON.stringify({ hangul, chosung }).length,
+        // Brand and name are what feed the fields (R2).
+        title: `${name} 해뜰녘`.length,
+      }
+    })
+
+    /**
+     * 실측 (JSON 문자 수 기준):
+     *
+     * | 이름 | 늘어난 것 | 이름+브랜드 | 배수 |
+     * | --- | --- | --- | --- |
+     * | 오버핏 울 발마칸 코트 | 96 | 16 | 6.00 |
+     * | 램스울 라운드넥 니트 | 90 | 15 | 6.00 |
+     * | 나이키 에어맥스 270 | 87 | 16 | 5.44 |
+     * | 캐시미어 머플러 | 75 | 12 | 6.25 |
+     *
+     * 자모가 한 음절을 최대 세 글자로 펴고 초성이 한 글자를 더하며, 거기에 JSON 의
+     * 따옴표·쉼표와 두 필드 이름이 붙는다. **짧은 이름일수록 배수가 크다** — 고정
+     * 오버헤드가 30자 남짓이기 때문이고, 절대량은 그쪽이 작다.
+     *
+     * 7배로 묶는다. 실측에 여유를 얹은 값이고, 이보다 커지면 그것은 설명까지
+     * 펴기 시작했다는 뜻이다.
+     */
+    for (const entry of measured) {
+      expect(entry.added / entry.title).toBeLessThan(7)
+    }
+  })
+
+  it('is unmoved by the description, however long it gets (R2)', () => {
+    const short = toDocument(source({ name: '코트', description: null }))
+    const long = toDocument(source({ name: '코트', description: '아주 긴 설명. '.repeat(200) }))
+
+    // 설명까지 폈다면 문서가 배로 늘었을 것이다. 그리고 설명을 초성으로 찾는
+    // 사람은 없다.
+    expect(long.hangul).toEqual(short.hangul)
+    expect(long.chosung).toEqual(short.chosung)
   })
 })

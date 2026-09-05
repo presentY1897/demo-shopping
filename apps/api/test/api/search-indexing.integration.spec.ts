@@ -22,6 +22,7 @@ import {
   DOCUMENT_VERSION_KEY,
   SearchIndexerService,
 } from '../../src/search/search-indexer.service.js'
+import { SearchService } from '../../src/search/search.service.js'
 import { SearchOutboxService } from '../../src/search/search-outbox.service.js'
 import { PrismaService } from '../../src/prisma/prisma.service.js'
 import { useApiApp } from '../support/api-app.js'
@@ -122,6 +123,17 @@ async function search(query: string, filter?: string): Promise<readonly string[]
   const body = (await response.json()) as { hits?: readonly { id: string }[] }
 
   return (body.hits ?? []).map((hit) => hit.id)
+}
+
+/**
+ * Suggestions through the **service**, not through a raw engine call.
+ *
+ * TASK-0103's whole mechanism is the step before the engine — classifying what
+ * was typed and spreading it into the shape the index holds. A raw query would
+ * skip exactly the part being tested.
+ */
+async function suggest(term: string): Promise<readonly string[]> {
+  return api.resolve<SearchService>(SearchService).suggest(term)
 }
 
 /**
@@ -316,6 +328,81 @@ describe('F5 · F5b · F5c — rebuilding', () => {
     // The same promise, so the same count — three separate rebuilds would each
     // read the whole catalogue and write it back over the others.
     expect([first, second, third]).toEqual([2, 2, 2])
+  })
+})
+
+describe('한글 자모 · 초성 (TASK-0103)', () => {
+  /**
+   * Against the real engine, because what is being checked is a *match* — and a
+   * match is the engine's opinion, not a mapper's. The unit tests cover the
+   * spelling; these cover whether the spelling finds anything.
+   */
+  async function indexed(name: string): Promise<void> {
+    await listing({ name })
+    await indexer().drain()
+    await settled()
+  }
+
+  it('finds a listing mid-composition: 코ㅌ → 코트 (F1)', async () => {
+    await indexed('오버핏 울 발마칸 코트')
+
+    // 「코ㅌ」는 완성형 `코` 뒤에 호환 자모 `ㅌ` 다. 자모로 펴 두지 않으면 「코트」와
+    // 한 글자도 겹치지 않는다.
+    expect(await suggest('코ㅌ')).toContain('오버핏 울 발마칸 코트')
+  })
+
+  it('finds one by its initials: ㅋㅌ → 코트 (F2)', async () => {
+    await indexed('오버핏 울 발마칸 코트')
+
+    expect(await suggest('ㅋㅌ')).toContain('오버핏 울 발마칸 코트')
+  })
+
+  it('still finds a fully typed word, unchanged (F3)', async () => {
+    await indexed('오버핏 울 발마칸 코트')
+
+    expect(await suggest('코트')).toContain('오버핏 울 발마칸 코트')
+    expect(await suggest('발마칸')).toContain('오버핏 울 발마칸 코트')
+  })
+
+  it('handles a name with Latin letters in it (F6)', async () => {
+    await indexed('나이키 에어맥스 270')
+
+    // 「나이ㅋ」 is a jamo query; the Latin and the digits must survive the
+    // spreading rather than being dropped as 「not Hangul」.
+    expect(await suggest('나이ㅋ')).toContain('나이키 에어맥스 270')
+    expect(await suggest('270')).toContain('나이키 에어맥스 270')
+  })
+
+  it('prefers the fully typed match over a chosung one (F5)', async () => {
+    // 「코트」 is a word in one and only the initials of the other.
+    await indexed('클래식 코트')
+    await indexed('카키 트렌치')
+
+    const names = await suggest('코트')
+
+    expect(names[0]).toBe('클래식 코트')
+  })
+
+  it('matches initials in the middle of a word too, and ranks the exact one first (4.1)', async () => {
+    // 처음에는 「접두어만 맞는다」고 적었다가 이 검사가 반증했다. 세그멘터가 호환
+    // 자모를 한 글자씩 쪼개므로 초성 검색은 토큰 나열을 찾는 것이 되고, 낱말
+    // 가운데도 맞는다 — 접미사를 색인할 필요가 없었다.
+    await indexed('클래식 코트')
+    await indexed('울 롱코트')
+
+    const names = await suggest('ㅋㅌ')
+
+    expect(names).toContain('울 롱코트')
+    // 정확히 맞은 쪽이 먼저다. 근접도 랭킹이 하는 일이고, R1 이 경계한 「넓어짐」을
+    // 감당하는 것이 그것이다.
+    expect(names[0]).toBe('클래식 코트')
+  })
+
+  it('does not match initials in the wrong order', async () => {
+    await indexed('클래식 코트')
+
+    // 「자모를 아무거나 포함」이 아니라는 음성 대조군. 순서가 있다.
+    expect(await suggest('ㅌㅋ')).not.toContain('클래식 코트')
   })
 })
 

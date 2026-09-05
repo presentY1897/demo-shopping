@@ -1,5 +1,8 @@
 import type { SearchFilter, SearchHit } from '@shopping/shared'
 import {
+  classifyHangulQuery,
+  hangulIndexFields,
+  hangulQueryFor,
   searchFiltersResponseSchema,
   searchResponseSchema,
   searchSuggestResponseSchema,
@@ -100,6 +103,43 @@ function facetsFor(
   return counts
 }
 
+/**
+ * 자모·초성 자동완성 (TASK-0103).
+ *
+ * **색인을 만드는 그 함수를 그대로 쓴다.** `hangulIndexFields` 와
+ * `classifyHangulQuery` 는 `packages/shared` 의 것이고, API 도 같은 것을 쓴다 —
+ * 목이 자기 방식으로 자모를 폈다면 화면은 실제로는 나오지 않을 후보를 보고
+ * 통과했을 것이다.
+ *
+ * 재현하지 **않는** 것: 낱말을 건너뛰는 초성 매칭이다. 실제 엔진은 「커피 토스트」를
+ * `ㅋㅌ` 로도 찾는데(그쪽 4.1 의 실측표), 그것은 근접도 랭킹이 뒤로 미는 넓은
+ * 매칭이고 화면이 검증할 성질이 아니다.
+ */
+function suggestionsFor(term: string): string[] {
+  const trimmed = term.trim()
+
+  if (trimmed === '') return []
+
+  const kind = classifyHangulQuery(trimmed)
+  const wanted = hangulQueryFor(trimmed, kind)
+
+  const matched = SEARCH_CATALOGUE.filter((entry) => {
+    const { name, brandName } = entry.hit
+
+    if (kind === 'complete') return name.includes(trimmed) || brandName.includes(trimmed)
+
+    const spelled = hangulIndexFields([name, brandName])
+    const words = kind === 'chosung' ? spelled.chosung : spelled.jamo
+
+    // 초성은 낱말 가운데도 맞고(실측), 자모는 접두어로 맞는다.
+    return words.some((word) =>
+      kind === 'chosung' ? word.includes(wanted) : word.startsWith(wanted),
+    )
+  })
+
+  return [...new Set(matched.map((entry) => entry.hit.name))].slice(0, 8)
+}
+
 export const searchHandlers: readonly RequestHandler[] = [
   http.get(mockPaths.search, ({ request }) =>
     answering(() => {
@@ -185,16 +225,10 @@ export const searchHandlers: readonly RequestHandler[] = [
   http.get(mockPaths.searchSuggest, ({ request }) =>
     answering(() => {
       const q = new URL(request.url).searchParams.get('q') ?? ''
-      const names =
-        q.trim() === ''
-          ? []
-          : [
-              ...new Set(
-                SEARCH_CATALOGUE.map((entry) => entry.hit.name).filter((name) => name.includes(q)),
-              ),
-            ].slice(0, 8)
 
-      return HttpResponse.json(defineFixture(searchSuggestResponseSchema, { suggestions: names }))
+      return HttpResponse.json(
+        defineFixture(searchSuggestResponseSchema, { suggestions: suggestionsFor(q) }),
+      )
     }),
   ),
 ]
