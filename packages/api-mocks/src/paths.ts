@@ -105,6 +105,8 @@ export const mockPaths = {
    */
   products: `*${API_PATH_PREFIX}/products`,
   /** `GET` for the editor and the preview, `PATCH` to save. */
+  /** `GET` the shopper's view of one listing — public, `ACTIVE` only (TASK-0043). */
+  productDetail: `*${API_PATH_PREFIX}/products/:id/detail`,
   product: `*${API_PATH_PREFIX}/products/:id`,
   /**
    * `POST` to put a listing on sale, and to take it off again.
