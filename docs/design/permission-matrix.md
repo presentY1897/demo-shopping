@@ -29,6 +29,7 @@
 | `cart.write` | `own` | — | — | `any` | — |
 | `order.read` | `own` | `own` | `any` | `any` | `any` |
 | `order.write` | `own` | `own` | — | `any` | — |
+| `reservation.sweep` | — | — | `any` | `any` | `demo` |
 | `claim.read` | `own` | `own` | `any` | `any` | `any` |
 | `claim.handle` | — | `own` | `any` | `any` | `demo` |
 | `coupon.read` | `own` | `own` | `any` | `any` | `any` |
@@ -60,17 +61,17 @@
 
 ### ADMIN_OPERATOR
 
-퍼미션 15개 — `catalog.read:any` · `catalog.write:any` · `product.read:any` · `product.write:any` · `media.upload:any` · `order.read:any` · `claim.read:any` · `claim.handle:any` · `coupon.read:any` · `coupon.write:any` · `settlement.read:any` · `user.read:any` · `seller.read:any` · `seller.approve:any` · `demo.manage:any`
+퍼미션 16개 — `catalog.read:any` · `catalog.write:any` · `product.read:any` · `product.write:any` · `media.upload:any` · `order.read:any` · `claim.read:any` · `claim.handle:any` · `coupon.read:any` · `coupon.write:any` · `settlement.read:any` · `user.read:any` · `seller.read:any` · `seller.approve:any` · `demo.manage:any` · `reservation.sweep:any`
 
 ### ADMIN_SUPER
 
-퍼미션 29개 — `catalog.read:any` · `catalog.write:any` · `catalog.delete:any` · `product.read:any` · `product.write:any` · `product.delete:any` · `media.upload:any` · `cart.read:any` · `cart.write:any` · `order.read:any` · `order.write:any` · `claim.read:any` · `claim.handle:any` · `coupon.read:any` · `coupon.write:any` · `coupon.delete:any` · `settlement.read:any` · `settlement.approve:any` · `settlement.pay:any` · `user.read:any` · `user.write:any` · `user.delete:any` · `profile.write:any` · `profile.delete:any` · `seller.read:any` · `seller.write:any` · `seller.approve:any` · `seller.suspend:any` · `demo.manage:any`
+퍼미션 30개 — `catalog.read:any` · `catalog.write:any` · `catalog.delete:any` · `product.read:any` · `product.write:any` · `product.delete:any` · `media.upload:any` · `cart.read:any` · `cart.write:any` · `order.read:any` · `order.write:any` · `reservation.sweep:any` · `claim.read:any` · `claim.handle:any` · `coupon.read:any` · `coupon.write:any` · `coupon.delete:any` · `settlement.read:any` · `settlement.approve:any` · `settlement.pay:any` · `user.read:any` · `user.write:any` · `user.delete:any` · `profile.write:any` · `profile.delete:any` · `seller.read:any` · `seller.write:any` · `seller.approve:any` · `seller.suspend:any` · `demo.manage:any`
 
 ### DEMO_ADMIN
 
-퍼미션 15개 — `catalog.read:any` · `catalog.write:demo` · `product.read:any` · `product.write:demo` · `media.upload:demo` · `order.read:any` · `claim.read:any` · `claim.handle:demo` · `coupon.read:any` · `coupon.write:demo` · `settlement.read:any` · `user.read:any` · `seller.read:any` · `seller.approve:demo` · `demo.manage:demo`
+퍼미션 16개 — `catalog.read:any` · `catalog.write:demo` · `product.read:any` · `product.write:demo` · `media.upload:demo` · `order.read:any` · `claim.read:any` · `claim.handle:demo` · `coupon.read:any` · `coupon.write:demo` · `settlement.read:any` · `user.read:any` · `seller.read:any` · `seller.approve:demo` · `demo.manage:demo` · `reservation.sweep:demo`
 
 ---
 
-퍼미션 29개 · 역할 5개.
+퍼미션 30개 · 역할 5개.
 `DEMO_ADMIN` 은 `ADMIN_OPERATOR` 에서 파생된다 — 쓰기 권한만 `demo` 로 좁히고 읽기는 그대로 둔다.
