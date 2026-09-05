@@ -109,6 +109,9 @@ export const mockPaths = {
    */
   productPublish: `*${API_PATH_PREFIX}/products/:id/publish`,
   productUnpublish: `*${API_PATH_PREFIX}/products/:id/unpublish`,
+  search: `*${API_PATH_PREFIX}/search`,
+  searchFilters: `*${API_PATH_PREFIX}/search/filters`,
+  searchSuggest: `*${API_PATH_PREFIX}/search/suggest`,
   sellerProducts: `*${API_PATH_PREFIX}/seller/products`,
   sellerProductStatus: `*${API_PATH_PREFIX}/seller/products/status`,
   sellerProductVariants: `*${API_PATH_PREFIX}/seller/products/:id/variants`,

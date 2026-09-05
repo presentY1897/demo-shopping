@@ -48,6 +48,7 @@ export {
   resetSellerStore,
   resetSessionStore,
   resetUploadStore,
+  searchHandlers,
   sellerConsoleHandlers,
   sellerConsoleSnapshot,
   sellerHandlers,
@@ -58,6 +59,12 @@ export {
   userRolesHandlers,
 } from './handlers'
 export type { SellerRequestRecord } from './handlers'
+export {
+  SEARCH_CATALOGUE,
+  SEARCH_COAT_CATEGORY,
+  SEARCH_SHOE_CATEGORY,
+  searchFilters,
+} from './handlers/search-catalogue'
 export {
   productId as sellerProductId,
   SELLER_CATEGORY_IDS,
