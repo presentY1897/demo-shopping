@@ -149,6 +149,12 @@ export const untouchedTables: Readonly<Record<string, string>> = {
   PaymentEvent: 'Payment 에 Cascade 로 매달려 있다. 분쟁 조사의 근거이므로 결제가 남는 한 남는다',
   Refund: 'Payment 에 매달려 있다',
   VirtualCardTransaction: 'VirtualCard 에 Cascade 로 매달려 있다',
+  ClaimRequest:
+    'SellerOrder 에 Cascade 로 매달려 있다. 주문이 남으므로 함께 남는다 — 「이 주문이 왜 취소됐나」는 산 사람이 데모였다는 이유로 지울 수 있는 기록이 아니라 **판 사람의 클레임 이력**이고, 정산(M12)이 반품으로 확정 취소된 금액을 그것으로 센다. `requestedById` 가 `RESTRICT` 이므로 계정 행이 툼스톤으로 남는 지금 구조에서 끊기지도 않는다 (TASK-0065)',
+  ClaimItem:
+    'ClaimRequest 에 Cascade 로 매달려 있다. `orderItemId` 는 `RESTRICT` 인데, 주문 항목도 지우지 않으므로 끊기지 않는다',
+  ClaimStatusHistory:
+    'ClaimRequest 에 Cascade 로 매달려 있다. 「누가 이 반품을 거절했나」는 분쟁의 근거이므로 클레임이 남는 한 남는다 — PaymentEvent 와 같은 판단',
 }
 
 /**

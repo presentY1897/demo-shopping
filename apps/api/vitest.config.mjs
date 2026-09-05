@@ -435,6 +435,27 @@ export default defineConfig({
           statements: 100,
         },
         /**
+         * TASK-0065 (6.2, Q5 강화). 클레임의 순수 판단 — 어느 상태에서 어디로
+         * 누가 옮기는가, 주문 상태가 어느 경로를 정하는가, 이 신청을 받아도
+         * 되는가, 아직 몇 개가 남았는가.
+         *
+         * **전부 조용히 틀린다.** 전이표에 없는 칸이 하나 열리면 검수하지 않은
+         * 반품이 환불로 앉아 물건은 안 왔는데 돈만 나가고, 주체가 한 칸 넓으면
+         * **신청한 사람이 자기 신청을 승인한다** — 어느 화살표에도 `BUYER` 가
+         * 없다는 것이 이 표의 존재 이유다. 두 경로가 한 열거형에 있으므로 섞이는
+         * 것을 막는 것도 표뿐이고, 한 칸이 새면 배송된 물건이 회수도 검수도 없이
+         * 환불된다. 거절 이유의 **순서**가 뒤집히면 배송 중인 주문에 「수량이
+         * 모자랍니다」가 나가 사람이 수량을 고쳐 다시 시도하고, 확정한 주문에
+         * 「기간이 지났습니다」가 나가 기다렸으면 됐다는 뜻으로 읽힌다. 넷 다
+         * 빨간 검사가 아니라 나중에 클레임 하나로 나타난다.
+         */
+        'src/claims/claim-rules.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        /**
          * TASK-0117. The error contract's decision-making, all of it pure:
          * which code and sentence a status maps to, what a domain failure's
          * payload looks like, which `details` shape one zod issue becomes, and

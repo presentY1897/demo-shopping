@@ -138,6 +138,10 @@ model User {
   orders        Order[]
   virtualCards  VirtualCard[]
 
+  /// 이 계정이 낸 취소·반품 신청 (TASK-0065). 탈퇴는 소프트 삭제이므로 저쪽 끝이
+  /// `Restrict` 이고, 그래서 「누가 신청했나」가 사라지지 않는다.
+  claimRequests ClaimRequest[]
+
   /// Stock movements this account made (TASK-0036). Withdrawal leaves them
   /// pointing here, which is why the edge is `Restrict` on the other side.
   stockMovements StockLedger[]
@@ -1420,6 +1424,9 @@ model SellerOrder {
   statusHistory OrderStatusHistory[]
   /// 발급된 운송장 (TASK-0061). **1:1** 이다 — 분할 배송은 이번 범위 밖이다.
   shipment      Shipment?
+  /// 이 몫에 걸린 취소·반품 신청 (TASK-0065). **1:N 이다** — 항목 셋 중 하나를
+  /// 취소하고 나중에 다른 하나를 반품하는 것이 정상 흐름이다.
+  claims        ClaimRequest[]
 
   /// 한 주문에 한 판매자는 한 몫이다. 두 줄이면 그 판매자의 배송비가 두 번 붙는다.
   @@unique([orderId, sellerId])
@@ -1453,6 +1460,27 @@ model OrderItem {
   /// 위 둘의 합.
   discountAmount       Int @default(0)
 
+  /// **살아 있는 클레임이 잡고 있는 수량** (TASK-0065 R1).
+  ///
+  /// 「이미 신청된 수량 합계」를 `ClaimItem` 에서 매번 세지 않는 이유는 `reserved`
+  /// 와 같다 — 세는 순간 그 값은 낡고, 「읽고 → 판단하고 → 쓰는」 사이에 남이
+  /// 끼어들면 두 신청이 각자 「아직 남았다」를 읽는다. 이 칸이 있으면 잡는 일
+  /// 전체가 **한 문장**이 된다:
+  ///
+  /// ```sql
+  /// UPDATE "OrderItem" SET "claimedQuantity" = "claimedQuantity" + $q
+  ///  WHERE "id" = $id AND "quantity" - "claimedQuantity" >= $q
+  /// ```
+  ///
+  /// **거절된 클레임은 이 칸을 돌려준다.** 세는 것이 「신청한 적 있는 수량」이
+  /// 아니라 「살아 있는 클레임이 잡고 있는 수량」이기 때문이고(`claim-rules.ts`),
+  /// 검수에서 떨어진 반품이 그 항목을 영영 잠그면 사람이 할 수 있는 일이 없어진다.
+  ///
+  /// 캐시라 어긋날 수 있고, 그 마지막 방어선이
+  /// `OrderItem_claimedQuantity_check`(`0 <= claimedQuantity <= quantity`)다 —
+  /// 조건부 갱신을 안 쓰는 코드가 하나 생기는 날 조용히 넘치는 것을 DB 가 막는다.
+  claimedQuantity      Int @default(0)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1460,6 +1488,7 @@ model OrderItem {
   /// `Restrict`: 팔린 조합은 지워지지 않는다. 스냅샷이 있어도 원장과 클레임이 이
   /// 참조를 따라간다.
   variant     ProductVariant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  claimItems  ClaimItem[]
 
   /// 「이 조합이 얼마나 팔렸나」. M13 의 판매량과 M10 의 클레임이 읽는다.
   @@index([variantId])
@@ -1843,4 +1872,176 @@ model ShipmentTrackingEvent {
 
   /// 한 배송의 이력을 시간순으로.
   @@index([shipmentId, occurredAt])
+}
+
+// ---------------------------------------------------------------------------
+// 클레임 — 취소 · 반품 (TASK-0065)
+//
+// 순수 규칙은 `apps/api/src/claims/claim-rules.ts` 가 갖는다. 여기 있는 것은 그
+// 규칙이 앉을 자리이고, PSL 로 적을 수 없는 것(CHECK)은 마이그레이션에 손으로 쓴
+// SQL 로 들어간다 — 지키는 것은 각각의 컬럼 주석에 함께 적혀 있다.
+//
+// **항목·수량 단위가 이 도메인의 전부다** (D-027). 주문 항목 셋 중 하나만, 그 중 두
+// 개 중 하나만 취소하는 것이 정상 흐름이고, 주문 단위로만 만들면 실제 서비스로 쓸
+// 수 없다.
+// ---------------------------------------------------------------------------
+
+/// 취소인가 반품인가 (`docs/design/state-machines.md` 4장).
+///
+/// **사람이 고르지 않는다.** 「취소할까 반품할까」는 물건이 어디 있는가의 문제이지
+/// 취향이 아니고, 고르게 두면 배송된 물건을 취소로 신청해 재고가 두 번 늘어난다.
+/// 주문 상태가 정한다 — `claimRouteFor()`.
+enum ClaimType {
+  /// 배송 전. `PAID` · `PREPARING`.
+  CANCEL
+  /// 배송 후. `DELIVERED`, 그리고 반품 기간 안.
+  RETURN
+}
+
+/// 클레임이 지나는 상태 (설계서 4장).
+///
+/// **두 경로가 한 열거형에 있다.** 나누면 「지금 이 클레임이 어디까지 왔나」를 묻는
+/// 화면과 목록이 유형별로 다른 코드를 갖게 되고, 실제로 둘은 같은 표에 나란히 있다.
+/// 대신 `ClaimRequest_type_status_check` 가 경로를 섞지 못하게 막는다.
+enum ClaimStatus {
+  CANCEL_REQUESTED
+  CANCEL_APPROVED
+  CANCEL_REJECTED
+  RETURN_REQUESTED
+  RETURN_APPROVED
+  /// 회수 중. 실제 운송이 아니라 가상이다 (TASK-0067).
+  PICKING_UP
+  INSPECTING
+  RETURN_COMPLETED
+  RETURN_REJECTED
+  /// 환불까지 끝났다. **두 경로가 만나는 유일한 자리**다 — 환불은 끝에서 같은
+  /// 일이고, 그 앞까지 오는 길이 다를 뿐이다.
+  REFUNDED
+}
+
+/// 누구 탓인가 (ERD 5장 · `pricing.md` 3장).
+///
+/// 값이 아니라 **돈**이다. 판매자 귀책이면 배송비·반품비를 판매자가 물고 구매자는
+/// 전액을 돌려받으며, 단순 변심이면 반품 배송비가 환불액에서 빠진다. 그래서
+/// 「모름」이 없다 — 정하지 않은 채로는 환불액을 계산할 수 없고, 계산하지 못하는
+/// 클레임은 영원히 열려 있는 클레임이 된다.
+enum ClaimFault {
+  /// 단순 변심 · 주문 실수. 반품 배송비는 구매자 부담이다.
+  CUSTOMER
+  /// 상품 하자 · 오배송 · 품절 취소. 비용은 판매자 부담이다.
+  SELLER
+}
+
+/// 취소 · 반품 신청 하나.
+///
+/// **`SellerOrder` 에 붙는다** — 배송·취소·정산의 단위가 거기이기 때문이다(D-023).
+/// 한 주문에 판매자가 셋이면 취소도 셋으로 갈린다.
+model ClaimRequest {
+  id            String @id @default(uuid(7)) @db.Uuid
+  sellerOrderId String @db.Uuid
+
+  type   ClaimType
+  status ClaimStatus
+
+  /// 왜 신청했는가. 비어 있을 수 없다 — `ClaimRequest_reason_check` 가 막는다.
+  /// 「왜 돌려주나」에 답하지 못하는 클레임은 판매자가 판단할 근거가 없다.
+  reason String
+
+  /// 누구 탓인가. 신청할 때 말하고, 검수 결과에 따라 바뀔 수 있다 (TASK-0067).
+  fault ClaimFault
+
+  /// 신청한 사람. **기본값이 없다.**
+  ///
+  /// 사람이 없는 신청은 없다 — `SYSTEM` 이 클레임을 내는 길은 이 TASK 에 없고,
+  /// 생긴다면 그때 이 컬럼이 아니라 이력의 `actor` 가 그것을 말해야 한다.
+  /// `Restrict`: 신청 이력이 가리키는 계정은 지워지지 않는다(탈퇴는 소프트 삭제다).
+  requestedById String @db.Uuid
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// 주문이 사라지면 그 주문의 클레임도 사라진다. 클레임만 남으면 아무 주문도
+  /// 가리키지 않는 신청서다.
+  sellerOrder   SellerOrder          @relation(fields: [sellerOrderId], references: [id], onDelete: Cascade)
+  requestedBy   User                 @relation(fields: [requestedById], references: [id], onDelete: Restrict)
+  items         ClaimItem[]
+  statusHistory ClaimStatusHistory[]
+
+  /// 「이 주문의 클레임 전부」를 시간순으로. 잔여 수량 화면과 상세가 읽는다.
+  @@index([sellerOrderId, createdAt])
+  /// 판매자 콘솔의 「처리할 클레임」 목록: 상태로 거르고 최신순 (M10 의 화면).
+  @@index([status, createdAt(sort: Desc)])
+  /// 「내가 낸 신청」 목록.
+  @@index([requestedById, createdAt(sort: Desc)])
+}
+
+/// 신청에 걸린 주문 항목 하나와, 그중 **몇 개**인가.
+///
+/// 이 표가 있는 것이 「부분 취소·부분 반품」의 전부다. 없으면 신청의 단위가 주문이
+/// 되고, 항목 셋 중 하나만 취소하는 정상 흐름을 표현할 수 없다.
+model ClaimItem {
+  id          String @id @default(uuid(7)) @db.Uuid
+  claimId     String @db.Uuid
+  orderItemId String @db.Uuid
+
+  /// 신청 수량. 1 이상이고 `OrderItem.quantity` 의 남은 몫을 넘지 못한다 —
+  /// 앞은 `ClaimItem_quantity_check`, 뒤는 `OrderItem_claimedQuantity_check` 가
+  /// 지킨다.
+  quantity Int
+
+  /// 이 줄로 돌려줄 금액.
+  ///
+  /// **이 TASK 는 계산하지 않는다** (TASK-0068). 컬럼이 지금 있는 이유는 환불이
+  /// 계산될 때 그 결과가 앉을 자리가 신청의 줄이어야 하기 때문이고 — 부분 환불은
+  /// 항목별로 갈린다(`pricing.md` 3장) — 나중에 표를 하나 더 만들면 같은 사실이
+  /// 두 곳에 살게 된다. 그때까지 값은 `0` 이고, 그 `0` 은 「0원을 돌려준다」가
+  /// 아니라 **「아직 계산하지 않았다」**다.
+  refundAmount Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  claim     ClaimRequest @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  /// `Restrict`: 클레임이 가리키는 주문 항목은 지워지지 않는다.
+  orderItem OrderItem    @relation(fields: [orderItemId], references: [id], onDelete: Restrict)
+
+  /// 한 신청에서 같은 항목을 두 줄로 적을 수 없다. 두 줄이면 「이 신청이 이 항목의
+  /// 몇 개를 잡고 있나」에 답이 둘이 되고, 거절이 돌려줄 수량도 갈린다.
+  @@unique([claimId, orderItemId])
+  /// 「이 항목에 걸린 클레임 전부」 — 잔여 수량의 대사(캐시가 맞는지)가 읽는다.
+  @@index([orderItemId])
+}
+
+/// 클레임의 상태 이력. 누가 언제 무엇에서 무엇으로 옮겼는가.
+///
+/// `OrderStatusHistory` 가 선례이고 **`OrderActor` 를 그대로 쓴다** — 주체는 클레임과
+/// 주문에서 같은 것을 뜻하고(사람이 아니라 종류다), 열거형을 한 벌 더 만들면 콘솔이
+/// 같은 값을 두 이름으로 다루게 된다.
+model ClaimStatusHistory {
+  id      String @id @default(uuid(7)) @db.Uuid
+  claimId String @db.Uuid
+
+  /// 신청이 생긴 줄에는 이전 상태가 없다. **신청은 전이가 아니라 생성**이다.
+  fromStatus ClaimStatus?
+  toStatus   ClaimStatus
+
+  /// 왜 옮겼는가. 거절에는 있고 정상 진행에는 없다.
+  reason String?
+
+  /// 누가 옮겼는가 — **종류. 기본값을 두지 않았다** (TASK-0059 4.2).
+  ///
+  /// 기본값을 두면 주체를 말하지 않은 이력이 `SYSTEM` 으로 기록되고, 그것은
+  /// 「모른다」가 아니라 **「기계가 했다」는 거짓**이다. 클레임에서는 그 거짓의 값이
+  /// 더 크다 — 「누가 이 반품을 거절했나」가 분쟁에서 다투는 바로 그 사실이다.
+  actor OrderActor
+
+  /// 누가 옮겼는가 — **누구**. 사람이 없는 전이(`SYSTEM`)는 `null` 이다.
+  actorId String? @db.Uuid
+
+  createdAt DateTime @default(now())
+
+  claim ClaimRequest @relation(fields: [claimId], references: [id], onDelete: Cascade)
+
+  /// 한 클레임의 이력을 시간순으로.
+  @@index([claimId, createdAt])
 }

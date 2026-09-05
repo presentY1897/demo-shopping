@@ -293,6 +293,21 @@ export const ko: Messages = {
     CARD_LIMIT_EXCEEDED: '카드 한도를 넘었어요.',
     CARD_RELEASE_EXCEEDS: '돌려줄 수 있는 금액을 넘었어요.',
     CARD_EXPIRED: '유효기간이 지난 카드예요.',
+    // 클레임 (TASK-0065). 판매자가 실제로 만나는 실패다 — 신청은 구매자가 하지만
+    // 승인·거절은 여기서 한다. 여섯을 나눈 이유가 「사람이 할 일이 다르다」이므로
+    // 문장도 **다음 행동**으로 끝난다.
+    CLAIM_IN_TRANSIT: '배송 중에는 취소도 반품도 할 수 없어요. 도착한 뒤에 다시 시도해 주세요.',
+    CLAIM_ORDER_CONFIRMED: '구매확정한 주문이에요. 관리자에게 문의해 주세요.',
+    CLAIM_WINDOW_CLOSED: '반품할 수 있는 기간이 지났어요.',
+    CLAIM_NOT_CLAIMABLE: '지금 상태에서는 취소도 반품도 신청할 수 없어요.',
+    // 남은 수량은 서버가 함께 보낸다. 문장에 숫자를 적어 두면 그 숫자만 옛날 값으로 남는다.
+    CLAIM_EXCEEDS_REMAINING: '신청할 수 있는 수량을 넘었어요. {remaining}개까지 가능해요.',
+    CLAIM_INVALID_QUANTITY: '수량은 1개 이상이어야 해요.',
+    CLAIM_ITEM_MISSING: '이 주문에 없는 항목이 섞여 있어요. 다시 확인해 주세요.',
+    // 클레임 상태 전이. 주문 쪽 문장과 따로 있는 이유는 화면이 다르기 때문이다 —
+    // 반품 상세에 「주문 상태가 바뀌었어요」가 뜨면 무엇을 다시 읽어야 할지 모른다.
+    CLAIM_TRANSITION_UNDEFINED: '클레임 상태가 이미 바뀌었어요. 새로고침한 뒤 다시 확인해 주세요.',
+    CLAIM_TRANSITION_FORBIDDEN: '이 클레임을 그렇게 바꿀 수 있는 권한이 없어요.',
   },
   // 응답이 아예 오지 않은 실패. 읽을 코드가 없으므로 번호도 보여 주지 않는다.
   apiFailures: {

@@ -229,6 +229,54 @@ export const domainErrorCodes = [
   'CARD_RELEASE_EXCEEDS',
   /** 유효기간이 지난 카드다. */
   'CARD_EXPIRED',
+  /**
+   * 클레임 신청이 거절된 여섯 (TASK-0065 · `claim-rules.ts` 의 `ClaimRefusal`).
+   *
+   * **여섯을 하나로 묶지 않는 이유는 사람이 할 일이 다르기 때문이다.** 그리고
+   * 이 여섯에는 순서가 있다 — 배송 중인 주문에 「수량이 모자랍니다」라고 답하면
+   * 수량을 고쳐 다시 시도하게 되고, 또 거절당한다. 코드가 하나면 그 순서를
+   * 표현할 방법 자체가 없다.
+   */
+  /** 배송 중이다. 취소하기엔 떠났고 반품하기엔 안 왔다 — 기다리는 수밖에 없다. */
+  'CLAIM_IN_TRANSIT',
+  /**
+   * 구매확정했다. 일반 반품은 끝났고 관리자 개입만 남는다.
+   *
+   * 기간 만료(`CLAIM_WINDOW_CLOSED`)와 **다른 코드**다. 확정한 주문에 「기간이
+   * 지났습니다」는 반쯤 맞는 말이라 더 나쁘다 — 기다렸으면 됐다는 뜻으로 읽힌다.
+   */
+  'CLAIM_ORDER_CONFIRMED',
+  /** 반품 기간이 지났다. `params.deadline` 에 기간의 끝을 싣는다. */
+  'CLAIM_WINDOW_CLOSED',
+  /** 이 상태의 주문에는 애초에 클레임이 없다 — 결제 전이거나 이미 취소됐다. */
+  'CLAIM_NOT_CLAIMABLE',
+  /**
+   * 남은 수량보다 많이 신청했다. `params.remaining` 을 싣는다.
+   *
+   * **동시 신청에서 진 쪽이 받는 코드이기도 하다** (R1). 그래서 숫자를 함께
+   * 보낸다 — 「신청할 수 없습니다」로 끝나는 화면은 방금 다른 창에서 하나를 먼저
+   * 신청한 사람에게 아무것도 알려 주지 않는다.
+   */
+  'CLAIM_EXCEEDS_REMAINING',
+  /** 0개 이하를 신청했다. */
+  'CLAIM_INVALID_QUANTITY',
+  /** 신청한 항목이 이 주문의 것이 아니다 (`ORDER_ITEM_MISSING` 과 같은 종류). */
+  'CLAIM_ITEM_MISSING',
+  /**
+   * 그 상태에서 그 상태로 가는 길이 **없다** (TASK-0065 F7).
+   *
+   * `params` 에 `from`·`to` 를 싣는다. 주문 쪽 `ORDER_TRANSITION_UNDEFINED` 와
+   * 같은 뜻이고 **다른 코드**인 이유는 화면이 다르기 때문이다 — 클레임 화면이
+   * 주문 문장을 보여 주면 「주문 상태가 바뀌었어요」가 반품 상세에 뜬다.
+   */
+  'CLAIM_TRANSITION_UNDEFINED',
+  /**
+   * 길은 있는데 **이 주체가 지날 수 없다.**
+   *
+   * 이 코드가 실제로 막는 것 하나: **신청자가 자기 클레임을 승인하는 것.** 전이표
+   * 어느 화살표에도 `BUYER` 가 없고, 그 사실이 밖으로 나오는 자리가 여기다.
+   */
+  'CLAIM_TRANSITION_FORBIDDEN',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]
