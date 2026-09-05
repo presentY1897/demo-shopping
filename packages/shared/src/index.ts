@@ -436,3 +436,14 @@ export { rolePermissions } from './auth/role-permissions.js'
 export type { PermissionGrant } from './auth/role-permissions.js'
 export { isRole, roleSchema, roles } from './auth/roles.js'
 export type { Role } from './auth/roles.js'
+
+export {
+  CHOSUNG_MIN_LENGTH,
+  chosungOf,
+  classifyHangulQuery,
+  decomposeChar,
+  decomposeHangul,
+  hangulIndexFields,
+  hangulQueryFor,
+} from './hangul.js'
+export type { HangulQueryKind } from './hangul.js'

@@ -30,6 +30,14 @@ export default defineConfig({
       thresholds: {
         'src/api/api-failure.ts': complete,
         'src/api/error-messages.ts': complete,
+        /**
+         * TASK-0103 6.2 raises Q5 for this one: 「한글 처리는 경계 케이스가 많다」.
+         *
+         * A branch nothing reaches here is an input for which search silently
+         * returns nothing — and the person who typed it does not report that,
+         * they conclude the shop has no coats.
+         */
+        'src/hangul.ts': complete,
       },
     },
   },
