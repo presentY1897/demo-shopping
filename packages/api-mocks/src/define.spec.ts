@@ -18,6 +18,8 @@ describe('defineFixture', () => {
         demoCleanup: { lastRunAt: null },
         searchIndex: { pending: 0, lastRunAt: null, oldestPendingAt: null },
         reservationExpiry: { status: 'ok', lastRunAt: null, releasedCount: 0 },
+        paymentReconcile: { status: 'ok', lastRunAt: null, resolvedCount: 0 },
+        paymentWebhook: { lastReceivedAt: null },
       }),
     ).toThrow(/uptime/)
   })
@@ -33,6 +35,8 @@ describe('defineFixture', () => {
         demoCleanup: { lastRunAt: null },
         searchIndex: { pending: 0, lastRunAt: null, oldestPendingAt: null },
         reservationExpiry: { status: 'ok', lastRunAt: null, releasedCount: 0 },
+        paymentReconcile: { status: 'ok', lastRunAt: null, resolvedCount: 0 },
+        paymentWebhook: { lastReceivedAt: null },
       }),
     ).toThrow(/version/)
   })
@@ -61,6 +65,8 @@ describe('defineFixture', () => {
       demoCleanup: { lastRunAt: '2026-09-05T00:00:00.000Z' },
       searchIndex: { pending: 0, lastRunAt: '2026-09-05T00:00:00.000Z', oldestPendingAt: null },
       reservationExpiry: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', releasedCount: 0 },
+      paymentReconcile: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', resolvedCount: 0 },
+      paymentWebhook: { lastReceivedAt: '2026-09-05T00:00:00.000Z' },
     })
   })
 })

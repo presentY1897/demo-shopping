@@ -72,6 +72,10 @@ function toAppConfig(env: Env, resolved: Resolved): AppConfig {
     storage: resolved.storage,
     googleOAuth: resolved.googleOAuth,
     toss: resolved.toss,
+    // 짝이 없는 한 개짜리라 `resolved` 를 거치지 않고 `Env` 에서 바로 온다 —
+    // 저쪽 셋은 「전부 또는 하나도」라는 집합의 규칙이 있어 전용 해석기가 필요했다
+    // (`env.schema.ts` 의 `TOSS_WEBHOOK_SECRET` 주석).
+    tossWebhookSecret: env.TOSS_WEBHOOK_SECRET ?? null,
     auth: {
       jwtSecret: env.JWT_SECRET,
       accessTokenTtlSeconds: ACCESS_TOKEN_TTL_SECONDS,

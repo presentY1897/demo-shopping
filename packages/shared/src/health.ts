@@ -23,7 +23,12 @@ export type HealthStatus = z.infer<typeof healthStatusSchema>
  * here anyway, because the test is not "is it something we call" — it is
  * "does the API keep a promise it cannot keep while this is broken".
  */
-export const healthDependencyKeys = ['database', 'search', 'reservationExpiry'] as const
+export const healthDependencyKeys = [
+  'database',
+  'search',
+  'reservationExpiry',
+  'paymentReconcile',
+] as const
 
 export type HealthDependencyKey = (typeof healthDependencyKeys)[number]
 
@@ -102,6 +107,47 @@ export const healthResponseSchema = z.object({
     lastRunAt: z.iso.datetime().nullable(),
     releasedCount: z.int().min(0),
   }),
+  /**
+   * 결제 대사 배치 (TASK-0056 F6 · D-220).
+   *
+   * **이 배치가 멈추면 사람이 갇힌다.** 결제사에 닿지 못한 승인은 `UNRESOLVED` 로
+   * 남고 거기서 나가는 길은 대사만 연다 — 그동안 그 주문에는 새 결제를 시작할 수
+   * 없다. 카드에서 돈이 빠졌는지도 모르는 채로 다시 결제할 수도 없는 사람이
+   * 남는데, **아무 요청도 실패하지 않는다.** 위의 `reservationExpiry` 와 같은
+   * 종류의 침묵이고, 그래서 같은 모양으로 `status` 를 품는다 —
+   * {@link healthDependencyKeys} 의 하나이고 `degraded` 는 맨 위의 `status` 까지
+   * 함께 내린다.
+   *
+   * `resolvedCount` 는 **마지막 한 번**이 승인 또는 실패로 확정한 결제의 수다.
+   * 저쪽도 아직 모르는 건과 웹훅이 먼저 처리한 건은 여기 들어오지 않는다 — 둘 다
+   * 정상이지만 대사가 옮긴 것은 아니고, 섞으면 이 숫자가 「대사가 일하고 있다」의
+   * 근거가 되지 못한다. 평소 값이 0 인 것이 정상이다: 이 상태 자체가 결제사에
+   * 닿지 못했을 때만 생긴다.
+   */
+  paymentReconcile: z.object({
+    status: healthStatusSchema,
+    lastRunAt: z.iso.datetime().nullable(),
+    resolvedCount: z.int().min(0),
+  }),
+  /**
+   * 마지막으로 받은 결제 웹훅의 시각 (TASK-0056 2장).
+   *
+   * **`demoCleanup` 쪽이지 `paymentReconcile` 쪽이 아니다** — 시각만 싣고 판단은
+   * 읽는 쪽에 맡긴다. 웹훅이 한 건도 오지 않은 것은 고장이 아니라 **평범한 상태**라서
+   * 그렇다: 결제사 키가 없는 배포, 웹훅 URL 을 아직 등록하지 않은 배포, 그리고 그냥
+   * 아무도 결제하지 않은 한 시간이 전부 여기 해당한다. 그것을 `degraded` 로 올리면
+   * 헬스체크는 늘 빨갛고, 늘 빨간 헬스체크는 아무도 보지 않는다.
+   *
+   * 그러면 웹훅이 **끊긴** 것은 누가 아는가 — 대사 배치가 안다. 웹훅을 놓쳐도
+   * 상태를 맞추는 것이 그쪽의 일이고, 그것이 멈춘 것은 위의 `paymentReconcile` 이
+   * 판정한다. 여기서 같은 판정을 한 번 더 내리면 두 곳이 조용히 어긋난다.
+   *
+   * `null` 은 「이 프로세스가 뜬 뒤로 한 건도 안 왔다」가 아니라 **「기록이 없다」**
+   * 이다 — 값이 `AppMeta` 에 있어 재시작을 넘겨 살아남기 때문이고, 그래서 배포
+   * 직후에도 어제 받은 시각이 그대로 보인다. 「웹훅이 언제부터 끊겼나」를 물을 수
+   * 있는 자리가 그 성질이다.
+   */
+  paymentWebhook: z.object({ lastReceivedAt: z.iso.datetime().nullable() }),
 })
 
 export type HealthResponse = z.infer<typeof healthResponseSchema>

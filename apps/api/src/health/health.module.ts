@@ -8,6 +8,8 @@ import { SearchIndexReporter } from './search-index.reporter.js'
 import { HealthController } from './health.controller.js'
 import { HEALTH_INDICATORS } from './health-indicator.js'
 import { HealthService } from './health.service.js'
+import { PaymentReconcileHealthIndicator } from './payment-reconcile.health-indicator.js'
+import { PaymentWebhookReporter } from './payment-webhook.reporter.js'
 import { ReservationExpiryHealthIndicator } from './reservation-expiry.health-indicator.js'
 import { SearchHealthIndicator } from './search.health-indicator.js'
 import { EXPECTED_SEARCH_INDEXES, SEARCH_INDEXES } from './search-indexes.js'
@@ -20,8 +22,12 @@ import { SearchWarmupService } from './search-warmup.service.js'
     DatabaseHealthIndicator,
     SearchHealthIndicator,
     ReservationExpiryHealthIndicator,
+    PaymentReconcileHealthIndicator,
     DemoCleanupReporter,
     SearchIndexReporter,
+    // 지표가 아니라 보고자다 — 웹훅이 한 건도 안 온 것은 고장이 아니라서 전체
+    // 판정에 실리지 않는다 (`payment-webhook.reporter.ts`).
+    PaymentWebhookReporter,
     HealthService,
     // Wakes the search engine once at boot. It has no consumer: the class
     // implements OnApplicationBootstrap and Nest calls it (TASK-0101 4.6).
@@ -39,8 +45,16 @@ import { SearchWarmupService } from './search-warmup.service.js'
         // (TASK-0051 F6). 여기서 빠지면 `/health` 의 `reservationExpiry.status` 가
         // `down` 으로 드러난다 — 조용히 맞는 것처럼 보이지 않는다.
         reservationExpiry: ReservationExpiryHealthIndicator,
-      ) => [database, search, reservationExpiry],
-      inject: [DatabaseHealthIndicator, SearchHealthIndicator, ReservationExpiryHealthIndicator],
+        // 대사가 멈추면 결과를 모르는 결제가 갇히고, 그 사람은 다시 결제할 수도
+        // 없다 (TASK-0056 · D-220). 여기서도 아무것도 실패하지 않는 것이 위험이다.
+        paymentReconcile: PaymentReconcileHealthIndicator,
+      ) => [database, search, reservationExpiry, paymentReconcile],
+      inject: [
+        DatabaseHealthIndicator,
+        SearchHealthIndicator,
+        ReservationExpiryHealthIndicator,
+        PaymentReconcileHealthIndicator,
+      ],
     },
   ],
 })

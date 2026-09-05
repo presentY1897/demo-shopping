@@ -32,6 +32,14 @@ export interface TestConfigOptions {
    * 스펙은 둘 다 넘겨야 하므로 한쪽만 잊을 수 없다 (TASK-0055 4.1).
    */
   readonly toss?: TossConfig | null
+  /**
+   * 웹훅 서명 시크릿. **기본값이 `null` 이다** — 그것이 배포의 기본값이기도 하다.
+   *
+   * `toss` 와 짝이 아니라서 따로 온다. 그 기본값이 「토스가 없는 앱」을 만드는 것과
+   * 달리, 이쪽의 기본값은 **모든 웹훅을 401 로 거절하는 앱**을 만든다 — 그리고 그
+   * 상태를 재는 것이 F4 의 한 갈래다 (`payment-webhook.spec.ts`).
+   */
+  readonly tossWebhookSecret?: string | null
   /** Overrides the derived three-app allow list; `[]` leaves every app unreachable. */
   readonly corsOrigins?: readonly string[]
   /** Shortens the access token so a spec can watch one expire without waiting. */
@@ -120,6 +128,7 @@ export function testAppConfig({
   storage = testStorageConfig,
   googleOAuth = testGoogleOAuthConfig,
   toss = null,
+  tossWebhookSecret = null,
   corsOrigins = testCorsOrigins,
   accessTokenTtlSeconds = 15 * 60,
 }: TestConfigOptions): AppConfig {
@@ -163,6 +172,7 @@ export function testAppConfig({
     storage,
     googleOAuth,
     toss,
+    tossWebhookSecret,
     auth: {
       jwtSecret: TEST_JWT_SECRET,
       accessTokenTtlSeconds,

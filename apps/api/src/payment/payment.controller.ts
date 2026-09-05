@@ -1,13 +1,26 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpCode,
+  InternalServerErrorException,
+  Param,
+  Post,
+} from '@nestjs/common'
 import type { PaymentResponse } from '@shopping/shared'
 import { paymentProviderSchema } from '@shopping/shared'
 import { z } from 'zod'
 
 import { Principal } from '../auth/principal.decorator.js'
+import { PublicEndpoint } from '../auth/public-endpoint.decorator.js'
 import { RequirePermission } from '../auth/require-permission.decorator.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { parseInput } from '../common/parse-input.js'
 import { PaymentService } from './payment.service.js'
+import { TOSS_WEBHOOK_ROUTE, TOSS_WEBHOOK_SIGNATURE_HEADER } from './payment-webhook.js'
+import { PaymentWebhookService } from './payment-webhook.service.js'
 import type { CardTransaction, IssuedCard } from './virtual-card.service.js'
 import { VirtualCardService } from './virtual-card.service.js'
 
@@ -56,6 +69,7 @@ export class PaymentController {
   constructor(
     private readonly payments: PaymentService,
     private readonly cards: VirtualCardService,
+    private readonly webhooks: PaymentWebhookService,
   ) {}
 
   /**
@@ -170,6 +184,46 @@ export class PaymentController {
     const input = parseInput(confirmTossSchema, body)
 
     return this.payments.confirmToss(principal, id, input.paymentKey, input.amount)
+  }
+
+  /**
+   * `POST /payments/toss/webhook` — 토스가 「확인해 보라」고 알려 온다 (TASK-0056).
+   *
+   * **이 라우트의 인증 수단은 서명이다.** 가드를 우회하는 것이 아니라 다른 자격을
+   * 쓰는 것이고, 그래서 `@PublicEndpoint()` 로 「가드가 볼 자격이 없다」를 소리 내어
+   * 말한다 — 이 저장소는 아무것도 선언하지 않은 핸들러를 거부하므로(`PermissionGuard`),
+   * 침묵으로 열리는 라우트는 존재할 수 없다. 대신 서명이 없거나 틀리면 401 이고,
+   * **시크릿이 설정되지 않은 배포에서는 전부 401** 이다.
+   *
+   * `@RequirePermission` 을 붙이지 않는 이유는 붙일 권한이 없기 때문이다. 부르는
+   * 쪽이 사람이 아니라 결제사이고, 그쪽에는 우리 역할표에 들어갈 계정이 없다.
+   *
+   * **본문이 `Buffer` 다.** `configure-app.ts` 가 이 경로에만 원문 보존 미들웨어를
+   * 걸어 두어서고, 이유는 서명이 파싱된 객체가 아니라 **바이트**에 걸려 있기
+   * 때문이다 (`payment-webhook.middleware.ts`).
+   *
+   * **200 을 고정한다.** POST 의 기본값 201 은 「만들었다」는 뜻인데 이 라우트가
+   * 만드는 것은 없고, 무엇보다 PG 가 보는 것은 2xx 인지 여부다.
+   */
+  @Post(TOSS_WEBHOOK_ROUTE)
+  @HttpCode(200)
+  @PublicEndpoint()
+  async receiveTossWebhook(
+    @Body() body: unknown,
+    // 같은 헤더가 두 번 오면 Node 가 쉼표로 이어 붙여 하나의 문자열로 준다 — 그
+    // 값은 어느 서명과도 같지 않으므로 401 이 되고, 그것이 맞는 답이다.
+    @Headers(TOSS_WEBHOOK_SIGNATURE_HEADER) signature: string | undefined,
+  ): Promise<{ received: true }> {
+    if (!Buffer.isBuffer(body)) {
+      // 여기 오는 유일한 길은 라우트 경로와 미들웨어 마운트 경로가 어긋난
+      // 것이다. 조용히 401 로 접으면 「서명이 안 맞는다」로 보여 한참을 엉뚱한
+      // 곳에서 찾게 되므로, 우리 쪽 배선 오류라고 말한다.
+      throw new InternalServerErrorException('웹훅 원문이 보존되지 않았습니다.')
+    }
+
+    await this.webhooks.receive(body, signature)
+
+    return { received: true }
   }
 
   @Post('payments/:id/capture')

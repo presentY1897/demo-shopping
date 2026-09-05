@@ -77,6 +77,18 @@ export interface AppConfig {
    */
   readonly toss: TossConfig | null
   /**
+   * 토스 웹훅의 서명 시크릿, 또는 설정되지 않았으면 `null` (TASK-0056 F4).
+   *
+   * {@link toss} 와 **따로 있다.** 저 둘은 한 쌍이라 함께 오지만 이것은 한 개이고,
+   * 승인 키가 있는 배포가 웹훅을 아직 등록하지 않은 상태는 정상이다 — 웹훅 URL 은
+   * 공개 주소가 생긴 뒤에 결제사 콘솔에 등록한다.
+   *
+   * `null` 이면 웹훅 라우트가 **모든 요청을 401 로 거절한다.** 다른 선택지 —
+   * 검증 없이 통과 — 는 아무나 결제 상태를 흔들 수 있는 문을 여는 것이고, 그 문은
+   * 인증 가드 밖이라 뒤에 아무것도 없다.
+   */
+  readonly tossWebhookSecret: string | null
+  /**
    * Secrets and lifetimes for sessions (TASK-0022).
    *
    * Not nullable, unlike {@link storage} and {@link googleOAuth}: a process
