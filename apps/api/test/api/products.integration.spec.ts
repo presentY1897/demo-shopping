@@ -697,6 +697,104 @@ describe('상태와 노출', () => {
   })
 })
 
+describe('손님이 보는 상세 (TASK-0043 4.1)', () => {
+  /**
+   * A4 is inverted here, and that is why the route exists.
+   *
+   * Every other product read in this file answers 401 without a token, which is
+   * right for a console. A storefront is not one: a shopper who has not signed
+   * in — and a crawler, which never will — still has to see the product.
+   */
+  it('answers a caller with no token at all (A4, inverted)', async () => {
+    const product = await create({ status: 'ACTIVE', options: COLOUR_AND_SIZE })
+
+    const answer = await api.client.getStorefrontProduct(product.id)
+
+    expect(answer.product.id).toBe(product.id)
+    // Everything the detail screen draws: the axes, and every combination with
+    // its own price and stock (R2 — the map is already in the response).
+    expect(answer.product.options).toHaveLength(2)
+    expect(answer.product.variants).toHaveLength(12)
+    expect(answer.product.variants[0]?.optionValueIds).toHaveLength(2)
+  })
+
+  it('labels and orders the attribute table for the screen (4.3)', async () => {
+    // `product.attributes` is a bag keyed by definition key. The Korean label
+    // and the order live on the definition, and the route that serves those is
+    // permissioned — so the storefront gets the table already resolved.
+    await operator().createAttribute({
+      categoryId,
+      key: 'fit',
+      label: '핏',
+      type: 'SELECT',
+      options: ['오버핏', '레귤러핏'],
+      sortOrder: 1,
+    })
+    await operator().createAttribute({
+      categoryId,
+      key: 'wool_ratio',
+      label: '울 함량',
+      type: 'NUMBER',
+      sortOrder: 0,
+    })
+
+    const product = await create({
+      status: 'ACTIVE',
+      attributes: { fit: '오버핏', wool_ratio: 70 },
+    })
+
+    const answer = await api.client.getStorefrontProduct(product.id)
+
+    // Labelled, and in the order the definitions declare — `sortOrder` does not
+    // survive into the response, so the screen cannot restore it.
+    expect(answer.attributes).toEqual([
+      { key: 'wool_ratio', label: '울 함량', value: 70 },
+      { key: 'fit', label: '핏', value: '오버핏' },
+    ])
+  })
+
+  it('carries the brand, and nothing else about the store', async () => {
+    const product = await create({ status: 'ACTIVE' })
+
+    const answer = await api.client.getStorefrontProduct(product.id)
+
+    expect(answer.seller.id).toBe(product.sellerId)
+    expect(answer.seller.brandName).toEqual(expect.any(String))
+    // Commission, status and the application history are the console's business.
+    expect(Object.keys(answer.seller).sort()).toEqual(['brandName', 'id'])
+  })
+
+  it.each(['DRAFT', 'SUSPENDED'] as const)('is a 404 for a %s listing (F9)', async (status) => {
+    const product = await create()
+
+    if (status === 'SUSPENDED') {
+      const live = await api
+        .clientAs(seller)
+        .updateProduct(product.id, { version: product.version, status: 'ACTIVE' })
+
+      await operator().updateProduct(product.id, {
+        version: live.product.version,
+        status: 'SUSPENDED',
+      })
+    }
+
+    // 404, not 403. TASK-0038 keeps both states out of the search index; a
+    // detail page that rendered them would undo that — and distinguishing 「없다」
+    // from 「보면 안 된다」 tells anyone asking which unpublished ids exist.
+    const refused = await failure(api.client.getStorefrontProduct(product.id))
+
+    expect(refused.status).toBe(404)
+  })
+
+  it('is a 404 for an id that never existed', async () => {
+    const refused = await failure(
+      api.client.getStorefrontProduct('0192f0c1-0000-7000-8000-00000000dead'),
+    )
+
+    expect(refused.status).toBe(404)
+  })
+})
+
 describe('목록', () => {
   it('shows a buyer only what is on sale', async () => {
     await create({ status: 'ACTIVE', name: '판매 중' })

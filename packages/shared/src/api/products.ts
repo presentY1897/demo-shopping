@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { attributeValuesSchema } from './attributes.js'
+import { attributeValueSchema, attributeValuesSchema } from './attributes.js'
 import { categoryIdSchema } from './categories.js'
 
 /**
@@ -268,6 +268,41 @@ export type ProductSummary = z.infer<typeof productSummarySchema>
 export const productResponseSchema = z.object({ product: productSchema })
 
 export type ProductResponse = z.infer<typeof productResponseSchema>
+
+/**
+ * The storefront's view of one listing (TASK-0043 4.1).
+ *
+ * The same `product` the console reads — the detail screen needs the images, the
+ * axes and every variant's price and stock, which is exactly what that shape
+ * carries, and a second, smaller product type would be a second thing to keep in
+ * step for no gain (gate C1).
+ *
+ * What is added is the **seller**, and only the two fields a storefront shows:
+ * the brand's name, and the id its brand page hangs off. Commission, status and
+ * the application's history are the console's business.
+ */
+export const productDetailResponseSchema = z.object({
+  product: productSchema,
+  seller: z.object({ id: z.uuid(), brandName: z.string() }),
+  /**
+   * 속성 표, 이미 풀려서 (TASK-0043 4.3).
+   *
+   * `product.attributes` is a bag keyed by `AttributeDefinition.key`, and the
+   * Korean label and the display order live only on the definition — which
+   * `GET /attributes` guards behind a permission. A storefront that drew the raw
+   * bag would print `wool_ratio: 70`.
+   *
+   * Resolved up the category lineage with the nearest ancestor winning — the
+   * same rule the search filters use — and **sorted here**, because `sortOrder`
+   * is on the definition and not in this payload. How a value is *shown*
+   * (boolean → 예/아니오) stays with the screen: that is language, not data.
+   */
+  attributes: z.array(
+    z.object({ key: z.string(), label: z.string(), value: attributeValueSchema }),
+  ),
+})
+
+export type ProductDetailResponse = z.infer<typeof productDetailResponseSchema>
 
 /**
  * A page of listings.

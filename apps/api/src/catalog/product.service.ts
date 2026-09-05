@@ -7,12 +7,14 @@ import {
 } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import type {
+  AttributeValue,
   AttributeValues,
   CreateProductRequest,
   DomainErrorCode,
   OptionValueMeta,
   Product,
   ProductBulkStatusRequest,
+  ProductDetailResponse,
   ProductListQuery,
   ProductListResponse,
   ProductResponse,
@@ -321,6 +323,93 @@ export class ProductService {
     }
 
     return { product }
+  }
+
+  /**
+   * One listing as a shopper sees it (TASK-0043 4.1).
+   *
+   * A separate method from {@link ProductService.get}, for the reason
+   * `CategoryService.storefrontTree` gives: the difference is not a parameter,
+   * it is that **there is no principal to check** — and a method taking
+   * `RequestPrincipal | null` would put the decision of when to skip the check
+   * inside the thing doing the checking.
+   *
+   * **Anything but `ACTIVE` is a 404, not a 403.** A draft is not for sale and a
+   * suspended listing has been taken down; TASK-0038 keeps both out of the
+   * search index for that reason, and a detail page that still rendered them
+   * would undo it. It is a 404 rather than a refusal because distinguishing 「없
+   * 다」 from 「보면 안 된다」 tells anyone who asks which unpublished ids exist.
+   */
+  async storefrontDetail(id: string): Promise<ProductDetailResponse> {
+    const product = await this.load(this.prisma, id)
+
+    if (product.status !== 'ACTIVE') throw new NotFoundException('상품을 찾을 수 없습니다.')
+
+    const seller = await this.prisma.seller.findUnique({
+      where: { id: product.sellerId },
+      select: { id: true, brandName: true },
+    })
+
+    // A listing whose store is gone is not on sale either — and the page has a
+    // brand link on it that would point nowhere. `Seller` has no soft delete;
+    // the store row outlives the account for order history, so the check is
+    // "does it exist" rather than "is it live".
+    if (seller === null) throw new NotFoundException('상품을 찾을 수 없습니다.')
+
+    return { product, seller, attributes: [...(await this.attributeTable(product))] }
+  }
+
+  /**
+   * The listing's own attributes, labelled and ordered (TASK-0043 4.3).
+   *
+   * One statement, whatever the depth: the definitions are gathered up the
+   * category's materialised path and the nearest ancestor wins — the rule
+   * `SearchService.filtersFor` already uses, and the one the editor resolves by.
+   * Sorting happens here because `sortOrder` is on the definition and does not
+   * survive into the response.
+   *
+   * A key the product carries but no definition explains is dropped rather than
+   * shown under its key: a row reading `wool_ratio` is a row that says the screen
+   * is unfinished, and a retired definition is exactly how one appears.
+   */
+  private async attributeTable(
+    product: Product,
+  ): Promise<readonly { key: string; label: string; value: AttributeValue }[]> {
+    const held = Object.keys(product.attributes)
+
+    if (held.length === 0) return []
+
+    const rows = await this.prisma.$queryRaw<
+      readonly { key: string; label: string; sortOrder: number; depth: number }[]
+    >`
+      SELECT d."key", d."label", d."sortOrder", length(a."path") AS "depth"
+        FROM "Category" c
+        JOIN "Category" a ON c."path" LIKE a."path" || '%'
+        JOIN "AttributeDefinition" d ON d."categoryId" = a."id"
+       WHERE c."id" = ${product.categoryId}
+         AND d."deletedAt" IS NULL
+         AND d."key" = ANY(${held}::text[])
+       ORDER BY length(a."path") DESC, d."sortOrder" ASC, d."key" ASC
+    `
+
+    const nearest = new Map<string, { label: string; sortOrder: number }>()
+
+    for (const row of rows) {
+      if (nearest.has(row.key)) continue
+
+      nearest.set(row.key, { label: row.label, sortOrder: row.sortOrder })
+    }
+
+    return [...nearest.entries()]
+      .sort(
+        ([leftKey, left], [rightKey, right]) =>
+          left.sortOrder - right.sortOrder || leftKey.localeCompare(rightKey),
+      )
+      .flatMap(([key, { label }]) => {
+        const value = product.attributes[key]
+
+        return value === undefined ? [] : [{ key, label, value }]
+      })
   }
 
   /**

@@ -43,6 +43,7 @@ import type {
   ProductListQuery,
   ProductListResponse,
   ProductPublishRequest,
+  ProductDetailResponse,
   ProductResponse,
   SellerProductListQuery,
   SellerProductListResponse,
@@ -52,6 +53,7 @@ import type {
 import {
   productBulkStatusResponseSchema,
   productListResponseSchema,
+  productDetailResponseSchema,
   productResponseSchema,
   sellerProductListResponseSchema,
   sellerVariantListResponseSchema,
@@ -222,6 +224,14 @@ export interface ApiClient {
   ) => Promise<ProductResponse>
   /** Retires a listing. The row and its variants survive for order history. */
   deleteProduct: (id: string, options?: ApiCallOptions) => Promise<ProductResponse>
+  /**
+   * One listing as a shopper sees it — no sign-in, `ACTIVE` only (TASK-0043 4.1).
+   *
+   * A different route from {@link ApiClient.getProduct}, not a flag on it: that
+   * one answers for whoever is signed in and will hand a seller their own draft.
+   * This one has no caller to answer for.
+   */
+  getStorefrontProduct: (id: string, options?: ApiCallOptions) => Promise<ProductDetailResponse>
   /**
    * The seller console's own catalogue page (TASK-0115).
    *
@@ -538,6 +548,13 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       request({
         path: '/categories/tree',
         schema: categoryTreeResponseSchema,
+        ...callOptions,
+      }),
+
+    getStorefrontProduct: (id, callOptions = {}) =>
+      request({
+        path: `/products/${encodeURIComponent(id)}/detail`,
+        schema: productDetailResponseSchema,
         ...callOptions,
       }),
 
