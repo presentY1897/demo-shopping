@@ -18,6 +18,13 @@ export interface AuthorizeRequest {
   readonly paymentId: string
   readonly orderId: string
   readonly amount: number
+  /**
+   * 어느 수단으로 낼 것인가 — 가상 카드에서는 카드 id 다 (TASK-0054).
+   *
+   * 프로바이더마다 뜻이 달라도 되는 자리라 이름이 구체적이지 않다. 토스는 이것을
+   * 쓰지 않고 결제창이 돌려준 키를 자기 방식으로 받는다.
+   */
+  readonly cardId?: string
 }
 
 /**

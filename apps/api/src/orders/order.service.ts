@@ -245,6 +245,66 @@ export class OrderService {
     })
   }
 
+  /**
+   * 결제가 확정됐다 — 주문을 완료로 옮긴다 (TASK-0054 4.2).
+   *
+   * **결제 서비스가 이것을 직접 하지 않는 이유**가 4.2 다. 결제가 주문과 재고를
+   * 알게 되면 토스가 붙는 날 같은 지식이 한 벌 더 생기거나, 결제 서비스가 두
+   * 프로바이더의 사정을 다 아는 자리가 된다. 프로바이더가 무엇이든 그 뒤는 같아야
+   * 하고, 그것이 D-031 이 말하는 추상화의 값이다.
+   *
+   * 한 트랜잭션이다. 예약 확정과 상태 전이가 갈리면 **팔린 재고가 없는 주문**이나
+   * **주문 없이 줄어든 재고**가 남고, 둘 다 사람이 손으로 찾아야 하는 종류다.
+   *
+   * 멱등이다. 이미 `PAID` 인 몫은 건드리지 않고 예약도 다시 확정하지 않는다 —
+   * 결제 승인 웹훅은 두 번 온다고 가정해야 한다(TASK-0056).
+   */
+  async markPaid(orderId: string): Promise<void> {
+    const now = this.clock.now()
+
+    await this.prisma.$transaction(async (tx) => {
+      const order = await tx.order.findUnique({
+        where: { id: orderId },
+        select: {
+          checkoutId: true,
+          sellerOrders: { where: { status: 'PAYMENT_PENDING' }, select: { id: true } },
+        },
+      })
+
+      if (order === null) throw new NotFoundException('주문을 찾을 수 없어요.')
+      if (order.sellerOrders.length === 0) return
+
+      // 예약을 실제 차감으로 바꾼다. 여기서 처음으로 재고가 줄어든다 — 그전까지
+      // 주문은 재고를 **잡고만** 있었다 (TASK-0049 4.4).
+      const holds = await tx.stockReservation.findMany({
+        where: { checkoutId: order.checkoutId, status: 'HELD' },
+        orderBy: { id: 'asc' },
+        select: { id: true },
+      })
+
+      for (const hold of holds) {
+        await this.reservations.confirm(tx, hold.id)
+      }
+
+      const ids = order.sellerOrders.map((row) => row.id)
+
+      await tx.sellerOrder.updateMany({
+        where: { id: { in: ids } },
+        data: { status: 'PAID', updatedAt: now },
+      })
+      await tx.orderStatusHistory.createMany({
+        data: ids.map((sellerOrderId) => ({
+          sellerOrderId,
+          fromStatus: 'PAYMENT_PENDING' as const,
+          toStatus: 'PAID' as const,
+          reason: null,
+          actorId: null,
+          createdAt: now,
+        })),
+      })
+    })
+  }
+
   // ------------------------------------------------------------------- reads
 
   /** 주문 하나. 구매자 자신과 운영자가 읽는다. */

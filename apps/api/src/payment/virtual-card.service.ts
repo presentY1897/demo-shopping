@@ -242,6 +242,26 @@ export class VirtualCardService {
   }
 
   /**
+   * 이 참조로 승인이 남아 있는 카드 (TASK-0054).
+   *
+   * 취소·환불이 결제키만 들고 오므로, 그것으로 카드를 되찾는 자리가 필요하다.
+   * 원장이 그 답을 갖고 있다 — 승인 행의 `refId` 가 결제 id 다.
+   */
+  async cardIdFor(refId: string): Promise<string | null> {
+    const row = await this.prisma.virtualCardTransaction.findFirst({
+      where: { refId, kind: 'CHARGE' },
+      select: { cardId: true },
+    })
+
+    return row?.cardId ?? null
+  }
+
+  /** 이 참조의 승인이 원장에 있는가. 대사가 묻는 질문이다. */
+  async chargedFor(refId: string): Promise<boolean> {
+    return (await this.cardIdFor(refId)) !== null
+  }
+
+  /**
    * `usedAmount` 가 원장과 어긋난 카드 전부 (F3).
    *
    * **고치지 않는다.** 원인을 모르는 채 값을 고치면 문제가 숨는다 — 재고와 예약이
