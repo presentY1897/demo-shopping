@@ -3,7 +3,7 @@ import type { PaymentProviderName, PaymentStatus } from '@shopping/shared'
 
 import type { AuthorizeRequest, AuthorizeResult, PaymentProviderPort } from './payment-provider.js'
 import type { TossClient } from './toss.client.js'
-import { TOSS_CLIENT, TossError } from './toss.client.js'
+import { TOSS_CLIENT, TOSS_UNREACHABLE, TossError } from './toss.client.js'
 import { paymentStatusFromToss } from './toss-rules.js'
 
 /**
@@ -39,7 +39,7 @@ export class TossProvider implements PaymentProviderPort {
     if (paymentKey === null) {
       // 결제창을 거치지 않고 승인 라우트를 직접 부른 경우다. 토스는 결제키 없이
       // 승인할 수 없으므로 거절이지 오류가 아니다.
-      return { approved: false, paymentKey: null, reason: '결제창을 먼저 거쳐야 해요.' }
+      return { outcome: 'declined', reason: '결제창을 먼저 거쳐야 해요.' }
     }
 
     let payment
@@ -51,7 +51,7 @@ export class TossProvider implements PaymentProviderPort {
         amount: request.amount,
       })
     } catch (error: unknown) {
-      return { approved: false, paymentKey: null, reason: reasonOf(error) }
+      return refusalOf(error)
     }
 
     if (payment.status !== 'DONE') {
@@ -59,10 +59,10 @@ export class TossProvider implements PaymentProviderPort {
       // 수단을 열지 않지만, 상태를 확인하지 않으면 입금 전에 주문이 완료된다.
       this.log.warn(`승인이 끝나지 않은 상태로 돌아왔습니다: ${payment.status}`)
 
-      return { approved: false, paymentKey: null, reason: '결제가 아직 끝나지 않았어요.' }
+      return { outcome: 'declined', reason: '결제가 아직 끝나지 않았어요.' }
     }
 
-    return { approved: true, paymentKey: payment.paymentKey, reason: null }
+    return { outcome: 'approved', paymentKey: payment.paymentKey }
   }
 
   /**
@@ -105,11 +105,22 @@ export class TossProvider implements PaymentProviderPort {
 }
 
 /**
- * 토스가 준 문장을 그대로 쓴다.
+ * 승인이 안 된 두 방식을 가른다 (TASK-0056 4.2 · D-220).
  *
- * 「카드 한도를 초과했습니다」 같은 것은 저쪽이 우리보다 정확히 안다. 다시 쓰면
- * 번역이 두 곳에서 조금씩 달라지고, 사용자에게는 그 차이가 그냥 혼란이다.
+ * **닿지 못한 것과 거절당한 것은 다른 사실이다.** 거절은 저쪽이 답을 준 것이라
+ * 「승인 안 됨」을 우리가 안다. 닿지 못한 것은 요청이 도착했는지조차 모르는
+ * 상태이고, 저쪽에서는 승인이 나 있을 수 있다 — 그것을 `FAILED` 로 적으면 되돌릴
+ * 길이 없어진다.
+ *
+ * 문장은 토스가 준 것을 그대로 쓴다. 「카드 한도를 초과했습니다」 같은 것은 저쪽이
+ * 우리보다 정확히 알고, 다시 쓰면 번역이 두 곳에서 조금씩 달라진다.
  */
-function reasonOf(error: unknown): string {
-  return error instanceof TossError ? error.message : '결제가 승인되지 않았어요.'
+function refusalOf(error: unknown): AuthorizeResult {
+  if (!(error instanceof TossError)) {
+    return { outcome: 'declined', reason: '결제가 승인되지 않았어요.' }
+  }
+
+  if (error.code === TOSS_UNREACHABLE) return { outcome: 'unknown', reason: error.message }
+
+  return { outcome: 'declined', reason: error.message }
 }

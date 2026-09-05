@@ -118,7 +118,16 @@ describe('승인 판단 — 거절', () => {
     // 막지 않으면 토스에 같은 승인을 두 번 보낸다.
     const forbidden = paymentStatuses.filter((status) => status !== 'READY')
 
-    expect(forbidden).toEqual(['AUTHORIZED', 'PAID', 'PARTIAL_CANCELED', 'CANCELED', 'FAILED'])
+    expect(forbidden).toEqual([
+      'AUTHORIZED',
+      'PAID',
+      'PARTIAL_CANCELED',
+      'CANCELED',
+      'FAILED',
+      // 「승인됐는지 모른다」에 결제창의 답을 덧씌우지 않는다 (D-220). 그 결제를
+      // 푸는 것은 대사이지 다시 열린 리다이렉트가 아니다.
+      'UNRESOLVED',
+    ])
 
     for (const status of forbidden) {
       expect(confirmDecision(candidate({ status }), 30_000)).toEqual({
