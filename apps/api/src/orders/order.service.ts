@@ -1,6 +1,12 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import type { Prisma } from '@prisma/client'
 import type {
   CreateOrderRequest,
@@ -41,7 +47,7 @@ import { priceOf } from './order-source.js'
 
 type Tx = Prisma.TransactionClient
 
-/** 유니크 위반. 주문번호가 겹쳤을 때만 본다. */
+/** 유니크 위반. 주문번호와 주문서 열쇠, 둘 다 이 코드로 온다. */
 const UNIQUE_VIOLATION = 'P2002'
 
 /**
@@ -79,6 +85,16 @@ export class OrderService {
    * 오늘 빈 배열을 넘기지만, **안분해서 저장하는 경로는 지금 만들어 둔다** — 나중에
    * 붙이면 그때 `OrderItem` 에 컬럼을 더하고 저장 코드를 고쳐야 하고, 그 시점에는
    * 이미 저장된 주문들이 그 값을 갖지 않는다.
+   *
+   * **주문서로 온 요청은 멱등하다** (TASK-0057 4.4). 같은 `checkoutId` 로 두 번째가
+   * 오면 첫 번째 주문을 그대로 돌려준다 — 화면이 새로 마운트되면 자기가 만든 주문을
+   * 잊고(거절 뒤 새로고침, 결제창을 닫고 주문서로 돌아오기) 같은 주문서로 다시
+   * 누르기 때문이다. 재고가 두 몫 잠기지는 않지만 결제되지 않은 주문 한 건이 남고,
+   * 그것이 주문 목록에 보이면 산 사람은 자기가 두 번 주문했다고 읽는다.
+   *
+   * 장바구니에서 온 길에는 이 성질이 없다. 열쇠가 없기 때문이다 — 그 길의
+   * `checkoutId` 는 저장 직전에 뽑는 난수라 두 요청이 같은 값을 들고 올 수 없고,
+   * 「같은 요청인가」를 물을 수 있는 것이 요청 안에 아무것도 없다.
    */
   async create(
     principal: RequestPrincipal,
@@ -86,15 +102,90 @@ export class OrderService {
     discounts: readonly PricingDiscount[] = [],
   ): Promise<OrderResponse> {
     const account = await this.account(principal, 'order.write')
+    const placed =
+      input.checkoutId === undefined ? null : await this.placedOrder(account.id, input.checkoutId)
+
+    // **이 요청의 나머지는 읽지 않는다 — 배송지가 달라도 그렇다.** 멱등의 뜻은
+    // 「같은 주문서에는 같은 답」이고, 그 답은 첫 요청이 남긴 것이지 두 번째 요청의
+    // 함수가 아니다. 배송지를 갈아 끼우는 것은 멱등이 아니라 수정이며, 그 주문에는
+    // 이미 결제가 붙어 판매자가 주소를 읽었을 수 있다. 다르면 409 로 거절하는 길도
+    // 있지만 그러면 주문은 이미 있는데 화면은 그것을 모른 채 오류만 보게 되어,
+    // 고치려던 것(화면이 자기 주문을 잊었다)이 하나도 풀리지 않는다. 배송지 변경은
+    // 주문 수정의 일이고 그 문은 아직 없다.
+    if (placed !== null) return this.get(principal, placed)
+
     const recipient = await this.recipientOf(account.id, input.addressId)
     const source =
       input.checkoutId === undefined
         ? await this.fromCart(account.id, input.itemIds ?? [])
         : await this.checkouts.linesOf(account.id, input.checkoutId)
     const plan = planOrder(source.lines, priceOf(source, discounts))
-    const orderId = await this.store(account.id, recipient, plan, source.checkoutId)
+    const orderId = await this.place(account.id, recipient, plan, source.checkoutId)
 
     return this.get(principal, orderId)
+  }
+
+  /**
+   * 이 주문서로 이미 만들어진 주문. 없으면 `null` 이고 남의 것이면 403 이다.
+   *
+   * **읽는 것이 먼저인 이유는 속도가 아니다.** 결제가 확정되면(`markPaid`) 그
+   * 주문서의 예약은 전부 `CONFIRMED` 가 되어 `HELD` 가 하나도 남지 않고, 그때
+   * `CheckoutService.linesOf` 는 「주문서를 찾을 수 없어요」로 답한다. 줄을 먼저
+   * 그리는 순서였다면 **결제까지 끝낸 사람의 새로고침이 404** 가 된다 — 이 멱등이
+   * 없애려는 바로 그 상황에서.
+   *
+   * 남의 주문서면 403 이다. 주문이 만들어지기 전에도 남의 `checkoutId` 는
+   * `linesOf` 에서 403 이었으므로, 멱등이 새로 알려 주는 것이 없다. 남의 주문은
+   * 물론 돌려주지 않는다.
+   */
+  private async placedOrder(userId: string, checkoutId: string): Promise<string | null> {
+    const placed = await this.prisma.order.findUnique({
+      where: { checkoutId },
+      select: { id: true, userId: true },
+    })
+
+    if (placed === null) return null
+    if (placed.userId !== userId) throw new ForbiddenException('다른 사람의 주문서예요.')
+
+    return placed.id
+  }
+
+  /**
+   * 저장한다. 그 사이에 같은 주문서로 남이 먼저 만들었으면 **그 주문이 답이다.**
+   *
+   * 위의 읽기와 저장 사이는 비어 있다 — 동시에 온 둘은 둘 다 「없다」를 읽고 둘 다
+   * 만들러 간다. 그 뒤를 막는 것이 `Order_checkoutId_key` 하나이고, 제약은
+   * 애플리케이션이 무엇을 하든 참이다. 어드바이저리 락으로 직렬화하는 길도 있지만
+   * 그러려면 잠글 이름을 하나 더 만들어야 하고, 그 이름에 동의하지 않는 코드가
+   * 하나만 생겨도 보장이 사라진다.
+   *
+   * **다시 읽는 일이 트랜잭션 밖인 것이 핵심이다.** Postgres 는 실패한 문장 하나가
+   * 트랜잭션 전체를 중단시키므로, 위반을 안에서 잡아 다시 읽으면 그 읽기가
+   * 「current transaction is aborted」로 거절된다(`HANDOFF` 가 장바구니에서 겪은
+   * 그것). 여기 도달한 시점에 진 쪽의 트랜잭션은 이미 롤백돼 아무것도 남기지
+   * 않았고, 이긴 쪽은 커밋을 마쳤다 — 유니크 위반은 상대가 커밋할 때까지 **기다렸다가**
+   * 나기 때문이다. 그래서 이 자리의 재조회는 반드시 이긴 주문을 본다.
+   *
+   * 주문번호 재시도({@link store})와 얽히지 않는다. 저 안쪽은 「번호를 새로 뽑아
+   * 전부 다시 한다」만 알고, 이 바깥은 두 시도 중 어느 것이 제약에 걸렸든 같은
+   * 판정을 한 번 한다.
+   */
+  private async place(
+    userId: string,
+    recipient: Recipient,
+    plan: ReturnType<typeof planOrder>,
+    held: string | null,
+  ): Promise<string> {
+    try {
+      return await this.store(userId, recipient, plan, held)
+    } catch (error: unknown) {
+      const winner =
+        held === null || !isCheckoutCollision(error) ? null : await this.placedOrder(userId, held)
+
+      if (winner === null) throw error
+
+      return winner
+    }
   }
 
   /** 장바구니에서 온 줄. 이 길에서는 주문이 예약을 **직접** 잡는다. */
@@ -119,6 +210,10 @@ export class OrderService {
    *
    * 한 번만 다시 한다. 40비트 난수가 같은 날 두 번 연달아 겹칠 확률은 이미 없는
    * 일이고, 무한히 다시 하는 고리는 **다른 이유로 실패할 때** 영원히 돈다.
+   *
+   * 주문서 열쇠가 겹친 것은 여기서 다루지 않는다. 다시 해도 같은 열쇠라 같은
+   * 제약에 걸리고, 그것은 실패가 아니라 **답이 이미 있다**는 뜻이다 —
+   * {@link place} 가 판정한다.
    */
   private async store(
     userId: string,
@@ -518,17 +613,61 @@ interface Recipient {
 
 /** 주문번호가 겹쳤는가. 다른 유니크 위반은 재시도로 고쳐지지 않는다. */
 function isOrderNumberCollision(error: unknown): boolean {
+  return isUniqueViolationOn(error, 'orderNumber')
+}
+
+/**
+ * 같은 주문서로 주문이 둘 만들어질 뻔했는가.
+ *
+ * 재시도가 답하는 경우가 아니다 — 다시 해도 같은 열쇠로 같은 제약에 걸린다.
+ * 답은 이미 만들어진 그 주문이다.
+ */
+function isCheckoutCollision(error: unknown): boolean {
+  return isUniqueViolationOn(error, 'checkoutId')
+}
+
+/**
+ * 어느 컬럼에서 난 유니크 위반인가.
+ *
+ * **자리를 둘 보는 이유는 드라이버 어댑터다.** 어댑터 없이 돌 때 Prisma 는 위반된
+ * 컬럼을 `meta.target` 에 담지만, 어댑터를 끼우면 그 자리가 비고 원본 오류가
+ * `meta.driverAdapterError` 아래에 **인덱스 이름**(`Order_checkoutId_key`)으로 온다.
+ * `target` 만 보던 판정은 이 배포에서 한 번도 참이 된 적이 없었다 — 그래서 주문번호
+ * 재시도도 여태 돌지 않았고, 아무도 몰랐다. 겹치는 일이 없으면 안 도는 코드와
+ * 못 도는 코드가 똑같이 보이기 때문이다.
+ *
+ * 이제는 아래 두 곳이 실제로 이 판정을 지난다(`order-idempotency.spec.ts` 의 경합
+ * 두 검사). 모양이 또 바뀌면 그때는 조용하지 않고 빨개진다.
+ */
+function isUniqueViolationOn(error: unknown, column: string): boolean {
   if (error === null || typeof error !== 'object') return false
 
-  const failure = error as { code?: unknown; meta?: { target?: unknown } }
+  const failure = error as {
+    readonly code?: unknown
+    readonly meta?: {
+      readonly target?: unknown
+      readonly driverAdapterError?: { readonly cause?: { readonly constraint?: unknown } }
+    }
+  }
 
   if (failure.code !== UNIQUE_VIOLATION) return false
 
-  const target = failure.meta?.target
+  const constraint = failure.meta?.driverAdapterError?.cause?.constraint as
+    { readonly index?: unknown; readonly fields?: unknown } | undefined
 
-  return typeof target === 'string'
-    ? target.includes('orderNumber')
-    : Array.isArray(target) && target.includes('orderNumber')
+  return [
+    ...namesOf(failure.meta?.target),
+    ...namesOf(constraint?.index),
+    ...namesOf(constraint?.fields),
+  ].some((name) => name.includes(column))
+}
+
+/** 이름 하나이거나 목록이거나, 아니면 아무것도 아니거나. */
+function namesOf(value: unknown): readonly string[] {
+  if (typeof value === 'string') return [value]
+  if (!Array.isArray(value)) return []
+
+  return value.filter((name): name is string => typeof name === 'string')
 }
 
 const ORDER_ITEM_SELECT = {

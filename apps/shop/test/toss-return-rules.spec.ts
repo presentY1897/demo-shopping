@@ -95,6 +95,13 @@ describe('승인이 던진 것을 할 말로', () => {
     expect(confirmFailureOf(refusal(409, 'PAYMENT_TRANSITION_REFUSED'))).toBe('already_settled')
   })
 
+  it('names a payment still being looked up, because that one says "wait" (D-220)', () => {
+    // **두 409 가 반대 방향의 문장을 낸다.** 위의 것은 「이미 끝났으니 결과를
+    // 확인하세요」이고 이것은 「아직 안 끝났으니 기다리세요」다 — 상태로 갈랐다면
+    // 둘 중 하나를 반드시 틀리게 말한다.
+    expect(confirmFailureOf(refusal(409, 'PAYMENT_AWAITING_RESULT'))).toBe('awaiting_result')
+  })
+
   it('sends an unknown refusal to "we do not know"', () => {
     // 「토스로 시작한 결제가 아니다」는 사람이 고칠 수 있는 종류가 아니라 우리
     // 버그다. 그 경우에 다시 결제하라고 시키면 같은 실패를 반복시킨다.
@@ -115,10 +122,11 @@ describe('다시 결제하기를 권해도 되는가', () => {
     expect(offersRetry(why)).toBe(true)
   })
 
-  it.each(['already_settled', 'unsettled', 'invalid_return'] as const)(
+  it.each(['already_settled', 'unsettled', 'awaiting_result', 'invalid_return'] as const)(
     'withholds it after %s',
     (why) => {
-      // 앞의 둘은 저쪽에 승인이 남아 있을 수 있다 — 다시 결제하면 두 번 낸다.
+      // 앞의 셋은 저쪽에 승인이 남아 있을 수 있다 — 다시 결제하면 두 번 낸다.
+      // `awaiting_result` 는 서버가 그 재시도를 아예 막아 두기까지 한다 (D-220).
       // 마지막은 애초에 돌아갈 주문서가 없다.
       expect(offersRetry(why)).toBe(false)
     },
@@ -128,7 +136,7 @@ describe('다시 결제하기를 권해도 되는가', () => {
     // 사유가 하나 늘면 이 줄이 아니라 `pnpm typecheck` 이 먼저 깨진다. 그래도
     // 세어 두는 이유는 목록이 늘었을 때 위의 두 갈래 중 어디에 넣을지가 **판단**
     // 이기 때문이다 — 잊으면 「다시 결제하기」가 조용히 붙는다.
-    expect(tossConfirmFailures).toHaveLength(6)
+    expect(tossConfirmFailures).toHaveLength(7)
   })
 })
 

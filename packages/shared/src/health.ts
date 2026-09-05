@@ -28,6 +28,7 @@ export const healthDependencyKeys = [
   'search',
   'reservationExpiry',
   'paymentReconcile',
+  'paymentStraggler',
 ] as const
 
 export type HealthDependencyKey = (typeof healthDependencyKeys)[number]
@@ -128,6 +129,28 @@ export const healthResponseSchema = z.object({
     status: healthStatusSchema,
     lastRunAt: z.iso.datetime().nullable(),
     resolvedCount: z.int().min(0),
+  }),
+  /**
+   * 낙오된 결제를 끝내는 배치 (TASK-0057 F2 · F6 · D-221).
+   *
+   * **이 배치가 멈추면 두 종류의 사람이 조용히 갇힌다.** 매입은 끝났는데 주문이
+   * 완료되지 않은 건은 「돈은 받았고 물건은 안 움직이는」 주문으로 남고, 매입 없이
+   * 남은 승인은 그 사람의 카드 한도를 영영 물고 있다. 어느 쪽도 요청 하나 실패
+   * 시키지 않는다 — 위의 두 필드와 같은 종류의 침묵이고, 그래서 같은 모양으로
+   * `status` 를 품는다. {@link healthDependencyKeys} 의 하나이고 `degraded` 는
+   * 맨 위의 `status` 까지 함께 내린다.
+   *
+   * `fixedCount` 는 **마지막 한 번**이 실제로 끝낸 결제의 수다 — 주문을 마저
+   * 완료시킨 건과 승인을 취소한 건의 합이다. 취소하려는 사이에 사람이 돌아와
+   * 매입을 마친 건은 여기 들어오지 않는다: 좋은 결과이지만 배치가 한 일이 아니고,
+   * 섞으면 이 숫자가 「배치가 일하고 있다」의 근거가 되지 못한다. 평소 값이 0 인
+   * 것이 정상이다 — 두 상태 모두 프로세스가 중간에 죽거나 사람이 결제창을 떠나야
+   * 생긴다.
+   */
+  paymentStraggler: z.object({
+    status: healthStatusSchema,
+    lastRunAt: z.iso.datetime().nullable(),
+    fixedCount: z.int().min(0),
   }),
   /**
    * 마지막으로 받은 결제 웹훅의 시각 (TASK-0056 2장).

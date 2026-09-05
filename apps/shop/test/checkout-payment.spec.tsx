@@ -20,6 +20,7 @@ import {
   shopperCheckout,
   httpFailureOn,
   neverAnswersOn,
+  unresolveNextApproval,
 } from '@shopping/api-mocks'
 import { DensityProvider } from '@shopping/ui/density'
 import { screen, within } from '@testing-library/react'
@@ -326,5 +327,116 @@ describe('거절 (F2)', () => {
     // 것은 결제가 됐는지 안 됐는지를 **우리도 모른다.**
     expect(await screen.findByText(pay.refusals.unreachable)).toBeVisible()
     expect(screen.queryByText(pay.refusals.declined)).toBeNull()
+  })
+})
+
+/**
+ * 확인 중 — 승인됐는지 우리가 모르는 결제 (TASK-0057 F5 · D-220).
+ *
+ * **이 갈래가 나머지와 다른 점은 사람이 할 일이다.** 거절은 「다른 카드로 해
+ * 보세요」이고 이쪽은 「확인 중이니 다시 결제하지 마세요」다. 그래서 아래 검사가
+ * 재는 것은 문장 하나가 아니라 셋이다: 매입을 부르지 않는가, 눌러 봐야 거절당할
+ * 버튼을 주지 않는가, 그리고 서버가 409 로 막은 경우도 같은 자리로 오는가.
+ */
+describe('확인 중 (F5 · D-220)', () => {
+  it('does not capture a payment whose approval never came back', async () => {
+    const user = userEvent.setup()
+
+    await renderCheckout()
+    await paymentSection()
+
+    // 렌더 뒤에 세운다 — `renderCheckout` 이 목을 되돌리면서 이 손잡이도 내린다.
+    unresolveNextApproval()
+    await order(user)
+
+    expect(await screen.findByText(pay.refusals.awaiting_result)).toBeVisible()
+
+    // **매입은 부르지 않는다.** 승인됐는지 모르는 결제를 확정할 수는 없고, 걸어
+    // 봐야 409 가 하나 더 늘 뿐이다 — 그리고 그 409 는 `catch` 에서 「잠시 후 다시
+    // 결제해 주세요」가 되어, 두 번 낼지도 모르는 사람에게 두 번째를 권한다.
+    expect(sent.some((each) => each.endsWith('/authorize'))).toBe(true)
+    expect(sent.filter((each) => each.endsWith('/capture'))).toEqual([])
+  })
+
+  it('offers no retry button, and says what to do instead', async () => {
+    const user = userEvent.setup()
+
+    await renderCheckout()
+    await paymentSection()
+
+    unresolveNextApproval()
+    await order(user)
+    await screen.findByText(pay.refusals.awaiting_result)
+
+    // 누르면 409 가 돌아올 버튼을 주는 것은 사람을 두 번 실패하게 하는 일이다.
+    expect(screen.queryByRole('button', { name: pay.retry })).toBeNull()
+
+    // 버튼이 없으므로 문장이 그 몫까지 진다 — 얼마나 기다리는지, 재고는 어떻게
+    // 되는지, 그다음 무엇을 하는지.
+    expect(screen.getByText(pay.awaitingHoldKept)).toBeVisible()
+    expect(screen.queryByText(pay.holdKept)).toBeNull()
+  })
+
+  it('is not the end of the checkout either — the order and its hold stay', async () => {
+    const user = userEvent.setup()
+
+    await renderCheckout()
+    await paymentSection()
+
+    unresolveNextApproval()
+    await order(user)
+    await screen.findByText(pay.refusals.awaiting_result)
+
+    expect(screen.getByRole('region', { name: copy.itemsTitle })).toBeVisible()
+    expect(screen.queryByText(pay.paidTitle)).toBeNull()
+    // 주문은 한 번만 만들어졌다. 확인 중인 결제가 주문을 하나 더 만들면, 대사가
+    // 「승인돼 있더라」를 확인해도 그 승인이 붙을 주문이 둘이 된다.
+    expect(ordersCreated()).toBe(1)
+  })
+
+  it('takes the server-side refusal to the same place (409 PAYMENT_AWAITING_RESULT)', async () => {
+    const user = userEvent.setup()
+
+    // 새로고침한 사람이 다시 누르면 받는 응답이다. 화면의 기억은 지워졌어도 서버는
+    // 그 주문에 결과를 모르는 결제가 있다는 것을 알고 있다.
+    testServer.server.use(
+      httpFailureOn(
+        'post',
+        mockPaths.payments,
+        409,
+        'PAYMENT_AWAITING_RESULT',
+        '앞선 결제의 결과를 확인하는 중이에요.',
+      ),
+    )
+
+    await renderCheckout()
+    await paymentSection()
+    await order(user)
+
+    expect(await screen.findByText(pay.refusals.awaiting_result)).toBeVisible()
+    expect(screen.queryByRole('button', { name: pay.retry })).toBeNull()
+  })
+
+  it('reads the code, not the status — another 409 still offers a retry', async () => {
+    const user = userEvent.setup()
+
+    testServer.server.use(
+      httpFailureOn(
+        'post',
+        mockPaths.payments,
+        409,
+        'PAYMENT_TRANSITION_REFUSED',
+        '이미 처리된 결제예요.',
+      ),
+    )
+
+    await renderCheckout()
+    await paymentSection()
+    await order(user)
+
+    // 409 라는 사실만으로 「기다리세요」라고 말하면, 기다릴 이유가 없는 사람이
+    // 아무것도 못 하게 된다. 갈라 주는 것은 코드다.
+    expect(await screen.findByText(pay.refusals.unreachable)).toBeVisible()
+    expect(screen.getByRole('button', { name: pay.retry })).toBeVisible()
   })
 })

@@ -11,6 +11,7 @@ import { methodId } from '@/lib/payment/methods'
 import type { IssuedCard } from '@/lib/payment/payment-api'
 import { TOSS_TEST_GUIDE_URL } from '@/lib/payment/toss'
 import type { PaymentState } from '@/lib/payment/use-payment'
+import { offersRetry } from '@/lib/payment/use-payment'
 import type { PaymentMessages } from '@/messages'
 
 const CURRENCY = 'KRW'
@@ -34,6 +35,10 @@ export interface PaymentSectionProps {
  * (`checkout-screen.tsx` 가 그 이유를 적는다), 이 영역이 하는 일은 **무엇으로
  * 결제할지 고르게 하고 그 결과를 말해 주는 것**이다. 실패한 뒤에만 버튼이 하나
  * 생긴다 — 그때 다시 해야 하는 것은 주문이 아니라 결제뿐이기 때문이다.
+ *
+ * **다시 할 수 없는 실패에는 그 버튼도 없다** (TASK-0057 F5). 결과를 확인하는 중인
+ * 결제가 그것이고, 그 갈림은 화면이 사유를 훑어서가 아니라 `offersRetry` 하나로
+ * 정해진다 — 어느 실패에 재시도를 주느냐는 결제의 규칙이지 배치의 규칙이 아니다.
  *
  * **쓸 수 없는 카드도 보여 준다** (TASK-0023 4장). 정지된 카드를 목록에서 빼면 카드를
  * 정지시킨 사람은 자기 카드가 사라졌다고 믿고, 다시 발급받으려 한다. 보여 주되
@@ -282,15 +287,47 @@ function Result({
       </p>
 
       {state.status === 'failed' ? (
-        <div className="flex flex-col gap-2 pt-2">
-          {/* 4.3 — 실패가 곧 포기는 아니다. 예약이 남아 있다는 것을 먼저 말한다. */}
-          <p className="text-fg-muted text-xs">{messages.holdKept}</p>
-          <Button onClick={onRetry} size="sm" type="button" variant="outline">
-            {messages.retry}
-          </Button>
-        </div>
+        <Recovery messages={messages} onRetry={onRetry} state={state} />
       ) : null}
     </>
+  )
+}
+
+/**
+ * 실패 뒤에 남는 것 — 예약은 그대로라는 말과, 다시 할 수 있으면 그 버튼.
+ *
+ * **버튼이 없는 갈래가 있다** (TASK-0057 F5 · D-220). 결과를 확인하는 중인 주문에는
+ * 서버가 새 결제를 막아 두었으므로, 「다시 결제하기」는 누르면 409 가 돌아올 버튼이고
+ * 그것을 주는 것은 사람을 두 번 실패하게 하는 일이다.
+ *
+ * **그래서 문장이 버튼의 몫까지 진다.** 버튼을 치우면 「그럼 나는 뭘 하면 되는가」가
+ * 남고, 그 답 — 얼마나 기다리고, 재고는 어떻게 되고, 그다음 무엇을 하는지 — 이
+ * `awaitingHoldKept` 다.
+ */
+function Recovery({
+  state,
+  messages,
+  onRetry,
+}: {
+  readonly state: Extract<PaymentState, { readonly status: 'failed' }>
+  readonly messages: PaymentMessages
+  readonly onRetry: () => void
+}) {
+  const retryable = offersRetry(state.refusal)
+
+  return (
+    <div className="flex flex-col gap-2 pt-2">
+      {/* 4.3 — 실패가 곧 포기는 아니다. 예약이 남아 있다는 것을 먼저 말한다. */}
+      <p className="text-fg-muted text-xs">
+        {retryable ? messages.holdKept : messages.awaitingHoldKept}
+      </p>
+
+      {retryable ? (
+        <Button onClick={onRetry} size="sm" type="button" variant="outline">
+          {messages.retry}
+        </Button>
+      ) : null}
+    </div>
   )
 }
 

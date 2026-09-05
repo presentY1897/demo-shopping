@@ -113,21 +113,27 @@ describe('승인 판단 — 거절', () => {
     }
   })
 
+  it('names the payment still being looked up, instead of calling it finished', () => {
+    // 「승인됐는지 모른다」에 결제창의 답을 덧씌우지 않는다 (D-220) — 그 결제를 푸는
+    // 것은 대사이지 다시 열린 리다이렉트가 아니다. 그리고 거절의 **이름이 달라야**
+    // 화면이 「확인 중」과 「이미 끝났다」를 다르게 말할 수 있다.
+    expect(confirmDecision(candidate({ status: 'UNRESOLVED' }), 30_000)).toEqual({
+      outcome: 'refused',
+      reason: 'awaiting_result',
+    })
+  })
+
   it('refuses every status that is not READY', () => {
     // 뒤로 가기·새로고침으로 같은 리다이렉트가 두 번 열리는 것이 정확히 이 경우다.
     // 막지 않으면 토스에 같은 승인을 두 번 보낸다.
-    const forbidden = paymentStatuses.filter((status) => status !== 'READY')
+    const forbidden = paymentStatuses.filter(
+      // `UNRESOLVED` 는 다른 이유로 거절된다 (아래 검사). 「모른다」와 「이미
+      // 처리됐다」를 같은 답으로 접으면, 승인이 끊긴 사람이 새로고침했을 때
+      // 끝나지도 않은 결제를 끝났다고 듣는다.
+      (status) => status !== 'READY' && status !== 'UNRESOLVED',
+    )
 
-    expect(forbidden).toEqual([
-      'AUTHORIZED',
-      'PAID',
-      'PARTIAL_CANCELED',
-      'CANCELED',
-      'FAILED',
-      // 「승인됐는지 모른다」에 결제창의 답을 덧씌우지 않는다 (D-220). 그 결제를
-      // 푸는 것은 대사이지 다시 열린 리다이렉트가 아니다.
-      'UNRESOLVED',
-    ])
+    expect(forbidden).toEqual(['AUTHORIZED', 'PAID', 'PARTIAL_CANCELED', 'CANCELED', 'FAILED'])
 
     for (const status of forbidden) {
       expect(confirmDecision(candidate({ status }), 30_000)).toEqual({

@@ -1,5 +1,6 @@
 import { isApiClientError } from '@shopping/shared'
 
+import { refusedWhileAwaiting } from './awaiting-result'
 import { TOSS_RETURN_CHECKOUT_PARAM } from './toss'
 
 /**
@@ -61,9 +62,13 @@ export function checkoutIdOf(params: URLSearchParams): string | null {
 }
 
 /**
- * 승인이 끝나지 못한 이유. 여섯을 나눠 두는 이유는 **다음에 할 일이 다르기**
- * 때문이다 — 하나로 뭉치면 「결제하지 못했어요」가 되고, 그 문장은 어느 경우에도
- * 다음 행동을 알려 주지 못한다.
+ * 승인이 끝나지 못한 이유. 나눠 두는 이유는 **다음에 할 일이 다르기** 때문이다 —
+ * 하나로 뭉치면 「결제하지 못했어요」가 되고, 그 문장은 어느 경우에도 다음 행동을
+ * 알려 주지 못한다.
+ *
+ * **하나는 「끝나지 못했다」조차 아니다.** `awaiting_result` 는 아직 결말이 정해지지
+ * 않은 상태이고, 그래서 아래 목록에서 유일하게 **실패가 아닌 항목**이다 — 화면이
+ * 그것을 실패로 그리면 사람은 결제가 안 됐다고 읽고 다시 결제한다.
  */
 export const tossConfirmFailures = [
   /** 카드사가 받아 주지 않았다. 200 으로 `FAILED` 인 결제가 온 경우다. */
@@ -77,15 +82,34 @@ export const tossConfirmFailures = [
    */
   'amount_mismatch',
   /**
-   * 이미 처리된 결제다 (409).
+   * 이미 처리된 결제다 (409 `PAYMENT_TRANSITION_REFUSED`).
    *
    * 성공 주소를 새로고침하거나 뒤로 갔다가 다시 온 것이 정확히 이 경우다. **다시
-   * 결제하라고 말하면 안 된다** — 그 결제는 이미 끝났을 수 있고, 우리는 성공인지
-   * 실패인지를 이 응답만으로 알 수 없다.
+   * 결제하라고 말하면 안 된다** — 우리는 그 결제가 성공했는지 실패했는지를 이
+   * 응답만으로 알 수 없다.
+   *
+   * **끝났다는 것만은 확실하다.** 예전에는 그렇지 않았다 — 결과를 모르는 결제
+   * (`UNRESOLVED`)까지 이 자리로 접혀 와서 「이미 처리된 결제예요」가 끝나지도 않은
+   * 결제에 뜨곤 했다. 서버가 그것을 `awaiting_result` 로 갈라 준 뒤로 여기 오는 것은
+   * 승인·매입·거절·취소가 끝난 결제뿐이고, 그래서 저 문장이 참이 됐다 (D-220).
    */
   'already_settled',
   /** 요청이 오가지 못했다. 결제가 됐는지 안 됐는지를 **우리도 모른다.** */
   'unreachable',
+  /**
+   * **승인됐는지 우리가 모른다 — 확인 중이다** (D-220).
+   *
+   * 결제사에 닿지 못해 결말이 정해지지 않은 것이고, 그 응답은 200 과 함께
+   * `UNRESOLVED` 인 결제로 온다. **`unsettled` 와 헷갈리면 안 된다** — 저쪽은
+   * 「승인은 됐다」가 확실한 상태라 그 말을 화면에 적을 수 있지만, 여기서 그 말을
+   * 적으면 사람은 「결제는 됐구나」로 이해하고 그것이 사실이 아닐 수 있다.
+   *
+   * 나가는 길은 대사만 연다. 이 화면에서도, 주문서에서도 사람이 할 수 있는 것은
+   * 기다리는 것뿐이고, 서버가 그동안 새 결제를 막는다
+   * (`PAYMENT_AWAITING_RESULT`). 주문서의 `awaiting_result` 와 같은 사실이라 같은
+   * 이름이다.
+   */
+  'awaiting_result',
   /**
    * 승인은 됐는데 매입을 못 했다.
    *
@@ -110,6 +134,9 @@ export type TossConfirmFailure = (typeof tossConfirmFailures)[number]
  */
 export function confirmFailureOf(error: unknown): TossConfirmFailure {
   if (!isApiClientError(error) || error.kind !== 'http') return 'unreachable'
+  // 「결과를 확인하는 중」이 먼저다. 이것만 사람에게 **기다리라**고 말하는 갈래라,
+  // 뒤의 어느 것으로 접혀도 그 사람은 다시 결제하러 간다.
+  if (refusedWhileAwaiting(error)) return 'awaiting_result'
   if (error.code === 'PAYMENT_AMOUNT_MISMATCH') return 'amount_mismatch'
   if (error.code === 'PAYMENT_TRANSITION_REFUSED') return 'already_settled'
 
@@ -138,6 +165,14 @@ export function tossFailureKind(code: string | null): TossFailureKind {
  * **「다시 결제하기」가 언제나 옳은 말은 아니다.** 이미 처리됐거나 승인만 남은
  * 결제를 두고 다시 결제하라고 하면 한 사람이 같은 물건을 두 번 산다. 주소가 잘못된
  * 경우도 마찬가지다 — 돌아갈 주문서가 애초에 없다.
+ *
+ * **허용 목록인 것이 여기서 값을 한다.** 결말이 정해지지 않은 결제(`awaiting_result`)
+ * 는 이름을 더하는 것만으로 재시도에서 빠졌다 — 거절 목록이었다면 이 함수를 같이
+ * 고쳐야 했고, 잊으면 누를수록 409 가 돌아오는 링크가 남는다.
+ *
+ * 주문서 쪽에도 같은 이름의 함수가 있지만 **어휘가 달라 합치지 않았다.** 그 이유는
+ * `awaiting-result.ts` 가 적는다 — 합쳐야 할 것은 「이것이 그 상태인가」이지 「이
+ * 화면이 무엇을 권하는가」가 아니다.
  */
 export function offersRetry(failure: TossConfirmFailure): boolean {
   return failure === 'declined' || failure === 'amount_mismatch' || failure === 'unreachable'

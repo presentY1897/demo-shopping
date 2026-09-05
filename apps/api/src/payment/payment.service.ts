@@ -370,6 +370,54 @@ export class PaymentService {
   }
 
   /**
+   * 승인 취소 — 매입 없이 남은 건을 되감는다 (TASK-0057 F2 · D-221).
+   *
+   * **환불이 아니다.** 매입 전이라 돈이 아직 우리 쪽으로 오지 않았고, 프로바이더
+   * API 도(`cancel` 대 `refund`) 수수료도 다르며 **부분이 없다** — 매입한 적이
+   * 없으니 나눌 것이 없다. `PaymentProviderPort.cancel` 이 처음부터 있었고 지금까지
+   * 아무도 부르지 않았던 자리가 이것이다.
+   *
+   * **권한을 보지 않는다.** 부르는 쪽이 배치이기 때문이고, 그래서 라우트에 붙이지
+   * 않는다 — 사용자에게 「승인 취소」 버튼은 없다. 그 사람은 이미 화면을 떠났고,
+   * 떠나지 않았다면 다음 행동은 결제를 마치는 것이다.
+   *
+   * 프로바이더 호출이 **잠금 안**인 이유는 환불과 같다(4.4). 저쪽에 먼저 말하고
+   * 우리가 못 적으면 「돈은 풀렸는데 장부는 잡혀 있다」가 되고, 그 불일치는 다음
+   * 주기가 같은 건을 또 취소하게 만든다.
+   */
+  async cancelAuthorization(paymentId: string, reason: string): Promise<void> {
+    const held = await this.read(paymentId)
+
+    this.assertTransition(held.status, 'CANCELED')
+
+    const provider = this.registry.resolve(held.provider)
+    const now = this.clock.now()
+
+    await this.prisma.$transaction(async (tx) => {
+      const fresh = await this.lock(tx, paymentId)
+
+      // 그 사이에 매입이 끝났을 수 있다 — 사람이 돌아와 결제를 마친 경우다.
+      // 던지지 않는 이유는 **그것이 좋은 결과이기 때문**이다: 되감을 이유가
+      // 사라졌고, 배치는 다음 건으로 가면 된다.
+      if (fresh.status !== 'AUTHORIZED') return
+
+      await provider.cancel(this.keyOf(fresh), fresh.authorizedAmount, reason)
+
+      await tx.payment.update({
+        where: { id: paymentId },
+        data: {
+          status: 'CANCELED',
+          // 승인액은 그대로 두고 취소 누계를 채운다. 「얼마가 잡혔다가 풀렸나」를
+          // 나중에 셀 수 있어야 하고, 승인액을 0으로 지우면 그 사실이 사라진다.
+          canceledAmount: fresh.authorizedAmount,
+          updatedAt: now,
+        },
+      })
+      await this.log(tx, paymentId, 'CANCELED', fresh.status, 'CANCELED', now, { reason })
+    })
+  }
+
+  /**
    * 부분 환불 (F3 · F4 · F6).
    *
    * **판단과 쓰기가 같은 잠금 안에 있다.** 동시에 들어온 두 환불이 각자 「아직
@@ -652,6 +700,19 @@ function confirmRefusalOf(reason: TossConfirmRefusal): Error {
       domainFailure('PAYMENT_AMOUNT_MISMATCH', '결제 금액이 주문 금액과 달라요.', {
         field: 'amount',
       }),
+    )
+  }
+
+  if (reason === 'awaiting_result') {
+    // 「이미 처리됐다」가 아니다. 그 사람의 결제는 아직 끝나지 않았고, 우리가 할
+    // 말은 「확인 중이니 다시 결제하지 마세요」다 — 새 결제를 막을 때와 같은 코드를
+    // 쓰는 이유가 그것이다. 화면은 두 자리를 같은 문장으로 답한다.
+    return new ConflictException(
+      domainFailure(
+        'PAYMENT_AWAITING_RESULT',
+        '앞선 결제의 결과를 확인하는 중이에요. 잠시 후 다시 시도해 주세요.',
+        { field: 'status' },
+      ),
     )
   }
 
