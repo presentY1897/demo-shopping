@@ -263,6 +263,12 @@ export const ko: Messages = {
     CART_PURCHASE_LIMIT: '1회 구매 가능 수량을 넘었어요.',
     CART_FULL: '장바구니가 가득 찼어요.',
     CART_ITEM_UNAVAILABLE: '지금은 판매하지 않는 상품이에요.',
+    // 재고 예약 (TASK-0048). 예약을 부르는 쪽은 주문 생성이라 콘솔에는
+    // 나타나지 않지만, 카탈로그가 전수라 문장이 있어야 한다.
+    RESERVATION_SOLD_OUT: '방금 다른 분이 먼저 담아가셨어요. 남은 수량을 확인해 주세요.',
+    RESERVATION_RELEASED: '주문서에 머무는 시간이 지나 예약이 풀렸어요. 다시 시도해 주세요.',
+    RESERVATION_CONFIRMED: '이미 결제가 끝난 주문이에요.',
+    RESERVATION_EXPIRED: '예약 시간이 지났어요. 처음부터 다시 진행해 주세요.',
   },
   // 응답이 아예 오지 않은 실패. 읽을 코드가 없으므로 번호도 보여 주지 않는다.
   apiFailures: {
