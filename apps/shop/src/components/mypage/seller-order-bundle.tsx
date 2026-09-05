@@ -9,6 +9,7 @@ import { useId, useState } from 'react'
 import type { BundleActions } from '@/lib/orders/use-order-detail'
 import type { OrderDetailMessages } from '@/messages'
 
+import { AutoConfirmNotice } from './auto-confirm-notice'
 import { OrderStatusBadge } from './order-status-badge'
 import { OrderTimeline } from './order-timeline'
 import { UpcomingEntry } from './upcoming-entry'
@@ -192,6 +193,14 @@ export function SellerOrderBundle({
           {repurchasing ? messages.repurchase.busy : messages.repurchase.action}
         </Button>
       </div>
+
+      {/*
+        확정이 언제 일어나는지, 또는 이미 일어났으면 그 뒤에 무엇이 닫혔는지
+        (TASK-0064 F5 · F8). **버튼 아래에 있는 것이 자리다** — 서버가 답한 액션
+        목록이 위에서 버튼을 그리고, 이 문단이 그 버튼을 지금 누르지 않아도 되는
+        이유(자동 확정)와 누른 뒤에 닫히는 것(반품)을 말한다.
+      */}
+      <AutoConfirmNotice messages={messages} sellerOrder={sellerOrder} />
 
       {/*
         아직 없는 화면 둘. 링크도 비활성 버튼도 아닌 이유는 `upcoming-entry.tsx` 에

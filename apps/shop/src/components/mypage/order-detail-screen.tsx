@@ -8,6 +8,7 @@ import { formatDate, formatMoney } from '@shopping/ui/format'
 import Link from 'next/link'
 import { useState } from 'react'
 
+import { AUTO_CONFIRM_DAYS } from '@/lib/orders/auto-confirm'
 import { useOrderDetail } from '@/lib/orders/use-order-detail'
 import { useRepurchase } from '@/lib/orders/use-repurchase'
 import type { MyPageMessages } from '@/messages'
@@ -207,7 +208,27 @@ export function OrderDetailScreen({
           )}
           <p className="text-fg">{copy.confirm.consequences}</p>
           <p className="text-fg font-semibold">{copy.confirm.irreversible}</p>
-          <p className="text-fg-muted">{copy.confirm.automatic}</p>
+          {/*
+            **확인창도 같은 시각을 말한다** — 카드의 안내와 다른 말을 하면 사람은
+            어느 쪽이 맞는지 모른다. 「배송완료 7일 뒤」를 여기 박아 두지 않는
+            이유는 시간을 압축한 배포에서 그 문장이 거짓이 되기 때문이고, 이
+            데모가 바로 그 배포다.
+          */}
+          <p className="text-fg-muted">
+            {pending?.autoConfirmAt === undefined || pending.autoConfirmAt === null
+              ? copy.confirm.automaticUnknown
+              : copy.confirm.automatic.replace(
+                  '{date}',
+                  formatDate(pending.autoConfirmAt, {
+                    locale: LOCALE,
+                    style: 'dateTime',
+                    timeZone: TIME_ZONE,
+                  }),
+                )}
+          </p>
+          <p className="text-fg-muted">
+            {copy.autoConfirm.rule.replace('{days}', String(AUTO_CONFIRM_DAYS))}
+          </p>
         </div>
       </ConfirmDialog>
     </div>

@@ -182,5 +182,14 @@ export function testAppConfig({
     appOrigins,
     // 재현 장치는 기본적으로 꺼져 있다 — 그것을 켜야 하는 스펙이 직접 켠다.
     paymentSimulation: 'off',
+    /**
+     * 배송 속도는 **배포의 기본값과 같은 `demo`** 다.
+     *
+     * `paymentSimulation` 과 반대로 기본값을 그대로 쓰는 이유는 이 값이 장치를
+     * 켜고 끄는 것이 아니라 속도만 고르기 때문이다 — 어느 값에서도 같은 사건이
+     * 같은 순서로 나므로, 여기서 다른 값을 쓰면 **스펙만 배포와 다른 시간을
+     * 재게** 된다. 다른 속도를 재는 스펙은 `config` 로 직접 넘긴다.
+     */
+    fulfillmentPace: 'demo',
   }
 }

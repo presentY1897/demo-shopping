@@ -171,6 +171,27 @@ export const sellerOrderSchema = z.object({
    * `shipment` 와 함께 `omit` 된다.
    */
   history: z.array(sellerOrderHistoryEntrySchema),
+  /**
+   * 이 몫이 자동으로 구매확정되는 시각, 또는 예정이 없으면 `null` (TASK-0064 F8).
+   *
+   * **서버가 계산해서 준다.** 규칙(배송완료 D+7)은 공개된 약속이라 화면이 이력에서
+   * 직접 더할 수도 있지만, 그러면 **데모에서 그 날짜가 틀린다** — 배포가
+   * `FULFILLMENT_PACE=demo` 면 배송도 확정도 시간이 압축되고(배송완료 5분 뒤),
+   * 그 설정은 어떤 응답에도 실리지 않아 화면이 알 방법이 없다. 화면이 계산하면
+   * 압축된 배포에서 「7일 뒤」라고 적어 놓고 5분 뒤에 확정되는 일이 벌어지고,
+   * 사람은 화면이 거짓말했다고 읽는다.
+   *
+   * `null` 인 경우는 둘이다. **배송완료가 아닌 몫**(아직 오는 중이거나 이미 확정·
+   * 취소·반품으로 끝난 몫)은 자동 확정을 기다리고 있지 않고, **배송완료인데 그
+   * 시각을 모르는 몫**은 지어낼 근거가 없다. 화면은 그 둘을 같게 다뤄도 된다 —
+   * 어느 쪽이든 말할 수 있는 날짜가 없다.
+   *
+   * 기준 시각은 **상태 이력의 `DELIVERED` 줄**이지 배송 행의 `deliveredAt` 이
+   * 아니다. 이유는 `apps/api/src/orders/order-confirm.service.ts` 에 적혀 있다 —
+   * 요약하면 이력은 반드시 있고 배송 행은 뒤처질 수 있으며, D+7 이 재는 것은
+   * 「상태가 배송완료로 선언된 뒤 얼마나 지났나」이기 때문이다.
+   */
+  autoConfirmAt: z.iso.datetime().nullable(),
 })
 
 export type SellerOrder = z.infer<typeof sellerOrderSchema>
@@ -466,13 +487,21 @@ export const checkoutSchema = z.object({
   /**
    * 판매자별 몫. 주문이 저장할 모양 그대로다 — **주문이 된 뒤에 생기는 것들만 빠진다.**
    *
-   * 상태와 배송과 이력이 그것이다. 주문서는 아직 주문이 아니므로 상태가 없고,
-   * 발송된 적도 없으며, 지나온 상태도 없다.
+   * 상태와 배송과 이력, 그리고 자동 확정 예정일이 그것이다. 주문서는 아직 주문이
+   * 아니므로 상태가 없고, 발송된 적도 없으며, 지나온 상태도 확정될 날짜도 없다.
    */
   sellerOrders: z.array(
-    sellerOrderSchema.omit({ id: true, status: true, shipment: true, history: true }).extend({
-      items: z.array(orderItemSchema.omit({ id: true })),
-    }),
+    sellerOrderSchema
+      .omit({
+        id: true,
+        status: true,
+        shipment: true,
+        history: true,
+        autoConfirmAt: true,
+      })
+      .extend({
+        items: z.array(orderItemSchema.omit({ id: true })),
+      }),
   ),
   totalProductAmount: priceSchema,
   totalCouponDiscountAmount: priceSchema,

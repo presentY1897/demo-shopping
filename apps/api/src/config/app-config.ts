@@ -128,7 +128,39 @@ export interface AppConfig {
    * 아니라 정상 기능이고, 운영에서도 일어나야 한다.
    */
   readonly paymentSimulation: PaymentSimulation
+  /**
+   * 발송된 주문이 배송완료와 구매확정까지 얼마나 빨리 가는가
+   * (TASK-0062 4장 · TASK-0064).
+   *
+   * | 값 | 배송 단계 간격 | 발송 → 배송완료 | 배송완료 → 자동 확정 |
+   * | --- | --- | --- | --- |
+   * | `demo` | 2분 | 6분 | 5분 |
+   * | `realistic` | 4시간 | 12시간 | 7일 |
+   *
+   * **두 기능이 축을 나눠 갖는 것이 이 필드의 이름이 `delivery` 가 아닌 이유다.**
+   * 배송과 구매확정이 각자의 스위치를 가지면 둘 중 하나만 켠 배포가 생기고, 그때
+   * 데모는 배송완료에서 끊긴다 — 그리고 아무것도 실패하지 않는다. 값이 뜻하는
+   * 시간은 각자 갖는다: 배송은 `shipping/delivery-simulator.ts`, 확정은
+   * `orders/order-confirm.ts` 다.
+   *
+   * **{@link paymentSimulation} 과 다른 종류의 값이다.** 저것은 재현 장치를
+   * 켜고 끄므로 `off` 가 있고 기본값이 `off` 다 — 켜는 것이 **실패**라서 깜빡
+   * 켜 두면 운영에서 결제가 깨진다. 이쪽은 켜고 끄는 것이 아니라 **속도**를
+   * 고른다: 배송은 어느 값에서도 가상이고(CLAUDE.md 5장), 두 값 모두 같은 사건을
+   * 같은 순서로 만든다.
+   *
+   * 그래서 기본값의 방향도 반대다. 여기서 잘못 두었을 때 조용한 쪽은
+   * `realistic` 이다 — 배포된 데모에서 배송완료가 영영 오지 않는데 **아무것도
+   * 실패하지 않는다.** 잘못 뒀을 때 조용한 값을 기본값으로 두지 않는다.
+   *
+   * 왜 데모 계정 판정이나 `PAYMENT_SIMULATION` 을 쓰지 않았는지는
+   * `shipping/delivery-simulator.ts` 의 `DELIVERY_STEP_MS` 에 표로 적혀 있다.
+   */
+  readonly fulfillmentPace: FulfillmentPace
 }
 
 /** 결제 실패 재현의 세 가지 모드. */
 export type PaymentSimulation = 'off' | 'delay' | 'timeout'
+
+/** 이행 속도의 두 가지 모드. 시간의 실제 값은 배송·확정이 각자 쥔다. */
+export type FulfillmentPace = 'demo' | 'realistic'

@@ -27,6 +27,7 @@ import type { UserEvent } from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { OrderDetailScreen } from '@/components/mypage/order-detail-screen'
+import { AUTO_CONFIRM_DAYS } from '@/lib/orders/auto-confirm'
 import { messagesFor } from '@/messages'
 
 import { testServer } from './setup'
@@ -282,7 +283,15 @@ describe('구매확정 (F3)', () => {
     // 정산과 적립금 지급의 방아쇠이고 되돌릴 수 없다 (`state-machines.md` 1장).
     expect(within(dialog).getByText(copy.confirm.consequences)).toBeVisible()
     expect(within(dialog).getByText(copy.confirm.irreversible)).toBeVisible()
-    expect(within(dialog).getByText(copy.confirm.automatic)).toBeVisible()
+    // 확인창이 말하는 시각은 카드의 안내와 **같은 값**이다 — 서버가 준 예정 시각
+    // 하나이고, 둘이 갈리면 사람은 어느 쪽이 맞는지 모른다.
+    expect(within(dialog).getByText(/자동으로 확정됩니다/u)).toBeVisible()
+    // 실제 서비스의 규칙도 같은 창에서 말한다 (TASK-0064). 확인창이 시각만
+    // 말하면 압축된 배포에서 「원래 이렇게 짧은 서비스」로 읽히고, 규칙만 말하면
+    // 5분 뒤에 확정된 사람이 화면이 거짓말했다고 읽는다.
+    expect(
+      within(dialog).getByText(copy.autoConfirm.rule.replace('{days}', String(AUTO_CONFIRM_DAYS))),
+    ).toBeVisible()
     // 어느 묶음인지 적는다. 대상을 말하지 않는 확인은 믿고 누르는 확인이다.
     expect(within(dialog).getByText(copy.bundleLabel.replace('{brand}', LUMIERE))).toBeVisible()
   })

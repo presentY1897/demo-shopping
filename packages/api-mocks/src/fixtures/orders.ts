@@ -540,6 +540,10 @@ export const shopperMixedOrder = defineFixture(orderResponseSchema, {
         paidAmount: 425_000,
         shipment: DELIVERED_SHIPMENT,
         history: DELIVERED_HISTORY,
+        // 배송완료 이레 뒤 (TASK-0064). **서버가 계산해서 보낸 값**이고, 이
+        // 픽스처는 압축하지 않는 배포(`FULFILLMENT_PACE=realistic`)를 흉내 낸다 —
+        // 화면이 규칙대로 더한 날짜를 그리는지가 여기서만 확인된다.
+        autoConfirmAt: '2026-09-13T02:30:00.000Z',
       },
       {
         id: MOCK_SELLER_ORDER_IDS.mixedShipped,
@@ -555,6 +559,8 @@ export const shopperMixedOrder = defineFixture(orderResponseSchema, {
         paidAmount: 51_500,
         shipment: IN_TRANSIT_SHIPMENT,
         history: SHIPPED_HISTORY,
+        // 아직 오는 중이라 확정을 기다리고 있지 않다.
+        autoConfirmAt: null,
       },
       {
         id: MOCK_SELLER_ORDER_IDS.mixedPreparing,
@@ -571,6 +577,7 @@ export const shopperMixedOrder = defineFixture(orderResponseSchema, {
         // 아직 보내지 않았다. 「못 읽었다」가 아니다.
         shipment: null,
         history: PREPARING_HISTORY,
+        autoConfirmAt: null,
       },
     ],
     totalProductAmount: 622_000,
@@ -618,6 +625,8 @@ export const shopperConfirmedOrder = defineFixture(orderResponseSchema, {
         paidAmount: 176_000,
         shipment: OLD_DELIVERED_SHIPMENT,
         history: CONFIRMED_HISTORY,
+        // 이미 확정됐다. 예정은 지난 것이 아니라 **없다**.
+        autoConfirmAt: null,
       },
     ],
     totalProductAmount: 189_000,
@@ -655,6 +664,7 @@ export const shopperCanceledOrder = defineFixture(orderResponseSchema, {
         paidAmount: 51_500,
         shipment: null,
         history: CANCELED_HISTORY,
+        autoConfirmAt: null,
       },
     ],
     totalProductAmount: 49_000,
@@ -696,6 +706,7 @@ export const shopperDeletedProductOrder = defineFixture(orderResponseSchema, {
          * 정확히 깨진다.
          */
         history: [],
+        autoConfirmAt: null,
       },
     ],
     totalProductAmount: 79_000,

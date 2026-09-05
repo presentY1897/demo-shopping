@@ -29,6 +29,8 @@ export const healthDependencyKeys = [
   'reservationExpiry',
   'paymentReconcile',
   'paymentStraggler',
+  'deliverySimulator',
+  'orderConfirm',
 ] as const
 
 export type HealthDependencyKey = (typeof healthDependencyKeys)[number]
@@ -131,6 +133,32 @@ export const healthResponseSchema = z.object({
     resolvedCount: z.int().min(0),
   }),
   /**
+   * 자동 구매확정 스케줄러 (TASK-0064 F2 · 6장).
+   *
+   * **이 잡이 멈추면 배송이 끝난 주문이 확정되지 않는다.** 구매확정은 정산(M12)과
+   * 적립금 지급(M11)의 방아쇠이므로, 멈춘 동안 판매자는 이미 배송을 마친 물건의
+   * 돈을 받지 못하고 구매자의 적립금도 들어오지 않는다. 그런데 **아무 요청도
+   * 실패하지 않는다** — 주문 화면에는 「배송완료」가 정직하게 떠 있고, 구매자가 직접
+   * 확정 버튼을 누르는 길은 멀쩡히 동작한다. 위의 필드들과 같은 종류의 침묵이고,
+   * 그래서 같은 모양으로 `status` 를 품는다 — {@link healthDependencyKeys} 의
+   * 하나이고 `degraded` 는 맨 위의 `status` 까지 함께 내린다.
+   *
+   * `confirmedCount` 는 **마지막 한 번**이 자동으로 확정한 몫의 수다. 구매자가 직접
+   * 누른 확정과, 고른 뒤에 보니 이미 확정돼 있던 몫은 여기 들어오지 않는다 — 둘 다
+   * 정상이지만 이 배치가 한 일이 아니고, 섞으면 이 숫자가 「배치가 일하고 있다」의
+   * 근거가 되지 못한다. 0 은 「확정할 때가 된 주문이 없었다」이지 「안 돌았다」가
+   * 아니다.
+   *
+   * **필수다.** API 는 언제나 이 키를 답한다 — 스케줄러가 안 돌았어도 「안 돌았다」를
+   * 답한다. 선택으로 두면 읽는 쪽이 「필드가 없다」와 「멈췄다」를 구분해야 하는데,
+   * 그 둘은 같은 뜻이면서 분기만 하나 늘린다.
+   */
+  orderConfirm: z.object({
+    status: healthStatusSchema,
+    lastRunAt: z.iso.datetime().nullable(),
+    confirmedCount: z.int().min(0),
+  }),
+  /**
    * 낙오된 결제를 끝내는 배치 (TASK-0057 F2 · F6 · D-221).
    *
    * **이 배치가 멈추면 두 종류의 사람이 조용히 갇힌다.** 매입은 끝났는데 주문이
@@ -151,6 +179,28 @@ export const healthResponseSchema = z.object({
     status: healthStatusSchema,
     lastRunAt: z.iso.datetime().nullable(),
     fixedCount: z.int().min(0),
+  }),
+  /**
+   * 배송 진행 시뮬레이터 (TASK-0062 F6 · F7).
+   *
+   * **이 잡이 멈추면 데모가 배송 중에서 끝난다.** 발송된 주문이 영영 `SHIPPED` 에
+   * 머물고, 그 뒤에 있는 구매확정 · 정산 · 반품은 열리지 않는다 — 방문자는 이
+   * 서비스의 절반을 보지 못한다. 그런데 **아무 요청도 실패하지 않는다**: 주문도
+   * 배송도 200 을 답하고 화면은 「배송중」이라고 정직하게 말한다. 위의 세 필드와
+   * 같은 종류의 침묵이고, 그래서 같은 모양으로 `status` 를 품는다 —
+   * {@link healthDependencyKeys} 의 하나이고 `degraded` 는 맨 위의 `status` 까지
+   * 함께 내린다.
+   *
+   * `advancedCount` 는 **마지막 한 번**이 다음 단계로 옮긴 배송의 수다. 던진 건은
+   * 여기 들어오지 않는다 — 그래야 계속 실패하는 한 건이 「밀린 것이 안 줄어든다」로
+   * 드러난다. 위의 두 배치와 달리 **평소 값이 0 이 아닌 것이 정상이다**: 이쪽은
+   * 사고가 아니라 정상 흐름을 진행시키는 잡이라, 배송 중인 주문이 있는 동안에는
+   * 계속 무언가를 옮긴다.
+   */
+  deliverySimulator: z.object({
+    status: healthStatusSchema,
+    lastRunAt: z.iso.datetime().nullable(),
+    advancedCount: z.int().min(0),
   }),
   /**
    * 마지막으로 받은 결제 웹훅의 시각 (TASK-0056 2장).

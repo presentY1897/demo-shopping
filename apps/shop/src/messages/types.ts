@@ -566,6 +566,8 @@ export interface OrderDetailMessages {
   readonly tracking: OrderTrackingMessages
   readonly timeline: OrderTimelineMessages
   readonly confirm: OrderConfirmMessages
+  readonly autoConfirm: OrderAutoConfirmMessages
+  readonly afterConfirm: OrderAfterConfirmMessages
   readonly payment: OrderPaymentMessages
   readonly recipient: OrderRecipientMessages
   readonly repurchase: OrderRepurchaseMessages
@@ -636,8 +638,15 @@ export interface OrderConfirmMessages {
   readonly description: string
   readonly consequences: string
   readonly irreversible: string
-  /** D+7 자동 확정이 있다는 사실 (TASK-0064). 서두를 이유가 없음을 말한다. */
+  /**
+   * 자동 확정이 있다는 사실 (TASK-0064). 서두를 이유가 없음을 말한다. `{date}`
+   *
+   * 시각이지 기간이 아니다. 「배송완료 7일 뒤」는 압축된 배포에서 거짓이 되고,
+   * 그 배포가 곧 이 데모다.
+   */
   readonly automatic: string
+  /** 예정 시각을 모를 때 대신 말하는 한 줄. 날짜를 지어내지 않는다. */
+  readonly automaticUnknown: string
   readonly confirmLabel: string
   readonly cancelLabel: string
   readonly closeLabel: string
@@ -646,6 +655,47 @@ export interface OrderConfirmMessages {
   /** 이미 확정돼 있었다 — 서버가 `changed: false` 로 답한 경우. `{brand}` */
   readonly alreadyDone: string
   readonly failedTitle: string
+}
+
+/**
+ * 자동 구매확정 예정 안내 (TASK-0064 F8).
+ *
+ * **문장이 셋인 것이 이 안내의 전부다.** 날짜 하나만 적으면 데모에서 그 날짜가
+ * 틀리고(시간이 압축돼 그보다 빨리 확정된다), 규칙만 적으면 「그래서 내 주문은
+ * 언제인가」에 답하지 못한다. 그래서 **예정일 · 규칙 · 데모라는 사실**을 나눠
+ * 적는다 — 어느 것도 다른 것의 자리를 대신하지 못한다.
+ *
+ * 화면이 이 날짜를 어떻게 얻는지, 그리고 왜 서버가 보내 주지 않는지는
+ * `lib/orders/auto-confirm.ts` 에 적혀 있다.
+ */
+export interface OrderAutoConfirmMessages {
+  readonly title: string
+  /** `{date}` — 실제 서비스 기준의 예정 시각. */
+  readonly dueAt: string
+  /**
+   * `{days}` — 실제 서비스의 규칙.
+   *
+   * **위의 날짜와 나란히 있는 것이 이 문장의 일이다.** 화면은
+   * `FULFILLMENT_PACE` 를 읽을 수 없어 「지금은 압축된 시간입니다」라고 단언할 수
+   * 없고, 단언하면 압축하지 않는 배포에서 거짓이 된다. 대신 실제 시각과 규칙을
+   * 함께 두면 둘의 차이가 그 사실을 말한다.
+   */
+  readonly rule: string
+  /** 배송완료 시각을 모르는 묶음에 붙는 말. 날짜를 지어내지 않는다. */
+  readonly unknownAt: string
+}
+
+/**
+ * 확정된 뒤의 안내 (TASK-0064 F5).
+ *
+ * **버튼이 사라진 자리에 문장이 선다.** 확정은 종착 상태라
+ * (`seller-order-transitions.ts` 의 `CONFIRMED: []`) 서버가 답하는 액션 목록이 비고,
+ * 화면은 아무것도 그리지 않는다 — 그것만으로는 「왜 반품 신청이 없나」에 답하지
+ * 못한다. 규칙을 새로 만드는 것이 아니라 **이미 닫혀 있는 것을 말하는** 자리다.
+ */
+export interface OrderAfterConfirmMessages {
+  readonly title: string
+  readonly noReturn: string
 }
 
 /**

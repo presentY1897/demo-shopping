@@ -37,7 +37,10 @@ import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { domainFailure } from '../common/domain-failure.js'
 import { isUniqueViolationOn } from '../common/unique-violation.js'
+import type { AppConfig } from '../config/app-config.js'
+import { APP_CONFIG } from '../config/app-config.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { autoConfirmAtOf, autoConfirmWindowMsOf } from './order-confirm.js'
 import type { ShipmentRow } from '../shipping/shipment.service.js'
 import { presentShipment, SHIPMENT_SELECT } from '../shipping/shipment.service.js'
 import { ReservationService } from '../reservation/reservation.service.js'
@@ -76,6 +79,10 @@ export class OrderService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
+    // 자동 확정 예정 시각을 답에 실으려면 이 프로세스의 기간을 알아야 한다
+    // (TASK-0064 F8). 읽는 것은 `FULFILLMENT_PACE` 하나이고, 그 판단은
+    // `order-confirm.ts` 가 쥔다 — 배송 시뮬레이터와 같은 축이다.
+    @Inject(APP_CONFIG) private readonly config: AppConfig,
     private readonly reservations: ReservationService,
     private readonly checkouts: CheckoutService,
     private readonly transitions: SellerOrderService,
@@ -437,7 +444,7 @@ export class OrderService {
 
     assertResourceAccess(principal, 'order.read', accountOwnership(row.user))
 
-    return { order: present(row) }
+    return { order: present(row, autoConfirmWindowMsOf(this.config)) }
   }
 
   /**
@@ -527,7 +534,7 @@ export class OrderService {
     assertResourceAccess(principal, 'order.read', sellerOwnership(row.seller))
 
     return {
-      sellerOrder: presentSellerOrder(row),
+      sellerOrder: presentSellerOrder(row, autoConfirmWindowMsOf(this.config)),
       orderNumber: row.order.orderNumber,
       orderedAt: row.order.createdAt.toISOString(),
       recipient: {
@@ -843,7 +850,16 @@ function presentHistory(row: HistoryRow): SellerOrderHistoryEntry {
   }
 }
 
-function presentSellerOrder(row: SellerOrderRow): SellerOrder {
+/**
+ * 판매자 몫 하나를 계약의 모양으로.
+ *
+ * `autoConfirmWindowMs` 를 인자로 받는 것은 이 함수가 **설정을 모르는 자리**이기
+ * 때문이다. 압축 여부의 판단은 `order-confirm.ts` 의 한 함수가 쥐고
+ * (배송 시뮬레이터와 같은 축을 읽는다), 여기까지 내려오는 것은 밀리초 하나다.
+ */
+function presentSellerOrder(row: SellerOrderRow, autoConfirmWindowMs: number): SellerOrder {
+  const history = row.statusHistory.map((entry) => presentHistory(entry))
+
   return {
     id: row.id,
     sellerId: row.sellerId,
@@ -871,26 +887,32 @@ function presentSellerOrder(row: SellerOrderRow): SellerOrder {
     shipment: row.shipment === null ? null : presentShipment(row.shipment),
     // 묶음에 붙는 사실이라 묶음 안에 있다. 구매자 상세와 판매자 상세가 **같은
     // 이력**을 읽는 것이 이 자리의 요점이다 (TASK-0063).
-    history: row.statusHistory.map((entry) => presentHistory(entry)),
+    history,
+    // 같은 이력에서 나온다 (TASK-0064 F8). 화면이 직접 더하지 않는 이유는 계약에
+    // 적혀 있다 — 압축된 배포에서 그 덧셈은 **틀린 날짜**가 된다.
+    autoConfirmAt: autoConfirmAtOf(row.status as OrderStatus, history, autoConfirmWindowMs),
   }
 }
 
-function present(row: {
-  readonly id: string
-  readonly orderNumber: string
-  readonly createdAt: Date
-  readonly recipientName: string
-  readonly recipientPhone: string
-  readonly postalCode: string
-  readonly addressLine1: string
-  readonly addressLine2: string | null
-  readonly totalProductAmount: number
-  readonly totalCouponDiscountAmount: number
-  readonly totalPointDiscountAmount: number
-  readonly totalShippingFee: number
-  readonly paidAmount: number
-  readonly sellerOrders: readonly SellerOrderRow[]
-}): Order {
+function present(
+  row: {
+    readonly id: string
+    readonly orderNumber: string
+    readonly createdAt: Date
+    readonly recipientName: string
+    readonly recipientPhone: string
+    readonly postalCode: string
+    readonly addressLine1: string
+    readonly addressLine2: string | null
+    readonly totalProductAmount: number
+    readonly totalCouponDiscountAmount: number
+    readonly totalPointDiscountAmount: number
+    readonly totalShippingFee: number
+    readonly paidAmount: number
+    readonly sellerOrders: readonly SellerOrderRow[]
+  },
+  autoConfirmWindowMs: number,
+): Order {
   return {
     id: row.id,
     orderNumber: row.orderNumber,
@@ -902,7 +924,7 @@ function present(row: {
       addressLine1: row.addressLine1,
       addressLine2: row.addressLine2,
     },
-    sellerOrders: row.sellerOrders.map((entry) => presentSellerOrder(entry)),
+    sellerOrders: row.sellerOrders.map((entry) => presentSellerOrder(entry, autoConfirmWindowMs)),
     totalProductAmount: row.totalProductAmount,
     totalCouponDiscountAmount: row.totalCouponDiscountAmount,
     totalPointDiscountAmount: row.totalPointDiscountAmount,
