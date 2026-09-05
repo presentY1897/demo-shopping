@@ -149,7 +149,11 @@ export default async function ProductPage({
           : formatMoney({ amount: Math.min(...prices), currency: CURRENCY })}
       </span>
 
-      <ProductDetail detail={detail} messages={messages.productDetail} />
+      <ProductDetail
+        cartMessages={messages.cart}
+        detail={detail}
+        messages={messages.productDetail}
+      />
     </>
   )
 }
