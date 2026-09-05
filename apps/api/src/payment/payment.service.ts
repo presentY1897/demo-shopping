@@ -26,12 +26,16 @@ import { OrderService } from '../orders/order.service.js'
 import { PaymentProviderRegistry } from './payment-registry.js'
 import type { RefundRefusal } from './payment-rules.js'
 import { canTransition, refundDecision } from './payment-rules.js'
+import type { TossConfirmRefusal } from './toss-rules.js'
+import { confirmDecision } from './toss-rules.js'
 
 type Tx = Prisma.TransactionClient
 
 /** 잠금 아래에서 읽은 결제 한 줄. */
 interface PaymentRow {
   readonly id: string
+  /** 어느 결제사인가. 토스 승인 라우트가 남의 결제를 받지 않기 위해 본다 (TASK-0055). */
+  readonly provider: PaymentProviderName
   readonly status: PaymentStatus
   readonly authorizedAmount: number
   readonly canceledAmount: number
@@ -127,7 +131,7 @@ export class PaymentService {
       paymentId: held.id,
       orderId: context.orderId,
       amount: held.authorizedAmount,
-      ...(context.methodRef === null ? {} : { cardId: context.methodRef }),
+      ...(context.methodRef === null ? {} : { methodRef: context.methodRef }),
     })
     const now = this.clock.now()
 
@@ -163,6 +167,58 @@ export class PaymentService {
     })
 
     return this.get(principal, paymentId)
+  }
+
+  /**
+   * 토스 결제창이 돌아왔다. 금액을 대조하고 승인으로 넘긴다 (TASK-0055 F1 · F2).
+   *
+   * **이 메서드의 존재 이유는 대조다.** 결제창 성공은 승인이 아니고, 돌아온
+   * `amount` 는 사용자가 고칠 수 있는 쿼리스트링에서 온 값이다. 비교 대상은
+   * **DB 의 승인액**이고 그 값은 주문이 정했다 — 그 대조를 빠뜨리는 것이 PG
+   * 연동에서 가장 흔하고 가장 비싼 실수다.
+   *
+   * **어긋나면 토스를 부르지 않는다.** 부르고 나서 거절하는 구현도 「거절됐다」는
+   * 단언은 통과하지만, 그쪽은 저쪽에 승인된 결제가 남고 우리 장부에는 남지 않는
+   * 훨씬 나쁜 모양이다. 그래서 대조가 프로바이더 호출보다 **앞**에 있다.
+   *
+   * 거절해도 결제는 `READY` 로 남는다. 다른 카드로 다시 시도하는 길을 막지 않기
+   * 위해서고(F3), 대신 **무슨 일이 있었는지는 이벤트로 남는다** — 금액 조작 시도는
+   * 조용히 사라지면 안 되는 종류의 사건이다.
+   */
+  async confirmToss(
+    principal: RequestPrincipal,
+    paymentId: string,
+    paymentKey: string,
+    amount: number,
+  ): Promise<PaymentResponse> {
+    const account = await this.account(principal, 'order.write')
+    const held = await this.own(account.id, paymentId)
+    const decision = confirmDecision(held, amount)
+
+    if (decision.outcome === 'refused') {
+      const now = this.clock.now()
+
+      // 상태를 바꾸지 않는 사건이다. `PaymentEvent_transition_check` 가 두 상태의
+      // 짝을 강제하므로 둘 다 `null` 이고, 그것이 「아무 데도 가지 않았다」의 표현이다.
+      await this.prisma.$transaction((tx) =>
+        this.log(tx, paymentId, 'FAILED', null, null, now, {
+          reason: decision.reason,
+          expected: held.authorizedAmount,
+          received: amount,
+        }),
+      )
+
+      throw confirmRefusalOf(decision.reason)
+    }
+
+    // 결제창이 돌려준 키를 결제에 붙인다. 승인 경로는 **하나뿐**이다 — 프로바이더가
+    // 그 키를 `methodRef` 로 받으므로, 토스도 가상 카드와 같은 `authorize` 를 지난다.
+    await this.prisma.payment.update({
+      where: { id: paymentId },
+      data: { methodRef: paymentKey, updatedAt: this.clock.now() },
+    })
+
+    return this.authorize(principal, paymentId)
   }
 
   /** 매입 확정. `AUTHORIZED` → `PAID`. */
@@ -309,6 +365,7 @@ export class PaymentService {
       where: { id: paymentId, order: { userId } },
       select: {
         id: true,
+        provider: true,
         status: true,
         authorizedAmount: true,
         canceledAmount: true,
@@ -331,7 +388,7 @@ export class PaymentService {
    */
   private async lock(tx: Tx, paymentId: string): Promise<PaymentRow> {
     const rows = await tx.$queryRaw<readonly PaymentRow[]>`
-      SELECT "id", "status", "authorizedAmount", "canceledAmount", "paymentKey"
+      SELECT "id", "provider", "status", "authorizedAmount", "canceledAmount", "paymentKey"
         FROM "Payment"
        WHERE "id" = ${paymentId}::uuid
        FOR UPDATE
@@ -414,6 +471,35 @@ export class PaymentService {
       },
     })
   }
+}
+
+/**
+ * 토스 승인 거절 셋을 각자의 답으로 (TASK-0055 F2).
+ *
+ * 금액 불일치가 400 인 이유는 **요청이 틀렸기 때문**이다 — 상태를 기다려도 낫지
+ * 않는다. `READY` 가 아닌 것은 409 다: 같은 리다이렉트가 두 번 열린 것(뒤로 가기·
+ * 새로고침)이 대부분이고, 그때는 이미 끝난 결제가 하나 있다.
+ */
+function confirmRefusalOf(reason: TossConfirmRefusal): Error {
+  if (reason === 'amount_mismatch') {
+    return new BadRequestException(
+      domainFailure('PAYMENT_AMOUNT_MISMATCH', '결제 금액이 주문 금액과 달라요.', {
+        field: 'amount',
+      }),
+    )
+  }
+
+  if (reason === 'provider_mismatch') {
+    return new BadRequestException(
+      domainFailure('PAYMENT_PROVIDER_MISMATCH', '토스로 시작한 결제가 아니에요.', {
+        field: 'provider',
+      }),
+    )
+  }
+
+  return new ConflictException(
+    domainFailure('PAYMENT_TRANSITION_REFUSED', '이미 처리된 결제예요.', { field: 'status' }),
+  )
 }
 
 /** 거절 셋을 각자의 답으로. 사람이 할 일이 다르므로 코드도 다르다. */

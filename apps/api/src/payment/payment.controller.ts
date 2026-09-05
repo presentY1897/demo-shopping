@@ -31,6 +31,19 @@ const startPaymentSchema = z.object({
 })
 
 /**
+ * `POST /payments/:id/toss/confirm` — 결제창이 돌아왔다 (TASK-0055).
+ *
+ * **금액을 받는다.** 서버가 이미 아는 값을 굳이 받는 이유는 그것을 쓰기 위해서가
+ * 아니라 **대조하기 위해서**다 — 브라우저가 무엇을 들고 돌아왔는지 알아야
+ * 조작을 발견할 수 있고, 받지 않으면 발견할 것 자체가 없다.
+ */
+const confirmTossSchema = z.object({
+  /** 결제창이 돌려준 키. 토스가 이 길이를 200자까지 쓴다. */
+  paymentKey: z.string().min(1).max(200),
+  amount: z.int().nonnegative(),
+})
+
+/**
  * 결제와 카드 (TASK-0054).
  *
  * 승인과 매입이 **두 라우트**인 것이 이 화면의 모양을 정한다. 가상 카드는 그 둘
@@ -138,6 +151,25 @@ export class PaymentController {
     @Param('id') id: string,
   ): Promise<PaymentResponse> {
     return this.payments.authorize(principal, id)
+  }
+
+  /**
+   * 토스 결제창에서 돌아온 뒤의 승인 (TASK-0055 F1 · F2).
+   *
+   * **`authorize` 와 다른 라우트인 이유**는 이 단계에만 대조할 것이 있기 때문이다.
+   * 가상 카드는 결제창을 거치지 않아 브라우저가 들고 돌아오는 값이 없고, 토스는
+   * 그 값을 들고 온다 — 그 값을 받는 자리가 곧 검산하는 자리다.
+   */
+  @Post('payments/:id/toss/confirm')
+  @RequirePermission('order.write')
+  confirmToss(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ): Promise<PaymentResponse> {
+    const input = parseInput(confirmTossSchema, body)
+
+    return this.payments.confirmToss(principal, id, input.paymentKey, input.amount)
   }
 
   @Post('payments/:id/capture')
