@@ -168,6 +168,7 @@ function toHit(hit: Record<string, unknown>): SearchHit {
     name: String(hit.name),
     brandName: String(hit.brandName),
     categoryId: Number(hit.categoryId),
+    sellerId: String(hit.sellerId),
     price: Number(hit.price),
     inStock: hit.inStock === true,
     thumbnailUrl: typeof hit.thumbnailUrl === 'string' ? hit.thumbnailUrl : null,

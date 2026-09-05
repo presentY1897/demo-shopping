@@ -116,7 +116,8 @@ function entry(
     hit: defineFixture(searchHitSchema, {
       id: `019596d0-1f1c-7c2e-9a0e-${String(index).padStart(12, '0')}`,
       name: `상품 ${String(index)}`,
-      brandName: '해뜰녘',
+      brandName: storefrontSeller.seller.brandName,
+      sellerId: SEARCH_CATALOGUE_SELLER_ID,
       categoryId: SEARCH_COAT_CATEGORY,
       price: 100_000,
       inStock: true,

@@ -102,6 +102,21 @@ export interface ApiClientOptions {
 export interface ApiRequestOptions<TResult> {
   /** Path below the version prefix, e.g. `/health`. */
   readonly path: string
+  /**
+   * Seconds this answer may be reused by a framework cache. Omitted means
+   * **never** (TASK-0102).
+   *
+   * The default has to be `no-store`: most of what this client fetches is
+   * somebody's session, somebody's basket or a liveness reading, and a framework
+   * that reused any of those would show one person another's page. So caching is
+   * opt-in and the call site says how long.
+   *
+   * It is opted into by the storefront's **public** reads — the catalogue, one
+   * listing, the category tree — which is what makes ISR possible at all: with
+   * `cache: 'no-store'` on every request a route can never be cached, whatever
+   * `revalidate` the page exports.
+   */
+  readonly revalidate?: number
   /** Parsed against the response body; a mismatch is a `malformed_response`. */
   readonly schema: z.ZodType<TResult>
   readonly method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
@@ -113,6 +128,8 @@ export interface ApiRequestOptions<TResult> {
 export interface ApiCallOptions {
   readonly signal?: AbortSignal
   readonly timeoutMs?: number
+  /** See {@link ApiRequestOptions.revalidate}. */
+  readonly revalidate?: number
 }
 
 export interface ApiClient {
@@ -498,6 +515,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     body,
     signal,
     timeoutMs,
+    revalidate,
   }: ApiRequestOptions<TResult>): Promise<TResult> {
     const url = buildUrl(baseUrl, prefix, path)
     const deadline = AbortSignal.timeout(timeoutMs ?? defaultTimeoutMs)
@@ -515,8 +533,10 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         ...(hasBody ? { body: JSON.stringify(body) } : {}),
         // Cookies are per origin and carry the session of this app alone.
         credentials: 'include',
-        // Liveness data is never reused; Next.js would otherwise cache it.
-        cache: 'no-store',
+        // Never reused unless the caller says how long it may be (TASK-0102):
+        // sessions, baskets and liveness readings must not be shared between
+        // visitors, and that is most of what this client fetches.
+        ...(revalidate === undefined ? { cache: 'no-store' as const } : { next: { revalidate } }),
         signal: signal === undefined ? deadline : AbortSignal.any([deadline, signal]),
       })
     } catch (error) {
