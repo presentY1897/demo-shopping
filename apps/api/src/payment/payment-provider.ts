@@ -72,4 +72,17 @@ export interface PaymentProviderPort {
   refund(paymentKey: string, amount: number, reason: string): Promise<void>
   /** 대사용. 우리가 아는 상태와 저쪽이 아는 상태가 같은지 물어본다. */
   getStatus(paymentKey: string): Promise<PaymentStatus>
+  /**
+   * **우리 결제 id 로** 승인 결과를 되찾는다 (TASK-0056 · D-220).
+   *
+   * `getStatus` 와 다른 이유는 열쇠다. 승인이 끊긴 건에는 `paymentKey` 가 없다 —
+   * 그 값은 저쪽의 답에 실려 오는데 그 답을 못 받은 것이 이 상황이다. 그래서 이
+   * 메서드는 **우리가 보낸 식별자**로 묻고, 그것이 `UNRESOLVED` 인 결제로
+   * 돌아가는 유일한 길이다.
+   *
+   * 답은 `authorize` 와 같은 세 가지다. **`unknown` 이 유효한 답인 것이 중요하다** —
+   * 저쪽이 아직 처리 중이면 우리도 아직 모르는 것이고, 그때는 상태를 옮기지 않고
+   * 다음 대사를 기다린다.
+   */
+  recover(paymentId: string): Promise<AuthorizeResult>
 }

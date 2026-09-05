@@ -47,7 +47,7 @@ const api = useApiApp({ database: db, authenticate: true })
 
 /** 결제사에 나간 한 마디. 무엇이 몇 번, 얼마로 나갔는지가 전부다. */
 interface ProviderCall {
-  readonly method: 'authorize' | 'capture' | 'cancel' | 'refund' | 'getStatus'
+  readonly method: 'authorize' | 'capture' | 'cancel' | 'refund' | 'getStatus' | 'recover'
   readonly paymentKey: string | null
   readonly amount: number | null
   readonly reason: string | null
@@ -129,6 +129,18 @@ class ScriptedProvider implements PaymentProviderPort {
 
     this.refundHold = null
     if (hold !== null) await hold()
+  }
+
+  /**
+   * 대사가 쓰는 되찾기 (TASK-0056). 이 스펙은 대사를 재지 않으므로 대본이 없다 —
+   * 승인 결과를 그대로 한 번 더 답한다.
+   */
+  recover(paymentId: string): Promise<AuthorizeResult> {
+    this.calls.push({ method: 'recover', paymentKey: null, amount: null, reason: null })
+
+    return this.approves
+      ? Promise.resolve({ outcome: 'approved', paymentKey: `${this.name}-${paymentId}` })
+      : Promise.resolve({ outcome: 'declined', reason: this.declineReason })
   }
 
   getStatus(paymentKey: string): Promise<PaymentStatus> {

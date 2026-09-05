@@ -54,6 +54,17 @@ export interface TossClient {
   cancel(paymentKey: string, reason: string, amount?: number): Promise<TossPayment>
   /** 대사용 조회. */
   get(paymentKey: string): Promise<TossPayment>
+  /**
+   * **우리 결제 id 로** 되찾는다 (TASK-0056 · D-220).
+   *
+   * 승인이 끊긴 건에는 `paymentKey` 가 없다 — 그 값은 저쪽의 답에 실려 오는데 그
+   * 답을 못 받은 것이 이 상황이다. 그래서 대사가 물어볼 수 있는 유일한 열쇠가
+   * **우리가 보낸 `orderId`**, 즉 우리 `Payment.id` 다 (TASK-0055 4.3).
+   *
+   * 그 결제가 저쪽에 아예 없으면 `null` 이다 — 요청이 도착조차 안 했다는 뜻이고,
+   * 그때 우리 결제는 실패로 끝난다.
+   */
+  getByOrderId(orderId: string): Promise<TossPayment | null>
 }
 
 /**
@@ -100,6 +111,19 @@ export class FetchTossClient implements TossClient {
 
   get(paymentKey: string): Promise<TossPayment> {
     return this.call(`/payments/${encodeURIComponent(paymentKey)}`, null)
+  }
+
+  async getByOrderId(orderId: string): Promise<TossPayment | null> {
+    try {
+      return await this.call(`/payments/orders/${encodeURIComponent(orderId)}`, null)
+    } catch (error: unknown) {
+      // 없는 주문은 404 다. **그것은 오류가 아니라 답이다** — 저쪽에 이 결제가
+      // 없다는 뜻이고, 대사는 그 답으로 우리 결제를 실패로 보낸다. 던지면 대사가
+      // 매번 재시도하며 영원히 풀지 못한다.
+      if (error instanceof TossError && error.code === 'NOT_FOUND_PAYMENT') return null
+
+      throw error
+    }
   }
 
   /**
@@ -181,6 +205,10 @@ function errorOf(payload: unknown, status: number): TossError {
  */
 export class UnconfiguredTossClient implements TossClient {
   confirm(): Promise<TossPayment> {
+    return this.refuse()
+  }
+
+  getByOrderId(): Promise<TossPayment | null> {
     return this.refuse()
   }
 

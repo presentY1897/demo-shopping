@@ -63,7 +63,7 @@ const WIDGET_KEY = 'toss-widget-payment-key'
 
 /** 토스에 나간 한 마디. 무엇이 어느 「주문」으로 얼마에 나갔는지가 전부다. */
 interface TossCall {
-  readonly method: 'confirm' | 'cancel' | 'get'
+  readonly method: 'confirm' | 'cancel' | 'get' | 'getByOrderId'
   readonly paymentKey: string
   /** 토스가 부르는 「주문」. 4.3 대로 우리 `Payment.id` 여야 한다. `confirm` 에만 있다. */
   readonly orderId: string | null
@@ -94,11 +94,25 @@ class FakeToss implements TossClient {
   /** 승인된 결제의 금액. 취소와 조회가 그럴듯한 답을 하려면 이것이 필요하다. */
   private readonly approved = new Map<string, number>()
 
+  /**
+   * 우리 결제 id 로 물었을 때 저쪽이 아는 것. 기본은 **모른다**(`null`).
+   *
+   * 끊긴 승인을 되찾는 길이고(TASK-0056 · D-220), 기본값이 「없음」인 이유는 이
+   * 파일이 대사를 재지 않기 때문이다 — 대사는 자기 스펙에서 이것을 채운다.
+   */
+  private readonly byOrderId = new Map<string, TossPayment>()
+
   reset(): void {
     this.calls.length = 0
     this.confirmStatus = 'DONE'
     this.confirmFailure = null
     this.approved.clear()
+    this.byOrderId.clear()
+  }
+
+  /** 저쪽이 이 「주문」을 알고 있는 것으로 만든다. */
+  knows(orderId: string, payment: TossPayment): void {
+    this.byOrderId.set(orderId, payment)
   }
 
   /** 이 대역이 받은 특정 호출만. */
@@ -146,6 +160,18 @@ class FakeToss implements TossClient {
       status: canceled < total ? 'PARTIAL_CANCELED' : 'CANCELED',
       totalAmount: total,
     })
+  }
+
+  getByOrderId(orderId: string): Promise<TossPayment | null> {
+    this.calls.push({
+      method: 'getByOrderId',
+      paymentKey: '',
+      orderId,
+      amount: null,
+      reason: null,
+    })
+
+    return Promise.resolve(this.byOrderId.get(orderId) ?? null)
   }
 
   get(paymentKey: string): Promise<TossPayment> {
