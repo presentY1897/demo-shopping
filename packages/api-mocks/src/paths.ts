@@ -133,6 +133,14 @@ export const mockPaths = {
    */
   paymentAuthorize: `*${API_PATH_PREFIX}/payments/:id/authorize`,
   paymentCapture: `*${API_PATH_PREFIX}/payments/:id/capture`,
+  /**
+   * `POST` 토스 결제창이 돌아온 뒤의 승인 (TASK-0055).
+   *
+   * `authorize` 와 **다른 라우트인 이유**는 이 단계에만 대조할 것이 있기 때문이다 —
+   * 브라우저가 `paymentKey` 와 `amount` 를 들고 돌아오고, 서버는 그 금액을 DB 의
+   * 승인액과 맞춰 본 뒤에야 결제사를 부른다 (F2).
+   */
+  paymentTossConfirm: `*${API_PATH_PREFIX}/payments/:id/toss/confirm`,
   /** `GET` the tree, `POST` a new node. */
   categories: `*${API_PATH_PREFIX}/categories`,
   /**

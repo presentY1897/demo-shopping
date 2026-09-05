@@ -103,7 +103,7 @@ async function renderCheckout(cards: typeof shopperCards = shopperCards) {
 async function paymentSection(): Promise<HTMLElement> {
   const section = await screen.findByRole('region', { name: pay.title })
 
-  await within(section).findByRole('group', { name: pay.chooseCard })
+  await within(section).findByRole('group', { name: pay.chooseMethod })
 
   return section
 }
@@ -212,7 +212,7 @@ describe('카드가 없는 사람', () => {
     const summary = screen.getByRole('complementary', { name: copy.summaryTitle })
 
     expect(within(summary).getByRole('button', { name: copy.placeOrder })).toBeDisabled()
-    expect(within(summary).getByText(pay.cardRequired)).toBeVisible()
+    expect(within(summary).getByText(pay.methodRequired)).toBeVisible()
   })
 })
 

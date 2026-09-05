@@ -17,6 +17,7 @@ import type { CardTransactionKind } from '@/lib/cards/cards-api'
 import type { HealthFailureReason } from '@/lib/health'
 import type { CardBlock } from '@/lib/payment/cards'
 import type { CardStatus } from '@/lib/payment/payment-api'
+import type { TossConfirmFailure, TossFailureKind } from '@/lib/payment/toss-return'
 import type { PaymentRefusal, PaymentStep } from '@/lib/payment/use-payment'
 
 /**
@@ -985,6 +986,15 @@ export interface CheckoutMessages {
    * 주문서가 결제까지 한다.
    */
   readonly payment: PaymentMessages
+  /**
+   * 토스 결제창이 돌아오는 두 화면 (TASK-0055).
+   *
+   * `payment` 아래가 아니라 옆인 이유는 **다른 라우트이기 때문**이다. 위의 것은
+   * 주문서 안의 한 영역이 읽고, 이 둘은 `checkout/toss/*` 가 읽는다 — 주문서를
+   * 떠났다가 돌아온 사람이 보는 화면이라 주문서의 문장을 다시 쓸 수 없다.
+   */
+  readonly tossSuccess: TossSuccessMessages
+  readonly tossFailure: TossFailureMessages
   readonly termsLabel: string
   readonly placeOrder: string
   readonly placing: string
@@ -1019,8 +1029,13 @@ export interface CheckoutMessages {
 export interface PaymentMessages {
   readonly title: string
   readonly loading: string
-  /** 라디오 그룹의 이름. 화면에는 없고 접근성 트리에만 있다. */
-  readonly chooseCard: string
+  /**
+   * 라디오 그룹의 이름. 화면에는 없고 접근성 트리에만 있다.
+   *
+   * 「카드 선택」이 아니라 「결제수단 선택」이다 (TASK-0055 4.6 과 같은 이유) —
+   * 두 번째 프로바이더가 목록에 들어온 순간 앞의 이름은 거짓이 된다.
+   */
+  readonly chooseMethod: string
   /** 카드 한 장의 이름. `{brand}` · `{number}` */
   readonly cardLabel: string
   /** 남은 한도. `{amount}` */
@@ -1036,8 +1051,8 @@ export interface PaymentMessages {
   readonly noneTitle: string
   readonly noneBody: string
   readonly noneAction: string
-  /** 카드를 안 골랐을 때 주문 버튼 아래에 나오는 이유. */
-  readonly cardRequired: string
+  /** 결제수단을 안 골랐을 때 주문 버튼 아래에 나오는 이유. */
+  readonly methodRequired: string
   /** 지금 무엇을 하는 중인가. 걸음마다 하나씩. */
   readonly progress: Readonly<Record<PaymentStep, string>>
   /** 끝나지 못한 이유. `exceeds_credit` 은 모자란 금액 `{amount}` 를 받는다. */
@@ -1047,4 +1062,73 @@ export interface PaymentMessages {
   readonly retry: string
   readonly paidTitle: string
   readonly paidBody: string
+  /** 토스 선택지와 그 아래 안내 (TASK-0055 4.5 · F7). */
+  readonly toss: TossOptionMessages
+}
+
+/**
+ * 결제수단 목록의 토스 한 줄 (TASK-0055).
+ *
+ * **키가 없으면 이 문장들은 한 번도 그려지지 않는다** (4.1). 그래도 카탈로그에
+ * 있는 이유는 문구가 설정에 따라 있다 없다 하면 안 되기 때문이다 — 키를 넣는
+ * 사람이 문구까지 쓰게 되는 순간, 그 문구는 아무도 검토하지 않은 것이 된다.
+ */
+export interface TossOptionMessages {
+  /** 결제수단 목록에 뜨는 이름. */
+  readonly label: string
+  /**
+   * 고른 사람에게만 보이는 안내 (F7 · 4.7).
+   *
+   * **카드번호가 없다.** 토스페이먼츠는 테스트용 국내 카드번호를 주지 않고, 대신
+   * 테스트 환경에서는 실제 카드 정보를 넣어도 가상으로만 승인된다 — 적을 수 있는
+   * 번호가 애초에 없으므로 안내는 그 사실과 문서 링크다.
+   */
+  readonly noticeTitle: string
+  readonly noticeBody: string
+  readonly noticeAction: string
+  /** 결제창으로 넘어가는 중. **완료가 아니라 넘어감이다** (4.2). */
+  readonly leaving: string
+  /** 결제창에 뜨는 주문 이름. `{name}` */
+  readonly orderNameSingle: string
+  /** 여러 건일 때. `{name}` · `{count}` */
+  readonly orderNameMore: string
+}
+
+/**
+ * 결제창이 성공으로 돌아온 화면 (TASK-0055 4.2).
+ *
+ * **`failures` 의 키가 유니온이다.** 승인이 끝나지 못하는 경우가 하나 늘면 여기가
+ * 비는 것이 아니라 `pnpm typecheck` 이 깨진다 — 결제 도중에 아무 말도 못 듣는 것이
+ * 가장 나쁜 실패이고, 하필 그 자리가 돈이 오간 뒤다.
+ */
+export interface TossSuccessMessages {
+  readonly title: string
+  /** 승인을 기다리는 중. 결제창의 성공은 아직 승인이 아니다. */
+  readonly confirming: string
+  readonly capturing: string
+  readonly doneTitle: string
+  readonly doneBody: string
+  readonly failedTitle: string
+  readonly failures: Readonly<Record<TossConfirmFailure, string>>
+  /** 다시 결제하러 주문서로. 그럴 수 있는 실패에만 나온다 (`offersRetry`). */
+  readonly backToCheckout: string
+  readonly backHome: string
+}
+
+/**
+ * 결제창이 실패로 돌아온 화면 (TASK-0055 F3).
+ *
+ * 두 갈래의 키가 유니온인 이유는 위와 같다. **창을 닫은 것은 사고가 아니므로**
+ * 같은 문장을 쓰지 않는다 — 마음이 바뀐 사람에게 「실패했어요」라고 말하면 우리
+ * 쪽이 고장 난 것처럼 들린다.
+ */
+export interface TossFailureMessages {
+  readonly title: string
+  readonly titles: Readonly<Record<TossFailureKind, string>>
+  readonly bodies: Readonly<Record<TossFailureKind, string>>
+  /** 주문도 예약도 그대로다 (F3). 어느 갈래에나 같이 붙는 한 문장이다. */
+  readonly holdKept: string
+  readonly backToCheckout: string
+  /** 주문서 id 를 모를 때. 장바구니에서 다시 시작할 수 있다. */
+  readonly backToCart: string
 }

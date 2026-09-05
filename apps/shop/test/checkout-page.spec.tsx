@@ -69,7 +69,7 @@ async function renderCheckout(width: number = VIEWPORTS.desktop) {
   // 카드 목록은 주문서와 **따로** 온다. 그것이 도착해야 카드 하나가 골라지고,
   // 골라져야 「주문하기」가 눌린다 (TASK-0054) — 기다리지 않으면 이 파일의 검사가
   // 어느 쪽이 먼저 도착했는지에 따라 갈린다.
-  await screen.findByRole('group', { name: copy.payment.chooseCard })
+  await screen.findByRole('group', { name: copy.payment.chooseMethod })
 
   return result
 }

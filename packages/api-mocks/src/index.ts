@@ -29,6 +29,7 @@ export {
   categoryHandlers,
   categoryRowsSnapshot,
   checkoutHandlers,
+  declineNextTossApproval,
   defaultHandlers,
   demoHandlers,
   failNextDefaultAssignment,

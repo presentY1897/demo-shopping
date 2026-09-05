@@ -61,7 +61,7 @@ export {
 } from './card-contract'
 export type { CardTransaction, IssuedCard } from './card-contract'
 export { demoHandlers, failNextDemoIssue, mockDemoAccount, resetDemoStore } from './demo'
-export { paymentHandlers, resetPaymentStore } from './payment'
+export { declineNextTossApproval, paymentHandlers, resetPaymentStore } from './payment'
 export { productHandlers, productRowsSnapshot, resetProductStore } from './products'
 export { searchHandlers } from './search'
 export {

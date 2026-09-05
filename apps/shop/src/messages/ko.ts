@@ -359,7 +359,7 @@ export const ko: Messages = {
     payment: {
       title: '결제수단',
       loading: '카드를 불러오는 중',
-      chooseCard: '결제할 카드 선택',
+      chooseMethod: '결제수단 선택',
       cardLabel: '{brand} {number}',
       available: '사용 가능 {amount}',
       blocked: {
@@ -369,22 +369,73 @@ export const ko: Messages = {
       noneTitle: '결제할 카드가 없어요',
       noneBody: '가상 카드가 있어야 결제할 수 있어요.',
       noneAction: '마이페이지에서 카드 발급받기',
-      cardRequired: '결제할 카드를 골라 주세요.',
+      methodRequired: '결제수단을 골라 주세요.',
       progress: {
         ordering: '주문을 접수하는 중이에요',
         starting: '결제를 여는 중이에요',
         authorizing: '카드 승인을 기다리는 중이에요',
         capturing: '결제를 확정하는 중이에요',
+        opening: '토스 결제창을 여는 중이에요',
       },
       refusals: {
         exceeds_credit: '카드 한도가 {amount} 모자라요. 다른 카드로 결제해 주세요.',
         declined: '카드가 결제를 거절했어요. 다른 카드로 결제해 주세요.',
         unreachable: '결제 결과를 확인하지 못했어요. 잠시 후 다시 결제해 주세요.',
+        toss_unavailable: '토스 결제창을 열지 못했어요. 다시 시도하거나 가상 카드로 결제해 주세요.',
       },
       holdKept: '잡아 둔 재고는 그대로 있어요. 카드를 바꿔 다시 결제할 수 있어요.',
       retry: '다시 결제하기',
       paidTitle: '결제가 완료됐어요',
       paidBody: '카드 승인까지 끝났어요. 주문 내역에서 진행 상황을 볼 수 있어요.',
+      // 토스는 「선택지」다 (R3). 안내에 카드번호를 적지 않는 이유는 4.7 이고,
+      // 토스가 테스트용 카드번호를 아예 주지 않는다는 사실이 그 근거다.
+      toss: {
+        label: '토스페이먼츠로 결제',
+        noticeTitle: '테스트 환경이에요',
+        noticeBody:
+          '결제창에 실제 카드 정보를 넣어도 가상으로만 승인되고 돈이 빠져나가지 않아요. 토스페이먼츠는 테스트 전용 카드번호를 따로 주지 않아서, 번호 대신 안내 문서를 두었어요.',
+        noticeAction: '토스페이먼츠 테스트 환경 안내 열기',
+        leaving: '토스 결제창으로 이동하고 있어요. 결제를 마치면 이 주문서로 돌아와요.',
+        orderNameSingle: '{name}',
+        orderNameMore: '{name} 외 {count}건',
+      },
+    },
+    // 결제창에서 돌아온 두 화면 (TASK-0055). 성공 주소로 돌아온 것은 아직 승인이
+    // 아니라는 것이 이 문장들의 전제다 (4.2).
+    tossSuccess: {
+      title: '결제 확인',
+      confirming: '결제를 승인하는 중이에요. 창을 닫지 말아 주세요.',
+      capturing: '결제를 확정하는 중이에요. 창을 닫지 말아 주세요.',
+      doneTitle: '결제가 완료됐어요',
+      doneBody: '카드 승인까지 끝났어요. 주문 내역에서 진행 상황을 볼 수 있어요.',
+      failedTitle: '결제를 마치지 못했어요',
+      failures: {
+        declined: '카드가 결제를 거절했어요. 주문서로 돌아가 다시 결제해 주세요.',
+        amount_mismatch:
+          '결제 금액이 주문 금액과 달라요. 결제는 진행되지 않았으니 주문서에서 다시 결제해 주세요.',
+        already_settled:
+          '이미 처리된 결제예요. 주문 내역에서 결과를 확인해 주세요. 이 화면에서 다시 결제하면 두 번 결제될 수 있어요.',
+        unreachable: '결제 결과를 확인하지 못했어요. 주문서에서 다시 결제해 주세요.',
+        unsettled:
+          '카드 승인은 끝났는데 확정을 마치지 못했어요. 다시 결제하면 두 번 결제될 수 있으니, 주문 내역에서 결과를 확인해 주세요.',
+        invalid_return: '결제창에서 돌아온 주소가 아니에요. 주문서에서 다시 결제해 주세요.',
+      },
+      backToCheckout: '주문서로 돌아가기',
+      backHome: '홈으로 가기',
+    },
+    tossFailure: {
+      title: '결제 취소',
+      titles: {
+        canceled: '결제를 취소했어요',
+        refused: '결제를 마치지 못했어요',
+      },
+      bodies: {
+        canceled: '결제창을 닫으셨어요.',
+        refused: '결제창에서 결제가 끝나지 않았어요.',
+      },
+      holdKept: '주문과 잡아 둔 재고는 그대로 있어요. 주문서에서 다시 결제할 수 있어요.',
+      backToCheckout: '주문서로 돌아가기',
+      backToCart: '장바구니로 돌아가기',
     },
     termsLabel: '주문 내용을 확인했고 결제에 동의합니다',
     placeOrder: '주문하기',
