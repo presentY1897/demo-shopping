@@ -125,6 +125,9 @@ const ADMIN_OPERATOR_GRANTS: readonly PermissionGrant[] = [
   // 관리자가 **실계정이 쓰는 쿠폰**을 못 만드는 자리다.
   grant('coupon.platform', 'any'),
   grant('settlement.read', 'any'),
+  // 읽기만이다. `commission.write` 가 없는 것이 TASK-0079 F7 이고, 데모 관리자가
+  // 요율을 못 바꾸는 것도 이 빈자리에서 따라 나온다 — 그쪽은 이 목록을 좁혀 받는다.
+  grant('commission.read', 'any'),
   grant('user.read', 'any'),
   grant('seller.read', 'any'),
   grant('seller.approve', 'any'),
