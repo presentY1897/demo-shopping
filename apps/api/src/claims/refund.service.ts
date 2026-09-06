@@ -5,6 +5,7 @@ import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { PaymentService, REFUND_TX_OPTIONS } from '../payment/payment.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { DiscountRestoreService } from './discount-restore.service.js'
 import type { CancelApproved, CancelRefundEvents } from './cancel-events.js'
 import type { ClaimStatus, ClaimType } from './claim-rules.js'
 import type { ClaimFault } from '@shopping/shared'
@@ -86,6 +87,10 @@ export class ClaimRefundService {
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
     private readonly payments: PaymentService,
+    // 할인의 복구 (TASK-0078). 현금과 **같은 트랜잭션**이어야 하므로 여기서
+    // 부른다 — 환불 뒤에 따로 도는 배치로 두면 그 사이에 죽은 프로세스가 적립금을
+    // 돌려주지 않은 주문을 남긴다.
+    private readonly restores: DiscountRestoreService,
   ) {}
 
   /**
@@ -171,6 +176,26 @@ export class ClaimRefundService {
 
     await this.writeLines(tx, claimId, breakdown)
 
+    // **적용의 역순으로 되돌린다** (`pricing.md` 4장 · TASK-0078). 적립금과 쿠폰이
+    // 먼저이고 현금이 마지막이다. 같은 트랜잭션인 것이 R1 이 요구하는 것이고, 그중
+    // 하나만 따로 커밋되면 되돌릴 수 없는 어긋남이 남는다 — 적립금은 돌아왔는데
+    // 현금은 안 나갔거나, 쿠폰만 되살아난 주문이 그것이다.
+    //
+    // 쿠폰 복원이 이 클레임을 `REFUNDED` 로 옮기기 **전에** 도는데도 이번 몫을 세는
+    // 이유는 `moveToRefunded` 가 아래에 있기 때문이 아니라, 복원 판단이 읽는 것이
+    // 상태가 아니라 **환불이 끝난 수량**이기 때문이다 — 그 수량은 방금 쓴
+    // `ClaimItem` 이 아니라 `REFUNDED` 클레임의 합이고, 그래서 순서를 바꿔야 한다.
+    await this.moveToRefunded(tx, claim)
+
+    const restored = await this.restores.restoreWithin(tx, {
+      claimId,
+      orderId: context.orderId,
+      sellerOrderId: claim.sellerOrderId,
+      userId: await this.buyerOf(tx, context.orderId),
+      items: context.items,
+      refundedNow: breakdown.total,
+    })
+
     // **0원이면 결제사를 부르지 않는다.** 반품비가 항목 환불액보다 큰 경우
     // (아주 싼 물건의 변심 반품)이고, `refundBreakdown` 이 0에서 바닥을 친 결과다.
     // `refundDecision` 은 0원을 `invalid_amount` 로 거절하므로 그대로 넘기면 끝난
@@ -185,7 +210,14 @@ export class ClaimRefundService {
     }
 
     await this.writeRecord(tx, claimId, context.paymentId, breakdown)
-    await this.moveToRefunded(tx, claim)
+
+    // 회수하지 못한 몫은 **아무 원장에도 남지 않는다** — 움직임이 없기 때문이다.
+    // 그것을 볼 자리가 아직 없어 로그 한 줄로 남긴다 (HANDOFF 의 이월 항목).
+    if (restored.clawbackShortfall > 0) {
+      this.log.warn(
+        `적립금 회수가 잔액에 막혔습니다 — 클레임 ${claimId}, 못 가져온 ${String(restored.clawbackShortfall)}원`,
+      )
+    }
 
     return 'refunded'
   }
@@ -197,6 +229,16 @@ export class ClaimRefundService {
    * `SELECT … FOR UPDATE` 는 앞사람이 커밋한 값을 다시 읽는다 —
    * `ClaimService.lock` · `PaymentService.lock` 이 같은 이유로 같은 모양이다.
    */
+  /** 이 주문을 산 사람. 적립금이 돌아갈 계정이다. */
+  private async buyerOf(tx: Tx, orderId: string): Promise<string> {
+    const order = await tx.order.findUniqueOrThrow({
+      where: { id: orderId },
+      select: { userId: true },
+    })
+
+    return order.userId
+  }
+
   private async lock(tx: Tx, claimId: string): Promise<LockedClaim> {
     const rows = await tx.$queryRaw<readonly LockedClaim[]>`
       SELECT "id", "status"::text AS "status", "type"::text AS "type",

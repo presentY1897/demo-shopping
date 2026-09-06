@@ -345,6 +345,110 @@ export class PointsService {
     })
   }
 
+  /**
+   * 환불이 되돌리는 적립금 (TASK-0078 F1 · F2).
+   *
+   * **이미 열린 트랜잭션 안에서 돈다.** 환불은 현금·쿠폰·적립금이 함께 움직이는 한
+   * 사건이고, 그중 하나만 따로 커밋되면 되돌릴 수 없는 어긋남이 남는다 —
+   * `PaymentService.refundWithin` 이 같은 이유로 같은 모양이다.
+   *
+   * **되돌아온 적립금은 새 통이다.** 원래 어느 통에서 얼마씩 빠졌는지는 기록되지
+   * 않으므로(사용 행은 통을 가리키지 않는다) 그 통들의 남은 기간을 되살릴 방법이
+   * 없고, 정책의 유효기간을 그날부터 다시 주는 것이 할 수 있는 유일하게 정직한
+   * 일이다. 그래서 이 행에는 `earnRateBp` 이 없다 — 적립된 것이 아니라 **돌아온
+   * 것**이다.
+   *
+   * 0원이면 아무것도 쓰지 않는다. 0원짜리 사건은 사건이 아니고, 원장에 그런 행을
+   * 남기면 「왜 줄지도 늘지도 않은 줄이 있나」를 읽는 사람이 묻게 된다.
+   */
+  async restoreWithin(
+    tx: Tx,
+    input: { readonly userId: string; readonly amount: number; readonly refId: string },
+  ): Promise<PointLedgerEntry | null> {
+    if (input.amount <= 0) return null
+
+    const policy = await this.policy()
+    const accountId = await this.accountIdFor(input.userId)
+    const now = this.clock.now()
+    const account = await this.lock(tx, accountId)
+
+    return this.record(tx, account.id, {
+      draft: {
+        type: 'RESTORE',
+        amount: input.amount,
+        refType: 'CLAIM_REQUEST',
+        refId: input.refId,
+        reason: null,
+      },
+      balanceAfter: account.balance + input.amount,
+      lot: {
+        expiresAt: expiryFrom(now, policy.validityDays),
+        remainingAmount: input.amount,
+        earnRateBp: null,
+      },
+      now,
+    })
+  }
+
+  /**
+   * 구매확정 후 반품에서 지급된 적립금을 되가져온다 (TASK-0078 F5 · F6).
+   *
+   * **음수 잔액을 만들지 않는다.** 이미 써 버린 적립금은 되가져올 수 없고, 잔액을
+   * 마이너스로 두면 그 사람은 다음에 적립받는 만큼을 잃는데 그 사실을 아무 화면도
+   * 설명하지 못한다. 못 가져온 몫은 이유에 적혀 남고, 그것이 관리자가 볼 자리다.
+   *
+   * `ADJUST` 인 이유는 이것이 사용도 만료도 아니기 때문이다 — 양방향인 유일한
+   * 종류이고, 그래서 이유를 말해야 하는 유일한 종류다.
+   *
+   * 나가는 움직임이므로 **통도 함께 비운다.** 잔액만 줄이면 남은 통들의 합이 잔액을
+   * 넘고(P5), 그 어긋남은 다음 사용에서 「쓸 수 있다는데 잔액이 모자란다」로 나타난다.
+   */
+  async clawbackWithin(
+    tx: Tx,
+    input: {
+      readonly userId: string
+      readonly amount: number
+      readonly refId: string
+      readonly reason: string
+    },
+  ): Promise<{ readonly taken: number; readonly shortfall: number }> {
+    if (input.amount <= 0) return { taken: 0, shortfall: 0 }
+
+    const accountId = await this.accountIdFor(input.userId)
+    const now = this.clock.now()
+    const account = await this.lock(tx, accountId)
+    const taken = Math.min(input.amount, account.balance)
+    const shortfall = input.amount - taken
+
+    if (taken === 0) return { taken: 0, shortfall }
+
+    const plan = planConsumption(await this.liveLots(tx, account.id, now), taken)
+
+    // 잔액은 있는데 살아 있는 통이 모자라다 — 원장이 이미 어긋나 있다는 뜻이다(P5).
+    // 가져갈 수 있는 만큼만 가져가고 나머지를 못 가져온 몫으로 넘긴다.
+    if (plan.outcome === 'refused') return { taken: 0, shortfall: input.amount }
+
+    await this.record(tx, account.id, {
+      draft: {
+        type: 'ADJUST',
+        amount: -taken,
+        refType: 'CLAIM_REQUEST',
+        refId: input.refId,
+        reason:
+          shortfall === 0
+            ? input.reason
+            : `${input.reason} (잔액 부족으로 ${String(shortfall)}원 회수하지 못함)`,
+      },
+      balanceAfter: account.balance - taken,
+      lot: null,
+      now,
+    })
+
+    for (const draw of plan.draws) await this.drawLot(tx, draw.lotId, draw.remainingAfter)
+
+    return { taken, shortfall }
+  }
+
   // ------------------------------------------------------------------ 읽기
 
   /** 이 사람의 잔액과, 원장이 말하는 잔액. 둘 다 나가는 이유는 계약에 적었다. */
@@ -577,7 +681,8 @@ export class PointsService {
       readonly lot: {
         readonly expiresAt: Date
         readonly remainingAmount: number
-        readonly earnRateBp: number
+        /** 적립의 사실이다 — 되돌아온 적립금에는 그런 비율이 없다 (TASK-0078). */
+        readonly earnRateBp: number | null
       } | null
       readonly now: Date
     },

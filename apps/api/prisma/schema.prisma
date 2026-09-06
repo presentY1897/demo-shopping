@@ -2668,7 +2668,8 @@ model UserCoupon {
 //   PointTransaction_balance_check     balanceAfter >= 0
 //   PointTransaction_ref_pair_check    refType 과 refId 는 함께 온다
 //   PointTransaction_reason_check      ADJUST 는 이유를 말한다
-//   PointTransaction_lot_check         통의 세 칸은 EARN 에만, 그리고 EARN 에는 반드시
+//   PointTransaction_lot_check         통의 두 칸은 EARN·RESTORE 에만, 그 둘에는 반드시
+//                                      (`earnRateBp` 은 EARN 에만 — TASK-0078)
 //   PointTransaction_remaining_check   0 <= remainingAmount <= amount
 //   PointTransaction_append_only       트리거: 지울 수 없고, 줄어드는 remainingAmount
 //                                      말고는 고칠 수도 없다

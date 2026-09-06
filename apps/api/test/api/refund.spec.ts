@@ -23,6 +23,7 @@ import type {
 } from '../../src/payment/payment-provider.js'
 import { PaymentProviderRegistry } from '../../src/payment/payment-registry.js'
 import { PaymentService } from '../../src/payment/payment.service.js'
+import { PointsService } from '../../src/points/points.service.js'
 import { useApiApp } from '../support/api-app.js'
 import { fixedClock } from '../support/clock.js'
 import { concurrently, fulfilled } from '../support/concurrently.js'
@@ -31,8 +32,10 @@ import {
   createAddress,
   createCategory,
   createProduct,
+  createCoupon,
   createProductVariant,
   createSeller,
+  createUserCoupon,
   createUser,
 } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
@@ -967,4 +970,320 @@ describe('반품', () => {
     })
     expect((await paymentRow(paymentId)).canceledAmount).toBe(17_000)
   })
+
+  /**
+   * **구매확정으로 나간 적립금을 되가져온다** (TASK-0078 F5).
+   *
+   * 지급이 있었는지는 상태가 아니라 **원장이 답한다** — 확정이 적립을 남겼다면 그
+   * 몫을 가리키는 `EARN` 행이 있고, 상태는 그 사이에 이미 옮겨졌을 수 있다.
+   */
+  it('구매확정으로 지급된 적립금을 반품에서 회수한다 (F5)', async () => {
+    const placed = await place({ lines: [{ price: 100_000, quantity: 1 }], shippingFee: 0 })
+    const only = placed.items[0]
+
+    if (only === undefined) throw new Error('항목이 없습니다.')
+
+    await pay(placed)
+    await deliver(placed)
+
+    // 확정이 하는 일 그대로. 이 몫을 가리키는 `EARN` 한 줄이 남는다.
+    const earned = await api.resolve<PointsService>(PointsService).earn({
+      userId: buyer.userId,
+      paidAmount: 100_000,
+      refType: 'SELLER_ORDER',
+      refId: placed.sellerOrderId,
+    })
+
+    expect(earned?.amount).toBeGreaterThan(0)
+
+    await returned(placed, only, 'DEFECTIVE')
+
+    const rows = await db.query<{ type: string; amount: number; reason: string | null }>(
+      `SELECT t."type"::text AS "type", t."amount", t."reason"
+         FROM "PointTransaction" t
+         JOIN "PointAccount" a ON a."id" = t."accountId"
+        WHERE a."userId" = $1 ORDER BY t."seq" DESC`,
+      [buyer.userId],
+    )
+
+    // 양방향인 유일한 종류라 이유를 말해야 한다.
+    expect(rows[0]?.type).toBe('ADJUST')
+    expect(rows[0]?.amount).toBe(-(earned?.amount ?? 0))
+    expect(rows[0]?.reason).toContain('회수')
+
+    const balance = await db.one<{ balance: number }>(
+      `SELECT "balance" FROM "PointAccount" WHERE "userId" = $1`,
+      [buyer.userId],
+    )
+
+    expect(balance.balance).toBe(0)
+  })
+
+  /**
+   * **음수 잔액을 만들지 않는다** (F6).
+   *
+   * 이미 써 버린 적립금은 되가져올 수 없다. 잔액을 마이너스로 두면 그 사람은 다음에
+   * 적립받는 만큼을 잃는데, 그 사실을 아무 화면도 설명하지 못한다 — 못 가져온 몫은
+   * 이유에 적혀 남고, 그것이 관리자가 볼 자리다.
+   */
+  it('적립금을 이미 썼으면 있는 만큼만 가져가고 음수가 되지 않는다 (F6)', async () => {
+    const placed = await place({ lines: [{ price: 100_000, quantity: 1 }], shippingFee: 0 })
+    const only = placed.items[0]
+
+    if (only === undefined) throw new Error('항목이 없습니다.')
+
+    await pay(placed)
+    await deliver(placed)
+
+    const points = api.resolve<PointsService>(PointsService)
+    const earned = await points.earn({
+      userId: buyer.userId,
+      paidAmount: 100_000,
+      refType: 'SELLER_ORDER',
+      refId: placed.sellerOrderId,
+    })
+    const given = earned?.amount ?? 0
+
+    // 받은 것의 대부분을 다른 주문에 써 버린다.
+    await points.use({
+      userId: buyer.userId,
+      amount: given - 1,
+      refType: 'ORDER',
+      refId: placed.orderId,
+    })
+
+    await returned(placed, only, 'DEFECTIVE')
+
+    const balance = await db.one<{ balance: number }>(
+      `SELECT "balance" FROM "PointAccount" WHERE "userId" = $1`,
+      [buyer.userId],
+    )
+    const rows = await db.query<{ type: string; amount: number; reason: string | null }>(
+      `SELECT t."type"::text AS "type", t."amount", t."reason"
+         FROM "PointTransaction" t
+         JOIN "PointAccount" a ON a."id" = t."accountId"
+        WHERE a."userId" = $1 AND t."type" = 'ADJUST' ORDER BY t."seq" DESC`,
+      [buyer.userId],
+    )
+
+    expect(balance.balance).toBe(0)
+    expect(rows[0]?.amount).toBe(-1)
+    // 못 가져온 몫이 이유에 남는다 — 그것이 지금 유일하게 사람이 볼 수 있는 자리다.
+    expect(rows[0]?.reason).toContain('잔액 부족')
+  })
 })
+
+/**
+ * 할인의 복구 (TASK-0078).
+ *
+ * 환불이 돈만 돌려주고 끝나면 **쓴 적립금이 사라진다.** 그 손해는 조용하다 — 환불은
+ * 성공하고 금액도 맞으며, 다만 잔액이 돌아오지 않는다. 반대로 너무 많이 돌려주면
+ * 그것은 없는 돈을 만든 것이고, 그쪽은 정산일까지 아무 데도 나타나지 않는다.
+ *
+ * 위의 픽스처를 그대로 쓴다. 「1원이 사라지지 않는다」는 할인이 나뉘어 있을 때만
+ * 증명되는 성질이라, 안분해 둔 주문이 이미 여기 있는 것이 중요하다.
+ */
+describe('할인 복구 (TASK-0078)', () => {
+  /** 이 사람의 적립금 원장, 최신순. */
+  function ledgerRows(userId: string) {
+    return db.query<{ type: string; amount: number; reason: string | null }>(
+      `SELECT t."type"::text AS "type", t."amount", t."reason"
+         FROM "PointTransaction" t
+         JOIN "PointAccount" a ON a."id" = t."accountId"
+        WHERE a."userId" = $1
+        ORDER BY t."seq" DESC`,
+      [userId],
+    )
+  }
+
+  function balanceOf(userId: string) {
+    return db.query<{ balance: number }>(
+      `SELECT "balance" FROM "PointAccount" WHERE "userId" = $1`,
+      [userId],
+    )
+  }
+
+  /** 이 주문에 쿠폰 한 장을 쓴 것으로 만든다. */
+  async function spendCoupon(placed: Placed, discountAmount: number): Promise<string> {
+    const coupon = await createCoupon(db, { discountValue: discountAmount })
+    const row = await createUserCoupon(db, {
+      couponId: coupon.id,
+      userId: buyer.userId,
+      status: 'USED',
+      usedAt: '2026-09-03T00:00:00.000Z',
+      orderId: placed.orderId,
+      discountAmount,
+    })
+
+    return row.id
+  }
+
+  function couponRow(id: string) {
+    return db.one<{ status: string; orderId: string | null; discountAmount: number | null }>(
+      `SELECT "status"::text AS "status", "orderId", "discountAmount"
+         FROM "UserCoupon" WHERE "id" = $1`,
+      [id],
+    )
+  }
+
+  it('전량 취소하면 쓴 적립금이 전부 돌아온다 (F1)', async () => {
+    const placed = await place({ lines: [{ price: 20_000, quantity: 1 }] })
+    const item = placed.items[0]
+
+    if (item === undefined) throw new Error('항목이 없습니다.')
+
+    await allocate(placed, [{ itemId: item.id, coupon: 0, point: 5_000 }])
+    await pay(placed)
+    await cancel(placed, [{ orderItemId: item.id, quantity: 1 }])
+
+    const [entry] = await ledgerRows(buyer.userId)
+
+    expect(entry?.type).toBe('RESTORE')
+    expect(entry?.amount).toBe(5_000)
+    expect((await balanceOf(buyer.userId))[0]?.balance).toBe(5_000)
+  })
+
+  it('한 개만 취소하면 그 항목의 안분액만 돌아온다 (F2)', async () => {
+    const placed = await place({ lines: [{ price: 10_000, quantity: 3 }] })
+    const item = placed.items[0]
+
+    if (item === undefined) throw new Error('항목이 없습니다.')
+
+    await allocate(placed, [{ itemId: item.id, coupon: 0, point: 3_000 }])
+    await pay(placed)
+    await cancel(placed, [{ orderItemId: item.id, quantity: 1 }])
+
+    expect((await balanceOf(buyer.userId))[0]?.balance).toBe(1_000)
+  })
+
+  it('적립금을 쓰지 않았으면 원장에 아무것도 남지 않는다', async () => {
+    const placed = await place({ lines: [{ price: 20_000, quantity: 1 }] })
+    const item = placed.items[0]
+
+    if (item === undefined) throw new Error('항목이 없습니다.')
+
+    await pay(placed)
+    await cancel(placed, [{ orderItemId: item.id, quantity: 1 }])
+
+    // 0원짜리 사건은 사건이 아니다 — 「왜 줄지도 늘지도 않은 줄이 있나」를 만들지 않는다.
+    expect(await ledgerRows(buyer.userId)).toEqual([])
+  })
+
+  it('전량 취소하면 쿠폰이 다시 쓸 수 있게 돌아온다 (F3)', async () => {
+    const placed = await place({ lines: [{ price: 20_000, quantity: 1 }] })
+    const item = placed.items[0]
+
+    if (item === undefined) throw new Error('항목이 없습니다.')
+
+    await allocate(placed, [{ itemId: item.id, coupon: 3_000, point: 0 }])
+
+    const userCouponId = await spendCoupon(placed, 3_000)
+
+    await pay(placed)
+    await cancel(placed, [{ orderItemId: item.id, quantity: 1 }])
+
+    // **넷을 함께 비운다.** 금액만 남기면 되돌아온 쿠폰이 여전히 정산에서 차감된다.
+    expect(await couponRow(userCouponId)).toEqual({
+      status: 'ISSUED',
+      orderId: null,
+      discountAmount: null,
+    })
+  })
+
+  /**
+   * **부분 취소면 되돌리지 않는다.** 최소 주문금액 5만원 쿠폰을 쓰고 일부만 남기면,
+   * 돌아온 쿠폰으로 그 조건을 우회해 다시 쓸 수 있다.
+   */
+  it('부분 취소면 쿠폰이 돌아오지 않는다 (F4)', async () => {
+    const placed = await place({ lines: [{ price: 10_000, quantity: 3 }] })
+    const item = placed.items[0]
+
+    if (item === undefined) throw new Error('항목이 없습니다.')
+
+    await allocate(placed, [{ itemId: item.id, coupon: 3_000, point: 0 }])
+
+    const userCouponId = await spendCoupon(placed, 3_000)
+
+    await pay(placed)
+    await cancel(placed, [{ orderItemId: item.id, quantity: 1 }])
+
+    expect((await couponRow(userCouponId)).status).toBe('USED')
+  })
+
+  /**
+   * **두 번째 환불이 복구를 두 번 하지 않는다** (F8).
+   *
+   * 첫 겹은 클레임의 상태다 — 이미 `REFUNDED` 면 아무것도 하지 않는다. 그 아래에
+   * 원장의 `PointTransaction_ref_key` 가 한 겹 더 있다.
+   */
+  it('환불을 다시 시도해도 복구가 두 번 일어나지 않는다 (F8)', async () => {
+    const placed = await place({ lines: [{ price: 20_000, quantity: 1 }] })
+    const item = placed.items[0]
+
+    if (item === undefined) throw new Error('항목이 없습니다.')
+
+    await allocate(placed, [{ itemId: item.id, coupon: 1_000, point: 5_000 }])
+
+    const userCouponId = await spendCoupon(placed, 1_000)
+
+    await pay(placed)
+
+    const { claim } = await cancel(placed, [{ orderItemId: item.id, quantity: 1 }])
+
+    await refunds().settle(claim.id)
+    await refunds().settle(claim.id)
+
+    expect(await ledgerRows(buyer.userId)).toHaveLength(1)
+    expect((await balanceOf(buyer.userId))[0]?.balance).toBe(5_000)
+    expect((await couponRow(userCouponId)).status).toBe('ISSUED')
+  })
+
+  /**
+   * **합계 검증** (F7): 현금 + 적립금 복구 = 사는 사람이 낸 것 전부.
+   *
+   * 환불액이 「상품금액 − 쿠폰안분 − 적립금안분」이라, 빠진 적립금안분이 적립금으로
+   * 돌아와야 둘의 합이 원래 낸 값이 된다. 쿠폰안분은 돌아오지 않는다 — 그것은 사는
+   * 사람이 낸 것이 아니라 깎인 값이고, 대신 쿠폰 자체가 돌아온다.
+   */
+  it('현금과 적립금 복구의 합이 낸 것과 같다 (F7)', async () => {
+    const placed = await place({
+      lines: [
+        { price: 30_000, quantity: 1 },
+        { price: 20_000, quantity: 1 },
+      ],
+      shippingFee: 0,
+    })
+    const [cheap, dear] = placed.items
+
+    if (cheap === undefined || dear === undefined) throw new Error('항목이 없습니다.')
+
+    await allocate(placed, [
+      { itemId: cheap.id, coupon: 2_000, point: 3_000 },
+      { itemId: dear.id, coupon: 3_000, point: 4_500 },
+    ])
+
+    const { paidAmount } = await pay(placed)
+
+    await cancel(placed, [
+      { orderItemId: cheap.id, quantity: 1 },
+      { orderItemId: dear.id, quantity: 1 },
+    ])
+
+    const refunded = (await refundRows(await paymentIdOf(placed.orderId))).reduce(
+      (sum, row) => sum + row.amount,
+      0,
+    )
+    const restored = (await balanceOf(buyer.userId))[0]?.balance ?? 0
+
+    expect(refunded + restored).toBe(paidAmount + 7_500)
+  })
+})
+
+/** 이 주문의 결제 id. 합계 검증이 환불 행을 찾을 때 쓴다. */
+async function paymentIdOf(orderId: string): Promise<string> {
+  const row = await db.one<{ id: string }>(`SELECT "id" FROM "Payment" WHERE "orderId" = $1`, [
+    orderId,
+  ])
+
+  return row.id
+}
