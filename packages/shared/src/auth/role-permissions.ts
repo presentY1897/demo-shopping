@@ -26,9 +26,17 @@ function grant(permission: Permission, scope: ResourceScope): PermissionGrant {
  * one's own profile is a different capability and gets its own permission when
  * TASK-0027 builds that screen.
  *
- * `media.upload` is absent for the same kind of reason: a buyer has nothing to
- * upload until review photos exist (M13). Granting it now would open a write
- * path into the bucket that no screen uses and no test covers.
+ * `media.upload:own` was absent while a buyer had nothing to upload; return
+ * photos (TASK-0067 F2) are that something. A defect return makes a claim the
+ * seller pays for, so it has to carry evidence — and a buyer who cannot presign
+ * cannot file one at all.
+ *
+ * **`own` is narrower here than it is for a seller.** A seller's `own` resolves
+ * against the store they hold, which is what confines their keys to
+ * `products/{sellerId}/…`; a buyer holds no store, so the same scope resolves
+ * against their own account and confines their keys to `returns/{userId}/…`.
+ * The upload endpoint never takes an owner from the request, so this grant opens
+ * exactly one prefix and it is the caller's own (TASK-0067 · `uploads.service.ts`).
  */
 const BUYER_GRANTS: readonly PermissionGrant[] = [
   grant('catalog.read', 'any'),
@@ -40,6 +48,7 @@ const BUYER_GRANTS: readonly PermissionGrant[] = [
   grant('order.write', 'own'),
   grant('claim.read', 'own'),
   grant('coupon.read', 'own'),
+  grant('media.upload', 'own'),
   grant('user.read', 'own'),
   grant('profile.write', 'own'),
   grant('profile.delete', 'own'),

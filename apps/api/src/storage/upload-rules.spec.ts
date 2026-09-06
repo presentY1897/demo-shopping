@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
 import type { UploadRuleResult } from './upload-rules.js'
-import { extensionOf, productImageKey, resolveUploadExtension } from './upload-rules.js'
+import {
+  extensionOf,
+  productImageKey,
+  resolveUploadExtension,
+  returnPhotoKey,
+} from './upload-rules.js'
 
 /**
  * The upload rules, exercised as pure input → output (QUALITY-GATES Q5, 순수
@@ -18,6 +23,8 @@ function refusalFor(result: UploadRuleResult): string {
 
 const SELLER = '0192f0c1-0000-7000-8000-0000000a0001'
 const OBJECT = '0192f0c2-0000-7000-8000-0000000b0002'
+/** The person filing a claim. A return key names them, never a store. */
+const USER = '0192f0c3-0000-7000-8000-0000000c0003'
 
 describe('extensionOf', () => {
   it('takes what follows the last dot, lowercased', () => {
@@ -97,5 +104,31 @@ describe('productImageKey', () => {
     ['a store id carrying a path segment', `${SELLER}/..`, OBJECT, 'png'],
   ])('refuses to build a key from %s', (_case, sellerId, objectId, extension) => {
     expect(() => productImageKey(sellerId, objectId, extension)).toThrow(/스토리지 키/)
+  })
+})
+
+describe('returnPhotoKey', () => {
+  it('puts the person who will file the claim in the key, not a store', () => {
+    // The prefix is what later decides ownership with no second lookup
+    // (`isOwnPhotoKey`), so a return key naming anything but the uploader would
+    // make "this photo is mine" unanswerable.
+    expect(returnPhotoKey(USER, OBJECT, 'jpg')).toBe(`returns/${USER}/${OBJECT}.jpg`)
+  })
+
+  it.each([
+    ['a user id that is not a UUID', 'user-1', OBJECT, 'png'],
+    ['an object id that is not a UUID', USER, 'object', 'png'],
+    ['an extension outside the whitelist', USER, OBJECT, 'exe'],
+    ['a user id carrying a path segment', `${USER}/..`, OBJECT, 'png'],
+  ])('refuses to build a key from %s', (_case, userId, objectId, extension) => {
+    expect(() => returnPhotoKey(userId, objectId, extension)).toThrow(/스토리지 키/)
+  })
+
+  it('never lands a return photo inside a store prefix', () => {
+    // The two builders exist so that the owner that was authorised and the
+    // prefix that is written cannot be paired wrongly; this is that pairing,
+    // stated as an assertion rather than left to the reader of two signatures.
+    expect(returnPhotoKey(USER, OBJECT, 'png').startsWith('returns/')).toBe(true)
+    expect(productImageKey(SELLER, OBJECT, 'png').startsWith('products/')).toBe(true)
   })
 })

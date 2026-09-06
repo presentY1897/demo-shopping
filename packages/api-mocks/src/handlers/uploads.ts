@@ -9,6 +9,7 @@ import type { RequestHandler } from 'msw'
 import { http, HttpResponse } from 'msw'
 
 import { defineFixture } from '../define'
+import { sessionBuyer } from '../fixtures/session'
 import { mockPaths, MOCK_STORAGE_ORIGIN, MOCK_STORAGE_PUBLIC_ORIGIN } from '../paths'
 import { answering, MockApiError, readBody } from './refusal'
 
@@ -45,6 +46,22 @@ interface SignedUpload {
 /** Something stable to build keys from, so a spec can predict them. */
 let counter = 0
 
+/**
+ * The prefix a purpose lands under, and the owner it is built from.
+ *
+ * **The return prefix takes its id from the session, never from the request**
+ * (`presignUploadRequestSchema` has no owner field for it). That is the property
+ * the double has to reproduce, because a screen attaches the key it gets back to
+ * a claim and the API decides ownership from the prefix alone — a double that
+ * echoed an id from the body would let a widget pass while sending a key the
+ * real server would refuse as somebody else's (`isOwnPhotoKey`).
+ */
+function keyOfPurpose(request: PresignUploadRequest, objectId: string, extension: string): string {
+  return request.purpose === 'return-photo'
+    ? `returns/${sessionBuyer.user.id}/${objectId}.${extension}`
+    : `products/${request.sellerId}/${objectId}.${extension}`
+}
+
 class UploadStore {
   private signed = new Map<string, SignedUpload>()
 
@@ -76,7 +93,7 @@ class UploadStore {
       contentLength: request.size,
       contentType: request.contentType,
       expiresAt: now + UPLOAD_URL_TTL_SECONDS * 1_000,
-      key: `products/${request.sellerId}/${objectId}.${extension}`,
+      key: keyOfPurpose(request, objectId, extension),
     }
 
     this.signed.set(upload.key, upload)
@@ -96,7 +113,7 @@ export function resetUploadStore(): void {
   store.reset()
 }
 
-/** `https://storage.test.invalid/shopping-test/products/…` → the key. */
+/** `https://storage.test.invalid/shopping-test/{products|returns}/…` → the key. */
 function keyOf(url: string): string {
   const path = new URL(url).pathname.replace(/^\/[^/]+\//, '')
 

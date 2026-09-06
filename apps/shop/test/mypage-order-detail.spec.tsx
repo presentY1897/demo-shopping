@@ -14,7 +14,9 @@ import {
   MOCK_ORDER_NOW,
   MOCK_SELLER_ORDER_IDS,
   mockPaths,
+  networkFailureOn,
   resetCartStore,
+  resetClaimStore,
   resetOrderStore,
   sessionBuyer,
   shopperCanceledOrder,
@@ -38,6 +40,7 @@ vi.mock('next/navigation', () => ({ usePathname: () => '/mypage/orders/x' }))
 
 const messages = messagesFor()
 const copy = messages.mypage.orderDetail
+const claimCopy = copy.claim
 
 const LUMIERE = '루미에르'
 const NODESTEP = '노드스텝'
@@ -91,6 +94,7 @@ beforeEach(() => {
   stubViewport(VIEWPORTS.desktop)
   resetOrderStore()
   resetCartStore()
+  resetClaimStore()
   vi.useFakeTimers({ shouldAdvanceTime: true })
   vi.setSystemTime(new Date(MOCK_ORDER_NOW))
 })
@@ -101,6 +105,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
   resetOrderStore()
   resetCartStore()
+  resetClaimStore()
 })
 
 describe('판매자별 묶음 (F1 · F2)', () => {
@@ -444,31 +449,74 @@ describe('결제 정보와 스냅샷', () => {
   })
 })
 
-describe('아직 없는 화면으로 가는 자리 (M10 · M13)', () => {
-  it('죽은 링크도 비활성 버튼도 두지 않는다', async () => {
-    await openDetail()
-
-    const claim = screen.getAllByText(copy.upcoming.claimTitle)[0]
-
-    expect(claim).toBeVisible()
-    // 링크가 아니다 — 없는 라우트로 보내면 404 이고, 탭 순회에 목적지 없는 정지가 생긴다.
-    expect(screen.queryByRole('link', { name: copy.upcoming.claimTitle })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: copy.upcoming.claimTitle })).not.toBeInTheDocument()
-    // 무엇이 언제 열리는지를 말한다.
-    expect(screen.getAllByText(copy.upcoming.claimBody)[0]).toBeVisible()
-  })
-
+describe('아직 없는 화면으로 가는 자리 (M13)', () => {
   it('리뷰 자리는 배송완료·구매확정 묶음에만 나온다', async () => {
     await openDetail()
 
     expect(within(bundleOf(LUMIERE)).getByText(copy.upcoming.reviewTitle)).toBeVisible()
     expect(within(bundleOf(MARU)).queryByText(copy.upcoming.reviewTitle)).not.toBeInTheDocument()
   })
+})
 
-  it('끝난 주문에는 취소·반품 자리가 없다', async () => {
+/**
+ * 취소·반품으로 가는 자리 (TASK-0066).
+ *
+ * **화면이 상태로 가르지 않는다.** 예전에 여기 있던 「취소·반품이 아직 말이 되는
+ * 상태들」 배열이 사라진 것이 이 절이 재는 것이고, 지금 그 자리에 있는 것은 서버가
+ * 답한 것뿐이다 (`GET /seller-orders/:id/claimable`).
+ */
+describe('취소·반품으로 가는 자리 (TASK-0066)', () => {
+  it('신청할 수 있는 묶음에는 신청 화면으로 가는 링크가 있다', async () => {
+    await openDetail()
+
+    const link = await within(bundleOf(MARU)).findByRole('link', {
+      name: claimCopy.cancel.replace('{brand}', MARU),
+    })
+
+    // 주소가 묶음을 들고 간다. 신청의 단위는 주문이 아니라 판매자 몫이다 (D-023).
+    expect(link).toHaveAttribute(
+      'href',
+      `/mypage/orders/${MOCK_ORDER_IDS.mixed}/claim?bundle=${MOCK_SELLER_ORDER_IDS.mixedPreparing}`,
+    )
+  })
+
+  it('배송완료 묶음은 반품으로 간다 — 경로를 화면이 고르지 않는다', async () => {
+    await openDetail()
+
+    expect(
+      await within(bundleOf(LUMIERE)).findByRole('link', {
+        name: claimCopy.returns.replace('{brand}', LUMIERE),
+      }),
+    ).toBeVisible()
+  })
+
+  /**
+   * **거절은 감추지 않고 이유를 말한다.** 배송 중인 묶음에 버튼이 없으면 사람은
+   * 그것을 찾다가 포기하고, 「신청할 수 없습니다」로 끝나면 기다리면 된다는 것을
+   * 알 방법이 없다.
+   */
+  it('배송 중인 묶음에는 왜 안 되는지가 문장으로 나온다', async () => {
+    await openDetail()
+
+    const shipped = bundleOf(NODESTEP)
+
+    expect(await within(shipped).findByText(claimCopy.refusals.in_transit)).toBeVisible()
+    expect(within(shipped).queryByRole('link', { name: /신청/ })).not.toBeInTheDocument()
+  })
+
+  it('끝난 주문에는 신청 링크 대신 그 이유가 나온다', async () => {
     await openDetail(MOCK_ORDER_IDS.canceled)
 
-    expect(screen.queryByText(copy.upcoming.claimTitle)).not.toBeInTheDocument()
+    expect(await screen.findByText(claimCopy.refusals.not_claimable)).toBeVisible()
     expect(shopperCanceledOrder.order.sellerOrders[0]?.id).toBe(MOCK_SELLER_ORDER_IDS.canceled)
+  })
+
+  /** 「물어보지 못했다」와 「신청할 수 없다」는 다른 사실이다. */
+  it('물어보지 못했을 때는 거절로 말하지 않는다', async () => {
+    testServer.server.use(networkFailureOn('get', mockPaths.claimable))
+    await openDetail()
+
+    expect(await screen.findAllByText(claimCopy.failed)).not.toHaveLength(0)
+    expect(screen.queryByText(claimCopy.refusals.not_claimable)).not.toBeInTheDocument()
   })
 })

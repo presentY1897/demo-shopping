@@ -293,6 +293,11 @@ export const ko: Messages = {
     CARD_LIMIT_EXCEEDED: '카드 한도를 넘었어요.',
     CARD_RELEASE_EXCEEDS: '돌려줄 수 있는 금액을 넘었어요.',
     CARD_EXPIRED: '유효기간이 지난 카드예요.',
+    RETURN_PHOTO_REQUIRED: '반품 사유를 확인할 수 있는 사진을 첨부해 주세요.',
+    RETURN_PHOTO_NOT_ALLOWED: '단순 변심 반품에는 사진을 첨부하지 않습니다.',
+    RETURN_PHOTO_TOO_MANY: '사진은 최대 {max}장까지 첨부할 수 있어요.',
+    RETURN_PHOTO_DUPLICATE: '같은 사진이 두 번 들어 있어요.',
+    RETURN_PHOTO_FOREIGN: '본인이 올린 사진만 첨부할 수 있어요.',
     // 클레임 (TASK-0065). 판매자가 실제로 만나는 실패다 — 신청은 구매자가 하지만
     // 승인·거절은 여기서 한다. 여섯을 나눈 이유가 「사람이 할 일이 다르다」이므로
     // 문장도 **다음 행동**으로 끝난다.

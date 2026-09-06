@@ -1,8 +1,16 @@
 'use client'
 
-import type { ApiFailure, Order, OrderStatus, SellerOrderAction } from '@shopping/shared'
+import type {
+  ApiFailure,
+  ClaimableResponse,
+  Order,
+  OrderStatus,
+  SellerOrderAction,
+} from '@shopping/shared'
 import { apiFailure } from '@shopping/shared'
 import { useCallback, useEffect, useState } from 'react'
+
+import { fetchClaimable } from '@/lib/claims/claims-api'
 
 import { fetchOrder, fetchSellerOrderActions, transitionSellerOrder } from './orders-api'
 
@@ -19,6 +27,17 @@ import { fetchOrder, fetchSellerOrderActions, transitionSellerOrder } from './or
  * 사라지면 안 되고, 실패한 묶음에 「할 수 있는 것이 없다」고 말해서도 안 된다 — 그
  * 둘은 다른 사실이고, 그래서 상태가 셋이다 (`loading` · `failed` · `ready`).
  *
+ * ## 「지금 신청할 수 있나」도 묶음마다 따로 묻는다 (TASK-0066)
+ *
+ * `GET /seller-orders/:id/claimable` 이 그것에 답한다. 액션 목록과 **같은 이유로
+ * 같은 모양**이다 — 화면이 「배송완료면 반품 버튼」을 적으면 그 판단이 세 앱에
+ * 흩어지고, 반품 기간처럼 배포 설정에 달린 값은 화면이 틀린 날짜를 자신 있게
+ * 적게 된다.
+ *
+ * 액션과 함께 병렬로 부르되 결과는 따로 둔다. 한쪽이 실패했다고 다른 쪽 자리가
+ * 비면 안 되고, 무엇보다 **「물어보지 못했다」와 「신청할 수 없다」는 다른 사실**
+ * 이다 — 뒤쪽으로 잘못 말하면 사람은 되는 일을 포기한다.
+ *
  * ## 전이 뒤에 다시 읽지 않는다
  *
  * `POST .../transitions` 의 답이 **새 상태와 새 액션 목록을 함께** 싣는다. 계약이
@@ -33,7 +52,15 @@ export type BundleActions =
   | { readonly status: 'failed' }
   | { readonly status: 'ready'; readonly actions: readonly SellerOrderAction[] }
 
+/** 한 묶음의 클레임 가능 여부. 같은 이유로 같은 셋이다. */
+export type BundleClaimable =
+  | { readonly status: 'loading' }
+  | { readonly status: 'failed' }
+  | { readonly status: 'ready'; readonly claimable: ClaimableResponse }
+
 const LOADING: BundleActions = { status: 'loading' }
+
+const CLAIM_LOADING: BundleClaimable = { status: 'loading' }
 
 export type OrderDetailState =
   | { readonly status: 'loading' }
@@ -55,6 +82,8 @@ export interface OrderDetail {
   readonly state: OrderDetailState
   /** 묶음 id → 그 묶음에 열려 있는 것. 아직 안 온 묶음은 `loading` 이다. */
   readonly actionsOf: (sellerOrderId: string) => BundleActions
+  /** 묶음 id → 지금 취소·반품을 신청할 수 있는가, 못 하면 왜. */
+  readonly claimableOf: (sellerOrderId: string) => BundleClaimable
   readonly reload: () => void
   /** 이 묶음을 다음 상태로. 구매자에게 열려 있는 것은 구매확정 하나다. */
   readonly transition: (sellerOrderId: string, to: OrderStatus) => Promise<TransitionResult>
@@ -65,6 +94,7 @@ export interface OrderDetail {
 export function useOrderDetail(id: string): OrderDetail {
   const [state, setState] = useState<OrderDetailState>({ status: 'loading' })
   const [actions, setActions] = useState<Readonly<Record<string, BundleActions>>>({})
+  const [claimables, setClaimables] = useState<Readonly<Record<string, BundleClaimable>>>({})
   const [busyId, setBusyId] = useState<string | null>(null)
   const [reloadToken, setReloadToken] = useState(0)
 
@@ -90,6 +120,21 @@ export function useOrderDetail(id: string): OrderDetail {
       }
     }
 
+    async function loadClaimable(sellerOrderId: string): Promise<void> {
+      try {
+        const claimable = await fetchClaimable(sellerOrderId, { signal: controller.signal })
+        if (controller.signal.aborted) return
+
+        setClaimables((current) => ({
+          ...current,
+          [sellerOrderId]: { status: 'ready', claimable },
+        }))
+      } catch {
+        if (controller.signal.aborted) return
+        setClaimables((current) => ({ ...current, [sellerOrderId]: { status: 'failed' } }))
+      }
+    }
+
     async function load(): Promise<void> {
       try {
         const { order } = await fetchOrder(id, { signal: controller.signal })
@@ -99,9 +144,19 @@ export function useOrderDetail(id: string): OrderDetail {
         setActions(
           Object.fromEntries(order.sellerOrders.map((bundle) => [bundle.id, LOADING] as const)),
         )
+        setClaimables(
+          Object.fromEntries(
+            order.sellerOrders.map((bundle) => [bundle.id, CLAIM_LOADING] as const),
+          ),
+        )
 
-        // 병렬이다. 묶음이 셋이면 세 왕복이고, 줄 세우면 화면이 그만큼 늦게 산다.
-        await Promise.all(order.sellerOrders.map((bundle) => loadActions(bundle.id)))
+        // 병렬이다. 묶음이 셋이면 여섯 왕복이고, 줄 세우면 화면이 그만큼 늦게 산다.
+        await Promise.all(
+          order.sellerOrders.flatMap((bundle) => [
+            loadActions(bundle.id),
+            loadClaimable(bundle.id),
+          ]),
+        )
       } catch (error) {
         if (controller.signal.aborted) return
         setState({ status: 'error', failure: apiFailure(error) })
@@ -118,6 +173,7 @@ export function useOrderDetail(id: string): OrderDetail {
   const reload = useCallback(() => {
     setState({ status: 'loading' })
     setActions({})
+    setClaimables({})
     setReloadToken((token) => token + 1)
   }, [])
 
@@ -161,5 +217,10 @@ export function useOrderDetail(id: string): OrderDetail {
     [actions],
   )
 
-  return { actionsOf, busyId, reload, state, transition }
+  const claimableOf = useCallback(
+    (sellerOrderId: string): BundleClaimable => claimables[sellerOrderId] ?? CLAIM_LOADING,
+    [claimables],
+  )
+
+  return { actionsOf, busyId, claimableOf, reload, state, transition }
 }

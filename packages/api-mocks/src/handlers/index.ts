@@ -5,6 +5,7 @@ import { attributeHandlers } from './attributes'
 import { cartHandlers } from './cart'
 import { categoryHandlers } from './categories'
 import { checkoutHandlers } from './checkout'
+import { claimHandlers } from './claims'
 import { demoHandlers } from './demo'
 import { healthHandlers } from './health'
 import { orderHandlers } from './orders'
@@ -36,6 +37,7 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...cartHandlers,
   ...checkoutHandlers,
   ...orderHandlers,
+  ...claimHandlers,
   ...paymentHandlers,
   ...categoryHandlers,
   ...attributeHandlers,
@@ -53,6 +55,23 @@ export { attributeHandlers, resetAttributeStore } from './attributes'
 export { cartHandlers, resetCartStore } from './cart'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
 export { checkoutHandlers, resetCheckoutStore } from './checkout'
+/**
+ * 취소·반품 신청 (TASK-0066). 「무엇을 신청할 수 있나」와 신청이 한 저장소를 본다.
+ *
+ * 주문 대역 **뒤에** 등록된다. 다섯 몫의 상태를 `handlers/orders.ts` 의 저장소에서
+ * 읽으므로, 그쪽이 답하지 않는 세상에서는 이 대역도 답할 것이 없다.
+ *
+ * id 와 시각은 픽스처와 핸들러가 **함께** 읽는 값이라 `claim-contract.ts` 에 산다 —
+ * 주문이 같은 이유로 `order-contract.ts` 를 갖는다.
+ */
+export { claimHandlers, failNextClaim, resetClaimStore } from './claims'
+export {
+  MOCK_CLAIM_ID,
+  MOCK_CLAIM_ORDER_ID,
+  MOCK_CLAIM_RETURN_WINDOW_CLOSED_AT,
+  MOCK_CLAIM_RETURN_WINDOW_ENDS_AT,
+  MOCK_CLAIM_SELLER_ORDER_IDS,
+} from './claim-contract'
 /**
  * 카드 계약 (TASK-0058). 핸들러가 아니라 **핸들러와 픽스처가 함께 읽는 모양**이고,
  * 그 파일이 왜 `fixtures/` 밖에 있는지는 거기 적혀 있다.

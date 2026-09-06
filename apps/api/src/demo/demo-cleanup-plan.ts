@@ -155,6 +155,11 @@ export const untouchedTables: Readonly<Record<string, string>> = {
     'ClaimRequest 에 Cascade 로 매달려 있다. `orderItemId` 는 `RESTRICT` 인데, 주문 항목도 지우지 않으므로 끊기지 않는다',
   ClaimStatusHistory:
     'ClaimRequest 에 Cascade 로 매달려 있다. 「누가 이 반품을 거절했나」는 분쟁의 근거이므로 클레임이 남는 한 남는다 — PaymentEvent 와 같은 판단',
+  ReturnDetail:
+    'ClaimRequest 에 Cascade 로 매달려 있다. 클레임이 남으므로 함께 남는다 — 귀책과 배송비 부담은 정산(M12)이 읽는 값이고, 산 사람이 데모였다는 것은 판 사람이 얼마를 물었는지를 지울 이유가 아니다 (TASK-0067)',
+  ReturnPhoto:
+    'ReturnDetail 에 Cascade 로 매달려 있다. **객체 자체는 이 계획이 지우지 않는다** — 버킷은 데이터베이스가 아니고, 고아 객체 청소는 상품 이미지와 같은 장치가 맡는다 (TASK-0033 F6)',
+  ReturnShipment: 'ReturnDetail 에 Cascade 로 매달려 있다',
 }
 
 /**

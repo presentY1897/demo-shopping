@@ -167,9 +167,11 @@ export function OrderDetailScreen({
                   <SellerOrderBundle
                     actions={detail.actionsOf(bundle.id)}
                     busy={detail.busyId === bundle.id}
+                    claimable={detail.claimableOf(bundle.id)}
                     density={density}
                     key={bundle.id}
                     messages={copy}
+                    orderId={order.id}
                     onConfirm={() => {
                       void confirmReceipt(bundle)
                     }}

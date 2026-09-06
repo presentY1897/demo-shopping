@@ -1,4 +1,4 @@
-import type { ApiClient, ClaimStatus, OrderStatus } from '@shopping/shared'
+import type { ApiClient, ClaimStatus, OrderStatus, ReturnReason } from '@shopping/shared'
 import {
   ApiClientError,
   cartResponseSchema,
@@ -7,6 +7,7 @@ import {
   claimResponseSchema,
   claimTransitionResponseSchema,
   orderResponseSchema,
+  returnResponseSchema,
   sellerOrderResponseSchema,
 } from '@shopping/shared'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -216,23 +217,50 @@ interface ClaimLine {
   readonly quantity: number
 }
 
+/** 이 사람의 사진 열쇠 하나. **접두어가 사람인 것**이 소유 판정의 전부다. */
+function photoKey(owner: string, index: number): string {
+  return `returns/${owner}/0000000${String(index)}-0000-4000-8000-000000000000.png`
+}
+
+/**
+ * 반품의 부속 — 사유와 그 증거.
+ *
+ * 사진을 사유에 맞춰 짓는 것이 요점이다. 하자·오배송은 **필수**이고 단순 변심은
+ * **금지**라, 한 벌로 두면 사유를 바꾼 검사가 사진 규칙에서 먼저 죽는다.
+ */
+function returnDetails(reason: ReturnReason, owner: TestCaller) {
+  return {
+    returnReason: reason,
+    photoKeys: reason === 'CHANGE_OF_MIND' ? [] : [photoKey(owner.userId, 1)],
+  }
+}
+
 function requestClaim(
   lines: readonly ClaimLine[],
   options: {
     readonly caller?: TestCaller
     readonly fault?: 'CUSTOMER' | 'SELLER'
+    /** 반품 경로에 신청할 때. 주면 `fault` 대신 부속이 실린다. */
+    readonly returnReason?: ReturnReason
     /** 겹침을 배열하는 검사에서 쓴다. 기본 5초는 **일부러 막아 둔** 잠금보다 짧다. */
     readonly timeoutMs?: number
   } = {},
 ) {
-  return client(options.caller ?? buyer).request({
+  const caller = options.caller ?? buyer
+
+  return client(caller).request({
     path: '/claims',
     method: 'POST',
     body: {
       sellerOrderId: placed.sellerOrderId,
       items: lines,
       reason: '색상이 화면과 달라요.',
-      fault: options.fault ?? 'CUSTOMER',
+      // **정확히 하나만 싣는다.** 계약이 「귀책이거나 사유이거나」로 좁혀 두었으므로
+      // (`createClaimRequestSchema` 의 `.refine`) 둘을 함께 실으면 400 이고, 그것은
+      // 이 헬퍼가 아니라 아래 「계약이 하나만 받는다」 절이 잴 일이다.
+      ...(options.returnReason === undefined
+        ? { fault: options.fault ?? 'CUSTOMER' }
+        : { return: returnDetails(options.returnReason, caller) }),
     },
     schema: claimResponseSchema,
     ...(options.timeoutMs === undefined ? {} : { timeoutMs: options.timeoutMs }),
@@ -259,6 +287,8 @@ function claimable(caller: TestCaller = buyer) {
 interface HttpFailure {
   readonly status: number
   readonly code: string
+  /** 어느 칸이 문제인가. 경로가 어긋난 신청은 이것으로 **빠진 쪽**을 말한다. */
+  readonly field: string
   readonly params: Readonly<Record<string, unknown>>
 }
 
@@ -275,12 +305,11 @@ function failureOf(error: unknown): HttpFailure {
   }
 
   const detail = error.body?.error.details?.at(0)
-  const params =
-    typeof detail === 'object' && detail !== null && 'params' in detail
-      ? ((detail.params ?? {}) as Record<string, unknown>)
-      : {}
+  const entry = typeof detail === 'object' && detail !== null ? detail : {}
+  const params = 'params' in entry ? ((entry.params ?? {}) as Record<string, unknown>) : {}
+  const field = 'field' in entry && typeof entry.field === 'string' ? entry.field : ''
 
-  return { status: error.status ?? 0, code: error.body?.error.code ?? '', params }
+  return { status: error.status ?? 0, code: error.body?.error.code ?? '', field, params }
 }
 
 async function failure(work: Promise<unknown>): Promise<HttpFailure> {
@@ -362,7 +391,10 @@ describe('F1 · F8 — 부분 신청과 잔여 수량', () => {
     const { claim } = await requestClaim([{ orderItemId: target.id, quantity: 1 }])
 
     expect(claim.type).toBe('CANCEL')
-    expect(claim.status).toBe('CANCEL_REQUESTED')
+    // `PAID` 의 취소는 신청과 같은 트랜잭션에서 스스로 승인된다 (TASK-0066) —
+    // 판매자가 아직 아무것도 하지 않아 거절할 근거가 없다. 여기서 볼 것은 그 뒤의
+    // 잔여 수량이고, 승인 여부가 그것을 바꾸지 않는다.
+    expect(claim.status).toBe('CANCEL_APPROVED')
     expect(claim.items).toHaveLength(1)
     expect(claim.items[0]?.quantity).toBe(1)
     // 환불액은 이 TASK 가 계산하지 않는다 (TASK-0068). 0 은 「아직 계산하지 않았다」다.
@@ -432,11 +464,15 @@ describe('F3 — 경로는 주문 상태가 정한다', () => {
     const cancel = await requestClaim([{ orderItemId: target.id, quantity: 1 }])
 
     expect(cancel.claim.type).toBe('CANCEL')
-    expect(cancel.claim.status).toBe('CANCEL_REQUESTED')
+    // 여기서 보는 것은 **경로**이고 그것은 `type` 이 말한다. 상태가 이미 승인인
+    // 것은 `PAID` 의 취소가 스스로 승인되기 때문이다 (TASK-0066).
+    expect(cancel.claim.status).toBe('CANCEL_APPROVED')
 
     await setOrderStatus('DELIVERED', { deliveredAt: justDelivered() })
 
-    const ret = await requestClaim([{ orderItemId: target.id, quantity: 1 }])
+    const ret = await requestClaim([{ orderItemId: target.id, quantity: 1 }], {
+      returnReason: 'DEFECTIVE',
+    })
 
     expect(ret.claim.type).toBe('RETURN')
     expect(ret.claim.status).toBe('RETURN_REQUESTED')
@@ -458,13 +494,126 @@ describe('F3 — 경로는 주문 상태가 정한다', () => {
         sellerOrderId: placed.sellerOrderId,
         items: [{ orderItemId: target.id, quantity: 1 }],
         reason: '단순 변심',
-        fault: 'CUSTOMER',
+        return: returnDetails('CHANGE_OF_MIND', buyer),
         type: 'CANCEL',
       },
       schema: claimResponseSchema,
     })
 
     expect(created.claim.type).toBe('RETURN')
+  })
+})
+
+/**
+ * 신청서가 **경로에 맞는 칸**을 싣는가 (TASK-0067).
+ *
+ * 계약은 「귀책이거나 사유이거나, 둘 중 하나」까지만 좁힌다. 어느 쪽이어야 하는지는
+ * 주문 상태의 답이고, 그 답과 어긋난 신청은 **만들어지기 전에** 거절된다 —
+ * 예전에는 반품 경로에 귀책만 실어 오면 사유도 사진도 없는 반품이 태어났고, 그
+ * 신청은 며칠 뒤 수거에서야 409 로 끝났다.
+ */
+describe('F1 — 신청은 경로가 요구하는 칸을 싣는다', () => {
+  /**
+   * **이 TASK 의 요점.** `POST /claims` 로 만든 반품에도 부속이 붙는다 — 즉 「걸을
+   * 수 없는 반품」이 더 이상 태어나지 않는다. 두 라우트가 신청의 문 하나를 지나므로
+   * 반품 전용 라우트를 부르지 않아도 사유와 사진이 같은 트랜잭션에 쓰인다.
+   */
+  it('attaches the return details to a claim filed through /claims', async () => {
+    const target = placed.items[0]
+
+    if (target === undefined) throw new Error('항목을 찾지 못했습니다.')
+
+    await setOrderStatus('DELIVERED', { deliveredAt: justDelivered() })
+
+    const { claim } = await requestClaim([{ orderItemId: target.id, quantity: 1 }], {
+      returnReason: 'WRONG_ITEM',
+    })
+    // 부속이 붙었는지는 **반품 라우트로 되읽어** 확인한다. 행만 세면 「이 신청서에
+    // 딸린 부속인가」까지는 말하지 못하고, 사진의 순서도 보이지 않는다.
+    const answer = await client().request({
+      path: `/returns/${claim.id}`,
+      method: 'GET',
+      schema: returnResponseSchema,
+    })
+
+    expect(claim.type).toBe('RETURN')
+    // 귀책은 요청이 주장한 것이 아니라 **사유에서 파생된** 값이다.
+    expect(claim.fault).toBe('SELLER')
+    expect(answer.return.reason).toBe('WRONG_ITEM')
+    expect(answer.return.photoKeys).toEqual([photoKey(buyer.userId, 1)])
+    expect(
+      await db.one<{ count: number }>(
+        `SELECT count(*)::int AS count FROM "ReturnDetail" WHERE "claimId" = $1`,
+        [claim.id],
+      ),
+    ).toEqual({ count: 1 })
+  })
+
+  it('refuses a return route that was handed a fault instead of a reason', async () => {
+    const target = placed.items[0]
+
+    if (target === undefined) throw new Error('항목을 찾지 못했습니다.')
+
+    await setOrderStatus('DELIVERED', { deliveredAt: justDelivered() })
+
+    const refused = await failure(requestClaim([{ orderItemId: target.id, quantity: 1 }]))
+
+    // 요청의 모양이 틀린 것이 아니라(그것은 계약이 400 으로 끝냈다) **이 주문에
+    // 대해** 틀렸다. 그래서 400 이 아니라 409 다.
+    expect(refused.status).toBe(409)
+    expect(refused.code).toBe('CLAIM_NOT_CLAIMABLE')
+    // 빠진 칸을 말한다 — 「신청할 수 없어요」로 끝나면 무엇을 고칠지 알 수 없다.
+    expect(refused.field).toBe('return')
+    expect(
+      await db.one<{ count: number }>(`SELECT count(*)::int AS count FROM "ClaimRequest"`),
+    ).toEqual({ count: 0 })
+  })
+
+  it('refuses a cancel route that was handed a return reason', async () => {
+    const target = placed.items[0]
+
+    if (target === undefined) throw new Error('항목을 찾지 못했습니다.')
+
+    // 결제완료 — 물건이 아직 떠나지 않았으니 경로는 취소다.
+    const refused = await failure(
+      requestClaim([{ orderItemId: target.id, quantity: 1 }], { returnReason: 'DEFECTIVE' }),
+    )
+
+    expect(refused.status).toBe(409)
+    expect(refused.code).toBe('CLAIM_NOT_CLAIMABLE')
+    expect(refused.field).toBe('fault')
+  })
+
+  /**
+   * 계약이 **하나만** 받는다.
+   *
+   * 둘 다 실을 수 있으면 「오배송인데 구매자 귀책」이 표현 가능해지고, 둘 다 비울 수
+   * 있으면 귀책 없는 신청이 생긴다 — 그 신청의 환불액은 아무도 계산할 수 없다.
+   */
+  it.each([
+    ['both a fault and a reason', { fault: 'CUSTOMER', return: { returnReason: 'DEFECTIVE' } }],
+    ['neither of them', {}],
+  ] as const)('refuses a request carrying %s', async (_case, parts) => {
+    const target = placed.items[0]
+
+    if (target === undefined) throw new Error('항목을 찾지 못했습니다.')
+
+    const refused = await failure(
+      client().request({
+        path: '/claims',
+        method: 'POST',
+        body: {
+          sellerOrderId: placed.sellerOrderId,
+          items: [{ orderItemId: target.id, quantity: 1 }],
+          reason: '둘 다 보내거나 아무것도 안 보내거나.',
+          ...parts,
+        },
+        schema: claimResponseSchema,
+      }),
+    )
+
+    expect(refused.status).toBe(400)
+    expect(refused.field).toBe('return')
   })
 })
 
@@ -724,6 +873,17 @@ describe('S5 — 마지막 방어선은 데이터베이스에 있다', () => {
 })
 
 describe('F7 — 전이', () => {
+  /**
+   * 이 절의 주문은 **상품 준비중**이다.
+   *
+   * `PAID` 의 취소는 신청과 동시에 스스로 승인되므로(TASK-0066) 판매자가 옮길
+   * 것이 남지 않는다 — 그 상태에서 이 절을 돌리면 「전이가 거절된다」도 「멱등이다」
+   * 도 전부 **이미 승인된 클레임**을 두고 하는 말이 되어 아무것도 증명하지 않는다.
+   */
+  beforeEach(async () => {
+    await setOrderStatus('PREPARING')
+  })
+
   it('walks the cancel path and records who moved it', async () => {
     const target = placed.items[0]
 
@@ -924,6 +1084,10 @@ describe('목록', () => {
     const target = placed.items[0]
 
     if (target === undefined) throw new Error('항목을 찾지 못했습니다.')
+
+    // 준비중이라 신청이 승인을 기다린다. `PAID` 였다면 태어나자마자 승인되어
+    // (TASK-0066) 「신청 상태로 거른다」를 잴 수 없다.
+    await setOrderStatus('PREPARING')
 
     const { claim } = await requestClaim([{ orderItemId: target.id, quantity: 1 }])
     const byStatus = await client().request({

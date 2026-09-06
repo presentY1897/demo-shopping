@@ -61,7 +61,9 @@ export interface TransitionRule {
  *   (TASK-0062), 그것이 멈춘 데모에서 판매자가 흐름을 이어 갈 수 있어야 한다.
  * - **`CANCELED` 로 가는 길에 구매자가 없다.** 취소는 클레임 절차를 지나고(M10),
  *   그 절차의 결론이 이 전이다 — 구매자가 직접 누르는 것이 아니라 신청이 승인된
- *   결과다. 그래서 주체가 판매자·관리자이고, 신청 화면은 M10 이 만든다.
+ *   결과다. `SYSTEM` 이 함께 있는 것은 그 승인이 자동일 수 있어서다(TASK-0066);
+ *   이 표가 M10 보다 먼저 쓰여 그 주체를 예상하지 못했고, 없는 동안 자동 승인은
+ *   `SYSTEM` 을 `SELLER` 로 접어 넣고 있었다 — **이력에 거짓이 남는 모양**이다.
  */
 export const sellerOrderTransitions: Readonly<Record<OrderStatus, readonly TransitionRule[]>> = {
   PAYMENT_PENDING: [
@@ -70,11 +72,19 @@ export const sellerOrderTransitions: Readonly<Record<OrderStatus, readonly Trans
   ],
   PAID: [
     { to: 'PREPARING', actors: ['SELLER', 'SYSTEM'] },
-    { to: 'CANCELED', actors: ['SELLER', 'ADMIN'] },
+    // `SYSTEM` 은 **자동 승인된 취소**다 (TASK-0066). 결제완료 상태에서는 판매자가
+    // 아직 준비를 시작하지 않았으므로 사람의 판단을 기다릴 이유가 없고, 그때 그
+    // 취소를 승인한 것은 사람이 아니다 — 여기 `SYSTEM` 이 없으면 그 사실을 이력에
+    // 정직하게 적을 방법이 없어진다.
+    { to: 'CANCELED', actors: ['SELLER', 'ADMIN', 'SYSTEM'] },
   ],
   PREPARING: [
     { to: 'SHIPPED', actors: ['SELLER'], requires: 'tracking' },
-    { to: 'CANCELED', actors: ['SELLER', 'ADMIN'] },
+    // 준비중의 취소는 **판매자 승인이 필요하다**(이미 무언가를 시작했을 수 있다).
+    // 그래도 `SYSTEM` 이 있는 것은 클레임이 승인된 뒤 그 결론을 주문에 반영하는
+    // 것이 배치이기 때문이고, 승인 자체는 사람이 한다 — 두 사실이 클레임 이력과
+    // 주문 이력에 각각 남는다.
+    { to: 'CANCELED', actors: ['SELLER', 'ADMIN', 'SYSTEM'] },
   ],
   SHIPPED: [{ to: 'DELIVERED', actors: ['SYSTEM', 'SELLER'] }],
   DELIVERED: [

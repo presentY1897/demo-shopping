@@ -11,6 +11,7 @@ import {
   resetCartStore,
   resetCategoryStore,
   resetCheckoutStore,
+  resetClaimStore,
   resetDemoStore,
   resetProductStore,
   resetSellerConsoleStore,
@@ -133,6 +134,9 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     // 있지만, 부르지 않는 스펙이 하나 생기는 순간 드러난다.
     resetCartStore()
     resetCheckoutStore()
+    // 클레임 (TASK-0066). 신청이 주문 항목의 수량을 잡아 두므로, 한 스펙이 건 신청이
+    // 넘어가면 다음 스펙의 「3개까지 신청할 수 있어요」가 앞 스펙의 「2개」가 된다.
+    resetClaimStore()
     // Back to "this account has never applied", which is the state five of the
     // seller console's faces are told apart from.
     resetSellerStore()

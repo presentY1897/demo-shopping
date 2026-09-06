@@ -24,7 +24,7 @@
 | `product.read` | `any` | `own` | `any` | `any` | `any` |
 | `product.write` | — | `own` | `any` | `any` | `demo` |
 | `product.delete` | — | `own` | — | `any` | — |
-| `media.upload` | — | `own` | `any` | `any` | `demo` |
+| `media.upload` | `own` | `own` | `any` | `any` | `demo` |
 | `cart.read` | `own` | — | — | `any` | — |
 | `cart.write` | `own` | — | — | `any` | — |
 | `order.read` | `own` | `own` | `any` | `any` | `any` |
@@ -53,7 +53,7 @@
 
 ### BUYER
 
-퍼미션 13개 — `catalog.read:any` · `product.read:any` · `seller.read:any` · `cart.read:own` · `cart.write:own` · `order.read:own` · `order.write:own` · `claim.read:own` · `coupon.read:own` · `user.read:own` · `profile.write:own` · `profile.delete:own` · `seller.write:own`
+퍼미션 14개 — `catalog.read:any` · `product.read:any` · `seller.read:any` · `cart.read:own` · `cart.write:own` · `order.read:own` · `order.write:own` · `claim.read:own` · `coupon.read:own` · `media.upload:own` · `user.read:own` · `profile.write:own` · `profile.delete:own` · `seller.write:own`
 
 ### SELLER_OWNER
 

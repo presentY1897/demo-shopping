@@ -353,13 +353,15 @@ const SYSTEM_ONLY: readonly string[] = [
   move('PAYMENT_PENDING', 'PAYMENT_FAILED'),
 ]
 
-/** 사람만 할 수 있는 전이. 자동으로 일어나면 안 되는 것들이다. */
-const HUMAN_ONLY: readonly string[] = [
-  move('PAID', 'CANCELED'),
-  move('PREPARING', 'SHIPPED'),
-  move('PREPARING', 'CANCELED'),
-  move('DELIVERED', 'RETURNED'),
-]
+/**
+ * 사람만 할 수 있는 전이. 자동으로 일어나면 안 되는 것들이다.
+ *
+ * **취소 둘이 여기서 빠진 것이 M10 의 결과다** (TASK-0066). 결제완료 상태의 취소는
+ * 자동 승인되고, 그것을 승인한 것은 사람이 아니다 — 목록에 남겨 두면 자동 승인이
+ * `SYSTEM` 을 `SELLER` 로 접어 넣게 되고 **이력에 거짓이 남는다.** 발송과 반품은
+ * 그대로다: 물건이 나가는 것과 되돌아오는 것은 사람이 정한다.
+ */
+const HUMAN_ONLY: readonly string[] = [move('PREPARING', 'SHIPPED'), move('DELIVERED', 'RETURNED')]
 
 describe('종착 상태에서는 아무 데도 못 간다', () => {
   it('agrees with the hand written list of terminal statuses', () => {
@@ -449,13 +451,13 @@ describe('주체가 나뉘는 자리', () => {
       .map(([from, rule]) => move(from, rule.to))
 
     expect(derived).toEqual(HUMAN_ONLY)
-    expect(derived).toHaveLength(4)
+    expect(derived).toHaveLength(2)
   })
 
-  it('leaves the remaining three open to both', () => {
-    // 아홉에서 둘과 넷을 빼면 셋. 이 뺄셈이 맞아야 위 두 목록이 「전부」다.
+  it('leaves the remaining five open to both', () => {
+    // 아홉에서 둘과 둘을 빼면 다섯. 이 뺄셈이 맞아야 위 두 목록이 「전부」다.
     expect(tableRules()).toHaveLength(9)
-    expect(SYSTEM_ONLY.length + HUMAN_ONLY.length + 3).toBe(9)
+    expect(SYSTEM_ONLY.length + HUMAN_ONLY.length + 5).toBe(9)
   })
 
   it('never lets the buyer cancel by themselves', () => {
@@ -477,7 +479,9 @@ describe('가능한 액션 목록 (F7)', () => {
     ])
     expect(availableTransitions('PREPARING', 'ADMIN').map((rule) => rule.to)).toEqual(['CANCELED'])
     expect(availableTransitions('PREPARING', 'BUYER')).toEqual([])
-    expect(availableTransitions('PREPARING', 'SYSTEM')).toEqual([])
+    // `SYSTEM` 이 취소 하나를 본다 — 클레임의 결론을 주문에 반영하는 것이
+    // 배치이기 때문이다 (TASK-0066). 승인 자체는 여전히 사람이 한다.
+    expect(availableTransitions('PREPARING', 'SYSTEM').map((rule) => rule.to)).toEqual(['CANCELED'])
   })
 
   it('splits the two moves out of DELIVERED between the buyer and the seller', () => {
@@ -518,7 +522,7 @@ describe('가능한 액션 목록 (F7)', () => {
     // 화면이 「운송장이 필요한 버튼」을 미리 알 수 있어야 입력란을 함께 그린다.
     expect(availableTransitions('PREPARING', 'SELLER')).toEqual([
       { to: 'SHIPPED', actors: ['SELLER'], requires: 'tracking' },
-      { to: 'CANCELED', actors: ['SELLER', 'ADMIN'] },
+      { to: 'CANCELED', actors: ['SELLER', 'ADMIN', 'SYSTEM'] },
     ])
   })
 })

@@ -12,10 +12,11 @@
  * a screen that renders it (C1·C2).
  */
 
-import type { PresignedUpload } from '@shopping/shared'
+import type { PresignedUpload, UploadContentType } from '@shopping/shared'
 import { createApiClient, isApiClientError, isApiFieldError } from '@shopping/shared'
 import { describe, expect, it } from 'vitest'
 
+import { sessionBuyer } from './fixtures/session'
 import { setupTestServer } from './node'
 
 setupTestServer()
@@ -32,6 +33,30 @@ async function presign(
     filename: 'coat.png',
     purpose: 'product-image',
     sellerId: SELLER_ID,
+    size: 3,
+    ...overrides,
+  })
+
+  return upload
+}
+
+/**
+ * The same call for a return photo (TASK-0067 F2).
+ *
+ * Note what the body does *not* carry: an owner. The prefix comes from who is
+ * asking, which is what lets the API decide ownership from the key alone.
+ */
+async function presignReturnPhoto(
+  overrides: Partial<{
+    contentType: UploadContentType
+    filename: string
+    size: number
+  }> = {},
+): Promise<PresignedUpload> {
+  const { upload } = await client.presignUpload({
+    contentType: 'image/png',
+    filename: 'defect.png',
+    purpose: 'return-photo',
     size: 3,
     ...overrides,
   })
@@ -78,6 +103,28 @@ describe('the presign double', () => {
     const error = await presign({ size: 5 * 1024 * 1024 + 1 }).catch((reason: unknown) => reason)
 
     expect(isApiClientError(error) && error.status).toBe(400)
+  })
+
+  /**
+   * The prefix is the owner, and the owner is the caller (TASK-0067 F2).
+   *
+   * A widget that built the key itself — or a double that echoed one from the
+   * request — would pass here and be refused by the real server as somebody
+   * else's photo, because the claim endpoint decides ownership from this prefix
+   * with no second lookup (`isOwnPhotoKey`).
+   */
+  it('puts a return photo under the caller, never under a store', async () => {
+    const upload = await presignReturnPhoto()
+
+    expect(upload.key).toMatch(new RegExp(`^returns/${sessionBuyer.user.id}/[0-9a-f-]+\\.png$`))
+    expect(upload.key).not.toContain('products/')
+  })
+
+  it('signs a return photo the same way, so the bucket accepts the same PUT', async () => {
+    const upload = await presignReturnPhoto({ contentType: 'image/webp', filename: 'tag.webp' })
+
+    expect(upload.headers).toEqual({ 'Content-Type': 'image/webp' })
+    expect((await put(upload, new Uint8Array([1, 2, 3]))).status).toBe(200)
   })
 })
 

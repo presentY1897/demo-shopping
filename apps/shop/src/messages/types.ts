@@ -2,11 +2,15 @@ import type { DensityLevel } from '@shopping/ui'
 import type {
   ApiFailureReason,
   CartItemNotice,
+  ClaimFault,
+  ClaimRefusal,
+  ClaimType,
   DenialReason,
   HealthStatus,
   OauthFailureReason,
   OauthNotice,
   OrderStatus,
+  ReturnReason,
   SearchSort,
   UserFacingErrorCode,
 } from '@shopping/shared'
@@ -16,6 +20,9 @@ import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { CardTransactionKind } from '@/lib/cards/cards-api'
+import type { ClaimDraftIssue } from '@/lib/claims/claim-draft'
+import type { ReturnPhotoRejection } from '@/lib/claims/return-photos'
+import type { ReturnPhotoStatus } from '@/lib/claims/use-return-photos'
 import type { HealthFailureReason } from '@/lib/health'
 import type { OrderPeriod, OrderStatusFilter } from '@/lib/orders/order-filters'
 import type { OrderStage, OrderStageState } from '@/lib/orders/order-stages'
@@ -145,6 +152,8 @@ export interface MyPageMessages {
   readonly orders: OrderHistoryMessages
   /** 주문 하나 — 판매자별 묶음 (TASK-0063). */
   readonly orderDetail: OrderDetailMessages
+  /** 취소·반품 신청 (TASK-0066). */
+  readonly claim: ClaimRequestMessages
   /** A request that never got an answer. Keyed by the reason it did not. */
   readonly failures: Readonly<Record<ApiFailureReason, string>>
   /**
@@ -188,6 +197,23 @@ export const myPageErrorCodes = [
    */
   'CARD_COUNT_REACHED',
   'CARD_AMOUNT_INVALID',
+  /**
+   * 반품 사진 거절 다섯 (TASK-0067).
+   *
+   * **목록이 늘어나는 것을 감수하는 이유가 둘이다.** 하나는 `CARD_COUNT_REACHED`
+   * 와 같다 — `RETURN_PHOTO_TOO_MANY` 는 `params.max` 를 문장에 끼워 넣어야 하고,
+   * 코드를 모르면 화면은 서버 문장을 그대로 흘려 **`{max}` 를 그대로 그린다.**
+   *
+   * 다른 하나는 이 다섯이 **사람이 할 일이 서로 다른** 거절이기 때문이다. 사진을
+   * 찍어 와야 하는 사람과, 사유를 고쳐야 하는 사람과, 한 장을 빼야 하는 사람에게
+   * 같은 문장을 보이면 서버가 코드를 다섯으로 나눈 일이 화면에서 다시 하나로
+   * 뭉개진다.
+   */
+  'RETURN_PHOTO_REQUIRED',
+  'RETURN_PHOTO_NOT_ALLOWED',
+  'RETURN_PHOTO_TOO_MANY',
+  'RETURN_PHOTO_DUPLICATE',
+  'RETURN_PHOTO_FOREIGN',
 ] as const satisfies readonly UserFacingErrorCode[]
 
 export type MyPageErrorCode = (typeof myPageErrorCodes)[number]
@@ -572,9 +598,159 @@ export interface OrderDetailMessages {
   readonly recipient: OrderRecipientMessages
   readonly repurchase: OrderRepurchaseMessages
   readonly upcoming: OrderUpcomingMessages
+  /** 취소·반품으로 가는 자리 (TASK-0066). */
+  readonly claim: OrderClaimEntryMessages
   /** 가능 액션을 못 읽었다. 「할 수 있는 것이 없다」와 다른 말이다. */
   readonly actionsFailed: string
   readonly actionsLoading: string
+}
+
+/**
+ * 묶음 하나에서 취소·반품으로 가는 자리 (TASK-0066).
+ *
+ * **버튼이거나 문장이다.** 「지금 신청할 수 있는가」는 서버가 답하고
+ * (`GET /seller-orders/:id/claimable`), 답이 `null` 이면 그 자리는 **왜 안 되는지**
+ * 를 말한다 — 감추면 사람은 취소 버튼을 찾다가 포기하고, 「취소할 수 없습니다」로
+ * 끝나면 기다리면 되는 사람과 고객센터를 찾아야 하는 사람이 구분되지 않는다.
+ */
+export interface OrderClaimEntryMessages {
+  /** `{brand}` — 같은 이름의 링크가 묶음마다 있어서 브랜드로 가른다. */
+  readonly cancel: string
+  readonly returns: string
+  readonly title: string
+  /** 여섯 거절. `exceeds_remaining` 만 `{remaining}` 을 쓴다. */
+  readonly refusals: Readonly<Record<ClaimRefusal, string>>
+  readonly loading: string
+  /** 물어보지 못했다. 「신청할 수 없다」와 다른 말이다. */
+  readonly failed: string
+}
+
+/**
+ * 취소·반품 신청 화면 (TASK-0066).
+ *
+ * **한 벌로 취소와 반품을 모두 말한다.** 요청의 모양이 같고(항목·수량·사유),
+ * 다른 것은 부르는 이름과 승인 뒤에 무엇이 일어나는가뿐이다 — 유형별로 문구를
+ * 통째로 나누면 같은 문장이 두 벌이 되고, 그 둘이 언젠가 다른 말을 한다.
+ * 유형이 가르는 것만 {@link ClaimTypeMessages} 로 묶어 둔다.
+ */
+export interface ClaimRequestMessages {
+  readonly types: Readonly<Record<ClaimType, ClaimTypeMessages>>
+  /**
+   * 신청할 수 없는 주문의 제목.
+   *
+   * 유형이 정해지지 않은 화면이라 「취소 신청」도 「반품 신청」도 거짓이다 —
+   * 배송 중인 주문에 「반품 신청」이라고 써 두면, 거절 문장을 읽기 전에 이미
+   * 틀린 것을 하나 배운 셈이 된다.
+   */
+  readonly refusedTitle: string
+  readonly backToOrder: string
+  readonly loadingLabel: string
+  readonly loadErrorTitle: string
+  /**
+   * 어느 묶음인지 주소가 말하지 않을 때.
+   *
+   * 주소를 손으로 친 사람만 닿는 자리다 — 화면에서 오는 길은 언제나 묶음을
+   * 들고 온다. 「잘못된 접근입니다」 대신 **돌아갈 곳**을 준다.
+   */
+  readonly missingBundleTitle: string
+  readonly missingBundleBody: string
+  readonly itemsLabel: string
+  readonly quantityLabel: string
+  /** `{count}` — 서버가 답한 잔여. 화면이 빼서 계산하지 않는다. */
+  readonly remainingLabel: string
+  /** 잔여가 0인 줄. 고를 수 없는 이유를 말한다. */
+  readonly alreadyClaimed: string
+  readonly selectLabel: string
+  readonly reasonLabel: string
+  readonly reasonHint: string
+  readonly reasonPlaceholder: string
+  /** 취소 경로에서만 그려진다. 반품의 귀책은 사람이 고르지 않는다. */
+  readonly faultLegend: string
+  readonly faults: Readonly<Record<ClaimFault, ToggleCopy>>
+  /**
+   * 반품 경로에서만 그려진다 (TASK-0067).
+   *
+   * **귀책 둘이 아니라 사유 셋을 묻는다.** 하자와 오배송은 돈에서만 같고(둘 다
+   * 판매자 부담) 사람이 겪은 일은 다르다 — 그 차이가 분쟁에서 다투는 것이라
+   * `SELLER` 한 값으로 접으면 자유 서술에만 남는다 (`returnReasons`).
+   */
+  readonly returnReasonLegend: string
+  readonly returnReasons: Readonly<Record<ReturnReason, ToggleCopy>>
+  readonly photos: ClaimPhotoMessages
+  readonly submit: string
+  readonly submitting: string
+  readonly submitErrorTitle: string
+  /** 보내기 전에 걸리는 것들. 서버 규칙이 아니라 **요청이 되기 전의** 것이다. */
+  readonly issues: Readonly<Record<ClaimDraftIssue, string>>
+  /** 여섯 거절, 신청을 보낸 뒤에 받았을 때. 자리가 다를 뿐 같은 문장이다. */
+  readonly refusals: Readonly<Record<ClaimRefusal, string>>
+  readonly outcome: ClaimOutcomeMessages
+}
+
+/**
+ * 하자 반품의 증거 사진 (TASK-0067 F2).
+ *
+ * **하자·오배송 사유에서만 그려진다.** 단순 변심에는 뒤집을 것이 없어 증거를 받을
+ * 이유가 없고, 받아 두면 아무도 보지 않는 이미지와 지우지 못하는 개인정보만 쌓인다.
+ */
+export interface ClaimPhotoMessages {
+  readonly legend: string
+  /** 파일을 고르는 자리의 이름. 끌어다 놓는 것도 같은 자리다. */
+  readonly dropLabel: string
+  readonly droppingLabel: string
+  /** `{max}` — 계약이 정한 장수의 상한. */
+  readonly hint: string
+  readonly listLabel: string
+  readonly remove: string
+  /**
+   * `{name}` — 같은 글자의 버튼이 다섯 개 있는 목록에서 **위치는 눈에만 보인다.**
+   * 그래서 보이는 글자는 짧게 두고 접근 가능한 이름에 파일 이름을 넣는다 (P4).
+   */
+  readonly removeNamed: string
+  readonly statuses: Readonly<Record<ReturnPhotoStatus, string>>
+  /**
+   * 왜 못 올렸는가.
+   *
+   * 넷을 나누는 기준은 **사람이 할 일이 다른가**다 — 형식과 크기는 다른 파일을
+   * 고르는 일이고, 장수는 하나를 빼는 일이며, 마지막 둘은 다시 시도하는 일이다.
+   *
+   * `too_many` 만 `{max}` 를 갖는다. 계약의 상한을 화면이 숫자로 적어 두면 그 값이
+   * 바뀌는 날 둘이 갈리고, 갈린 쪽은 **화면**이라 아무 검사도 실패하지 않는다.
+   */
+  readonly failures: Readonly<Record<ClaimPhotoFailureKey, string>>
+}
+
+export type ClaimPhotoFailureKey =
+  | ReturnPhotoRejection
+  /** presign 이 거절했다. 서버 문장이 이유를 말한다 */
+  | 'api'
+  /** 버킷이 거절했다. 봉투가 없으므로 우리가 할 말을 정한다 */
+  | 'storage'
+
+/** 유형이 가르는 것 — 부르는 이름과, 신청 전에 알려야 할 한 문장. */
+export interface ClaimTypeMessages {
+  readonly title: string
+  readonly description: string
+  /** 반품에만 값이 있다. `{date}` — 서버가 계산해 보낸 기간의 끝이다. */
+  readonly windowNotice: string | null
+}
+
+/**
+ * 신청이 접수된 뒤 (F1 · F4).
+ *
+ * **자동 승인과 승인 대기를 다르게 말한다.** 둘 다 「접수됐습니다」로 끝내면
+ * 자동 승인된 사람은 오지 않을 연락을 기다리고, 승인 대기인 사람은 이미 끝난
+ * 줄 안다.
+ */
+export interface ClaimOutcomeMessages {
+  readonly title: string
+  readonly approvedTitle: string
+  readonly approvedBody: string
+  readonly waitingTitle: string
+  readonly waitingBody: string
+  /** 환불과 재고는 아직 이 TASK 가 하지 않는다 (TASK-0068 · 0069). */
+  readonly refundPending: string
+  readonly backToOrder: string
 }
 
 /**
@@ -750,8 +926,6 @@ export interface OrderRepurchaseMessages {
  * TASK 번호가 컴포넌트의 주석에 적혀 있어 그 TASK 가 닫힐 때 `grep` 으로 찾힌다.
  */
 export interface OrderUpcomingMessages {
-  readonly claimTitle: string
-  readonly claimBody: string
   readonly reviewTitle: string
   readonly reviewBody: string
 }

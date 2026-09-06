@@ -12,12 +12,14 @@ import type {
   Claim,
   ClaimableItem,
   ClaimableResponse,
+  ClaimFault,
   ClaimHistoryEntry,
   ClaimItem,
   ClaimListItem,
   ClaimListQuery,
   ClaimListResponse,
   ClaimResponse,
+  ClaimReturnDetails,
   ClaimStatus,
   ClaimTransitionRequest,
   ClaimTransitionResponse,
@@ -26,7 +28,7 @@ import type {
   OrderItemSnapshot,
   Permission,
 } from '@shopping/shared'
-import { CLAIM_LIST_DEFAULT_LIMIT, grantedScopes } from '@shopping/shared'
+import { CLAIM_LIST_DEFAULT_LIMIT, grantedScopes, RETURN_PHOTO_MAX_COUNT } from '@shopping/shared'
 
 import { assertResourceAccess } from '../auth/access-denied.js'
 import type { AccountRow, SellerRow } from '../auth/resource-ownership.js'
@@ -43,8 +45,14 @@ import { domainFailure } from '../common/domain-failure.js'
 import type { AppConfig } from '../config/app-config.js'
 import { APP_CONFIG } from '../config/app-config.js'
 import { autoConfirmWindowMsOf } from '../orders/order-confirm.js'
+import type { SellerOrderStatusChanged } from '../orders/seller-order-events.js'
 import type { SellerOrderActor } from '../orders/seller-order-transitions.js'
+import { SellerOrderService } from '../orders/seller-order.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import type { CancelApproved, CancelRefundEvents, CancelRestockEvents } from './cancel-events.js'
+import { CANCEL_REFUND_EVENTS, CANCEL_RESTOCK_EVENTS } from './cancel-events.js'
+import type { CancelApproval, CancelLine } from './cancel-rules.js'
+import { cancelApprovalFor, cancelScopeOf, cancelSettledStatuses } from './cancel-rules.js'
 import type { ClaimRefusal } from './claim-rules.js'
 import {
   CLAIM_INITIAL,
@@ -53,6 +61,8 @@ import {
   claimTransitionDecision,
   remainingQuantity,
 } from './claim-rules.js'
+import type { ReturnPhotoRefusal } from './return-rules.js'
+import { returnCostShare, returnFaultOf, returnPhotoDecision } from './return-rules.js'
 
 type Tx = Prisma.TransactionClient
 
@@ -138,6 +148,65 @@ interface ClaimCommand {
 interface LockedClaim {
   readonly id: string
   readonly status: ClaimStatus
+  /**
+   * 어느 몫의 클레임인가.
+   *
+   * **잠근 그 행에 이미 있는 열이라 함께 읽는다.** 승인이 판매자 몫을 옮길지
+   * 판단하려면 이 값이 필요한데, 나중에 따로 읽으면 다른 순간의 스냅샷을 보게 되고
+   * 무엇보다 잠금이 지켜 주지 않는 읽기가 하나 늘어난다.
+   */
+  readonly sellerOrderId: string
+}
+
+/**
+ * 한 걸음이 남긴 것.
+ *
+ * `changed` 만 돌려주던 자리에 봉투가 생긴 이유는 **승인이 뒤에 일을 남기기**
+ * 때문이다 (TASK-0066). 승인은 두 길로 오지만(신청과 동시에 자동, 또는 판매자가
+ * 눌러서) 둘 다 {@link ClaimService.applyWithin} 하나를 지나므로, 그 뒤에 나가야
+ * 하는 것도 한 자리에서 만들어진다.
+ */
+interface ClaimMove {
+  readonly changed: boolean
+  /** 승인이었으면 커밋 뒤에 나갈 것. 그 밖의 전이에는 `null` 이다. */
+  readonly aftermath: CancelAftermath | null
+}
+
+/**
+ * 커밋한 **뒤에** 나가야 하는 것들.
+ *
+ * 트랜잭션 안에서 발행하면 롤백된 취소의 환불이 나가고, 그 돈은 되돌릴 수 없다 —
+ * `SellerOrderService.publish` 가 같은 이유로 같은 자리에 있다.
+ */
+interface CancelAftermath {
+  readonly approved: CancelApproved
+  /** 전체 취소여서 판매자 몫이 함께 옮겨졌으면 그 사실. 부분 취소면 `null`. */
+  readonly orderEvent: SellerOrderStatusChanged | null
+}
+
+/**
+ * 경로가 정해진 뒤의 신청서 — **귀책과, 반품이면 그 부속**.
+ *
+ * 요청의 `fault` 와 `return` 은 계약이 **둘 중 하나**로 좁혀 두었지만(그쪽 주석),
+ * 어느 쪽이 실렸는지와 **주문이 무엇을 열어 주는지**는 다른 질문이다. 이 타입은 그
+ * 둘을 맞춰 본 뒤의 결과라, 여기까지 온 값에는 「반품인데 사유가 없는」 조합이 없다.
+ */
+interface ClaimParts {
+  readonly fault: ClaimFault
+  /** 반품이면 사유와 사진, 취소면 `null`. */
+  readonly details: ClaimReturnDetails | null
+}
+
+/** 「전체인가」를 세는 질의 한 줄. 항목 하나가 주문한 수량과 확정된 취소 수량. */
+interface SettledLineRow extends CancelLine {
+  readonly orderItemId: string
+}
+
+/** 이 클레임이 걸고 있는 줄. 환불과 재고 복원이 받을 모양 그대로다. */
+interface ClaimLineRow {
+  readonly orderItemId: string
+  readonly variantId: string
+  readonly quantity: number
 }
 
 /** 목록 한 줄이 데이터베이스에서 나오는 모양. */
@@ -201,13 +270,40 @@ interface ListRow {
  * 요청이 자기 주체를 주장하게 두면 구매자가 `SELLER` 를 주장해 자기 클레임을
  * 승인한다. 그래서 {@link actorFor} 가 「이 사람은 이 몫의 무엇인가」를 행에서 읽어
  * 정하고, {@link transition} 은 절대 `SYSTEM` 을 만들지 않는다.
+ *
+ * ## 취소의 결론은 한 자리에서 난다 (TASK-0066)
+ *
+ * `PAID` 의 취소는 스스로 승인되고 `PREPARING` 의 취소는 판매자를 기다린다
+ * (`cancel-rules.ts`). 그 둘은 **다른 길로 들어오지만 같은 문을 지난다** —
+ * {@link applyWithin} 이 `CANCEL_APPROVED` 를 보면 그 자리에서 「이 몫에 남은 것이
+ * 있는가」를 세고, 없으면 `SellerOrderService.applyWithin` 으로 주문을 옮긴다.
+ * 자동 승인만 따로 처리하면 「구매자가 신청한 취소에만 주문이 안 닫히는」 종류의
+ * 어긋남이 생기고, 그것은 한쪽 길을 실제로 걸어 본 사람만 발견한다
+ * (`SellerOrderService.publish` 가 확정에 대해 같은 이유로 같은 모양이다).
+ *
+ * ## 반품의 부속도 여기서 태어난다 (TASK-0067)
+ *
+ * `ReturnDetail` 은 반품의 부속이지 별도의 신청서가 아니다. 그래서 이 서비스가
+ * **신청서와 같은 트랜잭션에서** 쓴다 — 갈라 두면 그 틈에서 죽은 요청이 「걸을 수
+ * 없는 반품」을 남기고, 그 행은 수거를 부를 때까지 아무 오류도 내지 않는다.
+ *
+ * 이것이 `ReturnService` 를 여기로 접는다는 뜻은 아니다. 저쪽이 갖는 것은 **신청
+ * 뒤의 걸음들**(수거·검수)과 그 걸음이 만드는 사실들이고, 여기 있는 것은 신청
+ * 하나다. 화살표는 여전히 `Return → Claim` 한 방향이다.
+ *
+ * 반품에만 있는 **판단**은 하나도 여기서 정하지 않는다 — 귀책도 배송비 분배도 사진의
+ * 필요도 전부 `return-rules.ts` 의 순수 함수이고, 이 서비스는 그것을 부르는 순서만
+ * 갖는다 (`cancel-rules.ts` 와 같은 관계다).
  */
 @Injectable()
 export class ClaimService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly sellerOrders: SellerOrderService,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(APP_CONFIG) private readonly config: AppConfig,
+    @Inject(CANCEL_REFUND_EVENTS) private readonly refunds: CancelRefundEvents,
+    @Inject(CANCEL_RESTOCK_EVENTS) private readonly restocks: CancelRestockEvents,
   ) {}
 
   // ------------------------------------------------------------------ writes
@@ -218,15 +314,29 @@ export class ClaimService {
    * **신청은 전이가 아니라 생성이다.** 그래서 전이표를 지나지 않고, 시작하는 자리는
    * 유형이 정한다 (`CLAIM_INITIAL`). 유형도 요청이 아니라 **주문 상태**가 정한다.
    *
-   * 세 걸음의 순서가 규칙이다.
+   * 다섯 걸음의 순서가 규칙이다.
    *
    * ① 소유권과 주체 — 잠금을 잡기 전이다. 남의 주문에 신청하는 요청이 잠금을 기다릴
    *    이유가 없다.
    * ② **판단은 `claimEligibility` 하나가 내린다.** 거절 여섯의 순서가 곧 사람에게
    *    할 말의 순서이고(배송 중인 주문에 「수량이 모자랍니다」라고 답하지 않는다),
    *    그 순서를 여기서 다시 적으면 규칙이 두 벌이 된다.
-   * ③ 잡는 것과 신청서를 쓰는 것이 **한 트랜잭션**이다. 갈리면 「수량은 잡혔는데
-   *    신청서가 없는 항목」이 남고, 그것은 아무도 신고하지 않는다.
+   * ③ **부속을 볼 차례다** (TASK-0067). 경로가 정해졌으므로 요청이 실은 것이 그
+   *    경로의 것인지 맞춰 보고, 반품이면 사진까지 본다. **신청서를 만들기 전이다** —
+   *    뒤로 미루면 사진 때문에 거절된 신청이 이미 수량을 잡은 뒤가 된다.
+   * ④ 잡는 것과 신청서를 쓰는 것과 **부속을 쓰는 것**이 한 트랜잭션이다. 앞의 둘이
+   *    갈리면 「수량은 잡혔는데 신청서가 없는 항목」이 남고, 뒤의 둘이 갈리면
+   *    **걸을 수 없는 반품**이 남는다 — 회수 운송장이 매달릴 `ReturnDetail` 이 없어
+   *    수거에서 409 로 끝나는, 신청한 사람이 아무것도 잘못하지 않은 행이다. 둘 다
+   *    아무도 신고하지 않는다.
+   * ⑤ **자동 승인도 같은 트랜잭션이다** (TASK-0066). `PAID` 의 취소는 판매자가 아직
+   *    아무것도 하지 않아 거절할 근거가 없으므로 규칙이 그 자리에서 승인한다. 이것을
+   *    커밋 뒤로 미루면 「승인되지 않은 채 아무도 안 보는 신청」이 남는데, 그것은
+   *    승인 대기와 구분되지 않아 판매자 화면에서도 티가 나지 않는다.
+   *
+   * **두 라우트가 이 문 하나를 지난다** (`POST /claims` · `POST /returns`). 계약이
+   * 하나이므로 문도 하나여야 한다 — 반품만 만드는 두 번째 생성 경로를 두면, 부속을
+   * 쓰는 순서와 잡는 순서가 두 벌이 되고 그 둘은 언젠가 갈린다.
    */
   async create(principal: RequestPrincipal, input: CreateClaimRequest): Promise<ClaimResponse> {
     const order = await this.sellerOrder(input.sellerOrderId)
@@ -256,8 +366,41 @@ export class ClaimService {
     // 갈래는 컴파일러를 위한 것이고, 값을 지어내는 대신 그 사실을 말한다.
     if (type === null) throw new BadRequestException('신청할 항목이 없습니다.')
 
+    const parts = partsFor(type, input)
+
+    if (parts.details !== null) {
+      const decision = returnPhotoDecision(
+        parts.details.returnReason,
+        parts.details.photoKeys,
+        principal.userId,
+      )
+
+      if (decision.outcome === 'refused') throw photoRefusal(decision.reason)
+    }
+
+    // **부속과 그 금액을 한 값으로 묶는다.** 둘이 따로 있으면 아래 트랜잭션에서
+    // 「사유는 있는데 금액은 없는」 조합을 컴파일러가 의심하게 되고, 그것을 달래는
+    // 검사 하나가 늘어난다 — 그 검사는 닿을 수 없다.
+    //
+    // 금액을 트랜잭션 밖에서 읽는 것은 그것이 **신청 시점의 사실**이기 때문이다.
+    // 정책이 그 사이에 바뀌더라도 이 반품이 물 값은 사람이 신청 화면에서 본 값이어야
+    // 하고, 다시 읽어 최신을 쓰는 쪽이 오히려 그 성질을 깬다 (CLAUDE.md 6장).
+    const attachment =
+      parts.details === null
+        ? null
+        : {
+            details: parts.details,
+            share: returnCostShare(parts.details.returnReason, {
+              // 반품비는 **판매자의 정책값**이고 원 배송비는 이 몫에 실제로 부과된
+              // 값이다. 앞엣것에 `SellerOrder.shippingFee` 를 쓰면 무료배송 주문은
+              // 변심 반품이 공짜가 되는데, 회수 운송은 무료배송 조건과 아무 상관이 없다.
+              returnShippingFee: order.seller.shippingFee,
+              originalShippingFee: order.shippingFee,
+            }),
+          }
+
     const initial = CLAIM_INITIAL[type]
-    const claimId = await this.prisma.$transaction(async (tx) => {
+    const created = await this.prisma.$transaction(async (tx) => {
       // **항목 id 순서로 잡는다.** 두 신청이 같은 두 항목을 반대 순서로 잡으면
       // 데드락이 되고, 그것은 부하가 있는 날에만 나타난다.
       for (const line of [...lines].sort((left, right) =>
@@ -266,13 +409,13 @@ export class ClaimService {
         await this.hold(tx, line.item.id, line.quantity, now)
       }
 
-      const created = await tx.claimRequest.create({
+      const claim = await tx.claimRequest.create({
         data: {
           sellerOrderId: order.id,
           type,
           status: initial,
           reason: input.reason,
-          fault: input.fault,
+          fault: parts.fault,
           requestedById: principal.userId,
           createdAt: now,
           updatedAt: now,
@@ -292,7 +435,7 @@ export class ClaimService {
 
       await tx.claimStatusHistory.create({
         data: {
-          claimId: created.id,
+          claimId: claim.id,
           // 생성이라 이전 상태가 없다.
           fromStatus: null,
           toStatus: initial,
@@ -303,10 +446,55 @@ export class ClaimService {
         },
       })
 
-      return created.id
+      // **부속은 신청서와 같은 트랜잭션이다** (TASK-0067). 갈라 두면 그 틈에서 죽은
+      // 요청이 「부속 없는 반품」을 남기고, 그것은 수거를 부를 때까지 아무 오류도
+      // 내지 않는다 — 여기 `if` 하나가 그 상태를 **막는 것이 아니라 생기지 않게**
+      // 하는 자리다.
+      if (attachment !== null) {
+        await tx.returnDetail.create({
+          data: {
+            claimId: claim.id,
+            reason: attachment.details.returnReason,
+            feeBearer: attachment.share.feeBearer,
+            returnShippingFee: order.seller.shippingFee,
+            originalShippingRefund: attachment.share.originalShippingRefund,
+            returnShippingDeduction: attachment.share.returnShippingDeduction,
+            createdAt: now,
+            updatedAt: now,
+            photos: {
+              // 순서는 사람이 고른 순서다. 증거의 순서가 바뀌면 「이 사진이 무엇을
+              // 보여 주는가」를 설명하던 사유와 어긋난다.
+              create: attachment.details.photoKeys.map((key, position) => ({
+                key,
+                position,
+                createdAt: now,
+              })),
+            },
+          },
+        })
+      }
+
+      // 자동 승인은 **취소에만** 있다. 반품은 물건이 돌아와야 하므로 판단할 것이
+      // 남아 있고, 그 판단은 사람의 것이다 (TASK-0067).
+      const approval: CancelApproval =
+        type === 'CANCEL' ? cancelApprovalFor(order.status) : { mode: 'REVIEW' }
+
+      if (approval.mode !== 'AUTO') return { claimId: claim.id, aftermath: null }
+
+      const move = await this.applyWithin(tx, claim.id, 'CANCEL_APPROVED', {
+        actor: approval.actor,
+        // 사람이 없는 승인이다. 신청한 사람을 여기 적으면 이력이 「구매자가
+        // 승인했다」로 읽히고, 그것이 전이표가 `BUYER` 를 막아 둔 바로 그 모양이다.
+        actorId: null,
+        reason: null,
+      })
+
+      return { claimId: claim.id, aftermath: move.aftermath }
     })
 
-    return { claim: await this.load(claimId) }
+    await this.publishCancel(created.aftermath)
+
+    return { claim: await this.load(created.claimId) }
   }
 
   /**
@@ -317,7 +505,8 @@ export class ClaimService {
    *
    * 트랜잭션이 잠금부터 이력까지만을 감싸는 것도 같다. 소유권 확인은 그 앞이고, 답을
    * 만드느라 클레임 전체를 다시 읽는 것은 그 뒤다 — 앞의 것은 잠금을 오래 쥐고 있을
-   * 이유가 없고, 뒤의 것은 커밋된 사실을 읽어야 한다.
+   * 이유가 없고, 뒤의 것은 커밋된 사실을 읽어야 한다. 환불·재고 복원도 그 뒤다
+   * (TASK-0066): 롤백된 승인의 환불은 되돌릴 수 없다.
    */
   async transition(
     principal: RequestPrincipal,
@@ -326,7 +515,7 @@ export class ClaimService {
   ): Promise<ClaimTransitionResponse> {
     const access = await this.access(claimId)
     const actor = this.actorFor(principal, access.sellerOrder, 'claim.handle')
-    const changed = await this.prisma.$transaction((tx) =>
+    const move = await this.prisma.$transaction((tx) =>
       this.applyWithin(tx, claimId, input.to, {
         actor,
         actorId: principal.userId,
@@ -334,7 +523,9 @@ export class ClaimService {
       }),
     )
 
-    return { claim: await this.load(claimId), changed }
+    await this.publishCancel(move.aftermath)
+
+    return { claim: await this.load(claimId), changed: move.changed }
   }
 
   // ------------------------------------------------------------------- reads
@@ -497,21 +688,54 @@ export class ClaimService {
   }
 
   /**
-   * 잠금 아래에서 한 걸음 옮긴다. **옮겼으면 `true`.**
+   * 잠금 아래에서 한 걸음 옮긴다. **옮겼으면 `changed: true`.**
    *
-   * **멱등이다.** 이미 목표 상태면 아무것도 하지 않고 `false` 를 돌려준다 — 이력도
-   * 늘지 않는다. 「정의되지 않은 전이」로 거절하면 재시도한 화면이 오류를 보는데, 그
-   * 사람이 원한 결과는 이미 이뤄져 있다.
+   * **멱등이다.** 이미 목표 상태면 아무것도 하지 않고 `changed: false` 를 돌려준다 —
+   * 이력도 늘지 않고 뒤따르는 일도 없다. 「정의되지 않은 전이」로 거절하면 재시도한
+   * 화면이 오류를 보는데, 그 사람이 원한 결과는 이미 이뤄져 있다. 그리고 그 멱등이
+   * **환불이 두 번 나가지 않는 첫 번째 이유**다 — 두 번째 승인 요청은 여기서 멈춰
+   * 아무것도 발행하지 않는다 (`idempotencyKey` 가 두 번째 이유다).
+   *
+   * **승인이면 그 자리에서 결론까지 낸다** (TASK-0066). 자동 승인과 판매자 승인이
+   * 이 문 하나를 지나므로, 「전체인가」를 세는 곳도 판매자 몫을 옮기는 곳도 하나다.
+   *
+   * ## 왜 `public` 이어도 안전한가
+   *
+   * `SellerOrderService.applyWithin` 과 **같은 이유이고, 같은 조건이다.** 이것이
+   * 트랜잭션을 열지 않고 남의 것을 받는 이유는 부르는 쪽이 **이미 트랜잭션 안**이기
+   * 때문이다 — 반품의 수거는 회수 운송장을 먼저 쓰고 전이를 부르는데
+   * (`ReturnService.pickUp`), 여기서 트랜잭션을 새로 열면 그 둘이 다른 트랜잭션이
+   * 되어 「회수중인데 운송장이 없다」가 사람이 보는 상태로 남는다. `markPaid` 와
+   * 예약 만료 스케줄러가 주문 쪽 문에 대해 갖는 문제와 같은 모양이다.
+   *
+   * **주체를 인자로 받는 것이 여기서 위험하지 않은 이유**는 이 문이 주체를 **믿지
+   * 않기** 때문이다. 전이표(`claimTransitionDecision`)가 그 주체로 이 화살표를 지날
+   * 수 있는지 다시 판정하므로, 부르는 쪽이 `SELLER` 를 지어내도 「신청자가 자기
+   * 클레임을 승인하는」 화살표는 여전히 없다.
+   *
+   * 그래도 부르는 쪽이 **먼저 해야 하는 일이 둘** 있고, 그것을 여기서 대신 해 주지
+   * 않는다.
+   *
+   * ① **소유권과 주체를 {@link actorFor} 로 정한다.** 요청이 주장한 주체를 그대로
+   *    넘기면 구매자가 `SELLER` 를 주장하고, 그때 막는 것은 전이표뿐이라 「관리자만
+   *    할 수 있는 일」과 「판매자도 할 수 있는 일」의 차이가 사라진다.
+   * ② **자기 걸음의 자리를 미리 확인한다** (`returnStepDecision`). 이 문이 나중에
+   *    거절해도 그 앞에서 쓴 운송장과 검수 기록은 남기 때문이다 — 그것이 이 문을
+   *    여는 대신 순서로 메우던 시절의 틈이었다.
+   *
+   * `SYSTEM` 을 여기서 만들지 않는 것도 그대로다. {@link transition} 은 절대
+   * `SYSTEM` 을 만들지 않고, 만드는 것은 규칙이 정한 자동 승인 하나다
+   * (`cancelApprovalFor`).
    */
-  private async applyWithin(
+  async applyWithin(
     tx: Tx,
     claimId: string,
     to: ClaimStatus,
     command: ClaimCommand,
-  ): Promise<boolean> {
+  ): Promise<ClaimMove> {
     const locked = await this.lock(tx, claimId)
 
-    if (locked.status === to) return false
+    if (locked.status === to) return { changed: false, aftermath: null }
 
     const decision = claimTransitionDecision(locked.status, to, command.actor)
 
@@ -537,7 +761,89 @@ export class ClaimService {
 
     if (RELEASES_QUANTITY[to]) await this.release(tx, claimId, now)
 
-    return true
+    return {
+      changed: true,
+      aftermath:
+        to === 'CANCEL_APPROVED' ? await this.settleCancel(tx, locked, command, now) : null,
+    }
+  }
+
+  /**
+   * 승인된 취소의 **결론** — 이 몫이 끝났는가 (TASK-0066 F1 · F2 · F7).
+   *
+   * ## 잠그는 순서가 규칙이다
+   *
+   * 판매자 몫의 행을 **세기 전에** 잠근다. 같은 몫에 두 부분 취소가 동시에 승인되면
+   * 잠금 없이는 둘 다 상대의 수량을 못 보고(각자의 스냅샷에서 상대는 아직 커밋 전이다)
+   * 둘 다 「아직 남았다」로 판단한다 — 마지막 한 개가 취소됐는데 주문은 **아무도
+   * 옮기지 않은 채** 준비중으로 남고, 그 상태에서 실패하는 것은 아무것도 없다.
+   * 먼저 잠그면 뒤에 온 쪽이 앞사람의 커밋을 보고 세게 되고, 그때 답이 `FULL` 로
+   * 바뀐다.
+   *
+   * 같은 잠금이 R1(취소 처리 중 판매자가 동시에 발송) 도 막는다. 발송은
+   * `SellerOrderService` 가 같은 행을 잠그고 지나므로 둘은 줄을 서고, 발송이
+   * 먼저였다면 아래 `applyWithin` 이 `SHIPPED → CANCELED` 를 정의되지 않은 전이로
+   * 거절한다 — 떠난 물건을 취소로 닫지 않는 것이 옳다.
+   *
+   * ## 부분 취소는 아무것도 옮기지 않는다
+   *
+   * 남은 항목은 계속 배송된다. `SellerOrder` 의 상태는 **남은 것 기준**이고
+   * (설계서 1장 마지막 줄), 취소된 수량은 `ClaimItem` 이 들고 있다.
+   */
+  private async settleCancel(
+    tx: Tx,
+    claim: LockedClaim,
+    command: ClaimCommand,
+    now: Date,
+  ): Promise<CancelAftermath> {
+    await this.lockSellerOrder(tx, claim.sellerOrderId)
+
+    const scope = cancelScopeOf(await this.settledLines(tx, claim.sellerOrderId))
+    const orderEvent =
+      scope === 'FULL'
+        ? await this.sellerOrders.applyWithin(tx, claim.sellerOrderId, 'CANCELED', {
+            // **주체를 접지 않고 그대로 넘긴다.** 전이표가 이제 `SYSTEM` 을 열어
+            // 두었으므로(TASK-0066), 자동 승인된 취소는 주문 이력에도 `SYSTEM` 으로
+            // 남는다 — 접어 넣던 동안은 그 자리에 「판매자가 취소했다」는 거짓이
+            // 적혔다.
+            actor: command.actor,
+            actorId: command.actorId,
+            reason: command.reason,
+          })
+        : null
+
+    return {
+      approved: {
+        claimId: claim.id,
+        sellerOrderId: claim.sellerOrderId,
+        scope,
+        approvedAt: now,
+        actor: command.actor,
+        lines: await this.claimLines(tx, claim.id),
+        idempotencyKey: claim.id,
+      },
+      orderEvent,
+    }
+  }
+
+  /**
+   * 환불과 재고 복원을 부르는 **유일한 자리** (TASK-0068 · 0069).
+   *
+   * **커밋한 뒤에 부른다.** 지금 두 구현 다 아무것도 하지 않으며, 그것이 무엇을
+   * 뜻하는지는 `cancel-events.ts` 에 적혀 있다.
+   *
+   * 돈이 먼저다. 둘 다 아직 아무것도 하지 않으므로 지금은 순서가 결과를 바꾸지
+   * 않지만, **기다리는 사람이 있는 쪽**이 앞에 있어야 나중에 재고 쪽이 느려질 때
+   * 환불이 그 뒤에 서지 않는다.
+   */
+  private async publishCancel(aftermath: CancelAftermath | null): Promise<void> {
+    if (aftermath === null) return
+
+    // 상태가 옮겨졌다는 사실은 주문 쪽 문이 알린다. 여기서 따로 알리면 같은 사건이
+    // 두 번 나가고, 받는 쪽은 그 둘을 구분할 방법이 없다.
+    await this.sellerOrders.publish(aftermath.orderEvent === null ? [] : [aftermath.orderEvent])
+    await this.refunds.refund([aftermath.approved])
+    await this.restocks.restock([aftermath.approved])
   }
 
   /**
@@ -550,7 +856,7 @@ export class ClaimService {
    */
   private async lock(tx: Tx, claimId: string): Promise<LockedClaim> {
     const rows = await tx.$queryRaw<readonly LockedClaim[]>`
-      SELECT "id", "status"::text AS "status"
+      SELECT "id", "status"::text AS "status", "sellerOrderId"
         FROM "ClaimRequest"
        WHERE "id" = ${claimId}::uuid
        FOR UPDATE
@@ -560,6 +866,58 @@ export class ClaimService {
     if (row === undefined) throw new NotFoundException('클레임을 찾을 수 없어요.')
 
     return row
+  }
+
+  /**
+   * 판매자 몫의 행을 잠근다. **읽는 것이 없다** — 필요한 것은 잠금 자체다.
+   *
+   * 바로 뒤의 {@link SellerOrderService.applyWithin} 도 같은 행을 잠그고 그때는
+   * 상태까지 읽는다. 그런데 그것만으로는 늦다: 「전체인가」를 세는 질의가 그
+   * 잠금보다 **앞**에 있어야 하는데, 세고 나서 잠그면 세는 동안 남이 끼어든다.
+   * 그래서 잠금을 앞으로 당기고, 두 번째 잠금은 같은 트랜잭션이 이미 쥔 것이라
+   * 아무것도 기다리지 않는다.
+   */
+  private async lockSellerOrder(tx: Tx, sellerOrderId: string): Promise<void> {
+    await tx.$executeRaw`SELECT 1 FROM "SellerOrder" WHERE "id" = ${sellerOrderId}::uuid FOR UPDATE`
+  }
+
+  /**
+   * 이 몫의 항목마다 「주문한 수량」과 「취소가 확정된 수량」.
+   *
+   * **`OrderItem.claimedQuantity` 를 쓰지 않는다.** 그 캐시가 세는 것은 살아 있는
+   * 신청이 **잡고 있는** 수량이라 아직 승인되지 않은 신청까지 들어 있고, 그것으로
+   * 판단하면 판매자가 거절할 신청 하나가 주문을 `CANCELED` 로 닫는다 — 그리고
+   * 전이표에 거기서 돌아오는 화살표가 없다. 그래서 확정된 것만 다시 센다
+   * (`cancel-rules.ts` 의 `CANCEL_SETTLED`).
+   *
+   * `type` 으로 취소만 고르는 것은 `REFUNDED` 를 두 경로가 함께 쓰기 때문이다.
+   * 환불까지 끝난 반품이 「취소된 수량」으로 세어지면 반품된 주문이 취소로 닫힌다.
+   */
+  private async settledLines(tx: Tx, sellerOrderId: string): Promise<readonly CancelLine[]> {
+    return tx.$queryRaw<readonly SettledLineRow[]>`
+      SELECT oi."id" AS "orderItemId",
+             oi."quantity" AS "ordered",
+             COALESCE(sum(ci."quantity") FILTER (
+               WHERE c."type" = 'CANCEL'
+                 AND c."status"::text = ANY (${cancelSettledStatuses}::text[])
+             ), 0)::int AS "canceled"
+        FROM "OrderItem" oi
+        LEFT JOIN "ClaimItem" ci ON ci."orderItemId" = oi."id"
+        LEFT JOIN "ClaimRequest" c ON c."id" = ci."claimId"
+       WHERE oi."sellerOrderId" = ${sellerOrderId}::uuid
+       GROUP BY oi."id", oi."quantity"
+    `
+  }
+
+  /** 이 클레임이 걸고 있는 줄들. 되돌릴 대상을 받는 쪽이 조회 없이 알아야 한다. */
+  private async claimLines(tx: Tx, claimId: string): Promise<readonly ClaimLineRow[]> {
+    return tx.$queryRaw<readonly ClaimLineRow[]>`
+      SELECT ci."orderItemId", oi."variantId", ci."quantity"
+        FROM "ClaimItem" ci
+        JOIN "OrderItem" oi ON oi."id" = ci."orderItemId"
+       WHERE ci."claimId" = ${claimId}::uuid
+       ORDER BY ci."orderItemId"
+    `
   }
 
   /**
@@ -601,14 +959,25 @@ export class ClaimService {
     return row?.createdAt ?? null
   }
 
-  /** 신청이 볼 주문 한 몫. 잠그기 전의 읽기다. */
+  /**
+   * 신청이 볼 주문 한 몫. 잠그기 전의 읽기다.
+   *
+   * **배송비 두 값을 여기서 함께 읽는다** (TASK-0067). 반품의 부담액을 정하는 데
+   * 필요한데, 이 조회가 이미 두 행을 다 잡고 있으므로 따로 물으면 왕복만 하나
+   * 늘어난다. 취소 경로에서는 읽고 쓰지 않는데, 그것이 두 번째 조회보다 싸다.
+   */
   private async sellerOrder(sellerOrderId: string) {
     const row = await this.prisma.sellerOrder.findUnique({
       where: { id: sellerOrderId },
       select: {
         id: true,
         status: true,
+        /** 이 몫에 실제로 부과된 배송비. 판매자 귀책이면 이만큼을 돌려준다. */
+        shippingFee: true,
         ...OWNERSHIP_SELECT,
+        // 소유권이 읽는 열에 **정책값 하나를 얹는다.** 반품비는 `Seller.shippingFee`
+        // 이고, 그 근거는 위 `create` 의 주석에 있다.
+        seller: { select: { ...sellerOwnershipSelect, shippingFee: true } },
         items: {
           orderBy: { id: 'asc' },
           select: {
@@ -705,8 +1074,14 @@ export class ClaimService {
    * 자기 주문에 대한 행위라 `order.write`, 승인·거절은 `claim.handle`, 조회는
    * `claim.read` 다. 구매자가 `claim.handle` 을 갖지 않는 것이 「신청자가 자기
    * 클레임을 승인하지 못한다」의 **첫 번째** 방어선이고, 전이표가 두 번째다.
+   *
+   * **`public` 인 이유는 이 답이 하나여야 하기 때문이다.** 반품의 걸음들도 같은
+   * 질문을 하는데(`ReturnService`), 사본을 두면 「이 사람은 이 반품의 무엇인가」에
+   * 답이 둘이 생기고 그중 하나는 반드시 틀린다 — 갈라지는 날 증상은 오류가 아니라
+   * **자기 가게에서 자기가 산 주문의 반품을 자기가 승인하는 일**이다. 읽는 것이
+   * 인자로 받은 행뿐이라(데이터베이스도 시계도 보지 않는다) 밖에서 불러도 안전하다.
    */
-  private actorFor(
+  actorFor(
     principal: RequestPrincipal,
     row: {
       readonly sellerId: string
@@ -855,6 +1230,95 @@ function refusal(reason: ClaimRefusal, remaining: number): HttpException {
       return new BadRequestException(
         domainFailure('CLAIM_INVALID_QUANTITY', '수량은 1개 이상이어야 해요.', {
           field: 'items',
+        }),
+      )
+  }
+}
+
+/**
+ * 요청이 실어 온 것과 **주문이 열어 준 경로**를 맞춘다 (TASK-0067).
+ *
+ * 계약은 「귀책이거나 사유이거나, 둘 중 하나」까지만 좁힌다
+ * (`createClaimRequestSchema`). 어느 쪽이어야 하는지는 계약이 알 수 없다 — 그것은
+ * 주문 상태의 답이고, 그 답은 여기 오기 전에 나온다.
+ *
+ * **어긋나면 만들지 않는다.** 반품 경로에 귀책만 실어 오면 예전에는 사유도 사진도
+ * 없는 반품이 태어났고, 그 신청은 수거에서야 409 로 끝났다. 여기서 거절하면 그
+ * 사람은 **신청 버튼을 누른 그 자리에서** 무엇이 빠졌는지 듣는다.
+ *
+ * 상태 코드가 409 인 것은 `claimEligibility` 의 거절들과 같은 이유다 — 요청의 모양이
+ * 틀린 것이 아니라(그것은 계약이 400 으로 끝냈다) **지금 이 주문에 대해** 틀렸다.
+ */
+function partsFor(type: ClaimType, input: CreateClaimRequest): ClaimParts {
+  if (type === 'RETURN') {
+    if (input.return === null) {
+      throw new ConflictException(
+        domainFailure('CLAIM_NOT_CLAIMABLE', '이 주문은 반품만 신청할 수 있어요.', {
+          field: 'return',
+        }),
+      )
+    }
+
+    // 귀책은 **파생**이다. 요청이 주장하게 두면 「오배송인데 구매자 귀책」이 만들어
+    // 지고, 그것은 판매자가 잘못했는데 구매자가 반품비를 무는 행이다.
+    return { fault: returnFaultOf(input.return.returnReason), details: input.return }
+  }
+
+  if (input.fault === null) {
+    throw new ConflictException(
+      domainFailure('CLAIM_NOT_CLAIMABLE', '이 주문은 취소만 신청할 수 있어요.', {
+        field: 'fault',
+      }),
+    )
+  }
+
+  return { fault: input.fault, details: null }
+}
+
+/**
+ * 사진 거절 다섯을 **서로 다른 답**으로 옮긴다 (TASK-0067 F2).
+ *
+ * 나누는 기준은 위 {@link refusal} 과 같다 — **사람이 할 일이 다른가.** 한 장을
+ * 빼야 하는 사람과 사유를 고쳐야 하는 사람과 아무것도 할 수 없는 사람에게 같은
+ * 코드로 답하면, 화면은 문장을 읽고 갈라야 한다.
+ *
+ * `foreign_photo` 가 **없는 사진인지 남의 사진인지 구분해 주지 않는** 것이 이
+ * 목록에서 유일하게 덜 말하는 자리다. 열쇠는 그 자체로 소유자를 말하므로, 둘을 갈라
+ * 답하면 남의 열쇠를 넣어 보는 것만으로 그것이 존재하는지 알 수 있다.
+ */
+function photoRefusal(reason: ReturnPhotoRefusal): HttpException {
+  switch (reason) {
+    case 'photo_required':
+      return new BadRequestException(
+        domainFailure(
+          'RETURN_PHOTO_REQUIRED',
+          '하자·오배송 반품에는 사진을 한 장 이상 첨부해 주세요.',
+          { field: 'return.photoKeys' },
+        ),
+      )
+    case 'photo_not_allowed':
+      return new BadRequestException(
+        domainFailure('RETURN_PHOTO_NOT_ALLOWED', '단순 변심 반품에는 사진을 첨부할 수 없어요.', {
+          field: 'return.photoKeys',
+        }),
+      )
+    case 'too_many_photos':
+      return new BadRequestException(
+        domainFailure('RETURN_PHOTO_TOO_MANY', '사진은 최대 {max}장까지 첨부할 수 있어요.', {
+          field: 'return.photoKeys',
+          params: { max: RETURN_PHOTO_MAX_COUNT },
+        }),
+      )
+    case 'duplicate_photo':
+      return new BadRequestException(
+        domainFailure('RETURN_PHOTO_DUPLICATE', '같은 사진을 두 번 첨부할 수 없어요.', {
+          field: 'return.photoKeys',
+        }),
+      )
+    case 'foreign_photo':
+      return new BadRequestException(
+        domainFailure('RETURN_PHOTO_FOREIGN', '첨부할 수 없는 사진이에요.', {
+          field: 'return.photoKeys',
         }),
       )
   }

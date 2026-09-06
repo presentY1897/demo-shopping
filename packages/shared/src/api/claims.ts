@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 import { orderActorSchema, orderItemSnapshotSchema, orderNumberSchema } from './orders.js'
 import { priceSchema, variantIdSchema } from './products.js'
+import { returnPhotoKeySchema } from './uploads.js'
 
 /**
  * 클레임의 계약 — 취소 · 반품 (TASK-0065 · `docs/design/state-machines.md` 4장).
@@ -73,6 +74,39 @@ export type ClaimFault = (typeof claimFaults)[number]
 export const claimFaultSchema = z.enum(claimFaults)
 
 /**
+ * 왜 돌려보내는가 (TASK-0067 2장 · 4장의 표).
+ *
+ * **`ClaimFault` 바로 옆에 있는 것이 이 값의 설명이다.** 귀책은 **둘**이다 — 그것이
+ * 돈을 가르는 축이고, `pricing.md` 3장의 표도 두 줄이다. 그런데 사람이 고르는 사유는
+ * **셋**이다. 셋을 둘로 접지 않는 이유는 **하자와 오배송이 돈에서만 같기 때문**이다:
+ * 둘 다 판매자가 반품비를 물지만 하자는 물건의 문제이고 오배송은 이행의 실수다.
+ * 분쟁·판매자 평가·나중의 통계가 다투는 것이 바로 그 차이이고, `SELLER` 한 값으로
+ * 접으면 그 사실은 자유 서술(`ClaimRequest.reason`)에만 남아 아무도 셀 수 없다.
+ *
+ * 그래서 **셋이 입력이고 둘은 파생**이다 (`returnFaultOf`). 요청이 귀책을 직접
+ * 주장하지 못하게 하는 것이 요점이다 — 주장하게 두면 「오배송인데 `CUSTOMER`」 같은
+ * 조합이 만들어지고, 그것을 막을 검사가 어디에도 없다.
+ *
+ * 사유가 `returns.ts` 가 아니라 여기 있는 이유는 **신청서의 칸이기 때문**이다.
+ * 신청의 계약이 하나면(아래 {@link createClaimRequestSchema}) 그 칸의 정의도 한
+ * 곳에 있어야 하고, 반대로 두면 계약이 자기 칸을 남의 파일에서 빌려 오게 된다.
+ * 「기타」가 없는 것도 같은 축이다 — 정하지 않으면 누가 반품비를 무는지 계산할 수
+ * 없고, 계산하지 못하는 반품은 영원히 열려 있는 반품이 된다.
+ */
+export const returnReasons = [
+  /** 단순 변심 · 주문 실수. 물건에는 아무 문제가 없다. */
+  'CHANGE_OF_MIND',
+  /** 상품 하자. 받은 물건 자체가 문제다. */
+  'DEFECTIVE',
+  /** 오배송. 물건은 멀쩡하지만 주문한 것이 아니다. */
+  'WRONG_ITEM',
+] as const
+
+export type ReturnReason = (typeof returnReasons)[number]
+
+export const returnReasonSchema = z.enum(returnReasons)
+
+/**
  * 신청이 거절되는 여섯 이유 (`claim-rules.ts` 의 `ClaimRefusal`).
  *
  * 계약에 두는 이유는 **화면이 「지금 신청할 수 있나」를 버튼을 누르기 전에 물어야
@@ -133,6 +167,68 @@ export const claimItemInputSchema = z.object({
 export type ClaimItemInput = z.infer<typeof claimItemInputSchema>
 
 /**
+ * 경로와 **무관한** 칸들 — 무엇을, 몇 개, 왜.
+ *
+ * 두 라우트(`POST /claims` · `POST /returns`)가 같은 것을 받게 하려고 따로 있다.
+ * 필드를 두 벌 적으면 한쪽에만 상한이 붙는 날이 오고, 그때 두 문이 서로 다른 요청을
+ * 받아들이면서 같은 표를 쓴다.
+ */
+export const claimRequestFields = {
+  sellerOrderId: z.uuid(),
+  items: z.array(claimItemInputSchema).min(1).max(CLAIM_MAX_ITEMS),
+  reason: claimReasonSchema,
+}
+
+/**
+ * 같은 항목이 두 줄로 오지 않는가.
+ *
+ * 오면 「이 신청이 이 항목의 몇 개를 잡고 있나」에 답이 둘이 된다.
+ * `ClaimItem_claimId_orderItemId_key` 가 결국 막지만, 그때는 잡아 둔 수량을
+ * 되돌리는 롤백으로 끝나고 부르는 쪽은 무엇이 잘못됐는지 못 듣는다.
+ */
+export function claimItemsAreDistinct(input: {
+  readonly items: readonly ClaimItemInput[]
+}): boolean {
+  return new Set(input.items.map((item) => item.orderItemId)).size === input.items.length
+}
+
+/** 위 검사가 실패했을 때 붙는 자리와 문장. 두 라우트가 **같은 말**을 해야 한다. */
+export const CLAIM_DUPLICATE_ITEMS_ISSUE: { path: string[]; message: string } = {
+  path: ['items'],
+  message: '같은 주문 항목을 두 번 보낼 수 없습니다.',
+}
+
+/**
+ * 반품에만 있는 칸들 — 왜 돌려보내는가와, 그 증거.
+ *
+ * **둘이 한 객체인 것이 이 스키마의 전부다.** 따로 두면 「사유 없는 사진」이 표현
+ * 가능해지고, 그것은 무엇의 증거인지 아무도 말할 수 없는 이미지다.
+ */
+export const claimReturnDetailsSchema = z.object({
+  returnReason: returnReasonSchema,
+  /**
+   * 이미 올라간 사진의 열쇠들.
+   *
+   * **URL 이 아니라 열쇠다.** URL 을 받으면 그것이 우리 버킷의 것인지 아닌지를 문자열
+   * 파싱으로 되묻게 되고, 그 판정은 도메인이 아니라 배포 설정에 달린 값(공개 호스트)에
+   * 기댄다. 열쇠는 그 자체로 소유자를 말한다 (`returnPhotoKeyPattern`).
+   *
+   * **장수의 상한이 여기 없는 것이 일부러다** — `claimItemInputSchema.quantity` 의
+   * 하한과 같은 이유다. `.max(RETURN_PHOTO_MAX_COUNT)` 를 걸면 여섯 번째 장이
+   * 스키마 단계에서 `INVALID` 한 필드 오류가 되고, 그 답은 **사유를 고쳐야 하는
+   * 사람과 한 장을 빼면 되는 사람을 구분하지 못한다.** 상한은 규칙이 갖고, 그쪽은
+   * 「이 사유에 사진이 필요한가」까지 함께 답하며 몇 장까지인지를 `params.max` 로
+   * 싣는다 (`returnPhotoDecision` → `RETURN_PHOTO_TOO_MANY`).
+   *
+   * 두 곳에 같은 숫자를 두면 뒤엣것은 **닿을 수 없는 규칙**이 된다 — 코드도 문장도
+   * 다 만들어 놓고 아무도 받지 못하는 상태가 그것이다.
+   */
+  photoKeys: z.array(returnPhotoKeySchema).default([]),
+})
+
+export type ClaimReturnDetails = z.infer<typeof claimReturnDetailsSchema>
+
+/**
  * `POST /api/v1/claims` — 취소·반품을 신청한다.
  *
  * **`type` 이 없다.** 경로는 주문 상태가 정하므로 요청이 주장할 것이 아니고, 주장하게
@@ -140,21 +236,39 @@ export type ClaimItemInput = z.infer<typeof claimItemInputSchema>
  *
  * **`status` 도 없다.** 신청은 전이가 아니라 **생성**이고, 시작하는 자리는 유형이
  * 정한다 (`CLAIM_INITIAL`).
+ *
+ * ## 반품의 부속이 여기 있는 이유 (TASK-0067)
+ *
+ * 없던 동안 이 문은 **걸을 수 없는 반품**을 만들 수 있었다. `ReturnDetail` 이 없는
+ * `RETURN` 신청은 회수 운송장이 매달릴 곳이 없어 수거에서 409 로 끝나는데, 그 409 는
+ * 신청한 사람이 아무것도 잘못하지 않았는데 며칠 뒤에 나온다. 「막는다」보다
+ * **「생기지 않는다」**가 나으므로, 부속을 신청서의 칸으로 들여 신청과 **한
+ * 트랜잭션**에 쓴다 (`ClaimService.create`).
+ *
+ * ## 귀책과 사유가 **둘 중 하나**인 것
+ *
+ * 취소는 사람이 귀책을 고르고(`fault`), 반품은 사유를 고르며 귀책은 거기서
+ * 파생된다(`returnFaultOf`). 둘 다 실을 수 있게 두면 「오배송인데 `CUSTOMER`」가
+ * 표현 가능해지고, 둘 다 비울 수 있게 두면 귀책 없는 신청이 생긴다 — 그 신청의
+ * 환불액은 아무도 계산할 수 없다. 그래서 **정확히 하나**를 계약이 요구한다.
+ *
+ * 어느 쪽을 실을지는 화면이 이미 안다. `GET /seller-orders/:id/claimable` 이
+ * `type` 을 답한 뒤에야 이 요청을 만들 수 있기 때문이고, 그 답과 어긋나면 서버가
+ * 거절한다 — **경로는 여전히 주문 상태가 정한다.**
  */
 export const createClaimRequestSchema = z
   .object({
-    sellerOrderId: z.uuid(),
-    items: z.array(claimItemInputSchema).min(1).max(CLAIM_MAX_ITEMS),
-    reason: claimReasonSchema,
-    fault: claimFaultSchema,
+    ...claimRequestFields,
+    /** 취소의 귀책. 반품에는 없다 — 반품의 귀책은 `return.returnReason` 이 정한다. */
+    fault: claimFaultSchema.nullable().default(null),
+    /** 반품의 부속. 취소에는 없다. */
+    return: claimReturnDetailsSchema.nullable().default(null),
   })
-  // 같은 항목을 두 줄로 보내면 「이 신청이 이 항목의 몇 개를 잡고 있나」에 답이
-  // 둘이 된다. `ClaimItem_claimId_orderItemId_key` 가 결국 막지만, 그때는 잡아 둔
-  // 수량을 되돌리는 롤백으로 끝나고 부르는 쪽은 무엇이 잘못됐는지 못 듣는다.
-  .refine(
-    (input) => new Set(input.items.map((item) => item.orderItemId)).size === input.items.length,
-    { path: ['items'], message: '같은 주문 항목을 두 번 보낼 수 없습니다.' },
-  )
+  .refine(claimItemsAreDistinct, CLAIM_DUPLICATE_ITEMS_ISSUE)
+  .refine((input) => (input.fault === null) !== (input.return === null), {
+    path: ['return'],
+    message: '취소는 귀책을, 반품은 사유를 — 둘 중 하나만 보내야 합니다.',
+  })
 
 export type CreateClaimRequest = z.infer<typeof createClaimRequestSchema>
 
