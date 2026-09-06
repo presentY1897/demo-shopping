@@ -16,6 +16,9 @@ import type {
   OrderActor,
   ReturnReason,
   SellerStatus,
+  SettlementApprovalFailure,
+  SettlementItemType,
+  SettlementStatus,
 } from '@shopping/shared'
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
@@ -32,6 +35,10 @@ import type { ReturnPhotoRejection } from '@/lib/claims/return-photos'
 import type { CommissionFieldErrorMessages } from '@/lib/commissions/form-schema'
 import type { BulkIssueOutcome, CouponCostGap } from '@/lib/coupons/platform-coupons'
 import type { SellerDecision } from '@/lib/sellers/decisions'
+import type { SettlementExportColumns } from '@/lib/settlements/csv'
+import type { HoldFieldErrorMessages } from '@/lib/settlements/hold-form'
+import type { CalculationLineKey } from '@/lib/settlements/settlement-console'
+import type { SettlementAction } from '@/lib/settlements/transitions'
 
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'
@@ -99,6 +106,8 @@ export interface Messages {
   readonly coupons: PlatformCouponMessages
   /** 수수료율 설정 (TASK-0079). */
   readonly commissions: CommissionMessages
+  /** 정산 승인·지급 (TASK-0081). */
+  readonly settlements: SettlementMessages
   /**
    * One sentence per error code the API can answer with (TASK-0117).
    *
@@ -1738,5 +1747,299 @@ export interface CommissionToastMessages {
   readonly closeLabel: string
   /** `{scope}` 를 `{rate}` 로. */
   readonly saved: string
+  readonly failedTitle: string
+}
+
+/**
+ * `/settlements` 와 `/settlements/[id]` 가 말하는 것 전부 (TASK-0081).
+ *
+ * 화면이 둘인데 조각이 하나다 — 목록과 상세는 운영자의 머릿속에서 한 가지 일이고,
+ * 상태 이름·항목 유형·실패 사유처럼 **양쪽이 함께 쓰는 어휘**가 두 벌이 되면 목록의
+ * 「보류」와 상세의 「보류」가 언젠가 다른 말이 된다 ({@link AdminClaimMessages} 가
+ * 같은 이유로 같은 모양이다).
+ *
+ * `errors` 는 **여기 없다.** API 가 답하는 것은 전부 위쪽 `errors` 조각에 코드로
+ * 키가 잡혀 있고(`SETTLEMENT_WRONG_STATUS` 도 거기 있다), 기능마다 사본을 두면 그
+ * 사본이 언젠가 다른 말을 한다 (TASK-0117 4.2).
+ */
+export interface SettlementMessages {
+  readonly title: string
+  readonly description: string
+  /**
+   * 이 화면을 아예 볼 수 없는 계정에게. **목록의 오류 제목과 다른 문장이다** —
+   * 「불러오지 못했어요」는 다시 시도하면 될 것처럼 읽히는데, 이것은 아무리 눌러도
+   * 되지 않는다.
+   */
+  readonly forbiddenTitle: string
+  /**
+   * 네 상태의 이름. `Record` 라 계약에 상태가 하나 늘면 여기가 typecheck 에서
+   * 걸린다 — 그리고 그 상태는 이름 없이 화면에 나타날 수 없다.
+   */
+  readonly statusLabels: Readonly<Record<SettlementStatus, string>>
+  /**
+   * 정산서 줄의 두 유형.
+   *
+   * 차감 줄이 판매 줄과 **눈에 띄게 달라 보여야** 한다 — 금액이 음수이고, 이번
+   * 회차의 판매가 아니라 지난 회차의 되돌림이기 때문이다.
+   */
+  readonly itemTypeLabels: Readonly<Record<SettlementItemType, string>>
+  readonly list: SettlementListMessages
+  readonly detail: SettlementDetailMessages
+  readonly actions: SettlementActionMessages
+  readonly bulk: SettlementBulkMessages
+  readonly export: SettlementExportMessages
+  /** 처리 뒤에 뜨는 짧은 알림. */
+  readonly toast: SettlementToastMessages
+  /** 한 줄씩, API 가 답하기 **전에** 실패한 경우에 대해. */
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+/** 정산서 목록 — 회차·판매자·상태로 좁히고, 필터의 총액을 본다. */
+export interface SettlementListMessages {
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  /** 좁혀 놓고 아무것도 안 나왔을 때. 「없다」와 뜻이 다르다. */
+  readonly filteredEmptyTitle: string
+  readonly filteredEmptyDescription: string
+  readonly listLabel: string
+  readonly columns: {
+    readonly select: string
+    readonly period: string
+    readonly brandName: string
+    readonly status: string
+    readonly salesAmount: string
+    readonly payoutAmount: string
+    readonly holdReason: string
+    readonly open: string
+  }
+  /** `8월 24일 ~ 8월 30일`. 끝은 **포함하는 날**로 그린다 (`inclusiveEnd`). */
+  readonly period: string
+  /** 한 줄을 고르는 체크박스의 이름. `{brand}` 가 들어간다. */
+  readonly selectRow: string
+  /** 이 페이지에서 승인할 수 있는 줄을 전부 고르는 체크박스. */
+  readonly selectPage: string
+  /** 승인할 수 없는 상태라 고를 수 없는 줄. */
+  readonly notSelectable: string
+  readonly openLabel: string
+  readonly filters: {
+    readonly legend: string
+    readonly dayLabel: string
+    /** 아무 날이나 고르면 **그 날이 속한 회차**를 본다는 사실. */
+    readonly dayHint: string
+    /** 고른 날이 접힌 회차. `{period}` 하나를 품는다. */
+    readonly resolved: string
+    readonly statusLabel: string
+    readonly statusAll: string
+    readonly reset: string
+  }
+  /** 지금 판매자로 좁혀 두었다는 칩. */
+  readonly narrow: {
+    readonly activeSeller: string
+    readonly clear: string
+  }
+  /**
+   * 필터가 고른 것 전체의 합계 (F: 정산 총액 요약).
+   *
+   * **`scopeNotice` 를 빼면 이 숫자가 거짓말이 된다.** 20건짜리 표 위에 200건의
+   * 합이 서 있는데 그 사실을 적지 않으면, 읽는 사람은 화면의 스무 줄을 더해 보고
+   * 숫자가 틀렸다고 판단한다.
+   */
+  readonly totals: {
+    readonly title: string
+    readonly payoutLabel: string
+    readonly countLabel: string
+    readonly countValue: string
+    readonly scopeNotice: string
+  }
+  readonly pagination: {
+    readonly label: string
+    readonly next: string
+    readonly previous: string
+    readonly pageUnit: string
+    readonly countUnit: string
+  }
+}
+
+/** 정산서 한 장 — 계산 근거와 항목 (F1 · F2). */
+export interface SettlementDetailMessages {
+  readonly backLabel: string
+  readonly title: string
+  /** `{brand}` 의 `{period}` 회차. */
+  readonly subtitle: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly notFoundTitle: string
+  readonly notFoundDescription: string
+  readonly sections: {
+    readonly actions: string
+    readonly summary: string
+    readonly calculation: string
+    readonly items: string
+  }
+  readonly summary: {
+    readonly brandName: string
+    readonly period: string
+    readonly status: string
+    readonly createdAt: string
+    readonly heldAt: string
+    readonly approvedAt: string
+    readonly paidAt: string
+    readonly holdReason: string
+    /** 아직 일어나지 않은 일. 빈칸으로 두면 「못 읽었다」와 같아진다. */
+    readonly none: string
+  }
+  /**
+   * TASK-0081 4장이 그린 다섯 줄.
+   *
+   * `Record` 라 줄이 하나 늘면 문구가 없는 것을 typecheck 이 잡는다. 「− 수수료」의
+   * 빼기 기호까지 문구에 들어 있다 — 금액의 부호는 `Intl` 이 그리고, 줄 이름은
+   * **무엇을 빼는 중인지**를 말한다.
+   */
+  readonly calculation: {
+    readonly caption: string
+    readonly lines: Readonly<Record<CalculationLineKey, string>>
+    /** 이 표가 서버의 계산을 **되풀이해 그린 것**이라는 사실. */
+    readonly note: string
+  }
+  readonly items: {
+    readonly caption: string
+    readonly empty: string
+    readonly columns: {
+      readonly type: string
+      readonly orderNumber: string
+      readonly salesAmount: string
+      readonly commissionAmount: string
+      readonly sellerCouponAmount: string
+      readonly payoutAmount: string
+    }
+    /** 주문으로 내려가는 링크의 이름 (F2). `{orderNumber}` 가 들어간다. */
+    readonly openOrder: string
+    /** 관리자 주문 화면이 아직 오지 않았다는 사실 (TASK-0095). */
+    readonly openOrderHint: string
+    /** 차감 줄이 왜 음수인지. 표 위의 한 줄이다. */
+    readonly adjustmentNotice: string
+  }
+}
+
+/** 승인 · 보류 · 지급 (F3 · F4 · F5 · F7). */
+export interface SettlementActionMessages {
+  /** 버튼의 이름. `Record` 라 판단이 하나 늘면 여기가 걸린다. */
+  readonly labels: Readonly<Record<SettlementAction, string>>
+  /**
+   * 더 옮길 곳이 없는 정산서 (F5).
+   *
+   * 비활성 버튼이 아니라 **문장**이다. 지급완료에서 나가는 화살표는 없고, 그것은
+   * 권한 문제가 아니라 이 정산서의 성질이라 「권한이 없어요」로 말할 수 없다.
+   */
+  readonly locked: {
+    readonly title: string
+    readonly description: string
+  }
+  /** 처리가 거절됐을 때 버튼 위에 서는 배너. */
+  readonly failedTitle: string
+  /**
+   * 누르기 전에 한 번 더 묻는 자리 (R1).
+   *
+   * 지급 확정에는 **금액이 다시 적힌다.** 잘못 지급하면 되돌리는 화살표가 없고
+   * (`settlementTransitions`), 오류는 다음 회차에서 조정할 수밖에 없다.
+   */
+  readonly confirm: {
+    readonly approve: SettlementConfirmMessages
+    readonly pay: SettlementConfirmMessages
+  }
+  /** 보류 대화상자 — 사유 없이는 나갈 수 없다 (F4). */
+  readonly hold: {
+    readonly title: string
+    readonly description: string
+    readonly reasonLabel: string
+    readonly reasonHint: string
+    readonly reasonPlaceholder: string
+    readonly submit: string
+    readonly submitting: string
+    readonly cancel: string
+    readonly closeLabel: string
+    /** 서버가 이 폼의 어느 칸도 가리키지 않고 거절했을 때. */
+    readonly submitError: string
+    readonly errors: HoldFieldErrorMessages
+  }
+}
+
+export interface SettlementConfirmMessages {
+  readonly title: string
+  /** `{brand}` · `{period}` · `{amount}` 를 품는다. */
+  readonly description: string
+  readonly confirm: string
+  readonly cancel: string
+  readonly closeLabel: string
+}
+
+/** 일괄 승인 (F6). */
+export interface SettlementBulkMessages {
+  /** `{count}` 건을 골랐다. */
+  readonly selected: string
+  readonly approve: string
+  readonly approving: string
+  readonly clear: string
+  /** 한 번에 보낼 수 있는 상한을 넘겼다. `{max}` 가 들어간다. */
+  readonly tooMany: string
+  readonly confirm: SettlementConfirmMessages
+  /**
+   * 결과 — **실패한 것을 조용히 빼지 않는다.**
+   *
+   * 「10건 골랐는데 8건이 승인됐다」를 화면이 말하지 못하면 남은 2건은 아무도 다시
+   * 보지 않고, 그 2건이야말로 사람이 봐야 하는 것들이다.
+   */
+  readonly result: {
+    readonly title: string
+    readonly approved: string
+    readonly failedTitle: string
+    readonly failedDescription: string
+    readonly reasons: Readonly<Record<SettlementApprovalFailure, string>>
+    readonly listLabel: string
+    readonly columns: {
+      readonly settlement: string
+      readonly reason: string
+    }
+    readonly open: string
+    readonly dismiss: string
+  }
+}
+
+/** CSV 내보내기 (F8). */
+export interface SettlementExportMessages {
+  readonly label: string
+  readonly exporting: string
+  /** 내보낼 것이 없다. 필터가 아무것도 고르지 못한 자리다. */
+  readonly empty: string
+  /** `{count}` 건을 받았다. */
+  readonly done: string
+  /** 파일 이름의 앞부분. 날짜가 뒤에 붙는다. */
+  readonly filePrefix: string
+  /** 이 파일이 **지금 필터가 고른 전부**라는 사실 — 화면의 한 페이지가 아니라. */
+  readonly note: string
+  readonly columns: SettlementExportColumns
+  /**
+   * 보류된 적이 없는 줄의 사유 칸 — **빈 문자열이다.**
+   *
+   * 화면의 표는 그 자리에 `—` 를 그리지만(빈칸은 「없다」와 「못 읽었다」를 섞는다),
+   * 스프레드시트에서 대시는 정렬과 필터에 걸리는 값이 된다. 사유가 적힌 줄만 골라
+   * 보려는 사람이 거르는 것이 정확히 그 빈칸이다.
+   */
+  readonly emptyHoldReason: string
+}
+
+export interface SettlementToastMessages {
+  readonly regionLabel: string
+  readonly closeLabel: string
+  readonly approved: string
+  readonly held: string
+  readonly paid: string
+  /** `{count}` 건을 승인했다. 실패가 있으면 그것은 토스트가 아니라 표로 남는다. */
+  readonly bulkApproved: string
+  readonly exported: string
   readonly failedTitle: string
 }
