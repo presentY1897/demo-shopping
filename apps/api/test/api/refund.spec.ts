@@ -1068,8 +1068,68 @@ describe('반품', () => {
 
     expect(balance.balance).toBe(0)
     expect(rows[0]?.amount).toBe(-1)
-    // 못 가져온 몫이 이유에 남는다 — 그것이 지금 유일하게 사람이 볼 수 있는 자리다.
     expect(rows[0]?.reason).toContain('잔액 부족')
+
+    // **그리고 숫자로도 선다.** 이유는 문장이라 「회수 실패 목록」을 만들 수 없다.
+    const record = await db.one<{ pointClawbackShortfall: number }>(
+      `SELECT r."pointClawbackShortfall"
+         FROM "ClaimRefund" r
+         JOIN "ClaimRequest" c ON c."id" = r."claimId"
+        WHERE c."sellerOrderId" = $1`,
+      [placed.sellerOrderId],
+    )
+
+    expect(record.pointClawbackShortfall).toBe(given - 1)
+  })
+
+  /**
+   * **하나도 못 가져간 경우가 원장에 남지 않는 자리다.** 움직인 돈이 0원이라 쓸 수
+   * 있는 행이 없고(0원짜리 사건은 사건이 아니다), 그래서 이 칸이 있다.
+   */
+  it('하나도 회수하지 못해도 그 사실이 숫자로 남는다 (F6)', async () => {
+    const placed = await place({ lines: [{ price: 100_000, quantity: 1 }], shippingFee: 0 })
+    const only = placed.items[0]
+
+    if (only === undefined) throw new Error('항목이 없습니다.')
+
+    await pay(placed)
+    await deliver(placed)
+
+    const points = api.resolve<PointsService>(PointsService)
+    const earned = await points.earn({
+      userId: buyer.userId,
+      paidAmount: 100_000,
+      refType: 'SELLER_ORDER',
+      refId: placed.sellerOrderId,
+    })
+    const given = earned?.amount ?? 0
+
+    await points.use({
+      userId: buyer.userId,
+      amount: given,
+      refType: 'ORDER',
+      refId: placed.orderId,
+    })
+
+    await returned(placed, only, 'DEFECTIVE')
+
+    const adjustments = await db.query(
+      `SELECT t."id" FROM "PointTransaction" t
+         JOIN "PointAccount" a ON a."id" = t."accountId"
+        WHERE a."userId" = $1 AND t."type" = 'ADJUST'`,
+      [buyer.userId],
+    )
+    const record = await db.one<{ pointClawbackShortfall: number }>(
+      `SELECT r."pointClawbackShortfall"
+         FROM "ClaimRefund" r
+         JOIN "ClaimRequest" c ON c."id" = r."claimId"
+        WHERE c."sellerOrderId" = $1`,
+      [placed.sellerOrderId],
+    )
+
+    // 원장에는 한 줄도 없다 — 움직인 돈이 없기 때문이다.
+    expect(adjustments).toEqual([])
+    expect(record.pointClawbackShortfall).toBe(given)
   })
 })
 

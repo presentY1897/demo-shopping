@@ -209,10 +209,10 @@ export class ClaimRefundService {
       )
     }
 
-    await this.writeRecord(tx, claimId, context.paymentId, breakdown)
+    await this.writeRecord(tx, claimId, context.paymentId, breakdown, restored.clawbackShortfall)
 
-    // 회수하지 못한 몫은 **아무 원장에도 남지 않는다** — 움직임이 없기 때문이다.
-    // 그것을 볼 자리가 아직 없어 로그 한 줄로 남긴다 (HANDOFF 의 이월 항목).
+    // 원장에는 남지 못한 사실이라 로그로도 한 번 말한다 — 위 칸이 조회할 수 있는
+    // 기록이고, 이 줄은 그 일이 **언제** 일어났는지를 남긴다.
     if (restored.clawbackShortfall > 0) {
       this.log.warn(
         `적립금 회수가 잔액에 막혔습니다 — 클레임 ${claimId}, 못 가져온 ${String(restored.clawbackShortfall)}원`,
@@ -456,6 +456,14 @@ export class ClaimRefundService {
     claimId: string,
     paymentId: string,
     breakdown: RefundBreakdown,
+    /**
+     * 되가져오지 못한 적립금 (TASK-0078 F6).
+     *
+     * **원장에 남을 수 없는 사실이라 여기 온다.** 하나도 못 가져간 경우에는 움직인
+     * 돈이 0원이고, 0원짜리 행은 `PointTransaction_amount_check` 가 막는다 — 그
+     * 규칙이 옳으므로 사실이 갈 다른 곳이 필요했다.
+     */
+    pointClawbackShortfall: number,
   ): Promise<void> {
     const now = this.clock.now()
     const amounts = {
@@ -463,6 +471,7 @@ export class ClaimRefundService {
       itemsAmount: breakdown.itemsAmount,
       shippingAmount: breakdown.shippingAmount,
       amount: breakdown.total,
+      pointClawbackShortfall,
       refundedAt: now,
       lastAttemptAt: now,
       updatedAt: now,

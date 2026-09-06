@@ -33,8 +33,8 @@ export function MyPageShell({
   readonly title: string
   readonly description: string
   readonly nav: MyPageNavMessages
-  /** Which of the four routes is being shown, so it is not a link to itself. */
-  readonly current: 'orders' | 'settings' | 'addresses' | 'cards'
+  /** Which of the six routes is being shown, so it is not a link to itself. */
+  readonly current: 'orders' | 'coupons' | 'points' | 'settings' | 'addresses' | 'cards'
   readonly children: ReactNode
 }) {
   return (
@@ -51,6 +51,17 @@ export function MyPageShell({
             앞이다 — 마이페이지에 오는 이유의 대부분이 「내 주문 어디까지 왔나」다.
           */}
           <MyPageNavItem current={current === 'orders'} href="/mypage/orders" label={nav.orders} />
+          {/*
+            쿠폰함과 적립금 (TASK-0077). 주문 바로 뒤인 것은 이 둘이 **주문할 때 쓰는
+            것**이기 때문이다 — 사람이 여기 오는 이유는 「무엇을 갖고 있나」를 확인해
+            다음 주문에 쓰려는 것이고, 그 동선이 배송지·카드보다 주문에 가깝다.
+          */}
+          <MyPageNavItem
+            current={current === 'coupons'}
+            href="/mypage/coupons"
+            label={nav.coupons}
+          />
+          <MyPageNavItem current={current === 'points'} href="/mypage/points" label={nav.points} />
           <MyPageNavItem
             current={current === 'settings'}
             href="/mypage/settings"
