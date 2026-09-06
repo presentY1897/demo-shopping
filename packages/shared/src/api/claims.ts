@@ -61,7 +61,7 @@ export type ClaimStatus = (typeof claimStatuses)[number]
 export const claimStatusSchema = z.enum(claimStatuses)
 
 /**
- * 누구 탓인가 (`pricing.md` 3장).
+ * 누구 탓인가 (`pricing.md` 4장).
  *
  * 값이 아니라 **돈**이다 — 판매자 귀책이면 배송비·반품비를 판매자가 물고 구매자는
  * 전액을 돌려받으며, 단순 변심이면 반품 배송비가 환불액에서 빠진다. 「모름」이 없는
@@ -77,7 +77,7 @@ export const claimFaultSchema = z.enum(claimFaults)
  * 왜 돌려보내는가 (TASK-0067 2장 · 4장의 표).
  *
  * **`ClaimFault` 바로 옆에 있는 것이 이 값의 설명이다.** 귀책은 **둘**이다 — 그것이
- * 돈을 가르는 축이고, `pricing.md` 3장의 표도 두 줄이다. 그런데 사람이 고르는 사유는
+ * 돈을 가르는 축이고, `pricing.md` 4장의 표도 두 줄이다. 그런데 사람이 고르는 사유는
  * **셋**이다. 셋을 둘로 접지 않는 이유는 **하자와 오배송이 돈에서만 같기 때문**이다:
  * 둘 다 판매자가 반품비를 물지만 하자는 물건의 문제이고 오배송은 이행의 실수다.
  * 분쟁·판매자 평가·나중의 통계가 다투는 것이 바로 그 차이이고, `SELLER` 한 값으로

@@ -52,7 +52,7 @@
 
 **역할을 다대다로 두는 이유**: 판매자도 물건을 산다. 단일 컬럼이면 판매자가 구매자 앱을 쓸 수 없거나 계정을 두 개 만들어야 한다.
 
-**수수료율의 표현**: **basis point 정수**(1bp = 0.01%, `350` = 3.50%). 금액이 정수(원)인데 비율만 부동소수면 정산에서 오차가 다시 들어온다. NULL 은 "개별율 없음"이며 카테고리 기본율이 적용된다(`docs/design/pricing.md` 5장).
+**수수료율의 표현**: **basis point 정수**(1bp = 0.01%, `350` = 3.50%). 금액이 정수(원)인데 비율만 부동소수면 정산에서 오차가 다시 들어온다. NULL 은 "개별율 없음"이며 카테고리 기본율이 적용된다(`docs/design/pricing.md` 6장).
 
 **PSL 로 표현할 수 없는 제약**은 마이그레이션에 직접 SQL 로 적었다. Prisma 7 의 드리프트 검사는 부분 인덱스와 CHECK 제약을 무시하므로(`prisma migrate diff --from-config-datasource --to-schema` 결과가 빈 마이그레이션), 이후 `migrate dev` 가 이것들을 지우려 들지 않는다. 확인은 `apps/api/src/prisma/schema-guards.spec.ts` 가 자동화한다.
 

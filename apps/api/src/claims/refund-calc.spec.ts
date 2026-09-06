@@ -27,7 +27,7 @@ import {
  *
  * 재는 것이 다섯이다. **어떤 분할 순서에서도 합계가 보존되는가**(1절), **경계에서
  * 방어가 어떻게 도는가**(2절), **배송비 네 줄**(3절), **총액이 음수로 뒤집히지
- * 않는가**(4절), **이 전부가 `pricing.md` 3장과 같은 말인가**(5절).
+ * 않는가**(4절), **이 전부가 `pricing.md` 4장과 같은 말인가**(5절).
  *
  * 1절이 이 스펙의 이유이고, 5절이 없으면 나머지는 코드를 코드와 비교하는 셈이 된다.
  */
@@ -133,7 +133,7 @@ function sum(amounts: readonly number[]): number {
  *
  * **`remainingEligibleAmount` 에 무엇을 넣는지는 이 함수가 정하지 못한다.**
  * `pricing.md` 1장은 무료배송 판정을 「상품금액 **− 쿠폰 할인**」으로 재라고 못
- * 박고 「3장의 부분 취소도 같은 기준으로 다시 잰다」고 이어 적는데, 이 인자의
+ * 박고 「4장의 부분 취소도 같은 기준으로 다시 잰다」고 이어 적는데, 이 인자의
  * 이름과 주석은 「남는 항목의 상품금액 합」이다. 두 값이 갈리는 주문에서는
  * 부르는 쪽이 어느 쪽을 넣느냐로 배송비 3,000원이 붙거나 안 붙는다 — 순수 계산인
  * 이 파일에서는 잴 수 없어 **보고만 한다.**
@@ -359,7 +359,7 @@ describe('2. 경계', () => {
   it('판매자 귀책이면 무료배송을 잃지 않는다', () => {
     // **잘못은 판매자가 했는데 구매자가 무료배송을 잃는 모양**을 막는 값이다.
     // 하자로 일부를 반품해 남은 금액이 문턱에 미달해도 재부과가 없다
-    // (`pricing.md` 3장 — 판매자 귀책 반품은 배송비·반품비 판매자 부담).
+    // (`pricing.md` 4장 — 판매자 귀책 반품은 배송비·반품비 판매자 부담).
     const facts = { remainingEligibleAmount: 10_000, freeShippingThreshold: 50_000 }
 
     expect(adjustment(shipping({ ...facts, sellerAtFault: true }))).toBe(0)
@@ -559,30 +559,30 @@ describe('4. 총액은 음수가 되지 않는다', () => {
 // ---------------------------------------------------------------------------
 
 /**
- * `pricing.md` 3장만. 문서에는 1·2·4·5장이 이어지고, 이 파일이 책임지는 것은 3장이다.
+ * `pricing.md` 4장만. 문서에는 1·2·3·5·6·7장이 이어지고, 이 파일이 책임지는 것은 4장이다.
  *
  * 장을 못 찾았는데 조용히 빈 문자열을 돌려주면 이 절 전체가 「빈 것끼리 같다」로
  * 통과한다. 문서를 못 읽은 것과 문서가 비어 있는 것은 다른 사건이므로 던진다
  * (`seller-order-transitions.spec.ts` 1절이 같은 장치를 쓴다).
  */
-function chapterThree(): string {
+function refundChapter(): string {
   const root = findRepoRoot()
 
   if (root === null) throw new Error('워크스페이스 루트를 찾지 못했습니다.')
 
   const document = readFileSync(join(root, 'docs', 'design', 'pricing.md'), 'utf8')
-  const chapter = /^## 3\. 환불 금액 계산[\s\S]*?(?=^## )/mu.exec(document)
+  const chapter = /^## 4\. 환불 금액 계산[\s\S]*?(?=^## )/mu.exec(document)
 
-  if (chapter === null) throw new Error('pricing.md 의 3장을 찾지 못했습니다.')
+  if (chapter === null) throw new Error('pricing.md 의 4장을 찾지 못했습니다.')
 
   return chapter[0]
 }
 
-/** 3장 첫 코드블록 — 환불액 공식. 뒤의 블록은 되돌리는 순서(①②③)라 여기가 아니다. */
+/** 4장 첫 코드블록 — 환불액 공식. 뒤의 블록은 되돌리는 순서(①②③)라 여기가 아니다. */
 function refundFormula(): string {
-  const fence = /^```$([\s\S]*?)^```$/mu.exec(chapterThree())
+  const fence = /^```$([\s\S]*?)^```$/mu.exec(refundChapter())
 
-  if (fence?.[1] === undefined) throw new Error('3장에서 환불액 공식을 찾지 못했습니다.')
+  if (fence?.[1] === undefined) throw new Error('4장에서 환불액 공식을 찾지 못했습니다.')
 
   return fence[1]
 }
@@ -628,11 +628,11 @@ function netFromDocument(line: RefundableLine): number {
   return rest.reduce((total, term) => total - read(term), read(first))
 }
 
-/** 3장 「배송비 환불」 표의 **상황** 열. 강조 표시(`**`)는 지운다. */
+/** 4장 「배송비 환불」 표의 **상황** 열. 강조 표시(`**`)는 지운다. */
 function shippingSituations(): readonly string[] {
-  const table = /\*\*배송비 환불\*\*\n\n((?:\|.*\n)+)/u.exec(chapterThree())
+  const table = /\*\*배송비 환불\*\*\n\n((?:\|.*\n)+)/u.exec(refundChapter())
 
-  if (table?.[1] === undefined) throw new Error('3장에서 배송비 환불 표를 찾지 못했습니다.')
+  if (table?.[1] === undefined) throw new Error('4장에서 배송비 환불 표를 찾지 못했습니다.')
 
   return table[1]
     .trimEnd()
@@ -710,7 +710,7 @@ describe('5. 문서와 같은 말인가', () => {
     // 배송비가 재부과된다. `return-rules.ts` 의 `returnCostShare` 가 계산해 둔
     // `originalShippingRefund` 를 이 함수가 받지 못하는 것이 원인이다. 구현을 고치지
     // 않고 **지금의 답을 못 박아 보고한다** — 어느 쪽이 맞는지는 문서(`pricing.md`
-    // 3장)를 먼저 고칠지 말지의 문제이고, TASK-0068 6.3 D2 가 그 순서를 정한다.
+    // 4장)를 먼저 고칠지 말지의 문제이고, TASK-0068 6.3 D2 가 그 순서를 정한다.
     expect(adjustment(shipping({ remainingEligibleAmount: 49_999, returnFee: 0 }))).toBe(-3_000)
   })
 })

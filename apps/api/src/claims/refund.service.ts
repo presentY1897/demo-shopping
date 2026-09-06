@@ -23,7 +23,7 @@ interface LockedClaim {
   readonly id: string
   readonly status: ClaimStatus
   readonly type: ClaimType
-  /** 누구 탓인가. 반품에서 배송비를 가르는 축이다 (`pricing.md` 3장). */
+  /** 누구 탓인가. 반품에서 배송비를 가르는 축이다 (`pricing.md` 4장). */
   readonly fault: ClaimFault
   readonly sellerOrderId: string
 }
@@ -32,7 +32,7 @@ interface LockedClaim {
 const ERROR_MAX_LENGTH = 500
 
 /**
- * 클레임 하나의 환불을 **실제로 실행한다** (TASK-0068 · `docs/design/pricing.md` 3장).
+ * 클레임 하나의 환불을 **실제로 실행한다** (TASK-0068 · `docs/design/pricing.md` 4장).
  *
  * 계산은 `refund-calc.ts` 가, 그 입력을 저장된 사실에서 만드는 일은 `refund-plan.ts`
  * 가 한다. 여기 있는 것은 **순서와 잠금**뿐이다.

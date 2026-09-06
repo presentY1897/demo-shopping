@@ -1,7 +1,7 @@
 import type { PricedOrder, ShippingPolicy } from './types.js'
 
 /**
- * 환불액 역산 (TASK-0047 F7). `docs/design/pricing.md` 3장이 규칙이다.
+ * 환불액 역산 (TASK-0047 F7). `docs/design/pricing.md` 4장이 규칙이다.
  *
  * ```
  * 환불액 = Σ (항목 상품금액 − 항목 쿠폰안분액 − 항목 적립금안분액) + 배송비 환불
