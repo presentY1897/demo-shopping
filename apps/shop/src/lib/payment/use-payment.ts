@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { placeOrder } from '@/lib/checkout/checkout-api'
+import { refusedAsUsedCoupon } from '@/lib/checkout/coupon-failure'
 
 import { awaitsResult, refusedWhileAwaiting } from './awaiting-result'
 import { availableCredit } from './cards'
@@ -172,14 +173,39 @@ export interface PaymentInput {
    * 문구를 아는 곳(화면)과 결제하는 곳(이 훅)이 뒤섞인다.
    */
   readonly orderName: string
+  /**
+   * 적용할 쿠폰 (TASK-0075).
+   *
+   * **주문서를 읽을 때 넘긴 것과 같아야 한다** (계약). 그래야 화면이 보여 준
+   * 금액과 저장되는 금액이 같은 입력에서 나온다 — 그래서 화면은 다시 읽는
+   * 중(`repricing`)에는 「주문하기」를 잠근다. 그 잠금이 없으면 앞의 선택으로
+   * 매겨진 금액을 보면서 뒤의 선택으로 주문하는 순간이 생긴다.
+   */
+  readonly userCouponIds: readonly string[]
 }
+
+/**
+ * 주문을 **만들지 못한** 이유 (TASK-0054 · TASK-0075).
+ *
+ * 나누는 이유는 늘 같다 — 다음에 할 일이 다르기 때문이다. 대부분은 그 사이에
+ * 주문서가 만료된 것이라 장바구니에서 다시 시작해야 하지만, 쿠폰이 태워진 사람은
+ * **그 한 장만 빼면** 지금 화면에서 그대로 주문할 수 있다.
+ */
+export const orderRefusals = [
+  /** 그 사이에 다른 주문이 고른 쿠폰을 썼다 (409 `COUPON_ALREADY_USED`). */
+  'coupon_already_used',
+  /** 그 밖의 실패. 대부분 만료된 주문서다. */
+  'unknown',
+] as const
+
+export type OrderRefusal = (typeof orderRefusals)[number]
 
 export interface PaymentStore {
   readonly cards: readonly IssuedCard[]
   readonly loadingCards: boolean
   readonly state: PaymentState
-  /** 주문을 만들지 못했다 — 대부분 그 사이에 주문서가 만료된 것이다. */
-  readonly orderFailed: boolean
+  /** 주문을 만들지 못했다. `null` 이면 아직 실패한 적이 없다. */
+  readonly orderRefusal: OrderRefusal | null
   readonly pay: (input: PaymentInput) => void
 }
 
@@ -196,7 +222,7 @@ export function usePayment(
   const [cards, setCards] = useState<readonly IssuedCard[]>([])
   const [loadingCards, setLoadingCards] = useState(true)
   const [state, setState] = useState<PaymentState>({ status: 'idle' })
-  const [orderFailed, setOrderFailed] = useState(false)
+  const [orderRefusal, setOrderRefusal] = useState<OrderRefusal | null>(null)
   /**
    * 이미 만든 주문.
    *
@@ -232,13 +258,12 @@ export function usePayment(
 
   const pay = useCallback(
     (input: PaymentInput) => {
-      setOrderFailed(false)
+      setOrderRefusal(null)
 
       async function run(): Promise<void> {
         const placed = order.current ?? (await place(input))
 
         if (placed === null) {
-          setOrderFailed(true)
           setState({ status: 'idle' })
 
           return
@@ -351,18 +376,31 @@ export function usePayment(
         setState({ status: 'leaving' })
       }
 
+      /**
+       * 주문 하나. 실패하면 **왜 실패했는지를 남기고** `null` 을 돌려준다.
+       *
+       * 이유를 여기서 정하는 이유는 던져진 것을 보는 자리가 여기뿐이기 때문이다.
+       * 부르는 쪽으로 예외를 흘리면 「주문을 못 만들었다」와 「결제가 거절됐다」가
+       * 한 `catch` 에서 만나고, 그 둘은 사람에게 할 말이 정반대다.
+       */
       async function place(
         next: PaymentInput,
       ): Promise<{ readonly id: string; readonly orderNumber: string } | null> {
         setState({ status: 'running', step: 'ordering' })
 
         try {
-          const { order: made } = await placeOrder(next.checkoutId, next.addressId)
+          const { order: made } = await placeOrder(
+            next.checkoutId,
+            next.addressId,
+            next.userCouponIds,
+          )
 
           onOrdered()
 
           return { id: made.id, orderNumber: made.orderNumber }
-        } catch {
+        } catch (error: unknown) {
+          setOrderRefusal(refusedAsUsedCoupon(error) ? 'coupon_already_used' : 'unknown')
+
           return null
         }
       }
@@ -372,7 +410,7 @@ export function usePayment(
     [onOrdered],
   )
 
-  return { cards, loadingCards, orderFailed, pay, state }
+  return { cards, loadingCards, orderRefusal, pay, state }
 }
 
 /**

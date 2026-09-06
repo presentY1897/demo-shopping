@@ -82,6 +82,14 @@ export const mockPaths = {
    */
   checkout: `*${API_PATH_PREFIX}/checkouts/:id`,
   /**
+   * `GET` 이 주문서에 쓸 수 있는 쿠폰과 추천 조합 (TASK-0075).
+   *
+   * `:id` 는 `/` 를 넘지 못하므로 위의 `checkout` 이 이것을 먹지 않는다. 그래도
+   * 핸들러 목록에서는 이쪽을 먼저 등록한다 — msw 는 **먼저 맞는 것**을 쓰고, 그
+   * 규칙에 기대지 않는 순서가 옆의 `cartItemsRemove`·`cartItems` 에도 서 있다.
+   */
+  checkoutCoupons: `*${API_PATH_PREFIX}/checkouts/:id/coupons`,
+  /**
    * `POST` 주문 생성 (TASK-0049).
    *
    * 열린 주문서를 가리키거나(`checkoutId`) 장바구니 줄을 가리킨다(`itemIds`) — 둘 중

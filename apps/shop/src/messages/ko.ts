@@ -354,8 +354,36 @@ export const ko: Messages = {
     discountLabel: '할인',
     shippingLabel: '배송비',
     totalLabel: '결제예정금액',
-    couponTitle: '쿠폰 · 적립금',
-    couponBody: '보유한 쿠폰과 적립금을 여기서 적용하게 됩니다.',
+    appliedCouponAmount: '-{amount}',
+    // 쿠폰 (TASK-0075). 못 쓰는 쿠폰의 문장 여섯은 **사람이 다음에 할 일**로
+    // 갈린다 — 더 담으면 되는 사람과 기다리면 되는 사람과 아무것도 할 수 없는
+    // 사람에게 같은 말을 하지 않는다.
+    coupon: {
+      title: '쿠폰',
+      loading: '쿠폰을 불러오는 중',
+      failed: '쿠폰을 불러오지 못했어요. 쿠폰 없이 주문할 수 있어요.',
+      none: '이 주문서에 쓸 수 있는 쿠폰이 없어요.',
+      choose: '적용할 쿠폰 선택',
+      discount: '{amount} 할인',
+      expiresAt: '{date}까지',
+      unusableTitle: '지금 쓸 수 없는 쿠폰',
+      faults: {
+        already_used: '이미 다른 주문에 사용한 쿠폰이에요.',
+        expired: '사용 기간이 지났어요.',
+        not_started: '아직 사용 기간이 시작되지 않았어요.',
+        out_of_scope: '이 주문서의 상품에는 쓸 수 없는 쿠폰이에요.',
+        below_minimum: '최소 주문금액에 못 미쳐요. 조금 더 담으면 쓸 수 있어요.',
+        no_discount: '이 주문서에서는 할인되는 금액이 없어요.',
+      },
+      recommend: '최대 할인 적용',
+      recommendAmount: '{amount}까지 할인받을 수 있어요',
+      applied: '쿠폰 {count}장 적용 · {amount} 할인',
+      repricing: '쿠폰을 적용해 금액을 다시 계산하는 중이에요',
+      // 사람이 잘못 고른 것이 아니다 — 목록이 쓸 수 있다고 말한 장만 고를 수
+      // 있었다. 그래서 사과가 아니라 **무슨 일이 있었는지**를 말한다.
+      rejected:
+        '고른 쿠폰을 지금은 쓸 수 없어 선택을 되돌렸어요. 목록을 다시 불러왔으니 골라 주세요.',
+    },
     payment: {
       title: '결제수단',
       loading: '카드를 불러오는 중',
@@ -454,9 +482,14 @@ export const ko: Messages = {
     termsLabel: '주문 내용을 확인했고 결제에 동의합니다',
     placeOrder: '주문하기',
     placing: '주문하는 중',
-    placeFailed: '주문하지 못했어요. 잠시 후 다시 시도해 주세요.',
+    placeFailures: {
+      coupon_already_used:
+        '고른 쿠폰이 다른 주문에 먼저 사용됐어요. 그 쿠폰을 빼고 다시 주문해 주세요.',
+      unknown: '주문하지 못했어요. 잠시 후 다시 시도해 주세요.',
+    },
     recipientRequired: '배송지를 선택해 주세요.',
     termsRequired: '주문 내용에 동의해 주세요.',
+    couponRepricing: '쿠폰을 적용하는 중이에요. 금액이 나오면 주문할 수 있어요.',
     expiredTitle: '주문서가 만료됐어요',
     expiredBody: '잡아 둔 재고를 놓아 드렸어요. 장바구니에서 다시 주문해 주세요.',
     backToCart: '장바구니로 돌아가기',
@@ -1102,7 +1135,7 @@ export const ko: Messages = {
       faults: {
         CUSTOMER: {
           label: '단순 변심 · 주문 실수',
-          // 값이 아니라 돈이다 (`pricing.md` 3장). 무엇이 달라지는지를 고르는
+          // 값이 아니라 돈이다 (`pricing.md` 4장). 무엇이 달라지는지를 고르는
           // 자리에서 말해야 고른 뒤에 놀라지 않는다.
           description: '왕복 배송비가 환불액에서 빠질 수 있습니다.',
         },
@@ -1116,7 +1149,7 @@ export const ko: Messages = {
         CHANGE_OF_MIND: {
           label: '단순 변심 · 주문 실수',
           // 고른 뒤에 놀라지 않도록 **돈이 어떻게 달라지는지**를 고르는 자리에서
-          // 말한다 (`pricing.md` 3장).
+          // 말한다 (`pricing.md` 4장).
           description: '반품 배송비를 부담하시고, 받으실 때 낸 배송비는 환불되지 않습니다.',
         },
         DEFECTIVE: {

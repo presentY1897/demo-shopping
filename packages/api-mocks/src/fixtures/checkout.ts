@@ -154,6 +154,10 @@ export const shopperCheckout = defineFixture(checkoutResponseSchema, {
         paidAmount: NODESTEP_PRODUCT_AMOUNT + NODESTEP_SHIPPING_FEE,
       },
     ],
+    // 아무 쿠폰도 고르지 않은 주문서다 (TASK-0075). 빈 배열이지 없는 필드가 아니다 —
+    // 화면은 「적용된 쿠폰 없음」을 그릴 줄 알아야 하고, 고른 뒤의 모양은 목이
+    // 선택에 맞춰 만들어 낸다 (`handlers/checkout.ts` 의 `repriced`).
+    appliedCoupons: [],
     totalProductAmount: LUMIERE_PRODUCT_AMOUNT + NODESTEP_PRODUCT_AMOUNT,
     totalCouponDiscountAmount: 0,
     totalPointDiscountAmount: 0,

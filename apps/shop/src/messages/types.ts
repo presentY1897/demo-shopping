@@ -5,6 +5,7 @@ import type {
   ClaimFault,
   ClaimRefusal,
   ClaimType,
+  CouponApplicabilityFault,
   DenialReason,
   HealthStatus,
   OauthFailureReason,
@@ -29,7 +30,7 @@ import type { OrderStage, OrderStageState } from '@/lib/orders/order-stages'
 import type { CardBlock } from '@/lib/payment/cards'
 import type { CardStatus } from '@/lib/payment/payment-api'
 import type { TossConfirmFailure, TossFailureKind } from '@/lib/payment/toss-return'
-import type { PaymentRefusal, PaymentStep } from '@/lib/payment/use-payment'
+import type { OrderRefusal, PaymentRefusal, PaymentStep } from '@/lib/payment/use-payment'
 
 /**
  * Shape every locale catalog implements.
@@ -1446,9 +1447,16 @@ export interface CheckoutMessages {
   readonly discountLabel: string
   readonly shippingLabel: string
   readonly totalLabel: string
-  /** 아직 안 온 것의 자리 (4.5). 「준비 중」이 아니라 무엇이 올지를 적는다. */
-  readonly couponTitle: string
-  readonly couponBody: string
+  /**
+   * 적용된 쿠폰 한 줄 (TASK-0075). `{amount}` — 그 장이 **실제로** 깎은 금액.
+   *
+   * 합계의 「할인」과 따로 그리는 이유는 계약이 `appliedCoupons` 를 장별로 싣는
+   * 이유와 같다: 두 장이 같은 항목을 겹쳐 덮으면 뒤엣것은 남은 금액까지만 깎이고,
+   * 그 사정이 드러나는 자리가 여기뿐이다.
+   */
+  readonly appliedCouponAmount: string
+  /** 쿠폰 영역 (TASK-0075). 4.5 가 자리만 두라던 그 자리에 실제 쿠폰이 들어왔다. */
+  readonly coupon: CheckoutCouponMessages
   /**
    * 결제수단 (TASK-0054). 4.5 가 자리만 두라고 한 그 자리에 실제 결제가 들어왔다.
    *
@@ -1468,10 +1476,24 @@ export interface CheckoutMessages {
   readonly termsLabel: string
   readonly placeOrder: string
   readonly placing: string
-  readonly placeFailed: string
+  /**
+   * 주문을 만들지 못했다 — 이유마다 한 문장 (TASK-0075).
+   *
+   * `Record<OrderRefusal, …>` 이라 이유가 하나 늘면 **컴파일이 막는다.** 쿠폰이
+   * 태워진 사람과 주문서가 만료된 사람에게 같은 문장을 보이면, 앞의 사람은 한 장만
+   * 빼면 될 일을 장바구니부터 다시 한다.
+   */
+  readonly placeFailures: Readonly<Record<OrderRefusal, string>>
   /** 배송지를 안 골랐을 때 주문 버튼 아래에 나오는 이유. */
   readonly recipientRequired: string
   readonly termsRequired: string
+  /**
+   * 쿠폰을 반영한 금액을 기다리는 중이라 아직 주문할 수 없다 (TASK-0075).
+   *
+   * 이 잠금이 계약을 지킨다 — 주문에 실리는 선택은 **화면이 보여 준 금액을 만든
+   * 그 선택**이어야 하고, 다시 읽는 중에는 그 둘이 같다고 말할 수 없다.
+   */
+  readonly couponRepricing: string
   readonly expiredTitle: string
   readonly expiredBody: string
   readonly backToCart: string
@@ -1487,6 +1509,54 @@ export interface CheckoutMessages {
    */
   /** 주문번호. 결제가 끝난 화면도 이 문장을 쓴다. `{number}` */
   readonly placedOrderNumber: string
+}
+
+/**
+ * 쿠폰 적용 (TASK-0075).
+ *
+ * **`faults` 의 키가 계약의 유니온이다.** 거절 사유가 하나 늘면 여기가 비는 것이
+ * 아니라 `pnpm typecheck` 이 깨진다 — 계약이 여섯으로 나눈 이유가 사람이 할 일이
+ * 여섯 가지로 다르기 때문인데, 문장이 하나 빠지면 그중 한 사람은 자기 쿠폰이 왜
+ * 회색인지 듣지 못한 채 화면을 떠난다.
+ *
+ * **거절(`refusals`)은 그것과 다른 종류다.** 위의 것은 목록을 읽는 순간 이미
+ * 알려진 사실이고, 이것은 **고른 뒤에 서버가 알려 준 사실**이다 — 화면에서
+ * 나타나는 자리도 다르다.
+ */
+export interface CheckoutCouponMessages {
+  readonly title: string
+  readonly loading: string
+  /** 쿠폰함을 못 읽었다. 주문서는 그대로이므로 문장 하나로 끝난다. */
+  readonly failed: string
+  /** 한 장도 없는 사람. 「불러오지 못했다」와 다른 말이어야 한다. */
+  readonly none: string
+  /** 체크박스 묶음의 이름. 화면에는 없고 접근성 트리에만 있다. */
+  readonly choose: string
+  /** 이 장 하나만 썼을 때 깎이는 금액. `{amount}` */
+  readonly discount: string
+  /** 언제까지 쓸 수 있나. `{date}` */
+  readonly expiresAt: string
+  /** 못 쓰는 쿠폰들 앞에 붙는 줄. 숨기지 않는다는 것이 계약이다 (F2). */
+  readonly unusableTitle: string
+  /** 못 쓰는 이유, 여섯 가지 전부. 빠지면 타입 검사가 잡는다. */
+  readonly faults: Readonly<Record<CouponApplicabilityFault, string>>
+  /** 최대 할인 조합을 그대로 고르는 버튼 (F7). */
+  readonly recommend: string
+  /** 그 조합이 얼마를 깎는지. `{amount}` */
+  readonly recommendAmount: string
+  /** 지금 적용된 쿠폰의 수와 합계. `{count}` · `{amount}` */
+  readonly applied: string
+  /** 고른 것으로 금액을 다시 매기는 중. 화면은 그대로 있고 이 줄만 바뀐다. */
+  readonly repricing: string
+  /**
+   * 서버가 고른 조합을 받아 주지 않아 선택을 되돌렸을 때 (400).
+   *
+   * 같은 사건의 다른 쪽 끝 — 주문하는 순간의 409 — 은 주문 버튼 아래
+   * (`placeFailures.coupon_already_used`)에서 말한다. 문장을 두 곳에 두는 것은
+   * **읽는 사람이 보고 있는 것이 다르기** 때문이다: 여기서는 쿠폰 목록을 보고
+   * 있고, 저기서는 방금 누른 주문 버튼을 보고 있다.
+   */
+  readonly rejected: string
 }
 
 /**
