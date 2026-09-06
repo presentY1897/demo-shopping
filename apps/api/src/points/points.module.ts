@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common'
 
 import { PrismaModule } from '../prisma/prisma.module.js'
+import { PointController } from './point.controller.js'
 import { PointExpiryService } from './point-expiry.service.js'
+import { PointSummaryService } from './point-summary.service.js'
 import { PointsOnOrderConfirmed } from './points-order-confirmed.js'
 import { PointsService } from './points.service.js'
 
@@ -20,7 +22,15 @@ import { PointsService } from './points.service.js'
  */
 @Module({
   imports: [PrismaModule],
-  providers: [PointsService, PointExpiryService, PointsOnOrderConfirmed],
-  exports: [PointsService, PointExpiryService, PointsOnOrderConfirmed],
+  controllers: [PointController],
+  providers: [
+    PointsService,
+    // 화면이 묻는 둘 — 「곧 들어올 것」과 「곧 사라질 것」 (TASK-0077). 원장에 아직
+    // 행이 없는 값이라 원장을 쓰는 서비스와 나눠 두었다.
+    PointSummaryService,
+    PointExpiryService,
+    PointsOnOrderConfirmed,
+  ],
+  exports: [PointsService, PointSummaryService, PointExpiryService, PointsOnOrderConfirmed],
 })
 export class PointsModule {}

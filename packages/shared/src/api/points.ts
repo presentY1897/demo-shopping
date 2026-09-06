@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { wonSchema } from '../pricing/types.js'
+
 /**
  * 적립금 원장, 계약으로 (TASK-0076).
  *
@@ -205,3 +207,65 @@ export const pointReconciliationFaults = [
 ] as const
 
 export type PointReconciliationFault = (typeof pointReconciliationFaults)[number]
+
+// ---------------------------------------------------------------------------
+// 적립금 화면 (TASK-0077)
+//
+// 원장은 이미 위에 있다. 여기 더해지는 것은 **화면이 원장만으로는 답할 수 없는 둘**
+// 이다 — 「곧 들어올 것」과 「곧 사라질 것」. 둘 다 아직 일어나지 않은 일이라 원장에
+// 행이 없고, 그래서 사는 사람은 그것을 볼 방법이 없었다.
+// ---------------------------------------------------------------------------
+
+/**
+ * 「곧 사라진다」의 경계 — 30일.
+ *
+ * 잔액 화면이 경고를 그리는 기준이고, 만료 배치가 실제로 지우는 순간
+ * (`PointTransaction.expiresAt`)과는 무관하다. 30일인 것은 **사람이 그 사이에 쓸 수
+ * 있는 기간**이라서다: 일주일이면 알아차렸을 때 이미 늦은 사람이 생기고, 석 달이면
+ * 경고가 늘 켜져 있어 아무도 보지 않는다.
+ */
+export const POINT_EXPIRING_SOON_DAYS = 30
+
+/** 곧 사라질 적립금 한 덩이. */
+export const pointExpiringSoonSchema = z.object({
+  /** 그 기간 안에 사라질 통들의 합. */
+  amount: z.int().min(1),
+  /** 그중 **가장 이른** 시각. 화면이 「9월 30일까지」라고 적는 값이다. */
+  at: z.iso.datetime(),
+})
+
+export type PointExpiringSoon = z.infer<typeof pointExpiringSoonSchema>
+
+/**
+ * `GET /api/v1/me/points` — 잔액과 그 주변.
+ *
+ * 원장(`GET /me/points/transactions`)과 라우트를 나눈 이유는 **읽는 빈도가 다르기**
+ * 때문이다. 마이페이지 요약과 적립금 화면 머리는 이 하나만 필요하고, 원장은 그
+ * 화면에 들어간 사람만 넘긴다.
+ */
+export const pointSummaryResponseSchema = z.object({
+  account: pointBalanceSchema,
+  /**
+   * 구매확정을 기다리는 주문에서 **들어올** 적립금 (F6).
+   *
+   * 적립은 구매확정 시점에 일어나므로(`pricing.md` 5장) 배송완료된 주문은 아직
+   * 아무것도 적립하지 않았다. 그 사실을 말해 주지 않으면 사는 사람은 「샀는데 왜
+   * 적립이 안 됐지」로 읽는다 — 이 값의 존재 이유가 그 문장 하나다.
+   *
+   * **배송완료된 몫만 센다.** 준비중·배송중까지 세면 취소 한 번에 사라지는 수를
+   * 「들어올 것」이라고 적게 되고, 그때 그 화면은 없어진 돈을 설명해야 한다.
+   */
+  pendingEarn: wonSchema,
+  /** 곧 사라질 것. 없으면 `null` 이고, 그때 화면은 아무 경고도 그리지 않는다. */
+  expiringSoon: pointExpiringSoonSchema.nullable(),
+})
+
+export type PointSummaryResponse = z.infer<typeof pointSummaryResponseSchema>
+
+/** `GET /api/v1/me/points/transactions` 의 쿼리. 커서는 `seq` 다. */
+export const pointLedgerQueryParamsSchema = z.object({
+  cursor: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(POINT_LEDGER_MAX_LIMIT).optional(),
+})
+
+export type PointLedgerQueryParams = z.infer<typeof pointLedgerQueryParamsSchema>

@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common'
 
 import { PrismaModule } from '../prisma/prisma.module.js'
 import { CouponApplyService } from './coupon-apply.service.js'
+import { CouponBoxController } from './coupon-box.controller.js'
+import { CouponBoxService } from './coupon-box.service.js'
 import { CouponConsoleService } from './coupon-console.service.js'
 import { CouponExpiryService } from './coupon-expiry.service.js'
 import { CouponController } from './coupon.controller.js'
@@ -22,7 +24,7 @@ import { CouponService } from './coupon.service.js'
  */
 @Module({
   imports: [PrismaModule],
-  controllers: [CouponController],
+  controllers: [CouponController, CouponBoxController],
   providers: [
     CouponService,
     // 적용 (TASK-0075). 주문서와 주문이 이것을 지나 쿠폰을 얹고 소진한다.
@@ -30,10 +32,19 @@ import { CouponService } from './coupon.service.js'
     // 발행자 콘솔 (TASK-0073 · TASK-0074). 관리자와 판매자가 같은 서비스를 쓴다 —
     // 화면이 다른 것은 부담 주체를 어떻게 말하느냐이고, 서버가 답하는 것은 같다.
     CouponConsoleService,
+    // 내 쿠폰함 (TASK-0077). 같은 표를 읽지만 **세는 단위가 다르다** — 저기서 한 줄은
+    // 정책이고 여기서 한 줄은 발급된 장이다.
+    CouponBoxService,
     // 만료 전환 (F7). 부르는 쪽이 없는 것이 정상이다 — 자기 주기로 돌고, 무엇을
     // 보고 몇 장씩 옮기는지는 `coupon-expiry.ts` 가 정한다.
     CouponExpiryService,
   ],
-  exports: [CouponService, CouponApplyService, CouponConsoleService, CouponExpiryService],
+  exports: [
+    CouponService,
+    CouponApplyService,
+    CouponConsoleService,
+    CouponBoxService,
+    CouponExpiryService,
+  ],
 })
 export class CouponModule {}
