@@ -8,7 +8,6 @@ import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
 import { createUser } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
-import { callers } from '../support/principal.js'
 import { recordStatements } from '../support/statements.js'
 
 /**
@@ -51,8 +50,17 @@ const P95_BUDGET_MS = 300
 
 const SAMPLES = 50
 
-beforeEach(() => {
+/**
+ * 실제 계정으로 만든 관리자.
+ *
+ * 합성 주체를 쓰지 않는 이유는 **플랫폼 쿠폰에 주인이 생겼기** 때문이다
+ * (TASK-0073) — 만들어질 행의 소유자가 부르는 사람이라 서버가 그 계정을 읽는다.
+ */
+let operator: TestCaller
+
+beforeEach(async () => {
   api.clock.set(NOW)
+  operator = { userId: (await createUser(db)).id, roles: ['ADMIN_OPERATOR'] }
 })
 
 function draft(overrides: Record<string, unknown> = {}): Record<string, unknown> {
@@ -74,7 +82,7 @@ function draft(overrides: Record<string, unknown> = {}): Record<string, unknown>
 }
 
 function issueCoupon(overrides: Record<string, unknown> = {}): Promise<CouponResponse> {
-  return api.clientAs(callers.operator).request({
+  return api.clientAs(operator).request({
     path: '/coupons',
     method: 'POST',
     body: draft(overrides),
