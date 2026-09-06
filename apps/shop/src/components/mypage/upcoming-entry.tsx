@@ -18,10 +18,14 @@
  *
  * ## 그 날을 어떻게 찾나
  *
- * 쓰는 쪽에 TASK 번호를 주석으로 적는다. `seller-order-bundle.tsx` 가
- * **TASK-0066**(취소 신청) · **TASK-0067**(반품 신청) · **TASK-0083**(리뷰 작성)을
- * 그렇게 달고 있고, 그 TASK 를 여는 사람이 `grep -rn 'TASK-0066' apps/shop` 으로
- * 여기 닿는다.
+ * 쓰는 쪽에 TASK 번호를 주석으로 적는다. 그 TASK 를 여는 사람이
+ * `grep -rn 'TASK-0083' apps/shop` 으로 여기 닿는다.
+ *
+ * **실제로 그렇게 닫힌 자리가 하나 있다.** `seller-order-bundle.tsx` 의 취소·반품
+ * 자리는 TASK-0066 이 오면서 문장에서 **버튼으로** 바뀌었고, 「지금 신청할 수
+ * 있는가」는 그때부터 서버가 답한다 — 못 하는 경우도 감추지 않고 이유를 말하므로
+ * 이 컴포넌트가 하던 일까지 그쪽이 가져갔다. 남은 사용처는 **TASK-0083**(리뷰
+ * 작성) 하나다.
  */
 export function UpcomingEntry({ title, body }: { readonly title: string; readonly body: string }) {
   return (

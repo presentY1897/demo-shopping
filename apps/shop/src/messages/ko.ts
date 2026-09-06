@@ -587,6 +587,15 @@ export const ko: Messages = {
       CARD_COUNT_REACHED:
         '카드는 {max}장까지 만들 수 있습니다. 쓰지 않는 카드를 지운 뒤 다시 발급해주세요.',
       CARD_AMOUNT_INVALID: '한도를 원 단위 정수로 입력해주세요.',
+      RETURN_PHOTO_REQUIRED: '하자·오배송 반품에는 사진을 한 장 이상 첨부해주세요.',
+      RETURN_PHOTO_NOT_ALLOWED: '단순 변심 반품에는 사진을 첨부할 수 없습니다.',
+      // {max} 는 서버가 실어 보낸 값이다. 화면이 숫자를 적어 두면 계약의 상한이
+      // 바뀌는 날 둘이 갈린다.
+      RETURN_PHOTO_TOO_MANY: '사진은 최대 {max}장까지 첨부할 수 있습니다.',
+      RETURN_PHOTO_DUPLICATE: '같은 사진을 두 번 첨부할 수 없습니다.',
+      // 없는 사진인지 남의 사진인지 구분해 말하지 않는다. 열쇠가 곧 소유자라,
+      // 갈라 답하면 남의 열쇠를 넣어 보는 것만으로 존재를 알 수 있다.
+      RETURN_PHOTO_FOREIGN: '첨부할 수 없는 사진입니다. 사진을 다시 첨부해주세요.',
     },
     failures: {
       network: 'API 서버에 닿지 못했습니다. 잠시 뒤 다시 시도해주세요.',
@@ -1021,13 +1030,157 @@ export const ko: Messages = {
         cartLink: '장바구니 보기',
       },
       upcoming: {
-        claimTitle: '취소 · 반품 신청',
-        claimBody: '신청 화면은 아직 준비 중입니다. 준비되면 이 자리에서 바로 신청할 수 있습니다.',
         reviewTitle: '리뷰 쓰기',
         reviewBody: '리뷰 작성은 아직 준비 중입니다. 구매확정한 상품부터 쓸 수 있게 됩니다.',
       },
+      claim: {
+        cancel: '{brand} 취소 신청',
+        returns: '{brand} 반품 신청',
+        title: '취소 · 반품',
+        // 여섯을 나누는 기준은 **사람이 할 일이 다른가**다. 「신청할 수 없습니다」
+        // 하나로 끝내면 기다리면 되는 사람과 고객센터를 찾아야 하는 사람이
+        // 구분되지 않고, 둘 다 할 수 있는 일이 없어진다.
+        refusals: {
+          in_transit:
+            '배송이 시작되어 지금은 취소할 수 없습니다. 상품을 받으신 뒤 반품을 신청해주세요.',
+          confirmed:
+            '구매확정한 주문입니다. 상품에 하자가 있는 경우에만 고객센터를 통해 처리됩니다.',
+          window_closed: '반품 신청 기간이 지났습니다. 고객센터로 문의해주세요.',
+          not_claimable: '이 주문은 신청할 수 있는 상태가 아닙니다. 주문 상태를 확인해주세요.',
+          exceeds_remaining: '지금은 {remaining}개까지 신청할 수 있습니다. 수량을 줄여주세요.',
+          invalid_quantity: '수량은 1개 이상이어야 합니다.',
+        },
+        loading: '신청할 수 있는지 확인하는 중입니다',
+        // 「물어보지 못했다」와 「신청할 수 없다」는 다른 말이다. 뒤쪽으로 잘못
+        // 말하면 사람은 되지 않을 일을 포기한 것이 된다.
+        failed: '신청할 수 있는지 확인하지 못했습니다. 새로고침한 뒤 다시 확인해주세요.',
+      },
       actionsFailed: '지금 할 수 있는 것을 확인하지 못했습니다. 새로고침한 뒤 다시 확인해주세요.',
       actionsLoading: '할 수 있는 것을 확인하는 중입니다',
+    },
+    claim: {
+      types: {
+        CANCEL: {
+          title: '취소 신청',
+          description:
+            '아직 발송되지 않은 상품을 취소합니다. 취소할 상품과 수량을 고르고 사유를 적어주세요.',
+          // 취소에는 기간이 없다. 물건이 아직 떠나지 않아 기다릴 것이 없다.
+          windowNotice: null,
+        },
+        RETURN: {
+          title: '반품 신청',
+          description:
+            '받으신 상품을 반품합니다. 반품할 상품과 수량을 고르고 사유를 적어주세요. 회수는 신청이 승인된 뒤에 진행됩니다.',
+          // 날짜를 화면이 더해 만들지 않는다. 기간의 축은 배포 설정이 정하고,
+          // 압축된 데모에서 화면이 계산하면 틀린 날짜를 자신 있게 적게 된다.
+          windowNotice: '{date}까지 신청할 수 있습니다.',
+        },
+      },
+      refusedTitle: '취소 · 반품 신청',
+      backToOrder: '주문 상세로',
+      loadingLabel: '신청할 수 있는 상품을 불러오는 중입니다',
+      loadErrorTitle: '신청 화면을 불러오지 못했습니다',
+      missingBundleTitle: '어느 배송인지 알 수 없습니다',
+      missingBundleBody:
+        '주문 상세에서 취소하거나 반품할 배송을 골라 다시 들어와주세요. 한 주문에 판매자가 여럿이면 신청도 판매자별로 합니다.',
+      itemsLabel: '신청할 상품',
+      quantityLabel: '수량',
+      // 서버가 답한 값이다. 화면이 「주문 수량 − 신청한 수량」을 계산하면 다른
+      // 탭에서 방금 신청한 것이 반영되지 않는다.
+      remainingLabel: '신청 가능 {count}개',
+      alreadyClaimed: '이미 신청한 상품입니다. 처리 상태는 주문 상세에서 확인할 수 있습니다.',
+      selectLabel: '신청 상품 선택',
+      reasonLabel: '사유',
+      reasonHint: '판매자가 읽고 판단합니다. 500자까지 쓸 수 있습니다.',
+      reasonPlaceholder: '예) 주문한 색상과 달라서 취소합니다.',
+      faultLegend: '누구의 사유인가요?',
+      faults: {
+        CUSTOMER: {
+          label: '단순 변심 · 주문 실수',
+          // 값이 아니라 돈이다 (`pricing.md` 3장). 무엇이 달라지는지를 고르는
+          // 자리에서 말해야 고른 뒤에 놀라지 않는다.
+          description: '왕복 배송비가 환불액에서 빠질 수 있습니다.',
+        },
+        SELLER: {
+          label: '상품 불량 · 오배송',
+          description: '배송비를 판매자가 부담하고 결제하신 금액을 전액 돌려받습니다.',
+        },
+      },
+      returnReasonLegend: '반품 사유를 골라주세요',
+      returnReasons: {
+        CHANGE_OF_MIND: {
+          label: '단순 변심 · 주문 실수',
+          // 고른 뒤에 놀라지 않도록 **돈이 어떻게 달라지는지**를 고르는 자리에서
+          // 말한다 (`pricing.md` 3장).
+          description: '반품 배송비를 부담하시고, 받으실 때 낸 배송비는 환불되지 않습니다.',
+        },
+        DEFECTIVE: {
+          label: '상품에 하자가 있음',
+          description: '배송비를 판매자가 부담합니다. 하자가 보이는 사진을 첨부해주세요.',
+        },
+        WRONG_ITEM: {
+          label: '주문한 상품과 다름',
+          description: '배송비를 판매자가 부담합니다. 받으신 상품 사진을 첨부해주세요.',
+        },
+      },
+      photos: {
+        legend: '사진 첨부',
+        dropLabel: '사진을 끌어다 놓거나 파일을 선택하세요',
+        droppingLabel: '여기에 놓으면 첨부됩니다',
+        // 장수를 화면이 정하지 않는다. 계약의 상한을 그대로 끼워 넣는다.
+        hint: 'JPG · PNG · WebP, 한 장당 5MB까지. 최대 {max}장 첨부할 수 있습니다.',
+        listLabel: '첨부한 사진',
+        remove: '첨부 취소',
+        // 같은 글자의 버튼이 여러 개라 읽어 주는 이름은 파일 이름으로 가른다 (P4).
+        removeNamed: '{name} 첨부 취소',
+        statuses: {
+          uploading: '올리는 중',
+          ready: '첨부됨',
+          failed: '올리지 못함',
+        },
+        failures: {
+          unsupported_type: 'JPG · PNG · WebP 사진만 첨부할 수 있습니다.',
+          too_large: '한 장당 5MB까지 첨부할 수 있습니다.',
+          too_many: '사진은 최대 {max}장까지 첨부할 수 있습니다.',
+          api: '사진을 올릴 수 없었습니다. 잠시 후 다시 시도해주세요.',
+          // 저장소는 우리 API 가 아니라 오류 봉투가 없다. 이유를 지어내는 대신
+          // 사람이 할 수 있는 일을 말한다.
+          storage: '사진 전송이 완료되지 않았습니다. 다시 첨부해주세요.',
+        },
+      },
+      submit: '신청하기',
+      submitting: '신청하는 중',
+      submitErrorTitle: '신청을 접수하지 못했습니다',
+      issues: {
+        no_items: '취소하거나 반품할 상품을 하나 이상 골라주세요.',
+        reason_required: '사유를 입력해주세요.',
+        reason_too_long: '사유는 500자까지 입력할 수 있습니다.',
+        photo_required: '하자·오배송 반품에는 사진을 한 장 이상 첨부해주세요.',
+        photo_uploading: '사진을 다 올린 뒤에 신청할 수 있습니다.',
+      },
+      refusals: {
+        in_transit: '신청하는 사이에 배송이 시작되었습니다. 상품을 받으신 뒤 반품을 신청해주세요.',
+        confirmed: '구매확정된 주문입니다. 상품에 하자가 있는 경우 고객센터로 문의해주세요.',
+        window_closed: '반품 신청 기간이 지났습니다. 고객센터로 문의해주세요.',
+        not_claimable: '이 주문은 신청할 수 있는 상태가 아닙니다. 주문 상태를 확인해주세요.',
+        // 이 갈래에 오는 사람은 대개 다른 창에서 방금 하나를 신청한 사람이다.
+        // 숫자를 말하지 않으면 몇 개로 고쳐야 하는지 알 방법이 없다.
+        exceeds_remaining:
+          '다른 곳에서 이미 신청된 수량이 있습니다. 지금은 {remaining}개까지 신청할 수 있습니다.',
+        invalid_quantity: '수량은 1개 이상이어야 합니다.',
+      },
+      outcome: {
+        title: '신청이 접수되었습니다',
+        approvedTitle: '바로 처리되었습니다',
+        // 판매자가 아직 아무것도 하지 않아 승인을 기다릴 이유가 없다.
+        approvedBody: '아직 발송 전이라 판매자 승인 없이 취소가 확정되었습니다.',
+        waitingTitle: '판매자 승인을 기다립니다',
+        waitingBody:
+          '판매자가 신청을 확인하면 처리됩니다. 진행 상태는 주문 상세에서 확인할 수 있습니다.',
+        // 아직 하지 않는 일을 한 것처럼 말하지 않는다 (TASK-0068 · 0069).
+        refundPending: '환불은 처리가 끝난 뒤 결제하신 수단으로 진행됩니다.',
+        backToOrder: '주문 상세로 돌아가기',
+      },
     },
   },
   components: {

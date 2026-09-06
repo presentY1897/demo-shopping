@@ -1,0 +1,116 @@
+import type { SellerOrderActor } from '../orders/seller-order-transitions.js'
+import type { CancelScope } from './cancel-rules.js'
+
+/**
+ * 취소 승인 하나가 뒤에 남기는 일 — **자리만** (TASK-0066 4장 · TASK-0068 · 0069).
+ *
+ * `order-confirmed-events.ts` 가 같은 모양이고, 그 파일이 이 형태의 이유를 길게
+ * 적어 두었다. 여기서는 **다른 점 하나**만 적는다.
+ *
+ * ## 왜 포트가 둘인가
+ *
+ * 승인된 취소가 부르는 것은 **환불**(TASK-0068)과 **재고 복원**(TASK-0069)이다.
+ * 한 이벤트로 묶어 한 포트에 넘기지 않는 이유는 저쪽 파일이 정산과 알림을 나눈
+ * 이유와 같다 — **받는 쪽도 실패의 뜻도 다르다.**
+ *
+ * | 포트 | 실패하면 | 그래서 |
+ * | --- | --- | --- |
+ * | {@link CancelRefundEvents} | **구매자가 돈을 못 받는다.** 사람이 문의한다 | 재시도가 필수이고, 두 번 나가면 안 된다 |
+ * | {@link CancelRestockEvents} | **팔 수 있는 물건이 안 팔린다.** 아무도 신고하지 않는다 | 재시도는 늦어도 되지만, 그것을 **발견하는 장치**가 필요하다 |
+ *
+ * 둘을 한 포트에 묶으면 나중에 그 둘의 재시도 정책을 함께 정해야 하고, 위 표의
+ * 오른쪽 칸이 서로 다르므로 그 결정은 반드시 한쪽을 잘못 다룬다.
+ *
+ * ## 「아무것도 안 하는 구현」이 지금 무엇을 뜻하는가
+ *
+ * 빠지는 것은 **후속 처리뿐**이다. 취소 자체는 이미 끝났다 — 클레임은
+ * `CANCEL_APPROVED` 이고, 이력에 누가 언제 승인했는지가 남아 있으며, 전체 취소면
+ * 판매자 몫이 `CANCELED` 로 옮겨져 있다. 즉 이 구현으로 도는 시스템에서 잘못되는
+ * 것은 둘이고, **둘 다 뒤늦게 할 수 있다.**
+ *
+ * - **돈이 돌아가지 않는다.** 결제는 `PAID` 로 남고 카드 잔액은 그대로다. 무엇을
+ *   얼마나 돌려줘야 하는지는 `ClaimItem` 이 들고 있고(`refundAmount` 가 0 인 것은
+ *   「0원」이 아니라 「아직 계산하지 않았다」), 안분 규칙은 `pricing.md` 에 있다.
+ * - **재고가 돌아오지 않는다.** 팔린 수량은 `ProductVariant.stock` 에서 이미 빠져
+ *   있고, 취소된 수량은 `ClaimItem.quantity` 가 안다. 원장(`StockLedger`)이
+ *   `CLAIM_ITEM` 참조 유형을 이미 갖고 있어(`stockRefTypes`) 나중에 대사할 수 있다.
+ *
+ * **던지지 않는 것도 결정이다.** 환불에 실패한 것이 승인을 되돌릴 이유는 아니다 —
+ * 규칙이든 판매자든 「취소한다」고 이미 판단했고, 그 판단은 유효하다. 되돌리려 해도
+ * 전이표에 `CANCELED` 를 떠나는 화살표가 없다. M10 의 나머지가 실제 구현을 붙일
+ * 때도 이 성질은 지켜야 하고, 그래서 부르는 쪽은 **커밋한 뒤에** 부른다.
+ *
+ * ## 반품(TASK-0067)이 이 파일을 쓰지 않는 이유
+ *
+ * 반품도 끝에서 환불하고 재입고한다. 그래도 이름에 `Cancel` 이 붙어 있는 것은
+ * **부르는 시점이 다르기** 때문이다 — 취소는 **승인** 자리에서 부르고, 반품은
+ * 물건이 돌아와 검수를 지난 뒤(`RETURN_COMPLETED`)에야 부른다. 그 둘을 한 포트에
+ * 두면 「승인만 하고 물건은 안 왔는데 재입고된 반품」이 한 줄 실수로 가능해진다.
+ */
+export interface CancelApprovedLine {
+  readonly orderItemId: string
+  /** 어떤 조합을 몇 개 되돌리는가. 재고 복원이 읽는다 (TASK-0069). */
+  readonly variantId: string
+  readonly quantity: number
+}
+
+export interface CancelApproved {
+  readonly claimId: string
+  readonly sellerOrderId: string
+  /**
+   * 이 승인 뒤에 이 몫에 남은 것이 있는가 (`cancelScopeOf`).
+   *
+   * 환불이 이것을 읽어야 한다 — 전체 취소는 배송비까지 돌려주지만 부분 취소는
+   * 남은 항목이 여전히 배송되므로 그렇지 않고, 남은 금액이 무료배송 문턱 아래로
+   * 내려가면 배송비가 **다시 붙는다** (TASK-0066 R2 · `pricing.md` 3장).
+   */
+  readonly scope: CancelScope
+  /** 승인된 시각. 클레임 이력에 적힌 것과 같은 값이다. */
+  readonly approvedAt: Date
+  /** 규칙이 승인했나(`SYSTEM`), 판매자가 승인했나. 문의를 받는 쪽에는 다르다. */
+  readonly actor: SellerOrderActor
+  readonly lines: readonly CancelApprovedLine[]
+  /**
+   * 같은 승인이 두 번 도착해도 한 번만 처리되게 하는 열쇠 (이중 환불 · 이중 입고).
+   *
+   * **클레임의 id 그 자체다.** 전이표에 `CANCEL_APPROVED` 로 **돌아오는** 화살표가
+   * 없어(`claim-rules.ts`) 한 클레임은 평생 한 번만 승인되고, 그래서 그 id 가 곧
+   * 「이 승인」의 이름이다. 시각이나 난수를 섞으면 재발행이 다른 열쇠를 갖게 되어
+   * 멱등이 깨지는데, 열쇠가 막아야 하는 것이 정확히 그 경우다.
+   */
+  readonly idempotencyKey: string
+}
+
+/** 승인된 취소만큼 돈을 돌려줄 곳 (TASK-0068). */
+export interface CancelRefundEvents {
+  refund: (events: readonly CancelApproved[]) => Promise<void>
+}
+
+/** 승인된 취소만큼 재고를 되돌릴 곳 (TASK-0069). */
+export interface CancelRestockEvents {
+  restock: (events: readonly CancelApproved[]) => Promise<void>
+}
+
+/** 주입 토큰. 인터페이스에는 프로바이더를 걸 런타임 값이 없다. */
+export const CANCEL_REFUND_EVENTS = Symbol('CANCEL_REFUND_EVENTS')
+
+export const CANCEL_RESTOCK_EVENTS = Symbol('CANCEL_RESTOCK_EVENTS')
+
+/**
+ * 지금 바인딩되는 환불 구현. **아무것도 하지 않는다.**
+ *
+ * 무엇을 뜻하는지는 {@link CancelApproved} 에 적혀 있다. TASK-0068 이 붙을 때
+ * `claim.module.ts` 의 한 줄만 바뀐다.
+ */
+export class NoopCancelRefundEvents implements CancelRefundEvents {
+  refund(): Promise<void> {
+    return Promise.resolve()
+  }
+}
+
+/** 지금 바인딩되는 재고 복원 구현. **아무것도 하지 않는다** (TASK-0069). */
+export class NoopCancelRestockEvents implements CancelRestockEvents {
+  restock(): Promise<void> {
+    return Promise.resolve()
+  }
+}

@@ -17,6 +17,7 @@ import { OrderModule } from './orders/order.module.js'
 import { PaymentModule } from './payment/payment.module.js'
 import { ProfileModule } from './profile/profile.module.js'
 import { ReservationModule } from './reservation/reservation.module.js'
+import { ReturnModule } from './claims/return.module.js'
 import { SearchModule } from './search/search.module.js'
 import { SellersModule } from './sellers/sellers.module.js'
 import { ShipmentModule } from './shipping/shipment.module.js'
@@ -43,6 +44,7 @@ export class AppModule {
         PaymentModule,
         ProfileModule,
         ReservationModule,
+        ReturnModule,
         SearchModule,
         SellersModule,
         ShipmentModule,

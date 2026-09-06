@@ -230,6 +230,26 @@ export const domainErrorCodes = [
   /** 유효기간이 지난 카드다. */
   'CARD_EXPIRED',
   /**
+   * 반품 사진이 필요한데 없다 (TASK-0067).
+   *
+   * 하자·오배송은 판매자에게 **돈을 물리는 주장**이라 근거가 없으면 판매자가 할 수
+   * 있는 일이 거절뿐이다. 단순 변심에는 반대로 **첨부를 금지**한다 — 뒤집을 것이
+   * 없어 받아 두면 아무도 안 보는 이미지와 지우지 못하는 개인정보만 쌓인다.
+   */
+  'RETURN_PHOTO_REQUIRED',
+  /** 단순 변심에 사진을 붙였다. */
+  'RETURN_PHOTO_NOT_ALLOWED',
+  /** 사진이 너무 많다. `params.max` 를 싣는다. */
+  'RETURN_PHOTO_TOO_MANY',
+  /** 같은 사진을 두 번 붙였다. */
+  'RETURN_PHOTO_DUPLICATE',
+  /**
+   * 남의 사진이다.
+   *
+   * 열쇠 접두어가 **올린 사람**이라(`returns/{userId}/…`) 조회 한 번 없이 판단된다.
+   */
+  'RETURN_PHOTO_FOREIGN',
+  /**
    * 클레임 신청이 거절된 여섯 (TASK-0065 · `claim-rules.ts` 의 `ClaimRefusal`).
    *
    * **여섯을 하나로 묶지 않는 이유는 사람이 할 일이 다르기 때문이다.** 그리고

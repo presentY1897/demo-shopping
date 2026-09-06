@@ -9,8 +9,8 @@
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
 | [TASK-0065](./TASK-0065-claim-schema.md) | 클레임 스키마 · 상태 머신 | 완료 | M09 |
-| [TASK-0066](./TASK-0066-cancel-flow.md) | 취소 신청 · 처리 (부분) | 승인됨 | 0065 |
-| [TASK-0067](./TASK-0067-return-flow.md) | 반품 신청 · 수거 · 검수 (부분) | 승인됨 | 0065 |
+| [TASK-0066](./TASK-0066-cancel-flow.md) | 취소 신청 · 처리 (부분) | 완료 | 0065 |
+| [TASK-0067](./TASK-0067-return-flow.md) | 반품 신청 · 수거 · 검수 (부분) | 완료 | 0065 |
 | [TASK-0068](./TASK-0068-refund-calc.md) | 환불 안분 계산 · 실행 | 승인됨 | 0066 |
 | [TASK-0069](./TASK-0069-stock-restore.md) | 재고 복원 | 승인됨 | 0066, 0067 |
 | [TASK-0070](./TASK-0070-seller-claims.md) | 판매자 클레임 처리 화면 | 승인됨 | 0067 |

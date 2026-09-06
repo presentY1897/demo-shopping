@@ -456,6 +456,45 @@ export default defineConfig({
           statements: 100,
         },
         /**
+         * TASK-0066 (6.2, Q5 강화). 취소의 순수 판단 — 이 취소가 스스로 승인되는가,
+         * 그리고 이 승인으로 판매자 몫이 끝나는가.
+         *
+         * **둘 다 조용히 틀린다.** 자동 승인이 한 상태 넓으면 판매자가 이미 포장을
+         * 시작한 주문이 그의 판단 없이 취소되고, 좁으면 아무도 할 일이 없는 승인을
+         * 구매자가 기다린다. 「전체인가」가 틀리면 더 조용하다 — 부분 취소를 셋으로
+         * 나눠 하면 마지막 한 개가 취소된 뒤에도 판매자 몫은 「상품 준비중」으로
+         * 남고, 보낼 물건이 하나도 없는 그 주문에서 **실패하는 것은 아무것도 없다.**
+         * 세는 대상이 한 칸 넓어 승인 전 신청까지 세면 반대로, 판매자가 거절할
+         * 신청 하나가 주문을 `CANCELED` 로 닫고 거기서 돌아오는 화살표는 없다.
+         */
+        'src/claims/cancel-rules.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        /**
+         * TASK-0067 (6.2, Q5 강화). 반품의 순수 판단 — 누가 반품 배송비를 무는가,
+         * 이 사유에 사진이 필요한가, 검수 결과가 다음에 무엇을 부르는가.
+         *
+         * **셋 다 조용히 틀린다.** 귀책 한 칸이 뒤집히면 판매자가 잘못한 반품에서
+         * 구매자가 반품비를 물고 — 부담자와 금액이 어긋난 행은 DB 가 막지만
+         * (`ReturnDetail_bearer_amount_check`), **짝이 맞은 채로 반대인 행**은 아무도
+         * 막지 못한다. 사진 규칙 한 칸이 헐거워지면 근거 없이 판매자에게 돈을
+         * 물릴 수 있고, 그때 판매자가 할 수 있는 일은 전부 거절하는 것뿐이다.
+         * 검수 표 한 칸이 뒤집히면 **물건을 못 받았는데 환불이 나간다** — 검수
+         * 단계를 만든 이유가 정확히 그것이라(TASK-0067 4장), 그 한 칸이 이 TASK
+         * 전체를 무의미하게 만든다.
+         *
+         * 어느 것도 빨간 검사로 나타나지 않는다. 증상은 몇 주 뒤 문의 하나다.
+         */
+        'src/claims/return-rules.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        /**
          * TASK-0117. The error contract's decision-making, all of it pure:
          * which code and sentence a status maps to, what a domain failure's
          * payload looks like, which `details` shape one zod issue becomes, and

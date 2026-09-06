@@ -266,6 +266,9 @@ export {
   presignUploadResponseSchema,
   productImageKeyPattern,
   productImageKeySchema,
+  RETURN_PHOTO_MAX_COUNT,
+  returnPhotoKeyPattern,
+  returnPhotoKeySchema,
   UPLOAD_MAX_BYTES,
   UPLOAD_URL_TTL_SECONDS,
   uploadContentTypes,
@@ -593,6 +596,7 @@ export {
   claimRefusals,
   claimRefusalSchema,
   claimResponseSchema,
+  claimReturnDetailsSchema,
   claimSchema,
   claimStatuses,
   claimStatusFilterSchema,
@@ -602,6 +606,8 @@ export {
   claimTypes,
   claimTypeSchema,
   createClaimRequestSchema,
+  returnReasons,
+  returnReasonSchema,
 } from './api/claims.js'
 export type {
   Claim,
@@ -616,12 +622,37 @@ export type {
   ClaimListResponse,
   ClaimRefusal,
   ClaimResponse,
+  ClaimReturnDetails,
   ClaimStatus,
   ClaimTransitionRequest,
   ClaimTransitionResponse,
   ClaimType,
   CreateClaimRequest,
+  ReturnReason,
 } from './api/claims.js'
+
+export {
+  createReturnRequestSchema,
+  inspectReturnRequestSchema,
+  returnDetailSchema,
+  returnFeeBearers,
+  returnFeeBearerSchema,
+  returnInspectionSchema,
+  returnResponseSchema,
+  returnShipmentDirections,
+  returnShipmentDirectionSchema,
+  returnShipmentSchema,
+} from './api/returns.js'
+export type {
+  CreateReturnRequest,
+  InspectReturnRequest,
+  ReturnDetail,
+  ReturnFeeBearer,
+  ReturnInspection,
+  ReturnResponse,
+  ReturnShipment,
+  ReturnShipmentDirection,
+} from './api/returns.js'
 
 export {
   demoCarrierCodes,

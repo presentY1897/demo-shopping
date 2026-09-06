@@ -130,6 +130,32 @@ export const mockPaths = {
   /** `POST` 이 묶음을 다음 상태로. 구매자에게는 구매확정만 열려 있다. */
   sellerOrderTransitions: `*${API_PATH_PREFIX}/seller-orders/:id/transitions`,
   /**
+   * `GET` 이 묶음에 지금 무엇을 몇 개까지 신청할 수 있나 (TASK-0066 F8).
+   *
+   * `actions` 가 전이에 대해 하는 일을 클레임에 대해 한다 — **화면이 상태로
+   * 분기하지 않게 하려고 있다.** 「배송완료면 반품 버튼」을 화면에 적으면 그 판단이
+   * 세 앱에 흩어지고, 반품 기간처럼 배포 설정(`FULFILLMENT_PACE`)에 달린 값은 화면이
+   * **틀린 날짜를 자신 있게** 적게 된다.
+   *
+   * 몫의 컬렉션 뒤에 오는 것은 옆의 라우트들과 같은 이유다 — `:id` 는 `/` 를 넘지
+   * 못해 서로를 먹지 않지만, 순서를 지켜 온 목록만 리터럴이 하나 붙는 날 안전하다.
+   */
+  claimable: `*${API_PATH_PREFIX}/seller-orders/:id/claimable`,
+  /**
+   * `POST` 취소·반품을 신청한다 (TASK-0066).
+   *
+   * **경로가 `/seller-orders/:id/claims` 가 아니다.** 클레임은 주문에 딸린 하위
+   * 자원이 아니라 자기 수명과 자기 상태 머신을 갖는 것이고, 판매자 콘솔은 주문을
+   * 거치지 않고 목록으로 연다. 어느 몫의 것인지는 몸통의 `sellerOrderId` 가 말한다.
+   */
+  claims: `*${API_PATH_PREFIX}/claims`,
+  /**
+   * `GET` 클레임 하나. 신청한 화면이 곧바로 이것을 다시 읽는다.
+   *
+   * 컬렉션 **뒤에** 온다 — 옆의 라우트들이 전부 그 순서다.
+   */
+  claim: `*${API_PATH_PREFIX}/claims/:id`,
+  /**
    * 내 카드들 (TASK-0054). `GET` 목록, `POST` 발급 (TASK-0058).
    *
    * 경로에 사용자 id 가 없다. 주인은 토큰이 정한다 — `/cart` · `/me` 와 같은 모양이고,

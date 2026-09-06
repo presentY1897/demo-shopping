@@ -1,5 +1,10 @@
 import type { UploadContentType } from '@shopping/shared'
-import { productImageKeyPattern, uploadImageExtensions, uploadImageFormats } from '@shopping/shared'
+import {
+  productImageKeyPattern,
+  returnPhotoKeyPattern,
+  uploadImageExtensions,
+  uploadImageFormats,
+} from '@shopping/shared'
 
 /**
  * What may be uploaded, decided from the request alone (TASK-0011 4.3).
@@ -84,6 +89,30 @@ export function productImageKey(sellerId: string, objectId: string, extension: s
   const key = `products/${sellerId}/${objectId}.${extension}`
 
   if (!productImageKeyPattern.test(key)) {
+    throw new Error(`생성된 스토리지 키가 규칙에 맞지 않습니다: ${key}`)
+  }
+
+  return key
+}
+
+/**
+ * `returns/{userId}/{objectId}.{ext}` (TASK-0067 F2).
+ *
+ * **`productImageKey` 에 인자를 하나 더하지 않고 함수를 하나 더 만든 이유**는 이
+ * 파일이 이미 적어 둔 그대로다 — 접두어와 **그것을 승인하는 주인**은 짝이다. 상품
+ * 이미지는 스토어를 확인한 뒤 그 스토어의 id 로 만들어지고, 반품 사진은 **부르는
+ * 사람 자신**을 확인한 뒤 그 사람의 id 로 만들어진다. 목적을 인자로 받는 한 함수가
+ * 되면 그 두 확인 중 어느 것을 지났는지 서명 한 줄로는 알 수 없게 되고, 「스토어를
+ * 확인하고 사용자 접두어를 만드는」 호출이 문법적으로 가능해진다.
+ *
+ * 형식을 다시 재는 것도 위와 같은 이유다. 이 열쇠는 나중에 **조회 없이** 소유자를
+ * 판정하는 데 쓰이므로(`isOwnPhotoKey` · `ReturnPhoto_key_format_check`), 그 판정이
+ * 믿는 모양을 만드는 쪽이 스스로 증명한다.
+ */
+export function returnPhotoKey(userId: string, objectId: string, extension: string): string {
+  const key = `returns/${userId}/${objectId}.${extension}`
+
+  if (!returnPhotoKeyPattern.test(key)) {
     throw new Error(`생성된 스토리지 키가 규칙에 맞지 않습니다: ${key}`)
   }
 

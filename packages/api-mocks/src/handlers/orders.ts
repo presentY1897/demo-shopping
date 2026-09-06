@@ -113,6 +113,19 @@ function sellerOrderById(id: string): { readonly order: Order; readonly bundle: 
 }
 
 /**
+ * 이 묶음이 지금 무엇인가. 클레임 대역이 「무엇을 신청할 수 있나」를 여기서 읽는다.
+ *
+ * 위의 {@link sellerOrderById} 와 달리 없으면 404 가 아니라 `undefined` 다 — 부르는
+ * 쪽이 자기 저장소에도 없는 몫을 이어서 찾아보기 때문이고, 그때 던져 버리면 그
+ * 대역은 자기가 세운 몫에 절대 못 닿는다.
+ */
+export function shopperBundleOf(sellerOrderId: string): SellerOrder | undefined {
+  return store.orders
+    .flatMap((order) => order.sellerOrders)
+    .find((bundle) => bundle.id === sellerOrderId)
+}
+
+/**
  * 한 묶음의 상태를 옮긴 새 저장소. 나머지는 그대로 둔다.
  *
  * **이력도 한 줄 자란다.** 상태만 옮기면 다시 읽은 상세에서 상태와 이력이 다른
