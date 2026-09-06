@@ -42,6 +42,7 @@
 | `settlement.pay` | — | — | — | `any` | — |
 | `commission.read` | — | — | `any` | `any` | `any` |
 | `commission.write` | — | — | — | `any` | — |
+| `settlement.run` | — | — | — | `any` | — |
 | `user.read` | `own` | `own` | `any` | `any` | `any` |
 | `user.write` | — | — | — | `any` | — |
 | `user.delete` | — | — | — | `any` | — |
@@ -69,7 +70,7 @@
 
 ### ADMIN_SUPER
 
-퍼미션 34개 — `catalog.read:any` · `catalog.write:any` · `catalog.delete:any` · `product.read:any` · `product.write:any` · `product.delete:any` · `media.upload:any` · `cart.read:any` · `cart.write:any` · `order.read:any` · `order.write:any` · `reservation.sweep:any` · `claim.read:any` · `claim.handle:any` · `coupon.read:any` · `coupon.write:any` · `coupon.platform:any` · `coupon.claim:any` · `coupon.delete:any` · `settlement.read:any` · `settlement.approve:any` · `settlement.pay:any` · `commission.read:any` · `commission.write:any` · `user.read:any` · `user.write:any` · `user.delete:any` · `profile.write:any` · `profile.delete:any` · `seller.read:any` · `seller.write:any` · `seller.approve:any` · `seller.suspend:any` · `demo.manage:any`
+퍼미션 35개 — `catalog.read:any` · `catalog.write:any` · `catalog.delete:any` · `product.read:any` · `product.write:any` · `product.delete:any` · `media.upload:any` · `cart.read:any` · `cart.write:any` · `order.read:any` · `order.write:any` · `reservation.sweep:any` · `claim.read:any` · `claim.handle:any` · `coupon.read:any` · `coupon.write:any` · `coupon.platform:any` · `coupon.claim:any` · `coupon.delete:any` · `settlement.read:any` · `settlement.approve:any` · `settlement.pay:any` · `commission.read:any` · `commission.write:any` · `settlement.run:any` · `user.read:any` · `user.write:any` · `user.delete:any` · `profile.write:any` · `profile.delete:any` · `seller.read:any` · `seller.write:any` · `seller.approve:any` · `seller.suspend:any` · `demo.manage:any`
 
 ### DEMO_ADMIN
 
@@ -77,5 +78,5 @@
 
 ---
 
-퍼미션 34개 · 역할 5개.
+퍼미션 35개 · 역할 5개.
 `DEMO_ADMIN` 은 `ADMIN_OPERATOR` 에서 파생된다 — 쓰기 권한만 `demo` 로 좁히고 읽기는 그대로 둔다.

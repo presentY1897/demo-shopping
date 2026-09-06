@@ -32,6 +32,7 @@ export const healthDependencyKeys = [
   'deliverySimulator',
   'orderConfirm',
   'claimRefund',
+  'settlementBatch',
 ] as const
 
 export type HealthDependencyKey = (typeof healthDependencyKeys)[number]
@@ -158,6 +159,23 @@ export const healthResponseSchema = z.object({
     status: healthStatusSchema,
     lastRunAt: z.iso.datetime().nullable(),
     confirmedCount: z.int().min(0),
+  }),
+  /**
+   * 주간 정산서 배치 (TASK-0080 6장).
+   *
+   * **이 배치가 멈추면 판매자가 돈을 못 받는다.** 그리고 아무것도 실패하지 않는다 —
+   * 주문도 배송도 구매확정도 멀쩡히 돌아가고, 판매자 화면에는 「정산 예정」이
+   * 정직하게 떠 있다. 판매자가 「이번 주 정산이 왜 없죠」라고 묻기 전까지 아무도
+   * 모르고, 그때는 이미 한 주가 지나 있다.
+   *
+   * `settledCount` 는 **마지막 한 번**이 적은 줄의 수다 — 새 판매 줄, 고쳐 쓴 줄,
+   * 차감 줄의 합이다. 평소 값이 0 인 것이 정상이라 그 자체로는 「돌고 있다」의
+   * 근거가 되지 못한다. 그 답은 `lastRunAt` 이 한다.
+   */
+  settlementBatch: z.object({
+    status: healthStatusSchema,
+    lastRunAt: z.iso.datetime().nullable(),
+    settledCount: z.int().min(0),
   }),
   /**
    * 낙오된 결제를 끝내는 배치 (TASK-0057 F2 · F6 · D-221).

@@ -287,6 +287,113 @@ describe('CommissionRate 의 제약들 — 요율은 정산이 곱하는 값이�
   })
 })
 
+describe('Settlement 의 제약들 — 정산서는 플랫폼의 장부다', () => {
+  /** 한 판매자의 한 회차는 한 장이다. 두 장이면 같은 주가 두 번 지급된다. */
+  async function settlement(
+    overrides: Partial<{
+      status: string
+      salesAmount: number
+      commissionAmount: number
+      sellerCouponAmount: number
+      returnAdjustmentAmount: number
+      payoutAmount: number
+      approvedById: string | null
+      periodStart: string
+      periodEnd: string
+    }> = {},
+  ): Promise<string> {
+    const owner = await createUser(db)
+    const seller = await createSeller(db, { userId: owner.id })
+    const values = {
+      status: 'PENDING',
+      salesAmount: 10_000,
+      commissionAmount: 1_000,
+      sellerCouponAmount: 0,
+      returnAdjustmentAmount: 0,
+      payoutAmount: 9_000,
+      approvedById: null,
+      periodStart: '2026-08-31T00:00:00.000Z',
+      periodEnd: '2026-09-07T00:00:00.000Z',
+      ...overrides,
+    }
+    const row = await db.one<{ id: string }>(
+      `INSERT INTO "Settlement"
+         ("id", "sellerId", "periodStart", "periodEnd", "status", "salesAmount",
+          "commissionAmount", "sellerCouponAmount", "returnAdjustmentAmount", "payoutAmount",
+          "approvedAt", "approvedById", "updatedAt")
+       VALUES (gen_random_uuid(), $1, $2::timestamptz, $3::timestamptz, $4::"SettlementStatus",
+               $5, $6, $7, $8, $9,
+               CASE WHEN $4 = 'PENDING' THEN NULL ELSE now() END, $10, now())
+       RETURNING "id"`,
+      [
+        seller.id,
+        values.periodStart,
+        values.periodEnd,
+        values.status,
+        values.salesAmount,
+        values.commissionAmount,
+        values.sellerCouponAmount,
+        values.returnAdjustmentAmount,
+        values.payoutAmount,
+        values.approvedById,
+      ],
+    )
+
+    return row.id
+  }
+
+  /**
+   * **합계 안의 관계는 DB 가 지킨다** (F8).
+   *
+   * 줄과 합계 사이의 관계는 SQL 로 강제할 수 없지만, 합계 안에서의 식은 할 수 있다.
+   * 이것이 어긋나면 관리자가 승인 화면에서 보는 숫자와 실제로 지급되는 숫자가 다르다.
+   */
+  it('지급액이 식과 어긋나는 정산서를 거절한다', async () => {
+    const error = await refusal(settlement({ payoutAmount: 9_001 }))
+
+    expect(error.code).toBe('23514')
+    expect(error.constraint).toBe('Settlement_total_check')
+  })
+
+  /** 차감은 빼는 값이다. 양수 차감은 「반품으로 돈이 늘었다」가 된다. */
+  it('양수 차감을 거절한다', async () => {
+    const error = await refusal(settlement({ returnAdjustmentAmount: 1_000, payoutAmount: 10_000 }))
+
+    expect(error.code).toBe('23514')
+    expect(error.constraint).toBe('Settlement_total_check')
+  })
+
+  /**
+   * 차감이 판매보다 크면 **지급액이 음수다.** 0으로 자르면 그 차액이 사라지고,
+   * 사라진 돈은 아무 데도 나타나지 않는다.
+   */
+  it('음수 지급액은 받는다', async () => {
+    const id = await settlement({ returnAdjustmentAmount: -20_000, payoutAmount: -11_000 })
+
+    expect(id).toBeTruthy()
+  })
+
+  /** 「승인됐는데 누가 언제 승인했는지 모른다」는 읽는 사람에게 거짓말이다. */
+  it('승인자 없는 승인을 거절한다', async () => {
+    const error = await refusal(settlement({ status: 'APPROVED' }))
+
+    expect(error.code).toBe('23514')
+    expect(error.constraint).toBe('Settlement_status_check')
+  })
+
+  it('뒤집힌 기간을 거절한다', async () => {
+    const error = await refusal(
+      settlement({
+        periodStart: '2026-09-07T00:00:00.000Z',
+        periodEnd: '2026-08-31T00:00:00.000Z',
+      }),
+    )
+
+    expect(error.code).toBe('23514')
+    expect(error.constraint).toBe('Settlement_period_check')
+  })
+})
+
 describe('StockReservation_quantity_check — 예약은 최소 한 개다', () => {
   it('refuses a reservation of nothing', async () => {
     const error = await refusal(reserve({ quantity: 0 }))

@@ -458,6 +458,39 @@ describe('사용 처리 (F5 · F6)', () => {
     expect(order.totalCouponDiscountAmount).toBe(3_000)
   })
 
+  /**
+   * **주문 항목에 「판매자가 부담한 몫」이 따로 적힌다** (TASK-0080 F3 · F4).
+   *
+   * 사는 사람이 내는 돈은 누가 부담하든 같아서, 이 값이 틀려도 결제 화면은 아무 말도
+   * 하지 않는다. 틀어진 금액은 몇 주 뒤 정산서 한 줄로만 나타난다 — 판매자가 부담한
+   * 적 없는 할인이 그의 정산액에서 빠지면 그것은 **남의 돈으로 한 할인의 청구서를
+   * 그에게 보내는** 일이다.
+   *
+   * 부담 주체별 안분의 산술은 `packages/shared/test/pricing.spec.ts` 가 잰다. 여기서
+   * 재는 것은 **그 값이 실제로 주문 항목까지 도착하는가**다.
+   */
+  it('splits the borne share onto the order item (TASK-0080)', async () => {
+    const shop = await store({ price: 10_000 })
+    const platform = await issue({ discountValue: 3_000 })
+    const seller = await issue({
+      sellerId: shop.sellerId,
+      scopeType: 'SELLER',
+      scopeIds: [shop.sellerId],
+      discountValue: 1_000,
+    })
+    const { order } = await place([await add(shop.variantId)], [platform, seller])
+    const row = await db.one<{ couponDiscountAmount: number; sellerCouponDiscountAmount: number }>(
+      `SELECT oi."couponDiscountAmount", oi."sellerCouponDiscountAmount"
+         FROM "OrderItem" oi
+         JOIN "SellerOrder" so ON so."id" = oi."sellerOrderId"
+        WHERE so."orderId" = $1`,
+      [order.id],
+    )
+
+    expect(row.couponDiscountAmount).toBe(4_000)
+    expect(row.sellerCouponDiscountAmount).toBe(1_000)
+  })
+
   it('refuses a second order with the same coupon', async () => {
     const shop = await store({ price: 10_000 })
     const userCouponId = await issue({ discountValue: 3_000 })

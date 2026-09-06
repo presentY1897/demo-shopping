@@ -353,6 +353,7 @@ export class OrderService {
         quantity: item.line.quantity,
         productAmount: item.productAmount,
         couponDiscountAmount: item.couponDiscountAmount,
+        sellerCouponDiscountAmount: item.sellerCouponDiscountAmount,
         pointDiscountAmount: item.pointDiscountAmount,
         discountAmount: item.discountAmount,
         commissionRateBp: rateOf(item.line),

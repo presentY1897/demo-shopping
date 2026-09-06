@@ -18,6 +18,7 @@ import { ReservationExpiryHealthIndicator } from './reservation-expiry.health-in
 import { SearchHealthIndicator } from './search.health-indicator.js'
 import { EXPECTED_SEARCH_INDEXES, SEARCH_INDEXES } from './search-indexes.js'
 import { SearchWarmupService } from './search-warmup.service.js'
+import { SettlementBatchHealthIndicator } from './settlement-batch.health-indicator.js'
 
 @Module({
   imports: [SearchModule],
@@ -31,6 +32,7 @@ import { SearchWarmupService } from './search-warmup.service.js'
     PaymentStragglerHealthIndicator,
     DeliverySimulatorHealthIndicator,
     ClaimRefundHealthIndicator,
+    SettlementBatchHealthIndicator,
     DemoCleanupReporter,
     SearchIndexReporter,
     // 지표가 아니라 보고자다 — 웹훅이 한 건도 안 온 것은 고장이 아니라서 전체
@@ -71,6 +73,10 @@ import { SearchWarmupService } from './search-warmup.service.js'
         // 채 남는다 (TASK-0071 · 배치는 TASK-0068). 여기서도 아무것도 실패하지
         // 않는 것이 위험이다 — 구매자에게는 「돈이 안 들어온다」로만 보인다.
         claimRefund: ClaimRefundHealthIndicator,
+        // 정산 배치가 멈추면 판매자가 돈을 못 받는다 (TASK-0080). 여기서도
+        // 아무것도 실패하지 않는 것이 위험이다 — 판매자 화면에는 「정산 예정」이
+        // 정직하게 떠 있고, 「이번 주 정산이 왜 없죠」를 듣기 전까지 아무도 모른다.
+        settlementBatch: SettlementBatchHealthIndicator,
       ) => [
         database,
         search,
@@ -80,6 +86,7 @@ import { SearchWarmupService } from './search-warmup.service.js'
         paymentStraggler,
         deliverySimulator,
         claimRefund,
+        settlementBatch,
       ],
       inject: [
         DatabaseHealthIndicator,
@@ -90,6 +97,7 @@ import { SearchWarmupService } from './search-warmup.service.js'
         PaymentStragglerHealthIndicator,
         DeliverySimulatorHealthIndicator,
         ClaimRefundHealthIndicator,
+        SettlementBatchHealthIndicator,
       ],
     },
   ],
