@@ -149,4 +149,82 @@ export const reviewableListResponseSchema = z.object({
 
 export type ReviewableListResponse = z.infer<typeof reviewableListResponseSchema>
 
+/**
+ * 리뷰를 늘어놓는 세 가지 축 (TASK-0084).
+ *
+ * **「낮은 평점 순」이 없다.** 그 정렬은 목록의 뜻을 바꾼다 — 위에서부터 읽는
+ * 사람에게 별 하나가 먼저 보이는 목록은 「이 상품의 리뷰」가 아니라 「이 상품의
+ * 불만」이 된다.
+ */
+export const reviewSortKeys = ['latest', 'rating', 'helpful'] as const
+
+export type ReviewSortKey = (typeof reviewSortKeys)[number]
+
+export const REVIEW_LIST_DEFAULT_LIMIT = 10
+export const REVIEW_LIST_MAX_LIMIT = 50
+
+/** `GET /api/v1/products/:id/reviews`. */
+export const reviewListQueryParamsSchema = z.object({
+  sort: z.enum(reviewSortKeys).optional(),
+  /** 사진이 있는 리뷰만 (F6). */
+  photoOnly: z.stringbool().optional(),
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(REVIEW_LIST_MAX_LIMIT).optional(),
+})
+
+export type ReviewListQueryParams = z.infer<typeof reviewListQueryParamsSchema>
+
+/** 별점 하나의 몫. */
+export const ratingBucketSchema = z.object({
+  rating: reviewRatingSchema,
+  count: z.int().min(0),
+  /** **다섯을 더하면 정확히 100** 이다 (리뷰가 하나라도 있으면). */
+  percentage: z.int().min(0).max(100),
+})
+
+export type RatingBucket = z.infer<typeof ratingBucketSchema>
+
+/**
+ * 이 상품의 평점 요약.
+ *
+ * 목록과 **함께** 오는 이유는 화면이 둘을 나란히 그리기 때문이고, 나눠 받으면
+ * 필터를 바꿀 때마다 분포가 함께 흔들린다 — 분포는 **필터와 무관한** 사실이다.
+ */
+export const ratingSummarySchema = z.object({
+  /** 100배 정수. 4.35는 435다 — 이 스키마에 부동소수가 없다. */
+  averageTimes100: z.int().min(0).max(500),
+  count: z.int().min(0),
+  /** 별 다섯부터 하나까지, 언제나 다섯 칸. */
+  buckets: z.array(ratingBucketSchema),
+  /** 사진이 붙은 리뷰의 수 — 「사진 리뷰만 보기」 버튼이 이 수를 그린다. */
+  photoCount: z.int().min(0),
+})
+
+export type RatingSummary = z.infer<typeof ratingSummarySchema>
+
+/** 목록에 실리는 리뷰 — 한 벌짜리에 도움 수와 내가 눌렀는지가 더해진다. */
+export const reviewListEntrySchema = reviewSchema.extend({
+  helpfulCount: z.int().min(0),
+  /** 로그인하지 않았으면 언제나 `false`. */
+  helpfulByMe: z.boolean(),
+})
+
+export type ReviewListEntry = z.infer<typeof reviewListEntrySchema>
+
+export const reviewListResponseSchema = z.object({
+  reviews: z.array(reviewListEntrySchema),
+  nextCursor: z.string().nullable(),
+  summary: ratingSummarySchema,
+})
+
+export type ReviewListResponse = z.infer<typeof reviewListResponseSchema>
+
+/** `POST`/`DELETE /api/v1/reviews/:id/helpful` 의 답. */
+export const reviewHelpfulResponseSchema = z.object({
+  helpfulCount: z.int().min(0),
+  helpfulByMe: z.boolean(),
+})
+
+export type ReviewHelpfulResponse = z.infer<typeof reviewHelpfulResponseSchema>
+
 export { REVIEW_IMAGE_MAX_COUNT }

@@ -173,6 +173,17 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
     await tx.refreshToken.deleteMany({ where: { userId } })
     await tx.userPreference.deleteMany({ where: { userId } })
     await tx.address.deleteMany({ where: { userId } })
+    // 「도움돼요」 (TASK-0084). **남의 리뷰에 누른 것도 그 사람의 것이다** — 남으면
+    // 실계정 리뷰의 순서가 사라진 사람의 손에 남는다. 지운 뒤 그 리뷰들의 세는
+    // 값을 **다시 센다**: 누적하면 어긋난 값을 되돌릴 방법이 없다.
+    const voted = await tx.reviewHelpful.findMany({ where: { userId }, select: { reviewId: true } })
+
+    await tx.reviewHelpful.deleteMany({ where: { userId } })
+    await tx.$executeRaw`
+      UPDATE "Review" r
+         SET "helpfulCount" = (
+               SELECT COUNT(*)::int FROM "ReviewHelpful" rh WHERE rh."reviewId" = r."id")
+       WHERE r."id" = ANY(${voted.map((row) => row.reviewId)}::uuid[])`
     // 리뷰 (TASK-0083 R1). **남의 상품에 남긴 말이지만 그 사람의 것이다** — 데모
     // 방문자가 남긴 별점이 실계정 상품의 평균에 영원히 섞이면 그 상품의 평점은
     // 아무도 검증할 수 없는 값이 된다. 사진은 `ReviewImage` 가 Cascade 로 함께

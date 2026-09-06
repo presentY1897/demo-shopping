@@ -147,12 +147,39 @@ describe('deny by default', () => {
 
 describe('public endpoints', () => {
   it('lets an anonymous caller through', async () => {
-    const { guard, resolve } = guardWith(null)
+    const { guard } = guardWith(null)
 
     await expect(
       guard.canActivate(contextFor(Handlers, handlerOf(Handlers, 'open'))),
     ).resolves.toBe(true)
-    expect(resolve).not.toHaveBeenCalled()
+  })
+
+  /**
+   * **공개라는 것은 「퍼미션이 필요 없다」이지 「누구인지 몰라도 된다」가 아니다**
+   * (TASK-0084).
+   *
+   * 리뷰 목록이 그 차이가 드러나는 자리다 — 로그인하지 않은 사람도 읽지만, 로그인한
+   * 사람에게는 「내가 도움돼요를 눌렀는가」를 한 칸 더 답해야 한다. 그 값을 읽는
+   * 것은 `@OptionalPrincipal` 이고, 붙여 주는 것이 여기다.
+   */
+  it('signs the caller in when it can, without requiring it', async () => {
+    const caller = principal()
+    const { guard, resolve } = guardWith(caller)
+    const context = contextFor(Handlers, handlerOf(Handlers, 'open'))
+
+    await expect(guard.canActivate(context)).resolves.toBe(true)
+    expect(resolve).toHaveBeenCalled()
+    expect(principalOf(requestOf(context))).toEqual(caller)
+  })
+
+  /** 토큰이 없거나 낡았거나 위조돼도 아무 일도 일어나지 않는다. */
+  it('leaves the request anonymous when nobody could be identified', async () => {
+    const { guard } = guardWith(null)
+    const context = contextFor(Handlers, handlerOf(Handlers, 'open'))
+
+    await guard.canActivate(context)
+
+    expect(principalOf(requestOf(context))).toBeNull()
   })
 })
 

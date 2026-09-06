@@ -27,6 +27,7 @@ export const ownedTables = [
   'RefreshToken',
   'UserPreference',
   'Address',
+  'ReviewHelpful',
   'Review',
   'UserRole',
   'ProductVariant',
@@ -86,6 +87,13 @@ export const cleanupPlan: readonly CleanupStep[] = [
     scope: 'user',
     because:
       '잡아 둔 재고는 놓아 주어야 한다 — 계정이 사라지면 아무도 결제하지 않는다. `ProductVariant.reserved` 를 함께 되돌린다 (TASK-0048)',
+  },
+  {
+    table: 'ReviewHelpful',
+    kind: 'hard',
+    scope: 'user',
+    because:
+      '**남의 리뷰에 누른 것도 그 사람의 것이다** (TASK-0084). 데모 방문자가 누른 「도움돼요」가 남으면 실계정 리뷰의 순서가 사라진 사람의 손에 남는다. 지우면서 그 리뷰들의 `helpfulCount` 를 다시 센다 — 누적하지 않고 세는 이유는 `Product.ratingAvg` 와 같다',
   },
   {
     table: 'Review',
@@ -214,6 +222,7 @@ export function orderFault(
     UserPreference: ['User'],
     Address: ['User'],
     Review: ['User'],
+    ReviewHelpful: ['User', 'Review'],
     UserRole: ['User'],
   }
   const position = new Map(plan.map((step, index) => [step.table, index]))

@@ -22,6 +22,8 @@ import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { SearchOutboxService } from '../search/search-outbox.service.js'
+import { ratingAverage } from './review-console.js'
 import type { ReviewImageRefusal, ReviewRefusal } from './review-rules.js'
 import {
   editable,
@@ -133,6 +135,7 @@ export class ReviewService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
+    private readonly outbox: SearchOutboxService,
   ) {}
 
   /** 산 것에 리뷰를 쓴다 (F1 · F2 · F3 · F6). */
@@ -149,20 +152,26 @@ export class ReviewService {
 
     this.assertImages(request.imageKeys, userId)
 
-    const created = await this.prisma.review.create({
-      data: {
-        orderItemId: request.orderItemId,
-        productId: subject.productId,
-        userId,
-        rating: request.rating,
-        content: request.content,
-        createdAt: now,
-        updatedAt: now,
-        images: {
-          create: request.imageKeys.map((key, position) => ({ key, position, createdAt: now })),
+    const created = await this.prisma.$transaction(async (tx) => {
+      const review = await tx.review.create({
+        data: {
+          orderItemId: request.orderItemId,
+          productId: subject.productId,
+          userId,
+          rating: request.rating,
+          content: request.content,
+          createdAt: now,
+          updatedAt: now,
+          images: {
+            create: request.imageKeys.map((key, position) => ({ key, position, createdAt: now })),
+          },
         },
-      },
-      select: REVIEW_SELECT,
+        select: REVIEW_SELECT,
+      })
+
+      await this.refreshRating(tx, subject.productId)
+
+      return review
     })
 
     return toReview(created)
@@ -186,7 +195,7 @@ export class ReviewService {
     const updated = await this.prisma.$transaction(async (tx) => {
       await tx.reviewImage.deleteMany({ where: { reviewId: id } })
 
-      return tx.review.update({
+      const review = await tx.review.update({
         where: { id },
         data: {
           rating: request.rating,
@@ -198,6 +207,10 @@ export class ReviewService {
         },
         select: REVIEW_SELECT,
       })
+
+      await this.refreshRating(tx, review.productId)
+
+      return review
     })
 
     return toReview(updated)
@@ -211,12 +224,43 @@ export class ReviewService {
    * 수정 기한이 막으려는 것과 같은 조작이다.
    */
   async remove(userId: string, id: string): Promise<void> {
-    await this.own(userId, id)
+    const held = await this.own(userId, id)
 
-    await this.prisma.review.update({
-      where: { id },
-      data: { status: 'DELETED', updatedAt: this.clock.now() },
+    await this.prisma.$transaction(async (tx) => {
+      await tx.review.update({
+        where: { id },
+        data: { status: 'DELETED', updatedAt: this.clock.now() },
+      })
+      await this.refreshRating(tx, held.productId)
     })
+  }
+
+  /**
+   * 이 상품의 평점을 **다시 센다** (F2 · F3 · F4).
+   *
+   * 더하고 빼지 않고 처음부터 센다 — `Product.minPrice` 가 같은 판단을 하고 그
+   * 이유가 저쪽에 적혀 있다: **파생값은 누적하지 않는다.** 누적하면 어긋난 값을
+   * 되돌릴 방법이 없고, 어긋난 평점은 아무도 신고하지 않는다.
+   *
+   * 다시 센 뒤 검색 인덱스에 사건을 남긴다. 부르는 쪽의 트랜잭션 안이라, **사건은
+   * 리뷰가 실제로 바뀐 만큼만 존재한다** — 롤백되면 사건도 함께 사라진다.
+   */
+  private async refreshRating(tx: Prisma.TransactionClient, productId: string): Promise<void> {
+    const rows = await tx.$queryRaw<{ rating: number; count: number }[]>`
+      SELECT "rating", COUNT(*)::int AS "count"
+        FROM "Review"
+       WHERE "productId" = ${productId}::uuid AND "status" = 'PUBLISHED'
+       GROUP BY "rating"`
+    const counts = Object.fromEntries(rows.map((row) => [row.rating, row.count]))
+
+    await tx.product.update({
+      where: { id: productId },
+      data: {
+        ratingAvg: ratingAverage(counts),
+        ratingCount: rows.reduce((sum, row) => sum + row.count, 0),
+      },
+    })
+    await this.outbox.publish(tx, productId, 'UPSERT')
   }
 
   /** 한 벌 읽기. 지워진 리뷰는 쓴 사람에게도 없는 것으로 답한다. */
@@ -271,17 +315,17 @@ export class ReviewService {
   }
 
   /** 이 사람의 리뷰. 남의 것이면 **없다**고 답한다. */
-  private async own(userId: string, id: string): Promise<{ createdAt: Date }> {
+  private async own(userId: string, id: string): Promise<{ createdAt: Date; productId: string }> {
     const review = await this.prisma.review.findUnique({
       where: { id },
-      select: { userId: true, status: true, createdAt: true },
+      select: { userId: true, status: true, createdAt: true, productId: true },
     })
 
     if (review?.userId !== userId || review.status === 'DELETED') {
       throw new NotFoundException('리뷰를 찾을 수 없어요.')
     }
 
-    return { createdAt: review.createdAt }
+    return { createdAt: review.createdAt, productId: review.productId }
   }
 
   private assertImages(keys: readonly string[], userId: string): void {

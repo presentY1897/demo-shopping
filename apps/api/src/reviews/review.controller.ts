@@ -1,17 +1,25 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query } from '@nestjs/common'
-import type { ReviewResponse, ReviewableListResponse } from '@shopping/shared'
+import type {
+  ReviewHelpfulResponse,
+  ReviewListResponse,
+  ReviewResponse,
+  ReviewableListResponse,
+} from '@shopping/shared'
 import {
   createReviewRequestSchema,
+  productIdSchema,
   reviewableListQueryParamsSchema,
+  reviewListQueryParamsSchema,
   updateReviewRequestSchema,
 } from '@shopping/shared'
 import { z } from 'zod'
 
-import { Principal } from '../auth/principal.decorator.js'
+import { OptionalPrincipal, Principal } from '../auth/principal.decorator.js'
 import { PublicEndpoint } from '../auth/public-endpoint.decorator.js'
 import { RequirePermission } from '../auth/require-permission.decorator.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { parseInput } from '../common/parse-input.js'
+import { ReviewListService } from './review-list.service.js'
 import { ReviewService } from './review.service.js'
 
 const reviewIdSchema = z.uuid()
@@ -31,7 +39,50 @@ const reviewIdSchema = z.uuid()
  */
 @Controller({ version: '1' })
 export class ReviewController {
-  constructor(private readonly reviews: ReviewService) {}
+  constructor(
+    private readonly reviews: ReviewService,
+    private readonly list: ReviewListService,
+  ) {}
+
+  /**
+   * 이 상품의 리뷰와 평점 (TASK-0084 F1 · F6).
+   *
+   * **로그인하지 않아도 읽는다.** 「내가 도움돼요를 눌렀는가」만 로그인한 사람에게
+   * 달라지고, 그 값은 로그인하지 않았으면 언제나 거짓이다.
+   */
+  @Get('products/:id/reviews')
+  @PublicEndpoint()
+  byProduct(
+    @OptionalPrincipal() principal: RequestPrincipal | null,
+    @Param('id') id: string,
+    @Query() query: unknown,
+  ): Promise<ReviewListResponse> {
+    return this.list.list(
+      parseInput(productIdSchema, id, 'id'),
+      parseInput(reviewListQueryParamsSchema, query),
+      principal?.userId ?? null,
+    )
+  }
+
+  /** 도움이 됐다고 누른다. **두 번 눌러도 한 번이다.** */
+  @Post('reviews/:id/helpful')
+  @RequirePermission('review.write')
+  vote(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+  ): Promise<ReviewHelpfulResponse> {
+    return this.list.vote(principal.userId, parseInput(reviewIdSchema, id, 'id'))
+  }
+
+  /** 누른 것을 무른다. 없던 것을 무르면 아무 일도 일어나지 않는다. */
+  @Delete('reviews/:id/helpful')
+  @RequirePermission('review.write')
+  unvote(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+  ): Promise<ReviewHelpfulResponse> {
+    return this.list.unvote(principal.userId, parseInput(reviewIdSchema, id, 'id'))
+  }
 
   /**
    * 아직 리뷰를 쓸 수 있는 주문 항목 (F7).

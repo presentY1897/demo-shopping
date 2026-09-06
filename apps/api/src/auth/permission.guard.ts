@@ -84,12 +84,16 @@ export class PermissionGuard implements CanActivate {
    * missing. The reason stays in the log, where the person who can act on it
    * reads it, and the caller gets an unexplained server error and a request id.
    */
-  private withoutPermission(
+  private async withoutPermission(
     context: ExecutionContext,
     permission: Permission | undefined,
     isPublic: boolean,
-  ): boolean {
-    if (isPublic && permission === undefined) return true
+  ): Promise<boolean> {
+    if (isPublic && permission === undefined) {
+      await this.attachIfSignedIn(context)
+
+      return true
+    }
 
     const handler = `${context.getClass().name}.${context.getHandler().name}`
 
@@ -102,6 +106,26 @@ export class PermissionGuard implements CanActivate {
 
     this.logger.error(`${handler} 에 퍼미션 선언이 없어 요청을 차단했습니다. (기본 거부)`)
     throw new InternalServerErrorException()
+  }
+
+  /**
+   * 공개 라우트에서도 **알 수 있으면 누구인지 적어 둔다** (TASK-0084).
+   *
+   * 공개라는 것은 「퍼미션이 필요 없다」이지 「누구인지 몰라도 된다」가 아니다.
+   * 리뷰 목록이 그 차이가 드러나는 자리다 — 로그인하지 않은 사람도 읽지만, 로그인한
+   * 사람에게는 「내가 도움돼요를 눌렀는가」를 한 칸 더 답해야 한다.
+   *
+   * **판정에는 쓰이지 않는다.** 이 자리를 지난 요청은 이미 퍼미션 검사를 통과할
+   * 필요가 없는 요청이고, 여기서 붙는 주체는 `@OptionalPrincipal` 이 읽는 값일
+   * 뿐이다. 그래서 토큰이 없거나 낡았거나 위조돼도 아무 일도 일어나지 않는다 —
+   * 해석기가 그 셋을 모두 `null` 로 답한다는 것이 그 계약이다
+   * (`PrincipalResolver`).
+   */
+  private async attachIfSignedIn(context: ExecutionContext): Promise<void> {
+    const request = context.switchToHttp().getRequest<IncomingMessage>()
+    const principal = await this.resolver.resolve(request)
+
+    if (principal !== null) attachPrincipal(request, principal)
   }
 }
 
