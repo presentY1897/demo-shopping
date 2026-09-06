@@ -3,11 +3,8 @@ import { Module } from '@nestjs/common'
 import { PrismaModule } from '../prisma/prisma.module.js'
 import { ClaimModule } from './claim.module.js'
 import { RefundingReturnEvents } from './refund.service.js'
-import {
-  NoopReturnRestockEvents,
-  RETURN_REFUND_EVENTS,
-  RETURN_RESTOCK_EVENTS,
-} from './return-events.js'
+import { RestockingReturnEvents } from './restock.service.js'
+import { RETURN_REFUND_EVENTS, RETURN_RESTOCK_EVENTS } from './return-events.js'
 import { ReturnController } from './return.controller.js'
 import { ReturnService } from './return.service.js'
 
@@ -31,8 +28,10 @@ import { ReturnService } from './return.service.js'
  * 유일한 자리다), 두 벌로 두면 「이미 몇 개를 환불했나」를 세는 규칙이 두 곳에 살게
  * 된다. 화살표는 여전히 `Return → Claim` 한 방향이다.
  *
- * 재입고(TASK-0069)는 여기 없다. 포트가 있고 지금 바인딩된 구현은 아무것도 하지
- * 않는다 (`return-events.ts`).
+ * **재입고도 붙었고, 실행기는 마찬가지로 `ClaimModule` 이 갖는다** (TASK-0069). 이유가
+ * 환불과 같다 — 되돌리는 일은 끝에서 같은 일이고, 「이 항목이 이미 되돌아왔나」를
+ * 묻는 열쇠가 두 곳에 살면 안 된다. 화살표는 여전히 `Return → Claim` 한 방향이고,
+ * `StockModule` 은 저쪽이 들여온다.
  */
 @Module({
   imports: [PrismaModule, ClaimModule],
@@ -40,8 +39,7 @@ import { ReturnService } from './return.service.js'
   providers: [
     ReturnService,
     { provide: RETURN_REFUND_EVENTS, useClass: RefundingReturnEvents },
-    // TASK-0069(재입고)가 붙을 때 여기 한 줄만 바뀐다.
-    { provide: RETURN_RESTOCK_EVENTS, useClass: NoopReturnRestockEvents },
+    { provide: RETURN_RESTOCK_EVENTS, useClass: RestockingReturnEvents },
   ],
   exports: [ReturnService],
 })

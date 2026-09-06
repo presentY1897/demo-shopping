@@ -342,9 +342,9 @@ export class ReturnService {
    * **커밋 뒤다.** 트랜잭션 안에서 발행하면 롤백된 검수의 환불이 나가고, 그 돈은
    * 되돌릴 수 없다 — `SellerOrderService.publish` 가 같은 이유로 같은 자리에 있다.
    *
-   * 던지지 않는 것까지는 흉내 내지 않는다. 지금 바인딩된 구현이 아무것도 하지 않으므로
-   * 던질 것이 없고, 실제 구현이 붙을 때 그 성질을 어디서 지킬지는 그쪽 TASK 의
-   * 결정이다 (`return-events.ts`).
+   * 던지지 않는 것은 **받는 쪽이 지킨다.** 두 실행기 모두 무슨 일이 있어도 값으로
+   * 답하므로(`ClaimRefundService.settle` · `ClaimRestockService.restore`) 여기서 다시
+   * 감쌀 것이 없다 — 감싸면 실패가 두 곳에서 다르게 다뤄진다 (`return-events.ts`).
    */
   private async publishCompleted(claimId: string, step: StepRow): Promise<void> {
     const detail = await this.prisma.returnDetail.findUniqueOrThrow({
