@@ -19,13 +19,24 @@ import {
   couponCategoryScopeIdSchema,
   couponProductScopeIdSchema,
   couponSellerScopeIdSchema,
-  platformOwnership,
 } from '@shopping/shared'
 import type { ZodType } from 'zod'
 
 import { assertResourceAccess } from '../auth/access-denied.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
-import { sellerOwnership, sellerOwnershipSelect } from '../auth/resource-ownership.js'
+import type { AccountRow } from '../auth/resource-ownership.js'
+import type { ResourceOwnership } from '@shopping/shared'
+
+import {
+  accountOwnership,
+  accountOwnershipSelect,
+  couponOwnership,
+  couponOwnershipSelect,
+  ownerGroup,
+  sellerOwnership,
+  sellerOwnershipSelect,
+  withinDemoGroup,
+} from '../auth/resource-ownership.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { domainFailure } from '../common/domain-failure.js'
@@ -45,6 +56,12 @@ type Tx = Prisma.TransactionClient
 
 /** 발급 한 건이 어디로 들어왔나. 거절의 문장이 갈리는 유일한 자리다. */
 type IssueDoor = 'grant' | 'claim'
+
+/** 새 쿠폰 행이 들고 태어나는 소유 정보. 둘 다 발행 시점에 정해지고 바뀌지 않는다. */
+interface CouponIssuer {
+  readonly issuedByUserId: string
+  readonly audience: 'ALL' | 'DEMO'
+}
 
 /**
  * 쿠폰의 발행과 발급 (TASK-0072).
@@ -98,12 +115,21 @@ export class CouponService {
    *
    * **부담 주체는 요청이 고르지 않는다.** `sellerId` 가 있으면 판매자 쿠폰이고
    * 없으면 플랫폼 쿠폰이다. 그래서 권한 검사가 곧 부담 주체의 검사가 된다 —
-   * 플랫폼 쿠폰은 `platformOwnership` 에 대한 `coupon.write` 라 `any` 스코프를
-   * 가진 관리자만 지나가고(판매자와 데모 관리자는 `out_of_scope` 로 거절된다),
-   * 판매자 쿠폰은 그 가게의 소유권 검사라 주인과 관리자가 지난다.
+   * 그리고 **둘은 다른 퍼미션**이다 (TASK-0073).
+   *
+   * | 등급 | 판매자 쿠폰 | 플랫폼 쿠폰 |
+   * | --- | --- | --- |
+   * | 판매자 | 자기 스토어 (`coupon.write:own`) | **낼 수 없다** — 퍼미션이 없다 |
+   * | 관리자 | 아무 스토어 (`coupon.write:any`) | 전부 (`coupon.platform:any`) |
+   * | 데모 관리자 | 데모 스토어 (`coupon.write:demo`) | **데모 그룹** (`coupon.platform:demo`) |
+   *
+   * 한동안 플랫폼 쿠폰은 `platformOwnership` 에 대한 `coupon.write` 였고, 그래서
+   * 데모 관리자에게 발행 화면이 **읽기 전용 껍데기**였다 — 주인이 아무도 아닌 행에는
+   * `any` 만 닿기 때문이다. 이제 그 행의 주인은 발행자이고, 스코프가 「어느 그룹에
+   * 낼 수 있는가」를 정한다.
    */
   async create(principal: RequestPrincipal, request: CreateCouponRequest): Promise<Coupon> {
-    await this.assertMayIssueFor(principal, request.sellerId)
+    const owner = await this.assertMayCreate(principal, request.sellerId)
 
     // **판단하기 전에 표준형으로 고른다.** 대소문자만 다른 uuid 와 두 번 고른
     // 대상이 서버·DB·적용에서 서로 다른 답을 내는 것을 막는다
@@ -131,7 +157,13 @@ export class CouponService {
 
     const now = this.clock.now()
 
-    return this.write(normalized, input.validFrom, input.validUntil, now)
+    return this.write(normalized, input.validFrom, input.validUntil, now, {
+      issuedByUserId: principal.userId,
+      // 만든 사람이 체험 계정이거나 대상 스토어가 체험 계정의 것이면 체험 그룹이다.
+      // 여기서 정해지고 그 뒤로 바뀌지 않으므로, 소유권을 묻는 자리가 아무것도
+      // 조인하지 않는다.
+      audience: ownerGroup(owner),
+    })
   }
 
   // ------------------------------------------------------------------ 발급
@@ -139,9 +171,10 @@ export class CouponService {
   /**
    * 발행자가 한 사람에게 지급한다 (F3 · F4 · F5).
    *
-   * 남의 쿠폰을 나눠 줄 수는 없다 — 쿠폰 행의 소유권에 대한 `coupon.write` 를
-   * 다시 묻는다. 발행할 때 지난 검사와 같은 검사이고, 다른 것은 **그때는 만들
-   * 행이 없어 `platformOwnership` 을 썼고 지금은 실제 행이 있다**는 점뿐이다.
+   * 남의 쿠폰을 나눠 줄 수는 없다 — **그 행의 소유권**에 대해 같은 퍼미션을 다시
+   * 묻는다. 발행할 때와 다른 것은 그때는 만들 행이 없어 부르는 사람의 계정을 썼고
+   * 지금은 실제 행이 있다는 점뿐이다. 그래서 진짜 관리자가 낸 플랫폼 쿠폰은
+   * 데모 관리자가 지급할 수 없다 — 그 행의 주인이 데모가 아니다.
    */
   async grant(
     principal: RequestPrincipal,
@@ -150,18 +183,19 @@ export class CouponService {
   ): Promise<UserCouponContract> {
     const coupon = await this.load(couponId)
 
-    await this.assertMayIssueFor(principal, coupon.sellerId)
+    assertMayIssue(principal, coupon)
 
     // 받을 사람이 실재하는지 먼저 본다. 없는 계정에 넣으면 외래키가 막아 주지만,
     // 그 실패는 500 으로 나가 「내가 잘못 친 것인지」를 아무도 알 수 없다.
     const recipient = await this.prisma.user.findFirst({
       where: { id: userId, deletedAt: null },
-      select: { id: true },
+      select: accountOwnershipSelect,
     })
 
     if (recipient === null) throw new NotFoundException('회원을 찾을 수 없어요.')
 
-    return this.issue(coupon, userId, 'grant')
+    // 받을 사람을 이미 읽었으므로 아래가 다시 읽지 않는다.
+    return this.issue(coupon, userId, 'grant', recipient)
   }
 
   /**
@@ -207,8 +241,12 @@ export class CouponService {
     coupon: CouponRow,
     userId: string,
     door: IssueDoor,
+    known?: AccountRow,
   ): Promise<UserCouponContract> {
     const now = this.clock.now()
+
+    await this.assertSameGroup(coupon, userId, door, known)
+
     const fault = issuabilityFault(coupon, now)
 
     // 두 거절 모두 **입력에 대한 것이 아니다** — 코드는 맞게 쳤고 쿠폰도 있다.
@@ -257,6 +295,53 @@ export class CouponService {
 
       throw error
     }
+  }
+
+  /**
+   * **데모가 낸 쿠폰은 데모에게만 간다** (TASK-0073).
+   *
+   * 발급받는 사람은 아무 권한도 들고 있지 않으므로 스코프 검사로는 물을 수 없는
+   * 질문이다. 막지 않으면 방문자가 만든 할인이 진짜 주문에 붙고, 코드가 달려
+   * 있으면 누구에게나 퍼진다.
+   *
+   * 반대 방향은 막지 않는다. 진짜 쿠폰을 데모 계정이 받는 것은 방문자가 진짜
+   * 흐름을 겪는 일이고, 그 주문 자체가 데모 데이터다.
+   *
+   * **데모 쿠폰일 때만 읽는다.** 대부분의 발급은 그렇지 않고, 성공하는 길에 질의를
+   * 하나 더 놓지 않는 것이 이 표의 규칙이다 (`explainRefusal` 과 같은 나눔). 지급
+   * (`grant`)은 받을 사람을 이미 읽은 참이라 그 행을 넘겨받는다.
+   */
+  private async assertSameGroup(
+    coupon: CouponRow,
+    userId: string,
+    door: IssueDoor,
+    known: AccountRow | undefined,
+  ): Promise<void> {
+    const owner = couponOwnership(coupon)
+
+    // 깃발이 아니라 **그룹**을 묻는다. 이 파일은 깃발의 이름을 알 필요가 없고,
+    // 알지 않는 것이 `demo-containment.spec.ts` 가 지키는 성질이다.
+    if (ownerGroup(owner) !== 'DEMO') return
+
+    const recipient =
+      known ??
+      (await this.prisma.user.findFirst({
+        where: { id: userId, deletedAt: null },
+        select: accountOwnershipSelect,
+      }))
+
+    // 코드를 넣은 사람의 계정이 사라졌다면 발급할 곳이 없다.
+    if (recipient === null) throw new NotFoundException('계정을 찾을 수 없어요.')
+    if (withinDemoGroup(owner, recipient)) return
+
+    throw new ForbiddenException(
+      domainFailure(
+        'COUPON_DEMO_ONLY',
+        door === 'claim'
+          ? '체험용으로 발행된 쿠폰이라 체험 계정만 받을 수 있어요.'
+          : '체험용으로 발행된 쿠폰이라 체험 계정에만 지급할 수 있어요.',
+      ),
+    )
   }
 
   /**
@@ -326,14 +411,30 @@ export class CouponService {
    * 플랫폼 쿠폰을 낼 수 없다」와 「데모 관리자는 실계정에 닿는 쿠폰을 낼 수 없다」를
    * 한 줄로 답한다 — 서비스가 역할을 직접 보지 않는다.
    */
-  private async assertMayIssueFor(
+  private async assertMayCreate(
     principal: RequestPrincipal,
     sellerId: string | null,
-  ): Promise<void> {
+  ): Promise<ResourceOwnership> {
     if (sellerId === null) {
-      assertResourceAccess(principal, 'coupon.write', platformOwnership)
+      // **만들어질 행의 주인은 나다.** 플랫폼 쿠폰에는 소유하는 스토어가 없으므로
+      // 발행자가 주인이고, 그래서 검사할 소유권은 부르는 사람의 계정이다.
+      //
+      // `coupon.write` 가 아니라 `coupon.platform` 인 것이 이 자리의 전부다. 소유권을
+      // 자기 계정으로 두는 순간 판매자의 `coupon.write:own` 이 그것에 닿아 통과하기
+      // 때문이고, 그러면 판매자가 **남의 돈으로 하는 할인**을 낼 수 있게 된다.
+      // 그 거절은 스코프가 아니라 판매자에게 이 퍼미션이 없다는 사실이 만든다.
+      const account = await this.prisma.user.findFirst({
+        where: { id: principal.userId, deletedAt: null },
+        select: accountOwnershipSelect,
+      })
 
-      return
+      if (account === null) throw new NotFoundException('계정을 찾을 수 없어요.')
+
+      const owner = accountOwnership(account)
+
+      assertResourceAccess(principal, 'coupon.platform', owner)
+
+      return owner
     }
 
     const seller = await this.prisma.seller.findUnique({
@@ -343,7 +444,14 @@ export class CouponService {
 
     if (seller === null) throw new NotFoundException('판매자를 찾을 수 없어요.')
 
-    assertResourceAccess(principal, 'coupon.write', sellerOwnership(seller))
+    const owner = sellerOwnership(seller)
+
+    assertResourceAccess(principal, 'coupon.write', owner)
+
+    // **대상 스토어의 그룹이 곧 이 쿠폰의 그룹이다.** 데모 관리자는 `demo` 스코프라
+    // 실계정의 스토어를 지날 수 없고, 실계정 관리자가 데모 스토어에 쿠폰을 내면
+    // 그것은 데모 그룹의 쿠폰이 맞다 — 할인되는 상품이 그 가게의 것이다.
+    return owner
   }
 
   /**
@@ -413,13 +521,14 @@ export class CouponService {
     validFrom: Date,
     validUntil: Date,
     now: Date,
+    issuer: CouponIssuer,
   ): Promise<Coupon> {
     try {
-      return await this.insert(request, validFrom, validUntil, now)
+      return await this.insert(request, validFrom, validUntil, now, issuer)
     } catch (error: unknown) {
       if (!isUniqueViolationOn(error, 'code')) throw error
 
-      return this.insert(request, validFrom, validUntil, now)
+      return this.insert(request, validFrom, validUntil, now, issuer)
     }
   }
 
@@ -428,6 +537,7 @@ export class CouponService {
     validFrom: Date,
     validUntil: Date,
     now: Date,
+    issuer: CouponIssuer,
   ): Promise<Coupon> {
     const row = await this.prisma.coupon.create({
       data: {
@@ -444,6 +554,11 @@ export class CouponService {
         validFrom,
         validUntil,
         issueLimit: request.issueLimit,
+        // **누가 냈고, 어느 그룹의 것인가** (TASK-0073). 앞엣것이 없으면 플랫폼
+        // 쿠폰에는 주인이 없어 `any` 스코프만 닿고, 뒤엣것이 없으면 그것을 물을
+        // 때마다 발행자와 스토어를 조인해야 한다.
+        issuedByUserId: issuer.issuedByUserId,
+        audience: issuer.audience,
         createdAt: now,
         updatedAt: now,
       },
@@ -465,8 +580,14 @@ export class CouponService {
   }
 }
 
-/** 응답에 실리는 쿠폰의 모양. */
-const COUPON_SELECT = {
+/**
+ * 계약에 실리는 칸들.
+ *
+ * 아래 {@link COUPON_SELECT} 와 나뉘어 있는 이유는 **읽는 쪽이 둘**이기 때문이다.
+ * 발급하는 길은 소유권까지 필요하고, 쿠폰함이나 주문서는 계약의 칸만 필요하다 —
+ * 뒤엣것에 소유권을 함께 읽히면 화면 하나가 조인을 두 개 더 끌고 다닌다.
+ */
+const COUPON_CONTRACT_SELECT = {
   id: true,
   issuerType: true,
   sellerId: true,
@@ -483,6 +604,20 @@ const COUPON_SELECT = {
   issueLimit: true,
   issuedCount: true,
 } as const
+
+type CouponContractRow = Prisma.CouponGetPayload<{ select: typeof COUPON_CONTRACT_SELECT }>
+
+/**
+ * 계약의 칸들, **그리고 그 행의 주인** (TASK-0073).
+ *
+ * 소유권을 함께 읽는 이유는 지급이 그것을 묻기 때문이다(`assertMayIssue`). 따로
+ * 읽으면 발급하는 길에 질의가 하나 더 붙고, 그 수를 `coupon-performance.spec.ts`
+ * 의 A5 가 센다.
+ *
+ * 주인은 **응답에 실리지 않는다** — `toCoupon` 이 계약의 칸만 골라 옮긴다. 실으면
+ * 판매자가 자기 쿠폰을 읽을 때 그것을 낸 관리자의 계정 id 가 함께 나간다.
+ */
+const COUPON_SELECT = { ...COUPON_CONTRACT_SELECT, ...couponOwnershipSelect } as const
 
 type CouponRow = Prisma.CouponGetPayload<{ select: typeof COUPON_SELECT }>
 
@@ -506,12 +641,29 @@ const USER_COUPON_SELECT = {
 
 type UserCouponRow = Prisma.UserCouponGetPayload<{ select: typeof USER_COUPON_SELECT }>
 
-/** 행을 계약의 모양으로. 날짜는 ISO 문자열이다 (`couponSchema`). */
-export function toCoupon(row: CouponRow): Coupon {
+/**
+ * 행을 계약의 모양으로. 날짜는 ISO 문자열이다 (`couponSchema`).
+ *
+ * **칸을 하나씩 옮긴다.** 행을 통째로 펼치면 위의 `select` 가 넓어지는 날 소유권이
+ * 조용히 응답에 실리고, 그때 새는 것은 그 쿠폰을 낸 사람의 계정 id 다.
+ */
+export function toCoupon(row: CouponContractRow): Coupon {
   return {
-    ...row,
+    id: row.id,
+    issuerType: row.issuerType,
+    sellerId: row.sellerId,
+    name: row.name,
+    code: row.code,
+    discountType: row.discountType,
+    discountValue: row.discountValue,
+    maxDiscountAmount: row.maxDiscountAmount,
+    minOrderAmount: row.minOrderAmount,
+    scopeType: row.scopeType,
+    scopeIds: row.scopeIds,
     validFrom: row.validFrom.toISOString(),
     validUntil: row.validUntil.toISOString(),
+    issueLimit: row.issueLimit,
+    issuedCount: row.issuedCount,
   }
 }
 
@@ -589,4 +741,21 @@ function alreadyIssued(door: IssueDoor): Error {
  */
 function assertUuids(ids: readonly string[], schema: ZodType<string>): void {
   if (ids.some((id) => !schema.safeParse(id).success)) throw missingScopeTarget()
+}
+
+/**
+ * 이 사람이 **이 쿠폰**을 지급할 수 있는가 (TASK-0073).
+ *
+ * 만드는 자리와 나누는 자리가 같은 퍼미션을 쓰고 소유권만 다르다 — 저기서는 만들어질
+ * 행의 주인이 부르는 사람이고, 여기서는 이미 있는 행의 주인이 그 행에 적혀 있다.
+ *
+ * 순수 함수인 이유는 **행을 이미 들고 있기 때문**이다. `assertMayCreate` 는 계정이나
+ * 스토어를 읽어야 해서 `await` 가 붙지만, 이쪽은 읽을 것이 없다.
+ */
+function assertMayIssue(principal: RequestPrincipal, coupon: CouponRow): void {
+  assertResourceAccess(
+    principal,
+    coupon.sellerId === null ? 'coupon.platform' : 'coupon.write',
+    couponOwnership(coupon),
+  )
 }

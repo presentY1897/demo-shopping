@@ -23,18 +23,20 @@ import { CouponService } from './coupon.service.js'
  * 함정에 같은 주석을 달아 두었고, 나중에 `coupons/:id` 가 생기는 날 이 순서가
  * 이미 맞아 있어야 한다.
  *
- * ## 발급받기가 `coupon.read` 인 것
+ * ## 발급받기는 `coupon.claim` 이다
  *
- * **이 파일에서 가장 설명이 필요한 줄이다.** 구매자는 `coupon.read:own` 만
- * 갖는다(`packages/shared/src/auth/role-permissions.ts`) — `coupon.write` 는
- * 발행자의 능력이고, 그것을 구매자에게 주면 **구매자가 쿠폰을 만들 수 있게
- * 된다.** 「내 쿠폰함에 넣는다」에 맞는 퍼미션(`coupon.claim` 같은)은 이 TASK 가
- * 소유하지 않은 목록에 있어서 여기서 더할 수 없다.
+ * 한동안 이 문은 `coupon.read` 를 썼다. 넓어서가 아니라 **이름과 행동이 달라서**
+ * 부채였다 — 구매자에게 `coupon.write` 를 줄 수는 없고(주면 구매자가 쿠폰을 만들 수
+ * 있다) 그 목록을 소유하지 않은 TASK 가 새 이름을 더할 수도 없어서, 「받는다」가
+ * 「읽는다」로 적혀 있었다. TASK-0073 이 등급을 나누면서 그 이름이 생겼다.
  *
- * 이름이 맞지 않을 뿐 **넓지는 않다.** 이 라우트는 `userId` 를 요청에서 받지
- * 않으므로 부르는 사람이 자기 쿠폰함 말고 다른 곳에 넣을 방법이 없고, 코드를
- * 모르면 아무 일도 일어나지 않는다. 그래도 이름과 행동이 갈리는 것은 부채이므로
- * 보고에 남긴다.
+ * ## 발행은 두 퍼미션으로 갈린다 (TASK-0073)
+ *
+ * 판매자 쿠폰은 `coupon.write` 이고 플랫폼 쿠폰은 `coupon.platform` 이다. 라우트는
+ * 하나인데 **요청의 `sellerId` 가 어느 쪽인지를 정하므로**, 데코레이터가 아니라
+ * 서비스가 그 갈림을 판정한다 — 데코레이터에 둘 중 하나를 적으면 다른 쪽이 열린다.
+ * 여기 `coupon.write` 만 걸려 있는 것은 **문을 지나는 최소 조건**이고, 그 뒤의
+ * 진짜 판정은 `CouponService.assertMayCreate` 에 있다.
  */
 @Controller({ version: '1' })
 export class CouponController {
@@ -54,7 +56,7 @@ export class CouponController {
 
   /** 코드를 넣어 **본인이** 받는다. `:id/issues` 보다 위에 있어야 한다. */
   @Post('coupons/claims')
-  @RequirePermission('coupon.read')
+  @RequirePermission('coupon.claim')
   async claim(
     @Principal() principal: RequestPrincipal,
     @Body() body: unknown,

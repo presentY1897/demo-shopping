@@ -13,7 +13,6 @@ import { barrier, concurrently, fulfilled, rejected } from '../support/concurren
 import { useDatabase } from '../support/database.js'
 import { createCategory, createProduct, createSeller, createUser } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
-import { callers } from '../support/principal.js'
 
 /**
  * 쿠폰 발행 · 발급 (TASK-0072), 이 워커의 실제 데이터베이스에 대고.
@@ -42,6 +41,16 @@ const VALID_UNTIL = '2026-09-30T00:00:00.000Z'
 let seller: TestCaller
 let otherSeller: TestCaller
 let buyer: TestCaller
+/**
+ * 실제 계정으로 만든 관리자와 데모 관리자.
+ *
+ * `operator` 같은 합성 주체를 쓰지 않는 이유는 **플랫폼 쿠폰에 주인이 생겼기**
+ * 때문이다 (TASK-0073). 만들어질 행의 소유자가 부르는 사람이므로 서버가 그 계정을
+ * 읽어야 하고, 행이 없는 주체는 「계정을 찾을 수 없어요」로 끝난다 — 그리고 데모
+ * 여부는 역할이 아니라 그 행에 있다.
+ */
+let operator: TestCaller
+let demoAdmin: TestCaller
 let categoryId: number
 
 beforeEach(async () => {
@@ -58,6 +67,13 @@ beforeEach(async () => {
   otherSeller = { userId: rival.id, roles: ['SELLER_OWNER'], sellerId: rivalStore.id }
 
   buyer = { userId: (await createUser(db)).id, roles: ['BUYER'] }
+  operator = { userId: (await createUser(db)).id, roles: ['ADMIN_OPERATOR'] }
+  demoAdmin = {
+    userId: (
+      await createUser(db, { isDemo: true, demoExpiresAt: new Date('2026-09-04T00:00:00.000Z') })
+    ).id,
+    roles: ['DEMO_ADMIN'],
+  }
   categoryId = (await createCategory(db)).id
 })
 
@@ -177,7 +193,7 @@ async function refusedBySql(statement: string, values: readonly unknown[]): Prom
 
 describe('발행 — 부담 주체 (F1)', () => {
   it('관리자가 낸 쿠폰은 플랫폼 부담으로 저장된다', async () => {
-    const { coupon } = await issueCoupon(callers.operator, {})
+    const { coupon } = await issueCoupon(operator, {})
 
     expect(coupon.issuerType).toBe('PLATFORM')
     expect(coupon.sellerId).toBeNull()
@@ -198,8 +214,8 @@ describe('발행 — 부담 주체 (F1)', () => {
   it('부담 주체는 요청이 고르지 않는다 — 저장된 값이 sellerId 에서 파생된다', async () => {
     // 요청에 `issuerType` 이 없으므로 「PLATFORM 인데 sellerId 가 있는」 조합이
     // 표현조차 되지 않는다. DB 의 `Coupon_issuer_check` 는 그 다음 겹이다.
-    const platform = await issueCoupon(callers.operator, {})
-    const bySeller = await issueCoupon(callers.operator, {
+    const platform = await issueCoupon(operator, {})
+    const bySeller = await issueCoupon(operator, {
       sellerId: seller.sellerId ?? null,
       scopeType: 'SELLER',
       scopeIds: [seller.sellerId ?? ''],
@@ -214,10 +230,99 @@ describe('발행 — 부담 주체 (F1)', () => {
     expect(await failure(issueCoupon(seller, {}))).toMatchObject({ status: 403 })
   })
 
-  it('데모 관리자도 플랫폼 쿠폰을 낼 수 없다', async () => {
-    // `DEMO_ADMIN` 의 `coupon.write` 는 `demo` 로 좁혀져 있고, 플랫폼 데이터는
-    // 데모가 만든 것이 아니다 — 실계정이 받게 될 쿠폰을 방문자가 만들지 못한다.
-    expect(await failure(issueCoupon(callers.demoAdmin, {}))).toMatchObject({ status: 403 })
+  /**
+   * **데모 관리자는 플랫폼 쿠폰을 낼 수 있다 — 자기 그룹의 것으로** (TASK-0073).
+   *
+   * 한동안 낼 수 없었다. 플랫폼 쿠폰의 주인이 아무도 아니라 `any` 만 닿았기
+   * 때문이고, 그래서 방문자에게 발행 화면이 읽기 전용 껍데기였다. 이제 주인은
+   * 발행자이고, `coupon.platform:demo` 가 그 행에 닿는다.
+   */
+  it('데모 관리자도 플랫폼 쿠폰을 낸다 — 그리고 그것은 데모 그룹의 것이다', async () => {
+    const { coupon } = await issueCoupon(demoAdmin, {})
+
+    expect(coupon.issuerType).toBe('PLATFORM')
+
+    const row = await db.one<{ issuedByUserId: string }>(
+      `SELECT "issuedByUserId" FROM "Coupon" WHERE "id" = $1`,
+      [coupon.id],
+    )
+
+    expect(row.issuedByUserId).toBe(demoAdmin.userId)
+  })
+
+  /** 그리고 **실계정이 낸 쿠폰에는 닿지 못한다.** 그 행의 주인이 데모가 아니다. */
+  it('데모 관리자는 관리자가 낸 플랫폼 쿠폰을 지급하지 못한다', async () => {
+    const { coupon } = await issueCoupon(operator, {})
+
+    expect(await failure(grant(demoAdmin, coupon.id, buyer.userId))).toMatchObject({ status: 403 })
+  })
+
+  /**
+   * **체험 그룹의 쿠폰은 체험 계정에게만 간다** (TASK-0073).
+   *
+   * 이것이 데모 관리자에게 발행을 열어 준 대가로 막아야 하는 구멍이다. 코드가 달린
+   * 플랫폼 쿠폰을 방문자가 만들어 코드를 퍼뜨리면, 그 할인은 **진짜 주문에** 붙는다.
+   */
+  it('데모 관리자가 낸 쿠폰은 실계정이 코드로 받지 못한다', async () => {
+    const { coupon } = await issueCoupon(demoAdmin, { withCode: true })
+    const failed = await failure(claim(buyer, formatCouponCode(coupon.code ?? '')))
+
+    expect(failed).toMatchObject({ status: 403, code: 'COUPON_DEMO_ONLY' })
+  })
+
+  it('지급으로도 실계정에 넣지 못한다', async () => {
+    const { coupon } = await issueCoupon(demoAdmin, {})
+
+    expect(await failure(grant(demoAdmin, coupon.id, buyer.userId))).toMatchObject({
+      status: 403,
+      code: 'COUPON_DEMO_ONLY',
+    })
+  })
+
+  it('체험 계정은 받는다 — 그것이 이 쿠폰의 그룹이다', async () => {
+    const demoBuyer = await createUser(db, {
+      isDemo: true,
+      demoExpiresAt: new Date('2026-09-04T00:00:00.000Z'),
+    })
+    const { coupon } = await issueCoupon(demoAdmin, {})
+    const { userCoupon } = await grant(demoAdmin, coupon.id, demoBuyer.id)
+
+    expect(userCoupon.userId).toBe(demoBuyer.id)
+  })
+
+  /**
+   * **반대 방향은 막지 않는다.** 진짜 쿠폰을 체험 계정이 받는 것은 방문자가 진짜
+   * 흐름을 겪는 일이고, 그 주문 자체가 체험 데이터다.
+   */
+  it('실계정이 낸 쿠폰은 체험 계정도 받는다', async () => {
+    const demoBuyer = await createUser(db, {
+      isDemo: true,
+      demoExpiresAt: new Date('2026-09-04T00:00:00.000Z'),
+    })
+    const { coupon } = await issueCoupon(operator, {})
+    const { userCoupon } = await grant(operator, coupon.id, demoBuyer.id)
+
+    expect(userCoupon.userId).toBe(demoBuyer.id)
+  })
+
+  /** 판매자 쪽도 같은 규칙이다 — 대상 스토어가 체험이면 그 쿠폰도 체험 그룹이다. */
+  it('데모 스토어의 쿠폰은 체험 그룹으로 저장된다', async () => {
+    const owner = await createUser(db, {
+      isDemo: true,
+      demoExpiresAt: new Date('2026-09-04T00:00:00.000Z'),
+    })
+    const store = await createSeller(db, { userId: owner.id })
+    const { coupon } = await issueCoupon(operator, {
+      sellerId: store.id,
+      scopeType: 'SELLER',
+      scopeIds: [store.id],
+    })
+    const row = await db.one<{ audience: string }>(
+      `SELECT "audience"::text AS "audience" FROM "Coupon" WHERE "id" = $1`,
+      [coupon.id],
+    )
+
+    expect(row.audience).toBe('DEMO')
   })
 
   it('구매자는 쿠폰을 낼 수 없다 (A3)', async () => {
@@ -356,7 +461,7 @@ describe('판매자 범위 강제 — 서버 (F2)', () => {
 
   it('없는 카테고리를 범위로 고르면 거절한다 — 조용히 아무 일도 안 하는 쿠폰을 막는다', async () => {
     const failed = await failure(
-      issueCoupon(callers.operator, {
+      issueCoupon(operator, {
         scopeType: 'CATEGORY',
         scopeIds: [String(categoryId + 10_000)],
       }),
@@ -425,14 +530,14 @@ describe('판매자 범위 강제 — 날 SQL (S5)', () => {
 
 describe('정책의 짝 (S5 · A2)', () => {
   it('정률 100 초과를 서버가 거절한다', async () => {
-    const failed = await failure(issueCoupon(callers.operator, { discountValue: 101 }))
+    const failed = await failure(issueCoupon(operator, { discountValue: 101 }))
 
     expect(failed).toMatchObject({ status: 400, code: 'INVALID', field: 'discountValue' })
   })
 
   it('정액에 상한을 두면 서버가 거절한다', async () => {
     const failed = await failure(
-      issueCoupon(callers.operator, {
+      issueCoupon(operator, {
         discountType: 'FIXED',
         discountValue: 3_000,
         maxDiscountAmount: 1_000,
@@ -444,7 +549,7 @@ describe('정책의 짝 (S5 · A2)', () => {
 
   it('기간이 뒤집히면 서버가 거절한다', async () => {
     const failed = await failure(
-      issueCoupon(callers.operator, { validFrom: VALID_UNTIL, validUntil: VALID_FROM }),
+      issueCoupon(operator, { validFrom: VALID_UNTIL, validUntil: VALID_FROM }),
     )
 
     expect(failed).toMatchObject({ status: 400, field: 'validUntil' })
@@ -477,8 +582,8 @@ describe('정책의 짝 (S5 · A2)', () => {
 
 describe('발급 (F3 · F4)', () => {
   it('지급하면 쿠폰함에 한 장이 생기고 발급 수가 는다', async () => {
-    const { coupon } = await issueCoupon(callers.operator, { issueLimit: 10 })
-    const { userCoupon } = await grant(callers.operator, coupon.id, buyer.userId)
+    const { coupon } = await issueCoupon(operator, { issueLimit: 10 })
+    const { userCoupon } = await grant(operator, coupon.id, buyer.userId)
 
     expect(userCoupon).toMatchObject({
       couponId: coupon.id,
@@ -494,11 +599,11 @@ describe('발급 (F3 · F4)', () => {
   })
 
   it('같은 쿠폰을 두 번 받을 수 없다', async () => {
-    const { coupon } = await issueCoupon(callers.operator, { issueLimit: 10 })
+    const { coupon } = await issueCoupon(operator, { issueLimit: 10 })
 
-    await grant(callers.operator, coupon.id, buyer.userId)
+    await grant(operator, coupon.id, buyer.userId)
 
-    const failed = await failure(grant(callers.operator, coupon.id, buyer.userId))
+    const failed = await failure(grant(operator, coupon.id, buyer.userId))
 
     expect(failed).toMatchObject({ status: 409, code: 'COUPON_ALREADY_ISSUED' })
     // 진 요청이 자리를 태우지 않는다 — 늘린 수량이 트랜잭션과 함께 되돌아간다.
@@ -506,9 +611,9 @@ describe('발급 (F3 · F4)', () => {
   })
 
   it('중복 발급을 DB 가 막는다 (S5)', async () => {
-    const { coupon } = await issueCoupon(callers.operator, {})
+    const { coupon } = await issueCoupon(operator, {})
 
-    await grant(callers.operator, coupon.id, buyer.userId)
+    await grant(operator, coupon.id, buyer.userId)
 
     const message = await refusedBySql(
       `INSERT INTO "UserCoupon" ("id", "couponId", "userId", "expiresAt", "updatedAt")
@@ -520,10 +625,8 @@ describe('발급 (F3 · F4)', () => {
   })
 
   it('없는 회원에게는 지급하지 않는다', async () => {
-    const { coupon } = await issueCoupon(callers.operator, {})
-    const failed = await failure(
-      grant(callers.operator, coupon.id, '0192f0c1-0000-7000-8000-0000000cffff'),
-    )
+    const { coupon } = await issueCoupon(operator, {})
+    const failed = await failure(grant(operator, coupon.id, '0192f0c1-0000-7000-8000-0000000cffff'))
 
     expect(failed.status).toBe(404)
   })
@@ -541,34 +644,34 @@ describe('발급 (F3 · F4)', () => {
 
 describe('발급 수량 소진 (F5)', () => {
   it('한도만큼 나가면 그 다음은 거절된다 — 순차', async () => {
-    const { coupon } = await issueCoupon(callers.operator, { issueLimit: 2 })
+    const { coupon } = await issueCoupon(operator, { issueLimit: 2 })
     const recipients = [
       (await createUser(db)).id,
       (await createUser(db)).id,
       (await createUser(db)).id,
     ]
 
-    await grant(callers.operator, coupon.id, recipients[0] ?? '')
-    await grant(callers.operator, coupon.id, recipients[1] ?? '')
+    await grant(operator, coupon.id, recipients[0] ?? '')
+    await grant(operator, coupon.id, recipients[1] ?? '')
 
-    const failed = await failure(grant(callers.operator, coupon.id, recipients[2] ?? ''))
+    const failed = await failure(grant(operator, coupon.id, recipients[2] ?? ''))
 
     expect(failed).toMatchObject({ status: 409, code: 'COUPON_ISSUE_EXHAUSTED' })
     expect(await issuedCountOf(coupon.id)).toBe(2)
   })
 
   it('무제한 쿠폰은 소진되지 않는다', async () => {
-    const { coupon } = await issueCoupon(callers.operator, { issueLimit: null })
+    const { coupon } = await issueCoupon(operator, { issueLimit: null })
 
     for (let index = 0; index < 3; index += 1) {
-      await grant(callers.operator, coupon.id, (await createUser(db)).id)
+      await grant(operator, coupon.id, (await createUser(db)).id)
     }
 
     expect(await issuedCountOf(coupon.id)).toBe(3)
   })
 
   it('잔여 1장에 **동시에** 들어오면 한 명만 받는다 (F6 · A7)', async () => {
-    const { coupon } = await issueCoupon(callers.operator, { issueLimit: 1, withCode: true })
+    const { coupon } = await issueCoupon(operator, { issueLimit: 1, withCode: true })
     const results = await raceToClaim(coupon.id, coupon.code ?? '')
 
     expect(fulfilled(results)).toHaveLength(1)
@@ -587,7 +690,7 @@ describe('발급 수량 소진 (F5)', () => {
     // **통제군이다.** 위 검사만 있으면 「무조건 하나만 통과시키는」 구현 — 예컨대
     // 전부 직렬화해 놓고 첫 건 말고 거절하는 코드 — 도 초록이고, 그때 재고 있는
     // 쿠폰이 아무에게도 나가지 않는다.
-    const { coupon } = await issueCoupon(callers.operator, {
+    const { coupon } = await issueCoupon(operator, {
       issueLimit: RACE_PARTIES,
       withCode: true,
     })
@@ -602,7 +705,7 @@ describe('발급 수량 소진 (F5)', () => {
     // 조건부 갱신이 이기는 한 이 CHECK 는 발동하지 않는다. 그래도 두는 이유는,
     // 언젠가 이 자리가 「읽고 판단하고 쓰는」 모양으로 고쳐 쓰이는 날 초과 발급을
     // 거절하는 것이 하나도 남지 않게 되기 때문이다.
-    const { coupon } = await issueCoupon(callers.operator, { issueLimit: 1 })
+    const { coupon } = await issueCoupon(operator, { issueLimit: 1 })
 
     const message = await refusedBySql(
       `UPDATE "Coupon" SET "issuedCount" = 2, "updatedAt" = now() WHERE "id" = $1`,
@@ -614,7 +717,7 @@ describe('발급 수량 소진 (F5)', () => {
 
   it('한도까지는 DB 도 통과시킨다', async () => {
     // 통제군.
-    const { coupon } = await issueCoupon(callers.operator, { issueLimit: 3 })
+    const { coupon } = await issueCoupon(operator, { issueLimit: 3 })
 
     await expect(
       db.execute(`UPDATE "Coupon" SET "issuedCount" = 3, "updatedAt" = now() WHERE "id" = $1`, [
@@ -628,13 +731,13 @@ describe('발급 수량 소진 (F5)', () => {
 
 describe('코드 발급 (F8)', () => {
   it('코드를 붙여 발행하면 저장 가능한 모양이 돌아온다', async () => {
-    const { coupon } = await issueCoupon(callers.operator, { withCode: true })
+    const { coupon } = await issueCoupon(operator, { withCode: true })
 
     expect(coupon.code).toMatch(COUPON_CODE_PATTERN)
   })
 
   it('코드가 없는 쿠폰도 있다 — 지급으로만 나간다', async () => {
-    const { coupon } = await issueCoupon(callers.operator, {})
+    const { coupon } = await issueCoupon(operator, {})
 
     expect(coupon.code).toBeNull()
   })
@@ -643,7 +746,7 @@ describe('코드 발급 (F8)', () => {
     const codes = new Set<string>()
 
     for (let index = 0; index < 5; index += 1) {
-      const { coupon } = await issueCoupon(callers.operator, { withCode: true })
+      const { coupon } = await issueCoupon(operator, { withCode: true })
 
       codes.add(coupon.code ?? '')
     }
@@ -652,7 +755,7 @@ describe('코드 발급 (F8)', () => {
   })
 
   it('본인이 코드를 넣으면 자기 쿠폰함에 들어온다', async () => {
-    const { coupon } = await issueCoupon(callers.operator, { withCode: true })
+    const { coupon } = await issueCoupon(operator, { withCode: true })
     const { userCoupon } = await claim(buyer, coupon.code ?? '')
 
     expect(userCoupon.userId).toBe(buyer.userId)
@@ -662,7 +765,7 @@ describe('코드 발급 (F8)', () => {
   it('보여 준 모양 그대로, 소문자로 넣어도 받는다', async () => {
     // 배너를 보고 옮겨 적는 사람을 위한 것이다. 「잘못된 코드입니다」로 끝나는
     // 화면은 무엇이 틀렸는지 말해 주지 않는다.
-    const { coupon } = await issueCoupon(callers.operator, { withCode: true })
+    const { coupon } = await issueCoupon(operator, { withCode: true })
     const typed = formatCouponCode(coupon.code ?? '').toLowerCase()
 
     await expect(claim(buyer, typed)).resolves.toMatchObject({
@@ -682,7 +785,7 @@ describe('코드 발급 (F8)', () => {
   })
 
   it('시작 전이면 거절한다 — 기다리면 되는 거절이다', async () => {
-    const { coupon } = await issueCoupon(callers.operator, {
+    const { coupon } = await issueCoupon(operator, {
       withCode: true,
       validFrom: '2026-09-10T00:00:00.000Z',
       validUntil: '2026-09-20T00:00:00.000Z',
@@ -693,7 +796,7 @@ describe('코드 발급 (F8)', () => {
   })
 
   it('기간이 끝났으면 다른 코드로 거절한다 — 기다려도 안 되는 거절이다', async () => {
-    const { coupon } = await issueCoupon(callers.operator, { withCode: true })
+    const { coupon } = await issueCoupon(operator, { withCode: true })
 
     api.clock.set(VALID_UNTIL)
 
@@ -703,7 +806,7 @@ describe('코드 발급 (F8)', () => {
   })
 
   it('끝난 쿠폰은 자리를 태우지 않는다', async () => {
-    const { coupon } = await issueCoupon(callers.operator, { withCode: true, issueLimit: 1 })
+    const { coupon } = await issueCoupon(operator, { withCode: true, issueLimit: 1 })
 
     api.clock.set(VALID_UNTIL)
     await failure(claim(buyer, coupon.code ?? ''))
