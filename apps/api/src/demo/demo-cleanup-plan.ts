@@ -27,6 +27,7 @@ export const ownedTables = [
   'RefreshToken',
   'UserPreference',
   'Address',
+  'Review',
   'UserRole',
   'ProductVariant',
   'ProductOption',
@@ -86,6 +87,13 @@ export const cleanupPlan: readonly CleanupStep[] = [
     because:
       '잡아 둔 재고는 놓아 주어야 한다 — 계정이 사라지면 아무도 결제하지 않는다. `ProductVariant.reserved` 를 함께 되돌린다 (TASK-0048)',
   },
+  {
+    table: 'Review',
+    kind: 'hard',
+    scope: 'user',
+    because:
+      '**남의 상품에 남긴 말이지만 그 사람의 것이다** (TASK-0083 R1). 데모 방문자가 남긴 별점이 실계정 상품의 평균에 영원히 섞이면, 그 상품의 평점은 아무도 검증할 수 없는 값이 된다. `ReviewImage` 는 Cascade 로 함께 가고, 상품의 `ratingAvg`·`ratingCount` 도 이때 다시 센다 (TASK-0084)',
+  },
   { table: 'RefreshToken', kind: 'hard', scope: 'user' },
   { table: 'UserPreference', kind: 'hard', scope: 'user' },
   { table: 'Address', kind: 'hard', scope: 'user' },
@@ -127,6 +135,8 @@ export const untouchedTables: Readonly<Record<string, string>> = {
   StockLedger: 'append-only. 사라진 상품의 재고 이력이 남는 것이 옳다',
   ProductImage: 'Product 에 Cascade 로 매달려 있고, 상품이 소프트 삭제라 함께 숨는다',
   CartItem: 'Cart 에 Cascade 로 매달려 있다. 장바구니가 지워지면 함께 간다 (TASK-0045)',
+  ReviewImage:
+    'Review 에 Cascade 로 매달려 있다 (TASK-0083). **버킷의 객체는 이 계획이 지우지 않는다** — 버킷은 데이터베이스가 아니고, 고아 객체 청소는 상품 이미지와 같은 장치가 맡는다 (TASK-0033 F6)',
   ProductOptionValue: 'ProductOption 에 매달려 있다',
   VariantOptionValue: 'ProductVariant 에 매달려 있다',
   Category: '공용이다. 데모 계정은 카테고리를 만들지 않는다',
@@ -203,6 +213,7 @@ export function orderFault(
     RefreshToken: ['User'],
     UserPreference: ['User'],
     Address: ['User'],
+    Review: ['User'],
     UserRole: ['User'],
   }
   const position = new Map(plan.map((step, index) => [step.table, index]))

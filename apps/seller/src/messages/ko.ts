@@ -327,6 +327,15 @@ export const ko: Messages = {
     POINT_AMOUNT_INVALID: '적립금은 1원 이상 원 단위로 입력해 주세요.',
     POINT_ALREADY_RECORDED: '이미 처리된 적립금 내역이에요.',
     SETTLEMENT_WRONG_STATUS: '정산서의 상태가 바뀌었어요. 목록을 새로고침해 주세요.',
+    // 리뷰의 거절들 (TASK-0083). 이 콘솔은 리뷰를 쓰지 않지만, 카탈로그가 전수라야
+    // 코드가 늘어난 날 빈 문장이 화면에 나오지 않는다.
+    REVIEW_NOT_DELIVERED: '아직 배송이 끝나지 않은 주문이에요.',
+    REVIEW_ALREADY_WRITTEN: '이미 리뷰를 쓴 주문이에요.',
+    REVIEW_WINDOW_CLOSED: '리뷰를 쓸 수 있는 기간이 지났어요.',
+    REVIEW_ORDER_CANCELED: '취소되거나 반품된 주문에는 리뷰를 쓸 수 없어요.',
+    REVIEW_EDIT_WINDOW_CLOSED: '리뷰를 고칠 수 있는 기간이 지났어요.',
+    REVIEW_IMAGE_TOO_MANY: '사진은 최대 {max}장까지 첨부할 수 있어요.',
+    REVIEW_IMAGE_FOREIGN: '첨부할 수 없는 사진이에요. 사진을 다시 첨부해 주세요.',
     // 쿠폰 (TASK-0072). 판매자 콘솔이 실제로 만나는 실패다 — 발행 화면은
     // TASK-0074 이고, 서버는 그 화면 없이도 이 코드들을 답한다.
     COUPON_SCOPE_FORBIDDEN:

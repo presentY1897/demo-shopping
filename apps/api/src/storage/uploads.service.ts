@@ -18,7 +18,12 @@ import { CLOCK } from '../common/clock.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import type { ObjectStorage } from './object-storage.js'
 import { OBJECT_STORAGE } from './object-storage.js'
-import { productImageKey, resolveUploadExtension, returnPhotoKey } from './upload-rules.js'
+import {
+  productImageKey,
+  resolveUploadExtension,
+  returnPhotoKey,
+  reviewImageKey,
+} from './upload-rules.js'
 
 /**
  * Handing out one presigned upload (TASK-0011 · TASK-0067).
@@ -107,12 +112,16 @@ export class UploadsService {
     request: PresignUploadRequest,
     extension: string,
   ): Promise<string> {
-    if (request.purpose === 'return-photo') {
+    // 사람의 접두어를 쓰는 목적이 둘이다 — 반품 사진과 리뷰 사진. 둘 다 부르는
+    // 사람 자신을 확인한 뒤 **그 사람의 id 로** 만들어지고, 다른 것은 접두어뿐이다.
+    if (request.purpose === 'return-photo' || request.purpose === 'review-image') {
       const account = await this.account(principal.userId)
 
       assertResourceAccess(principal, 'media.upload', accountOwnership(account))
 
-      return returnPhotoKey(account.id, randomUUID(), extension)
+      return request.purpose === 'return-photo'
+        ? returnPhotoKey(account.id, randomUUID(), extension)
+        : reviewImageKey(account.id, randomUUID(), extension)
     }
 
     const seller = await this.store(request.sellerId)

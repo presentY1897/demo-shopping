@@ -2,6 +2,7 @@ import type { UploadContentType } from '@shopping/shared'
 import {
   productImageKeyPattern,
   returnPhotoKeyPattern,
+  reviewImageKeyPattern,
   uploadImageExtensions,
   uploadImageFormats,
 } from '@shopping/shared'
@@ -113,6 +114,27 @@ export function returnPhotoKey(userId: string, objectId: string, extension: stri
   const key = `returns/${userId}/${objectId}.${extension}`
 
   if (!returnPhotoKeyPattern.test(key)) {
+    throw new Error(`생성된 스토리지 키가 규칙에 맞지 않습니다: ${key}`)
+  }
+
+  return key
+}
+
+/**
+ * `reviews/{userId}/{objectId}.{ext}` (TASK-0083 F6).
+ *
+ * 반품 사진과 **같은 모양이고 같은 이유**다 — 사진은 리뷰를 만들기 전에 올라가므로
+ * 열쇠가 리뷰를 가리킬 수 없고, 열쇠 하나만 보고 누구 것인지 말할 수 있어야 남의
+ * 사진을 자기 리뷰에 붙이는 요청이 조용히 통과하지 않는다.
+ *
+ * 그런데도 함수를 따로 두는 것은 이 파일이 이미 두 번 적어 둔 그대로다: **접두어와
+ * 그것을 승인하는 주인은 짝이고**, 목적을 인자로 받는 한 함수가 되면 그 짝이 문법
+ * 수준에서 어긋날 수 있게 된다.
+ */
+export function reviewImageKey(userId: string, objectId: string, extension: string): string {
+  const key = `reviews/${userId}/${objectId}.${extension}`
+
+  if (!reviewImageKeyPattern.test(key)) {
     throw new Error(`생성된 스토리지 키가 규칙에 맞지 않습니다: ${key}`)
   }
 

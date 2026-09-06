@@ -613,10 +613,11 @@ async function orderItem(amounts: {
 
   return db.query(
     `INSERT INTO "OrderItem"
-       ("id", "sellerOrderId", "variantId", "productSnapshot", "unitPrice", "quantity",
-        "productAmount", "couponDiscountAmount", "discountAmount", "commissionRateBp",
-        "updatedAt")
-     VALUES (gen_random_uuid(), $1, $2, '{}'::jsonb, $3, 1, $3, $4, $5, 1000, now())`,
+       ("id", "sellerOrderId", "variantId", "productId", "productSnapshot", "unitPrice",
+        "quantity", "productAmount", "couponDiscountAmount", "discountAmount",
+        "commissionRateBp", "updatedAt")
+     SELECT gen_random_uuid(), $1, $2, pv."productId", '{}'::jsonb, $3, 1, $3, $4, $5, 1000, now()
+       FROM "ProductVariant" pv WHERE pv."id" = $2`,
     [
       sellerOrder.id,
       variant.id,
