@@ -4,7 +4,9 @@ import { ClockModule } from '../common/clock.module.js'
 import { PrismaModule } from '../prisma/prisma.module.js'
 import { CommissionController } from './commission.controller.js'
 import { CommissionService } from './commission.service.js'
+import { SellerRevenueService } from './seller-revenue.service.js'
 import { SettlementBatchService } from './settlement-batch.service.js'
+import { SettlementConsoleService } from './settlement-console.service.js'
 import { SettlementController } from './settlement.controller.js'
 
 /**
@@ -20,7 +22,12 @@ import { SettlementController } from './settlement.controller.js'
 @Module({
   imports: [PrismaModule, ClockModule],
   controllers: [CommissionController, SettlementController],
-  providers: [CommissionService, SettlementBatchService],
+  providers: [
+    CommissionService,
+    SellerRevenueService,
+    SettlementBatchService,
+    SettlementConsoleService,
+  ],
   exports: [CommissionService],
 })
 export class SettlementModule {}

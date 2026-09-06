@@ -321,6 +321,7 @@ export const ko: Messages = {
     POINT_INSUFFICIENT: '적립금 잔액이 모자라요. 지금 쓸 수 있는 금액은 {available}원이에요.',
     POINT_AMOUNT_INVALID: '적립금은 1원 이상 원 단위로 입력해 주세요.',
     POINT_ALREADY_RECORDED: '이미 처리된 적립금 내역이에요.',
+    SETTLEMENT_WRONG_STATUS: '정산서의 상태가 바뀌었어요. 목록을 새로고침해 주세요.',
     // 쿠폰 (TASK-0072). 판매자 콘솔이 실제로 만나는 실패다 — 발행 화면은
     // TASK-0074 이고, 서버는 그 화면 없이도 이 코드들을 답한다.
     COUPON_SCOPE_FORBIDDEN:

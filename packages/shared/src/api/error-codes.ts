@@ -419,6 +419,14 @@ export const domainErrorCodes = [
    * 일이고, 사람이라면 「이미 처리됐어요」다.
    */
   'POINT_ALREADY_RECORDED',
+  /**
+   * 지금 상태에서는 할 수 없는 정산 처리다 (TASK-0081 F5).
+   *
+   * 「지급완료된 정산서는 수정할 수 없다」가 이 코드로 나온다. **화면이 버튼을
+   * 가리고 있어도 온다** — 다른 관리자가 방금 지급 처리했을 수 있고, 그때 이 답은
+   * 「당신이 틀렸다」가 아니라 「목록을 다시 읽어 보라」는 뜻이다.
+   */
+  'SETTLEMENT_WRONG_STATUS',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]

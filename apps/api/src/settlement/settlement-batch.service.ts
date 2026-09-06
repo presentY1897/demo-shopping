@@ -13,6 +13,7 @@ import type {
   SettlementPeriod,
 } from './settlement-calc.js'
 import { amountsOf, differenceOf, sumOf, weekBefore } from './settlement-calc.js'
+import { loadSettlementSources } from './settlement-sources.js'
 import type { SettlementTally } from './settlement-batch.js'
 import {
   NOTHING_SETTLED,
@@ -36,15 +37,6 @@ interface Candidate {
     /** 그 정산서가 아직 손댈 수 있는가 — `PENDING` 이면 고쳐 쓰고, 아니면 차감한다. */
     readonly amendable: boolean
   } | null
-}
-
-interface SourceRow {
-  readonly sellerOrderId: string
-  readonly unitPrice: number
-  readonly quantity: number
-  readonly returnedQuantity: number
-  readonly commissionRateBp: number
-  readonly sellerCouponDiscountAmount: number
 }
 
 /**
@@ -152,7 +144,10 @@ export class SettlementBatchService implements OnModuleInit, OnModuleDestroy {
 
     if (candidates.length === 0) return NOTHING_SETTLED
 
-    const sources = await this.sourcesOf(candidates.map((entry) => entry.sellerOrderId))
+    const sources = await loadSettlementSources(
+      this.prisma,
+      candidates.map((entry) => entry.sellerOrderId),
+    )
     const bySeller = new Map<string, Candidate[]>()
 
     for (const candidate of candidates) {
@@ -422,41 +417,6 @@ export class SettlementBatchService implements OnModuleInit, OnModuleDestroy {
       sellerId: row.sellerId,
       settled: { itemId: row.itemId, settlementId: row.settlementId, amendable: row.amendable },
     }))
-  }
-
-  /**
-   * 정산의 입력 — 주문 시점에 저장된 값들과, 지금까지 확정 취소된 수량.
-   *
-   * **환불까지 끝난 클레임만 센다.** 신청·승인만 된 반품은 아직 돈이 움직이지
-   * 않았고, 검수에서 떨어질 수도 있다 — 그것을 미리 빼면 판매자가 받을 돈이 남의
-   * 신청 하나로 줄어든다.
-   */
-  private async sourcesOf(
-    sellerOrderIds: readonly string[],
-  ): Promise<ReadonlyMap<string, readonly SettlementItemSource[]>> {
-    const rows = await this.prisma.$queryRaw<SourceRow[]>`
-      SELECT oi."sellerOrderId"::text            AS "sellerOrderId",
-             oi."unitPrice"                      AS "unitPrice",
-             oi."quantity"                       AS "quantity",
-             oi."commissionRateBp"               AS "commissionRateBp",
-             oi."sellerCouponDiscountAmount"     AS "sellerCouponDiscountAmount",
-             COALESCE(SUM(ci."quantity") FILTER (WHERE c."status" = 'REFUNDED'), 0)::int
-                                                 AS "returnedQuantity"
-        FROM "OrderItem" oi
-        LEFT JOIN "ClaimItem" ci   ON ci."orderItemId" = oi."id"
-        LEFT JOIN "ClaimRequest" c ON c."id" = ci."claimId"
-       WHERE oi."sellerOrderId" = ANY(${[...sellerOrderIds]}::uuid[])
-       GROUP BY oi."id"`
-    const sources = new Map<string, SettlementItemSource[]>()
-
-    for (const row of rows) {
-      const held = sources.get(row.sellerOrderId) ?? []
-
-      held.push(row)
-      sources.set(row.sellerOrderId, held)
-    }
-
-    return sources
   }
 
   /** 이 주기가 돌았다는 사실. 헬스체크가 이 두 행을 읽는다. */
