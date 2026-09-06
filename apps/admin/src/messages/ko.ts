@@ -1274,6 +1274,264 @@ export const ko: Messages = {
       unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
     },
   },
+  // 정산 승인·지급 (TASK-0081). 목록과 상세가 한 조각을 나눠 쓰는 이유는
+  // types.ts 의 SettlementMessages 주석에 있다 — 상태 이름과 항목 유형을 두 벌
+  // 두면 목록의 「보류」와 상세의 「보류」가 언젠가 다른 말이 된다.
+  settlements: {
+    title: '정산 관리',
+    description: '회차별 정산서를 검토하고 승인·보류·지급 처리합니다.',
+    forbiddenTitle: '정산서를 볼 수 없어요',
+    statusLabels: {
+      PENDING: '승인 대기',
+      HOLD: '보류',
+      APPROVED: '승인됨',
+      PAID: '지급완료',
+    },
+    // 차감 줄은 지난 회차의 되돌림이라 이번 회차의 판매와 성질이 다르다. 이름이
+    // 그 차이를 먼저 말하고, 음수 금액이 그것을 확인해 준다.
+    itemTypeLabels: {
+      SALE: '판매',
+      RETURN_ADJUSTMENT: '반품 차감',
+    },
+    list: {
+      loadingLabel: '정산서를 불러오는 중',
+      errorTitle: '정산서를 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      emptyTitle: '아직 정산서가 없어요',
+      emptyDescription:
+        '정산 배치가 매주 월요일에 지난주 회차를 만듭니다. 구매확정된 주문이 있어야 정산서가 생깁니다.',
+      filteredEmptyTitle: '이 조건에 맞는 정산서가 없어요',
+      filteredEmptyDescription: '회차나 상태를 바꾸거나, 조건을 지우고 전체를 보세요.',
+      listLabel: '정산서 목록',
+      columns: {
+        select: '선택',
+        period: '회차',
+        brandName: '판매자',
+        status: '상태',
+        salesAmount: '판매액',
+        payoutAmount: '지급액',
+        holdReason: '보류 사유',
+        open: '상세',
+      },
+      period: '{start} ~ {end}',
+      selectRow: '{brand} 정산서 선택',
+      selectPage: '이 페이지에서 승인할 수 있는 정산서 모두 선택',
+      notSelectable: '지금 상태에서는 승인할 수 없어요',
+      openLabel: '내역 보기',
+      filters: {
+        legend: '정산서 검색 조건',
+        dayLabel: '회차',
+        // 계약의 periodStart 는 구간이 아니라 한 순간이고 회차는 월요일 자정에
+        // 시작한다. 고른 날을 그대로 보내면 아무것도 안 걸리므로 화면이 접는다.
+        dayHint: '아무 날이나 고르면 그 날이 속한 주(월요일 시작)의 회차를 봅니다.',
+        resolved: '이 회차를 봅니다 · {period}',
+        statusLabel: '상태',
+        statusAll: '전체',
+        reset: '조건 지우기',
+      },
+      narrow: {
+        activeSeller: '{name}만 보는 중',
+        clear: '해제',
+      },
+      totals: {
+        title: '이 조건의 지급 예정 총액',
+        payoutLabel: '지급액 합계',
+        countLabel: '정산서',
+        countValue: '{count}건',
+        // 이 한 줄이 없으면 스무 줄짜리 표 위의 200건 합계가 틀린 숫자로 보인다.
+        scopeNotice: '지금 화면의 한 페이지가 아니라 위 조건에 해당하는 정산서 전부의 합입니다.',
+      },
+      pagination: {
+        label: '정산서 페이지 이동',
+        next: '다음',
+        previous: '이전',
+        pageUnit: '페이지',
+        countUnit: '건',
+      },
+    },
+    detail: {
+      backLabel: '정산서 목록으로',
+      title: '정산서',
+      subtitle: '{brand} · {period}',
+      loadingLabel: '정산서를 불러오는 중',
+      errorTitle: '정산서를 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      notFoundTitle: '정산서를 찾을 수 없어요',
+      notFoundDescription: '지워졌거나 주소가 잘못됐습니다. 목록에서 다시 찾아 주세요.',
+      sections: {
+        actions: '처리',
+        summary: '요약',
+        calculation: '계산 근거',
+        items: '항목별 내역',
+      },
+      summary: {
+        brandName: '판매자',
+        period: '회차',
+        status: '상태',
+        createdAt: '정산서 생성',
+        heldAt: '보류',
+        approvedAt: '승인',
+        paidAt: '지급 확정',
+        holdReason: '보류 사유',
+        none: '—',
+      },
+      calculation: {
+        caption: '지급액 계산 근거',
+        // 빼기 기호가 줄 이름에 있다. 금액의 부호는 Intl 이 그리고, 이름은
+        // 무엇을 빼는 중인지를 말한다.
+        lines: {
+          sales: '판매액',
+          commission: '− 플랫폼 수수료',
+          sellerCoupon: '− 판매자 부담 쿠폰',
+          returnAdjustment: '− 반품 차감',
+          payout: '지급액',
+        },
+        note: '판매액은 정가 기준이며 플랫폼 부담 쿠폰과 적립금은 빼지 않습니다. 지급액은 서버가 계산해 저장한 값이고, 위 네 줄은 그 근거입니다.',
+      },
+      items: {
+        caption: '정산 항목',
+        empty: '이 회차에 정산된 항목이 없습니다.',
+        columns: {
+          type: '유형',
+          orderNumber: '주문번호',
+          salesAmount: '판매액',
+          commissionAmount: '수수료',
+          sellerCouponAmount: '판매자 쿠폰',
+          payoutAmount: '지급액',
+        },
+        openOrder: '{orderNumber} 주문 열기',
+        openOrderHint: '주문 관리 화면은 준비 중입니다. 주문번호로 바로 찾아갈 수 있게 됩니다.',
+        adjustmentNotice:
+          '반품 차감 줄은 이미 승인·지급된 지난 회차의 판매를 되돌린 것이라 금액이 음수입니다.',
+      },
+    },
+    actions: {
+      labels: {
+        approve: '승인',
+        hold: '보류',
+        pay: '지급 확정',
+      },
+      locked: {
+        title: '더 처리할 것이 없어요',
+        // 권한 문제가 아니라 이 정산서의 성질이다. 「권한이 없어요」로 말할 수 없다.
+        description:
+          '지급이 끝난 정산서는 되돌리거나 고칠 수 없습니다. 금액이 틀렸다면 다음 회차에서 조정합니다.',
+      },
+      failedTitle: '처리하지 못했어요',
+      confirm: {
+        approve: {
+          title: '이 정산서를 승인할까요',
+          description:
+            '{brand}의 {period} 회차를 승인합니다. 지급액은 {amount}이고, 승인한 뒤에는 배치가 이 회차의 금액을 더 이상 고치지 않습니다.',
+          confirm: '승인',
+          cancel: '취소',
+          closeLabel: '창 닫기',
+        },
+        pay: {
+          title: '지급을 확정할까요',
+          // R1. 금액이 여기 다시 적힌다 — 되돌리는 화살표가 없기 때문이다.
+          description:
+            '{brand}의 {period} 회차에 {amount}을 지급한 것으로 기록합니다. 되돌릴 수 없고, 오류는 다음 회차에서 조정해야 합니다.',
+          confirm: '지급 확정',
+          cancel: '취소',
+          closeLabel: '창 닫기',
+        },
+      },
+      hold: {
+        title: '정산을 보류할까요',
+        description:
+          '분쟁이나 이상 건일 때 판단을 미룹니다. 사유는 해소된 뒤에도 남고, 판매자가 물었을 때 답하는 근거가 됩니다.',
+        reasonLabel: '보류 사유',
+        reasonHint:
+          '무엇을 확인해야 하는지 적어 주세요. 나중에 읽는 사람이 이 문장 하나로 판단합니다.',
+        reasonPlaceholder: '예: 반품 분쟁 확인 중 (클레임 3건)',
+        submit: '보류',
+        submitting: '보류하는 중',
+        cancel: '취소',
+        closeLabel: '창 닫기',
+        submitError: '보류하지 못했어요. 잠시 후 다시 시도해 주세요.',
+        errors: {
+          required: '보류 사유를 적어 주세요.',
+          tooLong: '{max}자까지 쓸 수 있어요.',
+        },
+      },
+    },
+    bulk: {
+      selected: '{count}건 선택',
+      approve: '선택 승인',
+      approving: '승인하는 중',
+      clear: '선택 해제',
+      tooMany: '한 번에 {max}건까지 승인할 수 있어요. 선택을 줄여 주세요.',
+      confirm: {
+        title: '선택한 정산서를 승인할까요',
+        description:
+          '{count}건을 승인합니다. 지급 예정 합계는 {amount}이고, 승인한 뒤에는 배치가 이 회차들의 금액을 더 이상 고치지 않습니다.',
+        confirm: '승인',
+        cancel: '취소',
+        closeLabel: '창 닫기',
+      },
+      result: {
+        title: '일괄 승인 결과',
+        approved: '{count}건을 승인했습니다.',
+        failedTitle: '승인하지 못한 정산서',
+        // 실패를 조용히 빼면 남은 건은 아무도 다시 보지 않는다. 그 건들이야말로
+        // 사람이 봐야 하는 것들이다.
+        failedDescription: '아래 정산서는 승인되지 않았습니다. 하나씩 열어 확인해 주세요.',
+        reasons: {
+          not_found: '정산서를 찾을 수 없습니다.',
+          wrong_status: '그 사이 상태가 바뀌어 승인할 수 없습니다.',
+        },
+        listLabel: '승인하지 못한 정산서 목록',
+        columns: {
+          settlement: '정산서',
+          reason: '이유',
+        },
+        open: '열기',
+        dismiss: '닫기',
+      },
+    },
+    export: {
+      label: 'CSV 내보내기',
+      exporting: '내보내는 중',
+      empty: '내보낼 정산서가 없어요.',
+      done: '{count}건을 내보냈습니다.',
+      filePrefix: 'settlements',
+      note: '지금 조건에 해당하는 정산서 전부를 받습니다. 화면의 한 페이지가 아닙니다.',
+      columns: {
+        periodStart: '회차 시작',
+        periodEnd: '회차 종료',
+        brandName: '판매자',
+        status: '상태',
+        salesAmount: '판매액',
+        commissionAmount: '수수료',
+        sellerCouponAmount: '판매자 쿠폰',
+        returnAdjustmentAmount: '반품 차감',
+        payoutAmount: '지급액',
+        holdReason: '보류 사유',
+      },
+      // 빈칸이다. 대시를 넣으면 스프레드시트에서 그것이 정렬·필터에 걸리는 값이
+      // 된다 (types.ts 의 같은 이름 참조).
+      emptyHoldReason: '',
+    },
+    toast: {
+      regionLabel: '정산 알림',
+      closeLabel: '닫기',
+      approved: '정산서를 승인했어요.',
+      held: '정산서를 보류했어요.',
+      paid: '지급을 확정했어요.',
+      bulkApproved: '{count}건을 승인했어요.',
+      exported: '정산서를 내보냈어요.',
+      failedTitle: '정산서를 처리하지 못했어요',
+    },
+    failures: {
+      network: '서버에 연결하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.',
+      timeout: '응답이 너무 늦어 요청을 멈췄어요. 잠시 후 다시 시도해 주세요.',
+      aborted: '요청을 취소했어요.',
+      malformed_response: '서버가 보낸 응답을 읽지 못했어요. 잠시 후 다시 시도해 주세요.',
+      configuration: '서버 주소 설정이 없어요. 개발 서버를 다시 실행해 주세요.',
+      unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+    },
+  },
   layout: {
     // 콘솔 이름. 사이드바 위와 모바일 시트 제목에 같은 문자열이 쓰인다.
     brand: '관리자 콘솔',
@@ -1693,6 +1951,7 @@ export const ko: Messages = {
     POINT_INSUFFICIENT: '적립금 잔액이 모자라요. 지금 쓸 수 있는 금액은 {available}원이에요.',
     POINT_AMOUNT_INVALID: '적립금은 1원 이상 원 단위로 입력해 주세요.',
     POINT_ALREADY_RECORDED: '이미 처리된 적립금 내역이에요.',
+    SETTLEMENT_WRONG_STATUS: '정산서의 상태가 바뀌었어요. 목록을 새로고침해 주세요.',
     // 쿠폰 (TASK-0072). 관리자 콘솔은 플랫폼 쿠폰을 내므로 범위 거절을 만날 일이
     // 없지만, 카탈로그가 전수라 문장이 있어야 한다 — 그리고 관리자가 판매자를
     // 대신해 발행하는 길이 열려 있어 아주 없는 것도 아니다.

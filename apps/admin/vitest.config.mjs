@@ -77,6 +77,17 @@ export default {
         // 접는 분기 하나가 아무도 그러려던 적 없는 전역 요율을 바꾼다.
         'src/lib/commissions/rate-bp.ts': complete,
         'src/lib/commissions/scopes.ts': complete,
+        // TASK-0081 의 판단들, 화면이 그려지기 전에 내려진 것. 넷 다 **틀려도
+        // 조용하다**: `transitions.ts` 는 `apps/api` 의 전이표를 비추는 거울이라
+        // 닿지 않은 분기 하나가 정산서에 없는 버튼을 내거나 있어야 할 버튼을
+        // 감추고, `settlement-console.ts` 의 회차 계산이 한 주 어긋나면 화면은
+        // 「이 조건에 정산서가 없습니다」를 멀쩡히 그린다. `csv.ts` 는 더하다 —
+        // 따옴표 하나를 놓치면 열이 밀린 파일이 **열리고, 읽히고, 틀린다.**
+        // `format.ts` 는 금액과 회차의 경계를 그리는 마지막 자리다.
+        'src/lib/settlements/transitions.ts': complete,
+        'src/lib/settlements/settlement-console.ts': complete,
+        'src/lib/settlements/csv.ts': complete,
+        'src/lib/settlements/format.ts': complete,
         // The photo gate in front of `POST /uploads/presign`. A missed branch
         // spends a round trip on a file the API refuses, and answers with a 400
         // that cannot say which file was at fault.
