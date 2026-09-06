@@ -75,10 +75,12 @@ export function confirmationsOf(
 }
 
 /**
- * 지금 바인딩되는 구현. **아무것도 하지 않는다.**
+ * 아무것도 하지 않는 구현.
  *
- * 무엇을 뜻하는지는 {@link OrderConfirmed} 에 적혀 있다. M11·M12 가 붙을 때
- * `order.module.ts` 의 한 줄만 바뀐다.
+ * **더 이상 바인딩돼 있지 않다** — M11 이 `PointsOnOrderConfirmed` 를 꽂았고
+ * (TASK-0076), 그 한 줄은 `seller-order.module.ts` 에 있다. 이 클래스가 남아 있는
+ * 이유는 위에 적힌 성질 — 「던지지 않는다」 — 을 재는 스펙의 기준선이기 때문이다.
+ * 정산(M12)이 붙을 때도 바뀌는 것은 저쪽 한 줄이다.
  */
 export class NoopOrderConfirmedEvents implements OrderConfirmedEvents {
   confirmed(): Promise<void> {

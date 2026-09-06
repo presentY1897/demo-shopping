@@ -164,6 +164,15 @@ export const untouchedTables: Readonly<Record<string, string>> = {
   ReturnShipment: 'ReturnDetail 에 Cascade 로 매달려 있다',
   ClaimAppeal:
     'ClaimRequest 에 Cascade 로 매달려 있다. 클레임이 남으므로 함께 남는다 — 「구매자가 이 거절에 이의를 냈고 관리자가 어떻게 답했나」는 분쟁의 근거이고, 산 사람이 데모였다는 이유로 지울 수 있는 기록이 아니다 (ClaimStatusHistory 와 같은 판단). `filedById` · `reviewedById` 가 `RESTRICT` 인데 계정 행이 툼스톤으로 남으므로 끊기지 않는다 (TASK-0071)',
+  Coupon:
+    '판매자·관리자가 만든 **정책**이고 지우지 않는다. 발급된 `UserCoupon` 이 `RESTRICT` 로 잡고, 정산(M12)이 「판매자 부담 쿠폰」을 이 행으로 읽는다. 데모 판매자가 낸 쿠폰이 살아남아도 그 가게는 정지되고 상품은 소프트 삭제되므로 적용될 대상이 없고, `validUntil` 이 어차피 수명을 끊는다 (TASK-0072)',
+  UserCoupon:
+    '계정이 소유하지만 **지우지 않는다.** 쓴 쿠폰은 그 주문의 금액을 설명하는 기록이고(`pricing.md` 2장의 안분), 정산이 판매자 부담 쿠폰을 그것으로 센다 — 주문을 남기면서 그 주문의 할인만 지우면 남은 것은 설명되지 않는 금액이다. 안 쓴 장을 따로 지우려면 계획에 조건이 필요해지는데, 「표 · 방식 · 소유자」 세 칸으로 읽히는 것이 이 계획의 안전장치다. `userId` 가 `RESTRICT` 이고 계정 행은 툼스톤으로 남으므로 끊기지 않는다 (TASK-0072)',
+  PointAccount:
+    '계정이 소유하지만 **지우지 않는다.** 잔액이 있는 것은 원장을 두고, 그 원장이 이 계좌를 가리킨다 — 계좌를 지우면 「이 주문에 적립금이 왜 3,000원 붙었나」에 답할 것이 사라진다. 주문을 남기기로 한 판단(`Order`)과 같은 이유이고, `userId` 가 `RESTRICT` 이며 계정 행은 툼스톤으로 남으므로 끊기지 않는다 (TASK-0076)',
+  PointTransaction:
+    'PointAccount 에 매달려 있다. 사실상 append-only 이고(`PointTransaction_append_only`), 사라진 계정의 적립·사용 이력이 남는 것이 옳다 — `StockLedger` 와 같은 판단',
+  PointPolicy: '계정 소유가 아니다. 플랫폼의 설정 한 행이다 (`AppMeta` 와 같다)',
 }
 
 /**

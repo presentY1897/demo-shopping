@@ -316,6 +316,20 @@ export const ko: Messages = {
     // TASK-0070. 화면이 먼저 막지만 그것은 친절이고, 규칙은 서버에 있다 — 화면만
     // 막으면 API 를 직접 부르는 길이 남는다.
     CLAIM_REASON_REQUIRED: '거절 사유를 입력해 주세요. 구매자에게 그대로 전달됩니다.',
+    // TASK-0076. 판매자 콘솔이 적립금을 직접 다루지는 않지만 이 목록은 전수라,
+    // 문장이 없으면 컴파일이 멈춘다. 그래서 「이 화면의 일이 아니다」도 문장으로 적는다.
+    POINT_INSUFFICIENT: '적립금 잔액이 모자라요. 지금 쓸 수 있는 금액은 {available}원이에요.',
+    POINT_AMOUNT_INVALID: '적립금은 1원 이상 원 단위로 입력해 주세요.',
+    POINT_ALREADY_RECORDED: '이미 처리된 적립금 내역이에요.',
+    // 쿠폰 (TASK-0072). 판매자 콘솔이 실제로 만나는 실패다 — 발행 화면은
+    // TASK-0074 이고, 서버는 그 화면 없이도 이 코드들을 답한다.
+    COUPON_SCOPE_FORBIDDEN:
+      '판매자 쿠폰은 내 스토어의 상품에만 적용할 수 있어요. 적용 대상을 다시 골라 주세요.',
+    COUPON_ISSUE_EXHAUSTED: '준비된 수량이 모두 나갔어요.',
+    COUPON_ALREADY_ISSUED: '이미 이 쿠폰을 가진 회원이에요.',
+    COUPON_CODE_UNKNOWN: '쿠폰 코드를 다시 확인해 주세요.',
+    COUPON_NOT_STARTED: '아직 발급을 시작하지 않은 쿠폰이에요.',
+    COUPON_ENDED: '발급 기간이 끝난 쿠폰이에요.',
   },
   // 응답이 아예 오지 않은 실패. 읽을 코드가 없으므로 번호도 보여 주지 않는다.
   apiFailures: {

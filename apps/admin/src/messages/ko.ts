@@ -1303,6 +1303,20 @@ export const ko: Messages = {
     // TASK-0070. 화면이 먼저 막지만 그것은 친절이고, 규칙은 서버에 있다 — 화면만
     // 막으면 API 를 직접 부르는 길이 남는다.
     CLAIM_REASON_REQUIRED: '거절 사유를 입력해 주세요. 구매자에게 그대로 전달됩니다.',
+    // TASK-0076. {available} 은 서버가 실어 보낸 값이다 — 화면이 마지막으로 읽은
+    // 잔액을 적으면 방금 다른 곳에서 쓴 금액을 모른 채 거짓을 말한다.
+    POINT_INSUFFICIENT: '적립금 잔액이 모자라요. 지금 쓸 수 있는 금액은 {available}원이에요.',
+    POINT_AMOUNT_INVALID: '적립금은 1원 이상 원 단위로 입력해 주세요.',
+    POINT_ALREADY_RECORDED: '이미 처리된 적립금 내역이에요.',
+    // 쿠폰 (TASK-0072). 관리자 콘솔은 플랫폼 쿠폰을 내므로 범위 거절을 만날 일이
+    // 없지만, 카탈로그가 전수라 문장이 있어야 한다 — 그리고 관리자가 판매자를
+    // 대신해 발행하는 길이 열려 있어 아주 없는 것도 아니다.
+    COUPON_SCOPE_FORBIDDEN: '판매자 쿠폰은 그 스토어의 상품에만 적용할 수 있어요.',
+    COUPON_ISSUE_EXHAUSTED: '준비된 수량이 모두 나갔어요.',
+    COUPON_ALREADY_ISSUED: '이미 이 쿠폰을 가진 회원이에요.',
+    COUPON_CODE_UNKNOWN: '쿠폰 코드를 다시 확인해 주세요.',
+    COUPON_NOT_STARTED: '아직 발급을 시작하지 않은 쿠폰이에요.',
+    COUPON_ENDED: '발급 기간이 끝난 쿠폰이에요.',
   },
   errorNotice: {
     title: '일시적인 문제가 생겼어요',
