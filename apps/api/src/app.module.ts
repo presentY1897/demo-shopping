@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module.js'
 import { CartModule } from './cart/cart.module.js'
 import { CatalogModule } from './catalog/catalog.module.js'
 import { ClaimModule } from './claims/claim.module.js'
+import { CouponModule } from './coupons/coupon.module.js'
 import { AllExceptionsFilter } from './common/all-exceptions.filter.js'
 import { ClockModule } from './common/clock.module.js'
 import { ConfigModule } from './config/config.module.js'
@@ -15,6 +16,7 @@ import { HealthModule } from './health/health.module.js'
 import { PrismaModule } from './prisma/prisma.module.js'
 import { OrderModule } from './orders/order.module.js'
 import { PaymentModule } from './payment/payment.module.js'
+import { PointsModule } from './points/points.module.js'
 import { ProfileModule } from './profile/profile.module.js'
 import { ReservationModule } from './reservation/reservation.module.js'
 import { ReturnModule } from './claims/return.module.js'
@@ -38,10 +40,12 @@ export class AppModule {
         CartModule,
         CatalogModule,
         ClaimModule,
+        CouponModule,
         DemoModule,
         HealthModule,
         OrderModule,
         PaymentModule,
+        PointsModule,
         ProfileModule,
         ReservationModule,
         ReturnModule,
