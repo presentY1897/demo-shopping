@@ -694,6 +694,8 @@ export interface PointScreenMessages {
   readonly noRef: string
   /** 주문 링크의 접근성 이름 (F5). 표 안에 같은 이름의 링크가 여럿이라 필요하다. `{at}` */
   readonly orderLink: string
+  /** 그 링크에 보이는 글자. 위 문장 안에 그대로 들어 있어야 한다 (WCAG 2.5.3). */
+  readonly orderLinkText: string
   /** `{count}` — 지금까지 불러온 줄 수. */
   readonly countLabel: string
   readonly loadMore: string

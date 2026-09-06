@@ -982,6 +982,7 @@ export const ko: Messages = {
       },
       noRef: '-',
       orderLink: '{at} 사용 내역의 주문 보기',
+      orderLinkText: '주문 보기',
       countLabel: '{count}건을 불러왔습니다',
       loadMore: '더 보기',
       loadingMore: '불러오는 중',

@@ -64,7 +64,7 @@ export function CouponClaimForm({
   })
 
   return (
-    <Card as="section" className="flex flex-col gap-4">
+    <Card as="article" className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <h2 className="text-lg font-semibold">{copy.title}</h2>
         <p className="text-fg-muted text-sm">{copy.description}</p>

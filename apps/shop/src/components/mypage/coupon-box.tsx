@@ -6,6 +6,7 @@ import { Badge, Button, DataList, EmptyState, Tabs } from '@shopping/ui/componen
 import Link from 'next/link'
 import { useState } from 'react'
 
+import type { CouponBox as CouponBoxConsole } from '@/lib/coupons/use-coupon-box'
 import { useCouponBox } from '@/lib/coupons/use-coupon-box'
 import type { MyPageMessages } from '@/messages'
 
@@ -137,7 +138,7 @@ function CouponPanel({
   messages,
   now,
 }: {
-  readonly box: ReturnType<typeof useCouponBox>
+  readonly box: CouponBoxConsole
   readonly messages: MyPageMessages
   readonly now: Date
 }) {
