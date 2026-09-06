@@ -91,8 +91,14 @@ export const sellerOrderTransitions: Readonly<Record<OrderStatus, readonly Trans
     { to: 'CONFIRMED', actors: ['BUYER', 'SYSTEM'] },
     { to: 'RETURNED', actors: ['SELLER', 'ADMIN'] },
   ],
-  // 종착 넷. 정산과 클레임이 여기서부터 시작하지만, 그것은 다른 표의 일이다.
-  CONFIRMED: [],
+  // **확정은 구매자에게 끝이다** (TASK-0071 4.0). 하자 반품은 확정 뒤에도 관리자
+  // 확인을 거쳐 처리되므로 화살표가 하나 있고, 그 주체가 `ADMIN` 뿐인 것이 이
+  // 줄의 전부다 — 구매자에게는 여전히 길이 없고(그래서 「확정 후 일반 반품 불가」가
+  // 그대로 참이다), 판매자가 확정된 주문을 되돌리는 것은 클레임 절차 밖이다.
+  //
+  // 정산이 나간 뒤에 이 화살표를 지나면 **지급을 회수해야 한다** — M12 의 일이고
+  // HANDOFF 2절에 적어 두었다.
+  CONFIRMED: [{ to: 'RETURNED', actors: ['ADMIN'] }],
   CANCELED: [],
   RETURNED: [],
   PAYMENT_FAILED: [],

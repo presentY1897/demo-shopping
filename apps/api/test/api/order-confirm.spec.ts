@@ -473,13 +473,18 @@ describe('수동 확정은 여전히 동작한다 (F1 회귀)', () => {
   })
 })
 
-describe('확정 뒤에는 반품이 닫힌다 (F5)', () => {
+describe('확정 뒤에는 반품이 **구매자와 판매자에게** 닫힌다 (F5)', () => {
   /**
-   * **새로 막는 코드가 없다.** 전이표에서 `CONFIRMED` 는 종착 상태이고
-   * (`seller-order-transitions.ts` — `CONFIRMED: []`), 상태를 옮기는 길은 그 표를
-   * 지나는 문 하나뿐이다. 아래 셋은 그 사실이 **실제로** 그렇게 동작하는지를 잰다 —
-   * 규칙을 지어내지 않았다는 것의 증거이자, 언젠가 그 표에 화살표가 하나 늘면
-   * 여기서 빨개진다.
+   * **새로 막는 코드가 없다.** 상태를 옮기는 길은 전이표를 지나는 문 하나뿐이고,
+   * 아래 셋은 그 표가 말하는 것이 **실제로** 그렇게 동작하는지를 잰다.
+   *
+   * **이 절의 제목이 한 번 바뀌었다** (TASK-0071 4.0). `CONFIRMED` 는 더 이상 종착이
+   * 아니다 — 하자 반품을 위해 `CONFIRMED → RETURNED` 가 열렸고, 주체는 **`ADMIN`
+   * 뿐**이다. 즉 「확정은 끝」이 「확정은 **구매자에게** 끝」으로 약해졌고, 그것이
+   * 여기서 재는 것이다: 판매자도 구매자도 여전히 이 몫을 되돌리지 못하고, 관리자만
+   * 클레임 절차를 지나 되돌린다 (`admin-claim.spec.ts` 가 그 경로를 잰다).
+   *
+   * 이 표에 화살표가 하나 더 늘면 여기서 빨개진다 — 그것이 이 절이 있는 이유다.
    */
   beforeEach(async () => {
     await deliverAt()
@@ -487,7 +492,7 @@ describe('확정 뒤에는 반품이 닫힌다 (F5)', () => {
     await confirmer().sweep()
   })
 
-  it('판매자가 반품 완료로 옮기려 하면 거절된다', async () => {
+  it('판매자가 반품 완료로 옮기려 하면 거절된다 — 주체가 아니다', async () => {
     const failure = await client(placed.seller)
       .request({
         path: `/seller-orders/${placed.sellerOrderId}/transitions`,
@@ -501,16 +506,24 @@ describe('확정 뒤에는 반품이 닫힌다 (F5)', () => {
       )
 
     expect(failure).toBeInstanceOf(ApiClientError)
-    expect(failure).toMatchObject({ status: 409 })
+    // **409 가 아니라 403 이다.** 화살표는 있는데 이 주체가 지날 수 없는 것이고, 그
+    // 차이가 사람에게 할 말을 가른다 — 앞엣것은 「다시 읽어라」이고 뒤엣것은 「다른
+    // 사람이면 된다」이다.
+    expect(failure).toMatchObject({ status: 403 })
     expect(await statusOf()).toBe('CONFIRMED')
   })
 
-  it('아무도 이 몫을 어디로도 옮길 수 없다', () => {
-    // 관리자도 예외가 아니다. 「하자 반품은 관리자 개입」은 M10 의 클레임 절차이지
-    // 이 표의 화살표가 아니다 — 여기 하나 열면 확정이 종착 상태가 아니게 된다.
-    for (const actor of ['BUYER', 'SELLER', 'ADMIN', 'SYSTEM'] as const) {
+  it('관리자 말고는 아무도 이 몫을 옮길 수 없다', () => {
+    // 하자 반품은 여전히 M10 의 클레임 절차를 지난다. 이 표가 여는 것은 **그 절차의
+    // 결론이 착지할 자리** 하나이고, 주체가 `ADMIN` 뿐인 것이 「확정은 구매자에게
+    // 끝」을 지키는 방법이다 (TASK-0071 4.0).
+    for (const actor of ['BUYER', 'SELLER', 'SYSTEM'] as const) {
       expect(availableTransitions('CONFIRMED', actor)).toEqual([])
     }
+
+    expect(availableTransitions('CONFIRMED', 'ADMIN')).toEqual([
+      { to: 'RETURNED', actors: ['ADMIN'] },
+    ])
   })
 
   it('화면이 받는 액션 목록도 비어 있다', async () => {

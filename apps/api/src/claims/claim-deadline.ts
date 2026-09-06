@@ -144,6 +144,23 @@ export function claimDueAtOf(requestedAt: Date, config: Pick<AppConfig, 'fulfill
 }
 
 /**
+ * 어떤 신청이든 기한은 **적어도 이만큼** 뒤다.
+ *
+ * 지연 목록이 질의를 좁히는 데 쓴다 (TASK-0071 · `adminOverdueScanBefore`). 영업일
+ * 계산을 SQL 로 내려보내지 않으려면 「이보다 나중에 신청된 것은 아직 기한 안」이라고
+ * **확실히** 말할 수 있는 값이 필요한데, 그 값을 부르는 쪽에서 정하면 여기 정의가
+ * 바뀌는 날 조용히 거짓이 된다 — 그때 증상은 지연 목록에서 **사라진 건**이고,
+ * 아무것도 실패하지 않는다.
+ *
+ * 압축 모드는 정확히 {@link CLAIM_HANDLING_DEMO_MS} 다. 실제 서비스에서는
+ * {@link addBusinessDays} 의 한 걸음이 **최소 하루**를 옮기므로(주말이면 더 옮긴다)
+ * 2영업일은 달력으로 이틀 이상이고, 그 하한이 이 값이다.
+ */
+export function claimEarliestDueMs(pace: FulfillmentPace): number {
+  return pace === 'demo' ? CLAIM_HANDLING_DEMO_MS : CLAIM_HANDLING_BUSINESS_DAYS * DAY_MS
+}
+
+/**
  * 기한을 넘겼는가.
  *
  * **기한 정각은 아직 기한 안이다.** 기한은 「그 순간까지」를 뜻하므로, 정각에

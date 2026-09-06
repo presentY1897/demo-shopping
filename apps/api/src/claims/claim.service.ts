@@ -10,6 +10,7 @@ import {
 import type { Prisma } from '@prisma/client'
 import type {
   Claim,
+  ClaimAppeal,
   ClaimableItem,
   ClaimableResponse,
   ClaimFault,
@@ -26,11 +27,12 @@ import type {
   ClaimType,
   CreateClaimRequest,
   OrderItemSnapshot,
+  OrderStatus,
   Permission,
 } from '@shopping/shared'
 import { CLAIM_LIST_DEFAULT_LIMIT, grantedScopes, RETURN_PHOTO_MAX_COUNT } from '@shopping/shared'
 
-import { assertResourceAccess } from '../auth/access-denied.js'
+import { accessDenied, assertResourceAccess } from '../auth/access-denied.js'
 import type { AccountRow, SellerRow } from '../auth/resource-ownership.js'
 import {
   accountOwnership,
@@ -51,9 +53,9 @@ import { SellerOrderService } from '../orders/seller-order.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import type { CancelApproved, CancelRefundEvents, CancelRestockEvents } from './cancel-events.js'
 import { CANCEL_REFUND_EVENTS, CANCEL_RESTOCK_EVENTS } from './cancel-events.js'
-import type { CancelApproval, CancelLine } from './cancel-rules.js'
+import type { CancelLine } from './cancel-rules.js'
 import { cancelApprovalFor, cancelScopeOf, cancelSettledStatuses } from './cancel-rules.js'
-import type { ClaimRefusal } from './claim-rules.js'
+import type { ClaimEligibility, ClaimRefusal, ClaimRequestCheck } from './claim-rules.js'
 import {
   CLAIM_INITIAL,
   claimEligibility,
@@ -62,10 +64,22 @@ import {
   remainingQuantity,
 } from './claim-rules.js'
 import { claimTransitionNeedsReason } from './claim-console.js'
-import type { ReturnPhotoRefusal } from './return-rules.js'
-import { returnCostShare, returnFaultOf, returnPhotoDecision } from './return-rules.js'
+import type { ReturnLine, ReturnPhotoRefusal } from './return-rules.js'
+import {
+  returnCostShare,
+  returnFaultOf,
+  returnPhotoDecision,
+  returnScopeOf,
+  returnSettledStatuses,
+} from './return-rules.js'
 
-type Tx = Prisma.TransactionClient
+/**
+ * 부르는 쪽이 이미 연 트랜잭션.
+ *
+ * `export` 인 것은 관리자의 문이 {@link ClaimIntake.alongside} 로 이 안에 자기 쓰기를
+ * 얹기 때문이다 (TASK-0071).
+ */
+export type Tx = Prisma.TransactionClient
 
 /**
  * 잡고 있던 수량을 **돌려주는** 상태.
@@ -112,6 +126,27 @@ const CLAIM_SELECT = {
   requestedById: true,
   createdAt: true,
   updatedAt: true,
+  /**
+   * 관리자 개입의 두 방향 (TASK-0071).
+   *
+   * **한 조회에 함께 담는다.** 세 앱이 전부 이 사실을 그려야 하는데(판매자는 자기
+   * 거절이 뒤집혔다는 것을, 구매자는 자기 이의가 어디까지 갔는지를) 따로 부르면 두
+   * 응답이 서로 다른 순간을 본다. 셋 다 인덱스가 있거나 기본키 조회다.
+   */
+  overturnsClaimId: true,
+  overturnedBy: { orderBy: { id: 'asc' }, select: { id: true } },
+  appeal: {
+    select: {
+      claimId: true,
+      filedById: true,
+      reason: true,
+      createdAt: true,
+      reviewedAt: true,
+      reviewedById: true,
+      outcome: true,
+      reviewNote: true,
+    },
+  },
   items: {
     orderBy: { orderItemId: 'asc' },
     select: {
@@ -162,27 +197,106 @@ interface LockedClaim {
 /**
  * 한 걸음이 남긴 것.
  *
- * `changed` 만 돌려주던 자리에 봉투가 생긴 이유는 **승인이 뒤에 일을 남기기**
- * 때문이다 (TASK-0066). 승인은 두 길로 오지만(신청과 동시에 자동, 또는 판매자가
- * 눌러서) 둘 다 {@link ClaimService.applyWithin} 하나를 지나므로, 그 뒤에 나가야
- * 하는 것도 한 자리에서 만들어진다.
+ * `changed` 만 돌려주던 자리에 봉투가 생긴 이유는 **결론이 뒤에 일을 남기기**
+ * 때문이다 (TASK-0066 · 0071). 승인은 두 길로 오지만(신청과 동시에 자동, 또는
+ * 판매자·관리자가 눌러서) 둘 다 {@link ClaimService.applyWithin} 하나를 지나므로,
+ * 그 뒤에 나가야 하는 것도 한 자리에서 만들어진다.
+ *
+ * **주문 사건이 봉투의 칸으로 올라와 있다.** 취소의 결론(`CANCEL_APPROVED`)과
+ * 반품의 결론(`RETURN_COMPLETED`)이 둘 다 판매자 몫을 닫을 수 있는데, 앞엣것 안에만
+ * 그 칸을 두면 반품 쪽은 자기 사건을 실을 자리가 없다 — 그때 증상은 「반품이 끝났는데
+ * 주문은 배송완료」이고, **아무것도 실패하지 않는다.**
  */
 interface ClaimMove {
   readonly changed: boolean
-  /** 승인이었으면 커밋 뒤에 나갈 것. 그 밖의 전이에는 `null` 이다. */
-  readonly aftermath: CancelAftermath | null
+  /** 취소가 승인됐으면 커밋 뒤에 나갈 것. 그 밖의 전이에는 `null` 이다. */
+  readonly approved: CancelApproved | null
+  /** 이 걸음이 판매자 몫을 함께 옮겼으면 그 사실. 부분이면 `null`. */
+  readonly orderEvent: SellerOrderStatusChanged | null
+}
+
+/** 아무 결론도 내지 않은 걸음. 멱등으로 물러난 호출의 답이기도 하다. */
+const NOTHING_MOVED: ClaimMove = { changed: false, approved: null, orderEvent: null }
+
+/**
+ * 승인된 자리 — 유형마다 하나씩.
+ *
+ * `Record` 인 것은 유형이 늘면 컴파일이 막아야 하기 때문이고, 값을 손으로 적는 것은
+ * 「승인」이 상태 이름의 접두사 규칙이 아니라 **전이표의 화살표**이기 때문이다
+ * (`CLAIM_INITIAL` 과 같은 모양).
+ */
+const CLAIM_APPROVED: Readonly<Record<ClaimType, ClaimStatus>> = {
+  CANCEL: 'CANCEL_APPROVED',
+  RETURN: 'RETURN_APPROVED',
 }
 
 /**
- * 커밋한 **뒤에** 나가야 하는 것들.
+ * 신청과 **같은 트랜잭션에서** 승인까지 갈 것인가, 간다면 누구로.
  *
- * 트랜잭션 안에서 발행하면 롤백된 취소의 환불이 나가고, 그 돈은 되돌릴 수 없다 —
- * `SellerOrderService.publish` 가 같은 이유로 같은 자리에 있다.
+ * `cancel-rules.ts` 의 `CancelApproval` 을 그대로 쓰지 않는 이유는 그것이 **주문
+ * 상태만 보고 내리는 판단**이기 때문이다 (「판매자가 이미 손을 댔는가」). 관리자의
+ * 개입은 그 판단을 지나지 않는다 — 개입 자체가 결론이고, 그 결론의 주체와 근거는
+ * 요청이 들고 온다.
  */
-interface CancelAftermath {
-  readonly approved: CancelApproved
-  /** 전체 취소여서 판매자 몫이 함께 옮겨졌으면 그 사실. 부분 취소면 `null`. */
-  readonly orderEvent: SellerOrderStatusChanged | null
+type ClaimApproval =
+  /** 판매자·관리자가 눌러 줄 때까지 신청 상태로 남는다. */
+  | { readonly mode: 'REVIEW' }
+  | {
+      readonly mode: 'APPROVE'
+      readonly actor: SellerOrderActor
+      /** 사람이 없는 승인(`SYSTEM`)은 `null` 이다. */
+      readonly actorId: string | null
+      readonly reason: string | null
+    }
+
+/**
+ * 신청이 **어느 문으로** 태어나는가 (TASK-0071).
+ *
+ * 구매자의 문(`POST /claims` · `POST /returns`)과 관리자의 문(`POST /admin/claims`)이
+ * 다른 것을 넣는다. **문을 둘로 만들지 않는 것이 요점이다** — 잡는 순서, 부속을 쓰는
+ * 순서, 이력의 첫 줄은 두 문에서 같아야 하고, 복사하면 그 셋이 언젠가 갈린다.
+ */
+export interface ClaimIntake {
+  /**
+   * 이 문이 요구하는 퍼미션.
+   *
+   * 구매자는 `order.write` 다 — 신청은 자기 주문에 대한 행위이고, `claim.handle` 을
+   * 요구하면 아무도 신청할 수 없다. 관리자는 **`claim.handle`** 이다: 관리자가 대신
+   * 내는 신청은 신청이 아니라 **처리**이고, 애초에 `ADMIN_OPERATOR` 에게
+   * `order.write` 가 없다 (`role-permissions.ts`).
+   */
+  readonly permission: Permission
+  /**
+   * 이 신청을 받아도 되는가.
+   *
+   * 구매자는 `claimEligibility`, 관리자는 `adminClaimEligibility` 다. **저 함수를
+   * 고쳐 관리자 갈래를 넣지 않는 이유**는 `admin-claim-rules.ts` 머리말에 있다 —
+   * 한 함수가 두 사람에게 다른 말을 하기 시작하면, 실수 하나가 「구매자가 확정 후에도
+   * 스스로 반품할 수 있다」가 된다.
+   */
+  readonly gate: (check: ClaimRequestCheck) => ClaimEligibility
+  /** 신청과 같은 트랜잭션에서 결론까지 낼 것인가. */
+  readonly approval: (orderStatus: OrderStatus, type: ClaimType) => ClaimApproval
+  /** 이 신청이 뒤집는 거절. 관리자 개입에만 있다. */
+  readonly overturnsClaimId: string | null
+  /**
+   * 이 문을 지날 수 있는 주체. `null` 이면 문이 주체를 가리지 않는다.
+   *
+   * 관리자의 문이 `'ADMIN'` 을 요구하는 것은 **퍼미션만으로는 부족하기 때문**이다.
+   * 자기 가게의 클레임을 판매자가 이 문으로 들어오면 `claim.handle:own` 이 통과하고,
+   * 그때 만들어지는 것은 「판매자가 스스로 낸 개입」 — 즉 자기 거절을 자기가 뒤집은
+   * 행이다. 주체는 요청이 주장하지 않고 {@link ClaimService.actorFor} 가 행에서
+   * 읽으므로, 여기서 그 답을 한 번 확인하면 그 상태가 생기지 않는다.
+   */
+  readonly requireActor: SellerOrderActor | null
+  /**
+   * 신청과 **같은 트랜잭션에서** 함께 일어나야 하는 것 (TASK-0071).
+   *
+   * 지금 하나뿐이다 — 개입이 이의를 **인용으로 닫는 것**. 커밋 뒤로 미루면 그 틈에서
+   * 죽은 요청이 「개입은 섰는데 이의는 아직 검토 대기」인 상태를 남기고, 그것을 본
+   * 다음 관리자는 같은 개입을 한 번 더 만든다.
+   */
+  readonly alongside: ((tx: Tx, claimId: string) => Promise<void>) | null
 }
 
 /**
@@ -200,6 +314,11 @@ interface ClaimParts {
 
 /** 「전체인가」를 세는 질의 한 줄. 항목 하나가 주문한 수량과 확정된 취소 수량. */
 interface SettledLineRow extends CancelLine {
+  readonly orderItemId: string
+}
+
+/** 같은 줄을, 반품에 대해 (TASK-0071). */
+interface ReturnedLineRow extends ReturnLine {
   readonly orderItemId: string
 }
 
@@ -339,9 +458,49 @@ export class ClaimService {
    * 하나이므로 문도 하나여야 한다 — 반품만 만드는 두 번째 생성 경로를 두면, 부속을
    * 쓰는 순서와 잡는 순서가 두 벌이 되고 그 둘은 언젠가 갈린다.
    */
-  async create(principal: RequestPrincipal, input: CreateClaimRequest): Promise<ClaimResponse> {
+  create(principal: RequestPrincipal, input: CreateClaimRequest): Promise<ClaimResponse> {
+    return this.createWith(principal, input, {
+      permission: 'order.write',
+      gate: claimEligibility,
+      requireActor: null,
+      alongside: null,
+      // 취소만 스스로 승인된다. 반품은 물건이 돌아와야 하므로 판단할 것이 남아
+      // 있고, 그 판단은 사람의 것이다 (TASK-0067).
+      approval: (orderStatus, type) => {
+        if (type !== 'CANCEL') return { mode: 'REVIEW' }
+
+        const approval = cancelApprovalFor(orderStatus)
+
+        // 사람이 없는 승인이다. 신청한 사람을 여기 적으면 이력이 「구매자가
+        // 승인했다」로 읽히고, 그것이 전이표가 `BUYER` 를 막아 둔 바로 그 모양이다.
+        return approval.mode === 'AUTO'
+          ? { mode: 'APPROVE', actor: approval.actor, actorId: null, reason: null }
+          : { mode: 'REVIEW' }
+      },
+      overturnsClaimId: null,
+    })
+  }
+
+  /**
+   * 위 문의 몸통. **두 문이 이것 하나를 지난다** (TASK-0071).
+   *
+   * 다른 것은 {@link ClaimIntake} 넷뿐이고, 같은 것은 이 함수 전부다 — 잡는 순서,
+   * 부속을 쓰는 순서, 이력의 첫 줄, 커밋 뒤에 나가는 것. 관리자 경로를 위해 이
+   * 순서를 복사했다면 그 사본은 언젠가 이쪽과 갈리고, 갈린 자리는 「관리자가 만든
+   * 클레임만 수량을 안 잡는다」처럼 **한참 뒤에 장부로** 드러난다.
+   */
+  async createWith(
+    principal: RequestPrincipal,
+    input: CreateClaimRequest,
+    intake: ClaimIntake,
+  ): Promise<ClaimResponse> {
     const order = await this.sellerOrder(input.sellerOrderId)
-    const actor = this.actorFor(principal, order, 'order.write')
+    const actor = this.actorFor(principal, order, intake.permission)
+
+    if (intake.requireActor !== null && actor !== intake.requireActor) {
+      throw accessDenied(intake.permission, 'out_of_scope')
+    }
+
     const now = this.clock.now()
     const deliveredAt = await this.deliveredAt(order.id)
     const lines = this.linesOf(order.items, input)
@@ -349,7 +508,7 @@ export class ClaimService {
     let type: ClaimType | null = null
 
     for (const line of lines) {
-      const decision = claimEligibility({
+      const decision = intake.gate({
         orderStatus: order.status,
         deliveredAt,
         now,
@@ -418,6 +577,8 @@ export class ClaimService {
           reason: input.reason,
           fault: parts.fault,
           requestedById: principal.userId,
+          // 관리자 개입이면 어느 거절을 뒤집었는지 (TASK-0071). 없으면 평범한 신청이다.
+          overturnsClaimId: intake.overturnsClaimId,
           createdAt: now,
           updatedAt: now,
           items: {
@@ -475,25 +636,26 @@ export class ClaimService {
         })
       }
 
-      // 자동 승인은 **취소에만** 있다. 반품은 물건이 돌아와야 하므로 판단할 것이
-      // 남아 있고, 그 판단은 사람의 것이다 (TASK-0067).
-      const approval: CancelApproval =
-        type === 'CANCEL' ? cancelApprovalFor(order.status) : { mode: 'REVIEW' }
+      // 이의를 인용으로 닫는 것 같은, 신청과 한 사실이어야 하는 쓰기 (TASK-0071).
+      if (intake.alongside !== null) await intake.alongside(tx, claim.id)
 
-      if (approval.mode !== 'AUTO') return { claimId: claim.id, aftermath: null }
+      // 결론까지 갈 것인가는 **문이 정한다.** 구매자의 문에서는 `PAID` 의 취소만
+      // 스스로 승인되고(`cancelApprovalFor`), 관리자의 문에서는 개입 자체가
+      // 결론이라 언제나 승인이다.
+      const approval = intake.approval(order.status, type)
 
-      const move = await this.applyWithin(tx, claim.id, 'CANCEL_APPROVED', {
+      if (approval.mode !== 'APPROVE') return { claimId: claim.id, move: NOTHING_MOVED }
+
+      const move = await this.applyWithin(tx, claim.id, CLAIM_APPROVED[type], {
         actor: approval.actor,
-        // 사람이 없는 승인이다. 신청한 사람을 여기 적으면 이력이 「구매자가
-        // 승인했다」로 읽히고, 그것이 전이표가 `BUYER` 를 막아 둔 바로 그 모양이다.
-        actorId: null,
-        reason: null,
+        actorId: approval.actorId,
+        reason: approval.reason,
       })
 
-      return { claimId: claim.id, aftermath: move.aftermath }
+      return { claimId: claim.id, move }
     })
 
-    await this.publishCancel(created.aftermath)
+    await this.publishMove(created.move)
 
     return { claim: await this.load(created.claimId) }
   }
@@ -524,7 +686,7 @@ export class ClaimService {
       }),
     )
 
-    await this.publishCancel(move.aftermath)
+    await this.publishMove(move)
 
     return { claim: await this.load(claimId), changed: move.changed }
   }
@@ -736,7 +898,7 @@ export class ClaimService {
   ): Promise<ClaimMove> {
     const locked = await this.lock(tx, claimId)
 
-    if (locked.status === to) return { changed: false, aftermath: null }
+    if (locked.status === to) return NOTHING_MOVED
 
     const decision = claimTransitionDecision(locked.status, to, command.actor)
 
@@ -771,11 +933,13 @@ export class ClaimService {
 
     if (RELEASES_QUANTITY[to]) await this.release(tx, claimId, now)
 
-    return {
-      changed: true,
-      aftermath:
-        to === 'CANCEL_APPROVED' ? await this.settleCancel(tx, locked, command, now) : null,
-    }
+    // **결론은 둘이고, 둘 다 판매자 몫을 닫을 수 있다.** 취소는 승인이 곧 결론이고
+    // (물건이 아직 떠나지 않았다), 반품은 검수를 통과해야 결론이다 —
+    // `RETURN_APPROVED` 에서 닫으면 승인만 받고 물건을 안 보낸 반품이 주문을 끝낸다.
+    if (to === 'CANCEL_APPROVED') return this.settleCancel(tx, locked, command, now)
+    if (to === 'RETURN_COMPLETED') return this.settleReturn(tx, locked, command)
+
+    return { changed: true, approved: null, orderEvent: null }
   }
 
   /**
@@ -805,7 +969,7 @@ export class ClaimService {
     claim: LockedClaim,
     command: ClaimCommand,
     now: Date,
-  ): Promise<CancelAftermath> {
+  ): Promise<ClaimMove> {
     await this.lockSellerOrder(tx, claim.sellerOrderId)
 
     const scope = cancelScopeOf(await this.settledLines(tx, claim.sellerOrderId))
@@ -823,6 +987,7 @@ export class ClaimService {
         : null
 
     return {
+      changed: true,
       approved: {
         claimId: claim.id,
         sellerOrderId: claim.sellerOrderId,
@@ -837,24 +1002,83 @@ export class ClaimService {
   }
 
   /**
-   * 환불과 재고 복원을 부르는 **유일한 자리** (TASK-0068 · 0069).
+   * 검수를 통과한 반품의 **결론** — 이 몫이 돌아왔는가 (TASK-0071).
    *
-   * **커밋한 뒤에 부른다.** 트랜잭션 안에서 부르면 롤백된 승인의 돈이 나가고 재고가
-   * 늘어난다. 둘 다 실제 구현이 붙었고(`cancel-events.ts`) 둘 다 던지지 않으므로,
-   * 한쪽이 실패해도 승인은 그대로 서 있다.
+   * ## 이 함수가 없던 동안 무엇이 비어 있었나
+   *
+   * 전이표에 `DELIVERED → RETURNED` 가 있었지만 **그것을 지나는 코드가 하나도
+   * 없었다.** 반품이 완료되고 환불까지 나가도 판매자 몫은 `DELIVERED` 로 남았고,
+   * 아무것도 실패하지 않았다 — 주문 목록은 「배송완료」를 정직하게 그렸다. 두 표가
+   * 다른 말을 하는 그 상태가 TASK-0071 4.0 이 확정 후 반품에 대해 거부한 바로 그
+   * 모양이고, 확정 쪽만 고치면 같은 어긋남이 배송완료 쪽에 남는다.
+   *
+   * ## 잠그는 순서와 세는 대상은 취소와 같다
+   *
+   * 판매자 몫의 행을 **세기 전에** 잠근다. 같은 몫에 두 부분 반품이 동시에 완료되면
+   * 잠금 없이는 둘 다 상대의 수량을 못 보고 둘 다 「아직 남았다」로 판단한다 —
+   * 마지막 한 개가 돌아왔는데 주문은 아무도 옮기지 않은 채 남는다.
+   *
+   * 세는 것은 **확정된 반품**뿐이다 (`RETURN_SETTLED`). 승인만 받고 물건을 안 보낸
+   * 반품까지 세면 판매자 몫이 `RETURNED` 로 닫히고, 거기서 돌아오는 화살표는 없다.
+   *
+   * ## 주체를 접지 않는다
+   *
+   * `CONFIRMED → RETURNED` 는 주체가 **`ADMIN` 뿐**이므로(4.0), 확정된 주문의 반품을
+   * 판매자가 검수로 끝내려 하면 여기서 거절된다. 그것이 옳다 — 확정을 되돌리는 것은
+   * 관리자 한 사람의 판단이고, 접어서 통과시키면 이력에 「관리자가 되돌렸다」는
+   * 거짓이 남는다.
+   */
+  private async settleReturn(
+    tx: Tx,
+    claim: LockedClaim,
+    command: ClaimCommand,
+  ): Promise<ClaimMove> {
+    await this.lockSellerOrder(tx, claim.sellerOrderId)
+
+    const scope = returnScopeOf(await this.returnedLines(tx, claim.sellerOrderId))
+
+    return {
+      changed: true,
+      // 환불과 재입고는 검수 라우트가 자기 사실(`ReturnCompleted`)로 발행한다.
+      // 여기서 한 번 더 실으면 같은 환불이 두 봉투에 담긴다.
+      approved: null,
+      orderEvent:
+        scope === 'FULL'
+          ? await this.sellerOrders.applyWithin(tx, claim.sellerOrderId, 'RETURNED', {
+              actor: command.actor,
+              actorId: command.actorId,
+              reason: command.reason,
+            })
+          : null,
+    }
+  }
+
+  /**
+   * 걸음 하나가 남긴 것을 **커밋한 뒤에** 내보낸다 (TASK-0068 · 0069 · 0071).
+   *
+   * **트랜잭션 안에서 부르면 롤백된 승인의 돈이 나가고 재고가 늘어난다.** 둘 다 실제
+   * 구현이 붙었고(`cancel-events.ts`) 둘 다 던지지 않으므로, 한쪽이 실패해도 승인은
+   * 그대로 서 있다.
    *
    * **돈이 먼저다.** 기다리는 사람이 있는 쪽이 앞이다 — 재고 복원은 원장 행 잠금을
    * 쥐고 도는 일이라 붐빌 때 늦어질 수 있고, 그 뒤에 환불이 서면 안 된다.
    * 재고가 늦는 것은 아무도 신고하지 않지만 돈이 늦는 것은 사람이 문의한다.
+   *
+   * **`public` 인 이유는 이 문을 밖에서도 지나기 때문**이다. 반품의 검수
+   * (`ReturnService.inspect`)는 자기 트랜잭션 안에서 {@link applyWithin} 을 부르므로,
+   * 그 걸음이 판매자 몫을 `RETURNED` 로 옮겼다는 사실도 저쪽이 커밋한 뒤에 나가야
+   * 한다. 저쪽이 봉투를 버리면 그 사건은 아무 데도 가지 않고, **아무것도 실패하지
+   * 않는다.**
    */
-  private async publishCancel(aftermath: CancelAftermath | null): Promise<void> {
-    if (aftermath === null) return
-
+  async publishMove(move: ClaimMove): Promise<void> {
     // 상태가 옮겨졌다는 사실은 주문 쪽 문이 알린다. 여기서 따로 알리면 같은 사건이
     // 두 번 나가고, 받는 쪽은 그 둘을 구분할 방법이 없다.
-    await this.sellerOrders.publish(aftermath.orderEvent === null ? [] : [aftermath.orderEvent])
-    await this.refunds.refund([aftermath.approved])
-    await this.restocks.restock([aftermath.approved])
+    await this.sellerOrders.publish(move.orderEvent === null ? [] : [move.orderEvent])
+
+    if (move.approved === null) return
+
+    await this.refunds.refund([move.approved])
+    await this.restocks.restock([move.approved])
   }
 
   /**
@@ -912,6 +1136,30 @@ export class ClaimService {
                WHERE c."type" = 'CANCEL'
                  AND c."status"::text = ANY (${cancelSettledStatuses}::text[])
              ), 0)::int AS "canceled"
+        FROM "OrderItem" oi
+        LEFT JOIN "ClaimItem" ci ON ci."orderItemId" = oi."id"
+        LEFT JOIN "ClaimRequest" c ON c."id" = ci."claimId"
+       WHERE oi."sellerOrderId" = ${sellerOrderId}::uuid
+       GROUP BY oi."id", oi."quantity"
+    `
+  }
+
+  /**
+   * 같은 셈을 **반품에 대해** (TASK-0071).
+   *
+   * 질의를 하나로 합치지 않는 이유는 `type` 으로 갈리는 두 값이 **서로 다른 결론**을
+   * 만들기 때문이다 — 취소가 전부면 `CANCELED`, 반품이 전부면 `RETURNED` 이고, 한
+   * 줄에 담으면 부르는 쪽이 「어느 쪽이 전부인가」를 다시 판정하게 된다. 세는 상태도
+   * 다르다: 취소는 승인부터, 반품은 **검수 통과부터**다.
+   */
+  private async returnedLines(tx: Tx, sellerOrderId: string): Promise<readonly ReturnLine[]> {
+    return tx.$queryRaw<readonly ReturnedLineRow[]>`
+      SELECT oi."id" AS "orderItemId",
+             oi."quantity" AS "ordered",
+             COALESCE(sum(ci."quantity") FILTER (
+               WHERE c."type" = 'RETURN'
+                 AND c."status"::text = ANY (${returnSettledStatuses}::text[])
+             ), 0)::int AS "returned"
         FROM "OrderItem" oi
         LEFT JOIN "ClaimItem" ci ON ci."orderItemId" = oi."id"
         LEFT JOIN "ClaimRequest" c ON c."id" = ci."claimId"
@@ -1040,6 +1288,9 @@ export class ClaimService {
       updatedAt: row.updatedAt.toISOString(),
       items: row.items.map((item) => toClaimItem(item)),
       history: row.statusHistory.map((entry) => toHistoryEntry(entry)),
+      overturnsClaimId: row.overturnsClaimId,
+      overturnedByClaimIds: row.overturnedBy.map((entry) => entry.id),
+      appeal: row.appeal === null ? null : toAppeal(row.appeal),
     }
   }
 
@@ -1186,6 +1437,35 @@ function toHistoryEntry(row: {
   }
 }
 
+/**
+ * 이의 한 건을 계약의 모양으로 (TASK-0071).
+ *
+ * `filedAt` 이 `createdAt` 인 것은 이의가 **한 번 접수되고 끝나는 사실**이기
+ * 때문이다 — 「낸 시각」과 「행이 생긴 시각」이 같고, 두 이름을 두면 어느 쪽이
+ * 진짜인지 묻게 된다 (`Claim.requestedAt` 이 같은 이유로 같은 모양이다).
+ */
+function toAppeal(row: {
+  readonly claimId: string
+  readonly filedById: string
+  readonly reason: string
+  readonly createdAt: Date
+  readonly reviewedAt: Date | null
+  readonly reviewedById: string | null
+  readonly outcome: 'UPHELD' | 'DISMISSED' | null
+  readonly reviewNote: string | null
+}): ClaimAppeal {
+  return {
+    claimId: row.claimId,
+    filedById: row.filedById,
+    reason: row.reason,
+    filedAt: row.createdAt.toISOString(),
+    reviewedAt: row.reviewedAt?.toISOString() ?? null,
+    reviewedById: row.reviewedById,
+    outcome: row.outcome,
+    reviewNote: row.reviewNote,
+  }
+}
+
 function toListItem(row: ListRow): ClaimListItem {
   return {
     id: row.id,
@@ -1211,8 +1491,13 @@ function toListItem(row: ListRow): ClaimListItem {
  * `Record` 가 아니라 `switch` 인 것은 상태 코드가 갈래마다 다르기 때문이다 — 표로
  * 적으면 코드·문장·필드 세 벌을 나란히 두게 되고, 그것은 표가 아니라 세 개의 표다.
  * 갈래가 하나 늘면 `ClaimRefusal` 이 완전하지 않아 컴파일이 멈춘다.
+ *
+ * **`export` 인 이유는 관리자의 문도 같은 거절을 내기 때문**이다 (TASK-0071).
+ * 판정자만 다르고(`adminClaimEligibility`) 답의 코드·상태·필드는 같아야 한다 —
+ * 사본을 두면 「관리자 경로에서만 다른 코드로 거절되는 수량 초과」가 생기고, 화면은
+ * 그 둘을 다르게 다뤄야 한다.
  */
-function refusal(reason: ClaimRefusal, remaining: number): HttpException {
+export function refusal(reason: ClaimRefusal, remaining: number): HttpException {
   switch (reason) {
     case 'in_transit':
       return new ConflictException(

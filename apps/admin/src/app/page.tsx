@@ -1,6 +1,7 @@
 import { PageHeader } from '@shopping/ui/console'
 
 import { ApiWakeGate } from '@/components/api-wake-gate'
+import { ClaimAttentionPanel } from '@/components/claims/claim-attention-panel'
 import { messagesFor, screenTitle } from '@/messages'
 
 /**
@@ -24,6 +25,13 @@ export default function HomePage() {
       <PageHeader description={messages.app.description} title={screenTitle('/')} />
 
       <ApiWakeGate health={messages.health} wake={messages.wake} />
+
+      {/*
+        F7 — 기한을 넘긴 클레임과 나가지 못한 환불이 **대시보드에 노출**된다.
+        진짜 대시보드는 TASK-0092 의 것이고, 이 패널은 그 격자가 생기면 한 칸으로
+        들어간다. 클레임을 읽을 수 없는 계정에는 아무것도 그리지 않는다.
+      */}
+      <ClaimAttentionPanel errors={messages.errors} messages={messages.claims} />
 
       <p className="text-fg-subtle text-sm">{messages.health.notice}</p>
 

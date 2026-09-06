@@ -9,12 +9,14 @@ import {
   claimListQueryParamsSchema,
   claimTransitionRequestSchema,
   createClaimRequestSchema,
+  fileClaimAppealRequestSchema,
 } from '@shopping/shared'
 
 import { Principal } from '../auth/principal.decorator.js'
 import { RequirePermission } from '../auth/require-permission.decorator.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { parseInput } from '../common/parse-input.js'
+import { ClaimAppealService } from './claim-appeal.service.js'
 import { ClaimService } from './claim.service.js'
 
 /**
@@ -34,7 +36,10 @@ import { ClaimService } from './claim.service.js'
  */
 @Controller({ version: '1' })
 export class ClaimController {
-  constructor(private readonly claims: ClaimService) {}
+  constructor(
+    private readonly claims: ClaimService,
+    private readonly appeals: ClaimAppealService,
+  ) {}
 
   /**
    * 취소 · 반품을 신청한다 (F1 ~ F6).
@@ -61,6 +66,26 @@ export class ClaimController {
     @Body() body: unknown,
   ): Promise<ClaimTransitionResponse> {
     return this.claims.transition(principal, id, parseInput(claimTransitionRequestSchema, body))
+  }
+
+  /**
+   * 거절에 **이의를 제기한다** (TASK-0071 F2).
+   *
+   * **퍼미션이 `order.write` 인 것이 이 라우트의 자리다.** 이의는 자기 주문에 대한
+   * 행위라 신청과 같은 축이고, `claim.handle` 을 요구하면 구매자는 아무것도 할 수
+   * 없다 — 위 표의 첫 줄과 같은 이유다.
+   *
+   * 관리자의 답(기각)은 여기가 아니라 `POST /admin/claims/:id/appeal/dismiss` 이고,
+   * 인용은 강제 처리 그 자체다 (`POST /admin/claims`).
+   */
+  @Post('claims/:id/appeal')
+  @RequirePermission('order.write')
+  appeal(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ): Promise<ClaimResponse> {
+    return this.appeals.file(principal, id, parseInput(fileClaimAppealRequestSchema, body))
   }
 
   /** 클레임 목록. 보이는 범위는 `claim.read` 의 스코프가 정한다. */

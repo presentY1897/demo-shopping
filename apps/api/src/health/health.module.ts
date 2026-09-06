@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 
 import { SearchModule } from '../search/search.module.js'
 
+import { ClaimRefundHealthIndicator } from './claim-refund.health-indicator.js'
 import { DatabaseHealthIndicator } from './database.health-indicator.js'
 import { DemoCleanupReporter } from './demo-cleanup.reporter.js'
 import { DeliverySimulatorHealthIndicator } from './delivery-simulator.health-indicator.js'
@@ -29,6 +30,7 @@ import { SearchWarmupService } from './search-warmup.service.js'
     OrderConfirmHealthIndicator,
     PaymentStragglerHealthIndicator,
     DeliverySimulatorHealthIndicator,
+    ClaimRefundHealthIndicator,
     DemoCleanupReporter,
     SearchIndexReporter,
     // 지표가 아니라 보고자다 — 웹훅이 한 건도 안 온 것은 고장이 아니라서 전체
@@ -65,6 +67,10 @@ import { SearchWarmupService } from './search-warmup.service.js'
         // 정산 · 반품이 열리지 않는다 (TASK-0062). 여기서도 아무것도 실패하지
         // 않는 것이 위험이다.
         deliverySimulator: DeliverySimulatorHealthIndicator,
+        // 환불 재시도가 멈추면 승인된 취소와 검수를 통과한 반품의 돈이 나가지 않은
+        // 채 남는다 (TASK-0071 · 배치는 TASK-0068). 여기서도 아무것도 실패하지
+        // 않는 것이 위험이다 — 구매자에게는 「돈이 안 들어온다」로만 보인다.
+        claimRefund: ClaimRefundHealthIndicator,
       ) => [
         database,
         search,
@@ -73,6 +79,7 @@ import { SearchWarmupService } from './search-warmup.service.js'
         orderConfirm,
         paymentStraggler,
         deliverySimulator,
+        claimRefund,
       ],
       inject: [
         DatabaseHealthIndicator,
@@ -82,6 +89,7 @@ import { SearchWarmupService } from './search-warmup.service.js'
         OrderConfirmHealthIndicator,
         PaymentStragglerHealthIndicator,
         DeliverySimulatorHealthIndicator,
+        ClaimRefundHealthIndicator,
       ],
     },
   ],

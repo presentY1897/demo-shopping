@@ -48,6 +48,26 @@ export default {
         // the review queue offering the wrong buttons — and the symptom is
         // never a red test, because the buttons still render.
         'src/lib/sellers/decisions.ts': complete,
+        // TASK-0071's decisions, taken before anything is drawn: which
+        // rejections can be overturned, what a return reason records as fault,
+        // what an intervention actually sends, and which instants a chosen day
+        // covers. Two of those tables are **mirrors** of `apps/api` (see the
+        // file), and a branch nothing reaches is a screen offering the wrong
+        // button or a request built against the wrong order — neither of which
+        // fails a test, because the screen still renders.
+        'src/lib/claims/claim-console.ts': complete,
+        // TASK-0071 F4's decisions, taken before anything is drawn: what may be
+        // typed into the lookup (and which of those the repository has no route
+        // for), which order states this intervention can begin from, which
+        // reasons a confirmed order may be reversed for, and what the request
+        // that reverses it carries. A missed branch offers a return form on an
+        // order the server will refuse, or hides one it would accept — and the
+        // screen renders either way.
+        'src/lib/claims/defect-return.ts': complete,
+        // The photo gate in front of `POST /uploads/presign`. A missed branch
+        // spends a round trip on a file the API refuses, and answers with a 400
+        // that cannot say which file was at fault.
+        'src/lib/claims/return-photos.ts': complete,
       },
     },
   },

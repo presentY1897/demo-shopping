@@ -72,7 +72,11 @@ export interface ClaimTransitionRule {
  *   없다 — 구매자가 하는 일은 신청(생성)이고, 그 뒤는 파는 쪽의 판단이다.
  * - **회수와 검수 진입은 `SYSTEM` 도 한다.** 회수가 가상이라(TASK-0067)
  *   시뮬레이터가 그 두 걸음을 민다. 판매자도 할 수 있는 것은 배송에서와 같은
- *   이유다 — 시뮬레이터가 멈춘 데모에서 흐름이 끊기면 안 된다.
+ *   이유다 — 시뮬레이터가 멈춘 데모에서 흐름이 끊기면 안 된다. **`ADMIN` 이 그
+ *   둘에 함께 있는 것은 TASK-0071 의 결과다**: 관리자가 판매자의 거절을 뒤집어
+ *   만든 반품은 **뒤집힌 판매자가 밀어 주기를 기다릴 수 없고**, 확정 후 하자
+ *   반품에는 애초에 판매자의 걸음이 없다. 결론(`INSPECTING → RETURN_COMPLETED`)에
+ *   `ADMIN` 이 이미 있었으므로, 없으면 관리자가 만든 반품만 중간에서 멈춘다.
  * - **환불은 `SYSTEM` 뿐이다.** 사람이 「환불됨」을 누르는 화면은 없다. 그것은
  *   돈이 실제로 나갔다는 사실의 결과이고, 그 사실을 아는 것은 결제 쪽이다
  *   (TASK-0068).
@@ -87,8 +91,8 @@ export const claimTransitions: Readonly<Record<ClaimStatus, readonly ClaimTransi
     { to: 'RETURN_APPROVED', actors: ['SELLER', 'ADMIN'] },
     { to: 'RETURN_REJECTED', actors: ['SELLER', 'ADMIN'] },
   ],
-  RETURN_APPROVED: [{ to: 'PICKING_UP', actors: ['SYSTEM', 'SELLER'] }],
-  PICKING_UP: [{ to: 'INSPECTING', actors: ['SYSTEM', 'SELLER'] }],
+  RETURN_APPROVED: [{ to: 'PICKING_UP', actors: ['SYSTEM', 'SELLER', 'ADMIN'] }],
+  PICKING_UP: [{ to: 'INSPECTING', actors: ['SYSTEM', 'SELLER', 'ADMIN'] }],
   INSPECTING: [
     { to: 'RETURN_COMPLETED', actors: ['SELLER', 'ADMIN'] },
     // 검수 불합격. 물건은 이미 판매자에게 있고 환불은 일어나지 않는다.

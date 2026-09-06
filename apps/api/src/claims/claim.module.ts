@@ -5,7 +5,10 @@ import { PaymentModule } from '../payment/payment.module.js'
 import { PrismaModule } from '../prisma/prisma.module.js'
 import { StockModule } from '../stock/stock.module.js'
 import { StorageModule } from '../storage/storage.module.js'
+import { AdminClaimController } from './admin-claim.controller.js'
+import { AdminClaimService } from './admin-claim.service.js'
 import { CANCEL_REFUND_EVENTS, CANCEL_RESTOCK_EVENTS } from './cancel-events.js'
+import { ClaimAppealService } from './claim-appeal.service.js'
 import { ClaimController } from './claim.controller.js'
 import { ClaimService } from './claim.service.js'
 import { ClaimRefundRetryService } from './refund-retry.service.js'
@@ -56,9 +59,16 @@ import { SellerClaimService } from './seller-claim.service.js'
  */
 @Module({
   imports: [PrismaModule, SellerOrderModule, PaymentModule, StockModule, StorageModule],
-  controllers: [ClaimController, SellerClaimController],
+  controllers: [ClaimController, SellerClaimController, AdminClaimController],
   providers: [
     ClaimService,
+    // 관리자 개입 (TASK-0071). `ClaimService` 와 따로 있는 이유는 판매자 콘솔의
+    // 읽기가 따로 있는 것과 같다 — 묻는 축이 다르다. 쓰기는 저쪽의 문
+    // (`createWith`)을 지나므로, 여기 있는 것은 **어떤 문으로 들어가는가**뿐이다.
+    AdminClaimService,
+    // 이의는 클레임의 상태가 아니라 옆에 붙는 사실이라 자기 서비스를 갖는다
+    // (`claim-appeal.service.ts` 의 세 이유).
+    ClaimAppealService,
     // 판매자 콘솔의 읽기 셋 (TASK-0070). `ClaimService` 와 따로 있는 이유는 읽는
     // 방향이 다르기 때문이고, `SellerOrderListService` 가 `OrderService` 옆에
     // 있는 것과 같은 나눔이다.
@@ -77,6 +87,8 @@ import { SellerClaimService } from './seller-claim.service.js'
   ],
   exports: [
     ClaimService,
+    AdminClaimService,
+    ClaimAppealService,
     ClaimRefundService,
     ClaimRefundRetryService,
     ClaimRestockService,

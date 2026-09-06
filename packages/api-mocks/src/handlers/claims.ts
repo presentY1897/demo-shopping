@@ -423,6 +423,12 @@ function claimFrom(
     updatedAt: MOCK_ORDER_NOW,
     items: lines.map((line, index) => claimItemFrom(line, sequence, index + 1)),
     history: autoApproved ? [requested, approved] : [requested],
+    // 관리자 개입의 세 칸 (TASK-0071). 이 대역이 서는 화면은 **구매자의 신청**이라
+    // 개입도 이의도 없는 상태가 정상이고, 지어내면 화면이 실 서버에서 오지 않는
+    // 조합에 맞춰진다 — `refundAmount` 가 언제나 0 인 것과 같은 판단이다.
+    overturnsClaimId: null,
+    overturnedByClaimIds: [],
+    appeal: null,
   }
 }
 

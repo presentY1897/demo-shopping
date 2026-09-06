@@ -31,6 +31,7 @@ export const healthDependencyKeys = [
   'paymentStraggler',
   'deliverySimulator',
   'orderConfirm',
+  'claimRefund',
 ] as const
 
 export type HealthDependencyKey = (typeof healthDependencyKeys)[number]
@@ -176,6 +177,36 @@ export const healthResponseSchema = z.object({
    * 생긴다.
    */
   paymentStraggler: z.object({
+    status: healthStatusSchema,
+    lastRunAt: z.iso.datetime().nullable(),
+    fixedCount: z.int().min(0),
+  }),
+  /**
+   * 나가지 못한 환불을 다시 내보내는 배치 (TASK-0071 · 배치는 TASK-0068 F8 · R3).
+   *
+   * **이 잡이 멈추면 돈이 안 돌아간 채 아무것도 실패하지 않는다.** 승인된 취소가
+   * `CANCEL_APPROVED` 로, 검수를 통과한 반품이 `RETURN_COMPLETED` 로 앉아 있을
+   * 뿐이고, 그 두 상태는 정상 흐름에서도 잠깐 지나는 자리라 목록만 봐서는 구분되지
+   * 않는다. 클레임 조회도 주문 조회도 200 을 답하고, 구매자에게는 「돈이 안
+   * 들어온다」로만 보이며, 그때 그 사람이 할 수 있는 일은 문의뿐이다. 바로 위의
+   * `paymentStraggler` 와 같은 종류의 침묵이고 — 저쪽은 들어온 돈, 이쪽은 나가야 할
+   * 돈이다 — 그래서 같은 모양으로 `status` 를 품는다. {@link healthDependencyKeys}
+   * 의 하나이고 `degraded` 는 맨 위의 `status` 까지 함께 내린다.
+   *
+   * `fixedCount` 는 **마지막 한 번**이 실제로 내보낸 환불의 수다. 고른 뒤에 보니
+   * 이미 환불돼 있던 건과 환불로 갈 자리가 아니었던 건, 그리고 이번에도 실패한 건은
+   * 여기 들어오지 않는다 — 앞의 둘은 배치가 한 일이 아니고 마지막은 아직 못 한
+   * 일이라, 섞으면 이 숫자가 「배치가 일하고 있다」의 근거가 되지 못한다. 평소 값이
+   * 0 인 것이 정상이다: 환불은 승인·검수 그 자리에서 곧바로 나가고, 여기 남는 것은
+   * 그 한 번이 실패한 건뿐이다.
+   *
+   * **필수다.** API 는 언제나 이 키를 답한다 — 배치가 안 돌았어도 「안 돌았다」를
+   * 답한다. 선택으로 두면 읽는 쪽이 「필드가 없다」와 「멈췄다」를 구분해야 하는데,
+   * 그 둘은 같은 뜻이면서 분기만 하나 늘린다. 그리고 **없는 경우를 허용하면 그것이
+   * 정상인 줄 알고 지나간다** — 돈이 안 돌아간 것을 알아챌 자리가 여기밖에 없는데,
+   * 그 자리가 비어 있어도 되는 값이면 아무도 그 침묵을 보지 않는다.
+   */
+  claimRefund: z.object({
     status: healthStatusSchema,
     lastRunAt: z.iso.datetime().nullable(),
     fixedCount: z.int().min(0),

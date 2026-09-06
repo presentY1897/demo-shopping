@@ -162,6 +162,8 @@ export const untouchedTables: Readonly<Record<string, string>> = {
   ReturnPhoto:
     'ReturnDetail 에 Cascade 로 매달려 있다. **객체 자체는 이 계획이 지우지 않는다** — 버킷은 데이터베이스가 아니고, 고아 객체 청소는 상품 이미지와 같은 장치가 맡는다 (TASK-0033 F6)',
   ReturnShipment: 'ReturnDetail 에 Cascade 로 매달려 있다',
+  ClaimAppeal:
+    'ClaimRequest 에 Cascade 로 매달려 있다. 클레임이 남으므로 함께 남는다 — 「구매자가 이 거절에 이의를 냈고 관리자가 어떻게 답했나」는 분쟁의 근거이고, 산 사람이 데모였다는 이유로 지울 수 있는 기록이 아니다 (ClaimStatusHistory 와 같은 판단). `filedById` · `reviewedById` 가 `RESTRICT` 인데 계정 행이 툼스톤으로 남으므로 끊기지 않는다 (TASK-0071)',
 }
 
 /**

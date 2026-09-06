@@ -302,6 +302,24 @@ export const mockPaths = {
    */
   adminSellerDecision: `*${API_PATH_PREFIX}/admin/sellers/:id/:action`,
   /**
+   * 관리자의 클레임 (TASK-0071).
+   *
+   * **지연 목록이 `adminClaims` 보다 **먼저** 등록돼야 하는가**를 물을 자리가 여기
+   * 없다 — 이 대역에는 `admin/claims/:id` 가 아예 없다. 클레임 하나는 `/claims/:id`
+   * 가 답하므로(관리자의 `claim.read` 가 `any` 다) 경로가 겹치지 않고, 그래서
+   * `overdue` 는 자기 이름 그대로 매칭된다. 상세를 나중에 여기 더한다면 그때는
+   * 순서가 규칙이 된다.
+   */
+  adminClaims: `*${API_PATH_PREFIX}/admin/claims`,
+  /** `GET` 기한을 넘긴 채 처리를 기다리는 클레임. */
+  adminOverdueClaims: `*${API_PATH_PREFIX}/admin/claims/overdue`,
+  /** `POST` 이의를 기각한다. 인용은 강제 처리 그 자체라 라우트가 없다. */
+  adminClaimAppealDismiss: `*${API_PATH_PREFIX}/admin/claims/:id/appeal/dismiss`,
+  /** `GET` 나가지 못한 환불 (TASK-0068 R3 이 넘긴 항목). */
+  adminFailedRefunds: `*${API_PATH_PREFIX}/admin/claim-refunds/failed`,
+  /** `POST` 구매자가 거절에 이의를 제기한다. */
+  claimAppeal: `*${API_PATH_PREFIX}/claims/:id/appeal`,
+  /**
    * The catalogue: `POST` a listing whole (TASK-0113).
    *
    * Not under `/seller/` even though only a seller calls it. Which role may

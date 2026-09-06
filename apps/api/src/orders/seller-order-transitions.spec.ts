@@ -210,9 +210,11 @@ describe('매트릭스 전수 — 9 × 9 × 4', () => {
     // 루프가 실제로 전부 돌았는지 센다. `orderStatuses` 가 늘면 이 숫자가 먼저
     // 어긋나고, 그때 손대야 할 곳이 여기가 아니라 표라는 것이 드러난다.
     expect(definedCells.length + undefinedCells.length).toBe(9 * 9 * 4)
-    expect(DEFINED.size).toBe(9)
-    expect(definedCells).toHaveLength(9 * 4)
-    expect(undefinedCells).toHaveLength(9 * 9 * 4 - 9 * 4)
+    // 정의된 전이는 열이다 — 아홉이었다가 `CONFIRMED → RETURNED` 가 늘었다
+    // (TASK-0071 4.0).
+    expect(DEFINED.size).toBe(10)
+    expect(definedCells).toHaveLength(10 * 4)
+    expect(undefinedCells).toHaveLength(9 * 9 * 4 - 10 * 4)
   })
 
   it('counts the statuses and actors this matrix claims to cover', () => {
@@ -345,7 +347,11 @@ describe('세 이유가 각각 도달한다', () => {
  * 나란히 두어야 **어느 쪽이 틀려도** 빨개진다 — 표가 전이를 잃어도, 이 목록이
  * 낡아도.
  */
-const TERMINAL: readonly OrderStatus[] = ['CONFIRMED', 'CANCELED', 'RETURNED', 'PAYMENT_FAILED']
+/**
+ * 종착 상태. **`CONFIRMED` 가 빠진 것이 TASK-0071 의 결과다** — 하자 반품만 관리자
+ * 확인을 거쳐 그 상태를 떠난다. 구매자에게는 여전히 길이 없다.
+ */
+const TERMINAL: readonly OrderStatus[] = ['CANCELED', 'RETURNED', 'PAYMENT_FAILED']
 
 /** `SYSTEM` 만 할 수 있는 전이. 결제로 움직이는 둘이고, 그것이 설계의 요점이다. */
 const SYSTEM_ONLY: readonly string[] = [
@@ -361,7 +367,12 @@ const SYSTEM_ONLY: readonly string[] = [
  * `SYSTEM` 을 `SELLER` 로 접어 넣게 되고 **이력에 거짓이 남는다.** 발송과 반품은
  * 그대로다: 물건이 나가는 것과 되돌아오는 것은 사람이 정한다.
  */
-const HUMAN_ONLY: readonly string[] = [move('PREPARING', 'SHIPPED'), move('DELIVERED', 'RETURNED')]
+const HUMAN_ONLY: readonly string[] = [
+  move('PREPARING', 'SHIPPED'),
+  move('DELIVERED', 'RETURNED'),
+  // 확정된 주문을 되돌리는 것은 **관리자 한 사람의 판단**이다 (TASK-0071 4.0).
+  move('CONFIRMED', 'RETURNED'),
+]
 
 describe('종착 상태에서는 아무 데도 못 간다', () => {
   it('agrees with the hand written list of terminal statuses', () => {
@@ -451,13 +462,13 @@ describe('주체가 나뉘는 자리', () => {
       .map(([from, rule]) => move(from, rule.to))
 
     expect(derived).toEqual(HUMAN_ONLY)
-    expect(derived).toHaveLength(2)
+    expect(derived).toHaveLength(3)
   })
 
   it('leaves the remaining five open to both', () => {
-    // 아홉에서 둘과 둘을 빼면 다섯. 이 뺄셈이 맞아야 위 두 목록이 「전부」다.
-    expect(tableRules()).toHaveLength(9)
-    expect(SYSTEM_ONLY.length + HUMAN_ONLY.length + 5).toBe(9)
+    // 열에서 둘과 셋을 빼면 다섯. 이 뺄셈이 맞아야 위 두 목록이 「전부」다.
+    expect(tableRules()).toHaveLength(10)
+    expect(SYSTEM_ONLY.length + HUMAN_ONLY.length + 5).toBe(10)
   })
 
   it('never lets the buyer cancel by themselves', () => {

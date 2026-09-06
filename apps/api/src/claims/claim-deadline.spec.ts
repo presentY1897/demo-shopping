@@ -6,6 +6,7 @@ import {
   CLAIM_HANDLING_DEMO_MS,
   claimDueAt,
   claimDueAtOf,
+  claimEarliestDueMs,
   isBusinessDay,
   isClaimOverdue,
   kstDayIndex,
@@ -127,5 +128,39 @@ describe('지연 판정', () => {
 
   it('is late one millisecond after it', () => {
     expect(isClaimOverdue(dueAt, new Date(dueAt.getTime() + 1))).toBe(true)
+  })
+})
+
+describe('가장 이른 기한 — 지연 목록의 컷오프가 기대는 하한', () => {
+  const DAY_MS = 24 * 60 * 60 * 1_000
+
+  it('is exactly the compressed window in the demo pace', () => {
+    expect(claimEarliestDueMs('demo')).toBe(CLAIM_HANDLING_DEMO_MS)
+  })
+
+  it('is two calendar days in the realistic pace', () => {
+    expect(claimEarliestDueMs('realistic')).toBe(CLAIM_HANDLING_BUSINESS_DAYS * DAY_MS)
+  })
+
+  /**
+   * **이 부등식이 지연 목록의 근거다** (TASK-0071 `adminOverdueScanBefore`).
+   *
+   * 영업일 계산을 SQL 로 내려보내지 않으려면 「이보다 나중에 신청된 것은 아직 기한
+   * 안」이라고 확실히 말할 수 있어야 하고, 그 말은 정확히 「기한 ≥ 신청 + 이 값」이다.
+   * 한 해의 매 시각을 돌아 그것이 참인지 센다 — 주말을 건너뛰는 걸음이 하루보다 짧게
+   * 잡히는 날 이 단언이 먼저 빨개진다.
+   */
+  it('is never more than the actual deadline, at any hour of the year', () => {
+    const HOUR = 60 * 60 * 1_000
+    const violations: string[] = []
+
+    for (let hour = 0; hour < 365 * 24; hour += 1) {
+      const requestedAt = new Date(Date.parse('2026-01-01T00:00:00.000Z') + hour * HOUR)
+      const slack = claimDueAt(requestedAt, 'realistic').getTime() - requestedAt.getTime()
+
+      if (slack < claimEarliestDueMs('realistic')) violations.push(requestedAt.toISOString())
+    }
+
+    expect(violations).toEqual([])
   })
 })
