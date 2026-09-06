@@ -25,6 +25,10 @@ pnpm-debug.log*
 
 # test / coverage
 coverage/
+# `vitest --reporter=blob` writes here. CI's sharded run produces one per shard
+# and the merge job consumes them; locally they appear whenever someone
+# reproduces that run.
+.vitest-reports/
 .nyc_output/
 playwright-report/
 test-results/

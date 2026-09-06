@@ -54,37 +54,62 @@ jobs:
       - uses: ./.github/actions/setup
       - run: pnpm build
 
-  test:
-    name: test
+  # The suite is sharded across runners, and the three jobs below are one gate.
+  #
+  # It ran as a single job until 2026-09-06, and by then it took 9m18s–9m42s
+  # against a ten minute cap — every package in series on one four-core runner,
+  # with `apps/api` alone accounting for eight of those minutes. The first branch
+  # to add a hundred tests tipped it over, and the failure arrived as
+  # `cancelled`: nothing in the log said a test failed, because none had.
+  #
+  # Two facts decided the shape. **Coverage doubles the api suite** — 147s
+  # without, 312s with, measured locally — and it cannot be dropped, because Q5
+  # states coverage as a gate. And **the api suite is most of the wall clock**,
+  # so splitting anything else first buys nothing.
+  #
+  # So `apps/api` is split three ways with `--shard`, each shard writing a blob
+  # report instead of checking anything, and `test` merges the three and applies
+  # the thresholds once. The merge is the only place that has seen every file;
+  # a shard reads 0% for the two thirds it never loaded, which is why
+  # `COVERAGE_THRESHOLDS=off` exists (`apps/api/vitest.config.mjs`).
+  #
+  # **`test` stays the name of the gate.** Branch protection requires four
+  # checks by name and CLAUDE.md tells the next person to count them; a matrix
+  # would have renamed this one to `test (1)`, `test (2)`, `test (3)` and left
+  # the required check permanently pending.
+  test-web:
+    name: test-web
     runs-on: ubuntu-latest
-    # Twenty, and the number is a hang guard rather than a performance budget.
-    #
-    # It was ten, and by 2026-09-06 the job was finishing in 9m18s–9m42s on
-    # `main` — three runs in a row within forty seconds of the cap. The next
-    # branch to add tests (TASK-0075 added a hundred) tipped it over, and the
-    # failure arrives as `cancelled`, which reads like an infrastructure hiccup
-    # rather than "your branch is too slow": nothing in the log says a test
-    # failed, because none did.
-    #
-    # Raising it does not hide a regression. What a cap this tight was catching
-    # was load noise on the runner, and it caught it by turning a green branch
-    # red. A suite that genuinely hangs still stops, twenty minutes later.
-    #
-    # **The trend is the real problem** and this does not fix it. The job runs
-    # every package in series and `apps/api` is most of it; the next step when
-    # this gets close again is a matrix over packages. That changes the job
-    # names, which is why it is not this commit — the four gate names are what
-    # branch protection requires and what CLAUDE.md tells the next person to
-    # count.
-    timeout-minutes: 20
-    # The suite runs against a real PostgreSQL (QUALITY-GATES 6장, D-207): the
-    # invariants this project relies on are enforced by the database — partial
-    # unique indexes, CHECK constraints, conditional stock updates — and mocking
-    # Prisma would leave exactly those out of the checks.
-    #
-    # The tag must equal the one in docker-compose.yml. A workflow cannot read a
-    # value out of that file, so `apps/api/test/ci/postgres-image-parity.spec.ts`
-    # compares the two strings and fails when they drift.
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      # Everything except `apps/api` — no database, no search engine, and the
+      # packages are small enough that series is fine here.
+      #
+      # `test:coverage`, not `test`. QUALITY-GATES Q5 states coverage as a gate
+      # and `vitest run` without `--coverage` evaluates none of it. Until
+      # 2026-09-04 every threshold was enforced only on the machine of whoever
+      # thought to run it, which is a gate that passes without proving anything.
+      #
+      # **Every package needs the script, even without thresholds.**
+      # `pnpm -r --if-present` *skips* a package that lacks it rather than
+      # falling back to `test` — so the packages that had no coverage
+      # configuration were given one that simply runs the suite. Without that,
+      # switching this line would have quietly stopped running the shop, seller
+      # and api-mocks tests in CI, which is a worse failure than the one it fixes.
+      - run: pnpm --filter '!@shopping/api' -r --if-present run test:coverage
+
+  test-api:
+    name: test-api
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      # One shard failing must not cancel the other two: the merge job needs
+      # their blobs to say anything useful about what else broke.
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     services:
       postgres:
         image: postgres:17.11-alpine
@@ -132,22 +157,47 @@ jobs:
       # runs `prisma migrate deploy` against it once and clones it per worker.
       # The command is the same one a developer runs locally.
       #
-      # `test:coverage`, not `test`. QUALITY-GATES Q5 states coverage as a gate —
-      # a line floor for services and 100% branches on the pure modules named in
-      # `apps/api/vitest.config.mjs` — and `vitest run` without `--coverage`
-      # evaluates none of it. Until 2026-09-04 every one of those thresholds was
-      # enforced only on the machine of whoever thought to run it, which is a
-      # gate that passes without proving anything.
-      #
-      # **Every package needs the script, even without thresholds.**
-      # `pnpm -r --if-present` *skips* a package that lacks it rather than
-      # falling back to `test` — so the four packages that had no coverage
-      # configuration were given one that simply runs the suite. Without that,
-      # switching this line would have quietly stopped running the shop, seller
-      # and api-mocks tests in CI, which is a worse failure than the one it fixes.
-      - run: pnpm test:coverage
+      # `--reporter=blob` writes the run to `.vitest-reports/` instead of the
+      # terminal, coverage included. Three of those are what `test` merges.
+      - run: >-
+          pnpm --filter @shopping/api exec vitest run --coverage
+          --reporter=blob --shard=${{ matrix.shard }}/3
         env:
+          # A shard has only seen a third of the files; the thresholds are
+          # applied once, on the merged report.
+          COVERAGE_THRESHOLDS: 'off'
           # There is no `.env` in CI, so the search spec reads the key from here.
           # The host it derives itself: `scripts/ports.mjs` with no `PORT_OFFSET`
           # answers 7700, which is the port the service above publishes.
           MEILI_MASTER_KEY: ci-master-key
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vitest-blob-${{ matrix.shard }}
+          path: apps/api/.vitest-reports/
+          retention-days: 1
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [test-web, test-api]
+    # `always()`, so that this job runs even when a shard failed and can say so
+    # itself. Without it the check would be *skipped*, and a skipped required
+    # check is not a red one — the PR would look mergeable.
+    if: always()
+    steps:
+      - name: fail when a suite did not pass
+        if: needs.test-web.result != 'success' || needs.test-api.result != 'success'
+        run: |
+          echo "test-web=${{ needs.test-web.result }} test-api=${{ needs.test-api.result }}"
+          exit 1
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: vitest-blob-*
+          merge-multiple: true
+          path: apps/api/.vitest-reports/
+      # The gate itself. Merging three shards restores the whole file list, and
+      # only then do the coverage thresholds mean what QUALITY-GATES Q5 says.
+      - run: pnpm --filter @shopping/api exec vitest --merge-reports --coverage
