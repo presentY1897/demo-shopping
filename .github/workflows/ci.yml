@@ -81,24 +81,44 @@ jobs:
     name: test-web
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      # Three groups rather than one job, and `--workspace-concurrency=1` inside
+      # each. The first run of this shape put `apps/shop`, `apps/admin` and
+      # `apps/seller` on one runner, where pnpm started all three at once and
+      # each spawned its own vitest workers — four cores, a dozen processes, and
+      # a cart spec failed on `findBy` while the screen still said
+      # 「장바구니를 불러오는 중」. Nothing was wrong with it; it simply had not
+      # been given a core within the second it waits.
+      #
+      # A test that fails under load is not a test that found something, and a
+      # suite that has one teaches people to press re-run. One package at a time
+      # per runner, and the runners are what run at once.
+      matrix:
+        include:
+          - name: packages
+            filter: --filter @shopping/shared --filter @shopping/ui --filter @shopping/api-mocks
+          - name: shop
+            filter: --filter @shopping/shop
+          - name: consoles
+            filter: --filter @shopping/admin --filter @shopping/seller
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      # Everything except `apps/api` — no database, no search engine, and the
-      # packages are small enough that series is fine here.
-      #
       # `test:coverage`, not `test`. QUALITY-GATES Q5 states coverage as a gate
       # and `vitest run` without `--coverage` evaluates none of it. Until
       # 2026-09-04 every threshold was enforced only on the machine of whoever
       # thought to run it, which is a gate that passes without proving anything.
       #
       # **Every package needs the script, even without thresholds.**
-      # `pnpm -r --if-present` *skips* a package that lacks it rather than
-      # falling back to `test` — so the packages that had no coverage
-      # configuration were given one that simply runs the suite. Without that,
-      # switching this line would have quietly stopped running the shop, seller
-      # and api-mocks tests in CI, which is a worse failure than the one it fixes.
-      - run: pnpm --filter '!@shopping/api' -r --if-present run test:coverage
+      # `--if-present` *skips* a package that lacks it rather than falling back
+      # to `test` — so the packages that had no coverage configuration were given
+      # one that simply runs the suite. Without that, switching this line would
+      # have quietly stopped running the shop, seller and api-mocks tests in CI,
+      # which is a worse failure than the one it fixes.
+      - run: >-
+          pnpm ${{ matrix.filter }} --workspace-concurrency=1 -r --if-present
+          run test:coverage
 
   test-api:
     name: test-api

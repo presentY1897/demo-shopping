@@ -8,7 +8,7 @@
 import { emptyCart, resetCartStore, sessionBuyer } from '@shopping/api-mocks'
 import { DENSITY_LEVELS } from '@shopping/ui'
 import { DensityProvider } from '@shopping/ui/density'
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -46,7 +46,16 @@ async function renderCart(width: number = VIEWPORTS.desktop) {
     { session: sessionBuyer },
   )
 
-  await screen.findByRole('heading', { level: 1, name: copy.title })
+  // **제목이 아니라 로딩이 사라지기를 기다린다.** 제목은 불러오는 동안에도 그려지는
+  // 값이라, 그것만 기다린 헬퍼는 화면이 아직 「장바구니를 불러오는 중」인 상태에서
+  // 돌아왔다 — 그 뒤의 동기 조회(`getByRole`)가 러너가 붐비는 날에만 실패했고,
+  // 실패한 화면에는 아무 결함이 없었다. 목이 응답하기 전에 단언한 것뿐이다.
+  //
+  // `waitForElementToBeRemoved` 가 아닌 이유는 이미 사라진 뒤에 불리면 던지기
+  // 때문이다. 빈 장바구니를 그리는 검사도 이 헬퍼를 지난다.
+  await waitFor(() => {
+    expect(screen.queryByText(copy.loading)).toBeNull()
+  })
 
   return result
 }

@@ -14,7 +14,7 @@
 import { emptyCart, resetCartStore, sessionBuyer } from '@shopping/api-mocks'
 import { DENSITY_LEVELS } from '@shopping/ui'
 import { DensityProvider } from '@shopping/ui/density'
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import axe from 'axe-core'
 import type { RunOptions } from 'axe-core'
@@ -72,7 +72,12 @@ async function renderCart(width: number = VIEWPORTS.desktop) {
     { session: sessionBuyer },
   )
 
-  await screen.findByRole('heading', { level: 1, name: copy.title })
+  // 제목은 불러오는 동안에도 그려지므로 그것만 기다리면 **로딩 화면에 axe 를
+  // 돌리게 된다** — 통과하지만 아무것도 재지 않는 검사다 (`cart-page.spec.tsx` 가
+  // 같은 자리에서 같은 이유로 같은 것을 기다린다).
+  await waitFor(() => {
+    expect(screen.queryByText(copy.loading)).toBeNull()
+  })
 
   return result
 }
