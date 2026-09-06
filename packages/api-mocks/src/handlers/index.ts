@@ -77,7 +77,12 @@ export { adminSellerHandlers, resetAdminSellerStore } from './admin-sellers'
 export { attributeHandlers, resetAttributeStore } from './attributes'
 export { cartHandlers, resetCartStore } from './cart'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
-export { checkoutHandlers, resetCheckoutStore } from './checkout'
+export {
+  checkoutHandlers,
+  resetCheckoutStore,
+  seedCheckoutCoupons,
+  spendCouponElsewhere,
+} from './checkout'
 /**
  * 취소·반품 신청 (TASK-0066). 「무엇을 신청할 수 있나」와 신청이 한 저장소를 본다.
  *

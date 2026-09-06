@@ -78,6 +78,8 @@ export {
   resetCartStore,
   resetCategoryStore,
   resetCheckoutStore,
+  seedCheckoutCoupons,
+  spendCouponElsewhere,
   resetClaimStore,
   resetDemoStore,
   resetOrderStore,

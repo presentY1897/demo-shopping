@@ -1,11 +1,12 @@
 'use client'
 
-import type { Address, Checkout } from '@shopping/shared'
+import type { Address, AppliedCoupon, Checkout } from '@shopping/shared'
 import { Button, Checkbox, EmptyState, ErrorState } from '@shopping/ui/components'
 import { formatMoney } from '@shopping/ui/format'
 import Link from 'next/link'
 import { useState } from 'react'
 
+import { CouponSection } from '@/components/checkout/coupon-section'
 import { PaymentSection } from '@/components/checkout/payment-section'
 import { useAddressBook } from '@/lib/checkout/use-address-book'
 import { formatRemaining } from '@/lib/checkout/remaining'
@@ -13,6 +14,7 @@ import { useCheckout } from '@/lib/checkout/use-checkout'
 import { defaultMethod, methodById, methodId, paymentMethods } from '@/lib/payment/methods'
 import { checkoutOrderName } from '@/lib/payment/order-name'
 import { tossClientKey } from '@/lib/payment/toss'
+import type { OrderRefusal } from '@/lib/payment/use-payment'
 import { usePayment } from '@/lib/payment/use-payment'
 import type { CheckoutMessages } from '@/messages'
 
@@ -71,7 +73,17 @@ export interface CheckoutScreenProps {
  * 가리키지 않는다.
  */
 export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
-  const { state, remaining, placed } = useCheckout(id)
+  const {
+    chooseCoupon,
+    chooseRecommended,
+    coupons,
+    placed,
+    rejected,
+    remaining,
+    repricing,
+    selection,
+    state,
+  } = useCheckout(id)
   const addresses = useAddressBook()
   // 주문이 생기는 순간 주문서 훅에게 알린다 — 그때부터 이 화면은 그 예약의 주인이
   // 아니고, 떠날 때 풀어서도 안 된다 (TASK-0054 4.3).
@@ -126,7 +138,11 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
   const method = methodById(methods, chosenMethod) ?? defaultMethod(methods)
   // 결제창으로 넘어가는 중에도 누를 수 없다 — 그 사이에 또 누르면 결제가 두 벌 열린다.
   const paying = payment.state.status === 'running' || payment.state.status === 'leaving'
-  const ready = address !== undefined && method !== null && agreed && !paying
+  // 쿠폰을 반영한 금액을 기다리는 동안에도 누를 수 없다 (TASK-0075). 주문에 실리는
+  // 선택은 **화면이 보여 준 금액을 만든 그 선택**이어야 하는데, 다시 읽는 중에는
+  // 그 둘이 같다고 말할 수 없다 — 여기서 열어 두면 앞의 금액을 보면서 뒤의 선택으로
+  // 주문하는 순간이 생긴다.
+  const ready = address !== undefined && method !== null && agreed && !paying && !repricing
 
   /**
    * 결제를 건다. 주문이 없으면 만들고, 있으면 그 주문에 다시 건다.
@@ -143,6 +159,10 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
       amount: checkout.paidAmount,
       checkoutId: checkout.id,
       method,
+      // 주문서를 읽을 때 넘긴 것과 **같은 선택**이다 (계약). 「주문하기」가
+      // 눌리는 순간 `repricing` 이 거짓이므로, 이 배열은 위의 금액을 만든 바로
+      // 그 배열이다.
+      userCouponIds: selection,
       // 결제창에 뜰 한 줄. 토스만 쓰지만 무엇으로 결제할지가 **누르는 순간**
       // 정해지므로, 문구를 아는 이 화면이 미리 만들어 넘긴다.
       orderName: checkoutOrderName(checkout, {
@@ -165,7 +185,17 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
           rows={addresses.rows}
         />
 
-        <Placeholder body={messages.couponBody} title={messages.couponTitle} />
+        <CouponSection
+          appliedCount={checkout.appliedCoupons.length}
+          coupons={coupons}
+          discount={checkout.totalCouponDiscountAmount}
+          messages={messages.coupon}
+          onChoose={chooseCoupon}
+          onRecommend={chooseRecommended}
+          rejected={rejected}
+          repricing={repricing}
+          selection={selection}
+        />
 
         <PaymentSection
           chosen={method === null ? null : methodId(method)}
@@ -187,9 +217,10 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
           missingRecipient={address === undefined}
           onAgree={setAgreed}
           onPlace={start}
-          placeFailed={payment.orderFailed}
           placing={paying}
           ready={ready}
+          refusal={payment.orderRefusal}
+          repricing={repricing}
         />
       </div>
     </div>
@@ -379,21 +410,6 @@ function Recipients({
   )
 }
 
-/**
- * 아직 안 온 것의 자리 (4.5).
- *
- * 「준비 중」이 아니라 **무엇이 들어올지**를 적는다. 빈 상자는 만들다 만 화면으로
- * 보이고, 이름이 붙은 빈 상자는 아직 안 온 기능으로 보인다.
- */
-function Placeholder({ title, body }: { readonly title: string; readonly body: string }) {
-  return (
-    <section aria-label={title} className="border-border bg-surface-muted rounded-lg border p-4">
-      <h2 className="text-fg text-sm font-semibold">{title}</h2>
-      <p className="text-fg-muted pt-1 text-sm">{body}</p>
-    </section>
-  )
-}
-
 function Summary({
   checkout,
   messages,
@@ -402,7 +418,8 @@ function Summary({
   onPlace,
   ready,
   placing,
-  placeFailed,
+  refusal,
+  repricing,
   missingRecipient,
   missingMethod,
 }: {
@@ -413,7 +430,8 @@ function Summary({
   readonly onPlace: () => void
   readonly ready: boolean
   readonly placing: boolean
-  readonly placeFailed: boolean
+  readonly refusal: OrderRefusal | null
+  readonly repricing: boolean
   readonly missingRecipient: boolean
   readonly missingMethod: boolean
 }) {
@@ -439,6 +457,15 @@ function Summary({
             {formatMoney({ amount: discount, currency: CURRENCY })}
           </dd>
         </div>
+        {/*
+          적용된 쿠폰을 **장별로** 적는다 (TASK-0075). 합계 한 줄로 끝내면 두 장이
+          같은 항목을 겹쳐 덮어 뒤엣것이 잘린 사정이 어디에도 드러나지 않는다 —
+          계약이 `appliedCoupons` 를 장별로 싣는 이유가 그것이고, 여기가 그 값이
+          쓰이는 자리다.
+        */}
+        {checkout.appliedCoupons.map((applied) => (
+          <AppliedCouponLine applied={applied} key={applied.userCouponId} messages={messages} />
+        ))}
         <div className="flex items-baseline justify-between gap-2">
           <dt className="text-fg-muted">{messages.shippingLabel}</dt>
           <dd className="text-fg tabular-nums">
@@ -471,16 +498,42 @@ function Summary({
       */}
       {ready ? null : (
         <p className="text-fg-subtle text-xs">
-          {reasonOf({ messages, missingMethod, missingRecipient })}
+          {reasonOf({ messages, missingMethod, missingRecipient, repricing })}
         </p>
       )}
 
-      {placeFailed ? (
+      {refusal === null ? null : (
         <p aria-live="polite" className="text-danger text-xs">
-          {messages.placeFailed}
+          {messages.placeFailures[refusal]}
         </p>
-      ) : null}
+      )}
     </aside>
+  )
+}
+
+/**
+ * 쿠폰 한 장이 **실제로** 깎은 금액.
+ *
+ * 이름과 금액이 나란히 붙는다. 이름이 없으면 두 장을 고른 사람은 어느 쪽이 얼마를
+ * 깎았는지 알 수 없고, 그 둘은 부담 주체가 다를 수도 있는 서로 다른 쿠폰이다.
+ */
+function AppliedCouponLine({
+  applied,
+  messages,
+}: {
+  readonly applied: AppliedCoupon
+  readonly messages: CheckoutMessages
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-2 pl-2">
+      <dt className="text-fg-subtle min-w-0 truncate text-xs">{applied.name}</dt>
+      <dd className="text-fg-subtle shrink-0 text-xs tabular-nums">
+        {messages.appliedCouponAmount.replace(
+          '{amount}',
+          formatMoney({ amount: applied.discountAmount, currency: CURRENCY }),
+        )}
+      </dd>
+    </div>
   )
 }
 
@@ -494,14 +547,20 @@ function Summary({
 function reasonOf({
   missingRecipient,
   missingMethod,
+  repricing,
   messages,
 }: {
   readonly missingRecipient: boolean
   readonly missingMethod: boolean
+  readonly repricing: boolean
   readonly messages: CheckoutMessages
 }): string {
   if (missingRecipient) return messages.recipientRequired
   if (missingMethod) return messages.payment.methodRequired
+  // 쿠폰은 **가장 마지막**이다. 곧 끝나는 기다림이라 다른 이유들보다 덜 급하고,
+  // 배송지도 안 고른 사람에게 「쿠폰을 적용하는 중」이라고 말하면 그 사람은 자기가
+  // 무엇을 해야 하는지 여전히 모른다.
+  if (repricing) return messages.couponRepricing
 
   return messages.termsRequired
 }

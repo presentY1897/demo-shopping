@@ -240,15 +240,14 @@ describe('배송지와 주문 (F6 · F7)', () => {
   })
 })
 
-describe('아직 안 온 것의 자리 (4.5)', () => {
-  it('names what will go there instead of saying 준비 중', async () => {
+describe('영역이 다 채워졌다', () => {
+  it('has a real coupon section where 4.5 left a placeholder', async () => {
     await renderCheckout()
 
-    // 빈 상자는 만들다 만 화면으로 보이고, 이름이 붙은 빈 상자는 아직 안 온
-    // 기능으로 보인다. **남은 자리는 하나뿐이다** — 결제수단은 TASK-0054 가
-    // 채웠고, 그 영역이 실제로 무엇을 하는지는 `checkout-payment.spec.tsx` 가 잰다.
-    expect(screen.getByRole('region', { name: copy.couponTitle })).toBeVisible()
-    expect(screen.getByText(copy.couponBody)).toBeVisible()
+    // 4.5 가 「자리만 둔다」고 했던 두 곳이 이제 둘 다 실제 기능이다 — 결제수단은
+    // TASK-0054 가, 쿠폰은 TASK-0075 가 채웠다. 각 영역이 무엇을 하는지는
+    // `checkout-payment.spec.tsx` 와 `checkout-coupons.spec.tsx` 가 잰다.
+    expect(screen.getByRole('region', { name: copy.coupon.title })).toBeVisible()
     expect(screen.getByRole('region', { name: copy.payment.title })).toBeVisible()
   })
 })

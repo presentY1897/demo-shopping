@@ -21,10 +21,12 @@ import {
   sessionBuyer,
   shopperCards,
   shopperCheckout,
+  shopperCheckoutCoupons,
   unresolveNextApproval,
 } from '@shopping/api-mocks'
 import { DENSITY_LEVELS } from '@shopping/ui'
 import { DensityProvider } from '@shopping/ui/density'
+import { formatMoney } from '@shopping/ui/format'
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import axe from 'axe-core'
@@ -85,6 +87,10 @@ async function renderCheckout(width: number = VIEWPORTS.desktop) {
   )
 
   await screen.findByRole('region', { name: copy.itemsTitle })
+  // 쿠폰 목록은 주문서와 **따로** 온다 (TASK-0075). 도착하기 전에 axe 를 돌리면
+  // 이 화면에서 가장 조작이 많은 영역 — 체크박스 열 개와 비활성 사유 여섯 줄 —
+  // 이 한 번도 검사되지 않은 채 통과한다.
+  await screen.findByRole('group', { name: copy.coupon.choose })
 
   return result
 }
@@ -191,6 +197,34 @@ describe('주문서 접근성 (P2)', () => {
 
       await expectNoViolations()
     })
+  })
+
+  /**
+   * 쿠폰을 고른 화면 (TASK-0075).
+   *
+   * **새로 들여오는 것이 둘이다.** 하나는 합계 옆에 붙는 쿠폰 이름·금액 줄로,
+   * `dl` 안에 `dt`/`dd` 짝이 늘어난 모양이 접근성 트리에서 무너지지 않는지를
+   * 봐야 한다. 다른 하나는 쿠폰 영역의 `aria-live` 줄이다 — 고르기 전에는 비어
+   * 있고 고른 뒤에 문장이 생기므로, 그 전환이 읽히는 자리에 있는지가 여기서만
+   * 확인된다.
+   */
+  it('passes with coupons applied', async () => {
+    const user = userEvent.setup()
+
+    await renderCheckout()
+
+    const section = screen.getByRole('region', { name: copy.coupon.title })
+
+    const { discountAmount, userCouponIds } = shopperCheckoutCoupons.recommendation
+
+    await user.click(within(section).getByRole('button', { name: copy.coupon.recommend }))
+    await within(section).findByText(
+      copy.coupon.applied
+        .replace('{count}', String(userCouponIds.length))
+        .replace('{amount}', formatMoney({ amount: discountAmount, currency: 'KRW' })),
+    )
+
+    await expectNoViolations()
   })
 
   it('passes on the expiry screen', async () => {

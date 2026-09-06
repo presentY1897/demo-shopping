@@ -1,9 +1,17 @@
-import type { Checkout, CheckoutResponse } from '@shopping/shared'
+import type {
+  ApplicableCoupon,
+  AppliedCoupon,
+  Checkout,
+  CheckoutCouponsResponse,
+  CheckoutResponse,
+} from '@shopping/shared'
 import {
+  checkoutCouponsResponseSchema,
   checkoutResponseSchema,
   createCheckoutRequestSchema,
   createOrderRequestSchema,
   orderResponseSchema,
+  selectedUserCouponIdsQuerySchema,
 } from '@shopping/shared'
 import type { RequestHandler } from 'msw'
 import { http, HttpResponse } from 'msw'
@@ -11,6 +19,7 @@ import { z } from 'zod'
 
 import { defineFixture } from '../define'
 import { shopperCheckout, shopperOrder } from '../fixtures/checkout'
+import { shopperCheckoutCoupons } from '../fixtures/checkout-coupons'
 import { mockPaths } from '../paths'
 import { answering, MockApiError, readBody } from './refusal'
 
@@ -50,11 +59,28 @@ const releaseResponseSchema = z.object({ released: z.int().min(0) })
 interface CheckoutStore {
   /** 이 목이 열 수 있는 주문서. `resetCheckoutStore` 가 갈아 끼운다. */
   readonly seed: CheckoutResponse
+  /** 이 주문서에 쓸 수 있(었)는 쿠폰. `GET /checkouts/:id/coupons` 가 답하는 것. */
+  readonly coupons: CheckoutCouponsResponse
   /** 예약이 아직 살아 있는가. 푼 뒤에는 `false` 이고, 다시 열면 `true` 가 된다. */
   readonly held: boolean
+  /**
+   * 목록을 읽은 **뒤에** 다른 주문이 태워 버린 쿠폰들 (TASK-0075 의 경합).
+   *
+   * 화면이 이 상태에 닿는 길이 둘이고 둘 다 사람이 아무것도 잘못하지 않은 길이다 —
+   * 고른 순간의 400 과, 주문하는 순간의 409. 목이 그 둘을 **같은 사실**에서
+   * 만들어 내야 화면의 두 문장이 실제로 같은 사건을 말하는지 검사가 확인할 수 있다.
+   */
+  readonly spent: readonly string[]
 }
 
-let store: CheckoutStore = { held: true, seed: shopperCheckout }
+const EMPTY_CHECKOUT_STORE: CheckoutStore = {
+  coupons: shopperCheckoutCoupons,
+  held: true,
+  seed: shopperCheckout,
+  spent: [],
+}
+
+let store: CheckoutStore = EMPTY_CHECKOUT_STORE
 
 /**
  * 열려 있는 주문서 하나. 아니면 404 다.
@@ -80,6 +106,116 @@ function lineCount(checkout: Checkout): number {
   return checkout.sellerOrders.reduce((count, sellerOrder) => count + sellerOrder.items.length, 0)
 }
 
+// ---------------------------------------------------------------------------
+// 쿠폰 적용 (TASK-0075)
+//
+// **여기 있는 것은 조회지 계산이 아니다.** 목이 하는 일은 「고른 id 가 목록의 어느
+// 장인가」를 찾아 그 장이 이미 말해 둔 `discountAmount` 를 더하는 것뿐이고, 두 장이
+// 같은 항목을 겹쳐 덮어 잘리는 일은 **재현하지 않는다** — 그 답은 계산 엔진의 것이고
+// 여기서 흉내 내면 QUALITY-GATES 6장 이 금지하는 「더 약한 두 번째 구현」이 된다.
+// 화면이 이 대역에 물어보는 것도 계산이 아니다: 고른 것이 쿼리에 실려 나가는가,
+// 답의 `appliedCoupons` 를 합계 옆에 그리는가, 거절당했을 때 무엇을 하는가.
+//
+// **판매자별 안분도 하지 않는다.** `sellerOrders[].couponDiscountAmount` 는 0 인 채
+// 두고 주문 단위 합계만 깎는다. 안분 규칙은 `docs/design/pricing.md` 의 것이고,
+// 화면은 그 숫자를 그리지 않는다.
+// ---------------------------------------------------------------------------
+
+/** 쿼리스트링에 실려 온 선택. 없으면 빈 배열이다. */
+function selectionOf(url: string): readonly string[] {
+  const raw = new URL(url).searchParams.get('userCouponIds')
+
+  if (raw === null) return []
+
+  const parsed = selectedUserCouponIdsQuerySchema.safeParse(raw)
+
+  // 계약을 벗어난 쿼리는 400 이다. 실제 컨트롤러가 `checkoutQueryParamsSchema` 로
+  // 같은 자리에서 막으므로, 여기서 통과시키면 화면이 목에서만 되는 문자열을 보낸다.
+  if (!parsed.success) throw new MockApiError(400, '요청 형식이 올바르지 않습니다.')
+
+  return parsed.data
+}
+
+/** 목록에서 이 장을 찾는다. 모르는 id 는 `undefined` 다. */
+function couponOf(userCouponId: string): ApplicableCoupon | undefined {
+  return store.coupons.coupons.find((entry) => entry.userCoupon.id === userCouponId)
+}
+
+/**
+ * 지금 이 선택이 통하는가.
+ *
+ * 통하지 않는 이유가 셋이다 — 모르는 장, 애초에 못 쓰는 장, 그리고 **목록을 읽은
+ * 뒤에 다른 주문이 태워 버린 장**. 앞의 둘은 화면의 버그이고 마지막 하나는 아무도
+ * 잘못하지 않은 경합이지만, 서버가 답하는 것은 셋 다 같은 400 이다 — 사는 사람이
+ * 할 일이 같기 때문이다: 그 장을 빼고 다시 고른다.
+ */
+function unusable(chosen: readonly string[]): boolean {
+  return chosen.some((id) => {
+    const entry = couponOf(id)
+
+    // 모르는 장은 `undefined?.fault` 가 `undefined` 라 이 비교에서 함께 걸린다 —
+    // 셋을 한 줄로 접은 것이지 하나를 빠뜨린 것이 아니다.
+    return entry?.fault !== null || store.spent.includes(id)
+  })
+}
+
+/** 고른 장들이 실제로 깎은 금액 — 목록이 이미 말해 둔 값 그대로다. */
+function appliedOf(chosen: readonly string[]): readonly AppliedCoupon[] {
+  return chosen.flatMap((id) => {
+    const entry = couponOf(id)
+
+    if (entry === undefined) return []
+
+    return [
+      {
+        userCouponId: entry.userCoupon.id,
+        couponId: entry.userCoupon.couponId,
+        name: entry.userCoupon.coupon.name,
+        issuerType: entry.userCoupon.coupon.issuerType,
+        discountAmount: entry.discountAmount,
+      },
+    ]
+  })
+}
+
+/** 고른 쿠폰이 반영된 주문서. 아무것도 안 골랐으면 씨앗 그대로다. */
+function repriced(checkout: Checkout, chosen: readonly string[]): Checkout {
+  const applied = appliedOf(chosen)
+  const total = applied.reduce((sum, entry) => sum + entry.discountAmount, 0)
+
+  return {
+    ...checkout,
+    appliedCoupons: [...applied],
+    totalCouponDiscountAmount: total,
+    paidAmount: checkout.paidAmount - total,
+  }
+}
+
+/**
+ * 목록 — 다만 그 사이에 태워진 장은 **이미 사용한 쿠폰**으로 표시해서.
+ *
+ * 400 을 만난 화면이 목록을 다시 읽는 이유가 이것이다. 거절당한 사람에게 남는 일이
+ * 「그 장을 빼고 다시 고르기」인데, 다시 읽은 목록이 여전히 그 장을 쓸 수 있다고
+ * 말하면 그 사람은 같은 거절을 한 번 더 받는다.
+ */
+function couponList(): CheckoutCouponsResponse {
+  if (store.spent.length === 0) return store.coupons
+
+  return defineFixture(checkoutCouponsResponseSchema, {
+    coupons: store.coupons.coupons.map((entry) =>
+      store.spent.includes(entry.userCoupon.id)
+        ? { ...entry, discountAmount: 0, fault: 'already_used' as const }
+        : entry,
+    ),
+    recommendation: {
+      ...store.coupons.recommendation,
+      userCouponIds: store.coupons.recommendation.userCouponIds.filter(
+        (id) => !store.spent.includes(id),
+      ),
+    },
+  })
+}
+
 export const checkoutHandlers: readonly RequestHandler[] = [
   /**
    * 주문서를 연다 — 즉 재고를 잡는다.
@@ -102,9 +238,47 @@ export const checkoutHandlers: readonly RequestHandler[] = [
     }),
   ),
 
-  /** 새로고침이 하는 일. 같은 주문서를 다시 읽을 뿐 새로 잡지 않는다 (4.1). */
-  http.get(mockPaths.checkout, ({ params }) =>
-    answering(() => answer(heldCheckout(String(params.id)))),
+  /**
+   * 이 주문서에 쓸 수 있는 쿠폰과 추천 조합 (TASK-0075).
+   *
+   * **못 쓰는 것까지 답한다** (F2). 목록에서 빼면 「분명히 쿠폰이 있었는데
+   * 없어졌다」가 되고, 그 사람이 다음에 할 일을 화면이 말해 줄 수 없다.
+   *
+   * `/checkouts/:id` 보다 **먼저** 등록한다 — msw 는 먼저 맞는 것을 쓰고, 옆의
+   * `cartItemsRemove`·`cartItems` 도 같은 순서로 서 있다.
+   */
+  http.get(mockPaths.checkoutCoupons, ({ params }) =>
+    answering(() => {
+      heldCheckout(String(params.id))
+
+      return HttpResponse.json(couponList())
+    }),
+  ),
+
+  /**
+   * 새로고침이 하는 일. 같은 주문서를 다시 읽을 뿐 새로 잡지 않는다 (4.1).
+   *
+   * **고른 쿠폰은 쿼리로 온다** (TASK-0075). 주문서에 저장하지 않는 것이 계약이라
+   * 이 대역도 저장하지 않는다 — 저장하면 「고르기」가 상태를 바꾸는 요청이 되고,
+   * 그때부터 두 번째 탭이 첫 번째 탭의 선택으로 주문하게 된다.
+   */
+  http.get(mockPaths.checkout, ({ params, request }) =>
+    answering(() => {
+      const checkout = heldCheckout(String(params.id))
+      const chosen = selectionOf(request.url)
+
+      if (unusable(chosen)) {
+        // `details[0].field` 가 `userCouponIds` 다 (계약). 화면이 「어느 입력이
+        // 문제였나」를 그것으로 가르므로, 코드만 맞고 필드가 비면 같은 400 이
+        // 쿼리 오류와 구분되지 않는다.
+        throw new MockApiError(400, '지금은 쓸 수 없는 쿠폰이에요.', {
+          code: 'COUPON_NOT_APPLICABLE',
+          field: 'userCouponIds',
+        })
+      }
+
+      return answer(repriced(checkout, chosen))
+    }),
   ),
 
   /**
@@ -154,6 +328,16 @@ export const checkoutHandlers: readonly RequestHandler[] = [
 
       if (body.checkoutId !== undefined) heldCheckout(body.checkoutId)
 
+      // 고른 것과 주문에 실린 것이 **같은 선택**이어야 한다 (계약). 그 사이에 다른
+      // 주문이 한 장을 태웠다면 여기서 지는 쪽이 생기고, 그것은 400 이 아니라
+      // 409 다 — 요청이 틀린 것이 아니라 세상이 바뀐 것이기 때문이다.
+      if (body.userCouponIds.some((id) => store.spent.includes(id))) {
+        throw new MockApiError(409, '이미 사용된 쿠폰이에요.', {
+          code: 'COUPON_ALREADY_USED',
+          field: 'userCouponIds',
+        })
+      }
+
       return HttpResponse.json(defineFixture(orderResponseSchema, shopperOrder))
     }),
   ),
@@ -167,5 +351,28 @@ export const checkoutHandlers: readonly RequestHandler[] = [
  * 실제로 그 상태에 닿는 방법이기 때문이다.
  */
 export function resetCheckoutStore(seed: CheckoutResponse = shopperCheckout): void {
-  store = { held: true, seed }
+  store = { ...EMPTY_CHECKOUT_STORE, seed }
+}
+
+/**
+ * 이 목의 쿠폰함을 갈아 끼운다 (TASK-0075).
+ *
+ * 주문서와 **따로** 받는 이유는 둘이 서로 다른 것을 정하기 때문이다 — 주문서는
+ * 「얼마짜리를 사는가」이고 쿠폰함은 「무엇을 갖고 있는가」다. 한 번에 받으면 쿠폰이
+ * 한 장도 없는 화면을 보려는 검사가 주문서까지 다시 적어야 한다.
+ */
+export function seedCheckoutCoupons(coupons: CheckoutCouponsResponse): void {
+  store = { ...store, coupons }
+}
+
+/**
+ * 목록을 읽은 뒤 다른 주문이 이 쿠폰을 태웠다고 친다.
+ *
+ * **화면이 경합에 닿는 유일한 문**이다. 사람이 화면에서 만들 수 있는 상태가
+ * 아니므로(못 쓰는 쿠폰은 애초에 고를 수 없다) 검사가 밖에서 만들어 준다. 이
+ * 한 번의 호출이 두 거절을 모두 켠다 — 고르는 순간의 400 과 주문하는 순간의 409 —
+ * 그 둘이 **같은 사실의 앞뒤**라는 것이 이 목이 지키는 성질이다.
+ */
+export function spendCouponElsewhere(userCouponId: string): void {
+  store = { ...store, spent: [...store.spent, userCouponId] }
 }
