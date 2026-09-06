@@ -1,6 +1,19 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common'
 import type {
   ReviewHelpfulResponse,
+  ReviewReplyResponse,
+  SellerProductReviewsResponse,
   ReviewListResponse,
   ReviewResponse,
   ReviewableListResponse,
@@ -10,7 +23,10 @@ import {
   productIdSchema,
   reviewableListQueryParamsSchema,
   reviewListQueryParamsSchema,
+  sellerIdSchema,
+  sellerProductReviewsQueryParamsSchema,
   updateReviewRequestSchema,
+  writeReviewReplyRequestSchema,
 } from '@shopping/shared'
 import { z } from 'zod'
 
@@ -20,6 +36,7 @@ import { RequirePermission } from '../auth/require-permission.decorator.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { parseInput } from '../common/parse-input.js'
 import { ReviewListService } from './review-list.service.js'
+import { ReviewReplyService } from './review-reply.service.js'
 import { ReviewService } from './review.service.js'
 
 const reviewIdSchema = z.uuid()
@@ -42,6 +59,7 @@ export class ReviewController {
   constructor(
     private readonly reviews: ReviewService,
     private readonly list: ReviewListService,
+    private readonly replies: ReviewReplyService,
   ) {}
 
   /**
@@ -62,6 +80,54 @@ export class ReviewController {
       parseInput(reviewListQueryParamsSchema, query),
       principal?.userId ?? null,
     )
+  }
+
+  /**
+   * 이 스토어의 상품에 달린 리뷰들 (TASK-0085 F5 · F6 · F7).
+   *
+   * `reviews/:id` 와 마디가 달라 부딪히지 않는다. 상품 상세의 목록과 다른 라우트인
+   * 이유는 **다른 질문에 답하기** 때문이다 — 저쪽은 「이 상품이 어떤가」이고 이쪽은
+   * 「무엇에 답해야 하는가」다.
+   */
+  @Get('seller-product-reviews')
+  @RequirePermission('review.reply')
+  sellerReviews(
+    @Principal() principal: RequestPrincipal,
+    @Query('sellerId') sellerId: string,
+    @Query() query: unknown,
+  ): Promise<SellerProductReviewsResponse> {
+    return this.replies.list(
+      principal,
+      parseInput(sellerIdSchema, sellerId, 'sellerId'),
+      parseInput(sellerProductReviewsQueryParamsSchema, query),
+    )
+  }
+
+  /**
+   * 판매자가 답한다 — **쓰거나 고친다** (TASK-0085 F1 · F3).
+   *
+   * `PUT` 인 이유는 리뷰당 답변이 하나이기 때문이다. 두 번째 답변이 저장될 자리가
+   * 없으므로(기본키가 `reviewId` 다) 「새로 만든다」와 「고친다」가 같은 일이 된다.
+   */
+  @Put('reviews/:id/reply')
+  @RequirePermission('review.reply')
+  async reply(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ): Promise<ReviewReplyResponse> {
+    const reviewId = parseInput(reviewIdSchema, id, 'id')
+    const { content } = parseInput(writeReviewReplyRequestSchema, body)
+
+    return { reply: await this.replies.write(principal, reviewId, content) }
+  }
+
+  /** 답변을 지운다. 리뷰는 남는다. */
+  @Delete('reviews/:id/reply')
+  @RequirePermission('review.reply')
+  @HttpCode(204)
+  removeReply(@Principal() principal: RequestPrincipal, @Param('id') id: string): Promise<void> {
+    return this.replies.remove(principal, parseInput(reviewIdSchema, id, 'id'))
   }
 
   /** 도움이 됐다고 누른다. **두 번 눌러도 한 번이다.** */

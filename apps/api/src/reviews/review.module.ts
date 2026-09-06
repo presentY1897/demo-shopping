@@ -5,6 +5,7 @@ import { PrismaModule } from '../prisma/prisma.module.js'
 import { SearchModule } from '../search/search.module.js'
 import { ReviewController } from './review.controller.js'
 import { ReviewListService } from './review-list.service.js'
+import { ReviewReplyService } from './review-reply.service.js'
 import { ReviewService } from './review.service.js'
 
 /**
@@ -21,7 +22,7 @@ import { ReviewService } from './review.service.js'
 @Module({
   imports: [PrismaModule, ClockModule, SearchModule],
   controllers: [ReviewController],
-  providers: [ReviewService, ReviewListService],
+  providers: [ReviewService, ReviewListService, ReviewReplyService],
   exports: [ReviewService],
 })
 export class ReviewModule {}

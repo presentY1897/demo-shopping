@@ -143,6 +143,8 @@ export const untouchedTables: Readonly<Record<string, string>> = {
   StockLedger: 'append-only. 사라진 상품의 재고 이력이 남는 것이 옳다',
   ProductImage: 'Product 에 Cascade 로 매달려 있고, 상품이 소프트 삭제라 함께 숨는다',
   CartItem: 'Cart 에 Cascade 로 매달려 있다. 장바구니가 지워지면 함께 간다 (TASK-0045)',
+  ReviewReply:
+    'Review 에 Cascade 로 매달려 있다 (TASK-0085). **데모 판매자가 쓴 답변도 남는다** — 그 스토어는 정지되고 상품은 소프트 삭제되므로 답변이 달린 리뷰를 볼 사람이 없고, 남의 리뷰에 달린 남의 말을 계정 만료로 지울 이유도 없다',
   ReviewImage:
     'Review 에 Cascade 로 매달려 있다 (TASK-0083). **버킷의 객체는 이 계획이 지우지 않는다** — 버킷은 데이터베이스가 아니고, 고아 객체 청소는 상품 이미지와 같은 장치가 맡는다 (TASK-0033 F6)',
   ProductOptionValue: 'ProductOption 에 매달려 있다',
