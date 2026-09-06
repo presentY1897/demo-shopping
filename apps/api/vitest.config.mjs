@@ -950,6 +950,20 @@ export default defineConfig({
                 lines: 100,
                 statements: 100,
               },
+              /**
+               * TASK-0079 (6.2, Q5 강화). 어느 요율이 적용되는가.
+               *
+               * **여기가 틀리면 조용하다.** 한 칸 높으면 판매자가 동의한 적 없는 수수료를
+               * 물고, 낮으면 플랫폼이 받아야 할 것을 못 받는다 — 어느 쪽도 오류로
+               * 나타나지 않고 정산서 한 줄의 숫자로만 있다. 그리고 그 숫자는 주문 시점에
+               * 항목에 박히므로, 틀린 채 하루가 지나면 **그날 판 것 전부가 굳는다**.
+               */
+              'src/settlement/commission-rate.ts': {
+                branches: 100,
+                functions: 100,
+                lines: 100,
+                statements: 100,
+              },
             },
     },
   },

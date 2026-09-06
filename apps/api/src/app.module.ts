@@ -22,6 +22,7 @@ import { ReservationModule } from './reservation/reservation.module.js'
 import { ReturnModule } from './claims/return.module.js'
 import { SearchModule } from './search/search.module.js'
 import { SellersModule } from './sellers/sellers.module.js'
+import { SettlementModule } from './settlement/settlement.module.js'
 import { ShipmentModule } from './shipping/shipment.module.js'
 import { StockModule } from './stock/stock.module.js'
 import { StorageModule } from './storage/storage.module.js'
@@ -51,6 +52,7 @@ export class AppModule {
         ReturnModule,
         SearchModule,
         SellersModule,
+        SettlementModule,
         ShipmentModule,
         StockModule,
         StorageModule,

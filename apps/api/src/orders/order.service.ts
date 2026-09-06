@@ -45,11 +45,12 @@ import { autoConfirmAtOf, autoConfirmWindowMsOf } from './order-confirm.js'
 import type { ShipmentRow } from '../shipping/shipment.service.js'
 import { presentShipment, SHIPMENT_SELECT } from '../shipping/shipment.service.js'
 import { ReservationService } from '../reservation/reservation.service.js'
+import { CommissionService } from '../settlement/commission.service.js'
 import { ORDER_NUMBER_SUFFIX_LENGTH, orderNumberOf } from './order-number.js'
 import { CheckoutService } from './checkout.service.js'
 import type { CartLineRow } from './order-lines.js'
 import { assertOrderable, policiesOf, toLine, VARIANT_LINE_SELECT } from './order-lines.js'
-import type { PlannedSellerOrder } from './order-plan.js'
+import type { OrderLine, PlannedSellerOrder } from './order-plan.js'
 import { planOrder } from './order-plan.js'
 import type { OrderSource } from './order-source.js'
 import { priceOf } from './order-source.js'
@@ -88,6 +89,7 @@ export class OrderService {
     private readonly checkouts: CheckoutService,
     private readonly transitions: SellerOrderService,
     private readonly coupons: CouponApplyService,
+    private readonly commissions: CommissionService,
   ) {}
 
   // ------------------------------------------------------------------ writes
@@ -293,8 +295,16 @@ export class OrderService {
         select: { id: true },
       })
 
+      // **주문 시점의 요율을 항목에 박는다** (TASK-0079 F4). 여기서 정하지 않으면
+      // 정산이 그때의 요율 표를 읽게 되고, 그 표는 이미 바뀌었을 수 있다 — 계약은
+      // 판매 시점에 성립한다.
+      const rateOf = await this.commissions.snapshotFor(
+        tx,
+        plan.sellerOrders.flatMap((group) => group.items.map((item) => item.line)),
+      )
+
       for (const group of plan.sellerOrders) {
-        await this.writeSellerOrder(tx, order.id, group, now)
+        await this.writeSellerOrder(tx, order.id, group, now, rateOf)
       }
 
       // **쿠폰은 마지막이다.** 여기서 지면(다른 주문이 먼저 썼으면) 트랜잭션 전체가
@@ -313,6 +323,7 @@ export class OrderService {
     orderId: string,
     group: PlannedSellerOrder,
     now: Date,
+    rateOf: (line: OrderLine) => number,
   ): Promise<void> {
     const sellerOrder = await tx.sellerOrder.create({
       data: {
@@ -344,6 +355,7 @@ export class OrderService {
         couponDiscountAmount: item.couponDiscountAmount,
         pointDiscountAmount: item.pointDiscountAmount,
         discountAmount: item.discountAmount,
+        commissionRateBp: rateOf(item.line),
         createdAt: now,
         updatedAt: now,
       })),

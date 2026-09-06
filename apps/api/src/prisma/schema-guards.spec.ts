@@ -77,7 +77,9 @@ describe('money and rate columns', () => {
     expect(schema()).not.toMatch(/@db\.(Real|DoublePrecision|Money|Decimal)\b/)
   })
 
-  it('stores the seller commission as an integer', () => {
-    expect(schema()).toMatch(/^\s+commissionRateBp\s+Int\?/m)
+  it('stores the commission rate as an integer', () => {
+    // 요율은 이제 자기 표를 갖는다 (TASK-0079) — 적용 기간과 변경 이력이 있어야
+    // 하고, 그 둘을 컬럼 하나로는 표현할 수 없다.
+    expect(schema()).toMatch(/^\s+rateBp\s+Int$/m)
   })
 })

@@ -141,12 +141,10 @@ export async function createAddress(db: Database, options: AddressOptions): Prom
 export interface SellerRow {
   readonly id: string
   readonly userId: string
-  readonly commissionRateBp: number | null
 }
 
 export interface SellerOptions {
   readonly userId: string
-  readonly commissionRateBp?: number | null
   readonly status?: 'PENDING' | 'ACTIVE' | 'REJECTED' | 'SUSPENDED'
 }
 
@@ -161,17 +159,10 @@ export interface SellerOptions {
  */
 export async function createSeller(db: Database, options: SellerOptions): Promise<SellerRow> {
   return db.one<SellerRow>(
-    `INSERT INTO "Seller" ("id", "userId", "brandName", "slug", "commissionRateBp", "status", "updatedAt")
-     VALUES ($1, $2, $3, $4, $5, $6::"SellerStatus", now())
-     RETURNING "id", "userId", "commissionRateBp"`,
-    [
-      randomUUID(),
-      options.userId,
-      unique('brand'),
-      unique('slug'),
-      options.commissionRateBp ?? null,
-      options.status ?? 'ACTIVE',
-    ],
+    `INSERT INTO "Seller" ("id", "userId", "brandName", "slug", "status", "updatedAt")
+     VALUES ($1, $2, $3, $4, $5::"SellerStatus", now())
+     RETURNING "id", "userId"`,
+    [randomUUID(), options.userId, unique('brand'), unique('slug'), options.status ?? 'ACTIVE'],
   )
 }
 
@@ -718,6 +709,50 @@ export async function createUserCoupon(
       options.usedAt ?? null,
       options.orderId ?? null,
       options.discountAmount ?? null,
+    ],
+  )
+}
+
+export interface CommissionRateRow {
+  readonly id: string
+  readonly sellerId: string | null
+  readonly categoryId: number | null
+  readonly rateBp: number
+  readonly validUntil: Date | null
+}
+
+/**
+ * 수수료율 한 벌 — 기본은 **전역**, 열려 있는 행.
+ *
+ * 범위는 셋 중 하나다(스토어 · 카테고리 · 전역). 둘 다 채우면
+ * `CommissionRate_scope_check` 가 거절하는데, 그것을 **거절하게 두는 것**이 이
+ * 팩토리의 성질이다 — 규칙에 없는 조합을 만들 수 있어야 제약을 잴 수 있다.
+ */
+export async function createCommissionRate(
+  db: Database,
+  options: {
+    readonly createdById: string
+    readonly sellerId?: string | null
+    readonly categoryId?: number | null
+    readonly rateBp?: number
+    readonly validFrom?: Date | string
+    readonly validUntil?: Date | string | null
+  },
+): Promise<CommissionRateRow> {
+  return db.one<CommissionRateRow>(
+    `INSERT INTO "CommissionRate"
+       ("id", "sellerId", "categoryId", "rateBp", "validFrom", "validUntil", "createdById",
+        "updatedAt")
+     VALUES ($1, $2, $3, $4, $5, $6, $7, now())
+     RETURNING "id", "sellerId", "categoryId", "rateBp", "validUntil"`,
+    [
+      orderedUuid(),
+      options.sellerId ?? null,
+      options.categoryId ?? null,
+      options.rateBp ?? 1_000,
+      options.validFrom ?? '2026-01-01T00:00:00.000Z',
+      options.validUntil ?? null,
+      options.createdById,
     ],
   )
 }

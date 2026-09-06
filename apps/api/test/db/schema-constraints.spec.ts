@@ -6,6 +6,8 @@ import { describe, expect, it } from 'vitest'
 import { useDatabase } from '../support/database.js'
 import {
   createAddress,
+  createCategory,
+  createCommissionRate,
   createSellableVariant,
   createSeller,
   createUser,
@@ -170,28 +172,118 @@ describe('User_google_identity_check — a live real account has an identity', (
   })
 })
 
-describe('Seller_commissionRateBp_check — commission is 0~10000 bp', () => {
-  it('refuses a negative rate', async () => {
+describe('CommissionRate 의 제약들 — 요율은 정산이 곱하는 값이다', () => {
+  /**
+   * 범위를 DB 가 강제하는 이유는 `erd.md` 1장이 적어 두었다 — **정산이 이 값을
+   * 곱하므로**, 음수나 100% 초과가 들어가면 판매자에게 주문액보다 많은 돈이
+   * 계산되고 아무도 눈치채지 못한다.
+   */
+  it('음수 요율을 거절한다', async () => {
     const user = await createUser(db)
-    const error = await refusal(createSeller(db, { userId: user.id, commissionRateBp: -1 }))
+    const error = await refusal(createCommissionRate(db, { createdById: user.id, rateBp: -1 }))
 
     expect(error.code).toBe('23514')
-    expect(error.constraint).toBe('Seller_commissionRateBp_check')
+    expect(error.constraint).toBe('CommissionRate_rate_check')
   })
 
-  it('refuses a rate above 100.00%', async () => {
+  it('100% 를 넘는 요율을 거절한다', async () => {
     const user = await createUser(db)
-    const error = await refusal(createSeller(db, { userId: user.id, commissionRateBp: 10_001 }))
+    const error = await refusal(createCommissionRate(db, { createdById: user.id, rateBp: 10_001 }))
 
     expect(error.code).toBe('23514')
-    expect(error.constraint).toBe('Seller_commissionRateBp_check')
+    expect(error.constraint).toBe('CommissionRate_rate_check')
   })
 
-  it.each([0, 10_000, null])('allows the boundary value %s', async (rate) => {
+  it.each([0, 10_000])('경계값 %s 는 받는다', async (rateBp) => {
     const user = await createUser(db)
-    const seller = await createSeller(db, { userId: user.id, commissionRateBp: rate })
+    const rate = await createCommissionRate(db, { createdById: user.id, rateBp })
 
-    expect(seller.commissionRateBp).toBe(rate)
+    expect(rate.rateBp).toBe(rateBp)
+  })
+
+  /**
+   * **범위는 셋 중 하나다.** 둘 다 채워진 행은 「이 카테고리의 이 판매자」라는 네
+   * 번째 범위가 되는데, 그런 것을 만들려면 우선순위 규칙을 다시 정해야 한다 —
+   * 표현 불가능하게 두는 편이 낫다.
+   */
+  it('스토어와 카테고리를 동시에 건 요율을 거절한다', async () => {
+    const user = await createUser(db)
+    const seller = await createSeller(db, { userId: user.id })
+    const category = await createCategory(db)
+    const error = await refusal(
+      createCommissionRate(db, {
+        createdById: user.id,
+        sellerId: seller.id,
+        categoryId: category.id,
+      }),
+    )
+
+    expect(error.code).toBe('23514')
+    expect(error.constraint).toBe('CommissionRate_scope_check')
+  })
+
+  it('기간이 뒤집힌 요율을 거절한다', async () => {
+    const user = await createUser(db)
+    const error = await refusal(
+      createCommissionRate(db, {
+        createdById: user.id,
+        validFrom: '2026-06-01T00:00:00.000Z',
+        validUntil: '2026-01-01T00:00:00.000Z',
+      }),
+    )
+
+    expect(error.code).toBe('23514')
+    expect(error.constraint).toBe('CommissionRate_period_check')
+  })
+
+  /**
+   * **범위마다 열린 행은 하나뿐이다.** 둘이면 「지금 요율」이 두 개가 되고, 어느
+   * 것이 적용될지는 조회의 정렬이 정한다 — 그것은 규칙이 아니라 우연이다.
+   */
+  it('같은 스토어에 열린 요율이 둘이 될 수 없다', async () => {
+    const user = await createUser(db)
+    const seller = await createSeller(db, { userId: user.id })
+
+    await createCommissionRate(db, { createdById: user.id, sellerId: seller.id })
+
+    const error = await refusal(
+      createCommissionRate(db, { createdById: user.id, sellerId: seller.id }),
+    )
+
+    expect(error.code).toBe('23505')
+    expect(error.constraint).toBe('CommissionRate_open_seller_key')
+  })
+
+  it('전역 요율도 열린 것은 하나뿐이다', async () => {
+    const user = await createUser(db)
+
+    await createCommissionRate(db, { createdById: user.id })
+
+    const error = await refusal(createCommissionRate(db, { createdById: user.id }))
+
+    expect(error.code).toBe('23505')
+    expect(error.constraint).toBe('CommissionRate_open_global_key')
+  })
+
+  /** 닫힌 행은 몇 개든 쌓인다 — 그것이 이력이다. */
+  it('닫힌 요율은 몇 개든 남는다', async () => {
+    const user = await createUser(db)
+    const seller = await createSeller(db, { userId: user.id })
+
+    for (const year of ['2024', '2025']) {
+      await createCommissionRate(db, {
+        createdById: user.id,
+        sellerId: seller.id,
+        validFrom: `${year}-01-01T00:00:00.000Z`,
+        validUntil: `${year}-12-31T00:00:00.000Z`,
+      })
+    }
+
+    const rows = await db.query(`SELECT "id" FROM "CommissionRate" WHERE "sellerId" = $1`, [
+      seller.id,
+    ])
+
+    expect(rows).toHaveLength(2)
   })
 })
 
@@ -415,8 +507,9 @@ async function orderItem(amounts: {
   return db.query(
     `INSERT INTO "OrderItem"
        ("id", "sellerOrderId", "variantId", "productSnapshot", "unitPrice", "quantity",
-        "productAmount", "couponDiscountAmount", "discountAmount", "updatedAt")
-     VALUES (gen_random_uuid(), $1, $2, '{}'::jsonb, $3, 1, $3, $4, $5, now())`,
+        "productAmount", "couponDiscountAmount", "discountAmount", "commissionRateBp",
+        "updatedAt")
+     VALUES (gen_random_uuid(), $1, $2, '{}'::jsonb, $3, 1, $3, $4, $5, 1000, now())`,
     [
       sellerOrder.id,
       variant.id,
