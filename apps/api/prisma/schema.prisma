@@ -2552,6 +2552,20 @@ model UserCoupon {
   usedAt  DateTime?
   orderId String?   @db.Uuid
 
+  /// 이 장이 **실제로 깎은 금액** (TASK-0075).
+  ///
+  /// 정책의 `discountValue` 로 다시 계산할 수 없다. 정률이면 그때의 상품금액이
+  /// 필요하고, 겹쳐 덮인 장은 남은 금액까지만 깎였기 때문이다 — 그리고 그 「그때」는
+  /// 주문이 지난 뒤에는 아무 데도 없다.
+  ///
+  /// **정산이 읽는 값이다** (`pricing.md` 5장). 판매자 부담 쿠폰의 안분액만 그
+  /// 판매자의 정산액에서 빠지는데, `SellerOrder.couponDiscountAmount` 는 플랫폼
+  /// 쿠폰과 판매자 쿠폰이 섞인 합계라 그 나눔에 답하지 못한다. 발행 화면의 사용
+  /// 통계(TASK-0073 F6 · TASK-0074 F5)도 이 칸을 센다.
+  ///
+  /// 「썼다」의 넷째 값이라 나머지 셋과 함께 움직인다 — `UserCoupon_used_check`.
+  discountAmount Int?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
