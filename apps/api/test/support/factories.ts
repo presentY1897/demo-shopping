@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto'
+import { randomBytes, randomUUID } from 'node:crypto'
 
 import type { Database } from './database.js'
 
@@ -19,6 +19,38 @@ import type { Database } from './database.js'
  */
 
 let sequence = 0
+
+/**
+ * An id that sorts in creation order, the way `@default(uuid(7))` rows do.
+ *
+ * Most tables here are `uuid(7)` and **Prisma generates that in the client**, not
+ * in the database — so a factory writing raw SQL has to supply one itself.
+ * `randomUUID()` is v4: it sorts randomly, which quietly makes every "newest
+ * first" assertion written against factory rows meaningless. A list spec would
+ * pass or fail by coincidence, and one did.
+ *
+ * The layout is v7's — 48 bits up front, then random, with the version and
+ * variant nibbles pinned — but **those 48 bits are a counter, not a clock.**
+ * Ordering is the only property a spec asks of them, a counter gives it without
+ * reading the wall clock (which this repo reserves for the injected `Clock`),
+ * and it cannot tie two rows created in the same millisecond.
+ */
+let ordinal = 0
+
+export function orderedUuid(): string {
+  const bytes = randomBytes(16)
+
+  ordinal += 1
+  bytes.writeUIntBE(0, 0, 2)
+  bytes.writeUInt32BE(ordinal, 2)
+  // 버전 7과 RFC 4122 변형.
+  bytes[6] = ((bytes[6] ?? 0) & 0x0f) | 0x70
+  bytes[8] = ((bytes[8] ?? 0) & 0x3f) | 0x80
+
+  const hex = bytes.toString('hex')
+
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
+}
 
 /** Unique within a run without depending on a database sequence. */
 function unique(prefix: string): string {
@@ -623,7 +655,9 @@ export async function createCoupon(db: Database, options: CouponOptions = {}): P
      RETURNING "id", "issuerType"::text AS "issuerType", "sellerId",
                "discountType"::text AS "discountType", "discountValue"`,
     [
-      randomUUID(),
+      // 만든 순서대로 정렬되는 id. 목록의 「최신순」을 재는 스펙이 우연으로
+      // 통과하지 않게 한다.
+      orderedUuid(),
       sellerId === null ? 'PLATFORM' : 'SELLER',
       sellerId,
       options.name ?? unique('쿠폰'),
@@ -676,7 +710,7 @@ export async function createUserCoupon(
      VALUES ($1, $2, $3, $4::"UserCouponStatus", $5, $6, $7, $8, now())
      RETURNING "id", "couponId", "userId", "status"::text AS "status", "discountAmount"`,
     [
-      randomUUID(),
+      orderedUuid(),
       options.couponId,
       options.userId,
       options.status ?? 'ISSUED',

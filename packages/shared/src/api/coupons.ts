@@ -705,3 +705,54 @@ export const bulkIssueResponseSchema = z.object({
 })
 
 export type BulkIssueResponse = z.infer<typeof bulkIssueResponseSchema>
+
+// ---------------------------------------------------------------------------
+// 쿠폰함 (TASK-0077)
+//
+// 발행자의 목록(`GET /coupons`)과 **다른 것**이다. 저기는 정책 한 건이 한 줄이고
+// 여기는 **발급된 장**이 한 줄이다 — 같은 쿠폰이 만 명에게 나갔으면 저기서는 한 줄,
+// 여기서는 그 사람의 한 장이다.
+// ---------------------------------------------------------------------------
+
+/**
+ * 「곧 만료된다」의 경계 — 7일 (TASK-0077 F2).
+ *
+ * 적립금의 30일(`POINT_EXPIRING_SOON_DAYS`)보다 짧은 이유는 **쿠폰이 짧게 살기**
+ * 때문이다. 캠페인 쿠폰의 수명이 보통 2~4주라 30일로 잡으면 받자마자 전부 「곧
+ * 만료」로 켜지고, 그러면 그 표시가 아무것도 구분하지 못한다.
+ */
+export const COUPON_EXPIRING_SOON_DAYS = 7
+
+/** 쿠폰함 한 쪽에 담기는 장수. */
+export const USER_COUPON_LIST_DEFAULT_LIMIT = 20
+
+export const USER_COUPON_LIST_MAX_LIMIT = 100
+
+/**
+ * `GET /api/v1/me/coupons` — 내 쿠폰함.
+ *
+ * `status` 가 곧 화면의 탭이다. 없으면 전부 — 마이페이지 요약이 「쿠폰 3장」을
+ * 그리려면 상태별로 세 번 묻는 대신 한 번 묻고 아래 `counts` 를 읽는다.
+ */
+export const userCouponListQueryParamsSchema = z.object({
+  status: userCouponStatusSchema.optional(),
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(USER_COUPON_LIST_MAX_LIMIT).optional(),
+})
+
+export type UserCouponListQueryParams = z.infer<typeof userCouponListQueryParamsSchema>
+
+export const userCouponListResponseSchema = z.object({
+  /** 최신순 — 방금 받은 장이 맨 위다. */
+  coupons: z.array(userCouponSchema),
+  /**
+   * 상태별 장수 — **탭에 붙는 수**이고, `status` 로 좁혀도 달라지지 않는다.
+   *
+   * 목록과 함께 나가는 이유는 탭이 셋이기 때문이다. 각 탭이 자기 수를 따로 물으면
+   * 화면 하나가 네 번 묻고, 그 넷은 서로 다른 순간의 답이라 합이 맞지 않을 수 있다.
+   */
+  counts: z.record(userCouponStatusSchema, z.int().min(0)),
+  nextCursor: z.string().nullable(),
+})
+
+export type UserCouponListResponse = z.infer<typeof userCouponListResponseSchema>
