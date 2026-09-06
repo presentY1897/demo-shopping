@@ -8,7 +8,7 @@
     "build": "node ../../scripts/web-app.mjs seller build",
     "start": "node ../../scripts/web-app.mjs seller start",
     "test": "vitest run",
-    "test:coverage": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix --max-warnings 0",
@@ -25,6 +25,7 @@
     "zod": "^4.5.4"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.11",
     "@shopping/api-mocks": "workspace:*",
     "@shopping/config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.3",

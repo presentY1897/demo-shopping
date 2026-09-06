@@ -17,7 +17,7 @@
 | [M09](./M09-fulfillment/) 배송·주문관리 | 상태 머신, 주문 화면, 가상 배송, 구매확정 | **6/6 완료** |
 | [M10](./M10-claims/) 취소·반품·환불 | 부분 취소·반품, 환불 안분, 재고 복원, 클레임 처리 | **7/7 완료** |
 | [M11](./M11-discount/) 할인 | 쿠폰(부담 주체), 적립금 원장, 적용·복구 | **7/7 완료** |
-| [M12](./M12-settlement/) 정산 | 수수료 정책, 정산서 배치, 승인·지급, 매출 대시보드 | 3/4 |
+| [M12](./M12-settlement/) 정산 | 수수료 정책, 정산서 배치, 승인·지급, 매출 대시보드 | **4/4 완료** |
 | [M13](./M13-community/) 회원 부가 | 리뷰, 위시리스트, Q&A, 팔로우, 알림, 신고 | 0/9 |
 | [M14](./M14-admin/) 관리자 | 대시보드, 회원·판매자 관리, 전체 조회, 데모 관리 | 0/5 |
 | [M15](./M15-polish/) 마무리 | 성능·정합성, 접근성, E2E·데모 시나리오, 포트폴리오 문서 | 0/4 |
@@ -196,14 +196,14 @@
 
 </details>
 
-<details><summary><b>M12. 정산</b> (3/4)</summary>
+<details><summary><b>M12. 정산</b> (4/4 완료)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
 | [TASK-0079](./M12-settlement/TASK-0079-commission.md) | 수수료 정책 · 관리자 설정 | 완료 |
 | [TASK-0080](./M12-settlement/TASK-0080-settlement-batch.md) | 정산서 생성 배치 | 완료 |
 | [TASK-0081](./M12-settlement/TASK-0081-settlement-admin.md) | 관리자 정산 승인 · 지급 | 완료 |
-| [TASK-0082](./M12-settlement/TASK-0082-seller-settlement.md) | 판매자 정산 내역 · 매출 대시보드 | 승인됨 |
+| [TASK-0082](./M12-settlement/TASK-0082-seller-settlement.md) | 판매자 정산 내역 · 매출 대시보드 | 완료 |
 
 </details>
 

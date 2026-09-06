@@ -11,6 +11,13 @@
  * The wake-up sequence itself — thresholds, backoff, automatic recovery — is
  * covered once, in `apps/shop/test/api-wake-gate.spec.tsx`, against the same
  * component.
+ *
+ * **Signed out on purpose.** TASK-0082 put the revenue dashboard on this route,
+ * and it asks the API for takings only once it knows the caller has a store —
+ * `renderWithAuth(..., { session: null })` therefore keeps this file about the
+ * one thing it has always been about (the liveness panel and the app id) and
+ * makes no request `@shopping/api-mocks` has no handler for. The dashboard's own
+ * behaviour is measured in `revenue-dashboard.spec.tsx`.
  */
 
 import {
@@ -21,12 +28,13 @@ import {
   neverAnswers,
 } from '@shopping/api-mocks'
 import { APP_ID_HEADER, healthEntries } from '@shopping/shared'
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import HomePage from '@/app/page'
 import { messagesFor, screenTitle } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { testServer } from './setup'
 
 const { health, wake } = messagesFor()
@@ -42,14 +50,14 @@ beforeEach(() => {
 
 describe('the seller home page', () => {
   it('renders the mocked health payload', async () => {
-    render(<HomePage />)
+    renderWithAuth(<HomePage />, { session: null })
 
     expect(await screen.findByText(healthOk.version)).toBeVisible()
     expect(screen.getAllByText(health.statusLabels.ok)).toHaveLength(healthEntries(healthOk).length)
   })
 
   it('identifies itself as seller on every call', async () => {
-    render(<HomePage />)
+    renderWithAuth(<HomePage />, { session: null })
     await screen.findByText(healthOk.version)
 
     // Asserted as a set: how many calls a screen makes is its own business and
@@ -65,7 +73,7 @@ describe('the seller home page', () => {
     // F4 — the server render awaits nothing, so the shell is there before the
     // API has answered anything at all (TASK-0101 4.3).
     testServer.server.use(neverAnswers(mockPaths.health))
-    render(<HomePage />)
+    renderWithAuth(<HomePage />, { session: null })
 
     // The heading is the dashboard's, not the console's: `PageHeader` owns
     // the `<h1>` on every console screen and the console's name is in the
@@ -76,7 +84,7 @@ describe('the seller home page', () => {
 
   it('shows the failure panel and a retry when the contract is broken', async () => {
     testServer.server.use(malformedResponse(mockPaths.health, driftedHealthPayload))
-    render(<HomePage />)
+    renderWithAuth(<HomePage />, { session: null })
 
     const alert = await screen.findByRole('alert')
 
@@ -85,7 +93,7 @@ describe('the seller home page', () => {
   })
 
   it('says search is usable when the API reports it ready', async () => {
-    render(<HomePage />)
+    renderWithAuth(<HomePage />, { session: null })
 
     expect(await screen.findByText(wake.search.ready)).toBeVisible()
   })
