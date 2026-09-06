@@ -14,6 +14,8 @@ function line(overrides: Partial<OrderLine> & Pick<OrderLine, 'itemId' | 'seller
     brandName: `브랜드 ${overrides.sellerId}`,
     unitPrice: 10_000,
     quantity: 1,
+    productId: `product-${overrides.itemId}`,
+    categoryPath: '/1/',
     snapshot: {
       productId: `product-${overrides.itemId}`,
       productName: '오버사이즈 코트',

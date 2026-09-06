@@ -577,3 +577,113 @@ export async function createSellableVariant(
 
   return { seller, product, variant }
 }
+
+export interface CouponRow {
+  readonly id: string
+  readonly issuerType: string
+  readonly sellerId: string | null
+  readonly discountType: string
+  readonly discountValue: number
+}
+
+export interface CouponOptions {
+  /** `null` 이면 플랫폼 쿠폰. 부담 주체는 고르는 값이 아니라 이 값에서 나온다. */
+  readonly sellerId?: string | null
+  readonly name?: string
+  readonly code?: string | null
+  readonly discountType?: 'FIXED' | 'PERCENT'
+  readonly discountValue?: number
+  readonly maxDiscountAmount?: number | null
+  readonly minOrderAmount?: number
+  readonly scopeType?: 'ALL' | 'CATEGORY' | 'PRODUCT' | 'SELLER'
+  readonly scopeIds?: readonly string[]
+  readonly validFrom?: Date | string
+  readonly validUntil?: Date | string
+  readonly issueLimit?: number | null
+  readonly issuedCount?: number
+}
+
+/**
+ * 전체 적용 · 정액 3,000원 · 이번 세기 내내 유효한 플랫폼 쿠폰.
+ *
+ * `issuerType` 을 받지 않는다. `sellerId` 가 있으면 판매자 쿠폰이고 없으면 플랫폼
+ * 쿠폰이며, 그 관계는 `Coupon_issuer_check` 가 강제한다 — 둘을 따로 받는 팩토리는
+ * 제약이 거절하는 조합을 만들 수 있게 해 두고 그 실패를 스펙마다 다시 설명하게 한다.
+ */
+export async function createCoupon(db: Database, options: CouponOptions = {}): Promise<CouponRow> {
+  const sellerId = options.sellerId ?? null
+
+  return db.one<CouponRow>(
+    `INSERT INTO "Coupon"
+       ("id", "issuerType", "sellerId", "name", "code", "discountType", "discountValue",
+        "maxDiscountAmount", "minOrderAmount", "scopeType", "scopeIds", "validFrom",
+        "validUntil", "issueLimit", "issuedCount", "updatedAt")
+     VALUES ($1, $2::"CouponIssuerType", $3, $4, $5, $6::"CouponDiscountType", $7, $8, $9,
+             $10::"CouponScopeType", $11::text[], $12, $13, $14, $15, now())
+     RETURNING "id", "issuerType"::text AS "issuerType", "sellerId",
+               "discountType"::text AS "discountType", "discountValue"`,
+    [
+      randomUUID(),
+      sellerId === null ? 'PLATFORM' : 'SELLER',
+      sellerId,
+      options.name ?? unique('쿠폰'),
+      options.code ?? null,
+      options.discountType ?? 'FIXED',
+      options.discountValue ?? 3_000,
+      options.maxDiscountAmount ?? null,
+      options.minOrderAmount ?? 0,
+      options.scopeType ?? 'ALL',
+      [...(options.scopeIds ?? [])],
+      options.validFrom ?? '2000-01-01T00:00:00.000Z',
+      options.validUntil ?? '2099-01-01T00:00:00.000Z',
+      options.issueLimit ?? null,
+      options.issuedCount ?? 0,
+    ],
+  )
+}
+
+export interface UserCouponRow {
+  readonly id: string
+  readonly couponId: string
+  readonly userId: string
+  readonly status: string
+  readonly discountAmount: number | null
+}
+
+/**
+ * 발급된 한 장.
+ *
+ * `expiresAt` 이 정책의 `validUntil` 을 따라가지 않고 인자로 오는 이유는 그것이
+ * **발급 시점의 스냅샷**이기 때문이다(`schema.prisma`) — 둘이 갈린 상태를 만드는
+ * 스펙이 실제로 있어야 그 스냅샷이 뜻을 갖는다. 기본값은 정책과 같게 둔다.
+ */
+export async function createUserCoupon(
+  db: Database,
+  options: {
+    readonly couponId: string
+    readonly userId: string
+    readonly status?: 'ISSUED' | 'USED' | 'EXPIRED'
+    readonly expiresAt?: Date | string
+    readonly usedAt?: Date | string | null
+    readonly orderId?: string | null
+    readonly discountAmount?: number | null
+  },
+): Promise<UserCouponRow> {
+  return db.one<UserCouponRow>(
+    `INSERT INTO "UserCoupon"
+       ("id", "couponId", "userId", "status", "expiresAt", "usedAt", "orderId",
+        "discountAmount", "updatedAt")
+     VALUES ($1, $2, $3, $4::"UserCouponStatus", $5, $6, $7, $8, now())
+     RETURNING "id", "couponId", "userId", "status"::text AS "status", "discountAmount"`,
+    [
+      randomUUID(),
+      options.couponId,
+      options.userId,
+      options.status ?? 'ISSUED',
+      options.expiresAt ?? '2099-01-01T00:00:00.000Z',
+      options.usedAt ?? null,
+      options.orderId ?? null,
+      options.discountAmount ?? null,
+    ],
+  )
+}

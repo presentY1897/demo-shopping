@@ -2,13 +2,15 @@ import { randomUUID } from 'node:crypto'
 
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import type {
+  CheckoutCouponsResponse,
   Checkout,
   CheckoutResponse,
   CreateCheckoutRequest,
-  PricingDiscount,
 } from '@shopping/shared'
 
 import { assertResourceAccess } from '../auth/access-denied.js'
+import type { CouponApplication } from '../coupons/coupon-apply.js'
+import { CouponApplyService } from '../coupons/coupon-apply.service.js'
 import type { AccountRow } from '../auth/resource-ownership.js'
 import { accountOwnership, accountOwnershipSelect } from '../auth/resource-ownership.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
@@ -38,6 +40,7 @@ export class CheckoutService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly reservations: ReservationService,
+    private readonly coupons: CouponApplyService,
   ) {}
 
   /**
@@ -46,11 +49,7 @@ export class CheckoutService {
    * 한 트랜잭션이다. 셋 중 마지막이 품절이면 앞의 둘도 없던 일이 되어야 하고,
    * 트랜잭션 안에서 잡으면 그것이 롤백으로 공짜가 된다.
    */
-  async open(
-    principal: RequestPrincipal,
-    input: CreateCheckoutRequest,
-    discounts: readonly PricingDiscount[] = [],
-  ): Promise<CheckoutResponse> {
+  async open(principal: RequestPrincipal, input: CreateCheckoutRequest): Promise<CheckoutResponse> {
     const account = await this.account(principal, 'order.write')
     const rows = await this.orderableLines(account.id, input.itemIds)
     const checkoutId = randomUUID()
@@ -66,19 +65,40 @@ export class CheckoutService {
       }
     })
 
-    return this.read(principal, checkoutId, discounts)
+    // 열자마자 쿠폰이 붙어 있는 주문서는 없다. 고르는 것은 다음 화면의 일이고,
+    // 그 선택은 읽을 때마다 함께 온다 (`checkoutQueryParamsSchema`).
+    return this.read(principal, checkoutId)
   }
 
   /** 열려 있는 주문서 하나. 만료됐거나 풀렸으면 없는 것으로 답한다. */
   async read(
     principal: RequestPrincipal,
     checkoutId: string,
-    discounts: readonly PricingDiscount[] = [],
+    userCouponIds: readonly string[] = [],
   ): Promise<CheckoutResponse> {
     const account = await this.account(principal, 'order.read')
     const source = await this.linesOf(account.id, checkoutId)
+    const application = await this.coupons.resolve(account.id, source, userCouponIds)
 
-    return { checkout: present(checkoutId, source, discounts) }
+    return { checkout: present(checkoutId, source, application) }
+  }
+
+  /**
+   * 이 주문서에 쓸 수 있는 쿠폰과 추천 조합 (TASK-0075 F2 · F7).
+   *
+   * 주문서 응답에 얹지 않고 라우트를 나눈 이유는 **읽는 빈도가 다르기** 때문이다.
+   * 주문서는 쿠폰을 고를 때마다 다시 읽히는데, 그때마다 쿠폰함 전체를 판정하고
+   * 조합을 전수 탐색해 함께 내려보내는 것은 같은 답을 반복해서 만드는 일이다 —
+   * 고르는 동안 쓸 수 있는 쿠폰의 **목록**은 바뀌지 않는다.
+   */
+  async applicableCoupons(
+    principal: RequestPrincipal,
+    checkoutId: string,
+  ): Promise<CheckoutCouponsResponse> {
+    const account = await this.account(principal, 'order.read')
+    const source = await this.linesOf(account.id, checkoutId)
+
+    return this.coupons.list(account.id, source)
   }
 
   /**
@@ -197,9 +217,9 @@ export class CheckoutService {
 function present(
   checkoutId: string,
   source: OrderSource,
-  discounts: readonly PricingDiscount[],
+  application: CouponApplication,
 ): Checkout {
-  const priced = priceOf(source, discounts)
+  const priced = priceOf(source, application.discounts)
   const bySeller = new Map(priced.sellerOrders.map((entry) => [entry.sellerId, entry]))
   const amounts = new Map(priced.items.map((item) => [item.itemId, item]))
   const groups = new Map<
@@ -235,6 +255,7 @@ function present(
   return {
     id: checkoutId,
     expiresAt: (source.expiresAt ?? new Date(0)).toISOString(),
+    appliedCoupons: [...application.applied],
     sellerOrders: [...groups].map(([sellerId, group]) => {
       const totals = bySeller.get(sellerId)
 

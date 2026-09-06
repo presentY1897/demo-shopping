@@ -1,4 +1,5 @@
 import { BadRequestException } from '@nestjs/common'
+import type { Prisma } from '@prisma/client'
 import type { OrderItemSnapshot, ShippingPolicy } from '@shopping/shared'
 
 import { resolvePurchaseLimit } from '../catalog/variant-rules.js'
@@ -35,6 +36,7 @@ export interface CartLineRow {
       readonly status: string
       readonly deletedAt: Date | null
       readonly maxPurchaseQuantity: number | null
+      readonly category: { readonly path: string }
       readonly images: readonly { readonly url: string }[]
       readonly options: readonly { readonly id: string; readonly sortOrder: number }[]
       readonly seller: {
@@ -132,9 +134,27 @@ export function toLine(row: CartLineRow): OrderLine {
     brandName: row.variant.product.seller.brandName,
     unitPrice: row.variant.price,
     quantity: row.quantity,
+    productId: row.variant.product.id,
+    categoryPath: row.variant.product.category.path,
     snapshot: snapshotOf(row),
   }
 }
+
+/**
+ * 대표 사진 한 장.
+ *
+ * 동점일 때의 순서까지 정해 둔다 — `sortOrder` 만으로는 같은 값을 가진 두 사진 중
+ * 어느 것이 대표가 될지가 실행마다 달라지고, 그 흔들림은 주문 스냅샷에 굳어 남는다.
+ *
+ * 아래 조각 밖에 있는 것은 타입 때문이다. `as const` 는 배열까지 `readonly` 로
+ * 만들고 Prisma 의 `orderBy` 는 그것을 받지 않으므로, 정렬 목록을 쓰려면 이 자리가
+ * `as const` 밖이어야 한다.
+ */
+const REPRESENTATIVE_IMAGE = {
+  orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
+  take: 1,
+  select: { url: true },
+} satisfies Prisma.Product$imagesArgs
 
 /**
  * 한 줄을 읽는 `select` 조각.
@@ -158,7 +178,16 @@ export const VARIANT_LINE_SELECT = {
       status: true,
       deletedAt: true,
       maxPurchaseQuantity: true,
-      images: { orderBy: { sortOrder: 'asc' }, take: 1, select: { url: true } },
+      // 카테고리 범위 쿠폰이 읽는 유일한 값이다 (TASK-0075). `categoryId` 가
+      // 아니라 `path` 인 이유는 **조상까지 닿아야** 하기 때문이다 — 「셔츠」 쿠폰이
+      // 「반팔 셔츠」에 안 붙으면 발행자는 잎 카테고리를 전부 나열해야 하고,
+      // 나중에 추가된 잎은 아무도 다시 나열해 주지 않는다.
+      //
+      // 줄마다 질의가 하나씩 붙지 않는다. 관계 하나를 더 고르는 것은 줄 수와
+      // 무관하게 문장 하나이고, 그 성질을 재는 것이 `orders-performance.spec.ts`
+      // 의 「한 줄이든 열 줄이든 같은 수의 문장」이다.
+      category: { select: { path: true } },
+      images: REPRESENTATIVE_IMAGE,
       options: { select: { id: true, sortOrder: true } },
       seller: {
         select: { id: true, brandName: true, shippingFee: true, freeShippingThreshold: true },

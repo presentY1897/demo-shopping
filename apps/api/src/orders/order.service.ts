@@ -17,7 +17,6 @@ import type {
   OrderListResponse,
   OrderResponse,
   OrderStatus,
-  PricingDiscount,
   SellerOrder,
   SellerOrderHistoryEntry,
   SellerOrderResponse,
@@ -25,6 +24,8 @@ import type {
 import { ORDER_LIST_DEFAULT_LIMIT } from '@shopping/shared'
 
 import { assertResourceAccess } from '../auth/access-denied.js'
+import type { CouponApplication } from '../coupons/coupon-apply.js'
+import { CouponApplyService } from '../coupons/coupon-apply.service.js'
 import type { AccountRow } from '../auth/resource-ownership.js'
 import {
   accountOwnership,
@@ -47,7 +48,7 @@ import { ReservationService } from '../reservation/reservation.service.js'
 import { ORDER_NUMBER_SUFFIX_LENGTH, orderNumberOf } from './order-number.js'
 import { CheckoutService } from './checkout.service.js'
 import type { CartLineRow } from './order-lines.js'
-import { assertOrderable, policiesOf, toLine } from './order-lines.js'
+import { assertOrderable, policiesOf, toLine, VARIANT_LINE_SELECT } from './order-lines.js'
 import type { PlannedSellerOrder } from './order-plan.js'
 import { planOrder } from './order-plan.js'
 import type { OrderSource } from './order-source.js'
@@ -86,6 +87,7 @@ export class OrderService {
     private readonly reservations: ReservationService,
     private readonly checkouts: CheckoutService,
     private readonly transitions: SellerOrderService,
+    private readonly coupons: CouponApplyService,
   ) {}
 
   // ------------------------------------------------------------------ writes
@@ -108,11 +110,7 @@ export class OrderService {
    * `checkoutId` 는 저장 직전에 뽑는 난수라 두 요청이 같은 값을 들고 올 수 없고,
    * 「같은 요청인가」를 물을 수 있는 것이 요청 안에 아무것도 없다.
    */
-  async create(
-    principal: RequestPrincipal,
-    input: CreateOrderRequest,
-    discounts: readonly PricingDiscount[] = [],
-  ): Promise<OrderResponse> {
+  async create(principal: RequestPrincipal, input: CreateOrderRequest): Promise<OrderResponse> {
     const account = await this.account(principal, 'order.write')
     const placed =
       input.checkoutId === undefined ? null : await this.placedOrder(account.id, input.checkoutId)
@@ -131,8 +129,12 @@ export class OrderService {
       input.checkoutId === undefined
         ? await this.fromCart(account.id, input.itemIds ?? [])
         : await this.checkouts.linesOf(account.id, input.checkoutId)
-    const plan = planOrder(source.lines, priceOf(source, discounts))
-    const orderId = await this.place(account.id, recipient, plan, source.checkoutId)
+    // 고른 쿠폰을 여기서 확인한다 — **저장 직전이다.** 주문서를 읽을 때 이미 한
+    // 번 봤지만 그 사이에 만료되거나 다른 탭에서 쓰였을 수 있고, 그때 이 주문은
+    // 쿠폰이 적용된 금액으로 저장되어서는 안 된다.
+    const application = await this.coupons.resolve(account.id, source, input.userCouponIds)
+    const plan = planOrder(source.lines, priceOf(source, application.discounts))
+    const orderId = await this.place(account.id, recipient, plan, source.checkoutId, application)
 
     return this.get(principal, orderId)
   }
@@ -187,9 +189,10 @@ export class OrderService {
     recipient: Recipient,
     plan: ReturnType<typeof planOrder>,
     held: string | null,
+    coupons: CouponApplication,
   ): Promise<string> {
     try {
-      return await this.store(userId, recipient, plan, held)
+      return await this.store(userId, recipient, plan, held, coupons)
     } catch (error: unknown) {
       const winner =
         held === null || !isCheckoutCollision(error) ? null : await this.placedOrder(userId, held)
@@ -232,13 +235,14 @@ export class OrderService {
     recipient: Recipient,
     plan: ReturnType<typeof planOrder>,
     held: string | null,
+    coupons: CouponApplication,
   ): Promise<string> {
     try {
-      return await this.write(userId, recipient, plan, held)
+      return await this.write(userId, recipient, plan, held, coupons)
     } catch (error: unknown) {
       if (!isOrderNumberCollision(error)) throw error
 
-      return this.write(userId, recipient, plan, held)
+      return this.write(userId, recipient, plan, held, coupons)
     }
   }
 
@@ -247,6 +251,7 @@ export class OrderService {
     recipient: Recipient,
     plan: ReturnType<typeof planOrder>,
     held: string | null,
+    coupons: CouponApplication,
   ): Promise<string> {
     const now = this.clock.now()
     const checkoutId = held ?? randomUUID()
@@ -291,6 +296,12 @@ export class OrderService {
       for (const group of plan.sellerOrders) {
         await this.writeSellerOrder(tx, order.id, group, now)
       }
+
+      // **쿠폰은 마지막이다.** 여기서 지면(다른 주문이 먼저 썼으면) 트랜잭션 전체가
+      // 롤백되어 예약도 주문도 없던 일이 되는데, 그 순서가 반대면 롤백될 것이
+      // 하나도 저장되기 전에 소진 판정이 나고 「졌는데 예약은 잡혔다」가 되는 시점이
+      // 생긴다 — 지금은 그런 시점이 없다 (TASK-0075 F5).
+      await this.coupons.consume(tx, userId, order.id, coupons.applied, now)
 
       return order.id
     })
@@ -612,45 +623,10 @@ export class OrderService {
     const rows = await this.prisma.cartItem.findMany({
       where: { id: { in: [...itemIds] }, cart: { userId } },
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
-      select: {
-        id: true,
-        quantity: true,
-        variant: {
-          select: {
-            id: true,
-            sku: true,
-            price: true,
-            isActive: true,
-            deletedAt: true,
-            sellerId: true,
-            maxPurchaseQuantity: true,
-            optionValues: { select: { optionValue: { select: { value: true, optionId: true } } } },
-            product: {
-              select: {
-                id: true,
-                name: true,
-                status: true,
-                deletedAt: true,
-                maxPurchaseQuantity: true,
-                images: {
-                  orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
-                  take: 1,
-                  select: { url: true },
-                },
-                options: { select: { id: true, sortOrder: true } },
-                seller: {
-                  select: {
-                    id: true,
-                    brandName: true,
-                    shippingFee: true,
-                    freeShippingThreshold: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      // **주문서와 같은 조각을 쓴다** (`VARIANT_LINE_SELECT`). 한때 여기에 같은
+      // 내용을 손으로 적어 두었는데, 그러면 한쪽에만 필드를 더한 날 주문서와 주문이
+      // 다른 것을 보여 준다 — 쿠폰의 카테고리 범위가 실제로 그 자리였다.
+      select: { id: true, quantity: true, variant: { select: VARIANT_LINE_SELECT } },
     })
 
     if (rows.length !== itemIds.length) {

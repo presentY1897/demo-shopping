@@ -1,12 +1,6 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 
-import type {
-  ApiClient,
-  OrderListResponse,
-  OrderResponse,
-  OrderStatus,
-  PricingDiscount,
-} from '@shopping/shared'
+import type { ApiClient, OrderListResponse, OrderResponse, OrderStatus } from '@shopping/shared'
 import {
   ApiClientError,
   calculateOrder,
@@ -27,10 +21,12 @@ import { useDatabase } from '../support/database.js'
 import {
   createAddress,
   createCategory,
+  createCoupon,
   createProduct,
   createProductVariant,
   createSeller,
   createUser,
+  createUserCoupon,
 } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
 import { callers } from '../support/principal.js'
@@ -557,8 +553,10 @@ describe('주문번호 (F7)', () => {
 
 describe('안분액 저장 (F8)', () => {
   it('writes each item’s share of an order-wide coupon', async () => {
-    // 쿠폰도 적립금도 M11 이라 컨트롤러는 할인을 받지 않는다 (4.2). 저장 경로는
-    // 지금 있고, 그것을 재려면 서비스를 직접 부른다.
+    // TASK-0075 이후로 **할인은 실제 쿠폰에서만 온다.** 서비스에 할인 목록을 직접
+    // 넘기던 자리가 사라졌고, 그것이 F1(계산기를 고치지 않는다)의 짝이다 — 주문이
+    // 저장하는 금액에 이르는 길이 하나뿐이어야 「보여 준 것과 산 것이 다르다」가
+    // 표현 불가능해진다.
     const store = await listing({ price: 10_000 })
     const cheap = await createProductVariant(db, {
       productId: store.productId,
@@ -568,14 +566,12 @@ describe('안분액 저장 (F8)', () => {
       optionSignature: 'cheap',
     })
     const itemIds = [await add(store.variantId), await add(cheap.id)]
-    const discounts: readonly PricingDiscount[] = [
-      { id: 'welcome', type: 'COUPON', scope: 'ORDER', amount: 3_000, bearer: 'PLATFORM' },
-    ]
+    const coupon = await createCoupon(db, { discountValue: 3_000 })
+    const issued = await createUserCoupon(db, { couponId: coupon.id, userId: buyer.userId })
 
     const { order } = await orders().create(
       { app: 'shop', userId: buyer.userId, roles: ['BUYER'], sellerId: null },
-      { itemIds, addressId },
-      discounts,
+      { itemIds, addressId, userCouponIds: [issued.id] },
     )
     const items = order.sellerOrders[0]?.items ?? []
 
@@ -583,6 +579,15 @@ describe('안분액 저장 (F8)', () => {
     expect(items.map((item) => item.couponDiscountAmount).sort()).toEqual([1_000, 2_000])
     expect(items.every((item) => item.discountAmount === item.couponDiscountAmount)).toBe(true)
     expect(order.totalCouponDiscountAmount).toBe(3_000)
+
+    // 그리고 그 장은 **소진되고 금액을 남긴다** (F5 · F6). 정산이 읽는 값이다.
+    const used = await db.one<{ status: string; orderId: string; discountAmount: number }>(
+      `SELECT "status"::text AS "status", "orderId", "discountAmount"
+         FROM "UserCoupon" WHERE "id" = $1`,
+      [issued.id],
+    )
+
+    expect(used).toEqual({ status: 'USED', orderId: order.id, discountAmount: 3_000 })
   })
 })
 
