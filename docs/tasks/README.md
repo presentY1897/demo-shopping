@@ -16,7 +16,7 @@
 | [M08](./M08-payment/) 결제 | 프로바이더 추상화, 가상 카드, 토스 연동, 웹훅, 실패 복구 | **7/7 완료** |
 | [M09](./M09-fulfillment/) 배송·주문관리 | 상태 머신, 주문 화면, 가상 배송, 구매확정 | **6/6 완료** |
 | [M10](./M10-claims/) 취소·반품·환불 | 부분 취소·반품, 환불 안분, 재고 복원, 클레임 처리 | **7/7 완료** |
-| [M11](./M11-discount/) 할인 | 쿠폰(부담 주체), 적립금 원장, 적용·복구 | 2/7 |
+| [M11](./M11-discount/) 할인 | 쿠폰(부담 주체), 적립금 원장, 적용·복구 | 3/7 |
 | [M12](./M12-settlement/) 정산 | 수수료 정책, 정산서 배치, 승인·지급, 매출 대시보드 | 0/4 |
 | [M13](./M13-community/) 회원 부가 | 리뷰, 위시리스트, Q&A, 팔로우, 알림, 신고 | 0/9 |
 | [M14](./M14-admin/) 관리자 | 대시보드, 회원·판매자 관리, 전체 조회, 데모 관리 | 0/5 |
@@ -182,14 +182,14 @@
 
 </details>
 
-<details><summary><b>M11. 할인</b> (2/7)</summary>
+<details><summary><b>M11. 할인</b> (3/7)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
 | [TASK-0072](./M11-discount/TASK-0072-coupon-schema.md) | 쿠폰 스키마 · 발행 API | 완료 |
 | [TASK-0073](./M11-discount/TASK-0073-platform-coupon-admin.md) | 관리자 플랫폼 쿠폰 화면 | 승인됨 |
 | [TASK-0074](./M11-discount/TASK-0074-seller-coupon.md) | 판매자 쿠폰 화면 | 승인됨 |
-| [TASK-0075](./M11-discount/TASK-0075-coupon-apply.md) | 쿠폰 적용 · 검증 | 승인됨 |
+| [TASK-0075](./M11-discount/TASK-0075-coupon-apply.md) | 쿠폰 적용 · 검증 | 완료 |
 | [TASK-0076](./M11-discount/TASK-0076-point-ledger.md) | 적립금 원장 · 적립 · 사용 | 완료 |
 | [TASK-0077](./M11-discount/TASK-0077-coupon-point-pages.md) | 쿠폰함 · 적립금 내역 화면 | 승인됨 |
 | [TASK-0078](./M11-discount/TASK-0078-discount-restore.md) | 환불 시 쿠폰 · 적립금 복구 | 승인됨 |
