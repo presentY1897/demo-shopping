@@ -1,6 +1,8 @@
 import type {
   ApiFailureReason,
   ClaimFault,
+  CouponDiscountType,
+  CouponLifecycle,
   ClaimHandlingStage,
   ClaimStatus,
   ClaimType,
@@ -26,6 +28,8 @@ import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { SellerClaimTab } from '@/lib/claims/claim-console'
+import type { CouponLiabilityUnbounded, SellerCouponScopeType } from '@/lib/coupons/coupon-console'
+import type { CouponFieldErrorMessages } from '@/lib/coupons/coupon-form'
 import type { SellerOrderTab } from '@/lib/orders/order-console'
 import type { StoreFieldErrorMessages } from '@/lib/sellers/store-form'
 import type { SessionRefusal } from '@/lib/auth/session-client'
@@ -145,6 +149,20 @@ export interface Messages {
    * 「수거 중」인 날이 온다.
    */
   readonly claims: ClaimVocabularyMessages
+  /**
+   * 판매자 쿠폰 목록 (TASK-0074). 상태 필터 · 부담 누계 · 발행 중단 · 정산 연결.
+   */
+  readonly couponList: CouponListMessages
+  /** 쿠폰 발행 폼 — 부담 경고와 예상 부담액이 그 안에 있다. */
+  readonly couponForm: CouponFormMessages
+  /**
+   * 상태 · 할인 방식 · 범위의 이름.
+   *
+   * 화면의 어휘가 아니라 **쿠폰의** 어휘라 목록과 폼이 나눠 쓴다 — `claims` 가 같은
+   * 이유로 목록과 상세 밖에 있다. 두 벌을 두면 목록에서는 「발행 중단」이고 폼에서는
+   * 「중단됨」인 날이 온다.
+   */
+  readonly coupons: CouponVocabularyMessages
 }
 
 /**
@@ -1413,4 +1431,229 @@ export interface ClaimDetailMessages {
   readonly failure: StoreFailureMessages
   readonly toast: ProductToastMessages
   readonly closeLabel: string
+}
+
+/* ------------------------------------------------- 판매자 쿠폰 (TASK-0074) -- */
+
+/**
+ * 쿠폰의 어휘.
+ *
+ * 상태와 방식은 `Record<계약의 유니온, string>` 이라, 계약에 값이 하나 늘면 문장이
+ * 없는 자리를 `pnpm typecheck` 가 먼저 잡는다 — 빈 배지를 그린 화면이 통과하는 것을
+ * 막는 유일한 장치가 그것이다.
+ *
+ * 범위만 계약의 유니온이 아니라 **판매자가 고를 수 있는 둘**로 좁혀져 있다
+ * (`SellerCouponScopeType`). 전체·카테고리에 이름을 붙여 두면 그 이름이 어딘가에
+ * 그려질 수 있게 되고, 이 화면은 그 둘이 **존재하지 않는 것처럼** 보여야 한다 (F1).
+ */
+export interface CouponVocabularyMessages {
+  readonly lifecycleLabels: Readonly<Record<CouponLifecycle, string>>
+  readonly discountTypeLabels: Readonly<Record<CouponDiscountType, string>>
+  readonly scopeTypeLabels: Readonly<Record<SellerCouponScopeType, string>>
+  /** `{amount}` — 정액. 금액은 통화 형식을 지난 값이 들어온다. */
+  readonly discountFixed: string
+  /** `{percent}` — 상한이 없는 정률. **경계가 없다는 사실이 여기서도 드러난다.** */
+  readonly discountPercent: string
+  /** `{percent}` `{cap}` — 상한이 있는 정률. */
+  readonly discountPercentCapped: string
+  /** 발급 수량에 상한이 없다. 목록과 폼이 같은 낱말을 쓴다. */
+  readonly unlimited: string
+  /** 값이 없는 칸. 「—」 한 글자라도 두 곳에 적으면 갈린다. */
+  readonly none: string
+}
+
+/**
+ * `/coupons` 목록이 그리는 모든 것.
+ *
+ * 정산 안내(`settlement`)와 부담 누계(`liability`)가 **목록의 슬라이스**인 것이
+ * TASK-0074 R1 의 답이다: 부담 구조는 발행 폼에서 한 번 말하고 끝나는 것이 아니라
+ * 목록에도 같은 낱말로 서 있어야 한다.
+ */
+export interface CouponListMessages {
+  readonly description: string
+  readonly loadingLabel: string
+  readonly settlement: CouponSettlementMessages
+  readonly liability: CouponLiabilitySummaryMessages
+  readonly filters: CouponFilterMessages
+  readonly table: CouponTableMessages
+  readonly issuing: CouponIssuingMessages
+  readonly pagination: PaginationMessages
+  readonly empty: EmptyStateMessages
+  readonly filteredEmpty: EmptyStateMessages
+  readonly errorTitle: string
+  readonly retry: string
+  /**
+   * 스토어가 없는 계정이 이 화면에 왔다.
+   *
+   * 오류가 아니다 — `sellerId` 가 없으면 목록을 **부르지도 않는다**. 불렀다면 서버는
+   * 그것을 플랫폼 쿠폰 목록으로 읽고 403 을 돌려주고, 화면은 「권한이 없어요」라고
+   * 말하게 된다. 신청하지 않았을 뿐인 사람에게 그것은 틀린 문장이다.
+   */
+  readonly noStore: StoreAbsentMessages
+  readonly toast: ProductToastMessages
+}
+
+/**
+ * 정산 화면으로 가는 자리 (M12).
+ *
+ * **링크 하나와 문장 하나뿐이다.** 차감이 언제 어떻게 일어나는지는 정산이 소유하는
+ * 사실이고, 그것을 여기서 설명하면 M12 가 규칙을 정하는 날 두 화면이 다른 말을
+ * 하게 된다. 여기서 하는 말은 「여기서 빠진다」와 「거기서 볼 수 있다」까지다.
+ */
+export interface CouponSettlementMessages {
+  readonly title: string
+  readonly body: string
+  readonly linkLabel: string
+}
+
+/** 부담 누계 (F5). */
+export interface CouponLiabilitySummaryMessages {
+  readonly title: string
+  /** `{amount}` — 이 줄들이 지금까지 깎은 금액의 합. */
+  readonly total: string
+  /** `{count}` — 그 금액이 나온 장수. */
+  readonly used: string
+  /**
+   * **이 페이지의 합계**라고 말하는 한 줄.
+   *
+   * 계약에 발행자별 누계를 답하는 자리가 없다. 없는 것을 「전체」라고 부르면 두 번째
+   * 페이지를 넘긴 사람이 줄어든 숫자를 보고 무엇이 사라졌는지 찾게 된다.
+   */
+  readonly note: string
+}
+
+export interface CouponFilterMessages {
+  readonly legend: string
+  readonly lifecycleLabel: string
+  readonly lifecycleAll: string
+  readonly reset: string
+}
+
+export interface CouponTableMessages {
+  readonly caption: string
+  readonly name: string
+  readonly lifecycle: string
+  readonly discount: string
+  readonly scope: string
+  readonly period: string
+  readonly issued: string
+  /** 이 쿠폰이 지금까지 깎은 금액. 판매자에게는 그것이 **부담 누계**다. */
+  readonly liability: string
+  readonly actions: string
+  /** `{code}` — 코드로 나가는 쿠폰만. */
+  readonly code: string
+  /** `{issued}` `{limit}` */
+  readonly issuedOfLimit: string
+  /** `{issued}` — 수량 상한이 없는 쿠폰. */
+  readonly issuedUnlimited: string
+  /** `{count}` */
+  readonly usedCount: string
+  /** `{count}` — 상품 지정 범위. */
+  readonly scopeProducts: string
+  /** `{from}` `{until}` */
+  readonly periodRange: string
+  /** `{amount}` — 최소 주문금액이 걸린 쿠폰. */
+  readonly minOrder: string
+}
+
+/**
+ * 발행 중단과 재개.
+ *
+ * **「삭제」가 아니라는 것을 문장이 말한다.** 중단은 더 나가지 않게 하는 일이고 이미
+ * 받은 사람의 쿠폰은 그대로 유효하다 — 그 사실을 적지 않으면 판매자는 중단을
+ * 「회수」로 이해하고, 그 오해는 고객 문의가 되어서야 드러난다.
+ */
+export interface CouponIssuingMessages {
+  readonly suspendLabel: string
+  readonly resumeLabel: string
+  readonly hint: string
+  /** `{name}` */
+  readonly suspendedNotice: string
+  /** `{name}` */
+  readonly resumedNotice: string
+  /** 기간이 끝나 손댈 것이 없는 줄. */
+  readonly ended: string
+}
+
+/**
+ * 발행 폼 (TASK-0074 4장 · 5장).
+ *
+ * 목록과 다른 슬라이스인 것은 문장이 다르기 때문이다. 목록의 어휘는 「이 쿠폰이
+ * 무엇을 했나」이고 폼의 어휘는 「이 쿠폰이 무엇을 하게 되나」다 — 한 벌로 접으면
+ * 「부담 누계」와 「예상 부담」이 같은 낱말을 쓰게 되고, 그 순간 이미 나간 돈과
+ * 아직 나가지 않은 돈이 화면에서 구분되지 않는다.
+ */
+export interface CouponFormMessages {
+  readonly title: string
+  readonly description: string
+  /** 폼을 여는 버튼. 닫혀 있는 것이 기본이다 — 목록이 이 화면의 본문이다. */
+  readonly openLabel: string
+  readonly closeLabel: string
+  readonly legend: string
+  readonly warning: CouponWarningMessages
+  readonly fields: CouponFormFieldMessages
+  readonly errors: CouponFieldErrorMessages
+  readonly errorTitle: string
+  readonly submitLabel: string
+  readonly submitFailed: string
+  /** `{name}` */
+  readonly issuedNotice: string
+  /** `{name}` `{code}` — 코드까지 함께 난 경우. */
+  readonly issuedWithCode: string
+}
+
+/**
+ * 발행 폼 맨 위의 경고 (F2 · F3).
+ *
+ * **이 화면이 존재하는 이유가 이 네 줄이다.** 판매자가 부담 구조를 모르고 쿠폰을
+ * 뿌리는 일이 실제로 흔하고, 그래서 「정산에서 차감됩니다」라는 문장과 **지금 입력한
+ * 값으로 계산한 숫자**가 발행 버튼보다 위에 있다.
+ */
+export interface CouponWarningMessages {
+  readonly title: string
+  readonly body: string
+  /** `{count}` `{perVoucher}` `{total}` — 「100장 × 5,000원 = 500,000원」 */
+  readonly estimate: string
+  readonly estimateLabel: string
+  /**
+   * 최대 부담에 **경계가 없을 때**의 두 문장.
+   *
+   * 0원이나 「—」 로 접지 않는다. 상한 없는 정률 쿠폰의 최대 부담은 큰 수가 아니라
+   * 없는 수이고, 숫자를 적으면 그 숫자가 곧 「이만큼만 나가겠구나」가 된다.
+   * 키가 `CouponLiabilityUnbounded` 라 이유가 하나 늘면 문장도 함께 늘어야 한다.
+   */
+  readonly unbounded: Readonly<Record<CouponLiabilityUnbounded, string>>
+  /** 아직 할인액을 입력하지 않았다. 채우면 숫자가 나타난다. */
+  readonly unknown: string
+}
+
+export interface CouponFormFieldMessages {
+  readonly nameLabel: string
+  readonly nameHint: string
+  readonly discountTypeLabel: string
+  /** 방식에 따라 뜻이 달라지는 칸이라 라벨도 갈린다 — 원이냐 퍼센트냐. */
+  readonly discountValueLabel: Readonly<Record<CouponDiscountType, string>>
+  readonly discountValueHint: Readonly<Record<CouponDiscountType, string>>
+  readonly maxDiscountAmountLabel: string
+  readonly maxDiscountAmountHint: string
+  readonly minOrderAmountLabel: string
+  readonly minOrderAmountHint: string
+  readonly scopeTypeLabel: string
+  readonly scopeTypeHint: string
+  readonly scopeIdsLabel: string
+  readonly scopeIdsHint: string
+  readonly scopeIdsLoading: string
+  readonly scopeIdsFailed: string
+  readonly scopeIdsEmpty: string
+  /** 상한에 걸려 목록이 잘렸다. `{count}` */
+  readonly scopeIdsTruncated: string
+  /** `{count}` */
+  readonly scopeIdsSelected: string
+  readonly validFromLabel: string
+  readonly validUntilLabel: string
+  readonly periodHint: string
+  readonly issueLimitLabel: string
+  readonly issueLimitHint: string
+  readonly withCodeLabel: string
+  readonly withCodeHint: string
 }

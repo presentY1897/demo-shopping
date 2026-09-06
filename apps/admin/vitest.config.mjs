@@ -64,6 +64,12 @@ export default {
         // order the server will refuse, or hides one it would accept — and the
         // screen renders either way.
         'src/lib/claims/defect-return.ts': complete,
+        // TASK-0073 의 판단들. 「발급 수량 × 최대 할인액」은 **틀려도 조용하다** —
+        // 화면은 그럴듯한 숫자를 하나 그리고, 발행자는 그것을 보고 버튼을 누른다.
+        // 특히 상한 없는 정률 쿠폰의 최대 비용은 무한대이므로, 닿지 않은 분기 하나가
+        // 「퍼센트 × 장수」라는 뜻 없는 곱셈을 화면에 남긴다. 사용률의 0 나눗셈과
+        // 사람이 친 숫자의 파싱도 같은 성질이다.
+        'src/lib/coupons/platform-coupons.ts': complete,
         // The photo gate in front of `POST /uploads/presign`. A missed branch
         // spends a round trip on a file the API refuses, and answers with a 400
         // that cannot say which file was at fault.

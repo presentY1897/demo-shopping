@@ -22,6 +22,17 @@ export function money(amount: number): string {
   return formatMoney({ amount, currency: CURRENCY }, { locale: LOCALE })
 }
 
+/**
+ * 개수 하나. **금액이 아니므로 통화 기호가 붙지 않는다.**
+ *
+ * `String(n)` 으로 적지 않는 이유는 자릿수다 — 「1000장 × 5,000원」은 두 수가 같은
+ * 종류로 보이지 않고, 쿠폰 발행 화면이 판매자에게 읽히기를 바라는 것이 정확히 그
+ * 곱셈이다.
+ */
+export function count(value: number): string {
+  return new Intl.NumberFormat(LOCALE).format(value)
+}
+
 export function dateTime(isoString: string): string {
   return formatDate(isoString, {
     locale: LOCALE,

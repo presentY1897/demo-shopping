@@ -17,6 +17,7 @@ import {
   resetProductStore,
   resetSellerClaimStore,
   resetSellerConsoleStore,
+  resetSellerCouponStore,
   resetSellerOrderStore,
   resetSellerStore,
   resetProfileStore,
@@ -143,6 +144,10 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     // 다음 스펙의 「대기 5건」이 앞 스펙의 「4건」이 되고, **파일 안의 순서가 통과
     // 여부를 정한다.**
     resetSellerClaimStore()
+    // 판매자 콘솔의 쿠폰 (TASK-0074). 한 스펙이 중단한 쿠폰이나 새로 발행한 쿠폰이
+    // 넘어가면 다음 스펙의 「여섯 줄」이 앞 스펙의 「일곱 줄」이 되고, 상태 필터를
+    // 재는 검사는 **파일 안의 순서에 따라** 통과하거나 실패한다.
+    resetSellerCouponStore()
     // 관리자의 클레임 개입 (TASK-0071). 한 스펙이 뒤집은 거절은 목록에 **새 줄**을
     // 남기므로, 넘어가면 다음 스펙의 「12건」이 앞 스펙의 「13건」이 된다 — 그리고
     // 그 줄은 원본의 이의 뱃지도 함께 꺼 놓는다.

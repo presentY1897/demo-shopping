@@ -1,4 +1,4 @@
-import { PRODUCT_MAX_VARIANTS } from '@shopping/shared'
+import { COUPON_NAME_MAX_LENGTH, PRODUCT_MAX_VARIANTS } from '@shopping/shared'
 
 import type { Messages } from './types'
 
@@ -1513,5 +1513,188 @@ export const ko: Messages = {
       failureTitle: '처리하지 못했습니다.',
     },
     closeLabel: '닫기',
+  },
+  // 판매자 쿠폰 (TASK-0074). 상태·할인 방식·범위의 이름은 목록과 폼이 나눠 쓴다.
+  coupons: {
+    lifecycleLabels: {
+      // 계약이 정한 가림 순서 그대로 적는다 (`couponLifecycles`). 위엣것이 아래를
+      // 가리므로, 「끝났는데 중단된」 쿠폰은 언제나 「종료」다.
+      ENDED: '종료',
+      SUSPENDED: '발행 중단',
+      SCHEDULED: '발행 예정',
+      EXHAUSTED: '수량 소진',
+      ACTIVE: '발행 중',
+    },
+    discountTypeLabels: {
+      FIXED: '정액 할인',
+      PERCENT: '정률 할인',
+    },
+    scopeTypeLabels: {
+      // 전체·카테고리는 여기 없다. 판매자가 고를 수 없는 것에 이름을 붙여 두면 그
+      // 이름이 언젠가 화면에 그려진다 (F1).
+      SELLER: '내 스토어 전체',
+      PRODUCT: '지정한 상품만',
+    },
+    discountFixed: '{amount}',
+    discountPercent: '{percent}%',
+    discountPercentCapped: '{percent}% (최대 {cap})',
+    unlimited: '무제한',
+    none: '—',
+  },
+  couponList: {
+    description: '내 스토어가 부담하는 쿠폰을 발행하고, 지금까지 얼마가 나갔는지 확인합니다.',
+    loadingLabel: '쿠폰 목록을 불러오는 중입니다',
+    settlement: {
+      title: '정산에서 차감됩니다',
+      // 언제 어떻게 빠지는지는 정산 화면(M12)이 소유하는 사실이다. 여기서 설명하면
+      // 두 화면이 다른 말을 하게 된다.
+      body: '판매자 쿠폰의 할인액은 내 정산액에서 빠집니다. 실제 차감 내역은 정산 화면에서 볼 수 있어요.',
+      linkLabel: '정산 내역 보기',
+    },
+    liability: {
+      title: '부담 누계',
+      total: '{amount}',
+      used: '사용 {count}장',
+      note: '지금 보고 있는 페이지의 합계입니다.',
+    },
+    filters: {
+      legend: '쿠폰 걸러 보기',
+      lifecycleLabel: '상태',
+      lifecycleAll: '전체 상태',
+      reset: '조건 지우기',
+    },
+    table: {
+      caption: '내 스토어가 발행한 쿠폰',
+      name: '쿠폰',
+      lifecycle: '상태',
+      discount: '할인',
+      scope: '적용 범위',
+      period: '기간',
+      issued: '발급',
+      liability: '부담 누계',
+      actions: '발행',
+      code: '코드 {code}',
+      issuedOfLimit: '{issued} / {limit}장',
+      issuedUnlimited: '{issued}장 (무제한)',
+      usedCount: '사용 {count}장',
+      scopeProducts: '지정 상품 {count}개',
+      periodRange: '{from} ~ {until}',
+      minOrder: '{amount} 이상 주문',
+    },
+    issuing: {
+      suspendLabel: '발행 중단',
+      resumeLabel: '발행 재개',
+      // 「회수」로 오해하는 것을 막는 한 줄. 이 오해는 고객 문의가 되어서야 드러난다.
+      hint: '중단하면 새로 발급되지 않습니다. 이미 받은 분은 그대로 쓸 수 있어요.',
+      suspendedNotice: "'{name}' 의 발행을 중단했습니다.",
+      resumedNotice: "'{name}' 의 발행을 다시 시작했습니다.",
+      ended: '기간이 끝났습니다',
+    },
+    pagination: {
+      label: '쿠폰 목록 페이지 이동',
+      previous: '이전',
+      next: '다음',
+      page: '{page} 페이지',
+    },
+    empty: {
+      title: '아직 발행한 쿠폰이 없어요.',
+      description: '쿠폰을 발행하면 여기에서 사용 현황과 부담 누계를 볼 수 있습니다.',
+    },
+    filteredEmpty: {
+      title: '조건에 맞는 쿠폰이 없어요.',
+      description: '상태를 바꿔 보세요.',
+    },
+    errorTitle: '쿠폰 목록을 불러오지 못했습니다.',
+    retry: '다시 시도',
+    noStore: {
+      title: '아직 스토어가 없어요.',
+      body: '입점 신청이 끝나면 내 스토어 쿠폰을 발행할 수 있습니다.',
+      applyLabel: '입점 신청하러 가기',
+    },
+    toast: {
+      regionLabel: '쿠폰 처리 알림',
+      closeLabel: '알림 닫기',
+      failureTitle: '처리하지 못했습니다.',
+    },
+  },
+  couponForm: {
+    title: '쿠폰 발행',
+    description: '내 스토어 상품에만 적용되는 쿠폰을 발행합니다.',
+    openLabel: '새 쿠폰 발행',
+    closeLabel: '발행 폼 닫기',
+    legend: '발행할 쿠폰',
+    warning: {
+      // TASK-0074 4장의 문장 그대로다. 발행 버튼보다 위에 있고, 숫자가 그 아래 붙는다.
+      title: '이 쿠폰의 할인액은 판매자 정산에서 차감됩니다.',
+      body: '플랫폼이 아니라 내 스토어가 부담합니다. 발행 전에 아래 금액을 확인해 주세요.',
+      estimateLabel: '예상 최대 부담',
+      estimate: '{count}장 × {perVoucher} = {total}',
+      unbounded: {
+        // 숫자를 적지 않는다. 상한 없는 정률 쿠폰의 최대 부담은 큰 수가 아니라 없는
+        // 수이고, 여기 숫자가 있으면 그것이 곧 「이만큼만 나가겠구나」가 된다.
+        noDiscountCeiling:
+          '최대 할인 금액이 없어 부담의 상한을 계산할 수 없습니다. 주문 금액이 클수록 더 많이 빠집니다.',
+        unlimitedIssue:
+          '발급 수량이 무제한이라 부담의 상한을 계산할 수 없습니다. 수량을 정하면 예상 금액을 보여 드려요.',
+      },
+      unknown: '할인 금액을 입력하면 예상 부담을 계산해 드립니다.',
+    },
+    fields: {
+      nameLabel: '쿠폰 이름',
+      nameHint: '구매자의 쿠폰함에 그대로 보이는 이름입니다.',
+      discountTypeLabel: '할인 방식',
+      discountValueLabel: {
+        FIXED: '할인 금액',
+        PERCENT: '할인율',
+      },
+      discountValueHint: {
+        FIXED: '한 장이 최대로 깎는 금액입니다. 주문 금액이 더 적으면 그만큼만 깎입니다.',
+        PERCENT: '1~100 사이로 입력해 주세요.',
+      },
+      maxDiscountAmountLabel: '최대 할인 금액',
+      maxDiscountAmountHint:
+        '비워 두면 상한이 없습니다. 상한이 없으면 예상 부담을 계산할 수 없어요.',
+      minOrderAmountLabel: '최소 주문 금액',
+      minOrderAmountHint: '비워 두면 제한이 없습니다.',
+      scopeTypeLabel: '적용 범위',
+      // 왜 둘뿐인지를 적어 둔다. 적지 않으면 「전체」가 없는 것이 결함으로 신고된다.
+      scopeTypeHint:
+        '판매자 쿠폰은 내 스토어 안에만 적용할 수 있습니다. 카테고리는 다른 스토어의 상품까지 덮기 때문에 고를 수 없어요.',
+      scopeIdsLabel: '적용할 상품',
+      scopeIdsHint: '내 스토어 상품만 고를 수 있습니다.',
+      scopeIdsLoading: '상품 목록을 불러오는 중입니다',
+      scopeIdsFailed:
+        '상품 목록을 불러오지 못했습니다. 스토어 전체 쿠폰은 그대로 발행할 수 있어요.',
+      scopeIdsEmpty: '등록한 상품이 없습니다. 상품을 먼저 등록해 주세요.',
+      scopeIdsTruncated: '최근 상품 {count}개만 보여 드립니다.',
+      scopeIdsSelected: '{count}개 선택됨',
+      validFromLabel: '시작',
+      validUntilLabel: '종료',
+      periodHint:
+        '이 기간에만 발급됩니다. 이미 받은 쿠폰의 사용 기한은 받은 시점의 기간을 따릅니다.',
+      issueLimitLabel: '발급 수량',
+      issueLimitHint: '비워 두면 무제한입니다. 무제한이면 예상 부담을 계산할 수 없어요.',
+      withCodeLabel: '쿠폰 코드 발급',
+      withCodeHint: '코드는 발행할 때 자동으로 만들어집니다. 직접 정할 수는 없어요.',
+    },
+    errors: {
+      nameRequired: '쿠폰 이름을 입력해 주세요.',
+      nameTooLong: `쿠폰 이름은 ${String(COUPON_NAME_MAX_LENGTH)}자까지 쓸 수 있어요.`,
+      discountValueRequired: '할인 금액을 입력해 주세요.',
+      discountValueRange: '할인 금액은 1 이상 정수로 입력해 주세요.',
+      percentRange: '할인율은 100%를 넘을 수 없어요.',
+      maxDiscountAmountRange: '최대 할인 금액은 1원 이상 정수로 입력해 주세요.',
+      minOrderAmountRange: '최소 주문 금액은 0원 이상 정수로 입력해 주세요.',
+      issueLimitRange: '발급 수량은 1장 이상 정수로 입력해 주세요.',
+      validFromRequired: '시작 일시를 입력해 주세요.',
+      validUntilRequired: '종료 일시를 입력해 주세요.',
+      periodOrder: '종료는 시작보다 뒤여야 해요.',
+      scopeRequired: '적용할 상품을 하나 이상 골라 주세요.',
+    },
+    errorTitle: '쿠폰을 발행하지 못했습니다.',
+    submitLabel: '이대로 발행',
+    submitFailed: '쿠폰을 발행하지 못했습니다. 잠시 후 다시 시도해 주세요.',
+    issuedNotice: "'{name}' 을(를) 발행했습니다.",
+    issuedWithCode: "'{name}' 을(를) 발행했습니다. 코드는 {code} 입니다.",
   },
 }
