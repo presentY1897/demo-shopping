@@ -21,24 +21,25 @@ import type { CancelScope } from './cancel-rules.js'
  * 둘을 한 포트에 묶으면 나중에 그 둘의 재시도 정책을 함께 정해야 하고, 위 표의
  * 오른쪽 칸이 서로 다르므로 그 결정은 반드시 한쪽을 잘못 다룬다.
  *
- * ## 「아무것도 안 하는 구현」이 지금 무엇을 뜻하는가
+ * ## 지금 무엇이 붙어 있고 무엇이 안 붙어 있는가
  *
- * 빠지는 것은 **후속 처리뿐**이다. 취소 자체는 이미 끝났다 — 클레임은
- * `CANCEL_APPROVED` 이고, 이력에 누가 언제 승인했는지가 남아 있으며, 전체 취소면
- * 판매자 몫이 `CANCELED` 로 옮겨져 있다. 즉 이 구현으로 도는 시스템에서 잘못되는
- * 것은 둘이고, **둘 다 뒤늦게 할 수 있다.**
+ * **환불은 붙었다** (TASK-0068). `RefundingCancelEvents` 가 바인딩돼 있고, 그것이
+ * 하는 일은 `refund.service.ts` 가 설명한다 — 항목별 몫을 `ClaimItem.refundAmount`
+ * 에 적고, `PaymentService.refundWithin` 으로 돈을 내보내고, 클레임을 `REFUNDED` 로
+ * 옮기는 일이 한 트랜잭션 안에 있다.
  *
- * - **돈이 돌아가지 않는다.** 결제는 `PAID` 로 남고 카드 잔액은 그대로다. 무엇을
- *   얼마나 돌려줘야 하는지는 `ClaimItem` 이 들고 있고(`refundAmount` 가 0 인 것은
- *   「0원」이 아니라 「아직 계산하지 않았다」), 안분 규칙은 `pricing.md` 에 있다.
- * - **재고가 돌아오지 않는다.** 팔린 수량은 `ProductVariant.stock` 에서 이미 빠져
- *   있고, 취소된 수량은 `ClaimItem.quantity` 가 안다. 원장(`StockLedger`)이
- *   `CLAIM_ITEM` 참조 유형을 이미 갖고 있어(`stockRefTypes`) 나중에 대사할 수 있다.
+ * **재고는 아직이다** (TASK-0069). 팔린 수량은 `ProductVariant.stock` 에서 이미 빠져
+ * 있고, 취소된 수량은 `ClaimItem.quantity` 가 안다. 원장(`StockLedger`)이
+ * `CLAIM_ITEM` 참조 유형을 이미 갖고 있어(`stockRefTypes`) 나중에 대사할 수 있다.
+ * 그동안 잘못되는 것은 「팔 수 있는 물건이 안 팔린다」 하나이고, **아무도 신고하지
+ * 않는다** — 위 표의 오른쪽 칸이 그 뜻이다.
  *
  * **던지지 않는 것도 결정이다.** 환불에 실패한 것이 승인을 되돌릴 이유는 아니다 —
  * 규칙이든 판매자든 「취소한다」고 이미 판단했고, 그 판단은 유효하다. 되돌리려 해도
- * 전이표에 `CANCELED` 를 떠나는 화살표가 없다. M10 의 나머지가 실제 구현을 붙일
- * 때도 이 성질은 지켜야 하고, 그래서 부르는 쪽은 **커밋한 뒤에** 부른다.
+ * 전이표에 `CANCELED` 를 떠나는 화살표가 없다. 그래서 부르는 쪽은 **커밋한 뒤에**
+ * 부르고, 실제 구현이 그 성질을 지키는 방법은 `ClaimRefundService.settle` 이
+ * **무슨 일이 있어도 값으로 답하는 것**이다 — 실패는 예외가 아니라 `ClaimRefund`
+ * 행에 남아 재시도 배치가 읽는다 (`refund-retry.ts`).
  *
  * ## 반품(TASK-0067)이 이 파일을 쓰지 않는 이유
  *
@@ -60,9 +61,16 @@ export interface CancelApproved {
   /**
    * 이 승인 뒤에 이 몫에 남은 것이 있는가 (`cancelScopeOf`).
    *
-   * 환불이 이것을 읽어야 한다 — 전체 취소는 배송비까지 돌려주지만 부분 취소는
-   * 남은 항목이 여전히 배송되므로 그렇지 않고, 남은 금액이 무료배송 문턱 아래로
-   * 내려가면 배송비가 **다시 붙는다** (TASK-0066 R2 · `pricing.md` 3장).
+   * 배송비를 가르는 사실이다 — 전체 취소는 배송비까지 돌려주지만 부분 취소는 남은
+   * 항목이 여전히 배송되므로 그렇지 않고, 남은 금액이 무료배송 문턱 아래로 내려가면
+   * 배송비가 **다시 붙는다** (TASK-0066 R2 · `pricing.md` 3장).
+   *
+   * **그런데 환불은 이 값을 읽지 않는다** (TASK-0068). 여기 실린 것은 **승인 시점의
+   * 답**이고, 환불이 실패해 며칠 뒤 재시도되면 그 사이에 다른 취소가 승인돼 있을 수
+   * 있다. 그때 옛 답으로 배송비를 돌려주면 두 클레임이 같은 배송비를 각자 한 번씩
+   * 돌려준다. 실행기는 대신 **환불 원장에서 같은 판정을 다시 세고, 이번 환불 전후의
+   * 차이만** 움직인다 — 그 차분이 성립하려면 두 판정이 같은 사실을 봐야 한다
+   * (`refund-plan.ts`). 이 값은 이벤트를 받는 다른 쪽(알림 · 화면)의 것으로 남는다.
    */
   readonly scope: CancelScope
   /** 승인된 시각. 클레임 이력에 적힌 것과 같은 값이다. */
@@ -97,10 +105,11 @@ export const CANCEL_REFUND_EVENTS = Symbol('CANCEL_REFUND_EVENTS')
 export const CANCEL_RESTOCK_EVENTS = Symbol('CANCEL_RESTOCK_EVENTS')
 
 /**
- * 지금 바인딩되는 환불 구현. **아무것도 하지 않는다.**
+ * 아무것도 하지 않는 환불 구현. **더 이상 바인딩되지 않는다** (TASK-0068).
  *
- * 무엇을 뜻하는지는 {@link CancelApproved} 에 적혀 있다. TASK-0068 이 붙을 때
- * `claim.module.ts` 의 한 줄만 바뀐다.
+ * 지금 바인딩되는 것은 `RefundingCancelEvents` 다. 이 클래스를 남겨 두는 이유는
+ * 환불이 도는 것이 방해가 되는 검사 — 취소의 상태 전이만 재는 스펙 — 이 포트를
+ * 이것으로 바꿔 끼울 수 있게 하기 위해서다.
  */
 export class NoopCancelRefundEvents implements CancelRefundEvents {
   refund(): Promise<void> {

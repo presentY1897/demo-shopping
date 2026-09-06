@@ -1617,9 +1617,12 @@ model Payment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  order   Order          @relation(fields: [orderId], references: [id], onDelete: Restrict)
-  events  PaymentEvent[]
-  refunds Refund[]
+  order        Order          @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  events       PaymentEvent[]
+  refunds      Refund[]
+  /// 이 결제로 나간 **클레임 환불**들 (TASK-0068). `refunds` 와 짝이지만 세는 것이
+  /// 다르다 — 저쪽은 「얼마가 나갔나」이고 이쪽은 「어느 클레임의 몫이었나」다.
+  claimRefunds ClaimRefund[]
 
   /// 「이 주문의 결제」. 한 주문에 결제 시도가 여러 번 있을 수 있다 — 실패하면
   /// 다시 하므로 유니크가 아니다.
@@ -1970,10 +1973,19 @@ model ClaimRequest {
   /// 반품 경로에만 있는 부속 (TASK-0067). `type = CANCEL` 인 신청에는 없다.
   returnDetail ReturnDetail?
 
+  /// 이 클레임의 환불 (TASK-0068). **1:1** 이다 — 열쇠가 클레임의 id 그 자체이고,
+  /// 그것이 「같은 클레임에 두 번 불려도 한 번만 환불된다」의 마지막 방어선이다.
+  refund ClaimRefund?
+
   /// 「이 주문의 클레임 전부」를 시간순으로. 잔여 수량 화면과 상세가 읽는다.
   @@index([sellerOrderId, createdAt])
   /// 판매자 콘솔의 「처리할 클레임」 목록: 상태로 거르고 최신순 (M10 의 화면).
   @@index([status, createdAt(sort: Desc)])
+  /// 환불 재시도 배치가 읽는 것: **환불을 기다리는 자리에 오래 앉아 있는** 클레임
+  /// (TASK-0068). 위 인덱스로는 안 된다 — 신청 시각이 아니라 **승인·검수가 상태를
+  /// 옮긴 시각**을 기준으로 유예를 재야 하고, 그 둘은 사람이 며칠 뒤에 승인하는
+  /// 정상 흐름에서 곧바로 갈린다.
+  @@index([status, updatedAt])
   /// 「내가 낸 신청」 목록.
   @@index([requestedById, createdAt(sort: Desc)])
 }
@@ -2047,6 +2059,85 @@ model ClaimStatusHistory {
 
   /// 한 클레임의 이력을 시간순으로.
   @@index([claimId, createdAt])
+}
+
+/// 클레임 하나에 대한 **환불 한 번** (TASK-0068).
+///
+/// ## 왜 표가 하나 더 필요한가
+///
+/// `Refund` 는 「이 결제에서 얼마가 나갔나」를 말하고, 이 표는 **「이 클레임의
+/// 환불이 끝났나」**를 말한다. 둘은 같은 사실이 아니다 — 한 주문에 판매자가 셋이면
+/// 클레임도 셋으로 갈리지만 결제는 하나이고, `Refund` 행만으로는 그중 어느 것이
+/// 어느 클레임의 몫인지 되짚을 수 없다.
+///
+/// ## 기본키가 `claimId` 인 것이 멱등의 전부다
+///
+/// 열쇠는 **클레임의 id 그 자체**다 (`cancel-events.ts` · `return-events.ts` 의
+/// `idempotencyKey`). 전이표에 `CANCEL_APPROVED` 로도 `RETURN_COMPLETED` 로도
+/// **돌아오는 화살표가 없어** 한 클레임은 평생 한 번만 그 자리에 서고, 그래서 그
+/// id 가 곧 「이 환불」의 이름이다. 시각이나 난수를 섞으면 재발행이 다른 열쇠를
+/// 갖게 되는데, 열쇠가 막아야 하는 것이 정확히 그 경우다.
+///
+/// `ReturnDetail` 이 같은 이유로 같은 모양이다 — 유니크 인덱스를 따로 두는 것보다
+/// 짧고, 「한 클레임에 환불 기록이 둘」이라는 상태를 애초에 만들 수 없다.
+///
+/// ## 실패한 시도도 여기 남는다
+///
+/// `refundedAt` 이 `null` 인 행은 **「아직 못 돌려줬다」**이고, 그 옆의
+/// `attempts` · `lastError` 가 왜인지를 말한다. 그것이 없으면 실패한 환불은
+/// 「승인됐는데 `REFUNDED` 로 안 간 클레임」으로만 보이고, 그 상태에서 사람이 할 수
+/// 있는 일은 로그를 뒤지는 것뿐이다 (TASK-0068 R3).
+model ClaimRefund {
+  claimId String @id @db.Uuid
+
+  /// 어느 결제로 나갔는가. 성공한 행에는 반드시 있다
+  /// (`ClaimRefund_settled_check`).
+  ///
+  /// 실패 기록에는 없을 수 있다 — 결제를 찾지 못한 것 자체가 실패의 이유일 수 있고,
+  /// 그때 값을 지어내면 대사가 없는 결제를 가리키게 된다.
+  paymentId String? @db.Uuid
+
+  /// 항목 몫의 합 (`refundBreakdown` 의 `itemsAmount`).
+  itemsAmount Int @default(0)
+
+  /// 배송비 조정. **부호가 있다** — 양수는 돌려준 것, 음수는 재부과·반품비 차감이다.
+  ///
+  /// 합쳐서 한 숫자로 적지 않는 이유는 `RefundQuote.shippingAdjustment` 와 같다:
+  /// 「배송비 3,000원 환불」과 「반품비 3,000원 차감」은 사람이 확인해야 할 서로 다른
+  /// 줄이고, 합치면 0원이 되어 **아무 일도 없었던 것처럼 보인다.**
+  shippingAmount Int @default(0)
+
+  /// 실제로 프로바이더에 요청한 금액. **`max(0, itemsAmount + shippingAmount)`** 이고
+  /// 그 식을 `ClaimRefund_total_check` 이 강제한다.
+  amount Int @default(0)
+
+  /// 돈이 실제로 나간 순간. **`null` 이면 아직 안 나갔다.**
+  ///
+  /// 이 열이 곧 「환불이 끝났는가」이고, 재시도 배치가 읽는 것도 이것이다. 상태
+  /// 열거형을 따로 두지 않는 이유는 값이 둘뿐이라서다 — 셋째 값이 필요해지는 날
+  /// 그것은 상태가 아니라 새 사실이다.
+  refundedAt DateTime?
+
+  /// 몇 번 시도했나. 성공한 시도까지 센다.
+  attempts Int @default(0)
+
+  /// 마지막 시도가 왜 실패했나. 성공하면 지운다 — 남겨 두면 「성공했는데 오류가
+  /// 적힌 행」이 되고, 그것을 읽는 사람은 무엇을 믿어야 할지 모른다.
+  lastError String?
+
+  lastAttemptAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  claim   ClaimRequest @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  /// `Restrict`: 환불이 가리키는 결제는 지워지지 않는다. 지워지면 「돈이 어디로
+  /// 나갔나」에 답할 수 없다.
+  payment Payment?     @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+
+  /// **아직 못 돌려준 것부터.** 재시도 배치와 운영자의 실패 목록이 읽는 유일한
+  /// 조회 조건이다 (R3).
+  @@index([refundedAt, lastAttemptAt])
 }
 
 // ---------------------------------------------------------------------------

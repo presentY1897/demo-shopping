@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common'
 
 import { PrismaModule } from '../prisma/prisma.module.js'
 import { ClaimModule } from './claim.module.js'
+import { RefundingReturnEvents } from './refund.service.js'
 import {
-  NoopReturnRefundEvents,
   NoopReturnRestockEvents,
   RETURN_REFUND_EVENTS,
   RETURN_RESTOCK_EVENTS,
@@ -26,16 +26,21 @@ import { ReturnService } from './return.service.js'
  * `autoConfirmWindowMsOf` 를 함수로 부르는 것과 같은 방법이다. `ShipmentService` 를
  * 들여오면 반품이 배송의 전이 문까지 알게 되는데, 회수는 그 문을 지나지 않는다.
  *
- * 환불(TASK-0068)과 재입고(TASK-0069)는 여기 없다. 대신 포트가 있고 지금 바인딩된
- * 구현은 아무것도 하지 않는다 (`return-events.ts`).
+ * **환불이 붙었다** (TASK-0068). 실행기는 `ClaimModule` 이 갖는다 — 취소와 반품이
+ * 끝에서 하는 일이 같기 때문이고(`claim-rules.ts` 의 `REFUNDED` 가 두 경로가 만나는
+ * 유일한 자리다), 두 벌로 두면 「이미 몇 개를 환불했나」를 세는 규칙이 두 곳에 살게
+ * 된다. 화살표는 여전히 `Return → Claim` 한 방향이다.
+ *
+ * 재입고(TASK-0069)는 여기 없다. 포트가 있고 지금 바인딩된 구현은 아무것도 하지
+ * 않는다 (`return-events.ts`).
  */
 @Module({
   imports: [PrismaModule, ClaimModule],
   controllers: [ReturnController],
   providers: [
     ReturnService,
-    // TASK-0068(환불)·0069(재입고)가 붙을 때 여기 두 줄만 바뀐다.
-    { provide: RETURN_REFUND_EVENTS, useClass: NoopReturnRefundEvents },
+    { provide: RETURN_REFUND_EVENTS, useClass: RefundingReturnEvents },
+    // TASK-0069(재입고)가 붙을 때 여기 한 줄만 바뀐다.
     { provide: RETURN_RESTOCK_EVENTS, useClass: NoopReturnRestockEvents },
   ],
   exports: [ReturnService],

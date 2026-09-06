@@ -24,12 +24,28 @@ import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { OrderService } from '../orders/order.service.js'
 import { PaymentProviderRegistry } from './payment-registry.js'
+import { LOCAL_STEP_BUDGET_MS, PROVIDER_DEADLINE_MS } from './payment-straggler.js'
 import type { RefundRefusal } from './payment-rules.js'
 import { canTransition, refundDecision } from './payment-rules.js'
 import type { TossConfirmRefusal } from './toss-rules.js'
 import { confirmDecision } from './toss-rules.js'
 
 type Tx = Prisma.TransactionClient
+
+/**
+ * 환불 트랜잭션의 마감.
+ *
+ * **Prisma 의 기본값은 5초인데 프로바이더 왕복 하나가 그보다 길 수 있다.**
+ * `toss.client.ts` 의 요청 마감이 15초이고, 환불은 그 호출을 **잠금 안**에서 하기
+ * 때문이다 ({@link PaymentService.refundWithin} 이 그 이유를 적어 두었다). 기본값을
+ * 그대로 두면 저쪽이 느린 날 우리 트랜잭션이 먼저 끊기고, 그때 남는 것은 **돈은
+ * 나갔는데 기록이 롤백된** 상태다 — 잠금을 조금 더 오래 쥐기로 한 결정이 정작 그
+ * 상태를 막지 못하게 된다.
+ *
+ * 값은 결제사 마감에 우리 쪽 한 걸음을 더한 것이다. 두 상수를 옮겨 적지 않고
+ * 가져다 쓰므로, 저쪽 마감이 늘어나면 이 마감도 함께 움직인다.
+ */
+export const REFUND_TX_OPTIONS = { timeout: PROVIDER_DEADLINE_MS + LOCAL_STEP_BUDGET_MS } as const
 
 /**
  * 결과를 모르던 결제 하나를 풀어 본 결과 (TASK-0056).
@@ -439,34 +455,61 @@ export class PaymentService {
 
     await this.own(account.id, paymentId)
 
-    const now = this.clock.now()
-    const provider = await this.providerOf(paymentId)
-
-    await this.prisma.$transaction(async (tx) => {
-      const fresh = await this.lock(tx, paymentId)
-      const decision = refundDecision(fresh, amount)
-
-      if (decision.outcome === 'refused')
-        throw refusalOf(decision.reason, decision.refundableAmount)
-
-      await provider.refund(this.keyOf(fresh), amount, reason)
-
-      await tx.refund.create({ data: { paymentId, amount, reason, refundedAt: now } })
-      await tx.payment.update({
-        where: { id: paymentId },
-        data: {
-          status: decision.nextStatus,
-          canceledAmount: decision.canceledAmount,
-          updatedAt: now,
-        },
-      })
-      await this.log(tx, paymentId, 'REFUNDED', fresh.status, decision.nextStatus, now, {
-        amount,
-        reason,
-      })
-    })
+    await this.prisma.$transaction(
+      (tx) => this.refundWithin(tx, paymentId, amount, reason),
+      REFUND_TX_OPTIONS,
+    )
 
     return this.get(principal, paymentId)
+  }
+
+  /**
+   * 환불의 본체 — **부르는 쪽의 트랜잭션 안에서** (F3 · F4 · F6 · TASK-0068).
+   *
+   * ## 왜 `public` 이고 왜 `tx` 를 받는가
+   *
+   * `ClaimService.applyWithin` · `SellerOrderService.applyWithin` 과 **같은 이유이고
+   * 같은 조건이다.** 부르는 쪽이 이미 트랜잭션 안이기 때문이다 — 클레임 환불은 이
+   * 호출과 함께 클레임을 `REFUNDED` 로 옮기고 환불 기록을 남기는데, 여기서
+   * 트랜잭션을 새로 열면 그 셋이 서로 다른 트랜잭션이 되어 **돈은 나갔는데 클레임은
+   * 승인된 채로** 남는 창이 생긴다. 그 창이 바로 이 TASK 의 멱등이 막아야 하는
+   * 상태다.
+   *
+   * **권한을 보지 않는 것도 그래서다.** 부르는 쪽이 배치이거나 클레임의 결론이고,
+   * 소유는 그 앞에서 이미 봤다 — `cancelAuthorization` 이 같은 이유로 같다.
+   *
+   * ## 순서는 바뀌지 않았다
+   *
+   * 프로바이더 호출은 여전히 **잠금 안**이다. 우리 장부에 먼저 적고 저쪽에 말하면
+   * 저쪽이 거절했을 때 적은 것을 지워야 하고, 반대로 저쪽에 먼저 말하고 우리가 못
+   * 적으면 **돈은 나갔는데 기록이 없다.** 둘 중 나은 쪽은 잠금을 조금 더 오래 쥐는
+   * 것이고, 그 「조금 더」의 상한이 {@link REFUND_TX_OPTIONS} 다.
+   *
+   * 프로바이더를 잠근 행에서 꺼내는 것도 같은 판단이다. 잠금 밖에서 한 번 더 읽으면
+   * 그 읽기만 다른 순간을 보게 되고, 그 열은 이미 잠근 행에 있다.
+   */
+  async refundWithin(tx: Tx, paymentId: string, amount: number, reason: string): Promise<void> {
+    const now = this.clock.now()
+    const fresh = await this.lock(tx, paymentId)
+    const decision = refundDecision(fresh, amount)
+
+    if (decision.outcome === 'refused') throw refusalOf(decision.reason, decision.refundableAmount)
+
+    await this.registry.resolve(fresh.provider).refund(this.keyOf(fresh), amount, reason)
+
+    await tx.refund.create({ data: { paymentId, amount, reason, refundedAt: now } })
+    await tx.payment.update({
+      where: { id: paymentId },
+      data: {
+        status: decision.nextStatus,
+        canceledAmount: decision.canceledAmount,
+        updatedAt: now,
+      },
+    })
+    await this.log(tx, paymentId, 'REFUNDED', fresh.status, decision.nextStatus, now, {
+      amount,
+      reason,
+    })
   }
 
   /** 결제 하나. 산 사람과 운영자가 읽는다. */
