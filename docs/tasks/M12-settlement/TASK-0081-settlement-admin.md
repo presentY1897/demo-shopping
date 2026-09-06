@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M12 정산 |
-| 상태 | 승인됨 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-02 |
 | 브랜치 | `feature/settlement-admin` |
 | 선행 작업 | TASK-0080 |
@@ -100,14 +100,14 @@ F5 의 「지급완료된 정산서는 수정할 수 없다」가 이 서비스�
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| F1 | 근거 표시 | 정산서 상세 | 항목별 계산 근거 표시 | [ ] |
-| F2 | 주문 추적 | 차감 항목 클릭 | 해당 주문 목록 표시 | [ ] |
-| F3 | 승인 | 승인 처리 | 상태 APPROVED | [ ] |
-| F4 | 보류 사유 | 사유 없이 보류 시도 | 차단 | [ ] |
-| F5 | 지급 잠금 | 지급완료 후 수정 시도 | 차단 | [ ] |
-| F6 | 일괄 승인 | 10건 선택 | 전부 승인, 실패 건 표시 | [ ] |
-| F7 | 데모 제한 | 데모 관리자로 지급 확정 | 403 + UI 비활성 | [ ] |
-| F8 | 내보내기 | CSV 다운로드 | 항목·금액 정확 | [ ] |
+| F1 | 근거 표시 | `settlement-console.spec.ts`(admin) 계산 5줄 · `settlement-console.spec.ts`(api) 「세 항과 지급액을 함께 답한다」 | 항목별 계산 근거 표시 | [x] |
+| F2 | 주문 추적 | `settlement-console.spec.ts`(api) 「항목마다 주문 번호가 실린다」 · `settlement-detail.spec.tsx` 주문 링크 | 해당 주문 목록 표시 | [x] |
+| F3 | 승인 | `settlement-console.spec.ts`(api) 「승인하면 상태가 바뀌고 누가 했는지 남는다」 | 상태 APPROVED | [x] |
+| F4 | 보류 사유 | `settlement-console.spec.ts`(api) 보류 4건 — 사유 없이 불가 · 해소 뒤에도 남음 | 차단 | [x] |
+| F5 | 지급 잠금 | `settlement-console.spec.ts`(api) 「지급완료된 정산서는 %s 로 움직이지 않는다」 3건 · `settlement-transitions.spec.ts` | 차단 | [x] |
+| F6 | 일괄 승인 | `settlement-console.spec.ts`(api) 일괄 승인 4건 — 실패를 이유와 함께 돌려준다 | 전부 승인, 실패 건 표시 | [x] |
+| F7 | 데모 제한 | `settlement-console.spec.ts`(api) 「운영자·데모 관리자는 지급 확정을 하지 못한다」 · `settlements-page.spec.tsx` 비활성 | 403 + UI 비활성 | [x] |
+| F8 | 내보내기 | `settlement-console.spec.ts`(admin) CSV — 이스케이프 · BOM · 금액이 숫자 그대로 | 항목·금액 정확 | [x] |
 
 ### 6.2 품질 게이트
 
@@ -119,8 +119,8 @@ F5 의 「지급완료된 정산서는 수정할 수 없다」가 이 서비스�
 
 | # | 기준 | 충족 |
 | --- | --- | --- |
-| D1 | 상태 갱신 + 인덱스 2곳 | [ ] |
-| D2 | 정산 상태 전이를 `docs/design/state-machines.md` 5장과 일치 확인 | [ ] |
+| D1 | 상태 갱신 + 인덱스 2곳 | [x] |
+| D2 | 정산 상태 전이를 `docs/design/state-machines.md` 5장과 일치 확인 — `settlement-transitions.spec.ts` 가 그 장의 다이어그램에서 화살표를 읽어 **양쪽 방향으로** 표와 견준다 | [x] |
 
 ## 7. 리스크 / 열린 질문
 
