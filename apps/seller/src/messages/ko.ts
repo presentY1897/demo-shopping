@@ -330,6 +330,8 @@ export const ko: Messages = {
     COUPON_CODE_UNKNOWN: '쿠폰 코드를 다시 확인해 주세요.',
     COUPON_NOT_STARTED: '아직 발급을 시작하지 않은 쿠폰이에요.',
     COUPON_ENDED: '발급 기간이 끝난 쿠폰이에요.',
+    COUPON_NOT_APPLICABLE: '이 주문에는 쓸 수 없는 쿠폰이에요.',
+    COUPON_ALREADY_USED: '이미 다른 주문에 사용된 쿠폰이에요.',
   },
   // 응답이 아예 오지 않은 실패. 읽을 코드가 없으므로 번호도 보여 주지 않는다.
   apiFailures: {
