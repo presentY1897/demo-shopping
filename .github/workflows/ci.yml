@@ -185,8 +185,15 @@ jobs:
       # `exit code 1` and not one word about which test failed, so the only way
       # to learn anything was to reproduce it locally. A shard has to be able to
       # say what broke where it broke.
+      #
+      # The `--exclude` is the same glob as `test:coverage` in
+      # `apps/api/package.json`, and `test/ci/perf-suite-parity.spec.ts` fails
+      # when the two drift. It cannot be written once: pnpm mangles `=` in the
+      # arguments it forwards through `run`, so the shard flags have to reach
+      # vitest directly.
       - run: >-
           pnpm --filter @shopping/api exec vitest run --coverage
+          --exclude '**/*-performance.spec.ts'
           --reporter=blob --reporter=default --shard=${{ matrix.shard }}/3
         env:
           # A shard has only seen a third of the files; the thresholds are
@@ -212,20 +219,91 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+  # The wall-clock gate (A1), and the only shape in which it means anything.
+  #
+  # These sixteen files call an endpoint many times and assert a p95. Under the
+  # coverage instrumentation the shards run, that number measures the
+  # instrumentation: the suite takes 147s without coverage and 312s with, and a
+  # 300ms budget was answered with 680ms on a runner where nothing was wrong.
+  # QUALITY-GATES A1 already says the measurement is a load measurement, not a
+  # side effect of the coverage run.
+  #
+  # So they run **alone, without coverage, one file at a time** — nothing else
+  # on the runner competes for the four cores while a latency is being taken.
+  # It costs 25 seconds and runs beside everything else.
+  #
+  # Their source coverage is not missed: pulling them out moved the api line
+  # coverage from 89.74% to 89.70% and every threshold still passes. What they
+  # exercise, other specs exercise too.
+  test-api-perf:
+    name: test-api-perf
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17.11-alpine
+        env:
+          # `apps/api/src/config/derived-env.ts` falls back to exactly these
+          # three values when no `.env` exists, which is the situation in CI, so
+          # DATABASE_URL comes out right with nothing set here.
+          POSTGRES_USER: shopping
+          POSTGRES_PASSWORD: shopping
+          POSTGRES_DB: shopping
+        ports:
+          - '5432:5432'
+        # Without a health check the first job step can win the race against
+        # postgres finishing its own initdb restart.
+        options: >-
+          --health-cmd "pg_isready -U shopping -d shopping"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+      # TASK-0038. One spec wants a real search engine, and the questions it asks
+      # are the ones only an engine answers: does the settings body it accepted
+      # make `attr_material` filterable, does the synonym list find 니트 for
+      # 스웨터. A double would agree with itself and disagree with production —
+      # the same argument gate A6 makes for a real database.
+      #
+      # Every other spec is pointed at a closed port (`testAppConfig`), so this
+      # service is used by exactly one file.
+      meilisearch:
+        image: getmeili/meilisearch:v1.24
+        env:
+          MEILI_MASTER_KEY: ci-master-key
+          MEILI_NO_ANALYTICS: 'true'
+          MEILI_ENV: development
+        ports:
+          - '7700:7700'
+        options: >-
+          --health-cmd "curl -fsS http://localhost:7700/health || exit 1"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm --filter @shopping/api run test:perf
+        env:
+          MEILI_MASTER_KEY: ci-master-key
+
   test:
     name: test
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [test-web, test-api]
+    needs: [test-web, test-api, test-api-perf]
     # `always()`, so that this job runs even when a shard failed and can say so
     # itself. Without it the check would be *skipped*, and a skipped required
     # check is not a red one — the PR would look mergeable.
     if: always()
     steps:
       - name: fail when a suite did not pass
-        if: needs.test-web.result != 'success' || needs.test-api.result != 'success'
+        if: >-
+          needs.test-web.result != 'success' || needs.test-api.result != 'success'
+          || needs.test-api-perf.result != 'success'
         run: |
-          echo "test-web=${{ needs.test-web.result }} test-api=${{ needs.test-api.result }}"
+          echo "test-web=${{ needs.test-web.result }}"
+          echo "test-api=${{ needs.test-api.result }}"
+          echo "test-api-perf=${{ needs.test-api-perf.result }}"
           exit 1
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup

@@ -36,16 +36,20 @@ function postgresImages(source: string): string[] {
 }
 
 describe('postgres image tag', () => {
-  it('is declared exactly once in each file', () => {
+  it('is declared once locally and at least once in the workflow', () => {
     expect(postgresImages(read('docker-compose.yml'))).toHaveLength(1)
-    expect(postgresImages(read('.github/workflows/ci.yml'))).toHaveLength(1)
+    // 워크플로에는 여럿이다. 데이터베이스를 쓰는 job 마다 자기 서비스를 세우고
+    // (샤드 셋과 시간을 재는 job 하나 — D-223), 그중 하나라도 다른 태그를 쓰면
+    // 「로컬에서는 되는데 CI 에서만 깨진다」가 된다. 개수를 못 박는 대신 **전부**를
+    // 견주는 이유가 그것이다.
+    expect(postgresImages(read('.github/workflows/ci.yml')).length).toBeGreaterThan(0)
   })
 
-  it('is the same in docker-compose.yml and in the CI workflow', () => {
+  it('is the same in docker-compose.yml and in every CI service', () => {
     const [compose] = postgresImages(read('docker-compose.yml'))
-    const [workflow] = postgresImages(read('.github/workflows/ci.yml'))
+    const workflow = postgresImages(read('.github/workflows/ci.yml'))
 
-    expect(workflow).toBe(compose)
+    expect(new Set(workflow)).toEqual(new Set([compose]))
   })
 
   it('is pinned to a patch version, not to a moving tag', () => {
