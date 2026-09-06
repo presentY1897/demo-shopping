@@ -202,11 +202,46 @@ export const ratingSummarySchema = z.object({
 
 export type RatingSummary = z.infer<typeof ratingSummarySchema>
 
+export const REVIEW_REPLY_CONTENT_MAX = 1_000
+
+/**
+ * 판매자의 답변 (TASK-0085).
+ *
+ * **리뷰당 하나**이고, 그것을 기본키가 만든다 — 두 번째 답변은 저장될 자리가 없다.
+ */
+export const reviewReplySchema = z.object({
+  reviewId: z.uuid(),
+  brandName: z.string(),
+  content: z.string(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
+})
+
+export type ReviewReply = z.infer<typeof reviewReplySchema>
+
+export const reviewReplyResponseSchema = z.object({ reply: reviewReplySchema })
+
+export type ReviewReplyResponse = z.infer<typeof reviewReplyResponseSchema>
+
+/** `PUT /api/v1/reviews/:id/reply` — 쓰거나 고친다. */
+export const writeReviewReplyRequestSchema = z.object({
+  content: z.string().trim().min(1).max(REVIEW_REPLY_CONTENT_MAX),
+})
+
+export type WriteReviewReplyRequest = z.infer<typeof writeReviewReplyRequestSchema>
+
 /** 목록에 실리는 리뷰 — 한 벌짜리에 도움 수와 내가 눌렀는지가 더해진다. */
 export const reviewListEntrySchema = reviewSchema.extend({
   helpfulCount: z.int().min(0),
   /** 로그인하지 않았으면 언제나 `false`. */
   helpfulByMe: z.boolean(),
+  /**
+   * 판매자의 답변 (TASK-0085 F4).
+   *
+   * 목록과 **함께** 오는 이유는 화면이 리뷰 바로 아래에 그리기 때문이다. 따로
+   * 받으면 리뷰 한 장마다 요청이 하나씩 늘고, 그것이 바로 N+1 이다.
+   */
+  reply: reviewReplySchema.nullable(),
 })
 
 export type ReviewListEntry = z.infer<typeof reviewListEntrySchema>
@@ -226,5 +261,53 @@ export const reviewHelpfulResponseSchema = z.object({
 })
 
 export type ReviewHelpfulResponse = z.infer<typeof reviewHelpfulResponseSchema>
+
+/**
+ * 판매자 리뷰 관리 목록의 한 줄 (F5 · F6).
+ *
+ * 상품 상세의 목록과 **다른 모양**인 이유는 다른 질문에 답하기 때문이다 — 저쪽은
+ * 「이 상품이 어떤가」이고 이쪽은 「무엇에 답해야 하는가」다. 그래서 여기에는 상품
+ * 이름이 있고 가려지지 않은 별점 분포가 없다.
+ */
+export const sellerProductReviewSchema = reviewSchema.extend({
+  productName: z.string(),
+  reply: reviewReplySchema.nullable(),
+})
+
+export type SellerProductReview = z.infer<typeof sellerProductReviewSchema>
+
+/**
+ * 「판매자 리뷰」가 이 저장소에서 두 가지를 뜻한다.
+ *
+ * `sellers.ts` 의 `SELLER_REVIEW_LIST_*` 는 **입점 심사 대기열**이고, 이쪽은 판매자가
+ * 자기 상품에 달린 **상품 리뷰**를 보는 목록이다. 이름을 길게 쓰는 이유가 그것이다 —
+ * 짧게 두면 두 화면이 같은 이름을 서로 다른 뜻으로 쓰게 된다.
+ */
+export const SELLER_PRODUCT_REVIEWS_DEFAULT_LIMIT = 20
+
+export const sellerProductReviewsQueryParamsSchema = z.object({
+  /** `true` 면 아직 답하지 않은 것만. */
+  unansweredOnly: z.stringbool().optional(),
+  /** 이 별점 이하만 — 대응이 필요한 리뷰를 먼저 찾는 것이 실제 사용 패턴이다 (4장). */
+  maxRating: z.coerce.number().pipe(reviewRatingSchema).optional(),
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(REVIEW_LIST_MAX_LIMIT).optional(),
+})
+
+export type SellerProductReviewsQueryParams = z.infer<typeof sellerProductReviewsQueryParamsSchema>
+
+export const sellerProductReviewsResponseSchema = z.object({
+  reviews: z.array(sellerProductReviewSchema),
+  nextCursor: z.string().nullable(),
+  /**
+   * 아직 답하지 않은 리뷰의 수 (F7).
+   *
+   * **필터와 무관하다.** 뱃지는 「지금 화면에 몇 개」가 아니라 「할 일이 몇 개」이고,
+   * 필터를 켜면 줄어드는 뱃지는 할 일을 숨긴다.
+   */
+  unansweredCount: z.int().min(0),
+})
+
+export type SellerProductReviewsResponse = z.infer<typeof sellerProductReviewsResponseSchema>
 
 export { REVIEW_IMAGE_MAX_COUNT }

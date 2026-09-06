@@ -31,6 +31,10 @@ interface ListRow {
   readonly optionLabel: string | null
   readonly imageKeys: readonly string[]
   readonly helpfulByMe: boolean
+  readonly replyContent: string | null
+  readonly replyCreatedAt: Date | null
+  readonly replyUpdatedAt: Date | null
+  readonly brandName: string
   readonly createdAt: Date
   readonly updatedAt: Date
 }
@@ -206,11 +210,18 @@ export class ReviewListService {
                 SELECT 1 FROM "ReviewHelpful" rh
                  WHERE rh."reviewId" = r."id" AND rh."userId" = ${viewerId}::uuid
              )) AS "helpfulByMe",
+             rr."content"        AS "replyContent",
+             rr."createdAt"      AS "replyCreatedAt",
+             rr."updatedAt"      AS "replyUpdatedAt",
+             s."brandName"       AS "brandName",
              r."createdAt"       AS "createdAt",
              r."updatedAt"       AS "updatedAt"
         FROM "Review" r
-        JOIN "User" u      ON u."id" = r."userId"
+        JOIN "User" u       ON u."id" = r."userId"
         JOIN "OrderItem" oi ON oi."id" = r."orderItemId"
+        JOIN "Product" p    ON p."id" = r."productId"
+        JOIN "Seller" s     ON s."id" = p."sellerId"
+        LEFT JOIN "ReviewReply" rr ON rr."reviewId" = r."id"
        WHERE r."productId" = ${productId}::uuid
          AND r."status" = 'PUBLISHED'
          AND (NOT ${photoOnly} OR EXISTS (
@@ -271,6 +282,18 @@ function toEntry(row: ListRow): ReviewListEntry {
     imageKeys: [...row.imageKeys],
     helpfulCount: row.helpfulCount,
     helpfulByMe: row.helpfulByMe,
+    // 답변을 목록과 **함께** 싣는다 (TASK-0085 F4). 따로 받으면 리뷰 한 장마다
+    // 요청이 하나씩 늘고, 그것이 바로 N+1 이다.
+    reply:
+      row.replyContent === null || row.replyCreatedAt === null || row.replyUpdatedAt === null
+        ? null
+        : {
+            reviewId: row.id,
+            brandName: row.brandName,
+            content: row.replyContent,
+            createdAt: row.replyCreatedAt.toISOString(),
+            updatedAt: row.replyUpdatedAt.toISOString(),
+          },
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   }
