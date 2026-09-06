@@ -179,9 +179,15 @@ jobs:
       #
       # `--reporter=blob` writes the run to `.vitest-reports/` instead of the
       # terminal, coverage included. Three of those are what `test` merges.
+      #
+      # **`default` is there too, and it has to be.** With blob alone a failing
+      # shard prints nothing at all — the first red run of this workflow said
+      # `exit code 1` and not one word about which test failed, so the only way
+      # to learn anything was to reproduce it locally. A shard has to be able to
+      # say what broke where it broke.
       - run: >-
           pnpm --filter @shopping/api exec vitest run --coverage
-          --reporter=blob --shard=${{ matrix.shard }}/3
+          --reporter=blob --reporter=default --shard=${{ matrix.shard }}/3
         env:
           # A shard has only seen a third of the files; the thresholds are
           # applied once, on the merged report.
