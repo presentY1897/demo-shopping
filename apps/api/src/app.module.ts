@@ -20,6 +20,7 @@ import { PointsModule } from './points/points.module.js'
 import { ProfileModule } from './profile/profile.module.js'
 import { ReservationModule } from './reservation/reservation.module.js'
 import { ReturnModule } from './claims/return.module.js'
+import { ReviewModule } from './reviews/review.module.js'
 import { SearchModule } from './search/search.module.js'
 import { SellersModule } from './sellers/sellers.module.js'
 import { SettlementModule } from './settlement/settlement.module.js'
@@ -50,6 +51,7 @@ export class AppModule {
         ProfileModule,
         ReservationModule,
         ReturnModule,
+        ReviewModule,
         SearchModule,
         SellersModule,
         SettlementModule,

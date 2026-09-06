@@ -346,6 +346,10 @@ export class OrderService {
       data: group.items.map((item) => ({
         sellerOrderId: sellerOrder.id,
         variantId: item.line.variantId,
+        // 어느 상품을 샀나 (TASK-0083). 조합에서 조인으로 알 수 있는 값이지만,
+        // 리뷰가 「이 상품을 샀다」를 조회 없이 증명하려면 그 사실이 한 표 안에
+        // 있어야 한다 — 복합 외래키가 그 값이 조합의 상품임을 강제한다.
+        productId: item.line.productId,
         // `OrderItemSnapshot` 은 평범한 객체이고 Prisma 의 JSON 입력 타입과 구조가
         // 같다. 단언 없이 그대로 넘어간다.
         productSnapshot: { ...item.line.snapshot },

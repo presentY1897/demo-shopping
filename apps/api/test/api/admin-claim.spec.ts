@@ -176,9 +176,10 @@ async function seedOrder(options: {
   )
   await db.execute(
     `INSERT INTO "OrderItem"
-       ("id", "sellerOrderId", "variantId", "productSnapshot", "unitPrice", "quantity",
-        "productAmount", "claimedQuantity", "commissionRateBp", "updatedAt")
-     VALUES ($1, $2, $3, $4::jsonb, 10000, $5, $6, 0, 1000, now())`,
+       ("id", "sellerOrderId", "variantId", "productId", "productSnapshot", "unitPrice",
+        "quantity", "productAmount", "claimedQuantity", "commissionRateBp", "updatedAt")
+     SELECT $1, $2, $3, pv."productId", $4::jsonb, 10000, $5, $6, 0, 1000, now()
+       FROM "ProductVariant" pv WHERE pv."id" = $3`,
     [
       orderItemId,
       sellerOrderId,

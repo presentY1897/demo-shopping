@@ -193,8 +193,12 @@ export class SellerRevenueService {
   /**
    * 많이 팔린 상품.
    *
-   * 상품 이름을 **스냅샷에서 읽는다.** 지금의 상품명이 아니라 팔릴 때의 이름이라야
+   * 상품 **이름**은 스냅샷에서 읽는다. 지금의 상품명이 아니라 팔릴 때의 이름이라야
    * 「이 이름으로 팔린 것이 몇 개」가 맞고, 지워진 상품도 목록에 남는다.
+   *
+   * 반면 **id 는 컬럼에서** 읽는다 (TASK-0083 이 `OrderItem.productId` 를 만들었다).
+   * JSON 에서 꺼내던 시절에는 그 값이 스냅샷을 만든 코드에 달려 있었고, 복합
+   * 외래키가 그것을 조합의 상품으로 못 박은 지금은 그럴 이유가 없다.
    */
   private async topProductsOf(
     sellerId: string,
@@ -202,7 +206,7 @@ export class SellerRevenueService {
     to: string,
   ): Promise<readonly RevenueProduct[]> {
     return this.prisma.$queryRaw<RevenueProduct[]>`
-      SELECT (oi."productSnapshot" ->> 'productId')   AS "productId",
+      SELECT oi."productId"::text                     AS "productId",
              MIN(oi."productSnapshot" ->> 'productName') AS "productName",
              SUM(oi."quantity")::int                  AS "quantity",
              SUM(oi."productAmount")::int             AS "salesAmount"

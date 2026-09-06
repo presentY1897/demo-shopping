@@ -111,10 +111,11 @@ async function seed(options: SeedOptions = {}): Promise<string> {
   )
   await db.execute(
     `INSERT INTO "OrderItem"
-       ("id", "sellerOrderId", "variantId", "productSnapshot", "unitPrice", "quantity",
-        "productAmount", "couponDiscountAmount", "sellerCouponDiscountAmount",
+       ("id", "sellerOrderId", "variantId", "productId", "productSnapshot", "unitPrice",
+        "quantity", "productAmount", "couponDiscountAmount", "sellerCouponDiscountAmount",
         "discountAmount", "commissionRateBp", "updatedAt")
-     VALUES (gen_random_uuid(), $1, $2, $3::jsonb, $4, $5, $6, $7, $7, $7, $8, now())`,
+     SELECT gen_random_uuid(), $1, $2, pv."productId", $3::jsonb, $4, $5, $6, $7, $7, $7, $8, now()
+       FROM "ProductVariant" pv WHERE pv."id" = $2`,
     [
       sellerOrderId,
       store.variant.id,

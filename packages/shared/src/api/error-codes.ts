@@ -427,6 +427,35 @@ export const domainErrorCodes = [
    * 「당신이 틀렸다」가 아니라 「목록을 다시 읽어 보라」는 뜻이다.
    */
   'SETTLEMENT_WRONG_STATUS',
+  /**
+   * 리뷰를 쓸 수 없는 네 가지 (TASK-0083 F3).
+   *
+   * 넷을 나누는 이유는 **사람이 할 일이 다르기** 때문이다. 아직 안 온 것은 기다리면
+   * 되고, 이미 쓴 것은 고치면 되며, 기한이 지난 것은 할 수 있는 일이 없고, 취소된
+   * 것은 애초에 받은 적이 없다 — 한 코드로 답하면 화면은 넷 중 셋을 반드시 틀리게
+   * 말한다.
+   */
+  'REVIEW_NOT_DELIVERED',
+  'REVIEW_ALREADY_WRITTEN',
+  'REVIEW_WINDOW_CLOSED',
+  'REVIEW_ORDER_CANCELED',
+  /**
+   * 수정 기한이 지났다 (F5).
+   *
+   * 작성 기한과 나누는 이유도 같다 — 이쪽은 이미 쓴 사람에게 하는 말이고, 그 사람이
+   * 알아야 하는 것은 「지금 보이는 리뷰가 최종본이다」이다.
+   */
+  'REVIEW_EDIT_WINDOW_CLOSED',
+  /** 사진이 너무 많다. `params.max` 를 싣는다 — 화면이 숫자를 적어 두면 갈린다. */
+  'REVIEW_IMAGE_TOO_MANY',
+  /**
+   * 남의 사진을 붙이려 했다.
+   *
+   * 없는 사진인지 남의 사진인지 **구분해 답하지 않는다.** 열쇠가 곧 소유자라,
+   * 갈라 답하면 남의 열쇠를 넣어 보는 것만으로 존재를 알 수 있다 (반품 사진의
+   * `RETURN_PHOTO_FOREIGN` 과 같은 판단).
+   */
+  'REVIEW_IMAGE_FOREIGN',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]

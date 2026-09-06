@@ -258,9 +258,10 @@ async function seedClaim(index: number, status: ClaimStatus): Promise<string> {
   )
   await db.execute(
     `INSERT INTO "OrderItem"
-       ("id", "sellerOrderId", "variantId", "productSnapshot", "unitPrice", "quantity",
-        "productAmount", "claimedQuantity", "commissionRateBp", "updatedAt")
-     VALUES ($1, $2, $3, $4::jsonb, 10000, 2, 20000, 1, 1000, now())`,
+       ("id", "sellerOrderId", "variantId", "productId", "productSnapshot", "unitPrice",
+        "quantity", "productAmount", "claimedQuantity", "commissionRateBp", "updatedAt")
+     SELECT $1, $2, $3, pv."productId", $4::jsonb, 10000, 2, 20000, 1, 1000, now()
+       FROM "ProductVariant" pv WHERE pv."id" = $3`,
     [
       orderItemId,
       sellerOrderId,

@@ -995,6 +995,20 @@ export default defineConfig({
                 lines: 100,
                 statements: 100,
               },
+              /**
+               * TASK-0083. 리뷰를 쓸 수 있는 시점.
+               *
+               * **구매했는가는 이 파일에 없다** — 그 답은 스키마가 갖고 있다. 여기
+               * 남은 것은 시점 판단뿐이고, 닿지 않은 갈래는 「아직 안 왔다」와 「이미
+               * 늦었다」와 「이미 썼다」 중 하나를 틀리게 말하는 화면이 된다. 셋은
+               * 사람이 할 일이 서로 다르다.
+               */
+              'src/reviews/review-rules.ts': {
+                branches: 100,
+                functions: 100,
+                lines: 100,
+                statements: 100,
+              },
             },
     },
   },

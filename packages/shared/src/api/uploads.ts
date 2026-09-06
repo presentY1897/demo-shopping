@@ -161,6 +161,30 @@ export const returnPhotoKeyPattern = new RegExp(
 
 export const returnPhotoKeySchema = z.string().regex(returnPhotoKeyPattern)
 
+/**
+ * 한 리뷰에 붙일 수 있는 사진의 수 — 다섯.
+ *
+ * 반품 사진과 같은 수이고 이유도 같다. 상한이 없으면 리뷰 한 번이 **업로드
+ * 무제한**이 되고, 그보다 많이 받아도 읽는 사람의 판단은 나아지지 않는다.
+ */
+export const REVIEW_IMAGE_MAX_COUNT = 5
+
+/**
+ * `reviews/{userId}/{objectId}.{ext}`.
+ *
+ * 접두어가 **쓴 사람**인 것은 반품 사진과 같은 이유다. ① 사진은 리뷰를 만들기
+ * 전에 올라가므로 열쇠가 리뷰를 가리킬 수 없고, ② 열쇠 하나만 보고 누구 것인지
+ * 말할 수 있어야 **남의 사진을 자기 리뷰에 붙이는 요청**이 조용히 통과하지 않는다.
+ *
+ * 상품 이미지와 갈라지는 것도 그 지점이다 — 저쪽은 스토어를 확인한 뒤 그 스토어의
+ * id 로 만들어지고, 이쪽은 부르는 사람 자신을 확인한 뒤 그 사람의 id 로 만들어진다.
+ */
+export const reviewImageKeyPattern = new RegExp(
+  `^reviews/${UUID}/${UUID}\\.(?:${uploadImageExtensions.join('|')})$`,
+)
+
+export const reviewImageKeySchema = z.string().regex(reviewImageKeyPattern)
+
 /** 목적과 무관하게 늘 필요한 것 — 무엇을, 어떤 형식으로, 몇 바이트. */
 const presignUploadFields = {
   filename: uploadFilenameSchema,
@@ -193,6 +217,10 @@ export const presignUploadRequestSchema = z.discriminatedUnion('purpose', [
     purpose: z.literal('return-photo'),
     ...presignUploadFields,
   }),
+  z.object({
+    purpose: z.literal('review-image'),
+    ...presignUploadFields,
+  }),
 ])
 
 export type PresignUploadRequest = z.infer<typeof presignUploadRequestSchema>
@@ -214,7 +242,7 @@ export const presignedUploadSchema = z.object({
    * 합집합이라 **부르는 쪽이 되받은 열쇠를 검사할 수 있다** — 반품 사진을 청했는데
    * `products/…` 가 돌아오면 그것을 신청서에 붙이는 자리에서 걸린다.
    */
-  key: z.union([productImageKeySchema, returnPhotoKeySchema]),
+  key: z.union([productImageKeySchema, returnPhotoKeySchema, reviewImageKeySchema]),
   /** Where to PUT the bytes. Carries the signature; treat it as a secret. */
   uploadUrl: z.url(),
   /** Where the object will be readable once the upload succeeds. */

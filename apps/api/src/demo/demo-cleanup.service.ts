@@ -173,6 +173,11 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
     await tx.refreshToken.deleteMany({ where: { userId } })
     await tx.userPreference.deleteMany({ where: { userId } })
     await tx.address.deleteMany({ where: { userId } })
+    // 리뷰 (TASK-0083 R1). **남의 상품에 남긴 말이지만 그 사람의 것이다** — 데모
+    // 방문자가 남긴 별점이 실계정 상품의 평균에 영원히 섞이면 그 상품의 평점은
+    // 아무도 검증할 수 없는 값이 된다. 사진은 `ReviewImage` 가 Cascade 로 함께
+    // 가고, 버킷의 객체는 상품 이미지와 같은 장치가 뒤에 치운다 (TASK-0033 F6).
+    await tx.review.deleteMany({ where: { userId } })
 
     if (seller !== null) {
       // The listings leave the search index. They are soft-deleted below rather

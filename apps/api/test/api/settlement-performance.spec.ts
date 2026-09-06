@@ -108,10 +108,11 @@ async function seedOrders(): Promise<void> {
   )
   await db.execute(
     `INSERT INTO "OrderItem"
-       ("id", "sellerOrderId", "variantId", "productSnapshot", "unitPrice", "quantity",
-        "productAmount", "commissionRateBp", "updatedAt")
-     SELECT gen_random_uuid(), s.id, $2, $3::jsonb, 10000, 1, 10000, 1000, now()
-       FROM unnest($1::uuid[]) AS s(id)`,
+       ("id", "sellerOrderId", "variantId", "productId", "productSnapshot", "unitPrice",
+        "quantity", "productAmount", "commissionRateBp", "updatedAt")
+     SELECT gen_random_uuid(), s.id, $2, pv."productId", $3::jsonb, 10000, 1, 10000, 1000, now()
+       FROM unnest($1::uuid[]) AS s(id)
+       CROSS JOIN "ProductVariant" pv WHERE pv."id" = $2`,
     [sellerOrderIds, variant.id, JSON.stringify({ productId: product.id, productName: '울 코트' })],
   )
   await db.execute(

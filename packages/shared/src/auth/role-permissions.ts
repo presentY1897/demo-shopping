@@ -52,6 +52,9 @@ const BUYER_GRANTS: readonly PermissionGrant[] = [
   // 쿠폰을 만들 수 있고, 그것은 스코프로 좁혀지지 않는 능력이다.
   grant('coupon.claim', 'own'),
   grant('media.upload', 'own'),
+  // 자기가 산 것에 리뷰를 쓴다 (TASK-0083). 읽기는 퍼미션이 없다 — 리뷰는 로그인하지
+  // 않은 사람도 읽는 상품 상세의 일부다.
+  grant('review.write', 'own'),
   grant('user.read', 'own'),
   grant('profile.write', 'own'),
   grant('profile.delete', 'own'),
@@ -88,6 +91,8 @@ const SELLER_OWNER_GRANTS: readonly PermissionGrant[] = [
   grant('coupon.read', 'own'),
   grant('coupon.write', 'own'),
   grant('coupon.claim', 'own'),
+  // 판매자도 물건을 산다 (TASK-0083).
+  grant('review.write', 'own'),
   // **`coupon.platform` 은 없다.** 플랫폼 부담 쿠폰은 남의 돈으로 하는 할인이고,
   // 그 거절은 스코프가 아니라 이 빈자리가 만든다 (`permissions.ts`).
   grant('coupon.delete', 'own'),
@@ -119,6 +124,9 @@ const ADMIN_OPERATOR_GRANTS: readonly PermissionGrant[] = [
   grant('order.read', 'any'),
   grant('claim.read', 'any'),
   grant('claim.handle', 'any'),
+  // 신고된 리뷰를 가리는 것은 일상 운영이다 (TASK-0091). `DEMO_ADMIN` 은 아래에서
+  // `demo` 로 좁혀지고, 그것이 방문자의 관리자가 실계정의 말을 못 지우는 자리다.
+  grant('review.moderate', 'any'),
   grant('coupon.read', 'any'),
   grant('coupon.write', 'any'),
   // 플랫폼 부담 쿠폰. `DEMO_ADMIN` 은 아래에서 `demo` 로 좁혀지고, 그것이 방문자의

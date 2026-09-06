@@ -66,11 +66,16 @@ let counter = 0
  * refuses. The signed-out fallback keeps the shopper's specs unchanged.
  */
 function keyOfPurpose(request: PresignUploadRequest, objectId: string, extension: string): string {
-  const owner = mockSession()?.user.id ?? sessionBuyer.user.id
+  // 사람의 접두어를 쓰는 목적이 둘이다 — 반품 사진과 리뷰 사진 (TASK-0083). 둘 다
+  // 부르는 사람 자신에게서 만들어지고, 상품 이미지만 스토어에서 만들어진다.
+  if (request.purpose === 'product-image') {
+    return `products/${request.sellerId}/${objectId}.${extension}`
+  }
 
-  return request.purpose === 'return-photo'
-    ? `returns/${owner}/${objectId}.${extension}`
-    : `products/${request.sellerId}/${objectId}.${extension}`
+  const owner = mockSession()?.user.id ?? sessionBuyer.user.id
+  const prefix = request.purpose === 'return-photo' ? 'returns' : 'reviews'
+
+  return `${prefix}/${owner}/${objectId}.${extension}`
 }
 
 class UploadStore {
