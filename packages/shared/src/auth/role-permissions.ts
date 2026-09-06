@@ -48,6 +48,9 @@ const BUYER_GRANTS: readonly PermissionGrant[] = [
   grant('order.write', 'own'),
   grant('claim.read', 'own'),
   grant('coupon.read', 'own'),
+  // 코드를 넣어 **본인이** 받는다. `coupon.write` 를 줄 수는 없다 — 주면 구매자가
+  // 쿠폰을 만들 수 있고, 그것은 스코프로 좁혀지지 않는 능력이다.
+  grant('coupon.claim', 'own'),
   grant('media.upload', 'own'),
   grant('user.read', 'own'),
   grant('profile.write', 'own'),
@@ -84,6 +87,9 @@ const SELLER_OWNER_GRANTS: readonly PermissionGrant[] = [
   grant('claim.handle', 'own'),
   grant('coupon.read', 'own'),
   grant('coupon.write', 'own'),
+  grant('coupon.claim', 'own'),
+  // **`coupon.platform` 은 없다.** 플랫폼 부담 쿠폰은 남의 돈으로 하는 할인이고,
+  // 그 거절은 스코프가 아니라 이 빈자리가 만든다 (`permissions.ts`).
   grant('coupon.delete', 'own'),
   grant('settlement.read', 'own'),
   grant('seller.read', 'own'),
@@ -115,6 +121,9 @@ const ADMIN_OPERATOR_GRANTS: readonly PermissionGrant[] = [
   grant('claim.handle', 'any'),
   grant('coupon.read', 'any'),
   grant('coupon.write', 'any'),
+  // 플랫폼 부담 쿠폰. `DEMO_ADMIN` 은 아래에서 `demo` 로 좁혀지고, 그것이 방문자의
+  // 관리자가 **실계정이 쓰는 쿠폰**을 못 만드는 자리다.
+  grant('coupon.platform', 'any'),
   grant('settlement.read', 'any'),
   grant('user.read', 'any'),
   grant('seller.read', 'any'),
