@@ -157,3 +157,23 @@ export const commissionSimulationResponseSchema = z.object({
 })
 
 export type CommissionSimulationResponse = z.infer<typeof commissionSimulationResponseSchema>
+
+/**
+ * `POST /api/v1/settlements/batch` — 정산 배치를 손으로 한 번 돌린다 (TASK-0080).
+ *
+ * 스케줄러가 한 시간마다 같은 일을 한다. 이 문은 **놓친 회차를 즉시 따라잡는**
+ * 자리이고, 몇 번을 눌러도 결과가 같다 — 한 판매자 몫은 한 번만 정산되고(F6), 이미
+ * 적힌 차감은 다시 계산돼도 같은 값이 된다.
+ */
+export const settlementRunResponseSchema = z.object({
+  /** 새로 만든 판매 줄. */
+  settled: z.int().min(0),
+  /** 승인 전이라 **고쳐 쓴** 판매 줄 (재생성). */
+  amended: z.int().min(0),
+  /** 이미 승인·지급된 회차 뒤에 온 반품이라 **차감 줄로 적은** 몫 (F7). */
+  adjusted: z.int().min(0),
+  /** 손댄 정산서의 수. */
+  settlements: z.int().min(0),
+})
+
+export type SettlementRunResponse = z.infer<typeof settlementRunResponseSchema>

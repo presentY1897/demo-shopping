@@ -39,6 +39,8 @@ export interface PlannedItem {
   readonly line: OrderLine
   readonly productAmount: number
   readonly couponDiscountAmount: number
+  /** 위 값 중 **판매자가 부담하는** 몫. 정산만 읽는다 (TASK-0080). */
+  readonly sellerCouponDiscountAmount: number
   readonly pointDiscountAmount: number
   readonly discountAmount: number
 }
@@ -94,6 +96,7 @@ function groupsOf(lines: readonly OrderLine[], priced: PricedOrder): Map<string,
       line,
       productAmount: amount.productAmount,
       couponDiscountAmount: amount.couponDiscountAmount,
+      sellerCouponDiscountAmount: amount.sellerCouponDiscountAmount,
       pointDiscountAmount: amount.pointDiscountAmount,
       discountAmount: amount.discountAmount,
     }

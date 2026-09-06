@@ -562,3 +562,95 @@ describe('F8 — 무작위 입력에서 합계가 보존된다', () => {
     }
   })
 })
+
+/**
+ * 부담 주체 (TASK-0080 R1).
+ *
+ * **사는 사람이 내는 돈은 누가 부담하든 같다.** 그래서 이 값이 틀려도 결제 화면은
+ * 아무 말도 하지 않고, 틀어진 금액은 몇 주 뒤 정산서 한 줄로만 나타난다. 판매자가
+ * 부담하지 않은 할인이 그의 정산액에서 빠지면 그것은 **남의 돈으로 한 할인의 청구서를
+ * 그에게 보내는** 일이다.
+ *
+ * 그래서 조합을 전수로 짚는다 — 플랫폼만, 판매자만, 섞였을 때, 그리고 판매자가 둘일 때.
+ */
+describe('부담 주체별 안분 (TASK-0080 F3 · F4)', () => {
+  const two = [item({ itemId: 'a' }), item({ itemId: 'b' })]
+
+  it('플랫폼 쿠폰은 판매자 부담 몫을 만들지 않는다', () => {
+    const priced = calculateOrder(input({ items: two, discounts: [coupon(2_000)] }))
+
+    expect(priced.items.map((line) => line.couponDiscountAmount)).toEqual([1_000, 1_000])
+    expect(priced.items.map((line) => line.sellerCouponDiscountAmount)).toEqual([0, 0])
+    expect(priced.sellerOrders[0]?.sellerCouponDiscountAmount).toBe(0)
+  })
+
+  it('판매자 쿠폰은 전액이 판매자 부담이다', () => {
+    const priced = calculateOrder(
+      input({ items: two, discounts: [coupon(2_000, { bearer: 'SELLER' })] }),
+    )
+
+    expect(priced.items.map((line) => line.sellerCouponDiscountAmount)).toEqual([1_000, 1_000])
+    expect(priced.sellerOrders[0]?.sellerCouponDiscountAmount).toBe(2_000)
+  })
+
+  /** **섞였을 때가 이 값이 존재하는 이유다.** 합쳐진 숫자로는 갈라낼 수 없다. */
+  it('섞이면 판매자 몫만 따로 센다', () => {
+    const priced = calculateOrder(
+      input({
+        items: two,
+        discounts: [coupon(2_000), coupon(1_000, { id: 's', bearer: 'SELLER' })],
+      }),
+    )
+
+    expect(priced.sellerOrders[0]?.couponDiscountAmount).toBe(3_000)
+    expect(priced.sellerOrders[0]?.sellerCouponDiscountAmount).toBe(1_000)
+  })
+
+  it('적립금은 판매자 부담이 아니다', () => {
+    const priced = calculateOrder(input({ items: two, discounts: [point(2_000)] }))
+
+    expect(priced.items.every((line) => line.sellerCouponDiscountAmount === 0)).toBe(true)
+  })
+
+  /** 남의 가게 쿠폰이 내 정산에서 빠지면 그것은 남의 할인을 내가 무는 일이다. */
+  it('한 판매자에게 걸린 쿠폰은 다른 판매자의 부담이 되지 않는다', () => {
+    const priced = calculateOrder(
+      input({
+        items: [item({ itemId: 'a' }), item({ itemId: 'b', sellerId: 's2' })],
+        discounts: [coupon(2_000, { scope: 'SELLER', targetId: 's1', bearer: 'SELLER' })],
+      }),
+    )
+    const mine = priced.sellerOrders.find((entry) => entry.sellerId === 's1')
+    const theirs = priced.sellerOrders.find((entry) => entry.sellerId === 's2')
+
+    expect(mine?.sellerCouponDiscountAmount).toBe(2_000)
+    expect(theirs?.sellerCouponDiscountAmount).toBe(0)
+  })
+
+  /** 부담 몫은 언제나 전체 쿠폰 몫 안에 있다 — `OrderItem_sellerCoupon_check` 와 같은 말. */
+  it('부담 몫이 전체 쿠폰 몫을 넘지 않는다', () => {
+    const priced = calculateOrder(
+      input({
+        items: two,
+        discounts: [coupon(1_000), coupon(1_500, { id: 's', bearer: 'SELLER' })],
+      }),
+    )
+
+    for (const line of priced.items) {
+      expect(line.sellerCouponDiscountAmount).toBeLessThanOrEqual(line.couponDiscountAmount)
+    }
+  })
+
+  /** 깎을 수 있는 것보다 큰 쿠폰은 거기까지만 적용된다 — 부담 몫도 그 값이다. */
+  it('한도에 걸린 판매자 쿠폰은 실제로 깎인 만큼만 부담이다', () => {
+    const priced = calculateOrder(
+      input({
+        items: [item({ itemId: 'a', unitPrice: 1_000 })],
+        discounts: [coupon(5_000, { bearer: 'SELLER' })],
+      }),
+    )
+
+    expect(priced.items[0]?.couponDiscountAmount).toBe(1_000)
+    expect(priced.items[0]?.sellerCouponDiscountAmount).toBe(1_000)
+  })
+})

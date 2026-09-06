@@ -173,6 +173,10 @@ export const untouchedTables: Readonly<Record<string, string>> = {
   PointTransaction:
     'PointAccount 에 매달려 있다. 사실상 append-only 이고(`PointTransaction_append_only`), 사라진 계정의 적립·사용 이력이 남는 것이 옳다 — `StockLedger` 와 같은 판단',
   PointPolicy: '계정 소유가 아니다. 플랫폼의 설정 한 행이다 (`AppMeta` 와 같다)',
+  Settlement:
+    '**판매자 몫이 남으므로 정산도 남는다.** 데모 판매자의 만료는 `SUSPENDED` 이지 삭제가 아니고(TASK-0025), 그 가게의 주문도 지우지 않는다 — 「이 가게에 얼마를 지급하기로 했나」는 산 사람이 데모였다는 이유로 지울 수 있는 기록이 아니라 **플랫폼 자신의 장부**다. `sellerId` 가 `RESTRICT` 이므로 스토어 행이 남는 지금 구조에서 끊기지도 않는다 (TASK-0080)',
+  SettlementItem:
+    'Settlement 에 Cascade 로 매달려 있다. `sellerOrderId` 는 `RESTRICT` 인데 주문 몫도 지우지 않으므로 끊기지 않는다',
   CommissionRate:
     '계정 소유가 아니다. 플랫폼이 정한 **수수료 정책**이고, 데모 관리자는 애초에 이 표를 쓸 수 없다(`commission.write` 가 없다). `createdById` 가 `RESTRICT` 인데 계정 행이 툼스톤으로 남으므로 끊기지 않는다 — 게다가 여기 남은 행을 만든 것은 실계정 최고 관리자뿐이다 (TASK-0079)',
 }

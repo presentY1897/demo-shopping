@@ -100,6 +100,13 @@ export interface PricedItem {
   readonly productAmount: number
   /** 이 항목에 안분된 쿠폰 할인. */
   readonly couponDiscountAmount: number
+  /**
+   * 위 값 중 **판매자가 부담하는** 몫 (`pricing.md` 6장).
+   *
+   * 사는 사람이 내는 돈과는 무관하다 — 정산에서만 쓴다. 이 몫만 판매자의 정산액에서
+   * 빠지고 플랫폼 쿠폰·적립금은 빠지지 않는다 (D-029).
+   */
+  readonly sellerCouponDiscountAmount: number
   /** 이 항목에 안분된 적립금. */
   readonly pointDiscountAmount: number
   /** 위 둘의 합. 부분 취소 때 「이 항목에 얼마가 붙어 있었나」가 이것이다. */
@@ -110,6 +117,8 @@ export interface PricedSellerOrder {
   readonly sellerId: string
   readonly productAmount: number
   readonly couponDiscountAmount: number
+  /** 위 값 중 **판매자가 부담하는** 몫. 정산이 읽는다. */
+  readonly sellerCouponDiscountAmount: number
   readonly pointDiscountAmount: number
   /**
    * 배송비를 낸 적립금 (TASK-0047).

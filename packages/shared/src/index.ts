@@ -561,6 +561,7 @@ export {
   commissionSimulationQueryParamsSchema,
   commissionSimulationResponseSchema,
   setCommissionRateRequestSchema,
+  settlementRunResponseSchema,
 } from './api/settlement.js'
 export type {
   CommissionRate,
@@ -571,6 +572,7 @@ export type {
   CommissionSimulationQueryParams,
   CommissionSimulationResponse,
   SetCommissionRateRequest,
+  SettlementRunResponse,
 } from './api/settlement.js'
 export {
   authorizePermission,

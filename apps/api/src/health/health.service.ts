@@ -14,6 +14,7 @@ import { paymentReconcileDetails } from './payment-reconcile.health-indicator.js
 import { paymentStragglerDetails } from './payment-straggler.health-indicator.js'
 import { PaymentWebhookReporter } from './payment-webhook.reporter.js'
 import { reservationExpiryDetails } from './reservation-expiry.health-indicator.js'
+import { settlementBatchDetails } from './settlement-batch.health-indicator.js'
 
 type Reading = readonly [HealthDependencyKey, HealthStatus]
 
@@ -50,6 +51,7 @@ export class HealthService {
       paymentStraggler,
       deliverySimulator,
       claimRefund,
+      settlementBatch,
       webhookReceivedAt,
     ] = await Promise.all([
       Promise.all(
@@ -69,6 +71,7 @@ export class HealthService {
       paymentStragglerDetails(this.indicators),
       deliverySimulatorDetails(this.indicators),
       claimRefundDetails(this.indicators),
+      settlementBatchDetails(this.indicators),
       // 지표 목록이 아니라 보고자에서 온다 — 웹훅이 한 건도 안 온 것은 고장이
       // 아니라 전체 판정에 실리지 않는다 (`payment-webhook.reporter.ts`).
       this.paymentWebhook.lastReceivedAt(),
@@ -91,6 +94,7 @@ export class HealthService {
         ...deliverySimulator,
       },
       claimRefund: { status: statusOf(readings, 'claimRefund'), ...claimRefund },
+      settlementBatch: { status: statusOf(readings, 'settlementBatch'), ...settlementBatch },
       paymentWebhook: { lastReceivedAt: webhookReceivedAt },
     }
   }

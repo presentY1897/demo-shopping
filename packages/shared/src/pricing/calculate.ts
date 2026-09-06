@@ -76,6 +76,18 @@ interface WorkingLine {
   readonly sellerId: string
   readonly productAmount: number
   coupon: number
+  /**
+   * 위 `coupon` 중 **판매자가 부담하는** 몫.
+   *
+   * 사는 사람이 내는 돈과는 아무 상관이 없다 — 누가 부담하든 결제 금액은 같다.
+   * 따로 세는 이유는 **정산의 입력이기 때문**이다: 이 몫만 판매자의 정산액에서
+   * 빠지고, 플랫폼 부담 쿠폰과 적립금은 빠지지 않는다 (`pricing.md` 6장, D-029).
+   *
+   * 나중에 되계산할 수 없어서 여기서 세어 둔다. 쿠폰의 범위는 주문 · 판매자 ·
+   * 항목 셋이라, 정산 시점에 쿠폰 정책만 보고 「이 항목에 얼마가 붙었나」를 되짚는
+   * 것은 안분을 통째로 다시 돌리는 일이고 그 규칙이 두 벌이 된다.
+   */
+  sellerCoupon: number
   point: number
 }
 
@@ -85,6 +97,7 @@ export function calculateOrder(input: PricingInput): PricedOrder {
     sellerId: item.sellerId,
     productAmount: item.unitPrice * item.quantity,
     coupon: 0,
+    sellerCoupon: 0,
     point: 0,
   }))
 
@@ -111,7 +124,10 @@ export function calculateOrder(input: PricingInput): PricedOrder {
       })),
     )
 
-    for (const entry of allocated) entry.item.coupon += entry.amount
+    for (const entry of allocated) {
+      entry.item.coupon += entry.amount
+      if (discount.bearer === 'SELLER') entry.item.sellerCoupon += entry.amount
+    }
   }
 
   const totalProductAmount = lines.reduce((sum, line) => sum + line.productAmount, 0)
@@ -176,6 +192,7 @@ export function calculateOrder(input: PricingInput): PricedOrder {
     sellerId: line.sellerId,
     productAmount: line.productAmount,
     couponDiscountAmount: line.coupon,
+    sellerCouponDiscountAmount: line.sellerCoupon,
     pointDiscountAmount: line.point,
     discountAmount: line.coupon + line.point,
   }))
@@ -184,12 +201,14 @@ export function calculateOrder(input: PricingInput): PricedOrder {
     const own = lines.filter((line) => line.sellerId === store.sellerId)
     const productAmount = own.reduce((sum, line) => sum + line.productAmount, 0)
     const coupon = own.reduce((sum, line) => sum + line.coupon, 0)
+    const sellerCoupon = own.reduce((sum, line) => sum + line.sellerCoupon, 0)
     const point = own.reduce((sum, line) => sum + line.point, 0)
 
     return {
       sellerId: store.sellerId,
       productAmount,
       couponDiscountAmount: coupon,
+      sellerCouponDiscountAmount: sellerCoupon,
       pointDiscountAmount: point,
       shippingPointAmount: store.shippingPoint,
       discountAmount: coupon + point + store.shippingPoint,

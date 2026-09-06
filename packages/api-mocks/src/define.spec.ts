@@ -20,6 +20,7 @@ describe('defineFixture', () => {
         reservationExpiry: { status: 'ok', lastRunAt: null, releasedCount: 0 },
         paymentReconcile: { status: 'ok', lastRunAt: null, resolvedCount: 0 },
         orderConfirm: { status: 'ok', lastRunAt: null, confirmedCount: 0 },
+        settlementBatch: { status: 'ok', lastRunAt: null, settledCount: 0 },
         paymentStraggler: { status: 'ok', lastRunAt: null, fixedCount: 0 },
         claimRefund: { status: 'ok', lastRunAt: null, fixedCount: 0 },
         deliverySimulator: { status: 'ok', lastRunAt: null, advancedCount: 0 },
@@ -41,6 +42,7 @@ describe('defineFixture', () => {
         reservationExpiry: { status: 'ok', lastRunAt: null, releasedCount: 0 },
         paymentReconcile: { status: 'ok', lastRunAt: null, resolvedCount: 0 },
         orderConfirm: { status: 'ok', lastRunAt: null, confirmedCount: 0 },
+        settlementBatch: { status: 'ok', lastRunAt: null, settledCount: 0 },
         paymentStraggler: { status: 'ok', lastRunAt: null, fixedCount: 0 },
         claimRefund: { status: 'ok', lastRunAt: null, fixedCount: 0 },
         deliverySimulator: { status: 'ok', lastRunAt: null, advancedCount: 0 },
@@ -75,6 +77,11 @@ describe('defineFixture', () => {
       reservationExpiry: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', releasedCount: 0 },
       paymentReconcile: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', resolvedCount: 0 },
       orderConfirm: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', confirmedCount: 0 },
+      settlementBatch: {
+        status: 'ok',
+        lastRunAt: '2026-09-05T00:00:00.000Z',
+        settledCount: 0,
+      },
       paymentStraggler: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', fixedCount: 0 },
       claimRefund: { status: 'ok', lastRunAt: '2026-09-05T00:00:00.000Z', fixedCount: 0 },
       deliverySimulator: {
