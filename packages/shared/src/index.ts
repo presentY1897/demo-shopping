@@ -553,6 +553,15 @@ export type {
 } from './api/sellers.js'
 export {
   REVIEW_CONTENT_MAX,
+  REVIEW_LIST_DEFAULT_LIMIT,
+  REVIEW_LIST_MAX_LIMIT,
+  ratingBucketSchema,
+  ratingSummarySchema,
+  reviewHelpfulResponseSchema,
+  reviewListEntrySchema,
+  reviewListQueryParamsSchema,
+  reviewListResponseSchema,
+  reviewSortKeys,
   REVIEWABLE_LIST_DEFAULT_LIMIT,
   REVIEWABLE_LIST_MAX_LIMIT,
   createReviewRequestSchema,
@@ -570,7 +579,14 @@ export {
 } from './api/reviews.js'
 export type {
   CreateReviewRequest,
+  RatingBucket,
+  RatingSummary,
   Review,
+  ReviewHelpfulResponse,
+  ReviewListEntry,
+  ReviewListQueryParams,
+  ReviewListResponse,
+  ReviewSortKey,
   ReviewRefusal,
   ReviewResponse,
   ReviewStatus,

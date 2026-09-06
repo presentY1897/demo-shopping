@@ -1009,6 +1009,19 @@ export default defineConfig({
                 lines: 100,
                 statements: 100,
               },
+              /**
+               * TASK-0084. 리뷰 목록의 축과 분포.
+               *
+               * 셋 다 **화면이 다시 계산하면 갈라지는** 것들이다 — 커서가 갈라지면
+               * 페이지가 겹치거나 건너뛰고, 분포가 갈라지면 합이 100이 아닌 그래프가
+               * 그려진다. 어느 쪽도 오류를 내지 않는다.
+               */
+              'src/reviews/review-console.ts': {
+                branches: 100,
+                functions: 100,
+                lines: 100,
+                statements: 100,
+              },
             },
     },
   },
