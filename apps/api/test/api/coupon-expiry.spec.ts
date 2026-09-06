@@ -78,7 +78,11 @@ async function issued(
   return row.id
 }
 
-/** 이미 쓴 한 장. `UserCoupon_used_check` 때문에 주문까지 있어야 만들어진다. */
+/**
+ * 이미 쓴 한 장. `UserCoupon_used_check` 때문에 주문까지 있어야 만들어진다.
+ *
+ * 금액도 있어야 한다 (TASK-0075). 「썼다」는 넷이 함께 움직인다 — 상태·시각·주문·금액.
+ */
 async function used(couponId: string, expiresAt: string): Promise<string> {
   const orderId = randomUUID()
 
@@ -93,8 +97,9 @@ async function used(couponId: string, expiresAt: string): Promise<string> {
 
   const row = await db.one<{ id: string }>(
     `INSERT INTO "UserCoupon"
-       ("id", "couponId", "userId", "status", "expiresAt", "usedAt", "orderId", "updatedAt")
-     VALUES (gen_random_uuid(), $1, $2, 'USED', $3::timestamp, now(), $4, now())
+       ("id", "couponId", "userId", "status", "expiresAt", "usedAt", "orderId",
+        "discountAmount", "updatedAt")
+     VALUES (gen_random_uuid(), $1, $2, 'USED', $3::timestamp, now(), $4, 1000, now())
      RETURNING "id"`,
     [couponId, userId, expiresAt, orderId],
   )

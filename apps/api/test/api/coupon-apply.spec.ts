@@ -368,6 +368,25 @@ describe('거절 (F2 · F4)', () => {
   })
 })
 
+describe('빈 선택', () => {
+  /**
+   * `?userCouponIds=` 하나로 오는 요청은 **아무것도 고르지 않은 것**이다. 빈 배열을
+   * 쿼리로 잇다 보면 흔히 나오는 모양이고, 그 뜻은 명백하다 — 400 으로 답하면
+   * 주문서가 통째로 안 열린다.
+   */
+  it('reads a checkout with an empty selection', async () => {
+    const shop = await store({ price: 10_000 })
+    const checkoutId = await openCheckout([await add(shop.variantId)])
+    const { checkout } = await client().request({
+      path: `/checkouts/${checkoutId}?userCouponIds=`,
+      schema: checkoutResponseSchema,
+    })
+
+    expect(checkout.appliedCoupons).toEqual([])
+    expect(checkout.totalCouponDiscountAmount).toBe(0)
+  })
+})
+
 describe('최대 할인 조합 (F7)', () => {
   it('recommends the combination that pays least', async () => {
     const shop = await store({ price: 20_000 })

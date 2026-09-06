@@ -469,6 +469,23 @@ describe('장별 실제 금액 (F6 · F8)', () => {
     expect(applied.map((entry) => entry.discountAmount)).toEqual([3_000, 1_000])
   })
 
+  /**
+   * **다 덮인 장도 목록에 남는다** — 0원으로. 빼 버리면 고른 장수와 적용된 장수가
+   * 소리 없이 갈리고, 화면은 사라진 한 장을 설명할 수 없다. 값이 없는 것과 0원은
+   * 다른 사실이고, 그 장은 실제로 쓰인 것이다.
+   */
+  it('keeps a fully covered coupon in the list at zero', () => {
+    const one = [line({ itemId: 'a', unitPrice: 3_000 })]
+    const { applied } = applyCoupons(
+      [coupon({ discountValue: 3_000 }), sellerCoupon('seller-a', { discountValue: 3_000 })],
+      one,
+      FREE_SHIPPING,
+      NOW,
+    )
+
+    expect(applied.map((entry) => entry.discountAmount)).toEqual([3_000, 0])
+  })
+
   it('applies nothing when nothing was chosen', () => {
     expect(applyCoupons([], lines, FREE_SHIPPING, NOW)).toEqual({ discounts: [], applied: [] })
   })
