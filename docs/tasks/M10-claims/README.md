@@ -13,5 +13,5 @@
 | [TASK-0067](./TASK-0067-return-flow.md) | 반품 신청 · 수거 · 검수 (부분) | 완료 | 0065 |
 | [TASK-0068](./TASK-0068-refund-calc.md) | 환불 안분 계산 · 실행 | 완료 | 0066 |
 | [TASK-0069](./TASK-0069-stock-restore.md) | 재고 복원 | 완료 | 0066, 0067 |
-| [TASK-0070](./TASK-0070-seller-claims.md) | 판매자 클레임 처리 화면 | 승인됨 | 0067 |
+| [TASK-0070](./TASK-0070-seller-claims.md) | 판매자 클레임 처리 화면 | 완료 | 0067 |
 | [TASK-0071](./TASK-0071-admin-claims.md) | 관리자 클레임 개입 | 승인됨 | 0070 |

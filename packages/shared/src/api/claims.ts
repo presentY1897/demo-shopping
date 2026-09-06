@@ -484,3 +484,334 @@ export const claimableResponseSchema = z.object({
 })
 
 export type ClaimableResponse = z.infer<typeof claimableResponseSchema>
+
+/* ------------------------------------------------------------------------- *
+ * 판매자 콘솔 (TASK-0070)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * 판매자가 **지금 손댈 것이 있는가** — 목록의 세 갈래.
+ *
+ * ## 왜 상태 열 개가 아니라 셋인가
+ *
+ * 「상태 탭」을 글자 그대로 만들면 탭이 열 개다. 열 개짜리 탭 줄은 360px 에서
+ * 가로로 넘치고, 무엇보다 판매자가 묻는 것은 「이 클레임이 `PICKING_UP` 인가」가
+ * 아니라 **「내가 지금 뭘 해야 하나」**다. 그래서 탭의 축은 상태가 아니라 이
+ * 셋이고, 상태 자체로 좁히고 싶은 사람을 위해 {@link sellerClaimListQuerySchema} 의
+ * `status` 가 그대로 남아 있다.
+ *
+ * ## 어느 상태가 어느 갈래인지는 **전이표가 정한다**
+ *
+ * 두 번째 표를 만들지 않는다. 「판매자가 할 일이 있다」는 곧 **「전이표에서 이
+ * 상태를 떠나는 화살표 중 `SELLER` 가 지날 수 있는 것이 있다」**이고, 그 사실은
+ * `apps/api/src/claims/claim-rules.ts` 의 `claimTransitions` 에 이미 한 번 적혀
+ * 있다. 표를 한 벌 더 두면 상태가 늘 때 한 곳만 고쳐지고, 그때 증상은 「처리할 것이
+ * 없는데 3건 대기」이거나 「있는데 0건」이다 — 어느 쪽도 실패하지 않는다.
+ */
+export const claimHandlingStages = [
+  /** 판매자가 다음 걸음을 밟아야 한다 — 승인 · 거절 · 수거 · 검수. */
+  'WAITING',
+  /** 판매자가 지금 할 일은 없다. 환불이 나가기를 기다리는 자리다. */
+  'IN_PROGRESS',
+  /** 끝났다. 전이표의 종착 셋이다. */
+  'CLOSED',
+] as const
+
+export type ClaimHandlingStage = (typeof claimHandlingStages)[number]
+
+export const claimHandlingStageSchema = z.enum(claimHandlingStages)
+
+export const SELLER_CLAIM_LIST_DEFAULT_LIMIT = 20
+export const SELLER_CLAIM_LIST_MAX_LIMIT = 50
+
+/**
+ * 판매자 목록의 커서 — **불투명 문자열**이다.
+ *
+ * `claimListQuerySchema.cursor` 가 `uuid` 인 것과 다르고, 그 차이가 이 목록의
+ * 판단 전체다. 저쪽의 정렬 키는 `id` 하나라 커서가 곧 마지막으로 본 행이지만,
+ * 여기 정렬 키는 **(단계, id)** 두 칸이다. 단계는 상태에서 나오고 상태는 움직이므로,
+ * 커서가 행을 가리키면 **그 행의 상태가 바뀌는 순간 커서가 가리키던 자리도 함께
+ * 움직인다** — 판매자가 목록을 넘기면서 승인을 누르는 것이 정확히 그 상황이다.
+ *
+ * 그래서 커서에 두 칸을 **모두 굳혀 넣는다.** 커서는 「마지막으로 본 행」이 아니라
+ * **「정렬 축 위의 위치」**이고, 그것이 `docs/design/pages.md` 의 커서 규약이 처음부터
+ * 적어 둔 문장이다 — 「정렬 키 상의 **위치**를 가리키는 불투명 문자열」.
+ *
+ * 값의 모양은 서버의 것이고 클라이언트는 해석하지 않는다. 그래서 여기서 재는 것은
+ * 길이뿐이다 — 상한이 없으면 이 문자열이 질의 하나를 임의 크기로 만든다.
+ */
+export const SELLER_CLAIM_CURSOR_MAX_LENGTH = 128
+
+export const sellerClaimCursorSchema = z.string().min(1).max(SELLER_CLAIM_CURSOR_MAX_LENGTH)
+
+/** `GET /api/v1/seller-claims` 의 질의, 부르는 쪽이 쓰는 모양. */
+export const sellerClaimListQuerySchema = z.object({
+  /** 탭. 없으면 전부이고, 그때도 **대기가 먼저 온다.** */
+  stage: claimHandlingStageSchema.optional(),
+  type: claimTypeSchema.optional(),
+  /** 상태로 직접 좁히기. 탭과 함께 걸면 둘 다 적용된다. */
+  status: claimStatusFilterSchema.optional(),
+  limit: z.int().min(1).max(SELLER_CLAIM_LIST_MAX_LIMIT).optional(),
+  cursor: sellerClaimCursorSchema.optional(),
+})
+
+export type SellerClaimListQuery = z.infer<typeof sellerClaimListQuerySchema>
+
+/**
+ * 같은 질의를, 값이 전부 문자열로 도착하는 형태로.
+ *
+ * `status` 만 변환이 붙고 문법은 **쉼표 하나**다 — 이 저장소의 모든 목록이 같은
+ * 문법을 쓴다(`claimListQueryParamsSchema` · `sellerOrderListQueryParamsSchema`).
+ * 목록마다 다른 문법을 쓰면 그 차이를 설명할 수 있는 사람이 아무도 없다.
+ */
+export const sellerClaimListQueryParamsSchema = z.object({
+  stage: claimHandlingStageSchema.optional(),
+  type: claimTypeSchema.optional(),
+  status: z
+    .string()
+    .transform((value) => value.split(','))
+    .pipe(claimStatusFilterSchema)
+    .optional(),
+  limit: z.coerce.number().int().min(1).max(SELLER_CLAIM_LIST_MAX_LIMIT).optional(),
+  cursor: sellerClaimCursorSchema.optional(),
+})
+
+/**
+ * 판매자 목록 한 줄.
+ *
+ * `claimListItemSchema` 와 겹치지만 **다른 스키마**인 이유는 저쪽이 구매자·판매자·
+ * 관리자가 함께 쓰는 모양이기 때문이다. 여기 더 붙는 셋 — 단계 · 기한 · 지연 — 은
+ * 판매자에게만 뜻이 있고, 구매자 화면에 「기한 초과」를 그리면 그것은 판매자를
+ * 재촉하는 말이 남의 화면에 뜨는 것이다.
+ */
+export const sellerClaimListItemSchema = z.object({
+  id: z.uuid(),
+  sellerOrderId: z.uuid(),
+  orderNumber: orderNumberSchema,
+  type: claimTypeSchema,
+  status: claimStatusSchema,
+  /** 상태에서 파생된다. 화면이 다시 세지 않게 서버가 답한다. */
+  stage: claimHandlingStageSchema,
+  fault: claimFaultSchema,
+  requestedAt: z.iso.datetime(),
+  /**
+   * 처리 기한 — 「신청 후 2영업일」 (TASK-0070 4장).
+   *
+   * **화면이 더하지 않는다.** 영업일의 정의(시간대 · 주말 · 공휴일)와 압축 데모의
+   * 축(`FULFILLMENT_PACE`)이 전부 서버에 있고, 어느 것도 응답에 실리지 않는다 —
+   * `claimableResponseSchema.returnWindowEndsAt` 이 같은 이유로 서버에서 온다.
+   */
+  dueAt: z.iso.datetime(),
+  /** 기한을 넘겼는가. 기한 **정각은 아직 기한 안**이다. */
+  overdue: z.boolean(),
+  /** 걸린 항목의 줄 수와 수량 합. 「2건 3개」를 그리는 데 쓴다. */
+  itemCount: z.int().min(0),
+  totalQuantity: z.int().min(0),
+  /** 「울 코트」. 「외 2건」은 붙이지 않는다 — 문장은 화면이 만든다. */
+  headline: z.string(),
+  thumbnailUrl: z.string().nullable(),
+})
+
+export type SellerClaimListItem = z.infer<typeof sellerClaimListItemSchema>
+
+export const sellerClaimListResponseSchema = z.object({
+  claims: z.array(sellerClaimListItemSchema),
+  /** 다음 페이지의 커서. 없으면 마지막이다. */
+  nextCursor: sellerClaimCursorSchema.nullable(),
+})
+
+export type SellerClaimListResponse = z.infer<typeof sellerClaimListResponseSchema>
+
+/**
+ * `GET /api/v1/seller-claims/summary` — 뱃지와 탭이 읽는 숫자.
+ *
+ * **목록과 다른 요청이다.** 같은 응답에 실으면 숫자가 필터를 따라 움직이고, 그러면
+ * 뱃지가 아니다 (`sellerOrderSummarySchema` 가 같은 이유로 같은 모양이다).
+ *
+ * **지연 건수가 여기 없다.** 세려면 「2영업일」을 SQL 로도 내려보내야 하고, 그러면
+ * 「영업일이 무엇인가」가 두 곳에 적힌다. 대신 대기 탭이 **오래된 순**이라 지연된
+ * 건이 정확히 그 탭 맨 위에 모인다 — 정렬이 곧 기한 순이기 때문이다
+ * (`seller-claim.service.ts`).
+ */
+export const sellerClaimSummarySchema = z.object({
+  /** 상태별 건수. **전 상태가 들어 있다** — 0건인 상태도 0을 받아야 그린다. */
+  counts: z.record(claimStatusSchema, z.int().min(0)),
+  /** 단계별 건수. 탭 옆의 숫자다. */
+  stages: z.record(claimHandlingStageSchema, z.int().min(0)),
+  /** 처리 대기 — 사이드바와 대시보드가 읽는 하나의 수. `stages.WAITING` 과 같다. */
+  waiting: z.int().min(0),
+})
+
+export type SellerClaimSummary = z.infer<typeof sellerClaimSummarySchema>
+
+export const sellerClaimSummaryResponseSchema = z.object({ summary: sellerClaimSummarySchema })
+
+export type SellerClaimSummaryResponse = z.infer<typeof sellerClaimSummaryResponseSchema>
+
+/**
+ * **환불 예정액** — 승인 버튼을 누르기 전에 얼마가 나가는지 (TASK-0070 4장 · R2).
+ *
+ * 「실제 환불과 같은 함수를 지난다」가 이 스키마의 전부다. 서버는 미리보기 전용
+ * 계산을 갖지 않고 `ClaimRefundService` 가 실제로 쓰는 입력 조립과
+ * `claimRefundBreakdown` 을 그대로 부른다 — 두 벌로 만들면 미리 본 금액과 실제 나간
+ * 금액이 갈리고, **그 차이는 사람의 장부에 남는다.**
+ *
+ * 그래서 필드가 `RefundBreakdown` 과 정확히 같은 모양이다. 이름을 바꾸거나 줄이면
+ * 그 순간 「같은 함수」가 아니게 된다.
+ */
+export const claimRefundQuoteLineSchema = z.object({
+  orderItemId: z.uuid(),
+  units: z.int().min(0),
+  amount: priceSchema,
+})
+
+export type ClaimRefundQuoteLine = z.infer<typeof claimRefundQuoteLineSchema>
+
+export const claimRefundQuoteSchema = z.object({
+  lines: z.array(claimRefundQuoteLineSchema),
+  /** 항목 몫의 합. */
+  itemsAmount: priceSchema,
+  /**
+   * 배송비 조정. **양수면 더 돌려주고 음수면 덜 돌려준다.**
+   *
+   * 부호를 살려 두는 것이 요점이다 — 「반품비 3,000원 차감」과 「원 배송비 3,000원
+   * 환불」을 하나로 접으면 0원이 되어 **아무 일도 없었던 것처럼 보인다**.
+   */
+  shippingAmount: z.int(),
+  /** 실제로 나갈 금액. 음수가 될 수 없다 — 환불은 청구로 뒤집히지 않는다. */
+  total: priceSchema,
+})
+
+export type ClaimRefundQuote = z.infer<typeof claimRefundQuoteSchema>
+
+/**
+ * 이 걸음을 **어느 문으로** 밟는가.
+ *
+ * 세 갈래가 있는 이유는 `POST /claims/:id/transitions` 로 전부 밀면 안 되기
+ * 때문이다. 그 라우트로도 상태는 옮겨지지만 **옮겨지기만 한다** — 회수 운송장은
+ * 나지 않고 검수 결과는 적히지 않으며, 합격했는데 환불이 시작되지 않는다
+ * (`return.controller.ts` 가 그 위험을 적어 두었다). 즉 「반품완료인데 아무 일도
+ * 일어나지 않은 반품」이 만들어지고, 그것은 아무 오류도 내지 않는다.
+ *
+ * 그 판단을 화면에 적으면 세 앱에 흩어진다. 서버가 답한다.
+ */
+export const claimActionRoutes = [
+  /** `POST /claims/:id/transitions` — 승인 · 거절. */
+  'transition',
+  /** `POST /returns/:claimId/pickup` — 수거. 운송장이 함께 난다. */
+  'pickup',
+  /** `POST /returns/:claimId/inspection` — 검수. 합격 여부가 환불을 가른다. */
+  'inspection',
+] as const
+
+export type ClaimActionRoute = (typeof claimActionRoutes)[number]
+
+export const claimActionRouteSchema = z.enum(claimActionRoutes)
+
+/**
+ * 지금 이 판매자가 밟을 수 있는 걸음 하나.
+ *
+ * `sellerOrderActionSchema` 가 주문에 대해 하는 일을 클레임에 대해 한다 — **화면이
+ * 상태로 분기하지 않게 하려고 있다.** 새 규칙이 아니라 `claimTransitions` 가 이미
+ * 답하고 있던 것을 응답에 싣는 것이고, 거기에 두 가지가 더 붙는다: 어느 문으로
+ * 가는가(`route`)와, 사유가 필수인가(`requiresReason`).
+ */
+export const claimActionSchema = z.object({
+  to: claimStatusSchema,
+  route: claimActionRouteSchema,
+  /**
+   * 사유 없이 보내면 **서버가 400 으로 거절한다**.
+   *
+   * 화면이 먼저 막는 것은 친절이고, 이 값이 참인 걸음을 사유 없이 보냈을 때
+   * 거절되는 것이 규칙이다 — 화면만 막으면 API 를 직접 부르는 길이 남는다.
+   */
+  requiresReason: z.boolean(),
+})
+
+export type ClaimAction = z.infer<typeof claimActionSchema>
+
+/**
+ * 첨부 사진 한 장.
+ *
+ * **열쇠와 URL 을 함께 싣는다.** 열쇠는 도메인의 값이고(`returnPhotoKeyPattern` 이
+ * 소유자를 말한다) URL 은 배포 설정에 달린 값이라, 화면이 열쇠에서 URL 을 만들면
+ * 그 설정이 프론트에 한 벌 더 생긴다.
+ *
+ * **판매자가 남의 사진을 볼 수 없다는 판정은 이 스키마가 아니라 그 앞에 있다** —
+ * `ClaimService.actorFor` 가 이 클레임의 주인이 아닌 사람을 403 으로 돌려보내므로,
+ * 여기까지 온 열쇠는 언제나 이 판매자 몫의 신청서에 붙은 것이다.
+ */
+export const claimPhotoSchema = z.object({
+  key: returnPhotoKeySchema,
+  /** 공개 URL. **저장소가 설정되지 않은 배포에서는 `null`** 이다 (TASK-0011 4.5). */
+  url: z.url().nullable(),
+})
+
+export type ClaimPhoto = z.infer<typeof claimPhotoSchema>
+
+/**
+ * 반품에만 있는 사실들, 판매자 화면이 그리는 만큼.
+ *
+ * `returnDetailSchema`(`returns.ts`)의 **부분집합**이고 대체가 아니다. 이 파일이
+ * 저쪽을 들여오지 않는 이유는 저쪽이 이 파일을 들여오기 때문이고(신청의 칸이 여기
+ * 있다), 고리를 만들면 zod 스키마가 평가 순서에 따라 `undefined` 로 태어난다.
+ *
+ * **금액 둘은 신청 시점에 굳은 값이다** (`returnCostShare` · `ReturnDetail`).
+ * 판매자가 그 뒤에 배송비 정책을 바꿔도 움직이지 않아야 하므로 여기서도, 어디서도
+ * 다시 계산하지 않는다.
+ */
+export const sellerClaimReturnSchema = z.object({
+  reason: returnReasonSchema,
+  /** 환불액에서 뺄 반품 배송비. 구매자 부담에서만 0보다 크다. */
+  returnShippingDeduction: z.int().min(0),
+  /** 돌려줄 원 배송비. 판매자 귀책에서만 0보다 크다. */
+  originalShippingRefund: z.int().min(0),
+  photos: z.array(claimPhotoSchema),
+  /** 회수 운송장. 아직 수거하지 않았으면 `null`. */
+  pickupTrackingNumber: z.string().nullable(),
+  /** 반송 운송장. 검수 불합격에서만 값이 있다. */
+  sendBackTrackingNumber: z.string().nullable(),
+})
+
+export type SellerClaimReturn = z.infer<typeof sellerClaimReturnSchema>
+
+/**
+ * `GET /api/v1/seller-claims/:id` — 판매자 콘솔의 클레임 상세.
+ *
+ * **한 응답인 것이 이 계약의 요점이다.** 화면은 대상 항목·사진·환불 예정액·기한·
+ * 버튼을 **언제나 함께** 그린다. 넷으로 나눠 부르면 네 응답이 서로 다른 순간을
+ * 보게 되고, 그때 판매자는 「1,000원」을 보면서 「2,000원」을 승인한다
+ * (`returnResponseSchema` 가 클레임과 부속을 함께 싣는 것과 같은 판단).
+ */
+export const sellerClaimDetailSchema = z.object({
+  claim: claimSchema,
+  stage: claimHandlingStageSchema,
+  dueAt: z.iso.datetime(),
+  overdue: z.boolean(),
+  /**
+   * 돈. **아직 안 나갔으면 예정액이고, 나갔으면 나간 액수다.**
+   *
+   * 한 필드인 것이 판단이다. 나눠 두면 화면이 「어느 쪽을 그릴지」를 상태로 다시
+   * 판정하게 되고, 그 판정이 틀리면 **끝난 클레임의 상세가 「환불 예정액 0원」**을
+   * 보여 준다 — 이미 환불된 클레임에 「지금 환불하면 얼마인가」를 물으면 남은 수량이
+   * 없으므로 답이 0이기 때문이다. 그것은 거짓말은 아니지만 판매자가 알고 싶은 것도
+   * 아니다.
+   *
+   * 어느 쪽이든 **실제 환불이 쓰는 같은 함수**를 지난 값이다 — 예정액은
+   * `claimRefundBreakdown` 이 지금 계산한 것이고, 나간 액수는 그 함수가 그때 계산해
+   * `ClaimRefund` 에 적어 둔 것이다.
+   */
+  quote: claimRefundQuoteSchema,
+  /** 위 금액이 **이미 나간 것**인가. 화면의 라벨이 이 값으로 갈린다. */
+  refunded: z.boolean(),
+  /** 지금 밟을 수 있는 걸음. 비어 있으면 종착이거나 시스템을 기다리는 자리다. */
+  actions: z.array(claimActionSchema),
+  /** 반품이면 부속, 취소면 `null`. */
+  return: sellerClaimReturnSchema.nullable(),
+})
+
+export type SellerClaimDetail = z.infer<typeof sellerClaimDetailSchema>
+
+export const sellerClaimDetailResponseSchema = z.object({ claim: sellerClaimDetailSchema })
+
+export type SellerClaimDetailResponse = z.infer<typeof sellerClaimDetailResponseSchema>

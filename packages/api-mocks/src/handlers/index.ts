@@ -6,6 +6,7 @@ import { cartHandlers } from './cart'
 import { categoryHandlers } from './categories'
 import { checkoutHandlers } from './checkout'
 import { claimHandlers } from './claims'
+import { sellerClaimHandlers } from './seller-claims'
 import { demoHandlers } from './demo'
 import { healthHandlers } from './health'
 import { orderHandlers } from './orders'
@@ -38,6 +39,7 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...checkoutHandlers,
   ...orderHandlers,
   ...claimHandlers,
+  ...sellerClaimHandlers,
   ...paymentHandlers,
   ...categoryHandlers,
   ...attributeHandlers,
@@ -72,6 +74,32 @@ export {
   MOCK_CLAIM_RETURN_WINDOW_ENDS_AT,
   MOCK_CLAIM_SELLER_ORDER_IDS,
 } from './claim-contract'
+/**
+ * 판매자 콘솔의 클레임 (TASK-0070). 목록·요약·상세와 전이·수거·검수가 한 저장소를
+ * 본다.
+ *
+ * 구매자의 `claims` **뒤에** 등록된다. `POST /claims/:id/transitions` 는 두 화면이
+ * 함께 쓸 수 있는 라우트이고, 기본 목록에서 먼저 맞는 쪽이 이기기 때문이다 —
+ * 구매자 대역이 그 문을 열지 않는 지금은 순서가 답을 바꾸지 않지만, 여는 날
+ * 바꾼다.
+ */
+export {
+  failNextSellerClaim,
+  resetSellerClaimStore,
+  sellerClaimHandlers,
+  sellerClaimSnapshot,
+} from './seller-claims'
+/**
+ * 판매자 클레임 대역의 씨앗과 조립기. 핸들러와 픽스처가 **함께** 읽으므로 픽스처
+ * 밖에 산다 — `claim-contract.ts` 와 같은 이유이고, 그 파일이 그 이유를 적어 두었다.
+ */
+export {
+  MOCK_SELLER_CLAIM_BRAND,
+  MOCK_SELLER_CLAIM_IDS,
+  MOCK_SELLER_CLAIM_NOW,
+  MOCK_SELLER_CLAIM_SELLER_STEPS,
+  MOCK_SELLER_CLAIM_STAGES,
+} from './seller-claim-contract'
 /**
  * 카드 계약 (TASK-0058). 핸들러가 아니라 **핸들러와 픽스처가 함께 읽는 모양**이고,
  * 그 파일이 왜 `fixtures/` 밖에 있는지는 거기 적혀 있다.

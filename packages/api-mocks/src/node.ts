@@ -14,6 +14,7 @@ import {
   resetClaimStore,
   resetDemoStore,
   resetProductStore,
+  resetSellerClaimStore,
   resetSellerConsoleStore,
   resetSellerOrderStore,
   resetSellerStore,
@@ -137,6 +138,10 @@ export function setupTestServer(...extraHandlers: readonly RequestHandler[]): Te
     // 클레임 (TASK-0066). 신청이 주문 항목의 수량을 잡아 두므로, 한 스펙이 건 신청이
     // 넘어가면 다음 스펙의 「3개까지 신청할 수 있어요」가 앞 스펙의 「2개」가 된다.
     resetClaimStore()
+    // 판매자 콘솔의 클레임 (TASK-0070). 한 스펙이 승인하거나 거절한 건이 넘어가면
+    // 다음 스펙의 「대기 5건」이 앞 스펙의 「4건」이 되고, **파일 안의 순서가 통과
+    // 여부를 정한다.**
+    resetSellerClaimStore()
     // Back to "this account has never applied", which is the state five of the
     // seller console's faces are told apart from.
     resetSellerStore()

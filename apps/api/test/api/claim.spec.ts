@@ -267,11 +267,20 @@ function requestClaim(
   })
 }
 
+/**
+ * 전이 하나.
+ *
+ * **거절에는 사유를 싣는다** (TASK-0070 5장). 규칙이 그것을 요구하므로 여기서 빼면
+ * 이 스펙이 재려던 것(거절이 수량을 돌려준다) 대신 사유 검사에 걸린다 — 그 검사를
+ * 재는 것은 `claim-seller-console.spec.ts` 의 몫이다.
+ */
 function transitionClaim(claimId: string, to: ClaimStatus, caller: TestCaller) {
+  const rejecting = to === 'CANCEL_REJECTED' || to === 'RETURN_REJECTED'
+
   return client(caller).request({
     path: `/claims/${claimId}/transitions`,
     method: 'POST',
-    body: { to },
+    body: rejecting ? { to, reason: '이미 발송 준비가 끝났어요.' } : { to },
     schema: claimTransitionResponseSchema,
   })
 }

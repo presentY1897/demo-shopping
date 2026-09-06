@@ -61,6 +61,7 @@ import {
   claimTransitionDecision,
   remainingQuantity,
 } from './claim-rules.js'
+import { claimTransitionNeedsReason } from './claim-console.js'
 import type { ReturnPhotoRefusal } from './return-rules.js'
 import { returnCostShare, returnFaultOf, returnPhotoDecision } from './return-rules.js'
 
@@ -743,6 +744,15 @@ export class ClaimService {
       throw transitionRefusal(decision.reason, locked.status, to)
     }
 
+    // **거절에는 사유가 있어야 한다** (TASK-0070 5장). 전이 판정 **뒤**에 보는 것이
+    // 순서다 — 있지도 않은 화살표에 「사유를 입력해 주세요」라고 답하면 사람은 사유를
+    // 적어 다시 시도하고, 또 거절당한다 (`claimEligibility` 가 같은 이유로 같은
+    // 순서를 갖는다).
+    //
+    // 여기가 유일한 자리인 것이 요점이다. 승인·거절·수거·검수가 전부 이 문을
+    // 지나므로(`ReturnService` 도 그렇다) 화면을 우회한 요청도 같은 판정을 받는다.
+    if (claimTransitionNeedsReason(to) && !hasText(command.reason)) throw reasonRequired()
+
     const now = this.clock.now()
 
     await tx.claimRequest.update({ where: { id: claimId }, data: { status: to, updatedAt: now } })
@@ -1332,6 +1342,24 @@ function photoRefusal(reason: ReturnPhotoRefusal): HttpException {
  * 한다), 주체가 막힌 것은 **다른 사람이면 된다.** 뒤쪽이 실제로 막는 것 하나가
  * 「신청자가 자기 클레임을 승인하는 것」이다.
  */
+/**
+ * 사유가 **실제로 적혔는가.**
+ *
+ * `null` 과 빈 문자열과 공백만 있는 문자열을 한 갈래로 접는다. 계약이
+ * `.trim()` 을 이미 걸었지만(`claimTransitionRequestSchema`) 이 문을 지나는 것이
+ * HTTP 하나가 아니다 — 검수도 여기로 오고, 그쪽의 `note` 는 다른 스키마다.
+ */
+function hasText(value: string | null): boolean {
+  return value !== null && value.trim() !== ''
+}
+
+/** 거절인데 사유가 없다. **400 이고 `reason` 필드에 붙는다.** */
+function reasonRequired(): HttpException {
+  return new BadRequestException(
+    domainFailure('CLAIM_REASON_REQUIRED', '거절 사유를 입력해 주세요.', { field: 'reason' }),
+  )
+}
+
 function transitionRefusal(
   reason: 'undefined_transition' | 'actor_forbidden',
   from: ClaimStatus,

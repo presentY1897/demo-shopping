@@ -449,6 +449,25 @@ export default defineConfig({
          * 「기간이 지났습니다」가 나가 기다렸으면 됐다는 뜻으로 읽힌다. 넷 다
          * 빨간 검사가 아니라 나중에 클레임 하나로 나타난다.
          */
+        // TASK-0070. 판매자 콘솔의 두 판단은 **틀려도 빨간 테스트가 되지 않는**
+        // 종류다. 「대기 먼저」의 순위가 어긋나면 목록이 그냥 다른 순서로 그려지고,
+        // 커서가 정렬 축이 아니라 행을 가리키면 페이지 하나가 조용히 사라진다. 어느
+        // 쪽도 아무것도 실패시키지 않는다.
+        'src/claims/claim-console.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        // 처리 기한. 「2영업일」의 정의 — 시간대 · 주말 · 공휴일 · 압축 데모 — 이
+        // 전부 여기 있고, 틀리면 지연 뱃지가 조용히 이르거나 늦게 뜬다. 경계가
+        // 하루 단위라 분기를 하나 놓치면 그만큼이 통째로 어긋난다.
+        'src/claims/claim-deadline.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
         'src/claims/claim-rules.ts': {
           branches: 100,
           functions: 100,

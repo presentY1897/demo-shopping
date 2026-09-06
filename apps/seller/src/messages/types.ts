@@ -1,5 +1,9 @@
 import type {
   ApiFailureReason,
+  ClaimFault,
+  ClaimHandlingStage,
+  ClaimStatus,
+  ClaimType,
   DemoCarrierCode,
   DenialReason,
   ErrorMessages,
@@ -9,6 +13,7 @@ import type {
   OrderActor,
   OrderStatus,
   ProductStatus,
+  ReturnReason,
   SellerOrderRequirement,
   SellerStatus,
   SellerStockAdjustType,
@@ -20,6 +25,7 @@ import type { ImageUploadListLabels, ShipmentTrackingLabels } from '@shopping/ui
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
 import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
+import type { SellerClaimTab } from '@/lib/claims/claim-console'
 import type { SellerOrderTab } from '@/lib/orders/order-console'
 import type { StoreFieldErrorMessages } from '@/lib/sellers/store-form'
 import type { SessionRefusal } from '@/lib/auth/session-client'
@@ -125,6 +131,20 @@ export interface Messages {
    * 목록에서는 「배송중」이고 상세에서는 「배송 중」인 날이 온다.
    */
   readonly orders: OrderVocabularyMessages
+  /**
+   * 취소·반품 처리 목록 (TASK-0070). 단계 탭 · 유형·상태 필터 · 처리 기한.
+   */
+  readonly claimList: ClaimListMessages
+  /** 클레임 하나 — 항목 · 사진 · 환불 예정액 · 귀책 · 기한 · 이력, 그리고 걸음들. */
+  readonly claimDetail: ClaimDetailMessages
+  /**
+   * 상태 · 유형 · 귀책 · 반품 사유 · 단계의 이름.
+   *
+   * 화면의 어휘가 아니라 **클레임의** 어휘라 두 화면이 나눠 쓴다 — `orders` 가 같은
+   * 이유로 목록과 상세 밖에 있다. 두 벌을 두면 목록에서는 「회수 중」이고 상세에서는
+   * 「수거 중」인 날이 온다.
+   */
+  readonly claims: ClaimVocabularyMessages
 }
 
 /**
@@ -1104,6 +1124,289 @@ export interface OrderDetailMessages {
   readonly history: OrderHistoryMessages
   readonly print: OrderPrintMessages
   readonly ship: OrderShipMessages
+  readonly errorTitle: string
+  readonly retry: string
+  readonly notFound: EmptyStateMessages
+  readonly failure: StoreFailureMessages
+  readonly toast: ProductToastMessages
+  readonly closeLabel: string
+}
+
+/* ---------------------------------------------- 취소·반품 처리 (TASK-0070) -- */
+
+/**
+ * 클레임의 어휘 — 상태 · 유형 · 귀책 · 반품 사유 · 단계 · 걸음의 이름.
+ *
+ * **전수 `Record` 인 것이 요점이다.** 상태나 사유가 하나 늘면 타입 검사가 빠진 문장을
+ * 잡고, 화면은 「알 수 없음」을 그릴 일이 없다 (`OrderVocabularyMessages` 와 같은 장치).
+ */
+export interface ClaimVocabularyMessages {
+  readonly statusLabels: Readonly<Record<ClaimStatus, string>>
+  readonly typeLabels: Readonly<Record<ClaimType, string>>
+  /** 누구 탓인가. **값이 아니라 돈이다** — 반품비를 누가 무는지가 여기서 갈린다. */
+  readonly faultLabels: Readonly<Record<ClaimFault, string>>
+  /** 왜 돌려보내는가. 셋이 입력이고 귀책 둘은 여기서 파생된다. */
+  readonly returnReasonLabels: Readonly<Record<ReturnReason, string>>
+  /** 탭의 축 — 「내가 지금 뭘 해야 하나」. */
+  readonly stageLabels: Readonly<Record<ClaimHandlingStage, string>>
+  /** 걸음의 이름 — 「어느 상태로」가 아니라 **무엇을 하는지**로 읽힌다. */
+  readonly actionLabels: Readonly<Record<ClaimStatus, string>>
+  /**
+   * 검수의 두 답.
+   *
+   * `actionLabels` 로 덮을 수 없는 자리다. `RETURN_REJECTED` 는 **두 곳에서** 나온다 —
+   * 신청을 거절하는 것(전이 라우트)과 검수에서 떨어뜨리는 것(검수 라우트)이고, 둘은
+   * 같은 상태로 가지만 다른 일이다. 상태 하나에 문장 하나인 표로는 그 둘을 가를 수
+   * 없고, 가르는 것은 `route` 다.
+   */
+  readonly inspectionLabels: {
+    readonly passed: string
+    readonly failed: string
+  }
+}
+
+/** 단계 탭. 상태 탭이 아닌 이유는 `claim-console.ts` 가 적어 두었다. */
+export interface ClaimTabMessages {
+  readonly label: string
+  readonly names: Readonly<Record<SellerClaimTab, string>>
+  /** `{name}` `{count}` — 탭 이름 뒤에 붙는 건수의 접근성 문장. */
+  readonly countLabel: string
+}
+
+/**
+ * 유형과 상태의 축.
+ *
+ * 단계는 위의 탭이 맡으므로 여기 없다 — 한 조건을 두 자리에서 고를 수 있게 만들면 어느
+ * 쪽이 이기는지를 정해야 하고, 그 규칙은 아무도 기억하지 못한다.
+ */
+export interface ClaimFilterMessages {
+  readonly legend: string
+  readonly typeLabel: string
+  readonly typeAll: string
+  readonly statusLabel: string
+  readonly statusAll: string
+  readonly reset: string
+}
+
+/** 목록 표의 열. */
+export interface ClaimTableMessages {
+  readonly caption: string
+  readonly orderNumber: string
+  readonly type: string
+  readonly status: string
+  readonly stage: string
+  readonly items: string
+  readonly requestedAt: string
+  readonly dueAt: string
+  readonly open: string
+  /** `{headline}` `{rest}` — 「울 코트 외 2건」. 개수는 서버가 세고 문장은 여기서 만든다. */
+  readonly headlineWithRest: string
+  /** `{count}` */
+  readonly quantity: string
+}
+
+/**
+ * 처리 기한과 지연 — 목록과 상세가 **같은 문장**을 쓴다.
+ *
+ * `rule` 이 이 슬라이스의 존재 이유다. 서버는 기한을 「신청 후 2영업일」로 세되
+ * **주말만 빼고 공휴일은 보지 않는다**(`apps/api/src/claims/claim-deadline.ts`).
+ * 그 사실을 숨기면 판매자는 설 연휴에 뜨는 「기한 초과」를 버그로 신고하고, 그때
+ * 대답할 수 있는 사람은 그 파일을 읽은 사람뿐이다.
+ */
+export interface ClaimDeadlineMessages {
+  /** 지연된 건에 붙는 배지. **색만으로 말하지 않는다** — 이 문장이 그 이유다. */
+  readonly overdue: string
+  readonly rule: string
+}
+
+/**
+ * 상세가 더 갖는 것.
+ *
+ * 목록의 것을 **넓히는** 모양인 이유는 두 화면이 같은 두 문장을 써야 하기 때문이다 —
+ * 따로 두면 목록에서는 「기한 초과」이고 상세에서는 「기한 지남」인 날이 온다.
+ */
+export interface ClaimDetailDeadlineMessages extends ClaimDeadlineMessages {
+  readonly label: string
+  readonly onTime: string
+  /** `{due}` — 상세의 경고 한 줄. */
+  readonly overdueNotice: string
+}
+
+/** 처리 대기 뱃지. */
+export interface ClaimBadgeMessages {
+  /** `{count}` */
+  readonly waiting: string
+  readonly none: string
+}
+
+export interface ClaimListMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly tabs: ClaimTabMessages
+  readonly filters: ClaimFilterMessages
+  readonly table: ClaimTableMessages
+  readonly badges: ClaimBadgeMessages
+  readonly deadline: ClaimDeadlineMessages
+  readonly pagination: PaginationMessages
+  readonly empty: EmptyStateMessages
+  readonly filteredEmpty: EmptyStateMessages
+  /**
+   * 목록에 실패 패널도 토스트도 없다.
+   *
+   * **이 화면은 아무것도 쓰지 않기 때문이다.** 승인·거절·수거·검수는 전부 상세에서
+   * 일어나고, 여기서 실패할 수 있는 것은 목록을 읽는 일 하나다 — 그것은 `DataList` 의
+   * 네 상태 중 오류가 이미 답한다. 쓰지 않는 문장을 카탈로그에 두면 번역할 사람이
+   * 그것을 번역한다.
+   */
+  readonly errorTitle: string
+  readonly retry: string
+}
+
+/**
+ * 환불 예정액.
+ *
+ * **배송비 조정은 부호를 살려 그린다.** 「반품비 3,000원 차감」과 「원 배송비 3,000원
+ * 환불」을 하나로 접으면 0원이 되어 아무 일도 없었던 것처럼 보인다
+ * (`claimRefundQuoteSchema` 가 적어 둔 그대로다).
+ */
+export interface ClaimQuoteMessages {
+  /**
+   * 아직 안 나간 돈의 이름.
+   *
+   * **`refunded` 하나가 이 라벨을 가른다** (`sellerClaimDetailSchema`). 금액은 같은
+   * 함수를 지난 같은 값이고 바뀌는 것은 시제뿐이라, 화면이 상태로 다시 판정하면 끝난
+   * 클레임이 「환불 예정액」을 보여 준다.
+   */
+  readonly pendingTitle: string
+  /** 이미 나간 돈의 이름. */
+  readonly refundedTitle: string
+  readonly itemsAmount: string
+  readonly shippingAmount: string
+  readonly total: string
+  /** 승인 버튼을 누르기 전에 읽는 한 줄. */
+  readonly pendingNotice: string
+  /** 이미 나간 뒤에 읽는 한 줄. */
+  readonly refundedNotice: string
+}
+
+/** 첨부 사진. */
+export interface ClaimPhotoMessages {
+  readonly empty: string
+  /** `{index}` — 사진에는 그 자체로 이름이 없다. 순번이 유일하게 참인 이름이다. */
+  readonly alt: string
+  /** 저장소가 설정되지 않은 배포에서 `url` 이 `null` 이다 (TASK-0011 4.5). */
+  readonly unavailable: string
+}
+
+/**
+ * 귀책과 그 근거 — **읽기 전용이다.**
+ *
+ * 판매자가 귀책을 직접 바꾸는 서버 계약이 **없다.** 반품의 귀책은 신청 사유에서
+ * 파생돼 `ReturnDetail` 에 굳어 있고 다시 계산하지 않는다. 그러니 입력 컨트롤을 내지
+ * 않고 **왜 여기서 바꿀 수 없는지**를 적는다 (TASK-0114 의 「옵션 축은 수정에서 바꾸지
+ * 않는다」와 같은 방식). 판매자의 판단은 **검수 합격·불합격**으로 표현된다.
+ */
+export interface ClaimFaultMessages {
+  readonly returnReason: string
+  readonly fault: string
+  readonly returnShippingDeduction: string
+  readonly originalShippingRefund: string
+  readonly readOnlyNotice: string
+}
+
+/** 회수·반송 운송장. 방향이 반대라는 사실이 이 도메인에서 유일하게 새로운 것이다. */
+export interface ClaimShipmentMessages {
+  readonly pickup: string
+  readonly sendBack: string
+  readonly none: string
+}
+
+/**
+ * 상태 이력 표.
+ *
+ * `OrderHistoryMessages` 와 모양이 같고 **다른 슬라이스**인 이유는 문장이 다르기
+ * 때문이다 — 여기서 `created` 는 「주문 접수」가 아니라 「신청 접수」이고, `step` 이
+ * 잇는 것은 주문 상태가 아니라 클레임 상태다. 한 벌로 접으면 클레임 이력에 「주문
+ * 접수」가 찍힌다.
+ */
+export interface ClaimHistoryMessages {
+  readonly caption: string
+  readonly at: string
+  readonly change: string
+  readonly actor: string
+  readonly reason: string
+  readonly noReason: string
+  /** `{from}` `{to}` — 「반품 신청 → 반품 승인」. 최초 신청에는 앞이 없다. */
+  readonly step: string
+  readonly created: string
+  readonly empty: string
+}
+
+/**
+ * 걸음과 그 확인 대화상자.
+ *
+ * **사유 칸이 둘이다.** 전이의 사유는 `reason` 이고 검수 불합격의 사유는 `note` 로,
+ * 같은 「거절 사유」이지만 다른 문에 실린다 (`reasonFieldOf`). 오류는 언제나 **그
+ * 칸에** 붙는다 — 대화상자 위의 문장 하나로는 어느 칸이 문제인지 말하지 못한다 (U2).
+ */
+export interface ClaimActionMessages {
+  readonly legend: string
+  /** 밟을 걸음이 없을 때. 종착이거나 시스템을 기다리는 자리다. */
+  readonly empty: string
+  readonly confirmTitle: string
+  /** `{action}` */
+  readonly confirmBody: string
+  readonly confirm: string
+  readonly cancel: string
+  readonly reasonLabel: string
+  readonly reasonPlaceholder: string
+  readonly reasonRequired: string
+  readonly noteLabel: string
+  readonly notePlaceholder: string
+  readonly noteRequired: string
+  /** `{status}` */
+  readonly done: string
+  /** 멱등한 전이가 아무것도 옮기지 않았을 때. */
+  readonly unchanged: string
+}
+
+export interface ClaimDetailMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly backToList: string
+  /** `{orderNumber}` */
+  readonly subtitle: string
+  readonly sections: {
+    readonly items: string
+    readonly request: string
+    readonly photos: string
+    readonly fault: string
+    readonly deadline: string
+    readonly shipments: string
+    readonly history: string
+  }
+  readonly items: {
+    readonly caption: string
+    readonly product: string
+    readonly option: string
+    readonly quantity: string
+    /** 이 줄의 환불 금액. **`ClaimItem.refundAmount` 가 아니라 견적의 줄**에서 온다. */
+    readonly refund: string
+    readonly noOption: string
+  }
+  readonly request: {
+    readonly reason: string
+    readonly requestedAt: string
+  }
+  readonly quote: ClaimQuoteMessages
+  readonly photos: ClaimPhotoMessages
+  readonly fault: ClaimFaultMessages
+  readonly shipments: ClaimShipmentMessages
+  readonly deadline: ClaimDetailDeadlineMessages
+  readonly history: ClaimHistoryMessages
+  readonly actions: ClaimActionMessages
   readonly errorTitle: string
   readonly retry: string
   readonly notFound: EmptyStateMessages

@@ -150,11 +150,53 @@ export const mockPaths = {
    */
   claims: `*${API_PATH_PREFIX}/claims`,
   /**
+   * `POST` 승인 · 거절 (TASK-0070).
+   *
+   * **판매자 콘솔의 쓰기가 `/seller-claims` 밑에 없다.** 같은 전이에 문이 둘 생기면
+   * 「어느 쪽이 진짜 규칙인가」에 답할 수 있는 사람이 없어지고, 그래서 콘솔 라우트는
+   * 읽기 셋뿐이다 (`SellerClaimController`).
+   *
+   * 리터럴이 붙은 이것이 {@link mockPaths.claim} 보다 **먼저** 온다. `:id` 는 `/` 를
+   * 넘지 못해 서로를 먹지는 않지만, 옆의 라우트들이 전부 그 순서로 적혀 있다.
+   */
+  claimTransitions: `*${API_PATH_PREFIX}/claims/:id/transitions`,
+  /**
    * `GET` 클레임 하나. 신청한 화면이 곧바로 이것을 다시 읽는다.
    *
    * 컬렉션 **뒤에** 온다 — 옆의 라우트들이 전부 그 순서다.
    */
   claim: `*${API_PATH_PREFIX}/claims/:id`,
+  /**
+   * `POST` 수거를 시작한다 (TASK-0067 · 0070 F3).
+   *
+   * **전이 라우트와 다른 문이다.** 그쪽으로 가면 상태만 옮겨지고 회수 운송장이 나지
+   * 않아, 「회수 중」이라고 말해 놓고 어디로 보내야 하는지 답하지 못하는 반품이
+   * 남는다. 어느 문으로 가는지는 상세의 `actions[].route` 가 답한다.
+   */
+  returnPickup: `*${API_PATH_PREFIX}/returns/:claimId/pickup`,
+  /**
+   * `POST` 입고 검수. **합격 여부가 환불을 가른다** (F4 · F5).
+   *
+   * `:claimId` 인 것은 반품이 클레임과 같은 열쇠를 쓰기 때문이다 — 반품은 클레임에
+   * 딸린 부속이고 자기 id 를 따로 갖지 않는다.
+   */
+  returnInspection: `*${API_PATH_PREFIX}/returns/:claimId/inspection`,
+  /**
+   * 판매자 콘솔의 클레임 목록 (TASK-0070). `GET` 만 있다.
+   *
+   * 구매자·관리자가 함께 쓰는 `/claims` 와 **다른 라우트**인 것이 계약이다 — 한 줄에
+   * 판매자에게만 뜻이 있는 셋(단계 · 기한 · 지연)이 실리고, 「기한 초과」를 구매자
+   * 화면에 그리면 판매자를 재촉하는 말이 남의 화면에 뜬다.
+   */
+  sellerClaims: `*${API_PATH_PREFIX}/seller-claims`,
+  /**
+   * 상태별 · 단계별 건수. **`sellerClaim` 보다 먼저 등록해야 한다** — msw 는 먼저
+   * 맞는 것을 쓰므로 뒤에 두면 `summary` 가 클레임 id 로 읽힌다. 실제 서버에서
+   * 컨트롤러의 선언 순서가 같은 함정이다.
+   */
+  sellerClaimSummary: `*${API_PATH_PREFIX}/seller-claims/summary`,
+  /** 클레임 하나 — 항목 · 사진 · 환불 예정액 · 기한 · 버튼이 한 응답이다. */
+  sellerClaim: `*${API_PATH_PREFIX}/seller-claims/:id`,
   /**
    * 내 카드들 (TASK-0054). `GET` 목록, `POST` 발급 (TASK-0058).
    *
