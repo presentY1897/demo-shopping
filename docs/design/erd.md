@@ -611,6 +611,7 @@ erDiagram
 ```mermaid
 erDiagram
     Coupon ||--o{ UserCoupon : issued
+    User ||--o{ Coupon : "issues"
     User ||--o{ UserCoupon : owns
     Order ||--o{ UserCoupon : uses
     User ||--o| PointAccount : has
@@ -619,7 +620,7 @@ erDiagram
 
 | 테이블 | 목적 | 비고 |
 | --- | --- | --- |
-| `Coupon` | 쿠폰 정책 | `issuerType` = PLATFORM / SELLER. **부담 주체가 정산을 가른다** |
+| `Coupon` | 쿠폰 정책 | `issuerType` = PLATFORM / SELLER. **부담 주체가 정산을 가른다**. `issuedByUserId` · `audience` 는 **누가 냈고 누구에게 갈 수 있나**로, 권한 층이 읽는다 |
 | `UserCoupon` | 발급된 쿠폰 | 발급/사용/만료 상태, 사용된 주문 |
 | `PointAccount` | 적립금 잔액 | 사용자당 1개 |
 | `PointTransaction` | 적립금 원장 | 적립/사용/복구/만료/조정. `balanceAfter` 를 함께 저장해 대사 가능 |
@@ -627,6 +628,12 @@ erDiagram
 - 적립은 **구매확정 시점**에 지급한다. 배송완료 직후 주면 반품 시 회수할 수 없다.
 - 환불 시 적립금은 **현금이 아니라 적립금으로** 복구된다.
 - 플랫폼 쿠폰·적립금은 플랫폼 부담이라 판매자 정산에서 차감하지 않는다. 판매자 쿠폰만 차감한다.
+- **쿠폰에는 주인이 있다** (D-224). 판매자 쿠폰의 주인은 그 스토어이고, 플랫폼 쿠폰의 주인은
+  **발행자**다 — 소유하는 스토어가 없으므로 그것 말고는 스코프가 닿을 값이 없다. 그래서 발행은
+  등급으로 갈린다: 판매자는 `coupon.write`, 플랫폼 부담은 `coupon.platform`.
+- `audience` 는 그 행이 **닿을 수 있는 그룹**이다. 발행 시점에 「만든 사람이 체험 계정이거나
+  대상 스토어가 체험 계정의 것」이면 `DEMO` 로 정해지고, 그 뒤로는 조인 없이 이 칸이 답한다.
+  체험 그룹의 쿠폰은 **체험 계정에게만 발급된다** — 그 반대는 막지 않는다.
 
 ---
 
