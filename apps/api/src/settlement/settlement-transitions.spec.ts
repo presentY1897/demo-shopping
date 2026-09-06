@@ -6,9 +6,14 @@
  * 길이 열려 있으면 그것은 돈이 두 번 나가는 길이다.
  */
 
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
 import { describe, expect, it } from 'vitest'
 
 import type { SettlementStatus } from '@prisma/client'
+
+import { findRepoRoot } from '../config/workspace.js'
 
 import {
   canTransition,
@@ -90,5 +95,44 @@ describe('이 상태로 올 수 있는 곳', () => {
   /** 처음 상태로 돌아오는 길이 없다 — 배치가 만든 뒤로는 아무도 되돌리지 못한다. */
   it('대기로 오는 길이 없다', () => {
     expect(sourcesOf('PENDING')).toEqual([])
+  })
+})
+
+/**
+ * 설계 문서에서 5장의 상태 다이어그램만 잘라 온다 (D2).
+ *
+ * 화살표를 여기 다시 적으면 이 검사는 **코드를 코드와 비교하게 된다.** 문서가
+ * 기준이고(CLAUDE.md 1장), 문서가 바뀌었는데 표가 안 바뀌면 여기가 빨개져야 한다.
+ */
+function settlementChapter(): string {
+  const root = findRepoRoot()
+
+  if (root === null) throw new Error('워크스페이스 루트를 찾지 못했습니다.')
+
+  const document = readFileSync(join(root, 'docs', 'design', 'state-machines.md'), 'utf8')
+  const chapter = /^## 5\. 정산[\s\S]*?(?=^## )/mu.exec(document)
+
+  if (chapter === null) throw new Error('state-machines.md 의 5장을 찾지 못했습니다.')
+
+  return chapter[0]
+}
+
+describe('설계 문서와 같은 표인가 (D2)', () => {
+  /**
+   * 문서의 다이어그램에서 화살표를 읽어 표와 견준다.
+   *
+   * **양쪽 방향으로 견준다.** 문서에 있는데 표에 없으면 못 하는 일이 생기고, 표에
+   * 있는데 문서에 없으면 아무도 승인한 적 없는 전이가 열려 있는 것이다.
+   */
+  it('문서의 화살표와 표의 화살표가 정확히 같다', () => {
+    const documented = [...settlementChapter().matchAll(/^\s{4}(\w+) --> (\w+)/gmu)]
+      .map(([, from, to]) => `${from ?? ''}→${to ?? ''}`)
+      .filter((arrow) => !arrow.startsWith('[*]') && !arrow.endsWith('[*]'))
+      .sort()
+    const implemented = Object.entries(settlementTransitions)
+      .flatMap(([from, targets]) => targets.map((to) => `${from}→${to}`))
+      .sort()
+
+    expect(implemented).toEqual(documented)
   })
 })
