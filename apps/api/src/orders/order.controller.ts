@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common'
 import type {
+  CheckoutCouponsResponse,
   CheckoutResponse,
   OrderListResponse,
   OrderResponse,
@@ -8,6 +9,7 @@ import type {
   SellerOrderSummaryResponse,
 } from '@shopping/shared'
 import {
+  checkoutQueryParamsSchema,
   createCheckoutRequestSchema,
   createOrderRequestSchema,
   orderListQueryParamsSchema,
@@ -30,8 +32,9 @@ import { SellerOrderListService } from './seller-order-list.service.js'
  * 때문이다 — 주문 단위 합계에는 남의 몫이 섞여 있으므로 판매자에게 그대로 줄 수 없고,
  * 다시 계산해서 주면 그 숫자는 아무 데도 저장된 적이 없는 값이 된다.
  *
- * 쿠폰·적립금은 아직 받지 않는다 (4.2). 서비스는 할인 목록을 인자로 받게 되어 있고
- * 여기서 넘기지 않을 뿐이다 — M11 이 그 목록을 계산해 채운다.
+ * **쿠폰은 요청에 실려 온다** (TASK-0075). 주문서 읽기의 쿼리와 주문 생성의 몸통에
+ * 각각 고른 장의 id 가 붙고, 서버는 그것을 확인해 계산 엔진의 할인 목록으로 편다.
+ * 적립금은 아직이다 — 그 자리는 TASK-0076 이 채운다.
  */
 @Controller({ version: '1' })
 export class OrderController {
@@ -56,14 +59,44 @@ export class OrderController {
     return this.checkouts.open(principal, parseInput(createCheckoutRequestSchema, body))
   }
 
-  /** 열려 있는 주문서. 만료됐거나 풀렸으면 없는 것으로 답한다. */
+  /**
+   * 열려 있는 주문서. 만료됐거나 풀렸으면 없는 것으로 답한다.
+   *
+   * **고른 쿠폰이 쿼리로 온다** (TASK-0075). 서버에 저장하지 않는 이유는 「고르기」가
+   * 상태를 바꾸는 요청이 되면 새로고침·뒤로가기·두 번째 탭이 각각 다른 주문서를 보게
+   * 되기 때문이다. 못 쓰는 장이 섞여 있으면 400 이고, 조용히 빼고 계산하지 않는다 —
+   * 그러면 화면이 「5,000원 할인」을 보여 준 채 그만큼 비싼 주문이 만들어진다.
+   */
   @Get('checkouts/:id')
   @RequirePermission('order.read')
   readCheckout(
     @Principal() principal: RequestPrincipal,
     @Param('id') id: string,
+    @Query() query: unknown,
   ): Promise<CheckoutResponse> {
-    return this.checkouts.read(principal, id)
+    const { userCouponIds } = parseInput(checkoutQueryParamsSchema, query)
+
+    return this.checkouts.read(principal, id, userCouponIds ?? [])
+  }
+
+  /**
+   * 이 주문서에 쓸 수 있는 쿠폰과 최대 할인 조합 (TASK-0075 F2 · F7).
+   *
+   * **주문서 응답에 얹지 않고 라우트를 나눴다.** 쿠폰을 고를 때마다 주문서를 다시
+   * 읽는데, 그때마다 쿠폰함 전체를 판정하고 조합을 전수 탐색해 함께 내려보내는 것은
+   * 같은 답을 반복해서 만드는 일이다 — 고르는 동안 **쓸 수 있는 목록은 바뀌지 않는다.**
+   *
+   * 위의 `checkouts/:id` 보다 아래에 있어도 부딪히지 않는다. 마디 수가 다르기
+   * 때문이고, 그래도 순서를 지키는 편이 낫다는 것은 `seller-orders/summary` 가
+   * 배운 것이다.
+   */
+  @Get('checkouts/:id/coupons')
+  @RequirePermission('order.read')
+  checkoutCoupons(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+  ): Promise<CheckoutCouponsResponse> {
+    return this.checkouts.applicableCoupons(principal, id)
   }
 
   /**

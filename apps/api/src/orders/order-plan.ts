@@ -27,6 +27,10 @@ export interface OrderLine {
   readonly brandName: string
   readonly unitPrice: number
   readonly quantity: number
+  /** 쿠폰의 `PRODUCT` 범위가 견주는 값 (TASK-0075). */
+  readonly productId: string
+  /** 쿠폰의 `CATEGORY` 범위가 견주는 값 — `/1/5/12/`. */
+  readonly categoryPath: string
   readonly snapshot: OrderItemSnapshot
 }
 
