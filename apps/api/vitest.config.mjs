@@ -982,6 +982,19 @@ export default defineConfig({
                 lines: 100,
                 statements: 100,
               },
+              /**
+               * TASK-0081. 정산서가 지날 수 있는 길.
+               *
+               * **없는 화살표가 불가능한가**를 지키는 표다. 여기 닿지 않은 갈래가
+               * 있다는 것은 아무도 지나 본 적 없는 전이가 열려 있다는 뜻이고, 그
+               * 전이가 「지급완료된 정산서를 다시 승인」이면 돈이 두 번 나간다.
+               */
+              'src/settlement/settlement-transitions.ts': {
+                branches: 100,
+                functions: 100,
+                lines: 100,
+                statements: 100,
+              },
             },
     },
   },
