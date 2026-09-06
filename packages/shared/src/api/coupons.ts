@@ -294,6 +294,10 @@ export const couponSellerScopeIdSchema = sellerIdSchema
  * 순서가 있다 — {@link couponApplicabilityFaults} 를 읽는 쪽이 이 순서로 본다.
  * 앞엣것이 뒤엣것을 가린다: 만료된 쿠폰에 「최소 주문금액이 모자라요」를 말하면
  * 사람은 장바구니를 채우러 갔다가 다시 거절당한다.
+ *
+ * **목록에서는 `fault` 로, 거절에서는 `details[0].params.reason` 으로 온다.**
+ * 고르기 전에는 판정의 결과이고 고른 뒤에는 400(`COUPON_NOT_APPLICABLE`)의 사유라,
+ * 같은 이름이 두 자리에 실린다 — 화면이 사유마다 그릴 문장은 한 벌이면 된다.
  */
 export const couponApplicabilityFaults = [
   /** 이미 다른 주문에 썼다. */
@@ -326,6 +330,11 @@ export const couponApplicabilityFaultSchema = z.enum(couponApplicabilityFaults)
  * 위쪽과 **다른 종류의 판단**이라 목록을 나눴다. 저것은 한 장에 대한 사실이고
  * 이것은 **여러 장 사이의 관계**다 — 두 장 모두 그 자체로는 멀쩡한데 함께 쓸 수
  * 없는 경우가 여기 있고, 화면이 어느 장에 문장을 붙여야 할지도 다르다.
+ *
+ * **오는 자리는 위와 같다** — 400 `COUPON_NOT_APPLICABLE` 의
+ * `details[0].params.reason`. 코드를 따로 두지 않은 것은 화면이 하는 일이 같기
+ * 때문이다: 그 선택을 풀고 사유를 적는다. 목록(`applicableCouponSchema.fault`)에는
+ * 실리지 않는다 — 한 장을 판정한 결과가 아니기 때문이다.
  */
 export const couponSelectionFaults = [
   /** 플랫폼 쿠폰을 두 장 골랐다. 주문 하나에 한 장이다. */
@@ -366,7 +375,11 @@ export const selectedUserCouponIdsSchema = z.array(z.uuid()).max(MAX_SELECTED_CO
  */
 export const selectedUserCouponIdsQuerySchema = z
   .string()
-  .transform((value) => value.split(','))
+  // 빈 문자열은 **아무것도 고르지 않은 것**이다. `''.split(',')` 은 `['']` 이라
+  // 그대로 두면 `?userCouponIds=` 하나가 「uuid 가 아닌 쿠폰을 골랐다」는 400 이
+  // 된다 — 쿼리를 조립하는 쪽이 빈 배열을 그렇게 잇는 것은 흔한 일이고, 그 요청의
+  // 뜻은 명백히 「없음」이다.
+  .transform((value) => (value === '' ? [] : value.split(',')))
   .pipe(selectedUserCouponIdsSchema)
 
 /**
@@ -443,7 +456,13 @@ export const appliedCouponSchema = z.object({
    * 있어야 한다** — 정산(M12)이 판매자 부담 쿠폰만 차감하기 때문이다.
    */
   issuerType: couponIssuerTypeSchema,
-  /** 이 장이 실제로 깎은 금액. 전부 더하면 주문의 쿠폰 할인액이다. */
+  /**
+   * 이 장이 실제로 깎은 금액. 전부 더하면 주문의 쿠폰 할인액이다.
+   *
+   * **0원일 수 있고, 그래도 목록에 남는다.** 앞의 쿠폰이 상품금액을 다 덮으면 뒤엣
+   * 것은 한 푼도 깎지 못하는데, 그때도 **그 장은 쓰인 것**이다 — 빼 버리면 고른
+   * 장수와 적용된 장수가 소리 없이 갈리고, 화면은 사라진 한 장을 설명할 수 없다.
+   */
   discountAmount: wonSchema,
 })
 
