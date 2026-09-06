@@ -57,7 +57,26 @@ jobs:
   test:
     name: test
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Twenty, and the number is a hang guard rather than a performance budget.
+    #
+    # It was ten, and by 2026-09-06 the job was finishing in 9m18s–9m42s on
+    # `main` — three runs in a row within forty seconds of the cap. The next
+    # branch to add tests (TASK-0075 added a hundred) tipped it over, and the
+    # failure arrives as `cancelled`, which reads like an infrastructure hiccup
+    # rather than "your branch is too slow": nothing in the log says a test
+    # failed, because none did.
+    #
+    # Raising it does not hide a regression. What a cap this tight was catching
+    # was load noise on the runner, and it caught it by turning a green branch
+    # red. A suite that genuinely hangs still stops, twenty minutes later.
+    #
+    # **The trend is the real problem** and this does not fix it. The job runs
+    # every package in series and `apps/api` is most of it; the next step when
+    # this gets close again is a matrix over packages. That changes the job
+    # names, which is why it is not this commit — the four gate names are what
+    # branch protection requires and what CLAUDE.md tells the next person to
+    # count.
+    timeout-minutes: 20
     # The suite runs against a real PostgreSQL (QUALITY-GATES 6장, D-207): the
     # invariants this project relies on are enforced by the database — partial
     # unique indexes, CHECK constraints, conditional stock updates — and mocking
