@@ -14,4 +14,4 @@ M07 에서 만든 금액 계산 엔진의 `discounts` 목록에 쿠폰과 적립
 | [TASK-0075](./TASK-0075-coupon-apply.md) | 쿠폰 적용 · 검증 | 완료 | 0072 |
 | [TASK-0076](./TASK-0076-point-ledger.md) | 적립금 원장 · 적립 · 사용 | 완료 | M10 |
 | [TASK-0077](./TASK-0077-coupon-point-pages.md) | 쿠폰함 · 적립금 내역 화면 | 승인됨 | 0075, 0076 |
-| [TASK-0078](./TASK-0078-discount-restore.md) | 환불 시 쿠폰 · 적립금 복구 | 승인됨 | 0075, 0076 |
+| [TASK-0078](./TASK-0078-discount-restore.md) | 환불 시 쿠폰 · 적립금 복구 | 완료 | 0075, 0076 |

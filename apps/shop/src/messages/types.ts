@@ -6,13 +6,17 @@ import type {
   ClaimRefusal,
   ClaimType,
   CouponApplicabilityFault,
+  CouponIssuerType,
+  CouponScopeType,
   DenialReason,
   HealthStatus,
   OauthFailureReason,
   OauthNotice,
   OrderStatus,
+  PointTransactionType,
   ReturnReason,
   SearchSort,
+  UserCouponStatus,
   UserFacingErrorCode,
 } from '@shopping/shared'
 import type { ProductCardLabels, ProductListLabels } from '@shopping/ui/catalog'
@@ -149,6 +153,12 @@ export interface MyPageMessages {
   readonly addresses: AddressBookMessages
   /** 가상 카드 관리 (TASK-0058). */
   readonly cards: CardWalletMessages
+  /** 쿠폰함 — 탭 셋, 만료 임박, 코드 등록 (TASK-0077). */
+  readonly coupons: CouponBoxMessages
+  /** 적립금 내역 — 잔액과 원장 (TASK-0077). */
+  readonly points: PointScreenMessages
+  /** 마이페이지 머리의 두 숫자 — 잔액과 쿠폰 수 (TASK-0077). */
+  readonly summary: AccountSummaryMessages
   /** 주문 내역 목록 (TASK-0063). */
   readonly orders: OrderHistoryMessages
   /** 주문 하나 — 판매자별 묶음 (TASK-0063). */
@@ -215,6 +225,27 @@ export const myPageErrorCodes = [
   'RETURN_PHOTO_TOO_MANY',
   'RETURN_PHOTO_DUPLICATE',
   'RETURN_PHOTO_FOREIGN',
+  /**
+   * 쿠폰 코드 등록의 거절 일곱 (TASK-0077 F3).
+   *
+   * **일곱이 전부 여기 있어야 하는 이유는 사람이 할 일이 일곱 가지로 다르기**
+   * 때문이다. 아직 시작하지 않은 쿠폰을 든 사람은 **기다리면** 되고, 끝난 쿠폰을 든
+   * 사람은 무엇을 해도 안 되며, 이미 받은 사람이 할 일은 쿠폰함을 보는 것이고, 소진된
+   * 쿠폰을 든 사람은 다음 캠페인을 기다린다. 계약이 코드를 일곱으로 나눈 이유가 그
+   * 차이이므로(`error-codes.ts`), 화면이 하나로 뭉치면 서버가 한 일이 화면에서 없던
+   * 일이 된다.
+   *
+   * 서버 문장을 그대로 흘리는 길도 있었다. 그러나 그 문장은 **발행자에게 하는 말**로
+   * 쓰여 있고(`coupon-rules.ts` 가 콘솔과 공유한다), 「체험용 쿠폰이라 체험 계정에만
+   * 지급할 수 있어요」는 지급하는 사람의 문장이지 받으려던 사람의 문장이 아니다.
+   */
+  'COUPON_CODE_UNKNOWN',
+  'COUPON_ALREADY_ISSUED',
+  'COUPON_NOT_STARTED',
+  'COUPON_ENDED',
+  'COUPON_ISSUE_EXHAUSTED',
+  'COUPON_SUSPENDED',
+  'COUPON_DEMO_ONLY',
 ] as const satisfies readonly UserFacingErrorCode[]
 
 export type MyPageErrorCode = (typeof myPageErrorCodes)[number]
@@ -226,6 +257,10 @@ export interface MyPageNavMessages {
   readonly cards: string
   /** 주문 내역 (TASK-0063). 계정 화면 넷 중 사람이 가장 자주 찾는 것이라 맨 앞이다. */
   readonly orders: string
+  /** 쿠폰함 (TASK-0077). */
+  readonly coupons: string
+  /** 적립금 내역 (TASK-0077). */
+  readonly points: string
 }
 
 /**
@@ -504,6 +539,188 @@ export interface CardLedgerMessages {
   readonly noOrder: string
   /** 주문 링크의 접근성 이름. 표 안에 같은 이름의 링크가 여럿이라 필요하다. `{number}` */
   readonly orderLink: string
+}
+
+/**
+ * 쿠폰함 (TASK-0077 F1 · F2 · F3).
+ *
+ * **빈 상태가 탭마다 다르다.** 쓸 수 있는 쿠폰이 없는 사람이 할 일은 코드를 넣거나
+ * 기획전을 보러 가는 것이고, 쓴 쿠폰이 없는 사람에게는 할 일이 없으며, 만료된 쿠폰이
+ * 없는 것은 **좋은 소식**이다. 한 문장으로 덮으면 그 셋 중 둘에게 틀린 말을 한다 —
+ * 주문 내역이 빈 상태를 둘로 나눈 것과 같은 판단이다.
+ *
+ * **할인 표기가 두 벌인 것은 단위가 다르기 때문이다.** `FIXED` 의 `discountValue` 는
+ * 원이고 `PERCENT` 의 그것은 퍼센트라(계약), 한 문장에 `{value}` 를 끼워 넣으면
+ * 「10원 할인」과 「3000% 할인」 중 하나가 반드시 나온다.
+ */
+export interface CouponBoxMessages {
+  readonly title: string
+  readonly description: string
+  readonly tabsLabel: string
+  /**
+   * 탭 셋의 이름. `Record` 라 상태가 하나 늘면 `pnpm typecheck` 이 깨진다 — 이름 없는
+   * 탭은 사람에게 「」로 보이고, 그것은 아무도 신고하지 않는 종류의 결함이다.
+   */
+  readonly tabs: Readonly<Record<UserCouponStatus, string>>
+  /** 탭에 붙는 수의 접근성 이름. `{count}` */
+  readonly tabBadge: string
+  readonly listLabel: string
+  readonly loadingLabel: string
+  /** 탭마다의 빈 상태. 셋이 서로 다른 말을 한다 — 위 문단 참조. */
+  readonly empty: Readonly<Record<UserCouponStatus, EmptyStateCopy>>
+  /** 쓸 수 있는 쿠폰이 없는 사람이 갈 곳. */
+  readonly emptyAction: string
+  /** `{count}` — 지금까지 불러온 장수. */
+  readonly countLabel: string
+  readonly loadMore: string
+  readonly loadingMore: string
+  readonly loadMoreFailedTitle: string
+  /**
+   * 만료 임박 배지 (F2). `{days}`
+   *
+   * 남은 날을 문장에 싣는 이유는 「곧」이 사람마다 다르기 때문이다. 「3일 남음」은
+   * 오늘 쓸지 내일 쓸지를 정할 수 있게 하고, 「곧 만료」는 그렇지 않다.
+   */
+  readonly expiringBadge: string
+  /** 정액 할인. `{amount}` */
+  readonly discountFixed: string
+  /** 정률 할인. `{percent}` */
+  readonly discountPercent: string
+  /** 정률의 상한. 정액에는 뜻이 없어 그리지 않는다. `{amount}` */
+  readonly maxDiscount: string
+  /** `{amount}` 이상 살 때만 쓸 수 있다. */
+  readonly minOrder: string
+  /** 최소 주문금액이 0원인 쿠폰. 「0원 이상」이라고 적으면 조건이 있는 것처럼 읽힌다. */
+  readonly noMinOrder: string
+  /** 누가 부담하는가 — 플랫폼 쿠폰인지 이 가게의 쿠폰인지. */
+  readonly issuers: Readonly<Record<CouponIssuerType, string>>
+  /** 어디에 쓸 수 있는가. */
+  readonly scopes: Readonly<Record<CouponScopeType, string>>
+  /** `{date}` 까지 쓸 수 있다. */
+  readonly expiresAt: string
+  /** `{date}` 에 썼다. */
+  readonly usedAt: string
+  /** `{date}` 에 만료됐다. */
+  readonly expiredAt: string
+  /**
+   * 쓴 장이 가리키는 주문의 **접근성 이름**. `{name}`
+   *
+   * 목록의 링크가 전부 「주문 보기」면 링크 목록을 훑는 사람에게 같은 이름이 스무 개
+   * 남는다 (WCAG 2.4.4). 보이는 글자는 아래 {@link orderLinkText} 이고, 그것이 이
+   * 문장 안에 그대로 들어 있어야 음성 제어가 같은 말로 이 링크를 누를 수 있다 (2.5.3).
+   */
+  readonly usedOrderLink: string
+  /** 그 링크에 보이는 글자. 짧아야 카드가 좁은 화면에서 접히지 않는다. */
+  readonly orderLinkText: string
+  readonly claim: CouponClaimMessages
+}
+
+/**
+ * 쿠폰 코드 등록 (F3).
+ *
+ * **입력이 너그럽다는 사실을 힌트가 말한다.** 서버가 하이픈·공백·소문자를 받아 주는데
+ * (`normalizeCouponCode`) 화면이 그것을 말하지 않으면, 배너의 `NEW9V-2K4TR` 을 보고
+ * 하이픈을 지워야 하나 망설이는 사람이 생긴다.
+ */
+export interface CouponClaimMessages {
+  readonly title: string
+  readonly description: string
+  readonly codeLabel: string
+  readonly codeHint: string
+  readonly codePlaceholder: string
+  readonly submit: string
+  readonly submitting: string
+  readonly submitError: string
+  /** 받은 쿠폰의 이름을 싣는다. 「받았습니다」만으로는 무엇이 들어왔는지 모른다. `{name}` */
+  readonly claimedNotice: string
+  readonly errors: CouponClaimErrorMessages
+}
+
+/** 빈 상태 하나 — 제목과 그 아래 한 줄. */
+export interface EmptyStateCopy {
+  readonly title: string
+  readonly body: string
+}
+
+export interface CouponClaimErrorMessages {
+  readonly required: string
+  /** 계약의 상한(`COUPON_CODE_INPUT_MAX_LENGTH`)을 넘겼다. `{max}` */
+  readonly tooLong: string
+}
+
+/**
+ * 적립금 내역 (TASK-0077 F4 · F5 · F6).
+ *
+ * **원장을 그대로 보여 준다.** 잔액만 보여 주는 화면은 「왜 줄었지」에 답할 수 없고,
+ * 그 답이 줄마다 붙은 `balanceAfter` 다 (4장).
+ *
+ * **적립 예정이 이 화면의 요점이다** (F6). 적립은 구매확정 시점에 일어나므로 배송완료된
+ * 주문은 아직 아무것도 적립하지 않았고, 그 사실을 말해 주지 않으면 사는 사람은 「샀는데
+ * 왜 적립이 안 됐지」로 읽는다.
+ */
+export interface PointScreenMessages {
+  readonly title: string
+  readonly description: string
+  readonly balanceLabel: string
+  /** 적립 예정 (F6). */
+  readonly pendingTitle: string
+  readonly pendingBody: string
+  /** 배송완료 몫이 하나도 없을 때. 0원을 크게 그리는 대신 이 문장을 쓴다. */
+  readonly pendingNone: string
+  /** 만료 예정. 서버가 판정해서 보내는 값이라 화면은 그리기만 한다. */
+  readonly expiringTitle: string
+  /** `{amount}` 이 `{date}` 에 사라진다. */
+  readonly expiringBody: string
+  readonly ledgerTitle: string
+  readonly caption: string
+  readonly loadingLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly failedTitle: string
+  readonly retryLabel: string
+  readonly atColumn: string
+  readonly typeColumn: string
+  readonly amountColumn: string
+  readonly balanceColumn: string
+  readonly refColumn: string
+  /**
+   * 유형 다섯의 이름 (R1).
+   *
+   * `Record` 라 유형이 하나 늘면 `pnpm typecheck` 이 깨진다. 빠진 유형은 그 유형이
+   * 처음 생긴 사람의 화면에서만 빈 칸으로 나타나고, 그 사람은 그것을 신고하지 않는다.
+   */
+  readonly types: Readonly<Record<PointTransactionType, string>>
+  /** 주문을 가리키지 않는 줄. 링크가 없는 줄이지 잘못된 줄이 아니다. */
+  readonly noRef: string
+  /** 주문 링크의 접근성 이름 (F5). 표 안에 같은 이름의 링크가 여럿이라 필요하다. `{at}` */
+  readonly orderLink: string
+  /** `{count}` — 지금까지 불러온 줄 수. */
+  readonly countLabel: string
+  readonly loadMore: string
+  readonly loadingMore: string
+  readonly loadMoreFailedTitle: string
+}
+
+/**
+ * 마이페이지 머리의 두 숫자 (TASK-0077).
+ *
+ * **둘이 따로 실패한다.** 적립금을 못 읽었다고 쿠폰 수까지 감추면 사람은 자기 쿠폰이
+ * 없어졌다고 읽는다 — 그래서 「지금은 불러오지 못했습니다」가 숫자 하나를 대신하는
+ * 문장이지 화면 전체의 문장이 아니다.
+ */
+export interface AccountSummaryMessages {
+  readonly title: string
+  readonly pointsLabel: string
+  readonly pointsLink: string
+  /** 구매확정을 기다리는 몫. `{amount}` */
+  readonly pendingLabel: string
+  readonly couponsLabel: string
+  readonly couponsLink: string
+  /** `{count}` — 쓸 수 있는 장수. 만료·사용한 장은 세지 않는다. */
+  readonly couponCount: string
+  readonly loadingLabel: string
+  /** 숫자 하나를 못 읽었을 때. 0을 그리면 그것은 거짓말이다. */
+  readonly unavailable: string
 }
 
 /**

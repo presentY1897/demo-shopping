@@ -608,6 +608,8 @@ export const ko: Messages = {
       settings: '프로필 · 설정',
       addresses: '배송지 관리',
       cards: '가상 카드',
+      coupons: '쿠폰함',
+      points: '적립금',
     },
     // 코드는 error.code 그대로다. 전수가 아니라 이 화면들이 실제로 분기하는
     // 것만 적는다 — 나머지는 서버 문장이 그대로 나온다(TASK-0112 4장).
@@ -629,6 +631,17 @@ export const ko: Messages = {
       // 없는 사진인지 남의 사진인지 구분해 말하지 않는다. 열쇠가 곧 소유자라,
       // 갈라 답하면 남의 열쇠를 넣어 보는 것만으로 존재를 알 수 있다.
       RETURN_PHOTO_FOREIGN: '첨부할 수 없는 사진입니다. 사진을 다시 첨부해주세요.',
+      // 쿠폰 코드 등록의 거절 일곱 (TASK-0077 F3). 문장이 일곱인 것은 사람이 할
+      // 일이 일곱 가지로 다르기 때문이고, 그래서 각 문장이 **다음에 할 일**로
+      // 끝난다 — 서버 문장은 발행자에게 하는 말이라 그 자리를 채우지 못한다.
+      COUPON_CODE_UNKNOWN:
+        '그런 쿠폰 코드가 없습니다. 대소문자와 하이픈은 상관없으니 글자만 다시 확인해주세요.',
+      COUPON_ALREADY_ISSUED: '이미 받은 쿠폰입니다. 쿠폰함에서 확인해주세요.',
+      COUPON_NOT_STARTED: '아직 받을 수 있는 기간이 아닙니다. 시작하면 다시 시도해주세요.',
+      COUPON_ENDED: '받을 수 있는 기간이 끝난 쿠폰입니다.',
+      COUPON_ISSUE_EXHAUSTED: '준비된 수량이 모두 나갔습니다.',
+      COUPON_SUSPENDED: '발행이 멈춘 쿠폰입니다. 다시 열릴 수 있으니 나중에 시도해주세요.',
+      COUPON_DEMO_ONLY: '체험 계정만 받을 수 있는 쿠폰입니다.',
     },
     failures: {
       network: 'API 서버에 닿지 못했습니다. 잠시 뒤 다시 시도해주세요.',
@@ -864,6 +877,126 @@ export const ko: Messages = {
         noOrder: '주문 없음',
         orderLink: '주문 {number} 보기',
       },
+    },
+    coupons: {
+      title: '쿠폰함',
+      description: '받아둔 쿠폰을 확인하고, 코드로 새 쿠폰을 받습니다.',
+      tabsLabel: '쿠폰 상태',
+      tabs: {
+        ISSUED: '사용 가능',
+        USED: '사용함',
+        EXPIRED: '만료',
+      },
+      tabBadge: '{count}장',
+      listLabel: '내 쿠폰',
+      loadingLabel: '쿠폰을 불러오는 중입니다',
+      // 셋이 서로 다른 말을 한다. 쓸 쿠폰이 없는 사람은 받으러 가야 하고, 쓴 적이
+      // 없는 사람에게는 할 일이 없으며, 만료된 쿠폰이 없는 것은 좋은 소식이다.
+      empty: {
+        ISSUED: {
+          title: '지금 쓸 수 있는 쿠폰이 없습니다',
+          body: '쿠폰 코드가 있다면 위에서 등록하고, 없다면 기획전에서 받을 수 있습니다.',
+        },
+        USED: {
+          title: '아직 사용한 쿠폰이 없습니다',
+          body: '주문할 때 쿠폰을 쓰면 여기에 쌓입니다.',
+        },
+        EXPIRED: {
+          title: '만료된 쿠폰이 없습니다',
+          body: '받아둔 쿠폰을 기간 안에 잘 쓰고 계십니다.',
+        },
+      },
+      emptyAction: '상품 둘러보기',
+      countLabel: '{count}장을 불러왔습니다',
+      loadMore: '더 보기',
+      loadingMore: '불러오는 중',
+      loadMoreFailedTitle: '다음 쿠폰을 불러오지 못했습니다',
+      // 남은 날을 싣는다. 「곧 만료」는 오늘 쓸지 내일 쓸지를 정하게 해주지 않는다.
+      expiringBadge: '{days}일 뒤 만료',
+      discountFixed: '{amount} 할인',
+      discountPercent: '{percent}% 할인',
+      maxDiscount: '최대 {amount}',
+      minOrder: '{amount} 이상 구매 시',
+      noMinOrder: '최소 주문금액 없음',
+      issuers: {
+        PLATFORM: '전체 상품',
+        SELLER: '판매자 쿠폰',
+      },
+      scopes: {
+        ALL: '모든 상품',
+        CATEGORY: '지정 카테고리',
+        PRODUCT: '지정 상품',
+        SELLER: '해당 판매자 상품',
+      },
+      expiresAt: '{date}까지',
+      usedAt: '{date} 사용',
+      expiredAt: '{date} 만료',
+      usedOrderLink: '{name} 쿠폰을 쓴 주문 보기',
+      orderLinkText: '주문 보기',
+      claim: {
+        title: '쿠폰 코드 등록',
+        description: '받은 코드를 입력하면 쿠폰함에 담깁니다.',
+        codeLabel: '쿠폰 코드',
+        // 서버가 하이픈·공백·소문자를 받아준다는 사실을 말해준다. 말하지 않으면
+        // 배너의 코드를 그대로 옮겨 적어도 되는지 망설이게 된다.
+        codeHint: '대소문자와 하이픈은 신경쓰지 않아도 됩니다.',
+        codePlaceholder: 'NEW9V-2K4TR',
+        submit: '쿠폰 받기',
+        submitting: '받는 중',
+        submitError: '쿠폰을 받지 못했습니다',
+        claimedNotice: '{name} 쿠폰을 받았습니다.',
+        errors: {
+          required: '쿠폰 코드를 입력해주세요.',
+          tooLong: '쿠폰 코드는 {max}자까지 입력할 수 있습니다.',
+        },
+      },
+    },
+    points: {
+      title: '적립금',
+      description: '지금 잔액과, 그 잔액이 어떻게 그렇게 됐는지를 확인합니다.',
+      balanceLabel: '사용 가능 적립금',
+      // F6 — 이 두 문장이 「샀는데 왜 적립이 안 됐지」에 대한 답이다.
+      pendingTitle: '적립 예정',
+      pendingBody: '배송이 끝난 주문이 구매확정되면 들어옵니다.',
+      pendingNone: '구매확정을 기다리는 주문이 없습니다.',
+      expiringTitle: '곧 사라지는 적립금',
+      expiringBody: '{amount}이 {date}에 사라집니다.',
+      ledgerTitle: '적립금 내역',
+      caption: '적립 · 사용 · 복구 · 만료 내역',
+      loadingLabel: '적립금 내역을 불러오는 중입니다',
+      emptyTitle: '아직 적립금 내역이 없습니다',
+      emptyBody: '구매확정하면 적립금이 지급되고, 그 기록이 여기에 쌓입니다.',
+      failedTitle: '적립금 내역을 불러오지 못했습니다',
+      retryLabel: '다시 시도',
+      atColumn: '일시',
+      typeColumn: '구분',
+      amountColumn: '금액',
+      balanceColumn: '잔액',
+      refColumn: '관련',
+      types: {
+        EARN: '적립',
+        USE: '사용',
+        RESTORE: '복구',
+        EXPIRE: '만료',
+        ADJUST: '조정',
+      },
+      noRef: '-',
+      orderLink: '{at} 사용 내역의 주문 보기',
+      countLabel: '{count}건을 불러왔습니다',
+      loadMore: '더 보기',
+      loadingMore: '불러오는 중',
+      loadMoreFailedTitle: '다음 내역을 불러오지 못했습니다',
+    },
+    summary: {
+      title: '내 혜택',
+      pointsLabel: '적립금',
+      pointsLink: '적립금 내역',
+      pendingLabel: '적립 예정 {amount}',
+      couponsLabel: '쿠폰',
+      couponsLink: '쿠폰함',
+      couponCount: '{count}장',
+      loadingLabel: '혜택을 불러오는 중입니다',
+      unavailable: '지금은 불러오지 못했습니다',
     },
     orders: {
       title: '주문 내역',

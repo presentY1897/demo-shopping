@@ -12,6 +12,8 @@ import { ClaimAppealService } from './claim-appeal.service.js'
 import { ClaimController } from './claim.controller.js'
 import { ClaimService } from './claim.service.js'
 import { ClaimRefundRetryService } from './refund-retry.service.js'
+import { DiscountRestoreService } from './discount-restore.service.js'
+import { PointsModule } from '../points/points.module.js'
 import { ClaimRefundService, RefundingCancelEvents } from './refund.service.js'
 import { ClaimRestockService, RestockingCancelEvents } from './restock.service.js'
 import { SellerClaimController } from './seller-claim.controller.js'
@@ -58,7 +60,16 @@ import { SellerClaimService } from './seller-claim.service.js'
  * 없기 때문이다. 화살표는 여전히 `Return → Claim` 한 방향이다.
  */
 @Module({
-  imports: [PrismaModule, SellerOrderModule, PaymentModule, StockModule, StorageModule],
+  imports: [
+    PrismaModule,
+    SellerOrderModule,
+    PaymentModule,
+    StockModule,
+    StorageModule,
+    // 환불이 적립금을 되돌린다 (TASK-0078). 방향이 한쪽이다 — 적립금은 클레임을
+    // 모르고, 아는 것은 잔액과 원장뿐이다.
+    PointsModule,
+  ],
   controllers: [ClaimController, SellerClaimController, AdminClaimController],
   providers: [
     ClaimService,
@@ -76,6 +87,9 @@ import { SellerClaimService } from './seller-claim.service.js'
     // 환불의 실행 (TASK-0068). 반품도 같은 것을 쓴다 — 환불은 **끝에서 같은 일**이고
     // 그 앞까지 오는 길이 다를 뿐이다 (`claim-rules.ts` 의 `REFUNDED`).
     ClaimRefundService,
+    // 할인의 복구 (TASK-0078). 환불과 **같은 트랜잭션**에서 돈다 — 뒤에 따로 도는
+    // 배치로 두면 그 사이에 죽은 프로세스가 적립금을 돌려주지 않은 주문을 남긴다.
+    DiscountRestoreService,
     // 나가지 못한 환불을 다시 내보낸다. 부르는 쪽이 없는 것이 정상이다 — 자기 주기로
     // 돌고, 무엇을 보고 몇 건씩 도는지는 `refund-retry.ts` 가 정한다.
     ClaimRefundRetryService,
@@ -92,6 +106,7 @@ import { SellerClaimService } from './seller-claim.service.js'
     ClaimRefundService,
     ClaimRefundRetryService,
     ClaimRestockService,
+    DiscountRestoreService,
     SellerClaimService,
   ],
 })

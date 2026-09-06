@@ -7,6 +7,8 @@ import { cartHandlers } from './cart'
 import { categoryHandlers } from './categories'
 import { checkoutHandlers } from './checkout'
 import { claimHandlers } from './claims'
+import { couponBoxHandlers } from './coupon-box'
+import { pointHandlers } from './points'
 import { sellerClaimHandlers } from './seller-claims'
 import { demoHandlers } from './demo'
 import { healthHandlers } from './health'
@@ -40,6 +42,8 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...checkoutHandlers,
   ...orderHandlers,
   ...claimHandlers,
+  ...couponBoxHandlers,
+  ...pointHandlers,
   ...sellerClaimHandlers,
   ...paymentHandlers,
   ...categoryHandlers,
@@ -110,6 +114,40 @@ export {
  * 주문이 같은 이유로 `order-contract.ts` 를 갖는다.
  */
 export { claimHandlers, failNextClaim, resetClaimStore } from './claims'
+/**
+ * 구매자의 쿠폰함과 코드 등록 (TASK-0077). 목록·수·발급이 한 저장소를 본다.
+ *
+ * **`defaultHandlers` 에 있다** — 발행자 콘솔의 쿠폰 대역(플랫폼·판매자)이 빠져 있는
+ * 것과 반대인데, 이유는 라우트가 겹치지 않기 때문이다. 저 둘은 `GET /coupons` 하나를
+ * 두고 다투지만 이쪽은 `/me/coupons` 와 `/coupons/claims` 라, 어느 콘솔 대역을 앞에
+ * 세워도 이 문은 그대로 열려 있다.
+ */
+export { couponBoxHandlers, couponBoxSnapshot, resetCouponBoxStore } from './coupon-box'
+/**
+ * 쿠폰함 대역의 씨앗과 조립기. 핸들러와 픽스처가 **함께** 읽으므로 픽스처 밖에 산다 —
+ * `seller-coupon-contract.ts` 와 같은 이유이고, 그 파일이 그 이유를 적어 두었다.
+ */
+export {
+  MOCK_CLAIMABLE_COUPON_CODE,
+  MOCK_CLAIM_OUTCOMES,
+  MOCK_COUPON_BOX_NOW,
+  MOCK_COUPON_BOX_PAGE_SIZE,
+  mockCouponBoxSeedAt,
+  mockCouponBoxSeeds,
+} from './coupon-box-contract'
+/**
+ * 구매자의 적립금 (TASK-0077). 잔액·원장이 한 저장소를 본다.
+ *
+ * **쓰기가 없다.** 적립도 사용도 주문이 일으키는 일이라 이 대역에 `POST` 가 없고,
+ * 그것이 실제 컨트롤러의 모양이기도 하다.
+ */
+export { pointHandlers, resetPointStore } from './points'
+export {
+  MOCK_POINT_LEDGER_PAGE_SIZE,
+  MOCK_POINT_NOW,
+  MOCK_POINT_ORDER_ID,
+  mockPointLedgerSeeds,
+} from './point-contract'
 export {
   MOCK_CLAIM_ID,
   MOCK_CLAIM_ORDER_ID,

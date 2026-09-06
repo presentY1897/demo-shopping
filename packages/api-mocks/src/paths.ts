@@ -382,6 +382,38 @@ export const mockPaths = {
    * 먼저 맞는 것을 쓰고, 옆의 라우트들이 전부 그 순서로 서 있다.
    */
   couponBulkIssues: `*${API_PATH_PREFIX}/coupons/:id/issues/bulk`,
+  /**
+   * `POST` 코드를 넣어 **본인이** 받는다 (TASK-0072 F8 · TASK-0077 F3).
+   *
+   * {@link mockPaths.coupon} 과 같은 자리에 놓이는 리터럴 경로다. 경로 파라미터가
+   * `/` 를 넘지 못하므로 저쪽이 이것을 삼킬 수는 없지만, 저쪽이 언젠가 `PATCH` 말고
+   * 다른 동사를 갖게 되는 날을 대비해 **핸들러 목록에서 먼저 등록한다** — 옆의
+   * `categoryReorder` 가 같은 이유로 같은 자리에 서 있다.
+   */
+  couponClaims: `*${API_PATH_PREFIX}/coupons/claims`,
+  /**
+   * 내 쿠폰함 (TASK-0077). `GET` 상태별 목록과 **탭에 붙는 수**.
+   *
+   * 발행자의 {@link mockPaths.coupons} 와 다른 라우트인 것이 계약이다 — 저기서 한
+   * 줄은 정책 한 건이고 여기서 한 줄은 **발급된 장**이다. 경로에 사용자 id 가 없는
+   * 것은 `/me` 와 같은 이유다: 주인은 토큰이 정하고, 남을 가리킬 자리가 없다.
+   */
+  meCoupons: `*${API_PATH_PREFIX}/me/coupons`,
+  /**
+   * `GET` 적립금 잔액과 그 주변 — 적립 예정·만료 예정 (TASK-0077).
+   *
+   * 원장과 라우트를 나눈 이유는 **읽는 빈도가 다르기** 때문이다. 마이페이지 요약은
+   * 이 하나만 부르고, 원장은 적립금 화면에 들어간 사람만 넘긴다.
+   */
+  mePoints: `*${API_PATH_PREFIX}/me/points`,
+  /**
+   * `GET` 원장 한 쪽, 최신순. 커서는 `seq` 다.
+   *
+   * msw 의 경로는 끝까지 맞아야 하므로 위의 {@link mockPaths.mePoints} 가 이것을
+   * 가리지 않는다. 그래도 핸들러 목록에서는 이쪽을 먼저 등록한다 — 옆의
+   * `categoryTree` 가 같은 이유로 같은 자리에 서 있다.
+   */
+  mePointTransactions: `*${API_PATH_PREFIX}/me/points/transactions`,
   /** `POST` a request for one presigned upload (TASK-0011). */
   uploadPresign: `*${API_PATH_PREFIX}/uploads/presign`,
   /**
