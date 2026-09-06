@@ -159,25 +159,33 @@ gh pr view <PR> --json statusCheckRollup \
 **게이트가 무엇인지는 안 바뀐다**(`docs/tasks/QUALITY-GATES.md`). 바뀌는 것은 **개발 중에 그것을
 얼마나 자주, 얼마나 넓게 돌리느냐**다.
 
-**CI 와 로컬이 크게 다르다.** 둘 다 재고 나서야 알았다.
+**검사는 이제 싸지 않다.** 2026-09-06 실측(로컬, 워밍업 후):
 
-| | CI | 로컬(워밍업 후) |
+| | 시간 | 비고 |
 | --- | --- | --- |
-| typecheck + lint | 122초 (직렬) | **22초 (병렬)** |
-| test | 164초 | **42초** |
+| `pnpm typecheck` | 18초 | |
+| `pnpm lint` | 62초 | |
+| `pnpm test` | **325초** | 전 패키지, 커버리지 없음 |
+| `pnpm --filter @shopping/api test` | **147초** | 검사 3,623개, 전부 실 PostgreSQL |
+| `pnpm --filter @shopping/api test:coverage` | **312초** | 위와 같은 검사 — **커버리지가 두 배로 만든다** |
 
-CI 는 매번 `pnpm install --frozen-lockfile` 로 의존성을 새로 받고 캐시가 차갑다. 로컬은
-이미 설치된 상태라 4배 빠르다 — **로컬 전체 게이트는 1분 남짓**이다.
+**전체 게이트는 8분쯤이고, 그중 대부분이 `apps/api` 다.** 「1분 남짓」이라고 적혀 있던 시절이
+있었는데(M06), 그때는 검사가 1,000개 남짓이었다.
 
-그래서 이 규칙은 "게이트가 병목이라서" 가 아니다. **손해가 없고 CI 환경에서는 실제로 이득이기
-때문**이다. 에이전트 시간의 주된 소비처는 따로 있다 — 브라우저 검증(Lighthouse·Playwright·실
-R2 왕복), 실 PostgreSQL 경합 테스트, PR 당 2분 44초짜리 CI 대기.
+CI 는 그 위에 자기 몫이 붙는다 — 매번 `pnpm install --frozen-lockfile` 로 의존성을 새로 받고
+캐시가 차갑다. 그래서 `test` 게이트는 **러너 넷에 나눠 돌린다**: `apps/api` 를 세 조각으로
+쪼갠 `test-api`, 나머지 전부인 `test-web`, 그리고 셋의 커버리지를 합쳐 문턱을 재는 `test`
+(`.github/workflows/ci.yml` 의 주석이 왜 그 모양인지를 적고 있다). **게이트 이름은 넷 그대로다**
+— 브랜치 보호가 이름으로 요구하고, 머지 전에 세는 것도 그 이름이다.
+
+그래서 「좁게 돌린다」는 규칙은 취향이 아니다. **자기 패키지만 돌리면 20초에 끝나는 일을 전체로
+돌리면 8분**이고, 그 차이가 하루에 몇 번씩 쌓인다.
 
 **개발 중 (반복하는 동안)**
 
 ```bash
-# 자기 패키지만. apps/api 작업이 packages/ui 의 800개를 돌릴 이유가 없다
-pnpm --filter @shopping/api test
+# 자기 패키지만. apps/api 작업이 packages/ui 의 900개를 돌릴 이유가 없다
+pnpm --filter @shopping/api exec vitest run src/coupons   # 고친 자리만 — 몇 초다
 pnpm --filter @shopping/api exec tsc --noEmit
 
 # 여러 개를 볼 때는 병렬로 — 출력이 섞이므로 실패했을 때만 하나씩 다시 본다
@@ -189,6 +197,10 @@ pnpm typecheck & pnpm lint & wait
 ```bash
 pnpm typecheck && pnpm lint && pnpm build && pnpm test
 ```
+
+커버리지 문턱까지 로컬에서 보려면 `pnpm --filter @shopping/api test:coverage` 를 따로 돌린다.
+두 배가 걸리므로 매번은 아니고, `vitest.config.mjs` 의 문턱을 건드렸을 때다. CI 는 그것을
+샤드별 blob 을 합친 뒤 한 번 잰다.
 
 **좁게 돌리는 것이 안전한 이유**: 브랜치가 합쳐지는 지점의 회귀는 **오케스트레이터가 머지 전
 `main` 위에서 전체를 한 번 더 돌려** 잡는다. 실제로 그 단계에서 `@shopping/shared` 의 `dist` 가
