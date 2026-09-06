@@ -1,5 +1,5 @@
 import type { ClaimFault, ClaimStatus, ReturnFeeBearer, ReturnReason } from '@shopping/shared'
-import { RETURN_PHOTO_MAX_COUNT, returnPhotoKeyPattern } from '@shopping/shared'
+import { claimStatuses, RETURN_PHOTO_MAX_COUNT, returnPhotoKeyPattern } from '@shopping/shared'
 
 /**
  * 반품의 순수 판단 (TASK-0067 · `docs/design/pricing.md` 3장).
@@ -280,4 +280,79 @@ export function returnStepDecision(
   if (status !== from && status !== to) return { outcome: 'refused', reason: 'wrong_status' }
 
   return { outcome: 'allowed' }
+}
+
+/**
+ * 반품이 **확정된 것으로 세어지는** 상태 (TASK-0071).
+ *
+ * `cancel-rules.ts` 의 `CANCEL_SETTLED` 와 **같은 장치이고 같은 이유**다 — 아직
+ * 판단 전인 신청까지 세면 판매자가 거절할 반품 하나가 주문을 `RETURNED` 로 닫고,
+ * 전이표에 거기서 돌아오는 화살표는 없다.
+ *
+ * 세는 자리가 취소보다 **뒤**인 것이 이 표의 요점이다. 취소는 승인이 곧 확정이지만
+ * (물건이 아직 떠나지 않았다) 반품은 **물건이 돌아와 검수를 통과해야** 확정이다 —
+ * `RETURN_APPROVED` 를 세면 승인만 받고 물건을 안 보낸 반품이 주문을 닫는다.
+ *
+ * `REFUNDED` 가 함께 있는 것은 그것이 완료의 **다음** 자리이기 때문이다. 환불까지
+ * 끝난 반품이 「확정되지 않은 반품」으로 읽히면, 두 번째 부분 반품이 들어올 때 첫
+ * 번째가 세어지지 않는다 (`CANCEL_SETTLED` 가 같은 이유로 같은 모양이다).
+ *
+ * `Record` 라 상태가 하나 늘면 **컴파일이 막는다.**
+ */
+export const RETURN_SETTLED: Readonly<Record<ClaimStatus, boolean>> = {
+  /** 검수를 통과했다. 물건이 우리 손에 있고 되돌릴 것도 없다. */
+  RETURN_COMPLETED: true,
+  /** 환불까지 끝난 반품. 완료의 다음 자리라 함께 센다. */
+  REFUNDED: true,
+  // 아직 물건이 돌아오지 않았거나, 돌아왔지만 검수에서 떨어졌다.
+  RETURN_REQUESTED: false,
+  RETURN_APPROVED: false,
+  PICKING_UP: false,
+  INSPECTING: false,
+  RETURN_REJECTED: false,
+  // 취소는 반품이 아니다. 그 몫은 `CANCELED` 로 끝난다 (`CANCEL_SETTLED`).
+  CANCEL_REQUESTED: false,
+  CANCEL_APPROVED: false,
+  CANCEL_REJECTED: false,
+}
+
+/** 같은 목록을, 질의에 그대로 실을 수 있는 모양으로. 두 벌로 적지 않는다. */
+export const returnSettledStatuses: readonly ClaimStatus[] = claimStatuses.filter(
+  (status) => RETURN_SETTLED[status],
+)
+
+/**
+ * 한 주문 항목이, 「이 몫이 전부 돌아왔는가」 판단에 필요한 만큼.
+ *
+ * 두 수 다 **이 완료가 반영된 뒤의 값**이다. 완료 전 값으로 판단하면 마지막 한 개가
+ * 돌아오는 순간이 언제나 「부분」이 된다 (`CancelLine` 과 같은 판단).
+ */
+export interface ReturnLine {
+  readonly ordered: number
+  /** 반품이 확정된 수량 ({@link RETURN_SETTLED} 인 클레임들의 합). */
+  readonly returned: number
+}
+
+export type ReturnScope =
+  /** 이 몫에 남은 것이 없다. `SellerOrder` 가 `RETURNED` 로 간다. */
+  | 'FULL'
+  /** 남은 항목은 그대로다. 상태를 옮기지 않는다. */
+  | 'PARTIAL'
+
+/**
+ * 이 반품으로 판매자 몫이 끝나는가 (TASK-0071).
+ *
+ * **정의가 `cancelScopeOf` 와 같다** — 「전체」는 한 신청의 크기가 아니라 **그 뒤에
+ * 남은 것의 크기**다. 세 개를 하나씩 세 번 나눠 반품하면 어느 신청도 「전체」가
+ * 아니지만, 세 번째가 마지막 한 개를 데려가면서 답이 `FULL` 로 바뀌어야 한다.
+ *
+ * 그런데 **타입을 함께 쓰지 않는다.** 세는 대상이 다르기 때문이다 — 저쪽은 취소된
+ * 수량이고 여기는 반품된 수량이며, 한 인터페이스에 담으면 `canceled` 라는 이름의
+ * 칸에 반품 수량이 들어간다. 그 거짓말은 질의를 읽는 사람에게 그대로 옮는다.
+ *
+ * 빈 목록을 따로 막지 않는다. 항목이 없는 판매자 몫은 주문 생성이 만들지 않고,
+ * 닿을 수 없는 분기를 두면 이 파일의 분기 100% 가 거짓이 된다.
+ */
+export function returnScopeOf(lines: readonly ReturnLine[]): ReturnScope {
+  return lines.every((line) => line.returned >= line.ordered) ? 'FULL' : 'PARTIAL'
 }

@@ -1,5 +1,6 @@
 import type { RequestHandler } from 'msw'
 
+import { adminClaimHandlers } from './admin-claims'
 import { adminSellerHandlers } from './admin-sellers'
 import { attributeHandlers } from './attributes'
 import { cartHandlers } from './cart'
@@ -49,9 +50,29 @@ export const defaultHandlers: readonly RequestHandler[] = [
   ...sellerOrderHandlers,
   ...sellerHandlers,
   ...adminSellerHandlers,
+  ...adminClaimHandlers,
   ...uploadHandlers,
 ]
 
+export {
+  adminClaimHandlers,
+  adminClaimRowsSnapshot,
+  failNextAdminClaim,
+  resetAdminClaimStore,
+} from './admin-claims'
+/**
+ * 관리자 개입의 씨앗 — 목록의 열두 줄과, **아직 클레임이 없는 다섯 몫**.
+ *
+ * 뒤엣것이 확정 후 하자 반품(F4)의 시작점이다. 원본 거절이 없는 개입이라 목록의 어느
+ * 줄로도 그 화면에 닿을 수 없고, 검사는 이 id 들로 라우팅한다.
+ */
+export {
+  MOCK_ADMIN_CLAIM_NOW,
+  MOCK_ADMIN_CLAIMABLE_IDS,
+  MOCK_ADMIN_CLAIMABLE_ORDER_NUMBERS,
+  MOCK_ADMIN_DEFECT_RETURN_ID,
+  MOCK_ADMIN_INTERVENTION_ID,
+} from './admin-claim-contract'
 export { adminSellerHandlers, resetAdminSellerStore } from './admin-sellers'
 export { attributeHandlers, resetAttributeStore } from './attributes'
 export { cartHandlers, resetCartStore } from './cart'

@@ -12,6 +12,7 @@ import { defineFixture } from '../define'
 import { sessionBuyer } from '../fixtures/session'
 import { mockPaths, MOCK_STORAGE_ORIGIN, MOCK_STORAGE_PUBLIC_ORIGIN } from '../paths'
 import { answering, MockApiError, readBody } from './refusal'
+import { mockSession } from './session'
 
 /**
  * Presigned uploads, and the storage that receives them (TASK-0011, TASK-0033).
@@ -55,10 +56,20 @@ let counter = 0
  * a claim and the API decides ownership from the prefix alone — a double that
  * echoed an id from the body would let a widget pass while sending a key the
  * real server would refuse as somebody else's (`isOwnPhotoKey`).
+ *
+ * **Whoever is signed in, not always the shopper.** An administrator files the
+ * confirmed-order defect return on somebody else's behalf (TASK-0071 F4), and the
+ * API builds that key from *the caller's* account — `UploadsService.keyFor`
+ * authorises `accountOwnership(principal.userId)` and never reads the claim's
+ * buyer. A double pinned to `sessionBuyer` would hand the admin console a key
+ * under a stranger's prefix, which is precisely the request `isOwnPhotoKey`
+ * refuses. The signed-out fallback keeps the shopper's specs unchanged.
  */
 function keyOfPurpose(request: PresignUploadRequest, objectId: string, extension: string): string {
+  const owner = mockSession()?.user.id ?? sessionBuyer.user.id
+
   return request.purpose === 'return-photo'
-    ? `returns/${sessionBuyer.user.id}/${objectId}.${extension}`
+    ? `returns/${owner}/${objectId}.${extension}`
     : `products/${request.sellerId}/${objectId}.${extension}`
 }
 

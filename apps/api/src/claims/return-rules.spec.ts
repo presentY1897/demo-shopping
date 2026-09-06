@@ -6,14 +6,18 @@ import { claimStatuses, RETURN_PHOTO_MAX_COUNT, returnReasons } from '@shopping/
 import { describe, expect, it } from 'vitest'
 
 import { findRepoRoot } from '../config/workspace.js'
+import type { ReturnLine } from './return-rules.js'
 import {
   isOwnPhotoKey,
+  RETURN_SETTLED,
   returnCostShare,
   returnFaultOf,
   returnFeeBearerOf,
   returnInspectionOutcome,
   returnPhotoDecision,
   returnPhotosRequired,
+  returnScopeOf,
+  returnSettledStatuses,
   returnStepDecision,
 } from './return-rules.js'
 
@@ -341,5 +345,47 @@ describe('6. 표에 빈 칸이 없다', () => {
     )
 
     expect(answered).toHaveLength(returnReasons.length)
+  })
+})
+
+describe('7. 이 반품으로 판매자 몫이 끝나는가 (TASK-0071)', () => {
+  /** 목록을 「주문 수량 / 반품 확정 수량」 쌍으로 짧게 적는다. */
+  function lines(...pairs: readonly (readonly [number, number])[]): readonly ReturnLine[] {
+    return pairs.map(([ordered, returned]) => ({ ordered, returned }))
+  }
+
+  it('is full when nothing is left on any line', () => {
+    expect(returnScopeOf(lines([2, 2], [1, 1]))).toBe('FULL')
+  })
+
+  it('is partial while one unit of one line is still there', () => {
+    expect(returnScopeOf(lines([2, 2], [1, 0]))).toBe('PARTIAL')
+    expect(returnScopeOf(lines([2, 1]))).toBe('PARTIAL')
+  })
+
+  /**
+   * **「전체」는 한 신청의 크기가 아니라 그 뒤에 남은 것의 크기다.**
+   *
+   * 세 개를 하나씩 세 번 나눠 반품하면 어느 신청도 전체가 아니지만, 세 번째가
+   * 마지막 한 개를 데려가면서 답이 바뀌어야 한다. 안 바뀌면 **돌려받을 물건이 하나도
+   * 없는 주문이 「배송완료」로 영원히 앉아 있고, 아무것도 실패하지 않는다.**
+   */
+  it('turns full on the last unit of a return split three ways', () => {
+    expect(returnScopeOf(lines([3, 1]))).toBe('PARTIAL')
+    expect(returnScopeOf(lines([3, 2]))).toBe('PARTIAL')
+    expect(returnScopeOf(lines([3, 3]))).toBe('FULL')
+  })
+
+  /**
+   * **세는 자리가 취소보다 뒤다.** 승인만 받고 물건을 안 보낸 반품이 주문을 닫으면
+   * 판매자는 받지도 못한 물건 값을 잃고, `RETURNED` 에서 돌아오는 화살표는 없다.
+   */
+  it('counts a return only once the goods have passed inspection', () => {
+    expect(returnSettledStatuses).toEqual(['RETURN_COMPLETED', 'REFUNDED'])
+  })
+
+  /** 상태가 하나 늘면 레코드가 컴파일로 막는다. 그 사실을 목록으로도 확인한다. */
+  it('has an answer for every claim status', () => {
+    expect(Object.keys(RETURN_SETTLED).toSorted()).toEqual([...claimStatuses].toSorted())
   })
 })

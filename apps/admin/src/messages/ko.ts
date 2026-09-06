@@ -447,6 +447,448 @@ export const ko: Messages = {
       unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
     },
   },
+  // 클레임 개입 (TASK-0071). 목록·상세·강제 처리·이의 기각·지연 모니터링·실패한
+  // 환불이 한 슬라이스에 있다 — 운영자의 머릿속에서 하나의 일이고, 라우트 경계로
+  // 쪼갠 문구는 서로 어긋나기 시작한다 (sellers 슬라이스와 같은 이유).
+  claims: {
+    title: '클레임 관리',
+    description:
+      '플랫폼 전체의 취소·반품을 조회하고, 판매자의 거절을 뒤집거나 구매자의 이의를 기각합니다.',
+    vocabulary: {
+      statusLabels: {
+        CANCEL_REQUESTED: '취소 신청',
+        CANCEL_APPROVED: '취소 승인',
+        CANCEL_REJECTED: '취소 거절',
+        RETURN_REQUESTED: '반품 신청',
+        RETURN_APPROVED: '반품 승인',
+        PICKING_UP: '회수 중',
+        INSPECTING: '입고 검수',
+        RETURN_COMPLETED: '반품 완료',
+        RETURN_REJECTED: '반품 거절',
+        REFUNDED: '환불 완료',
+      },
+      typeLabels: {
+        CANCEL: '취소',
+        RETURN: '반품',
+      },
+      faultLabels: {
+        CUSTOMER: '구매자 귀책',
+        SELLER: '판매자 귀책',
+      },
+      stageLabels: {
+        WAITING: '처리 대기',
+        IN_PROGRESS: '진행 중',
+        CLOSED: '처리 완료',
+      },
+      returnReasonLabels: {
+        CHANGE_OF_MIND: '단순 변심',
+        DEFECTIVE: '상품 하자',
+        WRONG_ITEM: '오배송',
+      },
+      actorLabels: {
+        BUYER: '구매자',
+        SELLER: '판매자',
+        ADMIN: '관리자',
+        SYSTEM: '자동 처리',
+      },
+    },
+    // 「처리할 수 없다」를 버튼이 아니라 문장으로 말하는 자리 (TASK-0063 4.1).
+    // 앞엣것은 무엇을 누르기 전에, 뒤엣것은 서버가 이 한 건에 대해 답한 뒤에 나온다.
+    scope: {
+      demoNotice:
+        '데모 관리자는 플랫폼 전체를 조회하지만, 바꾸는 것은 데모 계정이 만든 건뿐입니다. 실계정이 만든 클레임도 목록에 그대로 보이고, 강제 처리나 이의 기각을 누르면 서버가 거절합니다. 어느 쪽인지는 눌러 보기 전에는 알 수 없어요.',
+      outOfScope:
+        '이 클레임은 데모 계정이 만든 것이 아니라 처리할 수 없습니다. 조회는 그대로 됩니다 — 실계정의 재고와 돈은 데모 계정이 바꾸지 않습니다.',
+    },
+    list: {
+      tabs: {
+        // 넷째 탭은 목록이 아니라 **시작하는 자리**다. 그래서 「무엇을 볼지」가
+        // 아니라 「무엇을 할지」다.
+        label: '클레임 콘솔에서 할 일 고르기',
+        all: '전체',
+        overdue: '처리 지연',
+        failedRefunds: '환불 실패',
+        defectReturn: '확정 후 하자 반품',
+        countLabel: '{name} {count}건',
+      },
+      listLabel: '클레임 목록',
+      loadingLabel: '클레임 목록을 불러오는 중입니다',
+      errorTitle: '클레임 목록을 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      emptyTitle: '아직 들어온 클레임이 없어요',
+      emptyDescription: '구매자가 취소나 반품을 신청하면 여기에 쌓입니다.',
+      filteredEmptyTitle: '이 조건에 맞는 클레임이 없어요',
+      filteredEmptyDescription: '조건을 지우거나 다른 조건으로 찾아보세요.',
+      columns: {
+        orderNumber: '주문번호',
+        seller: '판매자',
+        buyer: '구매자',
+        type: '유형',
+        status: '상태',
+        stage: '단계',
+        items: '대상',
+        requestedAt: '신청 시각',
+        dueAt: '처리 기한',
+        flags: '표시',
+        quantity: '{count}개',
+      },
+      badges: {
+        overdue: '기한 초과',
+        appealPending: '이의 검토 대기',
+        intervention: '관리자 개입',
+      },
+      // 좁히는 값이 계약에서는 식별자이고 화면에서는 이름이다. 그래서 고르는 자리가
+      // 셀렉트가 아니라 목록의 행이다 — 이 콘솔에는 판매자·구매자를 빠짐없이 답하는
+      // 엔드포인트가 없고, 첫 페이지만 담은 셀렉트는 조용히 누군가를 빠뜨린다.
+      narrow: {
+        seller: '{name} 의 클레임만 보기',
+        buyer: '구매자 {id} 의 클레임만 보기',
+        activeSeller: '판매자: {name}',
+        activeBuyer: '구매자: {id}',
+        clear: '이 조건 지우기',
+      },
+      filters: {
+        legend: '클레임 좁혀 보기',
+        statusLabel: '상태',
+        statusAll: '전체 상태',
+        stageLabel: '단계',
+        stageAll: '전체 단계',
+        typeLabel: '유형',
+        typeAll: '전체 유형',
+        fromLabel: '신청 시작일',
+        toLabel: '신청 종료일',
+        periodHint: '고른 날의 0시부터 24시까지를 포함합니다. 한국 시간 기준이에요.',
+        appealedLabel: '이의 검토 대기만 보기',
+        reset: '조건 지우기',
+      },
+      pagination: {
+        label: '클레임 목록 페이지 이동',
+        previous: '이전',
+        next: '다음',
+        pageUnit: '페이지',
+        countUnit: '건',
+      },
+    },
+    overdue: {
+      title: '처리 지연',
+      description: '처리 기한을 넘긴 채 판매자의 다음 걸음을 기다리는 건입니다.',
+      listLabel: '처리 지연 클레임 목록',
+      loadingLabel: '지연된 클레임을 불러오는 중입니다',
+      errorTitle: '지연 목록을 불러오지 못했어요',
+      emptyTitle: '기한을 넘긴 클레임이 없어요',
+      emptyDescription: '들어온 신청이 모두 기한 안에서 처리되고 있습니다.',
+      truncatedNotice:
+        '한 번에 훑을 수 있는 양을 넘겼습니다. 여기 보이는 것보다 밀린 건이 더 있어요.',
+    },
+    failedRefunds: {
+      title: '환불 실패',
+      description: '승인·검수는 끝났는데 돈이 나가지 못한 건입니다. 구매자는 아직 기다리고 있어요.',
+      listLabel: '실패한 환불 목록',
+      loadingLabel: '실패한 환불을 불러오는 중입니다',
+      errorTitle: '실패한 환불을 불러오지 못했어요',
+      emptyTitle: '나가지 못한 환불이 없어요',
+      emptyDescription: '승인된 환불이 모두 정상적으로 지급됐습니다.',
+      hasMoreNotice: '보이는 것보다 더 많은 환불이 밀려 있습니다. 결제 연동 상태를 확인해주세요.',
+      columns: {
+        orderNumber: '주문번호',
+        seller: '판매자',
+        status: '클레임 상태',
+        amount: '환불 예정액',
+        attempts: '시도',
+        lastError: '마지막 실패 이유',
+        waitingSince: '기다린 시작 시각',
+      },
+      attemptCount: '{count}회',
+      noAttempt: '아직 시도하지 않음',
+      noError: '기록된 실패 이유 없음',
+    },
+    attention: {
+      title: '지금 손봐야 할 클레임',
+      description: '기한을 넘긴 건과 나가지 못한 환불입니다. 자세한 것은 클레임 관리에서 봅니다.',
+      loadingLabel: '개입이 필요한 건을 불러오는 중입니다',
+      errorTitle: '개입이 필요한 건을 불러오지 못했어요',
+      overdueCount: '기한 초과 {count}건',
+      failedCount: '환불 실패 {count}건',
+      allClear: '지금 개입이 필요한 클레임이 없습니다.',
+      link: '클레임 관리로',
+    },
+    detail: {
+      backLabel: '목록으로',
+      title: '클레임 상세',
+      subtitle: '주문번호 {orderNumber}',
+      loadingLabel: '클레임을 불러오는 중입니다',
+      errorTitle: '클레임을 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      notFoundTitle: '클레임을 찾을 수 없어요',
+      notFoundDescription: '이미 지워졌거나 주소가 잘못됐어요. 목록에서 다시 찾아보세요.',
+      sections: {
+        actions: '관리자 처리',
+        summary: '신청 요약',
+        items: '대상 항목',
+        request: '신청 사유',
+        appeal: '구매자 이의',
+        intervention: '개입 관계',
+        history: '처리 이력',
+      },
+      summary: {
+        type: '유형',
+        status: '상태',
+        fault: '귀책',
+        requestedBy: '신청 계정',
+        requestedAt: '신청 시각',
+        updatedAt: '최근 변경',
+        orderNumber: '주문번호',
+      },
+      items: {
+        caption: '이 클레임이 걸린 항목',
+        product: '상품',
+        option: '옵션',
+        sku: '품번',
+        quantity: '수량',
+        noOption: '옵션 없음',
+      },
+      history: {
+        caption: '이 클레임이 지나온 상태',
+        at: '시각',
+        change: '변화',
+        actor: '처리자',
+        reason: '사유',
+        created: '신청 접수',
+        step: '{from} → {to}',
+        noReason: '사유 없음',
+        empty: '아직 기록된 이력이 없어요.',
+      },
+      intervention: {
+        overturnsTitle: '이 클레임이 뒤집은 거절',
+        overturnsBody:
+          '관리자가 원본 거절 대신 낸 신청입니다. 원본은 거절된 채 그대로 남아 있어요.',
+        openOriginal: '원본 거절 열기',
+        overturnedTitle: '이 거절을 뒤집은 개입',
+        overturnedBody: '관리자가 다른 결론을 냈습니다. 이 거절 자체는 취소되지 않았어요.',
+        openIntervention: '개입 {index} 열기',
+        none: '이 클레임에 걸린 관리자 개입이 없습니다.',
+      },
+      actions: {
+        force: '강제 처리',
+        dismissAppeal: '이의 기각',
+      },
+      // 누를 수 없는 버튼을 내는 대신 왜 지금이 아닌지를 말한다. 비활성 버튼은 탭으로
+      // 닿지 못하고, aria-disabled 버튼은 닿아도 눌리지 않으면서 사유를 툴팁에 감춘다.
+      blocked: {
+        title: '지금 할 수 있는 처리가 없어요',
+        state: {
+          not_concluded:
+            '아직 판매자의 결론이 나지 않았습니다. 강제 처리는 거절을 뒤집는 일이라, 판매자가 승인하거나 거절한 뒤에 열립니다.',
+          settled:
+            '환불까지 끝난 클레임입니다. 구매자가 원한 결과라 뒤집을 것이 없고, 나간 돈을 도로 받는 절차는 이 서비스에 없습니다.',
+        },
+        permission:
+          '강제 처리와 이의 기각에는 클레임 처리 권한이 필요합니다. 조회는 그대로 됩니다.',
+        refusedTitle: '이 클레임은 처리할 수 없어요',
+      },
+      toast: {
+        regionLabel: '알림',
+        closeLabel: '닫기',
+        forced: '거절을 뒤집었어요. 관리자 이름으로 새 클레임이 하나 생겼습니다.',
+        dismissed: '이의를 기각했어요. 판매자의 거절이 유지됩니다.',
+      },
+      failureTitle: '요청을 처리하지 못했어요',
+    },
+    force: {
+      title: '판매자의 거절을 뒤집을까요?',
+      description: '거절 대신 관리자의 결론을 새 클레임으로 세웁니다.',
+      // 무엇이 일어나는지와 되돌릴 수 없다는 것을 나눠서 말한다. 한 문단이면 안 읽는다.
+      consequences: {
+        newClaim: '원본 거절은 그대로 남고, 관리자 이름으로 승인된 새 클레임이 하나 생깁니다.',
+        money:
+          '구매자에게 환불이 시작되고 판매자의 재고가 돌아갑니다. 두 사람의 것이 함께 바뀝니다.',
+        appeal: '이 거절에 걸린 이의가 있으면 같은 처리에서 인용으로 닫힙니다.',
+        irreversible: '되돌리는 절차는 없습니다. 나간 환불을 다시 받는 길이 이 서비스에는 없어요.',
+      },
+      itemsLabel: '이 개입이 대상으로 삼는 항목',
+      itemsCaption: '원본 신청에서 그대로 가져온 항목과 수량',
+      faultLabel: '귀책',
+      faultHint: '취소의 귀책을 여기서 다시 판정합니다. 환불액이 이 값으로 갈립니다.',
+      returnReasonLabel: '반품 사유',
+      returnReasonHint:
+        '반품의 귀책은 사유에서 나옵니다. 반품 배송비를 누가 무는지가 함께 정해져요.',
+      faultPreview: '{fault} 으로 기록됩니다.',
+      amountNotice:
+        '환불 금액은 판매자 화면과 같은 계산을 지나 정해집니다. 이 화면에는 금액 미리보기가 아직 없어요.',
+      reasonLabel: '개입 사유',
+      reasonHint: '이력에 그대로 남고 판매자와 구매자가 함께 봅니다. 500자까지 쓸 수 있어요.',
+      reasonPlaceholder: '무엇을 근거로 다른 결론을 냈는지 적어주세요.',
+      confirm: '강제 처리하기',
+      cancel: '취소',
+      closeLabel: '닫기',
+      errors: {
+        reasonRequired: '개입 사유를 입력해 주세요.',
+        reasonTooLong: '개입 사유는 500자까지 쓸 수 있어요.',
+      },
+    },
+    // 확정 후 하자 반품 (F4). 목록의 어느 줄로도 닿을 수 없는 자리라, 문구도
+    // 「무엇을 되돌리는가」부터 시작한다 — 구매확정 다이얼로그(`apps/shop`)가 톤의
+    // 본보기이고, 한 문단으로 접으면 아무도 읽지 않는다.
+    defectReturn: {
+      title: '확정 후 하자 반품',
+      description:
+        '구매확정된 주문을 관리자가 되돌려 반품을 대신 접수합니다. 구매자도 판매자도 이 일을 할 수 없어요.',
+      // 무엇이 일어나는지를 나눠서 말한다. 셋째 줄이 이 화면에만 있는 사실이다.
+      consequences: {
+        reopens:
+          '구매확정된 주문이 반품으로 되돌아갑니다. 확정은 구매자에게 끝이고, 그것을 되돌릴 수 있는 것은 관리자뿐입니다.',
+        money:
+          '관리자 이름으로 승인된 반품이 하나 생깁니다. 수거와 입고 검수를 거쳐 합격하면 구매자에게 환불이 나가고 판매자의 재고가 돌아갑니다.',
+        settlement:
+          '이 주문의 정산이 이미 나갔다면 그 돈을 판매자에게서 회수해야 합니다. 회수 절차는 아직 없어요(M12) — 지금 누르면 회수해야 할 금액이 하나 생긴다는 뜻입니다.',
+        irreversible:
+          '되돌리는 절차는 없습니다. 잘못 접수한 반품을 없던 일로 만드는 길이 이 서비스에는 없어요.',
+      },
+      lookup: {
+        legend: '되돌릴 주문 찾기',
+        label: '판매자 주문 식별자',
+        hint: '주문 하나에 판매자별 몫이 여럿이라, 반품은 그중 한 몫에 걸립니다.',
+        placeholder: '019597a0-0008-7000-8000-00000000c001',
+        submit: '찾기',
+        // **주문번호로 찾을 수 없다는 사실을 화면에 상주시킨다.** 사람이 손에 들고
+        // 오는 값이 주문번호인데 그것으로 판매자 몫을 찾는 조회 라우트가 없다.
+        // 이 문장이 없으면 운영자는 매번 주문번호를 넣어 보고 실패한다.
+        unavailableNotice:
+          '주문번호로는 아직 찾을 수 없습니다. 주문번호로 판매자 몫을 찾는 조회 라우트가 없어서(판매자 주문 목록은 부르는 사람의 가게로 좁혀집니다) 지금은 식별자로만 열립니다. 관리자 주문 화면이 열리면 그 목록에서 이 화면으로 오게 됩니다.',
+        errors: {
+          empty: '판매자 주문 식별자를 입력해 주세요.',
+          order_number:
+            '주문번호를 넣으셨어요. 지금은 주문번호로 찾을 수 없고, 판매자 주문 식별자가 필요합니다.',
+          unrecognised: '판매자 주문 식별자 형식이 아니에요. 36자리 식별자를 붙여넣어 주세요.',
+        },
+        loadingLabel: '주문을 불러오는 중입니다',
+        errorTitle: '주문을 불러오지 못했어요',
+        retryLabel: '다시 시도',
+        notFoundTitle: '그런 판매자 몫이 없어요',
+        notFoundDescription:
+          '식별자를 다시 확인해 주세요. 주문 전체의 id 가 아니라 판매자 몫 하나의 id 입니다.',
+      },
+      // 누를 수 없는 버튼을 내는 대신 왜 여기가 아닌지를 말한다 (TASK-0063 4.1).
+      blocked: {
+        title: '여기서 시작할 수 없는 주문이에요',
+        state: {
+          claim_path_open:
+            '아직 구매확정 전입니다. 구매자가 직접 취소·반품을 신청하고 판매자가 그것을 처리하는 정상 경로가 열려 있어요 — 관리자가 대신 낼 자리가 아닙니다.',
+          in_transit:
+            '배송 중입니다. 취소하기엔 이미 떠났고 반품하기엔 아직 도착하지 않았어요. 배송완료 뒤에는 구매자가 직접 신청할 수 있습니다.',
+          window_closed:
+            '배송완료 뒤 반품 기간이 지났고, 아직 구매확정 전입니다. 이 화면이 하는 일은 확정을 되돌리는 것이라 이 주문은 대상이 아니에요 — 기간이 지난 건의 개입은 아직 이 콘솔에 자리가 없습니다.',
+          not_claimable:
+            '이 상태의 주문에는 걸 것이 없습니다. 결제 전이거나, 이미 취소·반품으로 끝난 몫이에요.',
+          nothing_left:
+            '구매확정된 주문이 맞지만 남은 수량이 없습니다. 항목이 전부 다른 클레임에 잡혀 있어요.',
+        },
+      },
+      form: {
+        found: '구매확정된 주문입니다. 되돌릴 항목과 수량을 고르세요.',
+        itemsLegend: '되돌릴 항목과 수량',
+        itemsHint:
+          '남은 수량만큼만 고를 수 있습니다. 이미 다른 클레임이 잡고 있는 수량은 빠져 있어요.',
+        itemLabel: '{product} · {option}',
+        noOption: '옵션 없음',
+        remaining: '남은 수량 {count}개',
+        quantityLabel: '{product} 수량',
+        reasonLabel: '반품 사유',
+        // 사유 제한을 **문장으로도** 말한다. 목록에 없는 것만으로는 왜 없는지 모른다.
+        reasonHint:
+          '단순 변심은 여기 없습니다. 확정을 되돌리는 것은 판매자 귀책일 때만 할 수 있고, 그 판정이 곧 반품 배송비와 원 배송비를 누가 무는지를 정해요.',
+        faultPreview: '{fault} 으로 기록됩니다.',
+        photosLabel: '증거 사진',
+        photosHint:
+          '하자·오배송 반품에는 사진이 한 장 이상 필요합니다(최대 {max}장 · 한 장 5MB). 구매자에게 받은 사진을 관리자 계정으로 올리는 자리예요 — 첨부되는 것은 올린 사람의 것으로 기록됩니다.',
+        photosDropLabel: '사진을 끌어다 놓거나 파일을 선택하세요',
+        photosDropActive: '여기에 놓으세요',
+        photosListLabel: '첨부한 사진',
+        photoRemove: '{name} 빼기',
+        photoStatus: {
+          uploading: '올리는 중',
+          ready: '첨부됨',
+          failed: '실패',
+        },
+        photoFailures: {
+          unsupported_type: 'JPEG · PNG · WebP 만 올릴 수 있어요.',
+          too_large: '한 장에 5MB 까지 올릴 수 있어요.',
+          too_many: '사진은 최대 {max}장까지예요.',
+          storage: '저장소가 업로드를 거절했어요. 잠시 후 다시 올려 주세요.',
+        },
+        noteLabel: '개입 사유',
+        noteHint: '이력에 그대로 남고 판매자와 구매자가 함께 봅니다. 500자까지 쓸 수 있어요.',
+        notePlaceholder: '무엇을 확인했고 왜 확정을 되돌리는지 적어주세요.',
+        submit: '하자 반품 접수',
+        // 눌러 보기 전에는 그리지 않는다. 들어오자마자 「골라주세요」를 보이는 것은
+        // 안내가 아니라 아직 하지 않은 일에 대한 지적이다.
+        issuesLabel: '아직 남은 것',
+        issues: {
+          no_items: '되돌릴 항목을 하나 이상 골라주세요.',
+          reason_required: '개입 사유를 입력해 주세요.',
+          reason_too_long: '개입 사유는 500자까지 쓸 수 있어요.',
+          photo_required: '증거 사진을 한 장 이상 첨부해 주세요.',
+          photo_uploading: '아직 올라가는 중인 사진이 있어요. 끝나면 보낼 수 있습니다.',
+        },
+      },
+      confirm: {
+        title: '구매확정을 되돌릴까요?',
+        description: '이 주문의 확정이 되돌아가고, 관리자 이름으로 승인된 반품이 하나 생깁니다.',
+        itemsCaption: '이 반품이 대상으로 삼는 항목',
+        confirm: '되돌리고 접수하기',
+        cancel: '취소',
+        closeLabel: '닫기',
+      },
+      done: {
+        title: '하자 반품을 접수했어요',
+        body: '관리자 이름으로 승인된 반품이 생겼습니다. 수거와 입고 검수는 이어서 진행해야 해요.',
+        open: '접수한 반품 열기',
+        again: '다른 주문 찾기',
+      },
+      failureTitle: '반품을 접수하지 못했어요',
+    },
+    appeal: {
+      pendingTitle: '검토를 기다리는 이의',
+      pendingBody:
+        '구매자가 이 거절에 이의를 냈습니다. 인용은 곧 강제 처리이고(같은 처리에서 이의가 닫힙니다), 기각은 판매자의 거절을 유지합니다.',
+      reviewedTitle: '검토가 끝난 이의',
+      none: '이 클레임에 제기된 이의가 없습니다.',
+      filedAt: '제기 시각',
+      reason: '이의 사유',
+      reviewedAt: '검토 시각',
+      outcome: '결과',
+      outcomes: {
+        UPHELD: '인용 — 관리자가 거절을 뒤집었습니다',
+        DISMISSED: '기각 — 판매자의 거절이 유지됩니다',
+      },
+      reviewNote: '기각 사유',
+      noNote: '인용에는 별도 사유를 적지 않습니다. 근거는 개입 클레임의 이력에 있어요.',
+      dismiss: {
+        title: '이의를 기각할까요?',
+        description:
+          '판매자의 거절이 그대로 유지됩니다. 구매자는 이 사유를 답으로 받게 되므로, 무엇을 확인했는지 적어주세요.',
+        reasonLabel: '기각 사유',
+        reasonHint: '구매자에게 그대로 보입니다. 500자까지 쓸 수 있어요.',
+        reasonPlaceholder: '무엇을 확인했고 왜 거절이 유지되는지 적어주세요.',
+        confirm: '기각하기',
+        cancel: '취소',
+        closeLabel: '닫기',
+        errors: {
+          reasonRequired: '기각 사유를 입력해 주세요.',
+          reasonTooLong: '기각 사유는 500자까지 쓸 수 있어요.',
+        },
+      },
+    },
+    forbiddenTitle: '클레임을 볼 수 없어요',
+    failures: {
+      network: '서버에 연결하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.',
+      timeout: '응답이 너무 늦어 요청을 멈췄어요. 잠시 후 다시 시도해 주세요.',
+      aborted: '요청을 취소했어요.',
+      malformed_response: '서버가 보낸 응답을 읽지 못했어요. 잠시 후 다시 시도해 주세요.',
+      configuration: '서버 주소 설정이 없어요. 개발 서버를 다시 실행해 주세요.',
+      unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+    },
+  },
   layout: {
     // 콘솔 이름. 사이드바 위와 모바일 시트 제목에 같은 문자열이 쓰인다.
     brand: '관리자 콘솔',

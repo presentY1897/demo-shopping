@@ -243,7 +243,7 @@ export class ReturnService {
 
     const inspectedAt = this.clock.now()
 
-    await this.reissuingOnCollision(() =>
+    const move = await this.reissuingOnCollision(() =>
       this.prisma.$transaction(async (tx) => {
         // **아직 검수하지 않은 경우에만** 적는다. 두 번째 호출이 시각을 덮어쓰면
         // 「언제 검수했나」가 재시도한 시각이 되고, 그 값은 환불 이벤트에도 그대로
@@ -263,13 +263,19 @@ export class ReturnService {
         // **검수 결과와 전이 사유가 한 사실이다.** 불합격의 근거를 `ReturnDetail`
         // 에만 적으면 클레임 이력에는 사유 없는 거절이 남고, 분쟁에서 읽히는 것은
         // 그 이력이다 (`claimHistoryEntrySchema` 의 주석 — 「누가 그렇게 판단했나」).
-        await this.claims.applyWithin(tx, claimId, outcome.nextStatus, {
+        return this.claims.applyWithin(tx, claimId, outcome.nextStatus, {
           actor,
           actorId: principal.userId,
           reason: input.note ?? null,
         })
       }),
     )
+
+    // **합격이 판매자 몫을 닫았으면 그 사실도 나가야 한다** (TASK-0071). 그 전이는
+    // 위 트랜잭션 안에서 일어났고, 사건은 커밋된 뒤에 발행된다 — 봉투를 여기서
+    // 버리면 「반품이 끝나 주문이 `RETURNED` 인데 아무도 그 사실을 못 들은」 상태가
+    // 되고, **아무것도 실패하지 않는다.**
+    await this.claims.publishMove(move)
 
     // **`changed` 가 아니라 검수 결과를 본다.** 위 트랜잭션이 커밋된 뒤 여기 닿기
     // 전에 죽은 요청을 다시 부르면 전이는 이미 끝나 있어 `changed` 가 거짓이고,
@@ -342,13 +348,13 @@ export class ReturnService {
    * 아무것도 쓸 수 없다. 밖에서 다시 여는 것이 유일하게 동작하는 모양이고, 안의
    * 쓰기가 전부 멱등이라 두 번째 시도는 첫 번째가 남긴 것을 그대로 쓴다.
    */
-  private async reissuingOnCollision(work: () => Promise<void>): Promise<void> {
+  private async reissuingOnCollision<T>(work: () => Promise<T>): Promise<T> {
     try {
-      await work()
+      return await work()
     } catch (error) {
       if (!isUniqueViolationOn(error, 'trackingNumber')) throw error
 
-      await work()
+      return work()
     }
   }
 

@@ -317,7 +317,95 @@ export const claimHistoryEntrySchema = z.object({
 
 export type ClaimHistoryEntry = z.infer<typeof claimHistoryEntrySchema>
 
-/** 클레임 하나. 구매자와 판매자가 **같은 모양**을 본다 — 다른 것은 볼 수 있는가뿐이다. */
+/* ------------------------------------------------------------------------- *
+ * 이의 제기 (TASK-0071)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * 이의가 어떻게 끝났나.
+ *
+ * **「검토 중」이 값으로 없다.** 그것은 `reviewedAt` 이 `null` 인 것이고, 값을 하나
+ * 더 두면 「검토 중인데 결론이 적힌 이의」가 표현 가능해진다 — 서버 쪽
+ * `ClaimAppeal_review_check` 이 그 조합을 막는 것과 같은 판단이다.
+ */
+export const claimAppealOutcomes = [
+  /** 인용. 관리자가 거절을 뒤집었고, 그 개입은 **새 클레임**으로 서 있다. */
+  'UPHELD',
+  /** 기각. 판매자의 거절이 유지된다. 사유가 필수다. */
+  'DISMISSED',
+] as const
+
+export type ClaimAppealOutcome = (typeof claimAppealOutcomes)[number]
+
+export const claimAppealOutcomeSchema = z.enum(claimAppealOutcomes)
+
+/** 이의의 사유. 신청 사유와 같은 길이다 — 읽고 판단할 만큼이되 본문이 아니다. */
+export const CLAIM_APPEAL_REASON_MAX_LENGTH = CLAIM_REASON_MAX_LENGTH
+
+export const claimAppealReasonSchema = z.string().trim().min(1).max(CLAIM_APPEAL_REASON_MAX_LENGTH)
+
+/**
+ * 거절에 대한 **구매자의 이의** 한 건.
+ *
+ * ## 왜 상태가 아니라 별도의 사실인가
+ *
+ * 이의를 냈다고 클레임이 움직이지 않는다 — 관리자가 볼 때까지 그 클레임은 거절된
+ * 채다. 상태를 하나 더 만들면(예: `APPEALED`) 전이표에 되돌아오는 화살표가 생기고,
+ * `ClaimRefund` 의 멱등이 기대는 「한 클레임은 평생 한 번만 그 자리에 선다」가
+ * 흔들린다. 이력 줄로 적을 수도 없다: `ClaimStatusHistory` 는 전이의 기록이고, 같은
+ * 상태로 옮긴 줄은 `ClaimStatusHistory_transition_check` 이 막는다.
+ *
+ * 그래서 이의는 **클레임 옆에 붙는 사실**이고, `claimSchema.appeal` 이 그 자리다.
+ */
+export const claimAppealSchema = z.object({
+  claimId: z.uuid(),
+  /** 이의를 낸 사람. 이 클레임을 신청한 그 사람이다. */
+  filedById: z.uuid(),
+  reason: z.string(),
+  filedAt: z.iso.datetime(),
+  /** 관리자가 결론을 낸 순간. `null` 이면 **검토 대기**다. */
+  reviewedAt: z.iso.datetime().nullable(),
+  reviewedById: z.uuid().nullable(),
+  outcome: claimAppealOutcomeSchema.nullable(),
+  /**
+   * 기각의 사유. **인용에는 없다** — 인용의 근거는 개입 클레임의 이력에 적히고,
+   * 두 곳에 적으면 둘이 다른 말을 하는 날이 온다.
+   */
+  reviewNote: z.string().nullable(),
+})
+
+export type ClaimAppeal = z.infer<typeof claimAppealSchema>
+
+/**
+ * `POST /api/v1/claims/:id/appeal` — 구매자가 거절에 이의를 제기한다.
+ *
+ * **퍼미션이 `order.write` 다.** 신청과 같은 축이기 때문이다 — 이의는 자기 주문에
+ * 대한 행위이고, `claim.handle` 은 처리하는 쪽의 것이다. 구매자에게 그것을 요구하면
+ * 아무도 이의를 낼 수 없다 (`ClaimController` 의 표와 같은 나눔).
+ */
+export const fileClaimAppealRequestSchema = z.object({ reason: claimAppealReasonSchema })
+
+export type FileClaimAppealRequest = z.infer<typeof fileClaimAppealRequestSchema>
+
+/**
+ * `POST /api/v1/admin/claims/:id/appeal/dismiss` — 이의를 기각한다.
+ *
+ * **사유가 필수다.** 인용은 개입 클레임이 자기 이력에 근거를 남기지만, 기각은 그런
+ * 클레임이 생기지 않는다 — 여기 말고는 「왜 기각했나」가 적힐 자리가 없고, 그것이
+ * 없으면 구매자는 답을 받지 못한 채 거절만 다시 본다.
+ */
+export const dismissClaimAppealRequestSchema = z.object({ reason: claimAppealReasonSchema })
+
+export type DismissClaimAppealRequest = z.infer<typeof dismissClaimAppealRequestSchema>
+
+/**
+ * 클레임 하나. 구매자와 판매자가 **같은 모양**을 본다 — 다른 것은 볼 수 있는가뿐이다.
+ *
+ * 관리자 개입의 세 필드도 여기 있다 (TASK-0071). 관리자 전용 응답으로 빼지 않은
+ * 이유는 **세 역할이 전부 알아야 하는 사실**이기 때문이다 — 판매자는 자기 거절이
+ * 뒤집혔다는 것을, 구매자는 자기 이의가 어디까지 갔는지를 알아야 하고, 그것을
+ * 관리자 화면에만 실으면 나머지 둘은 「아무 일도 없었다」를 본다 (TASK-0071 R1).
+ */
 export const claimSchema = z.object({
   id: z.uuid(),
   sellerOrderId: z.uuid(),
@@ -333,6 +421,23 @@ export const claimSchema = z.object({
   updatedAt: z.iso.datetime(),
   items: z.array(claimItemSchema),
   history: z.array(claimHistoryEntrySchema),
+  /**
+   * **이 신청이 뒤집은 거절** (TASK-0071).
+   *
+   * 관리자의 강제 처리는 거절된 클레임을 되살리는 것이 아니라 **새 신청을 관리자가
+   * 대신 내는 것**이고, 이 값이 그 둘을 잇는 선이다. 「누가·왜」는 `history` 의 첫
+   * 줄이 이미 담는다 — `actor` 가 `ADMIN` 이고 `reason` 이 개입의 근거다.
+   */
+  overturnsClaimId: z.uuid().nullable(),
+  /**
+   * **이 거절을 뒤집은 신청들** — 위 필드의 반대 방향.
+   *
+   * 목록인 것은 부분 취소를 나눠 뒤집을 수 있기 때문이다. 대개 0개이거나 1개이고,
+   * 비어 있지 않다는 것 자체가 판매자 화면이 그려야 할 사실이다.
+   */
+  overturnedByClaimIds: z.array(z.uuid()),
+  /** 이 거절에 걸린 이의. 없으면 `null` 이다 (TASK-0071). */
+  appeal: claimAppealSchema.nullable(),
 })
 
 export type Claim = z.infer<typeof claimSchema>
@@ -815,3 +920,233 @@ export type SellerClaimDetail = z.infer<typeof sellerClaimDetailSchema>
 export const sellerClaimDetailResponseSchema = z.object({ claim: sellerClaimDetailSchema })
 
 export type SellerClaimDetailResponse = z.infer<typeof sellerClaimDetailResponseSchema>
+
+/* ------------------------------------------------------------------------- *
+ * 관리자 개입 (TASK-0071)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * `POST /api/v1/admin/claims` — **관리자가 대신 내는 신청**, 그리고 그 자리에서의 승인.
+ *
+ * ## 이 라우트가 「강제 처리」의 전부인 이유
+ *
+ * 판매자의 거절을 뒤집는 방법으로 셋을 두고 골랐다.
+ *
+ * | 안 | 왜 아닌가 |
+ * | --- | --- |
+ * | ⓐ 거절에서 나가는 화살표를 관리자에게 연다 | 거절은 잡고 있던 수량을 **이미 돌려주었다**. 되돌리는 화살표는 그 수량을 다시 잡는 연산을 함께 요구하고, 그 사이 구매자가 다시 신청했으면 잡을 수 없다. 게다가 `RETURN_REJECTED → RETURN_APPROVED` 는 전이표에 **고리**를 만들어, `ClaimRefund` 의 멱등이 기대는 「돌아오는 화살표가 없다」를 깬다 |
+ * | ⓒ 별도의 「개입」 표를 만든다 | 환불·재고 복원·주문 마감이 전부 클레임에 매달려 있다. 표를 하나 더 두면 그 기계를 한 벌 더 만들게 된다 |
+ * | ⓑ **새 신청을 관리자가 대신 낸다** | 아래 |
+ *
+ * 저장소는 이미 「거절된 것은 다시 신청할 수 있다」를 규칙으로 갖고 있다
+ * (`remainingQuantity`). **관리자의 뒤집기는 그 재신청의 주체가 관리자인 경우**이고,
+ * 그래서 새 상태도 새 화살표도 필요 없이 기존 기계가 그대로 돈다. 원본은 거절된 채
+ * 남는데 그것이 사실이다 — 관리자는 판매자가 거절했다는 사실을 없앤 것이 아니라
+ * **다른 결론을 낸 것**이다.
+ *
+ * ## 구매자의 신청과 다른 두 가지
+ *
+ * - **`overturnsClaimId`** — 어느 거절을 뒤집는가. 없으면 개입이 원본과 이어지지
+ *   않고, 판매자는 자기 거절이 살아 있는 줄 안다.
+ * - **주문 상태의 문턱이 다르다.** 구매확정한 주문에 하자 반품을 받는 것이 이
+ *   라우트의 두 번째 목적이고(TASK-0071 4.0), 반품 기간도 보지 않는다 — 기간은
+ *   구매자가 **스스로** 신청할 수 있는 창이지 관리자의 판단을 가두는 값이 아니다.
+ *   그 판정은 `claimEligibility` 가 아니라 `adminClaimEligibility` 가 한다.
+ *
+ * **유형은 여전히 요청이 정하지 않는다.** 주문 상태가 정한다 — 관리자라고 배송 중인
+ * 물건을 취소로 넣을 수 있어야 하는 것은 아니고, 그렇게 두면 재고가 두 번 늘어난다.
+ */
+export const createAdminClaimRequestSchema = z
+  .object({
+    ...claimRequestFields,
+    /** 취소의 귀책. 반품에는 없다 — 반품의 귀책은 `return.returnReason` 이 정한다. */
+    fault: claimFaultSchema.nullable().default(null),
+    /** 반품의 부속. 취소에는 없다. */
+    return: claimReturnDetailsSchema.nullable().default(null),
+    /** 이 개입이 뒤집는 거절. 확정 후 하자 반품처럼 원본이 없는 개입이면 `null`. */
+    overturnsClaimId: z.uuid().nullable().default(null),
+  })
+  .refine(claimItemsAreDistinct, CLAIM_DUPLICATE_ITEMS_ISSUE)
+  .refine((input) => (input.fault === null) !== (input.return === null), {
+    path: ['return'],
+    message: '취소는 귀책을, 반품은 사유를 — 둘 중 하나만 보내야 합니다.',
+  })
+
+export type CreateAdminClaimRequest = z.infer<typeof createAdminClaimRequestSchema>
+
+export const ADMIN_CLAIM_LIST_DEFAULT_LIMIT = 20
+export const ADMIN_CLAIM_LIST_MAX_LIMIT = 50
+
+/**
+ * `GET /api/v1/admin/claims` 의 질의 — 판매자 · 구매자 · 상태 · 기간.
+ *
+ * **커서가 `id` 하나다.** 판매자 콘솔은 정렬 축이 `(단계, id)` 두 칸이라 커서도 두
+ * 칸이지만(`sellerClaimCursorSchema`), 관리자 목록은 **작업 큐가 아니라 조회**라
+ * 최신순 하나로 충분하다. 「지금 처리할 것」은 아래 `/admin/claims/overdue` 가
+ * 따로 답한다 — 그것을 이 목록의 정렬로 만들면 커서가 **요청마다 다른 자리**를
+ * 가리키게 된다(지연은 `now` 에 달린 값이다).
+ */
+export const adminClaimListQuerySchema = z.object({
+  /** 이 가게에 들어온 것만. */
+  sellerId: z.uuid().optional(),
+  /** 이 사람이 산 주문의 것만. */
+  buyerId: z.uuid().optional(),
+  status: claimStatusFilterSchema.optional(),
+  stage: claimHandlingStageSchema.optional(),
+  type: claimTypeSchema.optional(),
+  /** 신청 시각의 구간. 양끝 모두 포함이다. */
+  from: z.iso.datetime().optional(),
+  to: z.iso.datetime().optional(),
+  /** 참이면 **검토 대기 중인 이의가 걸린 것만**. 거짓은 필터가 없는 것과 같다. */
+  appealed: z.boolean().optional(),
+  limit: z.int().min(1).max(ADMIN_CLAIM_LIST_MAX_LIMIT).optional(),
+  cursor: z.uuid().optional(),
+})
+
+export type AdminClaimListQuery = z.infer<typeof adminClaimListQuerySchema>
+
+/**
+ * 같은 질의를, 값이 전부 문자열로 도착하는 형태로.
+ *
+ * 타입이 있는 쪽 옆에 두는 이유는 둘이 갈리지 않게 하기 위해서다 — 한쪽에만
+ * 파라미터를 더하면 컴파일이 멈춘다. `status` 의 문법은 **쉼표 하나**이고, 그것이
+ * 이 저장소의 모든 목록이 쓰는 규약이다.
+ */
+export const adminClaimListQueryParamsSchema = z.object({
+  sellerId: z.uuid().optional(),
+  buyerId: z.uuid().optional(),
+  status: z
+    .string()
+    .transform((value) => value.split(','))
+    .pipe(claimStatusFilterSchema)
+    .optional(),
+  stage: claimHandlingStageSchema.optional(),
+  type: claimTypeSchema.optional(),
+  from: z.iso.datetime().optional(),
+  to: z.iso.datetime().optional(),
+  // `'false'` 를 참으로 읽지 않는다. `z.coerce.boolean()` 은 비지 않은 문자열을 전부
+  // 참으로 만들어, 「이의만 보기를 껐다」가 「켰다」로 도착한다.
+  appealed: z
+    .enum(['true', 'false'])
+    .transform((value) => value === 'true')
+    .optional(),
+  limit: z.coerce.number().int().min(1).max(ADMIN_CLAIM_LIST_MAX_LIMIT).optional(),
+  cursor: z.uuid().optional(),
+})
+
+/**
+ * 관리자 목록 한 줄.
+ *
+ * 판매자 목록(`sellerClaimListItemSchema`)과 다른 것은 **누구의 것인지가 필요하다**는
+ * 점이다. 판매자는 자기 가게만 보므로 가게를 적을 이유가 없지만, 관리자는 플랫폼
+ * 전체를 보므로 「누가 팔았고 누가 샀나」가 없으면 줄을 구분할 수 없다.
+ */
+export const adminClaimListItemSchema = claimListItemSchema.extend({
+  sellerId: z.uuid(),
+  brandName: z.string(),
+  /** 산 사람. 이름이 아니라 id 다 — 목록에 개인정보를 싣지 않는다. */
+  buyerId: z.uuid(),
+  stage: claimHandlingStageSchema,
+  dueAt: z.iso.datetime(),
+  overdue: z.boolean(),
+  /** 검토 대기 중인 이의가 걸려 있다. */
+  appealPending: z.boolean(),
+  /** 이 신청이 **관리자의 개입**이다 — 어느 거절을 뒤집었다. */
+  intervention: z.boolean(),
+})
+
+export type AdminClaimListItem = z.infer<typeof adminClaimListItemSchema>
+
+export const adminClaimListResponseSchema = z.object({
+  claims: z.array(adminClaimListItemSchema),
+  nextCursor: z.uuid().nullable(),
+})
+
+export type AdminClaimListResponse = z.infer<typeof adminClaimListResponseSchema>
+
+/** 지연 목록이 한 번에 훑는 줄 수. 근거는 `admin-claim-rules.ts` 에 있다. */
+export const ADMIN_OVERDUE_SCAN_LIMIT = 200
+
+export const ADMIN_OVERDUE_DEFAULT_LIMIT = 20
+export const ADMIN_OVERDUE_MAX_LIMIT = 100
+
+export const adminOverdueClaimsQueryParamsSchema = z.object({
+  limit: z.coerce.number().int().min(1).max(ADMIN_OVERDUE_MAX_LIMIT).optional(),
+})
+
+/**
+ * `GET /api/v1/admin/claims/overdue` — **기한을 넘긴 채 처리를 기다리는 클레임**.
+ *
+ * ## 왜 목록의 필터가 아니라 라우트인가
+ *
+ * 기한은 **영업일**로 센다(`claim-deadline.ts`). SQL 은 주말을 모르고, 그 계산을
+ * 질의로 내려보내면 시간대·주말의 정의가 두 벌이 된다 — 그때 지연 뱃지와 지연
+ * 목록이 서로 다른 건을 가리키고, 어느 쪽도 실패하지 않는다.
+ *
+ * 그래서 **넘치게 읽고 정확히 거른다**: 질의는 「가장 짧은 기한조차 지났을 수 있는」
+ * 보수적인 컷오프로 좁히고, 판정은 `isClaimOverdue` 가 한다. 훑는 줄 수에 상한이
+ * 있으므로({@link ADMIN_OVERDUE_SCAN_LIMIT}) 답에 `truncated` 가 붙는다 — 200줄을
+ * 넘겨 밀린 상태는 목록이 아니라 사고이고, 그 사실을 숨기면 화면은 「20건」만 본다.
+ */
+export const adminOverdueClaimsResponseSchema = z.object({
+  claims: z.array(adminClaimListItemSchema),
+  /** 훑은 줄 수. 상한에 닿았으면 `truncated` 가 참이다. */
+  scanned: z.int().min(0),
+  truncated: z.boolean(),
+})
+
+export type AdminOverdueClaimsResponse = z.infer<typeof adminOverdueClaimsResponseSchema>
+
+export const ADMIN_FAILED_REFUND_DEFAULT_LIMIT = 20
+export const ADMIN_FAILED_REFUND_MAX_LIMIT = 100
+
+export const adminFailedRefundQueryParamsSchema = z.object({
+  limit: z.coerce.number().int().min(1).max(ADMIN_FAILED_REFUND_MAX_LIMIT).optional(),
+})
+
+/**
+ * 나가지 못한 환불 한 건 (TASK-0068 R3 이 넘긴 항목).
+ *
+ * **`refundedAt IS NULL` 인 `ClaimRefund` 가 곧 이 목록이다.** 그 행이 없으면 실패한
+ * 환불은 「승인됐는데 `REFUNDED` 로 안 간 클레임」으로만 보이고, 그 상태에서 사람이
+ * 할 수 있는 일은 로그를 뒤지는 것뿐이다.
+ *
+ * `attempts` 와 `lastError` 를 함께 싣는 것이 요점이다 — 다음 주기에 사라질 실패(결제사가
+ * 잠깐 죽었다)와 사라지지 않을 실패(이미 다 환불된 결제, 없는 결제)를 가르는 것이
+ * 그 둘이고, 뒤엣것은 사람이 손대야 한다.
+ */
+export const adminFailedRefundSchema = z.object({
+  claimId: z.uuid(),
+  sellerOrderId: z.uuid(),
+  orderNumber: orderNumberSchema,
+  sellerId: z.uuid(),
+  brandName: z.string(),
+  claimStatus: claimStatusSchema,
+  /** 나갔어야 할 금액. 한 번도 계산되지 못한 실패면 0 이다. */
+  amount: priceSchema,
+  attempts: z.int().min(0),
+  lastError: z.string().nullable(),
+  lastAttemptAt: z.iso.datetime().nullable(),
+  /**
+   * **환불을 기다리기 시작한 시각** — 승인·검수가 상태를 옮긴 때
+   * (`ClaimRequest.updatedAt`). 실패한 환불은 트랜잭션째 물러나 그 행을 건드리지
+   * 않으므로, 이 값은 「얼마나 오래 못 받고 있나」에 그대로 답한다.
+   */
+  waitingSince: z.iso.datetime(),
+})
+
+export type AdminFailedRefund = z.infer<typeof adminFailedRefundSchema>
+
+export const adminFailedRefundListResponseSchema = z.object({
+  refunds: z.array(adminFailedRefundSchema),
+  /**
+   * 상한을 넘겨 더 있다.
+   *
+   * 커서를 두지 않은 것은 **페이지가 필요한 실패 목록은 이미 사고**이기 때문이다 —
+   * 정상 흐름에서 이 목록은 0건이고, 넘칠 때 필요한 것은 다음 페이지가 아니라 그
+   * 사실 자체다.
+   */
+  hasMore: z.boolean(),
+})
+
+export type AdminFailedRefundListResponse = z.infer<typeof adminFailedRefundListResponseSchema>

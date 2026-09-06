@@ -548,6 +548,12 @@ export function sellerClaimOf(seed: MockSellerClaimSeed): Claim {
     updatedAt: seed.requestedAt,
     items: [...claimItemsOf(seed)],
     history: [...historyOf(seed)],
+    // 관리자 개입의 세 칸 (TASK-0071). 판매자 콘솔의 씨앗에는 개입이 없다 — 있는
+    // 것을 지어내면 「내 거절이 뒤집혔다」를 그리는 화면이 실 서버에서 절대 오지
+    // 않는 조합에 맞춰진다.
+    overturnsClaimId: null,
+    overturnedByClaimIds: [],
+    appeal: null,
   }
 }
 

@@ -3,6 +3,7 @@ import type { HealthDependencyKey, HealthResponse, HealthStatus } from '@shoppin
 
 import type { AppConfig } from '../config/app-config.js'
 import { APP_CONFIG } from '../config/app-config.js'
+import { claimRefundDetails } from './claim-refund.health-indicator.js'
 import { DemoCleanupReporter } from './demo-cleanup.reporter.js'
 import { deliverySimulatorDetails } from './delivery-simulator.health-indicator.js'
 import { SearchIndexReporter } from './search-index.reporter.js'
@@ -48,6 +49,7 @@ export class HealthService {
       orderConfirm,
       paymentStraggler,
       deliverySimulator,
+      claimRefund,
       webhookReceivedAt,
     ] = await Promise.all([
       Promise.all(
@@ -66,6 +68,7 @@ export class HealthService {
       orderConfirmDetails(this.indicators),
       paymentStragglerDetails(this.indicators),
       deliverySimulatorDetails(this.indicators),
+      claimRefundDetails(this.indicators),
       // 지표 목록이 아니라 보고자에서 온다 — 웹훅이 한 건도 안 온 것은 고장이
       // 아니라 전체 판정에 실리지 않는다 (`payment-webhook.reporter.ts`).
       this.paymentWebhook.lastReceivedAt(),
@@ -87,6 +90,7 @@ export class HealthService {
         status: statusOf(readings, 'deliverySimulator'),
         ...deliverySimulator,
       },
+      claimRefund: { status: statusOf(readings, 'claimRefund'), ...claimRefund },
       paymentWebhook: { lastReceivedAt: webhookReceivedAt },
     }
   }

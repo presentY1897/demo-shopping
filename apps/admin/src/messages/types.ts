@@ -1,8 +1,14 @@
 import type {
+  ClaimFault,
+  ClaimHandlingStage,
+  ClaimStatus,
+  ClaimType,
   DenialReason,
   HealthStatus,
   OauthFailureReason,
   OauthNotice,
+  OrderActor,
+  ReturnReason,
   SellerStatus,
 } from '@shopping/shared'
 import type { ConsoleMenu, ConsoleShellLabels } from '@shopping/ui/console'
@@ -10,6 +16,13 @@ import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 
 import type { ApiFailureReason, AttributeType, ErrorMessages } from '@shopping/shared'
 
+import type { ForceIssue, InterventionBlock } from '@/lib/claims/claim-console'
+import type {
+  DefectReturnBlock,
+  DefectReturnIssue,
+  DefectReturnTarget,
+} from '@/lib/claims/defect-return'
+import type { ReturnPhotoRejection } from '@/lib/claims/return-photos'
 import type { SellerDecision } from '@/lib/sellers/decisions'
 
 import type { SessionRefusal } from '@/lib/auth/session-client'
@@ -72,6 +85,8 @@ export interface Messages {
   readonly attributes: AttributeMessages
   /** The seller onboarding review console (TASK-0110). */
   readonly sellers: SellerReviewMessages
+  /** The claim intervention console (TASK-0071). */
+  readonly claims: AdminClaimMessages
   /**
    * One sentence per error code the API can answer with (TASK-0117).
    *
@@ -762,4 +777,484 @@ export interface SellerReviewToastMessages {
    * and a silent refresh would look like their own click did it.
    */
   readonly conflict: string
+}
+
+/**
+ * Everything `/claims`, `/claims/[id]` and the dashboard's attention panel say
+ * (TASK-0071).
+ *
+ * One slice for the three, for the reason {@link CategoryMessages} gives: they
+ * are one task in an operator's head — 「지금 손댈 클레임이 있나」 — and the
+ * dashboard panel is that question asked from the other side of the console.
+ *
+ * **The vocabulary is its own record set, keyed by the contract's unions.** A
+ * status added to `@shopping/shared` fails `pnpm typecheck` here rather than
+ * rendering `RETURN_REJECTED` at an operator, which is the same device the
+ * seller console uses.
+ */
+export interface AdminClaimMessages {
+  readonly title: string
+  readonly description: string
+  readonly vocabulary: ClaimVocabularyMessages
+  readonly scope: ClaimScopeMessages
+  readonly list: AdminClaimListMessages
+  readonly overdue: OverdueClaimMessages
+  readonly failedRefunds: FailedRefundMessages
+  readonly attention: ClaimAttentionMessages
+  readonly detail: AdminClaimDetailMessages
+  readonly force: ClaimForceMessages
+  readonly defectReturn: DefectReturnMessages
+  readonly appeal: ClaimAppealMessages
+  /** Shown instead of the screen when the account may not read claims at all. */
+  readonly forbiddenTitle: string
+  /** One line per way a call can fail **before** the API answers. */
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+/** The domain's own words, one per value of each union the API answers with. */
+export interface ClaimVocabularyMessages {
+  readonly statusLabels: Readonly<Record<ClaimStatus, string>>
+  readonly typeLabels: Readonly<Record<ClaimType, string>>
+  readonly faultLabels: Readonly<Record<ClaimFault, string>>
+  readonly stageLabels: Readonly<Record<ClaimHandlingStage, string>>
+  readonly returnReasonLabels: Readonly<Record<ReturnReason, string>>
+  /** Who moved a claim. The history column an intervention is judged from. */
+  readonly actorLabels: Readonly<Record<OrderActor, string>>
+}
+
+/**
+ * What this console says about **the reach of its own writes** (F5).
+ *
+ * The screen never disables a control to express this. A `DEMO_ADMIN` holds
+ * `claim.handle` narrowed to `demo`, and no response on this screen carries
+ * `ownerIsDemo` — so per-row certainty is not available to it, and a greyed
+ * button would be a guess with the reason hidden in a tooltip. Both sentences
+ * below are things the screen can say truthfully instead: `demoNotice` before
+ * anything is pressed, `outOfScope` after the server has answered about one
+ * particular claim.
+ */
+export interface ClaimScopeMessages {
+  readonly demoNotice: string
+  /** The 403 the demo scope produces, said as a sentence about this claim. */
+  readonly outOfScope: string
+}
+
+export interface AdminClaimListMessages {
+  readonly tabs: {
+    readonly label: string
+    readonly all: string
+    readonly overdue: string
+    readonly failedRefunds: string
+    /** The fourth tab is a place to **start** something, not a list to read. */
+    readonly defectReturn: string
+    /** `{name}` · `{count}` — a tab that carries a number carries it this way. */
+    readonly countLabel: string
+  }
+  readonly listLabel: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  /** Empty *because of the filter*, which is a different emptiness. */
+  readonly filteredEmptyTitle: string
+  readonly filteredEmptyDescription: string
+  readonly columns: AdminClaimColumnMessages
+  readonly badges: {
+    readonly overdue: string
+    readonly appealPending: string
+    readonly intervention: string
+  }
+  readonly narrow: AdminClaimNarrowMessages
+  readonly filters: AdminClaimFilterMessages
+  readonly pagination: {
+    readonly label: string
+    readonly previous: string
+    readonly next: string
+    readonly pageUnit: string
+    readonly countUnit: string
+  }
+}
+
+export interface AdminClaimColumnMessages {
+  readonly orderNumber: string
+  readonly seller: string
+  readonly buyer: string
+  readonly type: string
+  readonly status: string
+  readonly stage: string
+  readonly items: string
+  readonly requestedAt: string
+  readonly dueAt: string
+  readonly flags: string
+  /** `{count}` — how many units the claim covers. */
+  readonly quantity: string
+}
+
+/**
+ * Narrowing to one store or one buyer.
+ *
+ * The filter exists in the contract as a uuid (`sellerId` · `buyerId`) and this
+ * console has no endpoint that lists either exhaustively — the seller queue is
+ * itself a page. So the choice is made **from a row**, where the value is real
+ * and named, rather than from a select that would quietly omit whoever is not
+ * on its first page.
+ */
+export interface AdminClaimNarrowMessages {
+  /** `{name}` — the store's brand name, as the button's accessible name. */
+  readonly seller: string
+  /** `{id}` — the buyer's account id, shortened for the eye but whole in the name. */
+  readonly buyer: string
+  readonly activeSeller: string
+  readonly activeBuyer: string
+  readonly clear: string
+}
+
+export interface AdminClaimFilterMessages {
+  readonly legend: string
+  readonly statusLabel: string
+  readonly statusAll: string
+  readonly stageLabel: string
+  readonly stageAll: string
+  readonly typeLabel: string
+  readonly typeAll: string
+  readonly fromLabel: string
+  readonly toLabel: string
+  /** Why a day is enough: the API takes an instant and the console makes one. */
+  readonly periodHint: string
+  readonly appealedLabel: string
+  readonly reset: string
+}
+
+export interface OverdueClaimMessages {
+  readonly title: string
+  readonly description: string
+  readonly listLabel: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  /** The scan hit its ceiling — a backlog this size is an incident, not a page. */
+  readonly truncatedNotice: string
+}
+
+export interface FailedRefundMessages {
+  readonly title: string
+  readonly description: string
+  readonly listLabel: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  readonly hasMoreNotice: string
+  readonly columns: {
+    readonly orderNumber: string
+    readonly seller: string
+    readonly status: string
+    readonly amount: string
+    readonly attempts: string
+    readonly lastError: string
+    readonly waitingSince: string
+  }
+  /** `{count}` — how many times the refund has been tried. */
+  readonly attemptCount: string
+  /** Nothing has been tried yet, which is not the same as "no error". */
+  readonly noAttempt: string
+  readonly noError: string
+}
+
+/**
+ * The dashboard's slice of this screen (F7).
+ *
+ * The counts alone would make the panel a badge; the rows are what make it
+ * usable, so it renders the same two tables the console does and links on.
+ */
+export interface ClaimAttentionMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  /** `{count}` each. */
+  readonly overdueCount: string
+  readonly failedCount: string
+  readonly allClear: string
+  readonly link: string
+}
+
+export interface AdminClaimDetailMessages {
+  readonly backLabel: string
+  readonly title: string
+  /** `{orderNumber}` */
+  readonly subtitle: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly notFoundTitle: string
+  readonly notFoundDescription: string
+  readonly sections: {
+    readonly actions: string
+    readonly summary: string
+    readonly items: string
+    readonly request: string
+    readonly appeal: string
+    readonly intervention: string
+    readonly history: string
+  }
+  readonly summary: {
+    readonly type: string
+    readonly status: string
+    readonly fault: string
+    readonly requestedBy: string
+    readonly requestedAt: string
+    readonly updatedAt: string
+    readonly orderNumber: string
+  }
+  readonly items: {
+    readonly caption: string
+    readonly product: string
+    readonly option: string
+    readonly sku: string
+    readonly quantity: string
+    readonly noOption: string
+  }
+  readonly history: {
+    readonly caption: string
+    readonly at: string
+    readonly change: string
+    readonly actor: string
+    readonly reason: string
+    readonly created: string
+    /** `{from}` → `{to}` */
+    readonly step: string
+    readonly noReason: string
+    readonly empty: string
+  }
+  /**
+   * The two directions of an intervention, which point at each other (F6).
+   *
+   * `overturnsClaimId` on the intervention, `overturnedByClaimIds` on the
+   * rejection: the same fact from both ends, and the screen draws both so that
+   * neither claim reads as an orphan.
+   */
+  readonly intervention: {
+    readonly overturnsTitle: string
+    readonly overturnsBody: string
+    readonly openOriginal: string
+    readonly overturnedTitle: string
+    readonly overturnedBody: string
+    /** `{index}` — interventions are a list, because a partial claim can be split. */
+    readonly openIntervention: string
+    readonly none: string
+  }
+  readonly actions: {
+    readonly force: string
+    readonly dismissAppeal: string
+  }
+  /**
+   * Why this claim cannot be acted on, **as sentences rather than a grey button**
+   * (TASK-0063 4.1 · this task's report).
+   *
+   * `state` is keyed by {@link InterventionBlock}, so a status that stops being
+   * overturnable without a sentence here fails the typecheck.
+   */
+  readonly blocked: {
+    readonly title: string
+    readonly state: Readonly<Record<InterventionBlock, string>>
+    /** Appended to TASK-0023's `reason(permission)`, which says *that* not *which*. */
+    readonly permission: string
+    readonly refusedTitle: string
+  }
+  readonly toast: {
+    readonly regionLabel: string
+    readonly closeLabel: string
+    readonly forced: string
+    readonly dismissed: string
+  }
+  readonly failureTitle: string
+}
+
+export interface ClaimForceMessages {
+  readonly title: string
+  readonly description: string
+  /**
+   * What actually happens, in four sentences rather than one paragraph.
+   *
+   * The 구매확정 dialog (TASK-0063) is the tone: a paragraph is not read, and
+   * the two facts that matter here — somebody's money moves, somebody's stock
+   * moves — are not the same fact.
+   */
+  readonly consequences: {
+    readonly newClaim: string
+    readonly money: string
+    readonly appeal: string
+    readonly irreversible: string
+  }
+  readonly itemsLabel: string
+  readonly itemsCaption: string
+  readonly faultLabel: string
+  readonly faultHint: string
+  readonly returnReasonLabel: string
+  readonly returnReasonHint: string
+  /** `{fault}` — what the chosen reason will be recorded as. */
+  readonly faultPreview: string
+  /** Why no amount is shown, said plainly rather than left as a blank. */
+  readonly amountNotice: string
+  readonly reasonLabel: string
+  readonly reasonHint: string
+  readonly reasonPlaceholder: string
+  readonly confirm: string
+  readonly cancel: string
+  readonly closeLabel: string
+  readonly errors: {
+    readonly reasonRequired: string
+    readonly reasonTooLong: string
+  }
+}
+
+/**
+ * 확정 후 하자 반품 — the one entry point that begins at an **order** (F4).
+ *
+ * Everything else in this slice starts from a claim that already exists. This
+ * one does not: the intervention it files has no original to overturn, so no row
+ * of any list leads here and the screen has to find its target itself.
+ *
+ * Three things it must say, and the catalog is where they are said:
+ *
+ * | What | Why it is a sentence and not a control |
+ * | --- | --- |
+ * | 주문번호로는 찾을 수 없다 | There is no route from an order number to a seller's share. Leaving it unsaid makes an operator type the number they were given, once per attempt |
+ * | 확정을 되돌린다 · 정산 회수가 따라온다 | The 구매확정 dialog in `apps/shop` is the tone. A paragraph is not read, and "money moves" and "a settlement has to be clawed back" are not the same fact |
+ * | 단순 변심은 없다 | A reason missing from a list reads as an oversight unless the screen says why it is missing |
+ */
+export interface DefectReturnMessages {
+  readonly title: string
+  readonly description: string
+  readonly consequences: {
+    readonly reopens: string
+    readonly money: string
+    /** The M12 half: a settlement already paid has to be recovered. */
+    readonly settlement: string
+    readonly irreversible: string
+  }
+  readonly lookup: DefectReturnLookupMessages
+  readonly blocked: {
+    readonly title: string
+    /** One sentence per state this screen cannot start from. */
+    readonly state: Readonly<Record<DefectReturnBlock, string>>
+  }
+  readonly form: DefectReturnFormMessages
+  readonly confirm: {
+    readonly title: string
+    readonly description: string
+    readonly itemsCaption: string
+    readonly confirm: string
+    readonly cancel: string
+    readonly closeLabel: string
+  }
+  readonly done: {
+    readonly title: string
+    readonly body: string
+    readonly open: string
+    readonly again: string
+  }
+  readonly failureTitle: string
+}
+
+/** Finding the seller's share, and saying what cannot be used to find it. */
+export interface DefectReturnLookupMessages {
+  readonly legend: string
+  readonly label: string
+  readonly hint: string
+  readonly placeholder: string
+  readonly submit: string
+  /** Why an order number does not work here. Stays on screen, not an error. */
+  readonly unavailableNotice: string
+  readonly errors: Readonly<Record<Exclude<DefectReturnTarget, 'seller_order_id'>, string>>
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly notFoundTitle: string
+  readonly notFoundDescription: string
+}
+
+/**
+ * The photo box, and the two sentences that keep it from being sent empty.
+ *
+ * **Two screens draw this same box** — the confirmed-order defect return and the
+ * dialog that overturns a rejected one (`ReturnPhotoField`) — because the server
+ * asks both of them for the same thing: 하자·오배송 반품에는 사진이 필수
+ * (`returnPhotoDecision`). One set of strings rather than two, so that the
+ * sentence explaining *why* the button did nothing cannot drift between the two
+ * places a photo is attached.
+ *
+ * `issues` is narrower here than the defect return form's own list: this
+ * interface owns only what a photo box can be short of. A catalog satisfies it
+ * with the wider record it already writes.
+ */
+export interface ReturnPhotoMessages {
+  readonly photosLabel: string
+  /** `{max}` — `RETURN_PHOTO_MAX_COUNT`, interpolated rather than written out. */
+  readonly photosHint: string
+  readonly photosDropLabel: string
+  readonly photosDropActive: string
+  readonly photosListLabel: string
+  /** `{name}` — the file's name, so a remove button says which one. */
+  readonly photoRemove: string
+  readonly photoStatus: Readonly<Record<'uploading' | 'ready' | 'failed', string>>
+  readonly photoFailures: Readonly<Record<ReturnPhotoRejection | 'storage', string>>
+  /** Heading over what is still missing. Shown only after somebody pressed. */
+  readonly issuesLabel: string
+  readonly issues: Readonly<Record<ForceIssue, string>>
+}
+
+export interface DefectReturnFormMessages extends ReturnPhotoMessages {
+  readonly found: string
+  readonly itemsLegend: string
+  readonly itemsHint: string
+  /** `{product}` · `{option}` — the checkbox's accessible name. */
+  readonly itemLabel: string
+  readonly noOption: string
+  /** `{count}` — what the server said is left, never a subtraction done here. */
+  readonly remaining: string
+  /** `{product}` — the quantity select's name, one per chosen row. */
+  readonly quantityLabel: string
+  readonly reasonLabel: string
+  /** Why 단순 변심 is not in the list. The restriction, said rather than implied. */
+  readonly reasonHint: string
+  /** `{fault}` — what the chosen reason will be recorded as. */
+  readonly faultPreview: string
+  readonly noteLabel: string
+  readonly noteHint: string
+  readonly notePlaceholder: string
+  readonly submit: string
+  /** Everything this form can be short of — the photo box's two, and its own. */
+  readonly issues: Readonly<Record<DefectReturnIssue, string>>
+}
+
+export interface ClaimAppealMessages {
+  readonly pendingTitle: string
+  readonly pendingBody: string
+  readonly reviewedTitle: string
+  readonly none: string
+  readonly filedAt: string
+  readonly reason: string
+  readonly reviewedAt: string
+  readonly outcome: string
+  readonly outcomes: Readonly<Record<'UPHELD' | 'DISMISSED', string>>
+  readonly reviewNote: string
+  readonly noNote: string
+  readonly dismiss: {
+    readonly title: string
+    readonly description: string
+    readonly reasonLabel: string
+    readonly reasonHint: string
+    readonly reasonPlaceholder: string
+    readonly confirm: string
+    readonly cancel: string
+    readonly closeLabel: string
+    readonly errors: {
+      readonly reasonRequired: string
+      readonly reasonTooLong: string
+    }
+  }
 }
