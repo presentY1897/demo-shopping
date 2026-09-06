@@ -1,4 +1,9 @@
-import { COUPON_NAME_MAX_LENGTH, PRODUCT_MAX_VARIANTS } from '@shopping/shared'
+import {
+  COUPON_NAME_MAX_LENGTH,
+  PRODUCT_MAX_VARIANTS,
+  REVENUE_MAX_DAYS,
+  REVENUE_TOP_PRODUCTS,
+} from '@shopping/shared'
 
 import type { Messages } from './types'
 
@@ -1697,5 +1702,189 @@ export const ko: Messages = {
     submitFailed: '쿠폰을 발행하지 못했습니다. 잠시 후 다시 시도해 주세요.',
     issuedNotice: "'{name}' 을(를) 발행했습니다.",
     issuedWithCode: "'{name}' 을(를) 발행했습니다. 코드는 {code} 입니다.",
+  },
+  revenue: {
+    description: '기간을 골라 매출 추이와 인기 상품을 봅니다. 주문이 일어난 날을 기준으로 셉니다.',
+    loadingLabel: '매출을 불러오는 중입니다',
+    filters: {
+      legend: '기간 고르기',
+      fromLabel: '시작',
+      toLabel: '끝',
+      reset: '최근 30일로',
+      rangeReversed: '끝나는 날이 시작하는 날보다 앞이에요.',
+      rangeTooLong: `한 번에 볼 수 있는 기간은 ${String(REVENUE_MAX_DAYS)}일까지예요.`,
+    },
+    totals: {
+      regionLabel: '이 기간의 합계',
+      salesLabel: '매출',
+      orderCountLabel: '주문 수',
+      averageLabel: '평균 주문금액',
+      orderCountValue: '{count}건',
+    },
+    comparison: {
+      title: '전 기간 대비',
+      previous: '지난 기간 {amount}',
+      up: '{percent}% 늘었어요',
+      down: '{percent}% 줄었어요',
+      flat: '지난 기간과 같아요',
+      // 0으로 나눈 결과를 그리지 않는다. 「+∞%」도 「+100%」도 둘 다 사실이 아니고,
+      // 판매자가 알아야 하는 것은 비율이 아니라 **비교할 것이 없다**는 사실이다.
+      none: '비교할 지난 기간 매출이 없어요.',
+      note: '바로 앞의 같은 길이 기간과 비교합니다.',
+    },
+    chart: {
+      title: '매출 추이',
+      caption: '그래프는 아래 표를 그린 것입니다.',
+      peak: '가장 많이 판 날 {amount}',
+      showTable: '날짜별 숫자 보기',
+      hideTable: '날짜별 숫자 접기',
+      tableCaption: '날짜별 매출과 주문 수',
+      dateHeader: '날짜',
+      salesHeader: '매출',
+      orderCountHeader: '주문 수',
+      empty: '이 기간에는 볼 수 있는 날이 없어요.',
+    },
+    topProducts: {
+      title: '인기 상품',
+      caption: '이 기간에 가장 많이 팔린 상품',
+      rankHeader: '순위',
+      nameHeader: '상품',
+      quantityHeader: '수량',
+      salesHeader: '매출',
+      quantityValue: '{count}개',
+      empty: '이 기간에 팔린 상품이 없어요.',
+      note: `많이 팔린 순으로 최대 ${String(REVENUE_TOP_PRODUCTS)}개까지 보여 드립니다.`,
+    },
+    empty: {
+      title: '이 기간에는 볼 수 있는 날이 없어요.',
+      description: '기간을 다시 골라 보세요.',
+    },
+    errorTitle: '매출을 불러오지 못했습니다.',
+    retry: '다시 시도',
+    noStore: {
+      title: '아직 스토어가 없어요.',
+      body: '입점 신청이 끝나면 매출과 정산을 여기에서 볼 수 있습니다.',
+      applyLabel: '입점 신청하러 가기',
+    },
+  },
+  settlementList: {
+    description: '회차별 정산서와 아직 정산되지 않은 금액을 봅니다.',
+    loadingLabel: '정산 내역을 불러오는 중입니다',
+    outlook: {
+      regionLabel: '정산 예정 금액',
+      awaitingConfirmationLabel: '확정 대기',
+      // 「아직 반품될 수 있다」를 여기서 말한다. 이 문장이 없으면 확정 대기 금액이
+      // 받기로 정해진 돈으로 읽힌다.
+      awaitingConfirmationHint: '배송이 끝났지만 구매확정 전이에요. 반품되면 줄어들 수 있어요.',
+      awaitingSettlementLabel: '정산 대기',
+      awaitingSettlementHint: '구매확정됐고 다음 정산서에 실립니다.',
+      countValue: '{count}건',
+      // 두 값을 더해 두지 않은 이유. 적지 않으면 판매자가 스스로 더하고, 그 합을
+      // 확정된 금액으로 기억한다.
+      note: '두 금액은 성격이 달라 합계를 내지 않습니다. 확정 대기는 아직 바뀔 수 있고, 정산 대기는 다음 회차에 그대로 실립니다.',
+      errorTitle: '정산 예정 금액을 불러오지 못했습니다.',
+    },
+    filters: {
+      legend: '정산서 걸러 보기',
+      statusLabel: '상태',
+      statusAll: '전체 상태',
+      reset: '조건 지우기',
+    },
+    table: {
+      caption: '내 정산서',
+      period: '회차',
+      status: '상태',
+      salesAmount: '판매액',
+      payoutAmount: '지급액',
+      actions: '내역',
+      periodRange: '{from} ~ {until}',
+      detailLabel: '계산 근거 보기',
+      holdReason: '보류 사유: {reason}',
+    },
+    totals: {
+      regionLabel: '이 조건의 합계',
+      payout: '지급액 합계 {amount}',
+      count: '정산서 {count}장',
+    },
+    pagination: {
+      label: '정산 내역 페이지 이동',
+      previous: '이전',
+      next: '다음',
+      page: '{page} 페이지',
+    },
+    empty: {
+      title: '아직 정산서가 없어요.',
+      description: '구매확정된 주문이 생기면 다음 회차에 첫 정산서가 만들어집니다.',
+    },
+    filteredEmpty: {
+      title: '조건에 맞는 정산서가 없어요.',
+      description: '상태를 바꿔 보세요.',
+    },
+    errorTitle: '정산 내역을 불러오지 못했습니다.',
+    retry: '다시 시도',
+    noStore: {
+      title: '아직 스토어가 없어요.',
+      body: '입점 신청이 끝나면 정산 내역을 여기에서 볼 수 있습니다.',
+      applyLabel: '입점 신청하러 가기',
+    },
+  },
+  settlementDetail: {
+    title: '정산서',
+    description: '이 회차의 지급액이 어떻게 나왔는지 항목별로 봅니다.',
+    loadingLabel: '정산서를 불러오는 중입니다',
+    backLabel: '정산 내역으로',
+    summary: {
+      regionLabel: '이 정산서',
+      periodLabel: '회차',
+      statusLabel: '상태',
+      createdLabel: '생성',
+      paidLabel: '지급',
+      notPaid: '아직 지급되지 않았습니다',
+      holdTitle: '이 정산서는 보류 중입니다',
+    },
+    calculation: {
+      title: '계산 근거',
+      caption: '지급액이 나온 다섯 줄',
+      labelHeader: '항목',
+      amountHeader: '금액',
+      // 수수료와 쿠폰 부담을 한 줄로 합치지 않는다 (3장 요구사항 5). 성격이 다른
+      // 두 차감이고, 합치면 이 화면이 답하려던 물음이 사라진다.
+      lines: {
+        sales: '판매액',
+        commission: '플랫폼 수수료',
+        sellerCoupon: '판매자 부담 쿠폰',
+        returnAdjustment: '반품 차감',
+        payout: '지급액',
+      },
+      // 판매액이 구매자가 낸 돈보다 큰 이유. 이 한 줄이 「왜 이 금액이냐」의 절반이다.
+      platformNote:
+        '플랫폼 쿠폰과 적립금은 차감되지 않습니다. 구매자가 그만큼 덜 냈더라도 판매자는 정가 기준으로 정산받습니다.',
+    },
+    items: {
+      title: '항목',
+      caption: '이 정산서에 실린 주문',
+      orderNumberHeader: '주문번호',
+      typeHeader: '구분',
+      salesHeader: '판매액',
+      commissionHeader: '수수료',
+      sellerCouponHeader: '판매자 쿠폰',
+      payoutHeader: '지급액',
+      empty: '이 정산서에는 항목이 없습니다.',
+      note: '반품 차감 줄은 금액이 음수로 적힙니다. 그래서 세로로 더하면 위의 합계와 같아집니다.',
+    },
+    errorTitle: '정산서를 불러오지 못했습니다.',
+    retry: '다시 시도',
+  },
+  settlements: {
+    statusLabels: {
+      PENDING: '승인 대기',
+      HOLD: '보류',
+      APPROVED: '승인됨',
+      PAID: '지급 완료',
+    },
+    itemTypeLabels: {
+      SALE: '판매',
+      RETURN_ADJUSTMENT: '반품 차감',
+    },
   },
 }

@@ -20,6 +20,8 @@ import type {
   SellerStatus,
   SellerStockAdjustType,
   SellerStockFilter,
+  SettlementItemType,
+  SettlementStatus,
   StockLedgerType,
   TrackingEventKind,
 } from '@shopping/shared'
@@ -31,6 +33,7 @@ import type { SellerClaimTab } from '@/lib/claims/claim-console'
 import type { CouponLiabilityUnbounded, SellerCouponScopeType } from '@/lib/coupons/coupon-console'
 import type { CouponFieldErrorMessages } from '@/lib/coupons/coupon-form'
 import type { SellerOrderTab } from '@/lib/orders/order-console'
+import type { CalculationLineKey } from '@/lib/settlements/settlement-console'
 import type { StoreFieldErrorMessages } from '@/lib/sellers/store-form'
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'
@@ -163,6 +166,283 @@ export interface Messages {
    * 「중단됨」인 날이 온다.
    */
   readonly coupons: CouponVocabularyMessages
+  /**
+   * 매출 대시보드 (TASK-0082). 기간 필터 · 추이 차트 · 전 기간 대비 · 인기 상품.
+   *
+   * `/` 의 슬라이스다. 사이드바의 「대시보드」가 가리키는 곳이고, `pages.md` 2장이
+   * 그 화면에 매출 추이를 배정해 두었다.
+   */
+  readonly revenue: RevenueDashboardMessages
+  /**
+   * 정산 내역 목록 (TASK-0082). 정산 예정 금액 · 회차 목록.
+   */
+  readonly settlementList: SettlementListMessages
+  /** 정산서 한 장 — 계산 근거 다섯 줄과 항목들. */
+  readonly settlementDetail: SettlementDetailMessages
+  /**
+   * 상태와 항목 종류의 이름.
+   *
+   * 화면의 어휘가 아니라 **정산의** 어휘라 목록과 상세가 나눠 쓴다 — `coupons` 가
+   * 같은 이유로 목록과 폼 밖에 있다. 두 벌을 두면 목록에서는 「지급 완료」이고
+   * 상세에서는 「지급됨」인 날이 온다.
+   */
+  readonly settlements: SettlementVocabularyMessages
+}
+
+/* ------------------------------------------- 매출 대시보드 (TASK-0082) -- */
+
+/**
+ * `/` 가 그리는 모든 것.
+ *
+ * 차트(`chart`)가 자기 슬라이스인 것이 F5 의 답이다: 그림은 `aria-hidden` 이고
+ * **같은 숫자의 표가 진짜 내용**이므로, 표의 머리글과 설명이 그림의 장식 문구와
+ * 같은 무게로 여기 서 있어야 한다.
+ */
+export interface RevenueDashboardMessages {
+  readonly description: string
+  readonly loadingLabel: string
+  readonly filters: RevenueFilterMessages
+  readonly totals: RevenueTotalsMessages
+  readonly comparison: RevenueComparisonMessages
+  readonly chart: RevenueChartMessages
+  readonly topProducts: RevenueTopProductMessages
+  /**
+   * `DataList` 가 요구하는 네 번째 상태.
+   *
+   * 계약이 **기간 안의 모든 날을 채워 보내므로** 실제로는 닿지 않는다 — 판매가 없던
+   * 날도 0으로 온다. 그래도 값을 두는 것은 `DataList` 가 빈 상태를 **필수 prop 으로**
+   * 강제하기 때문이고(그 컴포넌트의 판단이다), 「빠뜨린 빈 상태가 완성된 것처럼
+   * 보이는 일」을 막는 장치가 그것이다. `claim-detail-workspace.tsx` 도 같은 이유로
+   * 같은 자리를 채운다.
+   */
+  readonly empty: EmptyStateMessages
+  readonly errorTitle: string
+  readonly retry: string
+  /** 스토어가 없는 계정이 대시보드에 왔다. 매출을 **묻지도 않는다**. */
+  readonly noStore: StoreAbsentMessages
+}
+
+export interface RevenueFilterMessages {
+  readonly legend: string
+  readonly fromLabel: string
+  readonly toLabel: string
+  readonly reset: string
+  /** 끝이 시작보다 앞이다. 서버에 보내지 않고 이 자리에서 말한다. */
+  readonly rangeReversed: string
+  /** 계약의 상한을 넘겼다. 400 을 받아 「알 수 없는 오류」로 옮기지 않는다. */
+  readonly rangeTooLong: string
+}
+
+/** 큰 숫자 셋. 「얼마 팔았나 · 몇 건인가 · 한 건에 얼마인가」. */
+export interface RevenueTotalsMessages {
+  readonly regionLabel: string
+  readonly salesLabel: string
+  readonly orderCountLabel: string
+  readonly averageLabel: string
+  /** `{count}` — 건수에는 통화 기호가 붙지 않는다. */
+  readonly orderCountValue: string
+}
+
+/**
+ * 전 기간 대비 (F6).
+ *
+ * **`none` 이 이 슬라이스의 핵심이다.** 지난 기간 매출이 0원이면 증감률은 큰 수가
+ * 아니라 **없는 수**이고, 화면은 숫자 대신 그 사실을 말한다 — `+∞%` 도 `+100%` 도
+ * 둘 다 거짓말이다.
+ */
+export interface RevenueComparisonMessages {
+  readonly title: string
+  /** `{amount}` — 비교의 분모가 된 지난 기간 매출. 숫자를 숨기지 않는다. */
+  readonly previous: string
+  /** `{percent}` — 늘었다. */
+  readonly up: string
+  /** `{percent}` — 줄었다. */
+  readonly down: string
+  readonly flat: string
+  /** 지난 기간에 판 것이 없다. 비율 대신 이 문장이 선다. */
+  readonly none: string
+  /** 비교 대상이 **바로 앞의 같은 길이 기간**이라는 사실. 서버가 정한다. */
+  readonly note: string
+}
+
+/**
+ * 매출 추이 (F5).
+ *
+ * `caption` 과 `tableCaption` 이 둘 다 있는 이유가 F5 다. 그림은 장식이라 접근성
+ * 트리에서 빠지고, **표가 그 자리를 대신한다** — 그래서 표에는 자기 이름이 필요하다.
+ * `<svg>` 에 `aria-label` 하나를 붙여 때우지 않는다: 그것은 30일치 숫자를 「매출
+ * 추이 차트」 한 마디로 요약해 버리는 일이고, 요약은 대체물이 아니다.
+ */
+export interface RevenueChartMessages {
+  readonly title: string
+  /** 그림 아래에 늘 보이는 한 줄. 표를 여는 버튼이 무엇인지 말한다. */
+  readonly caption: string
+  /** `{amount}` — 이 기간에 가장 많이 판 날의 금액. y축 꼭대기다. */
+  readonly peak: string
+  readonly showTable: string
+  readonly hideTable: string
+  readonly tableCaption: string
+  readonly dateHeader: string
+  readonly salesHeader: string
+  readonly orderCountHeader: string
+  /** 기간 안에 하루도 없다. 계약이 최소 개수를 걸지 않으므로 있을 수 있는 답이다. */
+  readonly empty: string
+}
+
+/** 인기 상품 다섯 줄. */
+export interface RevenueTopProductMessages {
+  readonly title: string
+  readonly caption: string
+  readonly rankHeader: string
+  readonly nameHeader: string
+  readonly quantityHeader: string
+  readonly salesHeader: string
+  /** `{count}` — 수량. 금액이 아니므로 통화 기호가 없다. */
+  readonly quantityValue: string
+  readonly empty: string
+  /** 몇 개까지 보여 주는지. 「전체」로 읽히지 않게 한다. */
+  readonly note: string
+}
+
+/* --------------------------------------------- 정산 (TASK-0082) -- */
+
+export interface SettlementVocabularyMessages {
+  readonly statusLabels: Readonly<Record<SettlementStatus, string>>
+  readonly itemTypeLabels: Readonly<Record<SettlementItemType, string>>
+}
+
+/**
+ * `/settlements` 가 그리는 모든 것.
+ *
+ * 예정액(`outlook`)이 목록의 슬라이스인 것은 두 값이 한 화면의 위아래에 있기
+ * 때문이다. 「언제 얼마가 들어오나」에 답하려면 **아직 정산서가 아닌 돈**과 **이미
+ * 정산서가 된 돈**이 같은 화면에 있어야 한다.
+ */
+export interface SettlementListMessages {
+  readonly description: string
+  readonly loadingLabel: string
+  readonly outlook: SettlementOutlookMessages
+  readonly filters: SettlementFilterMessages
+  readonly table: SettlementTableMessages
+  readonly totals: SettlementTotalsMessages
+  readonly pagination: PaginationMessages
+  readonly empty: EmptyStateMessages
+  readonly filteredEmpty: EmptyStateMessages
+  readonly errorTitle: string
+  readonly retry: string
+  /** 스토어가 없는 계정. 목록을 **부르지도 않는다** — 부르면 403 이다. */
+  readonly noStore: StoreAbsentMessages
+}
+
+/**
+ * 정산 예정 금액 (F4).
+ *
+ * **두 단계가 각각 자기 이름과 자기 설명을 갖는다.** 합쳐서 한 숫자로 그리면
+ * 「받기로 확정된 돈」과 「아직 반품될 수 있는 돈」이 같은 값에 섞이고, 판매자는 그
+ * 합을 확정된 금액으로 읽는다. 계약이 두 덩이로 나눠 보내는 이유가 그것이고
+ * (`settlementOutlookResponseSchema`), 화면이 그것을 되돌리지 않는다.
+ */
+export interface SettlementOutlookMessages {
+  readonly regionLabel: string
+  readonly awaitingConfirmationLabel: string
+  readonly awaitingConfirmationHint: string
+  readonly awaitingSettlementLabel: string
+  readonly awaitingSettlementHint: string
+  /** `{count}` — 그 단계에 걸려 있는 판매자 몫의 수. */
+  readonly countValue: string
+  /** 두 값을 왜 더해 두지 않았는지. 이 한 줄이 없으면 판매자가 스스로 더한다. */
+  readonly note: string
+  readonly errorTitle: string
+}
+
+export interface SettlementFilterMessages {
+  readonly legend: string
+  readonly statusLabel: string
+  readonly statusAll: string
+  readonly reset: string
+}
+
+export interface SettlementTableMessages {
+  readonly caption: string
+  readonly period: string
+  readonly status: string
+  readonly salesAmount: string
+  readonly payoutAmount: string
+  readonly actions: string
+  /** `{from}` `{until}` — 끝은 **포함하는 날**로 옮겨서 그린다. */
+  readonly periodRange: string
+  readonly detailLabel: string
+  /** `{reason}` — 보류 사유. 해소된 뒤에도 남는다. */
+  readonly holdReason: string
+}
+
+/** 지금 필터가 고른 것들의 합. **페이지의 합이 아니다** — 계약이 그렇게 보낸다. */
+export interface SettlementTotalsMessages {
+  readonly regionLabel: string
+  /** `{amount}` */
+  readonly payout: string
+  /** `{count}` */
+  readonly count: string
+}
+
+/** `/settlements/[id]` 가 그리는 모든 것. */
+export interface SettlementDetailMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly backLabel: string
+  readonly summary: SettlementSummaryMessages
+  readonly calculation: SettlementCalculationMessages
+  readonly items: SettlementItemMessages
+  readonly errorTitle: string
+  readonly retry: string
+}
+
+export interface SettlementSummaryMessages {
+  readonly regionLabel: string
+  readonly periodLabel: string
+  readonly statusLabel: string
+  readonly createdLabel: string
+  readonly paidLabel: string
+  /** 아직 지급되지 않았다. 빈 칸을 두면 「0원 지급」으로 읽힌다. */
+  readonly notPaid: string
+  readonly holdTitle: string
+}
+
+/**
+ * 계산 근거 다섯 줄 (F2 · 3장 요구사항 5).
+ *
+ * `lines` 가 `Record<CalculationLineKey, string>` 이라 줄이 하나 늘면 문구 없는
+ * 자리를 `pnpm typecheck` 가 먼저 잡는다.
+ */
+export interface SettlementCalculationMessages {
+  readonly title: string
+  readonly caption: string
+  readonly labelHeader: string
+  readonly amountHeader: string
+  readonly lines: Readonly<Record<CalculationLineKey, string>>
+  /**
+   * **플랫폼 쿠폰과 적립금은 차감되지 않는다** (`pricing.md` 6장).
+   *
+   * 이 한 줄이 TASK-0082 4장이 없애려는 문의의 절반이다. 판매자가 보는 판매액은
+   * 구매자가 낸 돈보다 크고, 그 차이를 설명하지 않으면 「왜 더 많이 적혀 있죠」가
+   * 오거나 — 더 나쁘게는 — 아무도 묻지 않은 채 잘못 계산된 것으로 기억된다.
+   */
+  readonly platformNote: string
+}
+
+export interface SettlementItemMessages {
+  readonly title: string
+  readonly caption: string
+  readonly orderNumberHeader: string
+  readonly typeHeader: string
+  readonly salesHeader: string
+  readonly commissionHeader: string
+  readonly sellerCouponHeader: string
+  readonly payoutHeader: string
+  readonly empty: string
+  /** 차감 줄의 숫자가 왜 전부 음수인지. */
+  readonly note: string
 }
 
 /**
