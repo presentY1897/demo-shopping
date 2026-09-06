@@ -86,6 +86,19 @@ export const COUPON_SCOPE_MAX_IDS = 50
 /** 정액 할인의 상한. 정률의 `discountValue` 는 이것과 무관하게 100 이하다. */
 export const COUPON_MAX_DISCOUNT_VALUE = 10_000_000
 
+/**
+ * 정률 할인의 상한. **100 은 전액이고 그것을 넘는 수는 존재하지 않는다.**
+ *
+ * 스키마의 `refine` 이 아니라 상수인 것이 이 자리의 판단이다. 「이 값이 허용되는가」는
+ * 발행 규칙이고 그것은 서버가 쥔다(`coupon-rules.ts` 의 `percent_out_of_range`) —
+ * 계약이 같은 판단을 한 번 더 하면 규칙이 두 곳에 살고, 둘이 갈리는 날 어느 쪽이
+ * 맞는지 아무도 모른다.
+ *
+ * 그래도 **숫자는 하나여야 한다.** 화면이 입력을 미리 막는 것은 친절이고, 그
+ * 친절이 서버와 다른 수를 쓰면 사람은 화면이 받아 준 값으로 거절당한다.
+ */
+export const COUPON_PERCENT_MAX_VALUE = 100
+
 /** 발급 수량의 상한. `null` 은 무제한이라는 뜻이고, 이것은 그 반대쪽 끝이다. */
 export const COUPON_MAX_ISSUE_LIMIT = 1_000_000
 
@@ -584,14 +597,46 @@ export const couponListQueryParamsSchema = z.object({
     .transform((value) => value.split(','))
     .pipe(z.array(couponLifecycleSchema).min(1))
     .optional(),
+  /**
+   * 유효기간이 이 범위와 **겹치는** 쿠폰만.
+   *
+   * 「시작일이 이 사이」가 아니다. 발행자가 「9월에 돌던 쿠폰」을 찾을 때 8월에 시작해
+   * 9월까지 가는 것은 찾는 그 쿠폰이고, 시작일로 거르면 그것이 목록에서 사라진다.
+   * 경계는 양쪽 다 포함이다 — 주문 목록의 `from`·`to` 와 같은 규약이라, 두 화면이
+   * 같은 날짜를 골랐을 때 같은 경계를 얻는다.
+   */
+  from: z.iso.datetime().optional(),
+  to: z.iso.datetime().optional(),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(COUPON_LIST_MAX_LIMIT).optional(),
 })
 
 export type CouponListQueryParams = z.infer<typeof couponListQueryParamsSchema>
 
+/**
+ * 목록의 답.
+ *
+ * **정렬은 최신순이다** — 방금 낸 쿠폰이 맨 위에 있어야 발행 화면에서 돌아온 사람이
+ * 자기가 만든 것을 찾는다. 커서는 그 축 위의 자리이고, 정렬 축이 `id` 인 것은 그것이
+ * UUIDv7 이라 시간순이기 때문이다: `createdAt` 으로 정렬하면 같은 밀리초에 만들어진
+ * 두 쿠폰에서 커서가 한 건을 건너뛰거나 두 번 보여 준다.
+ *
+ * 계약이 이것을 말하지 않던 동안 대역은 **오름차순**을 골랐고(그것이 대역이 지킬 수
+ * 있는 유일하게 결정적인 축이었다), 서버는 내림차순이었다. 두 검사 모두 초록인 채로
+ * 갈려 있었다 — 계약이 말하지 않은 것은 대역이 정하게 된다.
+ */
 export const couponListResponseSchema = z.object({
   coupons: z.array(couponListEntrySchema),
+  /**
+   * 이 발행자의 쿠폰이 **지금까지** 만든 것 — 판매자에게는 부담 누계다
+   * (TASK-0074 F5).
+   *
+   * **필터와 페이지에 무관하다.** 화면에 보이는 줄들의 합이 아니라 이 스토어(또는
+   * 플랫폼)가 낸 모든 쿠폰의 합이다 — 「지금까지의 부담액 누계」는 서 있는 수이지
+   * 지금 보고 있는 페이지의 성질이 아니고, 페이지 합으로 답하면 다음 장을 넘길
+   * 때마다 누계가 달라진다.
+   */
+  totals: couponStatsSchema,
   nextCursor: z.string().nullable(),
 })
 
@@ -639,10 +684,19 @@ export type BulkIssueRequest = z.infer<typeof bulkIssueRequestSchema>
 export const bulkIssueResponseSchema = z.object({
   /** 이번에 실제로 나간 장수. */
   issued: z.int().min(0),
-  /** 이미 갖고 있어 건너뛴 사람 수. 두 번 눌렀을 때 전부 여기로 온다. */
+  /**
+   * 조건에는 맞지만 **이미 갖고 있어** 나가지 않은 사람 수.
+   *
+   * 두 번 눌렀을 때 전부 여기로 온다. 「0장 나갔습니다」만으로는 아무도 대상이 아닌
+   * 것과 모두가 이미 가진 것을 가를 수 없고, 그 둘에 발행자가 할 일이 다르다.
+   */
   skipped: z.int().min(0),
   /**
-   * 아직 남은 대상 수. `0` 이 아니면 상한에 걸린 것이고, 다시 누르면 이어서 나간다.
+   * 아직 남은 대상이 있는가 — **개수가 아니라 그 이상 있다는 뜻이다.**
+   *
+   * 서버는 상한보다 한 명만 더 읽으므로(`BULK_ISSUE_MAX_RECIPIENTS + 1`) 정확한
+   * 수를 알지 못한다. 세려면 회원 전체를 세어야 하고, 그 수는 버튼을 한 번 더 누르는
+   * 판단에 아무것도 보태지 않는다. `0` 이 아니면 다시 누르면 이어서 나간다.
    *
    * 발급 수량 상한(`issueLimit`)에 걸려 멈춘 경우도 여기 남는다 — 그때는 다시
    * 눌러도 나가지 않으며, 화면은 소진을 함께 그린다.

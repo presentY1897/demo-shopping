@@ -224,6 +224,32 @@ describe('현황 (F6 · TASK-0074 F5)', () => {
     expect(entry?.stats.discountTotal).toBe(2_500)
   })
 
+  /**
+   * **누계는 페이지의 합이 아니다** (TASK-0074 F5). 필터와 페이지에 무관한, 서 있는
+   * 수다 — 페이지 합으로 답하면 다음 장을 넘길 때마다 누계가 달라지고, 판매자가
+   * 정산과 견주려는 수가 그것이라 더 나쁘다.
+   */
+  it('누계는 걸러 낸 줄까지 함께 센다', async () => {
+    const shown = await issueCoupon(operator)
+    const hidden = await issueCoupon(operator)
+
+    for (const coupon of [shown, hidden]) {
+      await grant(operator, coupon.id, (await createUser(db)).id)
+      await db.query(
+        `UPDATE "UserCoupon"
+            SET "status" = 'USED', "usedAt" = now(), "orderId" = $2, "discountAmount" = 1000
+          WHERE "couponId" = $1`,
+        [coupon.id, await orderOf(buyer.userId)],
+      )
+    }
+
+    // 한 줄만 보이도록 좁혀도 누계는 둘을 다 센다.
+    const answer = await list(operator, '?limit=1')
+
+    expect(answer.coupons).toHaveLength(1)
+    expect(answer.totals).toEqual({ usedCount: 2, discountTotal: 2_000 })
+  })
+
   it('아직 쓰이지 않았으면 0이다', async () => {
     await issueCoupon(operator)
 
@@ -268,6 +294,44 @@ describe('상태 필터', () => {
   })
 })
 
+describe('기간 필터', () => {
+  /**
+   * **겹치는 것을 찾는다.** 「시작일이 이 사이」로 거르면 8월에 시작해 9월까지 가는
+   * 쿠폰이 「9월」 조회에서 사라지는데, 발행자가 찾는 것이 바로 그 쿠폰이다.
+   */
+  it('기간이 겹치는 쿠폰을 고른다', async () => {
+    const spanning = await issueCoupon(operator, {
+      validFrom: '2026-08-01T00:00:00.000Z',
+      validUntil: '2026-09-15T00:00:00.000Z',
+    })
+
+    await issueCoupon(operator, {
+      validFrom: '2026-10-01T00:00:00.000Z',
+      validUntil: '2026-10-31T00:00:00.000Z',
+    })
+
+    const answer = await list(
+      operator,
+      '?from=2026-09-01T00:00:00.000Z&to=2026-09-30T00:00:00.000Z',
+    )
+
+    expect(answer.coupons.map((entry) => entry.coupon.id)).toEqual([spanning.id])
+  })
+})
+
+describe('정렬', () => {
+  /** 방금 낸 쿠폰이 맨 위다 — 발행 화면에서 돌아온 사람이 찾는 것이 그것이다. */
+  it('최신순이다', async () => {
+    const first = await issueCoupon(operator, { name: '먼저' })
+    const second = await issueCoupon(operator, { name: '나중' })
+
+    expect((await list(operator)).coupons.map((entry) => entry.coupon.id)).toEqual([
+      second.id,
+      first.id,
+    ])
+  })
+})
+
 describe('발행 중단 (F5)', () => {
   it('멈추면 새로 받지 못한다', async () => {
     const coupon = await issueCoupon(operator, { withCode: true })
@@ -306,6 +370,21 @@ describe('발행 중단 (F5)', () => {
     expect(userCoupon.userId).toBe(buyer.userId)
   })
 
+  /**
+   * **멈춘 쿠폰은 한꺼번에도 나가지 않는다.** 한 장씩 가는 길은 발급의 조건부 갱신이
+   * 막지만 일괄 발급은 그 문장을 지나지 않아서, 중단의 뜻이 문마다 달라질 뻔했다.
+   */
+  it('멈춘 쿠폰은 일괄 지급도 되지 않는다', async () => {
+    const coupon = await issueCoupon(operator)
+
+    await setSuspended(operator, coupon.id, true)
+
+    expect(await failure(bulkIssue(operator, coupon.id, 'ALL'))).toMatchObject({
+      status: 403,
+      code: 'COUPON_SUSPENDED',
+    })
+  })
+
   it('남의 쿠폰은 멈추지 못한다', async () => {
     const coupon = await issueCoupon(operator)
 
@@ -335,6 +414,9 @@ describe('일괄 발급 (F4)', () => {
     const second = await bulkIssue(operator, coupon.id, 'ALL')
 
     expect(second.issued).toBe(0)
+    // **아무도 대상이 아닌 것과 모두가 이미 가진 것은 다른 사실이다.** 「0장」만으로는
+    // 그 둘을 가를 수 없고, 발행자가 할 일이 각각 다르다.
+    expect(second.skipped).toBe(first.issued)
 
     const count = await db.one<{ count: number }>(
       `SELECT count(*)::int AS "count" FROM "UserCoupon" WHERE "couponId" = $1`,
