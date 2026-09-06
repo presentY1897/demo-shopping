@@ -200,6 +200,16 @@ jobs:
         with:
           name: vitest-blob-${{ matrix.shard }}
           path: apps/api/.vitest-reports/
+          # **`.vitest-reports` starts with a dot**, and this action skips hidden
+          # files unless told not to. Without this line it uploaded nothing at
+          # all — with a warning, not an error — and the merge job died on
+          # `ENOENT: scandir .vitest-reports` three minutes later, pointing at
+          # the wrong end of the problem.
+          include-hidden-files: true
+          # And when there is nothing to upload, say so here rather than let the
+          # merge discover it. `warn` is what made the failure land in the wrong
+          # job the first time.
+          if-no-files-found: error
           retention-days: 1
 
   test:
