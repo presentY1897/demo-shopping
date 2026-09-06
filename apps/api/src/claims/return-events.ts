@@ -20,13 +20,16 @@ import type { SellerOrderActor } from '../orders/seller-order-transitions.js'
  * (`return-rules.ts` 의 `returnCostShare`). 그래서 여기 실리는 것은 계산의 입력이
  * 아니라 **계산된 결과**다.
  *
- * ## 「아무것도 안 하는 구현」이 지금 무엇을 뜻하는가
+ * ## 지금 무엇이 붙어 있고 무엇이 안 붙어 있는가
  *
- * 빠지는 것은 **후속 처리뿐**이다. 반품 자체는 이미 끝났다 — 클레임은
- * `RETURN_COMPLETED` 이고, 이력에 누가 언제 검수했는지가 남아 있으며, 검수 결과와
- * 배송비 부담은 `ReturnDetail` 에 적혀 있다. 즉 이 구현으로 도는 시스템에서
- * 잘못되는 것은 둘이고 **둘 다 뒤늦게 할 수 있다** — 돈이 안 돌아가고 재고가 안
- * 돌아온다.
+ * **환불은 붙었다** (TASK-0068). `RefundingReturnEvents` 가 바인딩돼 있고, 취소와
+ * **같은 실행기**를 쓴다 — 환불은 끝에서 같은 일이고 그 앞까지 오는 길이 다를
+ * 뿐이라, 「이 항목에서 이미 몇 개를 환불했나」를 세는 규칙이 두 곳에 살면 안 된다.
+ * 이 파일이 계산의 입력이 아니라 **계산된 결과**를 싣는다는 성질은 그대로다:
+ * 실행기는 `ReturnDetail` 의 두 금액을 그대로 쓰고 다시 계산하지 않는다.
+ *
+ * **재입고는 아직이다** (TASK-0069). 그동안 잘못되는 것은 재고 하나이고, 뒤늦게 할
+ * 수 있다.
  *
  * **던지지 않는 것도 결정이다.** 환불에 실패한 것이 검수를 되돌릴 이유는 아니다 —
  * 물건은 이미 판매자에게 있고, 되돌리려 해도 전이표에 `RETURN_COMPLETED` 를 떠나는
@@ -89,10 +92,11 @@ export const RETURN_REFUND_EVENTS = Symbol('RETURN_REFUND_EVENTS')
 export const RETURN_RESTOCK_EVENTS = Symbol('RETURN_RESTOCK_EVENTS')
 
 /**
- * 지금 바인딩되는 환불 구현. **아무것도 하지 않는다.**
+ * 아무것도 하지 않는 환불 구현. **더 이상 바인딩되지 않는다** (TASK-0068).
  *
- * 무엇을 뜻하는지는 {@link ReturnCompleted} 에 적혀 있다. TASK-0068 이 붙을 때
- * `return.module.ts` 의 한 줄만 바뀐다.
+ * 지금 바인딩되는 것은 `RefundingReturnEvents` 다. 이 클래스를 남겨 두는 이유는
+ * 환불이 도는 것이 방해가 되는 검사 — 수거와 검수의 전이만 재는 스펙 — 이 포트를
+ * 이것으로 바꿔 끼울 수 있게 하기 위해서다.
  */
 export class NoopReturnRefundEvents implements ReturnRefundEvents {
   refund(): Promise<void> {
