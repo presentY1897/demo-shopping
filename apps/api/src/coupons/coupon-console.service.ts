@@ -66,13 +66,15 @@ export class CouponConsoleService {
 
     const now = this.clock.now()
     const limit = query.limit ?? COUPON_LIST_DEFAULT_LIMIT
+    const issuer = { sellerId: query.sellerId ?? null }
     const rows = await this.prisma.coupon.findMany({
       where: {
-        sellerId: query.sellerId ?? null,
+        ...issuer,
         ...(query.cursor === undefined ? {} : { id: { lt: query.cursor } }),
         ...(query.lifecycle === undefined
           ? {}
           : { OR: lifecycleFilters(query.lifecycle, now, this.spent()) }),
+        ...periodFilter(query.from, query.to),
       },
       // id 가 UUIDv7 이라 시간순이다. `createdAt` 으로 정렬하면 같은 밀리초의 두
       // 쿠폰에서 커서가 한 건을 건너뛰거나 두 번 보여 준다 (`OrderService.list`).
@@ -81,7 +83,10 @@ export class CouponConsoleService {
       select: CONSOLE_SELECT,
     })
     const page = rows.slice(0, limit)
-    const stats = await this.statsOf(page.map((row) => row.id))
+    const [stats, totals] = await Promise.all([
+      this.statsOf(page.map((row) => row.id)),
+      this.totalsOf(issuer),
+    ])
 
     return {
       coupons: page.map((row) => ({
@@ -89,6 +94,7 @@ export class CouponConsoleService {
         lifecycle: couponLifecycleOf(row, now),
         stats: stats.get(row.id) ?? { usedCount: 0, discountTotal: 0 },
       })),
+      totals,
       nextCursor: rows.length > limit ? (page.at(-1)?.id ?? null) : null,
     }
   }
@@ -146,13 +152,24 @@ export class CouponConsoleService {
 
     const now = this.clock.now()
 
-    if (couponLifecycleOf(coupon, now) === 'ENDED') {
+    const lifecycle = couponLifecycleOf(coupon, now)
+
+    if (lifecycle === 'ENDED') {
       throw new ForbiddenException(
         domainFailure('COUPON_ENDED', '기간이 끝난 쿠폰은 지급할 수 없어요.'),
       )
     }
 
-    const recipients = await this.recipientsOf(coupon, target, couponId)
+    // **멈춘 쿠폰은 한꺼번에도 나가지 않는다.** 중단의 뜻이 「더 나가지 않게」이므로
+    // 한 장씩 막고 한꺼번에는 열어 두면 그 뜻이 문마다 달라진다 — 한 장씩 가는 길은
+    // 발급의 조건부 갱신이 막고(`takeIssueSlot`), 이 길은 그 문장을 지나지 않는다.
+    if (lifecycle === 'SUSPENDED') {
+      throw new ForbiddenException(
+        domainFailure('COUPON_SUSPENDED', '발행이 중단된 쿠폰은 지급할 수 없어요.'),
+      )
+    }
+
+    const { recipients, skipped } = await this.audienceOf(coupon, target, couponId)
 
     return this.prisma.$transaction(async (tx) => {
       // 행을 잠근다. 넣을 장수가 「남은 수량」과 「대상 수」 둘 다에 달려 있고,
@@ -188,7 +205,7 @@ export class CouponConsoleService {
 
       return {
         issued: going.length,
-        skipped: 0,
+        skipped,
         remaining: recipients.length - going.length,
       }
     })
@@ -250,36 +267,66 @@ export class CouponConsoleService {
   }
 
   /**
-   * 지급 대상 — 아직 이 쿠폰을 갖지 않은 사람만.
+   * 이 발행자의 쿠폰이 **지금까지** 만든 것 (TASK-0074 F5).
+   *
+   * **필터와 페이지에 무관하다.** 「지금까지의 부담액 누계」는 서 있는 수이지 지금
+   * 보고 있는 페이지의 성질이 아니고, 페이지 합으로 답하면 다음 장을 넘길 때마다
+   * 누계가 달라진다 — 판매자가 정산과 견주려는 수가 그것이라 더 나쁘다.
+   */
+  private async totalsOf(issuer: { sellerId: string | null }): Promise<{
+    usedCount: number
+    discountTotal: number
+  }> {
+    const answer = await this.prisma.userCoupon.aggregate({
+      where: { status: 'USED', coupon: issuer },
+      _count: { _all: true },
+      _sum: { discountAmount: true },
+    })
+
+    return {
+      usedCount: answer._count._all,
+      discountTotal: answer._sum.discountAmount ?? 0,
+    }
+  }
+
+  /**
+   * 지급 대상 — 아직 이 쿠폰을 갖지 않은 사람만, 그리고 이미 가진 사람의 수.
    *
    * 「이미 가진 사람」을 여기서 빼는 이유는 그것이 **건너뛴 수**가 아니라 애초에
    * 대상이 아니기 때문이다. 넣어 보고 유니크 위반으로 세는 길도 있지만, 그러면 한
    * 사람이 실패할 때마다 트랜잭션이 통째로 중단된다 (Postgres 의 성질).
    */
-  private async recipientsOf(
+  private async audienceOf(
     coupon: ConsoleRow,
     target: BulkIssueTarget,
     couponId: string,
-  ): Promise<readonly string[]> {
-    const rows = await this.prisma.user.findMany({
-      where: {
-        deletedAt: null,
-        // 체험 그룹의 쿠폰은 체험 계정에게만 간다 (D-224). 실계정 쿠폰에는 이
-        // 조건이 붙지 않는다 — 방문자도 진짜 흐름을 겪는다. 이 파일은 그 조건이
-        // 어느 칸을 보는지 알지 못한다.
-        ...accountFilterFor(ownerGroup(couponOwnership(coupon))),
-        ...(target === 'ALL'
-          ? {}
-          : { orders: target === 'HAS_ORDERED' ? { some: {} } : { none: {} } }),
-        userCoupons: { none: { couponId } },
-      },
-      orderBy: { id: 'asc' },
-      // 상한보다 한 명 더 읽어 「남았는가」에 답한다.
-      take: BULK_ISSUE_MAX_RECIPIENTS + 1,
-      select: { id: true },
-    })
+  ): Promise<{ recipients: readonly string[]; skipped: number }> {
+    const matching = {
+      deletedAt: null,
+      // 체험 그룹의 쿠폰은 체험 계정에게만 간다 (D-224). 실계정 쿠폰에는 이
+      // 조건이 붙지 않는다 — 방문자도 진짜 흐름을 겪는다. 이 파일은 그 조건이
+      // 어느 칸을 보는지 알지 못한다.
+      ...accountFilterFor(ownerGroup(couponOwnership(coupon))),
+      ...(target === 'ALL'
+        ? {}
+        : { orders: target === 'HAS_ORDERED' ? { some: {} } : { none: {} } }),
+    }
+    const [rows, skipped] = await Promise.all([
+      this.prisma.user.findMany({
+        where: { ...matching, userCoupons: { none: { couponId } } },
+        orderBy: { id: 'asc' },
+        // 상한보다 한 명 더 읽어 「남았는가」에 답한다. 정확한 수를 세지 않는 이유는
+        // 그 수가 「한 번 더 누를까」라는 판단에 아무것도 보태지 않기 때문이다.
+        take: BULK_ISSUE_MAX_RECIPIENTS + 1,
+        select: { id: true },
+      }),
+      // **이미 가진 사람은 대상에서 빠지지만 세기는 한다.** 「0장 나갔습니다」만으로는
+      // 아무도 대상이 아닌 것과 모두가 이미 가진 것을 가를 수 없고, 그 둘에 발행자가
+      // 할 일이 다르다 — 앞은 조건을 바꾸는 일이고 뒤는 아무것도 안 해도 되는 일이다.
+      this.prisma.user.count({ where: { ...matching, userCoupons: { some: { couponId } } } }),
+    ])
 
-    return rows.map((row) => row.id)
+    return { recipients: rows.map((row) => row.id), skipped }
   }
 
   /**
@@ -332,6 +379,20 @@ function lifecycleFilters(
 
     return { ...running, NOT: spent }
   })
+}
+
+/**
+ * 유효기간이 이 범위와 **겹치는** 쿠폰만.
+ *
+ * 「시작일이 이 사이」가 아니다. 발행자가 「9월에 돌던 쿠폰」을 찾을 때 8월에 시작해
+ * 9월까지 가는 것은 찾는 그 쿠폰이고, 시작일로 거르면 그것이 목록에서 사라진다.
+ * 겹침은 「시작이 `to` 보다 앞이고 끝이 `from` 보다 뒤」이며, 경계는 양쪽 다 포함이다.
+ */
+function periodFilter(from: string | undefined, to: string | undefined): Prisma.CouponWhereInput {
+  return {
+    ...(to === undefined ? {} : { validFrom: { lte: new Date(to) } }),
+    ...(from === undefined ? {} : { validUntil: { gte: new Date(from) } }),
+  }
 }
 
 /**

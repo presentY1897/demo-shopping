@@ -23,6 +23,11 @@ const ERROR_ENVELOPES: Readonly<
   Record<number, { readonly code: string; readonly message: string }>
 > = {
   400: { code: 'BAD_REQUEST', message: '요청 형식이 올바르지 않습니다.' },
+  // **403 이 빠져 있으면 소유권 거절이 400 으로 나간다.** 대역이 「남의 것은 볼 수
+  // 없어요」를 표현할 방법이 없어 핸들러가 자기 응답을 손으로 만들게 되고, 그 순간
+  // 이 파일이 「거절은 어떻게 생겼나」의 유일한 답이라는 성질이 사라진다 —
+  // TASK-0074 가 그 자리에서 그렇게 했다.
+  403: { code: 'FORBIDDEN', message: '이 작업을 수행할 권한이 없습니다.' },
   404: { code: 'NOT_FOUND', message: '요청한 경로를 찾을 수 없습니다.' },
   409: { code: 'CONFLICT', message: '다른 요청과 충돌해 처리하지 못했습니다.' },
 }
