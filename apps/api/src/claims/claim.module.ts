@@ -4,12 +4,15 @@ import { SellerOrderModule } from '../orders/seller-order.module.js'
 import { PaymentModule } from '../payment/payment.module.js'
 import { PrismaModule } from '../prisma/prisma.module.js'
 import { StockModule } from '../stock/stock.module.js'
+import { StorageModule } from '../storage/storage.module.js'
 import { CANCEL_REFUND_EVENTS, CANCEL_RESTOCK_EVENTS } from './cancel-events.js'
 import { ClaimController } from './claim.controller.js'
 import { ClaimService } from './claim.service.js'
 import { ClaimRefundRetryService } from './refund-retry.service.js'
 import { ClaimRefundService, RefundingCancelEvents } from './refund.service.js'
 import { ClaimRestockService, RestockingCancelEvents } from './restock.service.js'
+import { SellerClaimController } from './seller-claim.controller.js'
+import { SellerClaimService } from './seller-claim.service.js'
 
 /**
  * 취소 · 반품 (TASK-0065 · 0066 · 0067).
@@ -36,6 +39,11 @@ import { ClaimRestockService, RestockingCancelEvents } from './restock.service.j
  * 문은 `StockModule` 이 내보낸다. 여기서도 고리는 생기지 않는다: 화살표가
  * `Claim → Stock → Search` 로 한 방향이고, 검색 쪽은 클레임도 주문도 모른다.
  *
+ * **저장소가 다섯 번째 의존이다** (TASK-0070). 판매자 콘솔이 첨부 사진을 그리려면
+ * 열쇠를 공개 URL 로 바꿔야 하고, 그 값은 도메인이 아니라 배포 설정(`R2_PUBLIC_BASE_URL`)
+ * 에 달렸다. 화면이 만들면 그 설정이 프론트에 한 벌 더 생기고, 배포마다 갈린다.
+ * 고리는 여기서도 생기지 않는다 — `StorageModule` 은 설정 하나만 안다.
+ *
  * 반품 기간이 읽는 `autoConfirmWindowMsOf` 는 **함수**라 모듈이 필요 없다. 그것이
  * 축을 나눠 쓰는 값싼 방법이고, 축을 여기서 다시 정하지 않는 이유는
  * `claim.service.ts` 의 `returnWindowMs` 에 적혀 있다.
@@ -47,10 +55,14 @@ import { ClaimRestockService, RestockingCancelEvents } from './restock.service.j
  * 없기 때문이다. 화살표는 여전히 `Return → Claim` 한 방향이다.
  */
 @Module({
-  imports: [PrismaModule, SellerOrderModule, PaymentModule, StockModule],
-  controllers: [ClaimController],
+  imports: [PrismaModule, SellerOrderModule, PaymentModule, StockModule, StorageModule],
+  controllers: [ClaimController, SellerClaimController],
   providers: [
     ClaimService,
+    // 판매자 콘솔의 읽기 셋 (TASK-0070). `ClaimService` 와 따로 있는 이유는 읽는
+    // 방향이 다르기 때문이고, `SellerOrderListService` 가 `OrderService` 옆에
+    // 있는 것과 같은 나눔이다.
+    SellerClaimService,
     // 환불의 실행 (TASK-0068). 반품도 같은 것을 쓴다 — 환불은 **끝에서 같은 일**이고
     // 그 앞까지 오는 길이 다를 뿐이다 (`claim-rules.ts` 의 `REFUNDED`).
     ClaimRefundService,
@@ -63,6 +75,12 @@ import { ClaimRestockService, RestockingCancelEvents } from './restock.service.j
     ClaimRestockService,
     { provide: CANCEL_RESTOCK_EVENTS, useClass: RestockingCancelEvents },
   ],
-  exports: [ClaimService, ClaimRefundService, ClaimRefundRetryService, ClaimRestockService],
+  exports: [
+    ClaimService,
+    ClaimRefundService,
+    ClaimRefundRetryService,
+    ClaimRestockService,
+    SellerClaimService,
+  ],
 })
 export class ClaimModule {}

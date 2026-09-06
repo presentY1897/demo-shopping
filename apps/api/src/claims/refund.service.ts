@@ -107,6 +107,34 @@ export class ClaimRefundService {
     }
   }
 
+  /**
+   * **지금 이 클레임을 환불하면 얼마인가** — 승인 버튼을 누르기 전의 답 (TASK-0070).
+   *
+   * ## 미리보기 전용 계산이 없다
+   *
+   * 부르는 것이 {@link plan} 과 `claimRefundBreakdown` 이고, 그 둘은 {@link settle}
+   * 이 실제로 쓰는 바로 그것이다. 「환불 예정액」을 따로 계산하면 배송비 재부과나
+   * 누적 반올림 같은 규칙이 두 벌이 되고, 어긋난 날 증상은 **판매자가 1,000원이라고
+   * 읽고 승인한 뒤 2,000원이 나가는 것**이다 — 아무것도 실패하지 않는다.
+   *
+   * ## 잠그지 않는다
+   *
+   * 읽기이고 아무것도 쓰지 않는다. 승인이 그 사이에 일어나면 값이 낡을 수 있지만,
+   * 그것은 **잠금으로 고칠 수 있는 문제가 아니다** — 사람이 화면을 보고 있는 몇
+   * 초 동안 행을 잡고 있을 수는 없다. 대신 승인이 지나는 문(`settle`)이 스스로
+   * 잠그고 **그 순간의 원장에서 다시 센다.** 미리보기와 실제가 갈리는 유일한 창은
+   * 「보는 동안 다른 환불이 끼어드는 경우」이고, 그때 실제가 옳다.
+   *
+   * 아직 아무 항목도 걸리지 않은 클레임은 없다(`createClaimRequestSchema.items` 가
+   * `min(1)` 이다). 그래서 답은 언제나 줄을 갖는다.
+   */
+  async quote(claimId: string): Promise<RefundBreakdown> {
+    const claim = await this.claimOf(claimId)
+    const plan = await this.plan(this.prisma, claim)
+
+    return claimRefundBreakdown(plan.items, plan.shipping)
+  }
+
   /** 마지막으로 성공한 시각과 실패 사유. 운영자 화면과 스펙이 읽는다. */
   async recordOf(claimId: string): Promise<ClaimRefundRecord | null> {
     return this.prisma.claimRefund.findUnique({
@@ -185,6 +213,26 @@ export class ClaimRefundService {
   }
 
   /**
+   * 잠그지 않고 같은 줄을 읽는다. **미리보기의 것**이다.
+   *
+   * {@link lock} 과 열이 같은 것이 요점이다 — 두 경로가 같은 사실 위에서 계산해야
+   * 「미리 본 금액 = 실제 금액」이 성립한다. `SELECT … FOR UPDATE` 만 빠진다.
+   */
+  private async claimOf(claimId: string): Promise<LockedClaim> {
+    const rows = await this.prisma.$queryRaw<readonly LockedClaim[]>`
+      SELECT "id", "status"::text AS "status", "type"::text AS "type",
+             "fault"::text AS "fault", "sellerOrderId"
+        FROM "ClaimRequest"
+       WHERE "id" = ${claimId}::uuid
+    `
+    const [row] = rows
+
+    if (row === undefined) throw new NotFoundException('클레임을 찾을 수 없어요.')
+
+    return row
+  }
+
+  /**
    * 판매자 몫의 행을 잠근다. **읽는 것이 없다** — 필요한 것은 잠금 자체다.
    *
    * 이 잠금이 없으면 같은 주문 항목을 건드리는 두 환불이 각자 「지금까지 몇 개를
@@ -196,7 +244,25 @@ export class ClaimRefundService {
 
   /** 이 환불이 보는 세상 전부 — 항목 원장 · 배송비 · 어느 결제인가. */
   private async context(tx: Tx, claim: LockedClaim): Promise<RefundContext> {
-    const sellerOrder = await tx.sellerOrder.findUniqueOrThrow({
+    const plan = await this.plan(tx, claim)
+
+    return { paymentId: await this.paymentOf(tx, plan.orderId), ...plan }
+  }
+
+  /**
+   * 계산에 들어가는 **입력을 저장된 사실에서 조립한다.**
+   *
+   * {@link settle} 과 {@link quote} 가 **이 한 함수를 나눠 쓴다.** 미리보기가 자기
+   * 조립을 갖게 두면 「승인 전에 보여 준 금액」과 「실제 나간 금액」이 서로 다른
+   * 사실에서 나오게 되고, 그 차이는 빨간 테스트가 아니라 **사람의 장부**에 남는다
+   * (TASK-0070 R2 가 「두 벌로 만들지 않는다」고 적은 자리가 여기다).
+   *
+   * `paymentId` 만 저쪽에 남는다. 미리보기는 돈을 옮기지 않으므로 결제를 찾을
+   * 필요가 없고, 오히려 찾으면 안 된다 — {@link paymentOf} 는 살아 있는 결제가
+   * 없을 때 409 를 던지는데, 그것은 **환불의 사고**이지 미리보기의 답이 아니다.
+   */
+  private async plan(db: Tx, claim: LockedClaim): Promise<RefundPlan> {
+    const sellerOrder = await db.sellerOrder.findUniqueOrThrow({
       where: { id: claim.sellerOrderId },
       select: {
         orderId: true,
@@ -204,10 +270,10 @@ export class ClaimRefundService {
         seller: { select: { shippingFee: true, freeShippingThreshold: true } },
       },
     })
-    const items = await this.ledger(tx, claim)
+    const items = await this.ledger(db, claim)
 
     return {
-      paymentId: await this.paymentOf(tx, sellerOrder.orderId),
+      orderId: sellerOrder.orderId,
       items,
       shipping:
         claim.type === 'CANCEL'
@@ -218,7 +284,7 @@ export class ClaimRefundService {
               standardShippingFee: sellerOrder.seller.shippingFee,
               freeShippingThreshold: sellerOrder.seller.freeShippingThreshold,
             })
-          : returnShipping(await this.returnFacts(tx, claim)),
+          : returnShipping(await this.returnFacts(db, claim)),
     }
   }
 
@@ -454,11 +520,21 @@ export interface ClaimRefundRecord {
   readonly lastError: string | null
 }
 
-/** 이 환불이 보는 세상 전부. */
-interface RefundContext {
-  readonly paymentId: string
+/**
+ * 계산이 보는 세상 — **환불과 미리보기가 나눠 쓴다.**
+ *
+ * `paymentId` 가 여기 없는 것이 그 나눔이다. 미리보기는 돈을 옮기지 않는다.
+ */
+interface RefundPlan {
+  /** 결제를 찾을 때 쓴다. 환불만 필요하고 미리보기는 쓰지 않는다. */
+  readonly orderId: string
   readonly items: readonly RefundLedgerItem[]
   readonly shipping: ShippingPair
+}
+
+/** 이 환불이 보는 세상 전부. */
+interface RefundContext extends RefundPlan {
+  readonly paymentId: string
 }
 
 /** 남길 만한 한 줄로. 스택이 통째로 들어가면 실패 목록이 읽히지 않는다. */

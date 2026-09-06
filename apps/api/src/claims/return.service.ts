@@ -32,6 +32,7 @@ import {
   TRACKING_NUMBER_DIGITS,
   trackingNumberFrom,
 } from '../shipping/shipment-rules.js'
+import { claimTransitionNeedsReason } from './claim-console.js'
 import { ClaimService } from './claim.service.js'
 import type { ReturnCompleted, ReturnRefundEvents, ReturnRestockEvents } from './return-events.js'
 import { RETURN_REFUND_EVENTS, RETURN_RESTOCK_EVENTS } from './return-events.js'
@@ -228,6 +229,18 @@ export class ReturnService {
 
     this.assertStep(step, 'INSPECTING', outcome.nextStatus)
 
+    // **검수 불합격도 거절이다** (TASK-0070 5장). 그 판정은 여기서 다시 내리지 않고
+    // 전이가 쓰는 것과 **같은 함수**에 묻는다 — 「어느 걸음이 사유를 요구하나」가 두
+    // 곳에 적히면, 거절 하나에만 사유가 붙는 날이 온다.
+    //
+    // 붙는 자리는 `reason` 이 아니라 `note` 다. 이 요청에 `reason` 이라는 칸이
+    // 없으므로, 그 이름으로 답하면 화면은 오류를 어느 입력에도 놓지 못한다.
+    if (claimTransitionNeedsReason(outcome.nextStatus) && (input.note ?? '').trim() === '') {
+      throw new BadRequestException(
+        domainFailure('CLAIM_REASON_REQUIRED', '불합격 사유를 입력해 주세요.', { field: 'note' }),
+      )
+    }
+
     const inspectedAt = this.clock.now()
 
     await this.reissuingOnCollision(() =>
@@ -247,10 +260,13 @@ export class ReturnService {
 
         if (outcome.sendsBack) await this.issueShipment(tx, claimId, 'SEND_BACK')
 
+        // **검수 결과와 전이 사유가 한 사실이다.** 불합격의 근거를 `ReturnDetail`
+        // 에만 적으면 클레임 이력에는 사유 없는 거절이 남고, 분쟁에서 읽히는 것은
+        // 그 이력이다 (`claimHistoryEntrySchema` 의 주석 — 「누가 그렇게 판단했나」).
         await this.claims.applyWithin(tx, claimId, outcome.nextStatus, {
           actor,
           actorId: principal.userId,
-          reason: null,
+          reason: input.note ?? null,
         })
       }),
     )

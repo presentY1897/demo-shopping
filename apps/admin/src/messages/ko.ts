@@ -858,6 +858,9 @@ export const ko: Messages = {
     // 클레임 상태 전이. 주문 쪽 문장과 따로 있는 이유는 화면이 다르기 때문이다.
     CLAIM_TRANSITION_UNDEFINED: '클레임 상태가 이미 바뀌었어요. 새로고침한 뒤 다시 확인해 주세요.',
     CLAIM_TRANSITION_FORBIDDEN: '이 클레임을 그렇게 바꿀 수 있는 권한이 없어요.',
+    // TASK-0070. 화면이 먼저 막지만 그것은 친절이고, 규칙은 서버에 있다 — 화면만
+    // 막으면 API 를 직접 부르는 길이 남는다.
+    CLAIM_REASON_REQUIRED: '거절 사유를 입력해 주세요. 구매자에게 그대로 전달됩니다.',
   },
   errorNotice: {
     title: '일시적인 문제가 생겼어요',

@@ -297,6 +297,18 @@ export const domainErrorCodes = [
    * 어느 화살표에도 `BUYER` 가 없고, 그 사실이 밖으로 나오는 자리가 여기다.
    */
   'CLAIM_TRANSITION_FORBIDDEN',
+  /**
+   * **거절인데 사유가 없다** (TASK-0070 5장).
+   *
+   * 화면이 먼저 막지만 그것은 친절이고, 규칙은 여기 있다 — 화면만 막으면 API 를
+   * 직접 부르는 길이 남고, 그 길로 들어온 거절은 **구매자가 왜 거절당했는지 아무도
+   * 말할 수 없는 행**이 된다. 분쟁에서 관리자가 읽을 것이 그 한 줄뿐이다
+   * (TASK-0071 이 개입하는 자리).
+   *
+   * 승인·수거·입고에는 걸지 않는다. 정상 흐름마다 빈 칸을 채우게 하면 그 칸은 곧
+   * 「.」 으로 채워지고, 그때 거절 사유도 함께 무의미해진다.
+   */
+  'CLAIM_REASON_REQUIRED',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]
