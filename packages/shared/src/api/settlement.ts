@@ -177,3 +177,160 @@ export const settlementRunResponseSchema = z.object({
 })
 
 export type SettlementRunResponse = z.infer<typeof settlementRunResponseSchema>
+
+/**
+ * 정산서가 지나는 상태 (`state-machines.md` 5장).
+ *
+ * **보류는 승인의 반대가 아니라 판단을 미룬 상태다.** 그래서 「거절」이 없다 — 정산은
+ * 거절할 수 있는 것이 아니고, 금액이 틀렸으면 고쳐서 다음 회차에서 조정한다.
+ */
+export const settlementStatuses = ['PENDING', 'HOLD', 'APPROVED', 'PAID'] as const
+
+export type SettlementStatus = (typeof settlementStatuses)[number]
+
+export const settlementStatusSchema = z.enum(settlementStatuses)
+
+/** 정산서 한 장. 화면이 목록과 상세에서 같은 모양으로 읽는다. */
+export const settlementSchema = z.object({
+  id: z.uuid(),
+  sellerId: sellerIdSchema,
+  /** 스토어 이름. 목록에서 id 를 읽게 하지 않는다. */
+  brandName: z.string(),
+  periodStart: z.iso.datetime(),
+  /** **포함하지 않는 끝**이다. 다음 회차의 시작과 정확히 맞물린다. */
+  periodEnd: z.iso.datetime(),
+  status: settlementStatusSchema,
+  /** 판매액 — **정가 기준**이다. 플랫폼 쿠폰과 적립금을 빼지 않았다 (D-029). */
+  salesAmount: wonSchema,
+  commissionAmount: wonSchema,
+  sellerCouponAmount: wonSchema,
+  /** 지난 회차 뒤에 확정된 반품의 차감. **음수이거나 0이다.** */
+  returnAdjustmentAmount: z.int().max(0),
+  /**
+   * 실제로 줄 돈. **음수일 수 있다** — 지난 회차의 반품이 이번 주 판매보다 크면
+   * 그렇게 된다. 0으로 자르면 그 차액이 사라지고, 사라진 돈은 아무 데도 나타나지
+   * 않는다.
+   */
+  payoutAmount: z.int(),
+  /** 왜 보류했나 (F4). **해소된 뒤에도 남는다** — 판매자가 묻는 것은 대개 지급 뒤다. */
+  holdReason: z.string().nullable(),
+  heldAt: z.iso.datetime().nullable(),
+  approvedAt: z.iso.datetime().nullable(),
+  paidAt: z.iso.datetime().nullable(),
+  createdAt: z.iso.datetime(),
+})
+
+export type Settlement = z.infer<typeof settlementSchema>
+
+/** 정산서의 한 줄이 무엇인가. */
+export const settlementItemTypes = ['SALE', 'RETURN_ADJUSTMENT'] as const
+
+export type SettlementItemType = (typeof settlementItemTypes)[number]
+
+/**
+ * 정산서의 한 줄 (F1 · F2).
+ *
+ * **주문 번호를 함께 싣는 이유가 F2 다.** 판매자가 이의를 제기했을 때 관리자는 이
+ * 줄에서 그 주문으로 곧장 내려갈 수 있어야 하고, id 만으로는 그 링크를 만들 수 없다.
+ */
+export const settlementItemSchema = z.object({
+  id: z.uuid(),
+  type: z.enum(settlementItemTypes),
+  sellerOrderId: z.uuid(),
+  orderNumber: z.string(),
+  /** 차감 줄에서는 **셋 다 음수**다. 그래서 합계가 그냥 합이 된다. */
+  salesAmount: z.int(),
+  commissionAmount: z.int(),
+  sellerCouponAmount: z.int(),
+  payoutAmount: z.int(),
+  createdAt: z.iso.datetime(),
+})
+
+export type SettlementItem = z.infer<typeof settlementItemSchema>
+
+export const SETTLEMENT_LIST_DEFAULT_LIMIT = 20
+export const SETTLEMENT_LIST_MAX_LIMIT = 100
+
+/** `GET /api/v1/settlements` — 회차·판매자·상태로 거른 목록. */
+export const settlementListQueryParamsSchema = z.object({
+  status: z
+    .string()
+    .transform((value) => value.split(','))
+    .pipe(z.array(settlementStatusSchema).min(1))
+    .optional(),
+  sellerId: sellerIdSchema.optional(),
+  /** 이 회차 하나만. 회차의 시작 시각으로 가리킨다. */
+  periodStart: z.iso.datetime().optional(),
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(SETTLEMENT_LIST_MAX_LIMIT).optional(),
+})
+
+export type SettlementListQueryParams = z.infer<typeof settlementListQueryParamsSchema>
+
+export const settlementListResponseSchema = z.object({
+  settlements: z.array(settlementSchema),
+  nextCursor: z.string().nullable(),
+  /**
+   * 지금 필터가 고른 것들의 합계 — 「이번 회차에 얼마가 나가나」.
+   *
+   * **페이지가 아니라 필터의 합이다.** 페이지 합으로 답하면 다음 장을 넘길 때마다
+   * 총액이 달라지고, 그 숫자를 보고 지급을 결정하는 사람에게 그것은 답이 아니다.
+   */
+  totals: z.object({ count: z.int().min(0), payoutAmount: z.int() }),
+})
+
+export type SettlementListResponse = z.infer<typeof settlementListResponseSchema>
+
+/** `GET /api/v1/settlements/:id` — 계산 근거를 항목별로 펼친다 (F1). */
+export const settlementDetailResponseSchema = z.object({
+  settlement: settlementSchema,
+  items: z.array(settlementItemSchema),
+})
+
+export type SettlementDetailResponse = z.infer<typeof settlementDetailResponseSchema>
+
+export const settlementResponseSchema = z.object({ settlement: settlementSchema })
+
+export type SettlementResponse = z.infer<typeof settlementResponseSchema>
+
+export const SETTLEMENT_HOLD_REASON_MAX = 500
+
+/**
+ * `POST /api/v1/settlements/:id/hold` — 분쟁·이상 건으로 보류한다 (F4).
+ *
+ * 사유가 **비어 있을 수 없다.** 사유 없는 보류는 판매자가 「왜 제 정산이 멈췄죠」라고
+ * 물었을 때 답할 것이 없는 상태이고, 그 물음은 반드시 온다.
+ */
+export const holdSettlementRequestSchema = z.object({
+  reason: z.string().trim().min(1).max(SETTLEMENT_HOLD_REASON_MAX),
+})
+
+export type HoldSettlementRequest = z.infer<typeof holdSettlementRequestSchema>
+
+export const SETTLEMENT_BULK_APPROVE_MAX = 100
+
+/** `POST /api/v1/settlements/approvals` — 한꺼번에 승인한다 (F6). */
+export const bulkApproveSettlementsRequestSchema = z.object({
+  ids: z.array(z.uuid()).min(1).max(SETTLEMENT_BULK_APPROVE_MAX),
+})
+
+export type BulkApproveSettlementsRequest = z.infer<typeof bulkApproveSettlementsRequestSchema>
+
+/** 왜 이 한 장이 승인되지 않았나. 화면이 그대로 읽어 주는 목록이다. */
+export const settlementApprovalFailures = ['not_found', 'wrong_status'] as const
+
+export type SettlementApprovalFailure = (typeof settlementApprovalFailures)[number]
+
+/**
+ * 일괄 승인의 답 (F6).
+ *
+ * **실패한 것을 조용히 빼지 않는다.** 「10건 골랐는데 8건이 승인됐다」를 화면이
+ * 말하지 못하면, 남은 2건은 아무도 다시 보지 않는다 — 그리고 그 2건이야말로 사람이
+ * 봐야 하는 것들이다.
+ */
+export const bulkApproveSettlementsResponseSchema = z.object({
+  approved: z.array(z.uuid()),
+  failed: z.array(z.object({ id: z.uuid(), reason: z.enum(settlementApprovalFailures) })),
+})
+
+export type BulkApproveSettlementsResponse = z.infer<typeof bulkApproveSettlementsResponseSchema>
