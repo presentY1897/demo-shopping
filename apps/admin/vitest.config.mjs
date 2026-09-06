@@ -70,6 +70,13 @@ export default {
         // 「퍼센트 × 장수」라는 뜻 없는 곱셈을 화면에 남긴다. 사용률의 0 나눗셈과
         // 사람이 친 숫자의 파싱도 같은 성질이다.
         'src/lib/coupons/platform-coupons.ts': complete,
+        // TASK-0079 의 판단들, 화면이 그려지기 전에 내려진 것. **사람이 친 퍼센트를
+        // 계약의 정수로 옮기는 일**이 여기 있고, 그것이 틀리면 조용하다 — 화면은
+        // 멀쩡히 그려지고 검사는 초록이며, 달라지는 것은 모든 판매자의 다음 정산
+        // 금액뿐이다. `scopes.ts` 도 같은 성질이다: 「아직 고르지 않았다」를 전역으로
+        // 접는 분기 하나가 아무도 그러려던 적 없는 전역 요율을 바꾼다.
+        'src/lib/commissions/rate-bp.ts': complete,
+        'src/lib/commissions/scopes.ts': complete,
         // The photo gate in front of `POST /uploads/presign`. A missed branch
         // spends a round trip on a file the API refuses, and answers with a 400
         // that cannot say which file was at fault.

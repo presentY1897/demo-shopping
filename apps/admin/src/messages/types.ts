@@ -1,6 +1,7 @@
 import type {
   BulkIssueTarget,
   ClaimFault,
+  CommissionScope,
   ClaimHandlingStage,
   ClaimStatus,
   ClaimType,
@@ -28,6 +29,7 @@ import type {
   DefectReturnTarget,
 } from '@/lib/claims/defect-return'
 import type { ReturnPhotoRejection } from '@/lib/claims/return-photos'
+import type { CommissionFieldErrorMessages } from '@/lib/commissions/form-schema'
 import type { BulkIssueOutcome, CouponCostGap } from '@/lib/coupons/platform-coupons'
 import type { SellerDecision } from '@/lib/sellers/decisions'
 
@@ -95,6 +97,8 @@ export interface Messages {
   readonly claims: AdminClaimMessages
   /** 플랫폼 부담 쿠폰의 발행자 콘솔 (TASK-0073). */
   readonly coupons: PlatformCouponMessages
+  /** 수수료율 설정 (TASK-0079). */
+  readonly commissions: CommissionMessages
   /**
    * One sentence per error code the API can answer with (TASK-0117).
    *
@@ -1548,5 +1552,191 @@ export interface CouponToastMessages {
   readonly created: string
   readonly suspended: string
   readonly resumed: string
+  readonly failedTitle: string
+}
+
+/**
+ * `/commissions` 가 말하는 것 전부 (TASK-0079).
+ *
+ * 화면 하나에 한 조각이다 — 지금 요율·바꾸는 폼·미리보기·이력은 운영자의 머릿속에서
+ * 한 가지 일이고, 컴포넌트 경계를 따라 쪼갠 문구는 서로 어긋나기 시작한다
+ * ({@link PlatformCouponMessages} 가 같은 이유로 그렇게 되어 있다).
+ *
+ * `errors` 는 **여기 없다.** API 가 답하는 것은 전부 위쪽 `errors` 조각에 코드로 키가
+ * 잡혀 있고, 기능마다 사본을 두면 그 사본이 언젠가 다른 말을 한다 (TASK-0117 4.2).
+ */
+export interface CommissionMessages {
+  readonly title: string
+  readonly description: string
+  /**
+   * 이 화면을 아예 볼 수 없는 계정에게. **목록의 오류 제목과 다른 문장이다** —
+   * 「불러오지 못했어요」는 다시 시도하면 될 것처럼 읽히는데, 이것은 아무리 눌러도
+   * 되지 않는다.
+   */
+  readonly forbiddenTitle: string
+  /**
+   * 세 범위의 이름. `Record` 라 계약에 범위가 하나 늘면 여기가 typecheck 에서 걸린다.
+   *
+   * 목록의 절 제목이자 라디오의 항목이라 **한 벌뿐이다.** 두 곳에 따로 적으면 고른
+   * 것과 그것이 나타나는 절의 이름이 달라진다.
+   */
+  readonly scopeLabels: Readonly<Record<CommissionScope, string>>
+  readonly open: CommissionOpenRatesMessages
+  readonly editor: CommissionEditorMessages
+  readonly simulation: CommissionSimulationMessages
+  readonly history: CommissionHistoryMessages
+  /** 저장 뒤에 뜨는 짧은 알림. 되돌릴 수 있는 일이라 배너가 아니라 토스트다. */
+  readonly toast: CommissionToastMessages
+  /** 한 줄씩, API 가 답하기 **전에** 실패한 경우에 대해. */
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+/** 지금 유효한 요율들 — 세 절로 나뉜 목록 (F1 · F2 · F3). */
+export interface CommissionOpenRatesMessages {
+  readonly title: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  /**
+   * 세 절이 왜 그 순서인지 — 판매자 개별율이 카테고리를, 카테고리가 전역을 이긴다.
+   *
+   * 목록 위에 서지 않으면 세 요율이 동시에 걸린 스토어에서 **어느 것이 적용되는지**를
+   * 화면이 말하지 않는 것이 된다.
+   */
+  readonly priorityNotice: string
+  readonly globalTitle: string
+  /**
+   * 전역 요율이 아직 설정되지 않았다. `{rate}` 는 그때 쓰이는 폴백이다.
+   *
+   * 「0%」가 아니라 이 문장인 이유는 계약이 적어 둔 그대로다: 「설정을 안 했다」와
+   * 「수수료를 받지 않기로 했다」는 다른 결정이다.
+   */
+  readonly globalUnset: string
+  readonly categoryTitle: string
+  readonly categoryEmpty: string
+  readonly sellerTitle: string
+  readonly sellerEmpty: string
+  readonly categoryListLabel: string
+  readonly sellerListLabel: string
+  readonly columns: {
+    readonly target: string
+    readonly rate: string
+    /** 이 요율이 언제부터 적용됐나. 끝은 없다 — 열려 있는 행이므로. */
+    readonly since: string
+    readonly changedBy: string
+  }
+  /** `여성 › 아우터 › 코트` 의 구분자. */
+  readonly categorySeparator: string
+  /**
+   * 이름을 찾지 못한 대상. `{id}` 가 그 자리에 남는다.
+   *
+   * 빈칸으로 두지 않는다 — 요율은 걸려 있는데 어디에 걸렸는지 화면이 말하지 못하면,
+   * 그것을 지우거나 고칠 방법도 없다.
+   */
+  readonly unknownTarget: string
+}
+
+/** 한 범위의 요율을 바꾸는 자리 (F1 · F2 · F7). */
+export interface CommissionEditorMessages {
+  readonly title: string
+  readonly description: string
+  readonly scopeLabel: string
+  readonly categoryLabel: string
+  readonly categoryPlaceholder: string
+  readonly categoryLoading: string
+  readonly sellerLabel: string
+  readonly sellerPlaceholder: string
+  readonly sellerLoading: string
+  /** 스토어 목록을 못 받았다. 전역·카테고리 요율은 그래도 바꿀 수 있다. */
+  readonly sellerUnavailable: string
+  /**
+   * 목록이 잘려 있다는 사실.
+   *
+   * 콘솔에 스토어를 **찾는** 엔드포인트가 없어 심사 큐의 첫 페이지를 쓴다
+   * (`use-sellers.ts`). 반쪽짜리 목록을 말없이 내면, 거기 없는 스토어를 고르려던
+   * 사람은 그 스토어가 없다고 읽는다.
+   */
+  readonly sellerNotice: string
+  /** 이 범위에 지금 걸린 요율. `{rate}` 하나를 품은 한 줄이다. */
+  readonly currentLabel: string
+  /** 이 범위에는 아직 요율이 없다. `{rate}` 는 그때 실제로 쓰이는 폴백. */
+  readonly currentUnset: string
+  readonly rateLabel: string
+  /** 어떤 모양으로 쓰는가 — 소수점 아래 둘째 자리까지. */
+  readonly rateHint: string
+  readonly ratePlaceholder: string
+  readonly submit: string
+  readonly submitting: string
+  /** 서버가 이 폼의 어느 칸도 가리키지 않고 거절했을 때. */
+  readonly submitError: string
+  /**
+   * 누르기 전에 한 번 더 묻는 자리.
+   *
+   * 이미 팔린 것에는 소급되지 않지만(F4), 잘못 바꾼 채 하루가 지나면 그날 판 것
+   * 전부가 잘못된 요율로 굳는다 — 되돌릴 수 있다는 것이 위험을 줄여 주지 않는
+   * 종류의 값이다 (`permissions.ts` 의 `commission.write`).
+   */
+  readonly confirm: {
+    readonly title: string
+    /** `{scope}` 와 `{rate}` — 무엇을 몇 퍼센트로 바꾸는지. */
+    readonly description: string
+    readonly confirm: string
+    readonly cancel: string
+    readonly closeLabel: string
+  }
+  /** 보내기 전에 이 폼이 스스로 말하는 것. */
+  readonly errors: CommissionFieldErrorMessages
+}
+
+/** 바꾸면 얼마가 달라지나 (F6). */
+export interface CommissionSimulationMessages {
+  readonly title: string
+  /** 아직 물어볼 것이 없다 — 범위나 요율이 비어 있다. */
+  readonly idle: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  /** `{days}` · `{sales}` · `{current}` · `{proposed}` 를 한 줄로. */
+  readonly summary: string
+  readonly orderCount: string
+  /**
+   * 돌아본 기간에 팔린 것이 없다.
+   *
+   * **「0원 → 0원」을 그리지 않는다.** 그 두 숫자는 「영향이 없다」로 읽히는데,
+   * 실제로는 「비교할 근거가 없다」이고 둘은 전혀 다른 말이다.
+   */
+  readonly nothingTitle: string
+  readonly nothingDescription: string
+  /** 이 숫자가 예측이 아니라 「지난달에 이랬다면」이라는 사실. */
+  readonly caveat: string
+}
+
+/** 이 범위가 지나온 요율 (F5). */
+export interface CommissionHistoryMessages {
+  readonly title: string
+  readonly description: string
+  /** 범위를 아직 완결하지 않았다. */
+  readonly idle: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  readonly listLabel: string
+  readonly columns: {
+    readonly changedAt: string
+    readonly change: string
+    readonly changedBy: string
+  }
+  /** `3.5% → 4%`. */
+  readonly change: string
+  /** 처음 설정된 줄. 「무엇에서」가 없으므로 화살표도 없다. `{to}` 하나뿐이다. */
+  readonly firstChange: string
+}
+
+export interface CommissionToastMessages {
+  readonly regionLabel: string
+  readonly closeLabel: string
+  /** `{scope}` 를 `{rate}` 로. */
+  readonly saved: string
   readonly failedTitle: string
 }

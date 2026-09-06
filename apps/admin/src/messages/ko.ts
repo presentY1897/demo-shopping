@@ -1142,6 +1142,138 @@ export const ko: Messages = {
       unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
     },
   },
+  // 수수료율 설정 (TASK-0079). 아래 `scopeLabels` 는 @shopping/shared 가 소유한
+  // 유니온으로 키가 잡혀 있어, 범위가 하나 늘면 여기가 typecheck 에서 걸린다.
+  commissions: {
+    title: '수수료 설정',
+    description: '플랫폼이 떼는 수수료율을 전역·카테고리별·판매자별로 정합니다.',
+    forbiddenTitle: '수수료율을 볼 수 없어요',
+    scopeLabels: {
+      global: '전역',
+      category: '카테고리별',
+      seller: '판매자별',
+    },
+    open: {
+      title: '지금 적용되는 요율',
+      loadingLabel: '요율을 불러오는 중',
+      errorTitle: '요율을 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      // 목록의 순서가 곧 우선순위다. 그 사실을 적지 않으면, 세 요율이 동시에 걸린
+      // 스토어에서 어느 것이 적용되는지를 화면이 말하지 않는 셈이 된다.
+      priorityNotice:
+        '좁은 범위가 넓은 범위를 이깁니다. 판매자 개별 요율 → 카테고리 요율 → 전역 요율 순으로 찾아 처음 만나는 요율이 적용됩니다.',
+      globalTitle: '전역 요율',
+      // 「0%」가 아니라 이 문장이다. 설정을 안 한 것과 안 받기로 한 것은 다르다.
+      globalUnset: '아직 정하지 않았습니다. 지금은 기본 요율 {rate}가 적용됩니다.',
+      categoryTitle: '카테고리 요율',
+      categoryEmpty: '따로 정한 카테고리가 없습니다. 모두 전역 요율을 씁니다.',
+      sellerTitle: '판매자 개별 요율',
+      sellerEmpty: '개별 요율을 받는 판매자가 없습니다.',
+      categoryListLabel: '카테고리별 수수료율',
+      sellerListLabel: '판매자별 수수료율',
+      columns: {
+        target: '대상',
+        rate: '요율',
+        since: '적용 시작',
+        changedBy: '바꾼 사람',
+      },
+      categorySeparator: ' › ',
+      // 이름을 못 찾아도 빈칸으로 두지 않는다 — 어디에 걸린 요율인지 모르면 고칠
+      // 수도 없다.
+      unknownTarget: '이름을 찾지 못함 ({id})',
+    },
+    editor: {
+      title: '요율 바꾸기',
+      description: '범위를 고르고 새 요율을 적으면, 저장하기 전에 영향을 먼저 보여 드립니다.',
+      scopeLabel: '어디에 걸까요',
+      categoryLabel: '카테고리',
+      categoryPlaceholder: '카테고리를 고르세요',
+      categoryLoading: '카테고리를 불러오는 중입니다.',
+      sellerLabel: '판매자',
+      sellerPlaceholder: '판매자를 고르세요',
+      sellerLoading: '판매자를 불러오는 중입니다.',
+      sellerUnavailable:
+        '판매자 목록을 불러오지 못했습니다. 전역 요율과 카테고리 요율은 그대로 바꿀 수 있어요.',
+      // 반쪽짜리 목록을 말없이 내면, 거기 없는 스토어를 고르려던 사람은 그 스토어가
+      // 없다고 읽는다.
+      sellerNotice:
+        '최근 신청한 순으로 100곳까지만 목록에 오릅니다. 관리자 콘솔에 스토어를 이름으로 찾는 화면이 아직 없습니다.',
+      currentLabel: '지금 요율 {rate}',
+      currentUnset: '이 범위에는 아직 요율이 없습니다. 지금은 기본 요율 {rate}가 적용됩니다.',
+      rateLabel: '새 요율 (%)',
+      rateHint: '퍼센트로 적습니다. 소수점 아래 둘째 자리까지 쓸 수 있어요. (예: 3.5)',
+      ratePlaceholder: '3.5',
+      submit: '요율 저장',
+      submitting: '저장하는 중',
+      submitError: '요율을 바꾸지 못했어요. 잠시 후 다시 시도해 주세요.',
+      confirm: {
+        title: '요율을 바꿀까요',
+        // 이미 팔린 것에는 소급되지 않는다는 사실이 여기 있어야 한다 — 그것을
+        // 모르면 「과거 정산이 다시 계산되나」를 누르기 전에 알 수 없다.
+        description:
+          '{scope} 요율을 {rate}로 바꿉니다. 이미 판매된 주문의 수수료는 그대로이고, 이 요율은 지금부터 들어오는 주문에 적용됩니다.',
+        confirm: '바꾸기',
+        cancel: '취소',
+        closeLabel: '창 닫기',
+      },
+      errors: {
+        categoryRequired: '카테고리를 골라 주세요.',
+        sellerRequired: '판매자를 골라 주세요.',
+        rate: {
+          required: '새 요율을 적어 주세요.',
+          malformed: '숫자로 적어 주세요. (예: 3.5)',
+          too_precise: '소수점 아래 둘째 자리까지만 쓸 수 있어요. (예: 3.55)',
+          out_of_range: '0%에서 100% 사이로 적어 주세요.',
+        },
+      },
+    },
+    simulation: {
+      title: '바꾸면 얼마가 달라질까요',
+      idle: '범위를 고르고 새 요율을 적으면 영향을 계산합니다.',
+      loadingLabel: '영향을 계산하는 중',
+      errorTitle: '영향을 계산하지 못했어요',
+      summary: '지난 {days}일 판매 {sales} · 지금 요율이면 {current} · 새 요율이면 {proposed}',
+      orderCount: '주문 {count}건을 돌아봤습니다.',
+      // 「0원 → 0원」은 「영향이 없다」로 읽힌다. 실제로는 「비교할 근거가 없다」다.
+      nothingTitle: '비교할 판매가 없어요',
+      nothingDescription:
+        '지난 {days}일 동안 이 범위에서 팔린 주문이 없어 얼마나 달라질지 계산할 수 없습니다. 요율은 그대로 바꿀 수 있어요.',
+      caveat:
+        '지난 {days}일의 실제 판매에 새 요율을 적용해 본 값입니다. 앞으로의 판매를 예측한 값이 아닙니다.',
+    },
+    history: {
+      title: '변경 이력',
+      description: '고른 범위가 지나온 요율입니다. 최근 것이 위에 옵니다.',
+      idle: '범위를 고르면 그 범위의 이력이 나옵니다.',
+      loadingLabel: '이력을 불러오는 중',
+      errorTitle: '이력을 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      emptyTitle: '아직 바꾼 적이 없어요',
+      emptyDescription: '이 범위의 요율을 처음 정하면 여기에 남습니다.',
+      listLabel: '수수료율 변경 이력',
+      columns: {
+        changedAt: '바뀐 시각',
+        change: '변경',
+        changedBy: '바꾼 사람',
+      },
+      change: '{from} → {to}',
+      firstChange: '처음 설정 · {to}',
+    },
+    toast: {
+      regionLabel: '수수료 알림',
+      closeLabel: '닫기',
+      saved: '{scope} 요율을 {rate}로 바꿨어요.',
+      failedTitle: '요율을 바꾸지 못했어요',
+    },
+    failures: {
+      network: '서버에 연결하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.',
+      timeout: '응답이 너무 늦어 요청을 멈췄어요. 잠시 후 다시 시도해 주세요.',
+      aborted: '요청을 취소했어요.',
+      malformed_response: '서버가 보낸 응답을 읽지 못했어요. 잠시 후 다시 시도해 주세요.',
+      configuration: '서버 주소 설정이 없어요. 개발 서버를 다시 실행해 주세요.',
+      unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+    },
+  },
   layout: {
     // 콘솔 이름. 사이드바 위와 모바일 시트 제목에 같은 문자열이 쓰인다.
     brand: '관리자 콘솔',
@@ -1191,7 +1323,7 @@ export const ko: Messages = {
         id: 'settlement',
         label: '정산·프로모션',
         items: [
-          { href: '/commissions', label: '수수료 설정' },
+          { href: '/commissions', label: '수수료 설정', permission: 'commission.read' },
           { href: '/settlements', label: '정산 관리', permission: 'settlement.read' },
           { href: '/coupons', label: '플랫폼 쿠폰', permission: 'coupon.read' },
         ],
