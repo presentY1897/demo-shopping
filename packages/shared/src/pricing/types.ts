@@ -35,7 +35,7 @@ export const discountScopes = ['ORDER', 'SELLER', 'ITEM'] as const
 export type DiscountScope = (typeof discountScopes)[number]
 
 /**
- * 누가 부담하나. 정산에서 쓴다 (`pricing.md` 5장).
+ * 누가 부담하나. 정산에서 쓴다 (`pricing.md` 6장).
  *
  * 계산 결과는 이것과 무관하다 — 사는 사람이 내는 돈은 누가 부담하든 같다. 그래도
  * 입력에 있는 이유는 **안분액이 정산의 입력**이기 때문이다: 판매자 부담 쿠폰의

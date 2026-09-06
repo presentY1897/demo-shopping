@@ -124,7 +124,7 @@ export interface ShippingPair {
 }
 
 /**
- * 취소의 배송비 입력 (`pricing.md` 3장의 위 두 줄).
+ * 취소의 배송비 입력 (`pricing.md` 4장의 위 두 줄).
  *
  * **반품비가 없다.** 취소는 물건이 아직 떠나지 않은 자리라 회수할 운송이 없고,
  * 그래서 `returnFee` 는 언제나 0 이다 (`shippingAdjustment` 의 네 줄 중 마지막 줄은
@@ -141,7 +141,7 @@ export function cancelShipping(
     remainingEligibleAmount: remainingBasisOf(items, refunded),
     freeShippingThreshold: facts.freeShippingThreshold,
     returnFee: 0,
-    // **취소에는 귀책이 배송비를 가르는 축이 아니다.** `pricing.md` 3장의 표에서
+    // **취소에는 귀책이 배송비를 가르는 축이 아니다.** `pricing.md` 4장의 표에서
     // 「판매자 귀책」 줄은 반품 두 줄에만 붙어 있고, 재부과 줄에는 조건이 없다.
     // `ClaimRequest.fault` 는 구매자가 신청서에 적는 값이라 이 자리에 그대로
     // 넘기면 배송비를 신청자가 고르게 된다.
@@ -184,7 +184,7 @@ export interface ReturnShippingFacts {
  *
  * ## 왜 `full: true` 인가 — 반품은 **재부과하지 않는다**
  *
- * `pricing.md` 3장의 표에서 재부과 줄은 **부분 취소**에만 붙어 있고, 반품 두 줄은
+ * `pricing.md` 4장의 표에서 재부과 줄은 **부분 취소**에만 붙어 있고, 반품 두 줄은
  * 배송비를 귀책으로만 가른다. 그럴 만한 이유가 있다 — 재부과는 「보내기 전에
  * 취소했으니 무료배송의 조건이 사라졌다」는 말인데, 반품에서는 **물건이 실제로
  * 배송됐다.** 이미 제공된 운송의 값을 사후에 무르는 것은 다른 결정이고, 이 TASK 의

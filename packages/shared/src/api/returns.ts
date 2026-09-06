@@ -31,7 +31,7 @@ import { returnPhotoKeySchema } from './uploads.js'
  */
 
 /**
- * 반품 배송비를 **누가 무는가** (`pricing.md` 3장).
+ * 반품 배송비를 **누가 무는가** (`pricing.md` 4장).
  *
  * `ClaimFault` 와 값이 닮았지만 다른 축이다. 귀책은 「누구 탓인가」이고 이것은
  * 「누가 내는가」다 — 지금은 둘이 함께 움직이지만, 부분 부담이나 플랫폼 부담이
@@ -147,7 +147,7 @@ export const returnDetailSchema = z.object({
    * (CLAUDE.md 6장 「주문·결제·정산에 관련된 값은 스냅샷으로 남긴다」).
    */
   returnShippingFee: z.int().min(0),
-  /** 돌려줄 원 배송비. 판매자 귀책에서만 0보다 크다 (`pricing.md` 3장). */
+  /** 돌려줄 원 배송비. 판매자 귀책에서만 0보다 크다 (`pricing.md` 4장). */
   originalShippingRefund: z.int().min(0),
   /** 환불액에서 뺄 반품 배송비. 구매자 부담에서만 0보다 크다. */
   returnShippingDeduction: z.int().min(0),

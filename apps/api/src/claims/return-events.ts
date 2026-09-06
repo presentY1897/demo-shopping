@@ -57,7 +57,7 @@ export interface ReturnCompleted {
   readonly actor: SellerOrderActor
   readonly lines: readonly ReturnCompletedLine[]
   /**
-   * 환불액에서 뺄 반품 배송비 (`pricing.md` 3장 · 단순 변심).
+   * 환불액에서 뺄 반품 배송비 (`pricing.md` 4장 · 단순 변심).
    *
    * **여기서 다시 계산하지 않는다.** 신청 시점에 굳은 값이라(`ReturnDetail`) 그 뒤에
    * 판매자가 배송비 정책을 바꿔도 움직이지 않는다 — 안분액을 항목마다 저장해 두는

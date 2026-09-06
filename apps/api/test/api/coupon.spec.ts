@@ -184,7 +184,7 @@ describe('발행 — 부담 주체 (F1)', () => {
   })
 
   it('판매자가 낸 쿠폰은 판매자 부담으로, 자기 가게를 달고 저장된다', async () => {
-    // 정산이 「판매자 부담 쿠폰」을 이 두 칸으로 읽는다 (D-029 · `pricing.md` 5장).
+    // 정산이 「판매자 부담 쿠폰」을 이 두 칸으로 읽는다 (D-029 · `pricing.md` 6장).
     const { coupon } = await issueCoupon(seller, {
       sellerId: seller.sellerId ?? null,
       scopeType: 'SELLER',

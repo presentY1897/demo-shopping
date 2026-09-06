@@ -2,7 +2,7 @@ import type { ClaimFault, ClaimStatus, ReturnFeeBearer, ReturnReason } from '@sh
 import { claimStatuses, RETURN_PHOTO_MAX_COUNT, returnPhotoKeyPattern } from '@shopping/shared'
 
 /**
- * 반품의 순수 판단 (TASK-0067 · `docs/design/pricing.md` 3장).
+ * 반품의 순수 판단 (TASK-0067 · `docs/design/pricing.md` 4장).
  *
  * `claim-rules.ts` 가 「이 신청을 받아도 되는가」와 「이 걸음을 걸어도 되는가」를
  * 답한다면, 여기는 **반품 경로에만 있는 세 가지 판단**을 답한다.
@@ -18,7 +18,7 @@ import { claimStatuses, RETURN_PHOTO_MAX_COUNT, returnPhotoKeyPattern } from '@s
  *
  * ## 값을 어디서 가져왔나 — 문서와 판단을 나눈다
  *
- * **문서가 정한 것** (`pricing.md` 3장 · TASK-0067 4장의 표): 단순 변심이면 반품
+ * **문서가 정한 것** (`pricing.md` 4장 · TASK-0067 4장의 표): 단순 변심이면 반품
  * 배송비를 구매자가 물고 원 배송비는 돌려주지 않는다. 상품 하자와 오배송이면
  * 판매자가 물고 원 배송비까지 돌려준다.
  *
@@ -82,7 +82,7 @@ export interface ReturnFees {
 }
 
 /**
- * 이 반품에서 배송비가 어떻게 갈리는가 (`pricing.md` 3장의 아래 두 줄).
+ * 이 반품에서 배송비가 어떻게 갈리는가 (`pricing.md` 4장의 아래 두 줄).
  *
  * **두 금액을 하나로 합치지 않는다.** 「반품비 3,000원 차감」과 「원 배송비 3,000원
  * 환불」은 사람이 확인해야 할 서로 다른 줄이고, 합치면 0원이 되어 **아무 일도 없었던

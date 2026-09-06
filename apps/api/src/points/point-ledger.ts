@@ -305,7 +305,7 @@ export function reconciliationFaults(audit: PointLedgerAudit): readonly PointRec
  *
  * `scope: 'ORDER'` — 적립금은 주문 전체에 붙고 항목마다 안분된다(`pricing.md` 2장).
  * `bearer: 'PLATFORM'` — 정산이 읽는 값이다. 적립금은 플랫폼 부담이라 판매자 정산에서
- * 차감되지 않는다(`pricing.md` 5장). 이 한 칸이 틀리면 판매자가 자기가 주지도 않은
+ * 차감되지 않는다(`pricing.md` 6장). 이 한 칸이 틀리면 판매자가 자기가 주지도 않은
  * 할인을 물어낸다.
  */
 export function pointDiscount(amount: number): PricingDiscount {

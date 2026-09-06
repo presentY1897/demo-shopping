@@ -267,7 +267,7 @@ describe('적립은 구매확정에서만 일어난다', () => {
 
     const balance = pointBalanceSchema.parse(await points().balanceOf(buyer.userId))
     const { earnRateBp } = await points().policy()
-    // **그 판매자 몫의 실결제금액**이 근거다 (`pricing.md` 4장). 배송비가 들어간
+    // **그 판매자 몫의 실결제금액**이 근거다 (`pricing.md` 5장). 배송비가 들어간
     // 값이고, 그것이 「실결제금액」의 뜻이다 — 스펙이 상품금액을 다시 계산해
     // 단언하면 무료배송 조건이 바뀌는 날 이 검사만 조용히 다른 것을 재게 된다.
     const paidAmount = await paidAmountOf(placed.sellerOrderId)

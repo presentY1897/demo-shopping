@@ -110,7 +110,7 @@ ALTER TABLE "ReturnDetail" ADD CONSTRAINT "ReturnDetail_amount_check"
          AND "originalShippingRefund" >= 0
          AND "returnShippingDeduction" >= 0);
 
--- **부담자와 금액이 어긋날 수 없다** (`pricing.md` 3장 · `return-rules.ts`).
+-- **부담자와 금액이 어긋날 수 없다** (`pricing.md` 4장 · `return-rules.ts`).
 --
 -- 규칙 함수가 이미 짝을 맞춰 내놓지만, 그것은 그 함수를 지나는 코드에만 적용되는
 -- 규칙이다. 관리자 도구나 배치가 한 열만 고치는 날 「판매자 부담인데 구매자
