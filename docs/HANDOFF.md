@@ -1331,3 +1331,7 @@ Domain** → `cdn.demo-shopping.com`.
 | **커버리지 임계값은 파일 경로로 걸리고, 그 파일이 사라지면 조용히 통과한다.** 모듈을 옮기면서 `vitest.config.mjs` 의 임계값을 함께 옮기지 않으면 게이트가 없어진 것을 **아무것도 알려 주지 않는다** — 빨개지지 않으므로 리뷰에서도 안 보인다. 옮기기 전에 `grep` 으로 그 경로가 설정에 박혀 있는지 본다 | D-219 · `packages/shared/vitest.config.mjs` |
 | **새 CHECK 제약이 기존 제약의 이름을 빼앗는다.** `0 <= reserved <= stock` 을 더했더니 음수 재고가 `ProductVariant_stock_check` 가 아니라 새 제약 이름으로 거절됐다 — 앞의 것을 함의하고, 둘 다 위반일 때 어느 이름이 나오는지는 Postgres 가 정한다. S5 스펙은 이름으로 단언하므로 **기능은 그대로인데 검사만 빨개진다** | `test/db/product-constraints.spec.ts` 의 「refuses negative stock」 |
 | **플랫폼이 이미 하는 일을 직접 만들었다** — Vercel 은 pnpm 모노레포의 미영향 프로젝트를 자동으로 건너뛴다. "4개가 다 빌드된다" 를 헛빌드로 단정하고 스크립트를 만들었는데, 그 PR 은 `packages/shared` 를 바꿨으므로 **넷 다 빌드가 맞았다.** 문서를 먼저 읽었으면 안 만들었다 | TASK-0010 4.1 |
+| **`upload-artifact` 는 점으로 시작하는 디렉터리를 기본으로 건너뛴다.** `.vitest-reports` 를 올리라고 했더니 경고만 남기고 아무것도 올리지 않았고, 실패는 3분 뒤 **합치는 job 에서 `ENOENT`** 로 나타났다 — 문제의 반대쪽 끝이다. `include-hidden-files: true` 와 `if-no-files-found: error` | D-223 · `.github/workflows/ci.yml` |
+| **`--reporter=blob` 만 달면 실패한 샤드가 아무 말도 하지 않는다.** 첫 빨간 실행이 `exit code 1` 한 줄뿐이라 어느 검사가 깨졌는지 알 길이 로컬 재현밖에 없었다. `--reporter=default` 를 함께 단다 | D-223 |
+| **커버리지 계측 아래의 벽시계는 계측을 잰다.** 「300ms 이하」에 680ms 로 답한 검사가 있었고 화면에도 코드에도 결함이 없었다 — 같은 스위트가 계측 없이 147초, 붙이면 312초다. 시간을 재는 검사는 커버리지 밖에서 혼자 돈다 (`pnpm --filter @shopping/api run test:perf`) | D-223 |
+| **vitest 의 위치 인자는 글롭이 아니라 부분 문자열이다.** `'test/api/*-performance.spec.ts'` 를 따옴표로 넘기면 아무 파일도 안 고른다. 그리고 `-` 로 시작하는 문자열은 플래그로 읽힌다 | `apps/api` 의 `test:perf` |
