@@ -27,6 +27,20 @@ export default defineConfig({
     globalSetup: ['./test/setup/global-setup.ts'],
     setupFiles: ['./vitest.setup.mjs', './test/setup/worker-database.mts'],
     environment: 'node',
+    /**
+     * 15초, 그리고 이 숫자는 **멈춘 검사를 잡는 값**이지 속도 예산이 아니다.
+     *
+     * 기본값 5초는 순수 함수를 재는 스위트를 위한 값이다. 여기 있는 것들은 실
+     * PostgreSQL 에 대고 도는 통합 검사이고(A6), 주문 마흔 건을 차례로 만들어
+     * 번호가 마흔 개 다른지 보는 것 같은 검사는 그 자체로 5초에 가깝다 — 그리고
+     * CI 는 커버리지 계측 아래에서 두 배로 느리다. 실제로 그 검사가 5,199ms 로
+     * 시간 초과했고, **그것이 잡은 것은 아무것도 없었다.**
+     *
+     * 시간을 재는 검사(A1)는 여기 없다. 그쪽은 커버리지 없이 따로 돌고
+     * (`test:perf`), 자기 예산을 자기가 단언한다 — 그래서 이 값을 늘리는 것이
+     * 성능 회귀를 가리지 않는다.
+     */
+    testTimeout: 15_000,
     maxWorkers,
     coverage: {
       provider: 'v8',
