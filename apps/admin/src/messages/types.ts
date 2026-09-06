@@ -1,8 +1,13 @@
 import type {
+  BulkIssueTarget,
   ClaimFault,
   ClaimHandlingStage,
   ClaimStatus,
   ClaimType,
+  CouponAudience,
+  CouponDiscountType,
+  CouponLifecycle,
+  CouponScopeType,
   DenialReason,
   HealthStatus,
   OauthFailureReason,
@@ -23,6 +28,7 @@ import type {
   DefectReturnTarget,
 } from '@/lib/claims/defect-return'
 import type { ReturnPhotoRejection } from '@/lib/claims/return-photos'
+import type { BulkIssueOutcome, CouponCostGap } from '@/lib/coupons/platform-coupons'
 import type { SellerDecision } from '@/lib/sellers/decisions'
 
 import type { SessionRefusal } from '@/lib/auth/session-client'
@@ -87,6 +93,8 @@ export interface Messages {
   readonly sellers: SellerReviewMessages
   /** The claim intervention console (TASK-0071). */
   readonly claims: AdminClaimMessages
+  /** 플랫폼 부담 쿠폰의 발행자 콘솔 (TASK-0073). */
+  readonly coupons: PlatformCouponMessages
   /**
    * One sentence per error code the API can answer with (TASK-0117).
    *
@@ -1257,4 +1265,288 @@ export interface ClaimAppealMessages {
       readonly reasonTooLong: string
     }
   }
+}
+
+/**
+ * `/coupons` 가 말하는 것 전부 (TASK-0073).
+ *
+ * 화면 하나에 한 조각이다 — 목록·발행 폼·일괄 지급 대화상자는 운영자의 머릿속에서 한
+ * 가지 일이고, 컴포넌트 경계를 따라 쪼갠 문구는 서로 어긋나기 시작한다
+ * ({@link CategoryMessages} 가 같은 이유로 그렇게 되어 있다).
+ *
+ * `errors` 는 **여기 없다.** API 가 답하는 것은 전부 위쪽 `errors` 조각에 코드로
+ * 키가 잡혀 있고, 기능마다 사본을 두면 그 사본이 언젠가 다른 말을 한다 (TASK-0117 4.2).
+ */
+export interface PlatformCouponMessages {
+  readonly title: string
+  readonly description: string
+  /**
+   * 부담 주체를 말하는 한 벌 — **폼과 목록이 같은 문장을 쓴다** (F2).
+   *
+   * 두 곳에 따로 적으면 한쪽만 고쳐지고, 그때 「판매자 정산에서 차감되지 않는다」가
+   * 화면마다 다른 말이 된다. 그 사실이 이 화면의 존재 이유이므로 문장은 한 벌이다.
+   */
+  readonly burden: CouponBurdenMessages
+  /** 다섯 상태의 이름. `Record` 라 상태가 늘면 여기가 typecheck 에서 걸린다. */
+  readonly lifecycleLabels: Readonly<Record<CouponLifecycle, string>>
+  /** 어느 그룹에 닿는 쿠폰인가 (D-224). 「체험용」이 그중 하나다. */
+  readonly audienceLabels: Readonly<Record<CouponAudience, string>>
+  readonly discountTypeLabels: Readonly<Record<CouponDiscountType, string>>
+  readonly scopeTypeLabels: Readonly<Record<CouponScopeType, string>>
+  /**
+   * 이 화면을 아예 볼 수 없는 계정에게. **목록의 오류 제목과 다른 문장이다** —
+   * 「불러오지 못했어요」는 다시 시도하면 될 것처럼 읽히는데, 이것은 아무리 눌러도
+   * 되지 않는다.
+   */
+  readonly forbiddenTitle: string
+  /** 데모 관리자가 무엇까지 할 수 있는지, 그리고 서버가 거절했을 때의 한 줄 (F7). */
+  readonly scope: CouponScopeMessages
+  readonly tabs: {
+    readonly label: string
+    readonly list: string
+    readonly issue: string
+  }
+  readonly list: CouponListMessages
+  readonly form: CouponFormMessages
+  readonly bulk: CouponBulkIssueMessages
+  /** 발급 뒤에 뜨는 짧은 알림. 되돌릴 수 있는 일이라 배너가 아니라 토스트다. */
+  readonly toast: CouponToastMessages
+  /** 한 줄씩, API 가 답하기 **전에** 실패한 경우에 대해. */
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+export interface CouponBurdenMessages {
+  /** 목록의 모든 줄에 붙는 뱃지. 이 화면에는 플랫폼 쿠폰만 있다. */
+  readonly badge: string
+  /** 목록 위 한 줄 — 여기 있는 것이 전부 플랫폼 몫이라는 사실. */
+  readonly listNotice: string
+  /** 폼 안 한 줄 — 지금 만드는 것이 누구 돈인지. */
+  readonly formNotice: string
+}
+
+export interface CouponScopeMessages {
+  /** 데모 관리자에게 늘 참인 문장. 무엇을 누르기 전에 선다. */
+  readonly demoNotice: string
+  /** 서버가 이 한 건을 거절한 뒤. 데모 계정에게만 이 문장이 나간다. */
+  readonly outOfScope: string
+}
+
+export interface CouponListMessages {
+  readonly listLabel: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  /** 조건이 걸려 있어 비었을 때. 「없다」와 다른 말이다. */
+  readonly filteredEmptyTitle: string
+  readonly filteredEmptyDescription: string
+  readonly columns: CouponColumnMessages
+  readonly filters: {
+    readonly legend: string
+    readonly lifecycleLabel: string
+    readonly lifecycleAll: string
+    readonly fromLabel: string
+    readonly toLabel: string
+    /**
+     * 기간이 「걸침」이라는 것과, 하루의 경계가 어디인지.
+     *
+     * 감추면 「9월 1일부터」로 좁힌 사람이 8월에 시작한 쿠폰을 보고 필터가 고장 난
+     * 줄 안다 — 그것이 계약이 고른 규칙이고(겹침), 화면이 말하지 않으면 아무도
+     * 모른다.
+     */
+    readonly periodHint: string
+    readonly reset: string
+  }
+  /**
+   * 필터와 페이지에 **무관한** 누계 (F6).
+   *
+   * 보이는 줄들의 합이 아니라 플랫폼이 낸 모든 쿠폰의 합이다. 그 사실을 적어 두지
+   * 않으면 상태를 좁힌 사람이 「합계가 안 바뀐다」를 버그로 읽는다.
+   */
+  readonly totals: {
+    readonly title: string
+    readonly usedLabel: string
+    readonly discountLabel: string
+    readonly scopeNote: string
+  }
+  /** 칸 하나가 그리는 짧은 값들. 자리 표시자는 서버가 실어 보낸 숫자로 채운다. */
+  readonly values: {
+    /** `10% · 최대 5,000원` 의 뒷부분. */
+    readonly ceiling: string
+    /** 최소 주문금액이 있는 쿠폰에만. */
+    readonly minimum: string
+    /** 수량이 `null` 인 쿠폰. 「0장」이 아니라 「무제한」이다. */
+    readonly unlimited: string
+    /** `240 / 1,000장`. */
+    readonly issued: string
+    readonly issuedUnlimited: string
+    /** `120장 · 50%`. */
+    readonly used: string
+    /** `2026. 9. 1. ~ 2026. 9. 30.` */
+    readonly period: string
+    readonly code: string
+    readonly noCode: string
+  }
+  readonly actions: {
+    readonly suspend: string
+    readonly resume: string
+    readonly bulkIssue: string
+    /**
+     * 중단된 쿠폰에서 지급 버튼을 대신하는 문장.
+     *
+     * 서버가 `COUPON_SUSPENDED` 로 거절하므로 버튼을 두면 누를 때마다 거절이다.
+     * 다음에 할 일이 **재개**라는 것까지 말한다 — 그 버튼은 바로 옆에 있다.
+     */
+    readonly suspendedNoIssue: string
+    /**
+     * 끝난 쿠폰의 자리에 버튼 대신 서는 문장.
+     *
+     * 회색 버튼을 쓰지 않는 이유는 이 콘솔의 다른 자리와 같다 (TASK-0063 4.1) —
+     * 못 누르는 컨트롤은 키보드가 건너뛰고, 그래서 왜 못 누르는지도 읽히지 않는다.
+     */
+    readonly ended: string
+  }
+  readonly pagination: {
+    readonly label: string
+    readonly previous: string
+    readonly next: string
+    readonly pageUnit: string
+    readonly countUnit: string
+  }
+}
+
+export interface CouponColumnMessages {
+  readonly name: string
+  readonly burden: string
+  readonly discount: string
+  readonly period: string
+  readonly issued: string
+  readonly used: string
+  readonly discountTotal: string
+  readonly lifecycle: string
+  readonly actions: string
+}
+
+export interface CouponFormMessages {
+  readonly title: string
+  readonly description: string
+  readonly nameLabel: string
+  readonly namePlaceholder: string
+  readonly discountTypeLabel: string
+  /** 유형을 아직 고르지 않았을 때. 단위를 말할 수 없으므로 값만 말한다. */
+  readonly discountValueLabel: string
+  /** 유형마다 값의 뜻이 다르다 — 원인가 퍼센트인가. */
+  readonly discountValueLabels: Readonly<Record<CouponDiscountType, string>>
+  readonly discountValueHints: Readonly<Record<CouponDiscountType, string>>
+  readonly maxDiscountLabel: string
+  readonly maxDiscountHint: string
+  readonly minOrderLabel: string
+  readonly minOrderHint: string
+  readonly scopeTypeLabel: string
+  readonly categoryLabel: string
+  readonly categoryPlaceholder: string
+  /** 카테고리 이름 사이의 구분자. `여성 › 아우터 › 코트`. */
+  readonly categorySeparator: string
+  readonly categoryLoading: string
+  /**
+   * 상품·판매자 범위를 왜 고를 수 없는지.
+   *
+   * 계약에는 넷이 있지만 이 콘솔에는 상품과 판매자를 빠짐없이 답하는 엔드포인트가
+   * 없다. 첫 페이지만 담은 셀렉트는 거기 없는 것을 조용히 못 고르게 만들므로,
+   * 반쪽짜리 목록을 내는 대신 **왜 없는지**를 적는다.
+   */
+  readonly scopeUnsupported: string
+  readonly validFromLabel: string
+  readonly validUntilLabel: string
+  readonly periodHint: string
+  readonly issueLimitLabel: string
+  readonly issueLimitHint: string
+  readonly withCodeLabel: string
+  readonly withCodeHint: string
+  readonly submit: string
+  readonly submitting: string
+  /** 서버가 이 폼의 어느 칸도 가리키지 않고 거절했을 때. */
+  readonly submitError: string
+  readonly cost: CouponCostMessages
+  readonly confirm: CouponConfirmMessages
+  /** 보내기 전에 이 폼이 스스로 말하는 것. */
+  readonly errors: {
+    readonly nameRequired: string
+    readonly nameTooLong: string
+    readonly discountTypeRequired: string
+    readonly discountValueRequired: string
+    readonly percentOutOfRange: string
+    readonly amountOutOfRange: string
+    readonly minOrderInvalid: string
+    readonly issueLimitInvalid: string
+    readonly periodRequired: string
+    readonly periodInverted: string
+    readonly categoryRequired: string
+  }
+}
+
+export interface CouponCostMessages {
+  readonly title: string
+  /** 아직 채워지지 않았다. 숫자 대신 이 한 줄이 선다. */
+  readonly incomplete: string
+  readonly perCouponLabel: string
+  readonly totalLabel: string
+  /** `1,000장 × 5,000원`. 곱셈을 보여 주는 것이 숫자 하나보다 낫다. */
+  readonly formula: string
+  /** 이 값이 상한이지 예측이 아니라는 사실. */
+  readonly caveat: string
+  readonly unboundedTitle: string
+  /** 왜 계산할 수 없는지 — 구멍마다 할 일이 다르다. */
+  readonly gaps: Readonly<Record<CouponCostGap, string>>
+}
+
+export interface CouponConfirmMessages {
+  readonly title: string
+  readonly description: string
+  readonly confirm: string
+  readonly cancel: string
+  readonly closeLabel: string
+}
+
+export interface CouponBulkIssueMessages {
+  readonly title: string
+  readonly description: string
+  readonly targetLabel: string
+  readonly targetLabels: Readonly<Record<BulkIssueTarget, string>>
+  readonly targetHints: Readonly<Record<BulkIssueTarget, string>>
+  readonly confirm: string
+  readonly submitting: string
+  readonly cancel: string
+  readonly close: string
+  readonly closeLabel: string
+  readonly resultTitle: string
+  /**
+   * 한 번의 지급이 무슨 일이었나 — 네 가지.
+   *
+   * 「0장 나갔습니다」가 셋으로 갈리기 때문이다(`bulkIssueOutcomeOf`): 모두 이미
+   * 갖고 있거나, 수량이 다 찼거나, 조건에 맞는 사람이 없거나. 셋에 발행자가 할 일이
+   * 전부 다르므로 문장도 셋이다. `{count}` 는 사건마다 다른 수를 가리킨다 —
+   * 나간 수이거나, 이미 갖고 있는 사람 수이거나, 아무것도 아니다.
+   */
+  readonly outcomes: Readonly<Record<BulkIssueOutcome, string>>
+  /** 나간 지급에 딸리는 한 줄. 이미 갖고 있어 건너뛴 사람이 있었을 때만. */
+  readonly skipped: string
+  /**
+   * 아직 남았다는 사실 — **숫자를 적지 않는다.**
+   *
+   * 서버가 싣는 `remaining` 은 한 번에 훑는 상한(`BULK_ISSUE_MAX_RECIPIENTS`)보다 한
+   * 명 더 읽어 얻은 값이라 「남았는가」에는 답하지만 「몇 명인가」에는 답하지 않는다.
+   * 그것을 인원수로 적으면 수천 명이 남았는데 「1명 남았어요」라고 말하게 된다.
+   */
+  readonly remaining: string
+}
+
+export interface CouponToastMessages {
+  readonly regionLabel: string
+  readonly closeLabel: string
+  readonly created: string
+  readonly suspended: string
+  readonly resumed: string
+  readonly failedTitle: string
 }

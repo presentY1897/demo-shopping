@@ -359,6 +359,29 @@ export const mockPaths = {
   sellerProductDuplicate: `*${API_PATH_PREFIX}/seller/products/:id/duplicate`,
   variantLedger: `*${API_PATH_PREFIX}/variants/:id/ledger`,
   variantStockAdjust: `*${API_PATH_PREFIX}/variants/:id/stock-adjustments`,
+  /**
+   * 발행자 콘솔의 쿠폰 (TASK-0073 · TASK-0074).
+   *
+   * `GET` 발행한 쿠폰 목록, `POST` 발행. 관리자와 판매자가 **같은 라우트**를 쓰고
+   * 어느 목록인지는 `?sellerId=` 가 정한다 — 계약이 그렇게 생겼으므로 경로를 두 벌
+   * 두면 그 순간 두 콘솔의 통계가 다른 정의를 갖게 된다.
+   */
+  coupons: `*${API_PATH_PREFIX}/coupons`,
+  /**
+   * `PATCH` 발행을 멈추거나 다시 연다.
+   *
+   * {@link mockPaths.coupons} 를 삼키지 않는다 — 경로 파라미터는 `/` 를 넘지
+   * 못하므로 `/coupons` 와 `/coupons/:id` 는 서로를 가릴 수 없다.
+   */
+  coupon: `*${API_PATH_PREFIX}/coupons/:id`,
+  /**
+   * `POST` 조건에 맞는 회원에게 한꺼번에 지급한다 (TASK-0073 F4).
+   *
+   * {@link mockPaths.coupon} 보다 **좁은 경로**다. 경로 파라미터가 `/` 를 넘지 못해
+   * 둘이 서로를 가리지는 않지만, 핸들러 목록에서는 이쪽을 먼저 등록한다 — msw 는
+   * 먼저 맞는 것을 쓰고, 옆의 라우트들이 전부 그 순서로 서 있다.
+   */
+  couponBulkIssues: `*${API_PATH_PREFIX}/coupons/:id/issues/bulk`,
   /** `POST` a request for one presigned upload (TASK-0011). */
   uploadPresign: `*${API_PATH_PREFIX}/uploads/presign`,
   /**

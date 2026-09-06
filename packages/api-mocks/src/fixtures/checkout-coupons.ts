@@ -121,6 +121,12 @@ function coupon(fields: {
       validFrom: fields.validFrom ?? VALID_FROM,
       validUntil: fields.validUntil ?? VALID_UNTIL,
       issueLimit: null,
+      // 열 장 모두 실계정의 쿠폰이고, 아무도 발행을 멈추지 않았다 (TASK-0073 · D-224).
+      // 「체험 계정에게만 가는 쿠폰」과 「발행이 중단된 쿠폰」은 주문서가 아니라 발행자
+      // 콘솔이 묻는 질문이라, 여기서 갈래를 늘리면 이 픽스처가 답하지 않는 것을 답하는
+      // 척하게 된다.
+      audience: 'ALL' as const,
+      suspendedAt: null,
       issuedCount: 1,
     },
   }

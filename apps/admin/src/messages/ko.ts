@@ -889,6 +889,259 @@ export const ko: Messages = {
       unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
     },
   },
+  // 플랫폼 부담 쿠폰의 발행자 콘솔 (TASK-0073). 아래 레코드 다섯은 전부
+  // @shopping/shared 가 소유한 유니온으로 키가 잡혀 있어, 값이 하나 늘면 여기가
+  // typecheck 에서 걸린다 — 문장 없는 상태를 화면이 빈칸으로 그리는 대신이다.
+  coupons: {
+    title: '플랫폼 쿠폰',
+    description: '플랫폼이 부담하는 쿠폰을 발행하고, 발급 현황과 사용 통계를 봅니다.',
+    // 이 화면의 존재 이유가 한 문장으로 적히는 자리다. 폼과 목록이 **같은 문장**을
+    // 쓰는 이유는 한쪽만 고쳐지는 것을 막기 위해서다.
+    burden: {
+      badge: '플랫폼 부담',
+      listNotice:
+        '여기 있는 쿠폰의 할인액은 모두 플랫폼이 부담합니다. 판매자 정산에서는 차감되지 않고, 판매자는 정가 기준으로 정산받습니다.',
+      formNotice:
+        '지금 발행하는 쿠폰의 할인액은 플랫폼이 부담합니다. 판매자 정산에서 차감되지 않으므로, 아래 예상 비용은 전액 플랫폼의 몫입니다.',
+    },
+    lifecycleLabels: {
+      ENDED: '기간 종료',
+      SUSPENDED: '발행 중단',
+      SCHEDULED: '시작 전',
+      EXHAUSTED: '수량 소진',
+      ACTIVE: '발급 중',
+    },
+    audienceLabels: {
+      ALL: '전체 회원',
+      DEMO: '체험용',
+    },
+    discountTypeLabels: {
+      FIXED: '정액 할인',
+      PERCENT: '정률 할인',
+    },
+    scopeTypeLabels: {
+      ALL: '전체 상품',
+      CATEGORY: '카테고리',
+      PRODUCT: '지정 상품',
+      SELLER: '지정 스토어',
+    },
+    forbiddenTitle: '플랫폼 쿠폰을 볼 수 있는 권한이 없어요',
+    // 데모 관리자가 무엇을 할 수 있는지 (F7 · D-224). 앞엣것은 무엇을 누르기 전에,
+    // 뒤엣것은 서버가 이 한 건에 대해 답한 뒤에 나온다 — 클레임 콘솔과 같은 규약이다.
+    scope: {
+      demoNotice:
+        '체험 관리자가 발행한 쿠폰은 체험 계정에만 지급됩니다. 목록에는 실계정 관리자가 낸 쿠폰도 함께 보이지만, 그 쿠폰을 중단하거나 지급하려고 하면 서버가 거절합니다.',
+      outOfScope:
+        '실계정 관리자가 발행한 쿠폰이라 체험 관리자가 바꿀 수 없습니다. 조회는 그대로 됩니다 — 실계정 회원이 받은 쿠폰은 체험 계정이 건드리지 않습니다.',
+    },
+    tabs: {
+      label: '쿠폰 콘솔에서 할 일 고르기',
+      list: '발행한 쿠폰',
+      issue: '새 쿠폰 발행',
+    },
+    list: {
+      listLabel: '플랫폼 쿠폰 목록',
+      loadingLabel: '쿠폰 목록을 불러오는 중입니다',
+      errorTitle: '쿠폰 목록을 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      emptyTitle: '아직 발행한 쿠폰이 없어요',
+      emptyDescription: '「새 쿠폰 발행」에서 첫 쿠폰을 만들면 여기에 쌓입니다.',
+      filteredEmptyTitle: '이 상태의 쿠폰이 없어요',
+      filteredEmptyDescription: '조건을 지우거나 다른 상태로 찾아보세요.',
+      columns: {
+        name: '쿠폰',
+        burden: '부담·대상',
+        discount: '할인',
+        period: '기간',
+        issued: '발급',
+        used: '사용',
+        discountTotal: '할인 총액',
+        lifecycle: '상태',
+        actions: '관리',
+      },
+      filters: {
+        legend: '쿠폰 좁혀 보기',
+        lifecycleLabel: '상태',
+        lifecycleAll: '전체 상태',
+        fromLabel: '기간 시작일',
+        toLabel: '기간 종료일',
+        // 「시작일이 이 사이」가 아니라 「이 기간에 걸쳐 있던 쿠폰」이다. 그 규칙을
+        // 적지 않으면 8월에 시작해 9월까지 가는 쿠폰이 「9월」 조건에 나타나는 것을
+        // 사람이 고장으로 읽는다.
+        periodHint:
+          '고른 기간에 유효기간이 걸쳐 있던 쿠폰을 모두 보여줍니다. 기간 안에 시작한 쿠폰만 고르는 것이 아니에요. 고른 날의 0시부터 종료일 24시까지이고, 한국 시간 기준입니다.',
+        reset: '조건 지우기',
+      },
+      // 이 콘솔이 낸 쿠폰 전체의 누계 (F6). 목록의 조건과 페이지에 흔들리지 않는다.
+      totals: {
+        title: '전체 누계',
+        usedLabel: '사용된 쿠폰',
+        discountLabel: '플랫폼이 부담한 할인',
+        scopeNote:
+          '발행한 모든 플랫폼 쿠폰의 누계입니다. 아래 조건이나 페이지를 바꿔도 이 숫자는 달라지지 않아요.',
+      },
+      values: {
+        ceiling: '최대 {amount}',
+        minimum: '{amount} 이상 주문',
+        unlimited: '무제한',
+        issued: '{issued} / {limit}장',
+        issuedUnlimited: '{issued}장 · 무제한',
+        used: '{used}장 · {rate}%',
+        period: '{from} ~ {until}',
+        code: '코드 {code}',
+        noCode: '지급 전용',
+      },
+      actions: {
+        suspend: '발행 중단',
+        resume: '발행 재개',
+        bulkIssue: '일괄 지급',
+        suspendedNoIssue:
+          '발행을 중단한 동안에는 지급할 수 없어요. 재개하면 남은 수량을 이어서 지급할 수 있습니다.',
+        // 회색 버튼 대신 문장을 세운다 (TASK-0063 4.1). 발급된 장은 그대로 유효하다.
+        ended:
+          '기간이 끝난 쿠폰이라 더 지급할 수 없어요. 이미 발급된 쿠폰은 만료일까지 그대로 쓸 수 있습니다.',
+      },
+      pagination: {
+        label: '쿠폰 목록 페이지 이동',
+        previous: '이전',
+        next: '다음',
+        pageUnit: '페이지',
+        countUnit: '건',
+      },
+    },
+    form: {
+      title: '새 쿠폰 발행',
+      description: '유형과 값, 조건과 기간, 수량을 정합니다. 발행한 뒤에는 중단만 할 수 있어요.',
+      nameLabel: '쿠폰 이름',
+      namePlaceholder: '예) 가을맞이 10% 할인',
+      discountTypeLabel: '할인 유형',
+      discountValueLabel: '할인 값',
+      discountValueLabels: {
+        FIXED: '할인 금액 (원)',
+        PERCENT: '할인율 (%)',
+      },
+      discountValueHints: {
+        FIXED: '주문 금액에서 이 금액만큼 깎입니다.',
+        PERCENT: '주문 금액의 이 비율만큼 깎입니다. 1~100 사이로 입력해 주세요.',
+      },
+      maxDiscountLabel: '최대 할인 금액 (원)',
+      // 예상 비용을 계산할 수 있게 만드는 칸이라, 힌트가 그 사실을 말한다.
+      maxDiscountHint:
+        '정률 쿠폰에만 씁니다. 비워 두면 한 장이 깎을 수 있는 금액에 위가 없어 예상 비용을 계산할 수 없어요.',
+      minOrderLabel: '최소 주문 금액 (원)',
+      minOrderHint: '이 금액 이상일 때만 쓸 수 있습니다. 조건이 없으면 0으로 둡니다.',
+      scopeTypeLabel: '적용 범위',
+      categoryLabel: '적용 카테고리',
+      categoryPlaceholder: '카테고리를 선택하세요',
+      categorySeparator: ' › ',
+      categoryLoading: '카테고리를 불러오는 중입니다',
+      scopeUnsupported:
+        '지정 상품·지정 스토어 범위는 이 화면에서 고를 수 없습니다. 관리자 콘솔에는 상품과 스토어를 빠짐없이 답하는 목록이 아직 없어, 반쪽짜리 선택지를 내는 대신 비워 두었습니다.',
+      validFromLabel: '발급 시작일',
+      validUntilLabel: '발급 종료일',
+      periodHint: '고른 날의 0시부터 종료일 24시까지입니다. 한국 시간 기준이에요.',
+      issueLimitLabel: '발급 수량 (장)',
+      issueLimitHint:
+        '준비한 수량입니다. 비워 두면 무제한이 되고, 그때는 예상 비용을 계산할 수 없어요.',
+      withCodeLabel: '쿠폰 코드 발급',
+      withCodeHint:
+        '코드를 만들면 회원이 직접 입력해 받을 수 있습니다. 코드는 서버가 만들어 발행 뒤에 목록에 나타납니다.',
+      submit: '이 내용으로 발행',
+      submitting: '발행하는 중',
+      submitError: '쿠폰을 발행하지 못했어요. 입력한 내용을 다시 확인해 주세요.',
+      cost: {
+        title: '예상 비용',
+        incomplete: '할인 유형과 값을 채우면 예상 비용을 계산합니다.',
+        perCouponLabel: '한 장당 최대',
+        totalLabel: '전체 최대',
+        formula: '{count}장 × {amount}',
+        caveat:
+          '받은 사람이 모두 쓰고 모두 상한까지 깎였을 때의 금액입니다. 실제 비용은 이보다 작습니다.',
+        unboundedTitle: '예상 비용을 계산할 수 없어요',
+        gaps: {
+          no_ceiling:
+            '정률 쿠폰에 최대 할인 금액이 없습니다. 한 장이 깎는 금액이 주문 금액에 따라 얼마든지 커질 수 있어요.',
+          no_limit: '발급 수량이 무제한입니다. 몇 장이 나갈지 정해지지 않아 합계를 낼 수 없어요.',
+        },
+      },
+      confirm: {
+        title: '이 쿠폰을 발행할까요?',
+        description:
+          '발행하면 회원이 받을 수 있게 되고, 발급된 쿠폰은 되돌릴 수 없습니다. 조건이 틀렸다면 발행을 중단하고 새로 내야 해요.',
+        confirm: '발행',
+        cancel: '다시 볼게요',
+        closeLabel: '닫기',
+      },
+      errors: {
+        nameRequired: '쿠폰 이름을 입력해 주세요.',
+        nameTooLong: '쿠폰 이름은 {max}자까지 쓸 수 있어요.',
+        discountTypeRequired: '할인 유형을 골라 주세요.',
+        discountValueRequired: '할인 값을 1 이상의 정수로 입력해 주세요.',
+        percentOutOfRange: '할인율은 1~100 사이로 입력해 주세요.',
+        amountOutOfRange: '할인 금액은 1원 이상 {max}원 이하로 입력해 주세요.',
+        minOrderInvalid: '최소 주문 금액은 0 이상의 정수로 입력해 주세요.',
+        issueLimitInvalid: '발급 수량은 1장 이상 {max}장 이하로 입력하거나 비워 주세요.',
+        periodRequired: '발급 기간을 정해 주세요.',
+        periodInverted: '종료일은 시작일과 같거나 뒤여야 해요.',
+        categoryRequired: '적용할 카테고리를 골라 주세요.',
+      },
+    },
+    bulk: {
+      title: '한꺼번에 지급',
+      description:
+        '조건에 맞는 회원에게 쿠폰을 지급합니다. 이미 이 쿠폰을 가진 회원은 건너뛰므로, 두 번 눌러도 한 사람에게 두 장이 가지 않습니다.',
+      targetLabel: '지급 대상',
+      targetLabels: {
+        ALL: '전체 회원',
+        HAS_ORDERED: '주문한 적 있는 회원',
+        NEVER_ORDERED: '아직 주문하지 않은 회원',
+      },
+      targetHints: {
+        ALL: '체험용 쿠폰은 체험 계정에만 지급됩니다.',
+        HAS_ORDERED: '다시 찾아오게 하려는 지급입니다.',
+        NEVER_ORDERED: '첫 주문을 만들려는 지급입니다.',
+      },
+      confirm: '지급',
+      submitting: '지급하는 중',
+      cancel: '취소',
+      close: '닫기',
+      // × 단추와 아래의 「닫기」가 같은 일을 한다. 이름까지 같으면 화면을 소리로 듣는
+      // 사람에게 「닫기 버튼」이 두 번 들리고, 그중 어느 것을 눌러야 하는지 알 수 없다.
+      closeLabel: '창 닫기',
+      resultTitle: '지급 결과',
+      // 「0장 나갔습니다」가 세 가지 서로 다른 일이라 문장이 넷이다. 뒤의 셋에
+      // 발행자가 할 일이 전부 다르다 — 아무것도 안 해도 되는 일, 새 쿠폰을 내는 일,
+      // 대상을 바꾸는 일.
+      outcomes: {
+        issued: '{count}명에게 지급했어요.',
+        all_held:
+          '조건에 맞는 회원 {count}명이 이미 이 쿠폰을 갖고 있어요. 새로 나간 쿠폰은 없습니다.',
+        quantity_gone:
+          '준비한 수량이 다 차서 한 장도 나가지 않았어요. 더 지급하려면 쿠폰을 새로 발행해야 합니다.',
+        nobody: '조건에 맞는 회원이 없어요. 다른 대상을 골라 보세요.',
+      },
+      skipped: '이미 이 쿠폰을 가진 {count}명은 건너뛰었어요.',
+      // 숫자를 적지 않는다 — 서버가 세어 주는 것은 「남았는가」이지 「몇 명인가」가 아니다.
+      remaining:
+        '한 번에 지급할 수 있는 수를 넘어 아직 대상이 남았습니다. 다시 누르면 이어서 지급합니다. 준비한 수량이 다 찼다면 더 나가지 않아요.',
+    },
+    toast: {
+      regionLabel: '쿠폰 알림',
+      closeLabel: '닫기',
+      created: "'{name}' 쿠폰을 발행했어요.",
+      suspended: '발행을 중단했어요. 이미 발급된 쿠폰은 그대로 쓸 수 있습니다.',
+      resumed: '발행을 다시 시작했어요.',
+      failedTitle: '처리하지 못했어요',
+    },
+    failures: {
+      network: '서버에 연결하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.',
+      timeout: '응답이 너무 늦어 요청을 멈췄어요. 잠시 후 다시 시도해 주세요.',
+      aborted: '요청을 취소했어요.',
+      malformed_response: '서버가 보낸 응답을 읽지 못했어요. 잠시 후 다시 시도해 주세요.',
+      configuration: '서버 주소 설정이 없어요. 개발 서버를 다시 실행해 주세요.',
+      unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+    },
+  },
   layout: {
     // 콘솔 이름. 사이드바 위와 모바일 시트 제목에 같은 문자열이 쓰인다.
     brand: '관리자 콘솔',

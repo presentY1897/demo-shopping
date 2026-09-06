@@ -74,6 +74,23 @@ export {
   MOCK_ADMIN_INTERVENTION_ID,
 } from './admin-claim-contract'
 export { adminSellerHandlers, resetAdminSellerStore } from './admin-sellers'
+/**
+ * 플랫폼 부담 쿠폰의 발행자 콘솔 (TASK-0073). 목록·발행·중단·일괄 지급이 한 저장소를
+ * 본다.
+ *
+ * **`defaultHandlers` 에 없다** — 판매자 쿠폰 대역이 같은 이유로 빠져 있고, 그 이유는
+ * 아래 그쪽 블록이 적어 두었다. 이 화면의 검사는 `server.use(...platformCouponHandlers)`
+ * 로 자기 저장소를 앞에 세운다.
+ */
+export {
+  emptyPlatformCouponStore,
+  failNextPlatformCoupon,
+  MOCK_PLATFORM_COUPON_IDS,
+  MOCK_PLATFORM_COUPON_NOW,
+  platformCouponHandlers,
+  platformCouponSnapshot,
+  resetPlatformCouponStore,
+} from './platform-coupons'
 export { attributeHandlers, resetAttributeStore } from './attributes'
 export { cartHandlers, resetCartStore } from './cart'
 export { categoryHandlers, categoryRowsSnapshot, resetCategoryStore } from './categories'
@@ -160,6 +177,31 @@ export {
   sellerConsoleHandlers,
   sellerConsoleSnapshot,
 } from './seller-console'
+/**
+ * 판매자 콘솔의 쿠폰 (TASK-0074). 목록·발행·중단이 한 저장소를 본다.
+ *
+ * **`defaultHandlers` 에 없다.** 같은 `/coupons` 라우트를 관리자 콘솔(TASK-0073)도
+ * 쓰므로, 둘 다 기본 목록에 실으면 먼저 등록된 쪽이 언제나 이겨 다른 쪽 저장소는
+ * 아무 검사도 지나지 않는다. 이 화면의 검사가 `server.use(...sellerCouponHandlers)`
+ * 로 자기 저장소를 앞에 세운다.
+ */
+export {
+  failNextSellerCoupon,
+  resetSellerCouponStore,
+  sellerCouponHandlers,
+  sellerCouponSnapshot,
+} from './seller-coupons'
+/**
+ * 판매자 쿠폰 대역의 씨앗과 조립기. 핸들러와 픽스처가 **함께** 읽으므로 픽스처
+ * 밖에 산다 — `seller-claim-contract.ts` 와 같은 이유다.
+ */
+export {
+  MOCK_COUPON_SELLER_ID,
+  MOCK_OTHER_SELLER_ID,
+  MOCK_SELLER_COUPON_NOW,
+  mockSellerCouponSeedAt,
+  mockSellerCouponSeeds,
+} from './seller-coupon-contract'
 /**
  * 판매자 콘솔의 주문 (TASK-0060).
  *
