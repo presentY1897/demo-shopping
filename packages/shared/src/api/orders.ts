@@ -1,5 +1,10 @@
 import { z } from 'zod'
 
+import {
+  appliedCouponSchema,
+  selectedUserCouponIdsQuerySchema,
+  selectedUserCouponIdsSchema,
+} from './coupons.js'
 import { addressLineSchema, phoneSchema, recipientNameSchema } from './profile.js'
 import { priceSchema, productIdSchema, variantIdSchema } from './products.js'
 import { shipmentSchema } from './shipments.js'
@@ -353,6 +358,17 @@ export const createOrderRequestSchema = z
     checkoutId: z.uuid().optional(),
     /** 어느 배송지로. 값은 복사되고 이 id 는 주문에 남지 않는다. */
     addressId: z.uuid(),
+    /**
+     * 적용할 쿠폰 (TASK-0075).
+     *
+     * **주문서를 읽을 때 넘긴 것과 같아야 한다.** 그래야 화면이 보여 준 금액과
+     * 저장되는 금액이 같은 입력에서 나온다 — 서버가 「마지막에 본 선택」을 기억해
+     * 두는 길도 있지만, 그러면 두 탭에서 각각 고른 사람의 주문이 어느 쪽 선택으로
+     * 만들어지는지를 아무도 말할 수 없게 된다.
+     *
+     * 기본값이 빈 배열이라 **쿠폰을 모르는 화면은 아무것도 바꾸지 않아도 된다.**
+     */
+    userCouponIds: selectedUserCouponIdsSchema.default([]),
   })
   // 둘 중 정확히 하나. 둘 다 보내면 어느 쪽이 이기는지를 정해야 하고, 그 규칙은
   // 아무도 기억하지 못한다.
@@ -503,6 +519,15 @@ export const checkoutSchema = z.object({
         items: z.array(orderItemSchema.omit({ id: true })),
       }),
   ),
+  /**
+   * 이 주문서에 **실제로 적용된** 쿠폰 (TASK-0075).
+   *
+   * 고른 것과 같지 않을 수 있다 — 두 장이 같은 항목을 겹쳐 덮으면 뒤엣것은 남은
+   * 금액까지만 깎인다. 합계만으로는 그 사정이 보이지 않으므로 장별로 싣는다.
+   *
+   * 쿠폰을 고르지 않았으면 빈 배열이다.
+   */
+  appliedCoupons: z.array(appliedCouponSchema),
   totalProductAmount: priceSchema,
   totalCouponDiscountAmount: priceSchema,
   totalPointDiscountAmount: priceSchema,
@@ -527,6 +552,20 @@ export const createCheckoutRequestSchema = z.object({
 })
 
 export type CreateCheckoutRequest = z.infer<typeof createCheckoutRequestSchema>
+
+/**
+ * `GET /checkouts/:id` 의 쿼리 (TASK-0075).
+ *
+ * **주문서에 선택을 저장하지 않는다.** 고른 쿠폰은 화면이 들고 있고 읽을 때마다
+ * 함께 보낸다 — 서버에 두면 「고르기」가 상태를 바꾸는 요청이 되고, 그때부터
+ * 새로고침·뒤로가기·두 번째 탭이 각각 다른 주문서를 보게 된다. 값이 없으면 아무
+ * 쿠폰도 적용되지 않은 주문서다.
+ */
+export const checkoutQueryParamsSchema = z.object({
+  userCouponIds: selectedUserCouponIdsQuerySchema.optional(),
+})
+
+export type CheckoutQueryParams = z.infer<typeof checkoutQueryParamsSchema>
 
 /** 주문서에서 쓰는 배송 요청사항. 저장되는 곳은 아직 없다 — M09 의 배송이 받는다. */
 export const CHECKOUT_NOTE_MAX_LENGTH = 100
