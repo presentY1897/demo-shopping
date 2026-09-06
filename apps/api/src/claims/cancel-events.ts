@@ -28,11 +28,14 @@ import type { CancelScope } from './cancel-rules.js'
  * 에 적고, `PaymentService.refundWithin` 으로 돈을 내보내고, 클레임을 `REFUNDED` 로
  * 옮기는 일이 한 트랜잭션 안에 있다.
  *
- * **재고는 아직이다** (TASK-0069). 팔린 수량은 `ProductVariant.stock` 에서 이미 빠져
- * 있고, 취소된 수량은 `ClaimItem.quantity` 가 안다. 원장(`StockLedger`)이
- * `CLAIM_ITEM` 참조 유형을 이미 갖고 있어(`stockRefTypes`) 나중에 대사할 수 있다.
- * 그동안 잘못되는 것은 「팔 수 있는 물건이 안 팔린다」 하나이고, **아무도 신고하지
- * 않는다** — 위 표의 오른쪽 칸이 그 뜻이다.
+ * **재고도 붙었다** (TASK-0069). `RestockingCancelEvents` 가 바인딩돼 있고, 그것이
+ * 하는 일은 `restock.service.ts` 가 설명한다 — 클레임 항목마다 `CANCEL` 을 원장에
+ * 적고 그 결과로 `ProductVariant.stock` 이 움직인다. 멱등의 열쇠는 **클레임 항목의
+ * id** 이고(`StockLedger_ref_key`), 사라진 상품은 건너뛰되 클레임은 끝난다.
+ *
+ * 위 표의 오른쪽 칸은 그대로 유효하다 — 여기서 잘못되면 「팔 수 있는 물건이 안
+ * 팔린다」이고 **아무도 신고하지 않는다.** 그래서 발견하는 장치가 실행기 바깥에
+ * 있다: 경고 로그와 `StockService.reconcile`.
  *
  * **던지지 않는 것도 결정이다.** 환불에 실패한 것이 승인을 되돌릴 이유는 아니다 —
  * 규칙이든 판매자든 「취소한다」고 이미 판단했고, 그 판단은 유효하다. 되돌리려 해도
@@ -117,7 +120,13 @@ export class NoopCancelRefundEvents implements CancelRefundEvents {
   }
 }
 
-/** 지금 바인딩되는 재고 복원 구현. **아무것도 하지 않는다** (TASK-0069). */
+/**
+ * 아무것도 하지 않는 재고 복원 구현. **더 이상 바인딩되지 않는다** (TASK-0069).
+ *
+ * 지금 바인딩되는 것은 `RestockingCancelEvents` 다. 이 클래스가 남아 있는 이유는
+ * 환불 쪽의 것과 같다 — 재고가 도는 것이 방해가 되는 검사(취소의 상태 전이만 재는
+ * 스펙)가 포트를 이것으로 바꿔 끼울 수 있어야 한다.
+ */
 export class NoopCancelRestockEvents implements CancelRestockEvents {
   restock(): Promise<void> {
     return Promise.resolve()

@@ -551,6 +551,26 @@ export default defineConfig({
           statements: 100,
         },
         /**
+         * TASK-0069 (6.2, Q5 강화). 재고 복원의 순수 판단 — 이 자리가 「물건이 우리
+         * 손에 있다」인가, 어느 원장 유형으로 적는가, 이 줄을 되돌리는가.
+         *
+         * **셋 다 조용히 틀린다.** 상태 표에 `RETURN_REJECTED` 가 한 칸 열리면
+         * **검수에서 떨어진 반품이 재입고된다** — 물건은 구매자에게 반송되는데
+         * 재고는 늘어 있고, 그 재고가 없다는 것은 팔린 뒤에야 드러난다. 반대로
+         * `REFUNDED` 가 빠지면 정상 흐름에서 재고가 **영영** 돌아오지 않는다:
+         * 환불이 먼저 불려 클레임은 그때 이미 `REFUNDED` 이고, 아무것도 실패하지
+         * 않는다. 줄 판단의 순서가 뒤집히면 이미 되돌린 뒤 사라진 상품에 대해
+         * 「사라져서 못 했다」는 거짓 경고가 나가고, 사람은 없는 재고를 찾아다닌다.
+         *
+         * 어느 것도 빨간 검사가 아니라 몇 주 뒤 재고 실사에서 맞지 않는 숫자다.
+         */
+        'src/claims/restock-plan.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        /**
          * TASK-0117. The error contract's decision-making, all of it pure:
          * which code and sentence a status maps to, what a domain failure's
          * payload looks like, which `details` shape one zod issue becomes, and

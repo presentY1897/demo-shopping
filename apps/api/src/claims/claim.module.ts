@@ -3,15 +3,13 @@ import { Module } from '@nestjs/common'
 import { SellerOrderModule } from '../orders/seller-order.module.js'
 import { PaymentModule } from '../payment/payment.module.js'
 import { PrismaModule } from '../prisma/prisma.module.js'
-import {
-  CANCEL_REFUND_EVENTS,
-  CANCEL_RESTOCK_EVENTS,
-  NoopCancelRestockEvents,
-} from './cancel-events.js'
+import { StockModule } from '../stock/stock.module.js'
+import { CANCEL_REFUND_EVENTS, CANCEL_RESTOCK_EVENTS } from './cancel-events.js'
 import { ClaimController } from './claim.controller.js'
 import { ClaimService } from './claim.service.js'
 import { ClaimRefundRetryService } from './refund-retry.service.js'
 import { ClaimRefundService, RefundingCancelEvents } from './refund.service.js'
+import { ClaimRestockService, RestockingCancelEvents } from './restock.service.js'
 
 /**
  * 취소 · 반품 (TASK-0065 · 0066 · 0067).
@@ -33,8 +31,10 @@ import { ClaimRefundService, RefundingCancelEvents } from './refund.service.js'
  * 하되 **판단은 같은 순수 함수**(`claimTransitionDecision`)에 맡긴다 —
  * `refund.service.ts` 의 `moveToRefunded` 가 그 이유를 적어 두었다.
  *
- * 재고(TASK-0069)는 여전히 여기 없다. 포트가 있고, 지금 바인딩된 구현은 아무것도 하지
- * 않는다 (`cancel-events.ts`).
+ * **재고가 네 번째 의존으로 들어왔다** (TASK-0069). 되돌린 수량은 원장을 지나야 하고
+ * (`ProductVariant.stock` 을 쓰는 코드는 `StockService` 하나뿐이다 — TASK-0036), 그
+ * 문은 `StockModule` 이 내보낸다. 여기서도 고리는 생기지 않는다: 화살표가
+ * `Claim → Stock → Search` 로 한 방향이고, 검색 쪽은 클레임도 주문도 모른다.
  *
  * 반품 기간이 읽는 `autoConfirmWindowMsOf` 는 **함수**라 모듈이 필요 없다. 그것이
  * 축을 나눠 쓰는 값싼 방법이고, 축을 여기서 다시 정하지 않는 이유는
@@ -47,7 +47,7 @@ import { ClaimRefundService, RefundingCancelEvents } from './refund.service.js'
  * 없기 때문이다. 화살표는 여전히 `Return → Claim` 한 방향이다.
  */
 @Module({
-  imports: [PrismaModule, SellerOrderModule, PaymentModule],
+  imports: [PrismaModule, SellerOrderModule, PaymentModule, StockModule],
   controllers: [ClaimController],
   providers: [
     ClaimService,
@@ -58,10 +58,11 @@ import { ClaimRefundService, RefundingCancelEvents } from './refund.service.js'
     // 돌고, 무엇을 보고 몇 건씩 도는지는 `refund-retry.ts` 가 정한다.
     ClaimRefundRetryService,
     { provide: CANCEL_REFUND_EVENTS, useClass: RefundingCancelEvents },
-    // TASK-0069(재고 복원)가 붙을 때 여기 한 줄만 바뀐다. 「아무것도 안 한다」가 지금
-    // 무엇을 뜻하는지는 `cancel-events.ts` 가 설명한다.
-    { provide: CANCEL_RESTOCK_EVENTS, useClass: NoopCancelRestockEvents },
+    // 재고 복원의 실행 (TASK-0069). 반품도 같은 것을 쓴다 — 되돌리는 일은 **끝에서
+    // 같은 일**이고, 열쇠도 멱등의 겹도 두 경로에서 같다 (`restock.service.ts`).
+    ClaimRestockService,
+    { provide: CANCEL_RESTOCK_EVENTS, useClass: RestockingCancelEvents },
   ],
-  exports: [ClaimService, ClaimRefundService, ClaimRefundRetryService],
+  exports: [ClaimService, ClaimRefundService, ClaimRefundRetryService, ClaimRestockService],
 })
 export class ClaimModule {}

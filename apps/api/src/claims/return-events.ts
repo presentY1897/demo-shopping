@@ -28,8 +28,14 @@ import type { SellerOrderActor } from '../orders/seller-order-transitions.js'
  * 이 파일이 계산의 입력이 아니라 **계산된 결과**를 싣는다는 성질은 그대로다:
  * 실행기는 `ReturnDetail` 의 두 금액을 그대로 쓰고 다시 계산하지 않는다.
  *
- * **재입고는 아직이다** (TASK-0069). 그동안 잘못되는 것은 재고 하나이고, 뒤늦게 할
- * 수 있다.
+ * **재입고도 붙었다** (TASK-0069). `RestockingReturnEvents` 가 바인딩돼 있고, 취소와
+ * **같은 실행기**를 쓴다 — 되돌리는 일도 끝에서 같은 일이라, 「이 항목이 이미
+ * 되돌아왔나」를 묻는 열쇠가 두 곳에 살면 안 된다. 갈리는 것은 원장에 적히는 유형
+ * 하나(`RETURN_IN`)이고, 그 갈림은 `restock-plan.ts` 의 표에 있다.
+ *
+ * **검수 불합격은 이 자리에 오지 않는다.** 부르는 쪽이
+ * `returnInspectionOutcome` 으로 갈라 주고, 실행기도 클레임의 상태를 다시 본다 —
+ * 물건을 못 받았는데 재고가 느는 것이 검수 단계를 만든 이유이므로, 그 판단은 두 겹이다.
  *
  * **던지지 않는 것도 결정이다.** 환불에 실패한 것이 검수를 되돌릴 이유는 아니다 —
  * 물건은 이미 판매자에게 있고, 되돌리려 해도 전이표에 `RETURN_COMPLETED` 를 떠나는
@@ -104,7 +110,12 @@ export class NoopReturnRefundEvents implements ReturnRefundEvents {
   }
 }
 
-/** 지금 바인딩되는 재입고 구현. **아무것도 하지 않는다** (TASK-0069). */
+/**
+ * 아무것도 하지 않는 재입고 구현. **더 이상 바인딩되지 않는다** (TASK-0069).
+ *
+ * 지금 바인딩되는 것은 `RestockingReturnEvents` 다. 남겨 두는 이유는 환불 쪽의 것과
+ * 같다 — 재입고가 도는 것이 방해가 되는 검사가 포트를 이것으로 바꿔 끼울 수 있어야 한다.
+ */
 export class NoopReturnRestockEvents implements ReturnRestockEvents {
   restock(): Promise<void> {
     return Promise.resolve()
