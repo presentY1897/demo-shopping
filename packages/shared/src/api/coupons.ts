@@ -142,6 +142,18 @@ export const couponCodeInputSchema = z.string().trim().min(1).max(COUPON_CODE_IN
  */
 export const couponScopeIdSchema = z.string().min(1).max(64)
 
+/**
+ * 쿠폰이 닿을 수 있는 그룹 (D-224).
+ *
+ * `DEMO` 는 방문자의 관리자·판매자가 낸 쿠폰이다. 발행 시점에 정해지고 바뀌지
+ * 않으며, **체험 계정에게만 발급된다** — 그 반대는 막지 않는다.
+ */
+export const couponAudiences = ['ALL', 'DEMO'] as const
+
+export type CouponAudience = (typeof couponAudiences)[number]
+
+export const couponAudienceSchema = z.enum(couponAudiences)
+
 /** 쿠폰 정책 한 건. 발급된 장(`UserCoupon`)이 아니라 그 원본이다. */
 export const couponSchema = z.object({
   id: couponIdSchema,
@@ -163,6 +175,23 @@ export const couponSchema = z.object({
   validUntil: z.iso.datetime(),
   /** `null` 은 무제한. 소진 판정은 이 값과 아래 `issuedCount` 로만 이뤄진다. */
   issueLimit: z.int().min(0).nullable(),
+  /**
+   * 어느 그룹의 것인가 (TASK-0073 · D-224).
+   *
+   * `DEMO` 는 **체험 계정에게만 발급되는 쿠폰**이다. 방문자의 관리자가 낸 것이고,
+   * 그것이 실계정 주문에 붙지 않게 하는 값이다. 화면이 이것을 그리는 이유는 진짜
+   * 관리자의 목록에는 둘이 섞여 보이기 때문이다 — 자기가 낸 것과 방문자가 낸 것을
+   * 가르지 못하면 통계도 「예상 비용」도 뜻이 흐려진다.
+   */
+  audience: couponAudienceSchema,
+  /**
+   * 발행이 중단된 시각. `null` 이면 발행 중이다.
+   *
+   * **이미 발급된 장에는 아무 일도 일어나지 않는다.** 중단은 「더 나가지 않게」이지
+   * 「나간 것을 무르게」가 아니다 — 무르는 것은 사람이 받은 것을 빼앗는 일이라
+   * 다른 결정이고, 이 화면에는 그 문이 없다.
+   */
+  suspendedAt: z.iso.datetime().nullable(),
   /**
    * 지금까지 발급된 장수.
    *
@@ -467,3 +496,158 @@ export const appliedCouponSchema = z.object({
 })
 
 export type AppliedCoupon = z.infer<typeof appliedCouponSchema>
+
+// ---------------------------------------------------------------------------
+// 발행자 콘솔 (TASK-0073 · TASK-0074)
+//
+// 관리자와 판매자가 같은 계약을 쓴다. 화면이 다른 것은 **누가 부담하는가**를 어떻게
+// 말하느냐이고(플랫폼은 「플랫폼 부담」, 판매자는 「정산에서 차감됩니다」), 서버가
+// 답하는 모양은 같다 — 두 벌로 만들면 통계의 정의가 두 곳에서 갈린다.
+// ---------------------------------------------------------------------------
+
+/**
+ * 쿠폰이 지금 어떤 상태인가 — **저장되지 않고 매번 계산된다.**
+ *
+ * 칸으로 두지 않는 이유는 그중 셋이 시간의 함수이기 때문이다. 기간이 지나면 아무도
+ * 아무것도 하지 않아도 끝난 쿠폰이 되고, 그것을 칸에 적어 두면 그 칸을 옮기는 배치가
+ * 하나 더 필요해진다 — 그리고 그 배치가 멈춘 동안 화면은 거짓을 말한다.
+ *
+ * 순서가 있다. 위엣것이 아래를 가린다: 끝난 쿠폰은 중단됐든 소진됐든 **끝난** 것이고,
+ * 중단된 쿠폰에 「아직 시작 전」이라고 말하면 발행자는 기다리면 되는 줄 안다.
+ */
+export const couponLifecycles = [
+  /** 기간이 끝났다. 무엇을 해도 되돌릴 수 없다. */
+  'ENDED',
+  /** 발행자가 멈췄다. 이미 나간 장은 그대로 유효하다. */
+  'SUSPENDED',
+  /** 아직 시작 전. 기다리면 된다. */
+  'SCHEDULED',
+  /** 준비된 수량이 다 나갔다. */
+  'EXHAUSTED',
+  /** 지금 발급되고 있다. */
+  'ACTIVE',
+] as const
+
+export type CouponLifecycle = (typeof couponLifecycles)[number]
+
+export const couponLifecycleSchema = z.enum(couponLifecycles)
+
+/**
+ * 한 쿠폰이 실제로 만든 것.
+ *
+ * `issuedCount` 가 여기 없는 이유는 **쿠폰 자신이 들고 있기** 때문이다
+ * (`couponSchema.issuedCount`). 같은 수를 두 곳에 실으면 어느 쪽이 맞는지 묻게 된다.
+ */
+export const couponStatsSchema = z.object({
+  /** 실제로 주문에 쓰인 장수. 발급된 장수와의 차이가 사용률의 분자와 분모다. */
+  usedCount: z.int().min(0),
+  /**
+   * 이 쿠폰이 지금까지 깎은 금액의 합.
+   *
+   * **판매자에게는 이것이 부담 누계다** (TASK-0074 F5). 정책으로 되계산할 수 없는
+   * 값이라 사용 시점에 장마다 적어 두었고(`UserCoupon.discountAmount`), 이것은 그
+   * 합이다.
+   */
+  discountTotal: wonSchema,
+})
+
+export type CouponStats = z.infer<typeof couponStatsSchema>
+
+/** 목록의 한 줄 — 정책과, 지금 상태와, 그 쿠폰이 만든 것. */
+export const couponListEntrySchema = z.object({
+  coupon: couponSchema,
+  lifecycle: couponLifecycleSchema,
+  stats: couponStatsSchema,
+})
+
+export type CouponListEntry = z.infer<typeof couponListEntrySchema>
+
+/** 한 번에 받아 가는 줄 수. 목록은 커서로 넘긴다. */
+export const COUPON_LIST_DEFAULT_LIMIT = 20
+
+export const COUPON_LIST_MAX_LIMIT = 100
+
+/**
+ * `GET /api/v1/coupons` — 발행한 쿠폰 목록.
+ *
+ * **`sellerId` 가 어느 목록인지를 정한다.** 없으면 플랫폼 쿠폰이고, 있으면 그
+ * 스토어의 쿠폰이다. 권한은 그 구분을 따라간다 — 판매자는 자기 스토어만 지나가고,
+ * 플랫폼 목록은 `coupon.platform` 을 가진 등급만 본다.
+ *
+ * 목록마다 다른 문법을 쓰지 않으려고 필터는 쉼표 하나다
+ * (`orderListQueryParamsSchema` 와 같은 규약).
+ */
+export const couponListQueryParamsSchema = z.object({
+  sellerId: sellerIdSchema.optional(),
+  lifecycle: z
+    .string()
+    .transform((value) => value.split(','))
+    .pipe(z.array(couponLifecycleSchema).min(1))
+    .optional(),
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(COUPON_LIST_MAX_LIMIT).optional(),
+})
+
+export type CouponListQueryParams = z.infer<typeof couponListQueryParamsSchema>
+
+export const couponListResponseSchema = z.object({
+  coupons: z.array(couponListEntrySchema),
+  nextCursor: z.string().nullable(),
+})
+
+export type CouponListResponse = z.infer<typeof couponListResponseSchema>
+
+/**
+ * `PATCH /api/v1/coupons/:id` — 발행을 멈추거나 다시 연다.
+ *
+ * **바꿀 수 있는 것이 이것 하나뿐이다.** 할인율·범위·기간을 고치는 문은 없다: 이미
+ * 발급된 장은 발급 시점의 조건으로 쓰이고(`UserCoupon.expiresAt` 이 그 스냅샷이다),
+ * 정책만 고치면 같은 쿠폰이 사람마다 다른 뜻을 갖게 된다. 조건이 틀렸으면 멈추고
+ * 새로 낸다.
+ */
+export const updateCouponRequestSchema = z.object({ suspended: z.boolean() })
+
+export type UpdateCouponRequest = z.infer<typeof updateCouponRequestSchema>
+
+/**
+ * 누구에게 한꺼번에 지급하나 (TASK-0073 F4).
+ *
+ * 셋뿐이고, 셋 다 발행자가 실제로 하려는 일이다 — 전원에게, 다시 오게 하려고, 처음
+ * 사게 하려고. 조건을 더 늘리지 않는 이유는 화면이 묻지 않는 조건은 **죽은 API**가
+ * 되기 때문이다.
+ */
+export const bulkIssueTargets = ['ALL', 'HAS_ORDERED', 'NEVER_ORDERED'] as const
+
+export type BulkIssueTarget = (typeof bulkIssueTargets)[number]
+
+export const bulkIssueTargetSchema = z.enum(bulkIssueTargets)
+
+/**
+ * 한 번의 일괄 발급이 건드리는 계정의 상한.
+ *
+ * 상한이 없으면 버튼 하나가 회원 수만큼의 행을 한 트랜잭션에 넣는다. 넘치면 남은
+ * 수를 응답에 실어 **다시 누르면 이어서 나가게** 한다 — 이미 받은 사람은 건너뛰므로
+ * 두 번 눌러도 두 장이 되지 않는다.
+ */
+export const BULK_ISSUE_MAX_RECIPIENTS = 500
+
+/** `POST /api/v1/coupons/:id/issues/bulk` — 조건에 맞는 회원에게 한꺼번에 지급한다. */
+export const bulkIssueRequestSchema = z.object({ target: bulkIssueTargetSchema })
+
+export type BulkIssueRequest = z.infer<typeof bulkIssueRequestSchema>
+
+export const bulkIssueResponseSchema = z.object({
+  /** 이번에 실제로 나간 장수. */
+  issued: z.int().min(0),
+  /** 이미 갖고 있어 건너뛴 사람 수. 두 번 눌렀을 때 전부 여기로 온다. */
+  skipped: z.int().min(0),
+  /**
+   * 아직 남은 대상 수. `0` 이 아니면 상한에 걸린 것이고, 다시 누르면 이어서 나간다.
+   *
+   * 발급 수량 상한(`issueLimit`)에 걸려 멈춘 경우도 여기 남는다 — 그때는 다시
+   * 눌러도 나가지 않으며, 화면은 소진을 함께 그린다.
+   */
+  remaining: z.int().min(0),
+})
+
+export type BulkIssueResponse = z.infer<typeof bulkIssueResponseSchema>

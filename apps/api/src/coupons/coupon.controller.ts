@@ -1,16 +1,25 @@
-import { Body, Controller, Param, Post } from '@nestjs/common'
-import type { CouponResponse, UserCouponResponse } from '@shopping/shared'
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common'
+import type {
+  BulkIssueResponse,
+  CouponListResponse,
+  CouponResponse,
+  UserCouponResponse,
+} from '@shopping/shared'
 import {
+  bulkIssueRequestSchema,
   claimCouponRequestSchema,
   couponIdSchema,
+  couponListQueryParamsSchema,
   createCouponRequestSchema,
   issueCouponRequestSchema,
+  updateCouponRequestSchema,
 } from '@shopping/shared'
 
 import { Principal } from '../auth/principal.decorator.js'
 import { RequirePermission } from '../auth/require-permission.decorator.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { parseInput } from '../common/parse-input.js'
+import { CouponConsoleService } from './coupon-console.service.js'
 import { CouponService } from './coupon.service.js'
 
 /**
@@ -40,7 +49,26 @@ import { CouponService } from './coupon.service.js'
  */
 @Controller({ version: '1' })
 export class CouponController {
-  constructor(private readonly coupons: CouponService) {}
+  constructor(
+    private readonly coupons: CouponService,
+    private readonly console: CouponConsoleService,
+  ) {}
+
+  /**
+   * 발행한 쿠폰 목록과 현황 (TASK-0073 F6 · TASK-0074 F5).
+   *
+   * **`sellerId` 가 어느 목록인지를 정한다.** 없으면 플랫폼 쿠폰이고, 있으면 그
+   * 스토어의 것이다. 라우트를 둘로 나누지 않는 이유는 **답의 모양이 같기** 때문이다 —
+   * 나누면 「사용률」과 「부담 누계」의 정의가 두 곳에 살게 된다.
+   */
+  @Get('coupons')
+  @RequirePermission('coupon.read')
+  list(
+    @Principal() principal: RequestPrincipal,
+    @Query() query: unknown,
+  ): Promise<CouponListResponse> {
+    return this.console.list(principal, parseInput(couponListQueryParamsSchema, query))
+  }
 
   /** 쿠폰을 발행한다. 플랫폼 쿠폰은 관리자만, 판매자 쿠폰은 그 가게의 주인이. */
   @Post('coupons')
@@ -64,6 +92,44 @@ export class CouponController {
     const { code } = parseInput(claimCouponRequestSchema, body)
 
     return { userCoupon: await this.coupons.claim(principal, code) }
+  }
+
+  /**
+   * 발행을 멈추거나 다시 연다 (TASK-0073 F5).
+   *
+   * **이미 발급된 장에는 아무 일도 일어나지 않는다.** 중단은 「더 나가지 않게」이지
+   * 「나간 것을 무르게」가 아니다 — 무르는 것은 사람이 받은 것을 빼앗는 일이라 다른
+   * 결정이고, 그 문은 없다.
+   */
+  @Patch('coupons/:id')
+  @RequirePermission('coupon.write')
+  async update(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ): Promise<CouponResponse> {
+    const couponId = parseInput(couponIdSchema, id, 'id')
+    const { suspended } = parseInput(updateCouponRequestSchema, body)
+
+    return { coupon: await this.console.setSuspended(principal, couponId, suspended) }
+  }
+
+  /**
+   * 조건에 맞는 회원에게 한꺼번에 지급한다 (TASK-0073 F4).
+   *
+   * `:id/issues` 보다 **아래**에 있어도 부딪히지 않는다 — 마디 수가 다르다.
+   */
+  @Post('coupons/:id/issues/bulk')
+  @RequirePermission('coupon.write')
+  bulkIssue(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ): Promise<BulkIssueResponse> {
+    const couponId = parseInput(couponIdSchema, id, 'id')
+    const { target } = parseInput(bulkIssueRequestSchema, body)
+
+    return this.console.bulkIssue(principal, couponId, target)
   }
 
   /** 발행자가 한 사람에게 지급한다. */

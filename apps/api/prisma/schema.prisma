@@ -2556,6 +2556,16 @@ model Coupon {
   /// 것이 이 칸의 존재 이유다 — {@link CouponAudience} 의 주석이 그 값을 잰다.
   audience CouponAudience @default(ALL)
 
+  /// 발행이 중단된 시각. `NULL` 이면 발행 중이다 (TASK-0073 F5).
+  ///
+  /// **이미 발급된 장에는 아무 일도 일어나지 않는다.** 중단은 「더 나가지 않게」이지
+  /// 「나간 것을 무르게」가 아니다 — 무르는 것은 사람이 받은 것을 빼앗는 일이라
+  /// 다른 결정이고, 그 문은 아직 없다.
+  ///
+  /// 판정하는 자리는 발급의 조건부 갱신 한 문장이다(`takeIssueSlot`). 따로 읽어
+  /// 판단하면 그 사이에 중단된 쿠폰이 한 장 더 나간다.
+  suspendedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -2573,6 +2583,8 @@ model Coupon {
   @@index([issuerType, validUntil])
   /// 「내가 낸 쿠폰」. 데모 관리자의 목록이 자기가 낸 것으로 좁혀지는 자리다.
   @@index([issuedByUserId, createdAt(sort: Desc)])
+  /// 발급이 읽는 조건 그대로. 목록도 이 칸으로 거른다.
+  @@index([suspendedAt])
 }
 
 /// 발급된 쿠폰 한 장.

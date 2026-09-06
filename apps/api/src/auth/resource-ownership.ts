@@ -131,3 +131,17 @@ export function ownerGroup(owner: ResourceOwnership): 'ALL' | 'DEMO' {
 export function withinDemoGroup(owner: ResourceOwnership, account: AccountRow): boolean {
   return !owner.ownerIsDemo || account.isDemo
 }
+
+/**
+ * 이 그룹의 행을 **받을 수 있는 계정**의 조건 — Prisma `where` 조각.
+ *
+ * {@link withinDemoGroup} 이 한 사람을 두고 답하는 질문을, 여러 사람을 뽑을 때
+ * 쓰는 모양으로 옮긴 것이다. 일괄 발급이 그 자리다: 거절할 사람을 뽑아 놓고
+ * 거절하는 대신, 대상 조회가 처음부터 조건을 달고 나간다.
+ *
+ * 여기 있는 이유도 같다 — **깃발의 이름을 아는 자리는 이 파일 하나**이고
+ * (`demo-containment.spec.ts`), 부르는 쪽은 그룹만 말한다.
+ */
+export function accountFilterFor(group: 'ALL' | 'DEMO'): { readonly isDemo?: true } {
+  return group === 'DEMO' ? { isDemo: true } : {}
+}

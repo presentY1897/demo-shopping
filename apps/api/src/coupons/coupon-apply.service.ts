@@ -236,6 +236,8 @@ const USER_COUPON_WITH_POLICY_SELECT = {
       validUntil: true,
       issueLimit: true,
       issuedCount: true,
+      audience: true,
+      suspendedAt: true,
     },
   },
 } as const

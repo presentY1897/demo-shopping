@@ -356,6 +356,7 @@ export class CouponService {
          SET "issuedCount" = "issuedCount" + 1, "updatedAt" = ${now}
        WHERE "id" = ${couponId}::uuid
          AND ("issueLimit" IS NULL OR "issuedCount" < "issueLimit")
+         AND "suspendedAt" IS NULL
     `
   }
 
@@ -385,10 +386,19 @@ export class CouponService {
 
     const coupon = await tx.coupon.findUnique({
       where: { id: couponId },
-      select: { issueLimit: true, issuedCount: true },
+      select: { issueLimit: true, issuedCount: true, suspendedAt: true },
     })
 
     if (coupon === null) throw new NotFoundException('쿠폰을 찾을 수 없어요.')
+
+    // **중단을 먼저 본다.** 멈춘 쿠폰에 「다 나갔어요」라고 답하면 받는 사람은 자기가
+    // 늦은 줄 알고, 발행자는 자기가 멈춘 것이 사람에게 어떻게 보이는지 모른다
+    // (TASK-0073 F5).
+    if (coupon.suspendedAt !== null) {
+      throw new ConflictException(
+        domainFailure('COUPON_SUSPENDED', '지금은 발급이 중단된 쿠폰이에요.'),
+      )
+    }
 
     // 소진이 아닌데 0행이면 그 사이에 쿠폰이 사라진 것이다. 그런 행은 이 표에서
     // 만들어지지 않지만(발급된 쿠폰은 `Restrict` 가 잡는다), 조용히 성공한 것처럼
@@ -603,6 +613,8 @@ const COUPON_CONTRACT_SELECT = {
   validUntil: true,
   issueLimit: true,
   issuedCount: true,
+  audience: true,
+  suspendedAt: true,
 } as const
 
 type CouponContractRow = Prisma.CouponGetPayload<{ select: typeof COUPON_CONTRACT_SELECT }>
@@ -664,6 +676,8 @@ export function toCoupon(row: CouponContractRow): Coupon {
     validUntil: row.validUntil.toISOString(),
     issueLimit: row.issueLimit,
     issuedCount: row.issuedCount,
+    audience: row.audience,
+    suspendedAt: row.suspendedAt?.toISOString() ?? null,
   }
 }
 

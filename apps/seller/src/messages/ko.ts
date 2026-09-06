@@ -333,6 +333,7 @@ export const ko: Messages = {
     COUPON_NOT_APPLICABLE: '이 주문에는 쓸 수 없는 쿠폰이에요.',
     COUPON_ALREADY_USED: '이미 다른 주문에 사용된 쿠폰이에요.',
     COUPON_DEMO_ONLY: '체험용 쿠폰이라 체험 계정에만 지급할 수 있어요.',
+    COUPON_SUSPENDED: '발행이 중단된 쿠폰이에요.',
   },
   // 응답이 아예 오지 않은 실패. 읽을 코드가 없으므로 번호도 보여 주지 않는다.
   apiFailures: {
