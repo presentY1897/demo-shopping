@@ -1319,6 +1319,7 @@ export const ko: Messages = {
     COUPON_ENDED: '발급 기간이 끝난 쿠폰이에요.',
     COUPON_NOT_APPLICABLE: '이 주문에는 쓸 수 없는 쿠폰이에요.',
     COUPON_ALREADY_USED: '이미 다른 주문에 사용된 쿠폰이에요.',
+    COUPON_DEMO_ONLY: '체험용 쿠폰이라 체험 계정에만 지급할 수 있어요.',
   },
   errorNotice: {
     title: '일시적인 문제가 생겼어요',
