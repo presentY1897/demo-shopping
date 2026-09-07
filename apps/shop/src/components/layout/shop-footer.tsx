@@ -15,6 +15,8 @@
  * Server-renderable: no hook, no browser API.
  */
 
+import Link from 'next/link'
+
 import { PageContainer } from '@shopping/ui/layout'
 
 import type { FooterMessages } from '@/messages'
@@ -43,7 +45,19 @@ export function ShopFooter({
           </section>
         </div>
 
-        <p className="text-fg-subtle text-xs">{messages.copyright}</p>
+        {/*
+          안내로 가는 문은 **모든 화면에** 있다 (TASK-0099). 홈에만 두면 검색 결과로
+          바로 들어온 사람은 이 서비스에 둘러보기가 있다는 것을 끝까지 모른다.
+        */}
+        <p className="flex flex-wrap items-center gap-3 text-xs">
+          <Link
+            className="text-fg-muted min-h-touch -mx-2 inline-flex items-center px-2 underline-offset-2 hover:underline"
+            href="/guide"
+          >
+            {messages.guideLabel}
+          </Link>
+          <span className="text-fg-subtle">{messages.copyright}</span>
+        </p>
       </PageContainer>
     </footer>
   )

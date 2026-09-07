@@ -78,6 +78,11 @@ else env.NODE_ENV = inheritedNodeEnv
 env.PORT ??= String(ports[app])
 // Read by the app when it calls the API. Public by nature — never a secret.
 env.NEXT_PUBLIC_API_URL ??= `http://localhost:${ports.api}`
+// 안내 화면이 세 앱을 나란히 열게 한다 (TASK-0099). 배포에서는 각 앱의 실제 주소가
+// 주입되고, 로컬에서는 여기서 계산한 값이 그대로 맞다 — 데모 동선의 요점이 「탭 세
+// 개를 동시에 연다」라서 주소를 손으로 적게 하면 그 동선이 시작되지 않는다.
+env.NEXT_PUBLIC_SELLER_URL ??= `http://localhost:${ports.seller}`
+env.NEXT_PUBLIC_ADMIN_URL ??= `http://localhost:${ports.admin}`
 
 const args = [...forwarded]
 if (PORT_BOUND.has(args[0]) && !hasPortFlag(args)) args.push('--port', env.PORT)
