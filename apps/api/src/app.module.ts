@@ -16,6 +16,7 @@ import type { AppConfig } from './config/app-config.js'
 import { HealthModule } from './health/health.module.js'
 import { PrismaModule } from './prisma/prisma.module.js'
 import { OrderModule } from './orders/order.module.js'
+import { NotificationModule } from './notifications/notification.module.js'
 import { PaymentModule } from './payment/payment.module.js'
 import { PointsModule } from './points/points.module.js'
 import { ProfileModule } from './profile/profile.module.js'
@@ -48,6 +49,7 @@ export class AppModule {
         CouponModule,
         DemoModule,
         HealthModule,
+        NotificationModule,
         OrderModule,
         PaymentModule,
         PointsModule,

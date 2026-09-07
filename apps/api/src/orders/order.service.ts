@@ -46,6 +46,7 @@ import type { ShipmentRow } from '../shipping/shipment.service.js'
 import { presentShipment, SHIPMENT_SELECT } from '../shipping/shipment.service.js'
 import { ReservationService } from '../reservation/reservation.service.js'
 import { CommissionService } from '../settlement/commission.service.js'
+import { NotificationService } from '../notifications/notification.service.js'
 import { ORDER_NUMBER_SUFFIX_LENGTH, orderNumberOf } from './order-number.js'
 import { CheckoutService } from './checkout.service.js'
 import type { CartLineRow } from './order-lines.js'
@@ -90,6 +91,7 @@ export class OrderService {
     private readonly transitions: SellerOrderService,
     private readonly coupons: CouponApplyService,
     private readonly commissions: CommissionService,
+    private readonly notifications: NotificationService,
   ) {}
 
   // ------------------------------------------------------------------ writes
@@ -457,6 +459,41 @@ export class OrderService {
     })
 
     await this.transitions.publish(changes)
+    void this.notifySellers(changes.map((event) => event.sellerOrderId))
+  }
+
+  /**
+   * 결제가 끝난 몫을 **판 사람에게** 알린다 (TASK-0090 F7).
+   *
+   * 산 사람의 알림은 상태 전이가 이미 만든다(`OrderStatusNotifier`). 이쪽은 그
+   * 포트를 지나지 않는데, 같은 전이가 두 사람에게 **다른 말**을 해야 하기 때문이다 —
+   * 구매자에게 `PAID` 는 방금 자기가 한 일이라 알릴 것이 아니고, 판매자에게는 그것이
+   * 「새 주문이 들어왔다」다.
+   *
+   * 기다리지 않는다. 알림이 늦는 것이 결제 완료 처리를 되돌릴 이유는 아니다.
+   */
+  private async notifySellers(sellerOrderIds: readonly string[]): Promise<void> {
+    if (sellerOrderIds.length === 0) return
+
+    const rows = await this.prisma.sellerOrder.findMany({
+      where: { id: { in: [...sellerOrderIds] } },
+      select: {
+        id: true,
+        paidAmount: true,
+        seller: { select: { userId: true } },
+        order: { select: { orderNumber: true } },
+      },
+    })
+
+    await this.notifications.sendMany(
+      rows.map((row) => ({
+        userId: row.seller.userId,
+        type: 'SELLER_ORDER' as const,
+        title: '새 주문이 들어왔어요',
+        body: `주문 ${row.order.orderNumber} · ${row.paidAmount.toLocaleString('ko-KR')}원`,
+        link: `/orders/${row.id}`,
+      })),
+    )
   }
 
   // ------------------------------------------------------------------- reads

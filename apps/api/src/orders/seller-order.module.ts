@@ -5,7 +5,8 @@ import { PointsOnOrderConfirmed } from '../points/points-order-confirmed.js'
 import { PrismaModule } from '../prisma/prisma.module.js'
 import { OrderConfirmService } from './order-confirm.service.js'
 import { ORDER_CONFIRMED_EVENTS } from './order-confirmed-events.js'
-import { NoopSellerOrderEvents, SELLER_ORDER_EVENTS } from './seller-order-events.js'
+import { OrderStatusNotifier } from '../notifications/order-status.notifier.js'
+import { SELLER_ORDER_EVENTS } from './seller-order-events.js'
 import { SellerOrderController } from './seller-order.controller.js'
 import { SellerOrderService } from './seller-order.service.js'
 
@@ -33,7 +34,10 @@ import { SellerOrderService } from './seller-order.service.js'
     OrderConfirmService,
     // M13 이 실제 발행을 붙일 때 여기 한 줄만 바뀐다. 지금 구현이 무엇을 뜻하는지는
     // `seller-order-events.ts` 가 설명한다.
-    { provide: SELLER_ORDER_EVENTS, useClass: NoopSellerOrderEvents },
+    // TASK-0059 가 남겨 둔 포트의 실제 구현 (TASK-0090). 여기 한 곳을 채우는 것으로
+    // 발송 · 배송완료 · 취소 · 확정이 전부 알림을 갖는다 — 그 파일의 주석이 예상한
+    // 그대로다.
+    { provide: SELLER_ORDER_EVENTS, useClass: OrderStatusNotifier },
     // M11 이 그 한 줄을 바꿨다 (TASK-0076). 정산(M12)이 붙을 때는 이 자리가 다시
     // 바뀐다 — 두 일을 한 구현에 합치지 말고, 둘 다 부르는 구현 하나를 여기에
     // 세운다. 실패의 뜻이 다르기 때문이고, 그것을 `order-confirmed-events.ts` 가
