@@ -144,21 +144,48 @@ function p95Of(durations: readonly number[]): number {
   return sorted[Math.floor(sorted.length * 0.95)] ?? Number.POSITIVE_INFINITY
 }
 
+/**
+ * 표본 수. **20개였을 때 p95 는 사실상 최댓값이었다.**
+ *
+ * `floor(20 × 0.95) = 19` 는 정렬된 20개의 마지막 값이다. 그러면 느린 표본 **하나**가
+ * 검사를 빨갛게 만들고, 공유 러너에서 그 하나는 코드와 무관하게 나온다 — 이 저장소가
+ * 이미 세 번 겪은 종류의 실패다(`performance.md`). 실제로 이 검사가 CI 에서 648ms 로
+ * 걸렸고 로컬에서는 통과했다.
+ *
+ * 30개면 `floor(30 × 0.95) = 28` 이라 가장 느린 하나를 넘긴다. **예산을 늘린 것이
+ * 아니라 p95 를 p95 로 만든 것이다** — 다른 성능 스펙들이 먼저 30을 쓰고 있었다
+ * (`orders-performance.spec.ts`).
+ */
+const SAMPLES = 30
+
+/**
+ * 표본 루프 **전체**의 예산.
+ *
+ * vitest 의 기본 5초는 한 요청의 예산이다. 표본 30개짜리 루프는 한 요청이 50ms 여도
+ * 벽시계로 몇 초이고, 러너가 붐비면 그 몇 초가 5초를 넘는다 — 그리고 그때 실패는
+ * 「p95 초과」가 아니라 **타임아웃**으로 나타나서, 성능 회귀처럼 읽히지만 아니다.
+ */
+const SAMPLING_BUDGET_MS = 180_000
+
 describe('응답 시간 (A1 · F5)', () => {
-  it('answers the headline metrics well inside 500ms at p95 over 500 orders', async () => {
-    await fill()
+  it(
+    'answers the headline metrics well inside 500ms at p95 over 500 orders',
+    { timeout: SAMPLING_BUDGET_MS },
+    async () => {
+      await fill()
 
-    const durations: number[] = []
+      const durations: number[] = []
 
-    for (let index = 0; index < 20; index += 1) {
-      const started = performance.now()
+      for (let index = 0; index < SAMPLES; index += 1) {
+        const started = performance.now()
 
-      await metrics()
-      durations.push(performance.now() - started)
-    }
+        await metrics()
+        durations.push(performance.now() - started)
+      }
 
-    expect(p95Of(durations)).toBeLessThan(500)
-  })
+      expect(p95Of(durations)).toBeLessThan(500)
+    },
+  )
 
   /**
    * 처리 대기는 **자주 다시 읽히는 답**이다 (화면이 돌아올 때마다). 지표보다 훨씬
