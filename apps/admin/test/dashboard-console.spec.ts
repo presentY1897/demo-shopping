@@ -71,6 +71,20 @@ describe('물을 수 있는 기간인가', () => {
     expect(periodProblem({ from: '2026-09-06', to: '2026-08-08' })).toBe('reversed')
   })
 
+  /**
+   * **빈 칸을 먼저 본다.**
+   *
+   * 날짜 칸을 지우면 `''` 가 되고, 그것은 `to < from` 비교에서 조용히 통과한 뒤
+   * `from=` 으로 나가 서버가 400 으로 답한다 — 그 400 은 어느 칸이 문제인지 말할 수
+   * 없는 문장이라 사람이 고칠 데를 못 찾는다.
+   */
+  it('names an empty box rather than sending it', () => {
+    expect(periodProblem({ from: '', to: '2026-09-06' })).toBe('incomplete')
+    expect(periodProblem({ from: '2026-08-08', to: '' })).toBe('incomplete')
+    // 빈 칸이 「거꾸로」보다 먼저다 — 둘 다 해당해도 사람이 할 일은 채우는 것이다.
+    expect(periodProblem({ from: '', to: '' })).toBe('incomplete')
+  })
+
   /** 계약의 상한과 **같은 값**으로 잰다. 서버가 원본이고 화면은 먼저 말할 뿐이다. */
   it('names a period past the contract ceiling', () => {
     const to = '2026-09-06'

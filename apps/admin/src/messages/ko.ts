@@ -1809,6 +1809,7 @@ export const ko: Messages = {
         fromLabel: '시작일',
         toLabel: '종료일',
         reset: '최근 30일로',
+        rangeIncomplete: '시작일과 종료일을 모두 골라 주세요.',
         rangeReversed: '종료일이 시작일보다 앞서 있어요. 두 날짜를 확인해 주세요.',
         rangeTooLong: '한 번에 최대 {max}일까지 볼 수 있어요. 기간을 줄여 주세요.',
       },
