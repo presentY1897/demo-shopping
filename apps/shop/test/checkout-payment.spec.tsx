@@ -212,8 +212,14 @@ describe('카드가 없는 사람', () => {
 
     const summary = screen.getByRole('complementary', { name: copy.summaryTitle })
 
-    expect(within(summary).getByRole('button', { name: copy.placeOrder })).toBeDisabled()
-    expect(within(summary).getByText(pay.methodRequired)).toBeVisible()
+    // 「비활성인가」가 아니라 **「비활성인 채로 읽히는가」**를 본다 — 버튼은 탭
+    // 순서에 남아야 그 이유에 닿을 수 있다 (`checkout-screen.tsx`).
+    const place = within(summary).getByRole('button', { name: copy.placeOrder })
+    const reason = within(summary).getByText(pay.methodRequired)
+
+    expect(place).toHaveAttribute('aria-disabled', 'true')
+    expect(place).toHaveAttribute('aria-describedby', reason.id)
+    expect(reason).toBeVisible()
   })
 })
 

@@ -1,0 +1,16 @@
+{
+  "extends": "@shopping/config/tsconfig/base.json",
+  "compilerOptions": {
+    "types": ["node"],
+    // `page.evaluate` 안의 코드는 **브라우저에서** 돈다. `document` 와
+    // `getComputedStyle` 은 거기 있고, 여기서는 타입만 필요하다.
+    "lib": ["ES2023", "DOM"],
+    "noEmit": true,
+    // 포트는 저장소에 한 벌뿐이다 (`scripts/ports.mjs`). 다시 적는 대신 그 파일을
+    // 그대로 가져다 쓰고, 그러려면 JS 를 읽을 수 있어야 한다.
+    "allowJs": true,
+    "checkJs": false
+  },
+  "include": ["**/*.ts", "../scripts/ports.mjs"],
+  "exclude": ["node_modules", "playwright-report", "test-results"]
+}

@@ -204,8 +204,18 @@ describe('배송지와 주문 (F6 · F7)', () => {
     // 배송지는 기본값이 골라져 있고, 남은 것은 동의다. 누를 수 없는 이유가 그
     // 아래 적혀 있다 — 이유 없는 비활성 컨트롤을 보면 사람은 화면이 고장 났다고
     // 생각한다.
-    expect(within(summary).getByRole('button', { name: copy.placeOrder })).toBeDisabled()
-    expect(within(summary).getByText(copy.termsRequired)).toBeVisible()
+    //
+    // **진짜 `disabled` 가 아니라 `aria-disabled` 다** (TASK-0099 가 찾은 것):
+    // 진짜였을 때는 탭 순서에서 사라져 마우스를 쓰지 않는 사람이 버튼에도 이유에도
+    // 닿지 못했다. 그래서 여기서 검사하는 것은 「비활성인가」가 아니라 **「비활성인
+    // 채로 읽히는가」**다.
+    const place = within(summary).getByRole('button', { name: copy.placeOrder })
+    const reason = within(summary).getByText(copy.termsRequired)
+
+    expect(place).toHaveAttribute('aria-disabled', 'true')
+    expect(place).toBeEnabled()
+    expect(place).toHaveAttribute('aria-describedby', reason.id)
+    expect(reason).toBeVisible()
   })
 
   it('places the order once both are settled, and says the order number (F7)', async () => {

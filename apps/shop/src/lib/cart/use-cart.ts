@@ -3,6 +3,8 @@
 import type { CartResponse } from '@shopping/shared'
 import { useCallback, useEffect, useState } from 'react'
 
+import { useAuth } from '@/lib/auth/auth-context'
+
 import { publishCartCount } from './cart-count'
 import { fetchCart, removeItems, updateQuantity } from './cart-api'
 import type { Selection } from './selection'
@@ -18,6 +20,12 @@ import { initialSelection, reconcile } from './selection'
  *
  * 실패는 **화면 전체의 상태**다. 홈의 섹션과 다르다 — 신상품 줄이 비어 있는 홈은
  * 여전히 쓸 수 있지만, 장바구니가 비어 보이는 장바구니는 「비었다」는 거짓말이다.
+ *
+ * **세션이 정해질 때까지 묻지 않는다** (TASK-0099 F1 이 찾은 결함). 이 화면을 주소로
+ * 곧장 열면 — 새로고침, 즐겨찾기, 밖에서 들어온 링크 — 부팅 갱신과 장바구니 요청이
+ * 동시에 나가고, 토큰이 아직 없어 401 이 돌아온다. 그러면 담아 둔 것이 있는 사람에게
+ * 「불러오지 못했어요」가 뜬다. 알림 쪽이 먼저 쓰던 방식과 같다
+ * (`use-notifications.ts` — `if (!signedIn) return`).
  */
 
 export type CartState =
@@ -36,12 +44,19 @@ export interface CartStore {
 }
 
 export function useCart(): CartStore {
+  const { state: auth } = useAuth()
+  // 「확인 중」과 「로그인 안 함」은 다른 답이다 (TASK-0023 4장). 확인 중에 물으면
+  // 401 이 오고, 로그인 안 한 것으로 접으면 **담아 둔 사람의 장바구니가 빈다.**
+  const settled = auth.status !== 'checking'
+
   const [state, setState] = useState<CartState>({ status: 'loading' })
   const [selection, setSelection] = useState<Selection>(new Set())
   const [busy, setBusy] = useState(false)
   const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
+    if (!settled) return undefined
+
     const controller = new AbortController()
 
     async function load(): Promise<void> {
@@ -63,7 +78,7 @@ export function useCart(): CartStore {
     return () => {
       controller.abort()
     }
-  }, [attempt])
+  }, [attempt, settled])
 
   /**
    * 쓰기 하나를 보내고 그 응답으로 화면을 갈아 끼운다.
