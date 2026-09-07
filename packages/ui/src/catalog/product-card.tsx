@@ -100,8 +100,19 @@ export function discountPercent(
 }
 
 /** `450` → `4.5`. The API carries hundredths so it can stay an integer. */
+/**
+ * 100배 정수 평점을 **소수 한 자리로** — 435 는 4.4 다.
+ *
+ * 반올림을 **정수 공간에서** 한다. `435 / 100` 은 4.35 가 아니라 4.34999… 로
+ * 저장되고, 그것을 `toFixed(1)` 에 넘기면 「4.3」이 나온다 — 사람이 보기에 명백히
+ * 틀린 값인데 아무것도 실패하지 않는다. 나누기를 마지막에 한 번만 하면 그 자리가
+ * 없어진다.
+ *
+ * 0 과 없음이 같은 답인 이유는 `Product_rating_check` 가 「리뷰가 없으면 평균도 0」을
+ * 요구하기 때문이다 — 0점짜리 평점은 존재하지 않고, 0은 언제나 「아직 없다」다.
+ */
 export function ratingOf(ratingAvg: number | undefined): number | null {
-  return ratingAvg === undefined || ratingAvg <= 0 ? null : Math.round(ratingAvg) / 100
+  return ratingAvg === undefined || ratingAvg <= 0 ? null : Math.round(ratingAvg / 10) / 10
 }
 
 function fill(template: string, values: Readonly<Record<string, string | number>>): string {

@@ -31,6 +31,8 @@ import { choose, displayPrice, selectedVariant } from '@/lib/products/variant-se
 import { useAddToCart } from '@/lib/cart/use-add-to-cart'
 import type { CartMessages, ProductDetailMessages } from '@/messages'
 
+import { ProductReviews } from '../reviews/product-reviews'
+
 import { OptionPicker } from './option-picker'
 import { ProductGallery } from './product-gallery'
 import { ProductInfo } from './product-info'
@@ -179,6 +181,23 @@ export function ProductDetail({
       density={density}
       description={product.description}
       messages={messages.info}
+    />
+  )
+
+  /**
+   * 리뷰 (TASK-0084).
+   *
+   * **격자 밖, 본문 아래 전폭이다.** 밀도 3에서 정보 블록은 세 번째 열로 빠지는데,
+   * 리뷰는 그 열에 들어가면 분포 그래프와 사진 갤러리가 카드 폭으로 눌린다 — 그리고
+   * 리뷰는 세 단계 모두에서 읽히는 것이지 맥시멀의 부록이 아니다.
+   *
+   * 집계를 넘기는 이유는 미니멀 단계가 **아무것도 묻지 않기** 때문이다. 상품 상세가
+   * 이미 들고 있는 값으로 「4.4 · 리뷰 12건」을 그리고, 펼친 뒤에야 목록을 부른다.
+   */
+  const reviews = (
+    <ProductReviews
+      copy={messages.reviews}
+      productId={product.id}
       ratingAvg={product.ratingAvg}
       ratingCount={product.ratingCount}
     />
@@ -219,6 +238,8 @@ export function ProductDetail({
             {density === 3 ? <div className="min-w-0 xl:col-span-1">{info}</div> : null}
           </div>
         )}
+
+        {reviews}
       </PageContainer>
 
       {band === 'base' ? (

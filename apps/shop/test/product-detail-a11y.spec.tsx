@@ -15,7 +15,7 @@
 import { storefrontProductDetail, storefrontProductWithoutOptions } from '@shopping/api-mocks'
 import { DENSITY_LEVELS, DENSITY_STORAGE_KEY } from '@shopping/ui'
 import { DensityProvider } from '@shopping/ui/density'
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import axe from 'axe-core'
 import type { RunOptions } from 'axe-core'
@@ -23,6 +23,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { messagesFor } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
+import { stubReviewApi } from './support/reviews'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
 vi.mock('next/navigation', async () => {
@@ -64,13 +66,20 @@ async function renderDetail(
   document.documentElement.setAttribute('data-density', String(density))
   stubViewport(width)
 
-  return render(
+  return renderWithAuth(
     <DensityProvider>{await ProductPage({ params: Promise.resolve({ id }) })}</DensityProvider>,
   )
 }
 
 beforeEach(() => {
   localStorage.clear()
+  /*
+   * 리뷰 섹션이 상품 상세 안에 있으므로 이 파일의 렌더는 전부 리뷰 목록을 묻는다.
+   * `@shopping/api-mocks` 에는 그 라우트의 핸들러가 아직 없어 요청이 대역에 닿지
+   * 못하고, 그러면 「핸들러 없는 요청」으로 파일 전체가 실패한다 —
+   * `test/support/reviews.ts` 가 그 자리를 대신하고, 왜 거기 있는지도 적혀 있다.
+   */
+  stubReviewApi()
 })
 
 afterEach(() => {

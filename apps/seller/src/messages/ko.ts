@@ -103,7 +103,12 @@ export const ko: Messages = {
         id: 'customers',
         label: '고객',
         items: [
-          { href: '/reviews', label: '리뷰 관리' },
+          // `review.reply` 다. 이 화면이 API 에 처음 묻는 것이 목록이고, 그
+          // 목록을 여는 퍼미션이 답변을 쓰는 퍼미션과 같기 때문이다
+          // (`GET /seller-product-reviews` 가 그것을 요구한다). 「읽기」가
+          // 따로 없는 이유는 리뷰 자체가 로그인 없이도 읽는 공개 정보라서다 —
+          // 판매자에게만 있는 능력은 「답한다」쪽이다.
+          { href: '/reviews', label: '리뷰 관리', permission: 'review.reply' },
           { href: '/questions', label: '문의 관리' },
         ],
       },
@@ -1894,6 +1899,95 @@ export const ko: Messages = {
     itemTypeLabels: {
       SALE: '판매',
       RETURN_ADJUSTMENT: '반품 차감',
+    },
+  },
+  reviewList: {
+    description: '내 상품에 달린 리뷰를 보고 답변합니다. 아직 답하지 않은 리뷰가 위에 옵니다.',
+    loadingLabel: '리뷰를 불러오는 중입니다',
+    unanswered: {
+      regionLabel: '답변할 리뷰',
+      value: '{count}건',
+      // 필터를 켜면 목록은 줄어드는데 이 수는 그대로다. 적지 않으면 그 차이가
+      // 버그로 읽힌다 — 뱃지는 「지금 화면에 몇 개」가 아니라 「할 일이 몇 개」다.
+      note: '아래 조건과 상관없이 내 상품 전체에서 셉니다.',
+      none: '답변하지 않은 리뷰가 없습니다.',
+    },
+    filters: {
+      legend: '리뷰 걸러 보기',
+      unansweredOnlyLabel: '답변하지 않은 리뷰만',
+      maxRatingLabel: '평점',
+      maxRatingAll: '전체 평점',
+      maxRatingOption: '{rating}점 이하',
+      reset: '조건 지우기',
+    },
+    card: {
+      listLabel: '리뷰 목록',
+      ratingValue: '별점 {rating}점',
+      productLabel: '상품: {name}',
+      optionLabel: '옵션: {option}',
+      authorLabel: '작성자 {name}',
+      writtenAt: '{date} 작성',
+      photoCount: '사진 {count}장',
+      unansweredBadge: '답변 대기',
+      answeredBadge: '답변 완료',
+    },
+    reply: {
+      heading: '내 답변',
+      authorLine: '{brand}',
+      updatedAt: '{date} 수정',
+      writeLabel: '답변 쓰기',
+      editLabel: '답변 수정',
+      deleteLabel: '답변 삭제',
+      cancelLabel: '취소',
+      saveLabel: '답변 저장',
+      contentLabel: '답변 내용',
+      contentHint: '{max}자까지 쓸 수 있습니다. 구매자에게 상품 상세에서 그대로 보입니다.',
+      contentPlaceholder: '불편을 드려 죄송합니다. 확인 후 연락드리겠습니다.',
+      errors: {
+        required: '답변 내용을 입력해주세요.',
+        tooLong: '답변은 {max}자까지 쓸 수 있어요.',
+      },
+      errorTitle: '답변을 저장하지 못했습니다',
+      submitFailed: '답변을 저장하지 못했습니다. 잠시 후 다시 시도해주세요.',
+      savedNotice: '답변을 저장했습니다.',
+      deletedNotice: '답변을 삭제했습니다.',
+      failureTitle: '처리하지 못했습니다.',
+      refusals: {
+        // 자기 목록에서는 열리지 않아야 하는 길이다. 그래도 문장이 있는 이유는
+        // 목록을 읽은 순간과 답변을 쓰는 순간 사이에 시간이 있기 때문이다.
+        forbidden: '내 스토어의 상품이 아니라서 답변할 수 없어요.',
+        // 다른 탭에서 지웠거나, 구매자가 리뷰를 내렸다. 할 일은 다시 읽는 것이다.
+        gone: '이 리뷰나 답변이 이미 사라졌어요. 목록을 새로고침해 주세요.',
+      },
+      confirm: {
+        title: '답변을 삭제할까요?',
+        description:
+          '삭제하면 상품 상세에서 답변이 사라집니다. 되돌릴 수 없고, 다시 쓰려면 새로 작성해야 합니다.',
+        confirm: '삭제',
+        cancel: '취소',
+        closeLabel: '닫기',
+      },
+    },
+    pagination: {
+      label: '리뷰 목록 페이지 이동',
+      previous: '이전',
+      next: '다음',
+      page: '{page} 페이지',
+    },
+    empty: {
+      title: '아직 리뷰가 없어요.',
+      description: '구매자가 배송받은 상품에 리뷰를 남기면 여기에서 답변할 수 있습니다.',
+    },
+    filteredEmpty: {
+      title: '조건에 맞는 리뷰가 없어요.',
+      description: '평점을 넓히거나 「답변하지 않은 리뷰만」을 꺼 보세요.',
+    },
+    errorTitle: '리뷰를 불러오지 못했습니다.',
+    retry: '다시 시도',
+    noStore: {
+      title: '아직 스토어가 없어요.',
+      body: '입점 신청이 끝나면 내 상품에 달린 리뷰를 여기에서 볼 수 있습니다.',
+      applyLabel: '입점 신청하러 가기',
     },
   },
 }

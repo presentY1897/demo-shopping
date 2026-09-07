@@ -9,9 +9,10 @@
  * package**, and pnpm enforces it — `msw` is not a dependency of any app, so a
  * spec here cannot import `http` even if it wanted to.
  *
- * TASK-0082's three routes (`/seller-revenue`,
- * `/seller-settlement-outlook`, `/settlements`) have no handlers there yet, and
- * this branch does not own `packages/`. So the seam moves one layer up: instead
+ * TASK-0082's three routes (`/seller-revenue`, `/seller-settlement-outlook`,
+ * `/settlements`) and TASK-0085's three (`/seller-product-reviews`, and the
+ * reply written and removed at `/reviews/:id/reply`) have no handlers there yet,
+ * and neither branch owns `packages/`. So the seam moves one layer up: instead
  * of intercepting the network, the specs replace `getApiClient` with a **real**
  * `createApiClient` whose `fetch` is this stub.
  *
@@ -21,10 +22,15 @@
  * `settlementListResponseSchema` fails here exactly as it would through msw, and
  * the fixtures themselves go through `defineFixture` for the same reason.
  *
- * What it loses is the network layer itself: headers, the app-id, and the URL
- * the client actually built. The URL is recovered — {@link apiRequests} records
- * every one — so a spec can still assert that `sellerId` was on the query and
- * that the cursor came back unchanged.
+ * What it loses is the network layer itself: headers and the app-id. The request
+ * is recovered — {@link apiCalls} records the URL, the method and the parsed
+ * body of every one — so a spec can still assert that `sellerId` was on the
+ * query, that the cursor came back unchanged, and that the reply that went out
+ * is the sentence somebody typed.
+ *
+ * **The answers are keyed by path alone, not by method.** `PUT` and `DELETE` on
+ * `/reviews/:id/reply` therefore share one stub; a test that needs them to
+ * answer differently has to be two tests, which is what they are.
  *
  * **When handlers land in `@shopping/api-mocks`, delete this file** and move
  * these specs onto `testServer.server.use(...)` like every other screen.
@@ -38,25 +44,53 @@ import { apiErrorBody, MOCK_REQUEST_ID } from '@shopping/api-mocks'
 type Answer =
   | { readonly kind: 'json'; readonly status: number; readonly body: unknown }
   | { readonly kind: 'resolved'; readonly status: number; readonly resolve: (url: URL) => unknown }
+  | { readonly kind: 'empty'; readonly status: number }
   | { readonly kind: 'network' }
 
 const answers = new Map<string, Answer>()
 
-const seen: string[] = []
+/**
+ * One call the client actually made.
+ *
+ * The URL alone was enough while every route this stub served was a `GET`
+ * (TASK-0082). TASK-0085 writes: `PUT /reviews/:id/reply` carries the sentence
+ * the seller typed, and a screen that sent the *previous* draft — or sent it to
+ * the wrong review — would look identical from the query string.
+ */
+export interface ApiCall {
+  readonly url: string
+  readonly method: string
+  /** Parsed back from the JSON the client serialised, or `undefined` for a bodyless call. */
+  readonly body: unknown
+}
+
+const seen: ApiCall[] = []
 
 /** The same origin the vitest preset gives the app. Unroutable by design. */
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://api.test.invalid'
 
 /** Every URL the client actually built, in order. Query strings included. */
 export function apiRequests(): readonly string[] {
+  return seen.map((call) => call.url)
+}
+
+/** Every call in order — method and body included. */
+export function apiCalls(): readonly ApiCall[] {
   return seen
+}
+
+function callsTo(path: string): readonly ApiCall[] {
+  return seen.filter((call) => new URL(call.url).pathname === `${API_PATH_PREFIX}${path}`)
 }
 
 /** The last URL asked for whose path is `path`, or `null`. */
 export function lastRequestTo(path: string): string | null {
-  const match = seen.filter((url) => new URL(url).pathname === `${API_PATH_PREFIX}${path}`).at(-1)
+  return callsTo(path).at(-1)?.url ?? null
+}
 
-  return match ?? null
+/** The last call to `path`, or `null`. Use it when the body or the method matters. */
+export function lastCallTo(path: string): ApiCall | null {
+  return callsTo(path).at(-1) ?? null
 }
 
 /** Answers `path` with `body`, parsed by whatever schema the caller declared. */
@@ -80,6 +114,18 @@ export function answerFailure(path: string, status: number, code: string, messag
  */
 export function answerJsonBy(path: string, resolve: (url: URL) => unknown, status = 200): void {
   answers.set(path, { kind: 'resolved', resolve, status })
+}
+
+/**
+ * Answers `path` with 204 and no body at all.
+ *
+ * `Response.json` cannot express this — serialising `undefined` throws — and
+ * answering `null` instead would send the four bytes `null`, which is exactly
+ * what `z.undefined()` refuses. A `DELETE` that returns 204 is the shape
+ * `deleteReviewReply` declares, so the stub has to be able to produce it.
+ */
+export function answerNoContent(path: string): void {
+  answers.set(path, { kind: 'empty', status: 204 })
 }
 
 /** The API never answered: a stopped process, a DNS miss. */
@@ -106,8 +152,12 @@ export function resetApiStub(): void {
  * same thing to the caller: the client's `try` around `doFetch` is what turns
  * either into an `ApiFailure` (`classifyTransportFailure`).
  */
-function stubFetch(input: string, _init: RequestInit): Promise<Response> {
-  seen.push(input)
+function stubFetch(input: string, init: RequestInit): Promise<Response> {
+  seen.push({
+    body: typeof init.body === 'string' ? (JSON.parse(init.body) as unknown) : undefined,
+    method: init.method ?? 'GET',
+    url: input,
+  })
 
   const url = new URL(input)
   const answer = answers.get(url.pathname.slice(API_PATH_PREFIX.length))
@@ -120,6 +170,14 @@ function stubFetch(input: string, _init: RequestInit): Promise<Response> {
   }
   // How a dead network reaches `fetch`.
   if (answer.kind === 'network') return Promise.reject(new TypeError('fetch failed'))
+  if (answer.kind === 'empty') {
+    return Promise.resolve(
+      new Response(null, {
+        headers: { [REQUEST_ID_HEADER]: MOCK_REQUEST_ID },
+        status: answer.status,
+      }),
+    )
+  }
 
   const body = answer.kind === 'json' ? answer.body : answer.resolve(url)
 

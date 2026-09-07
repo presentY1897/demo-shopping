@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * 설명 · 속성 표 · 배송 · 리뷰 · 추천 — 밀도가 정하는 것은 **양**이다 (TASK-0043 4장).
+ * 설명 · 속성 표 · 배송 · 문의 · 추천 — 밀도가 정하는 것은 **양**이다 (TASK-0043 4장).
  *
  * R1 asks that the three steps not be three components. They are not: every
  * block below is written once and the density decides how much of it appears —
@@ -9,10 +9,15 @@
  * shipping line is one sentence, a summary, or the paragraph. Three separate
  * layouts would be three places to fix the next copy change.
  *
- * The review, inquiry and recommendation blocks are **placeholders with their
- * milestone named**. TASK-0023 4장 is explicit that an absent feature is shown
- * and explained rather than hidden — the point of the demo is that the shape of
- * the finished thing is visible.
+ * The inquiry and recommendation blocks are **placeholders with their milestone
+ * named**. TASK-0023 4장 is explicit that an absent feature is shown and
+ * explained rather than hidden — the point of the demo is that the shape of the
+ * finished thing is visible.
+ *
+ * **리뷰는 더 이상 여기 없다.** TASK-0084 가 그 자리를 진짜 목록으로 채웠고
+ * (`components/reviews/product-reviews.tsx`), 그것은 밀도에 따라 요청까지 달라지는
+ * 화면이라 이 정적인 블록 안에 들어갈 수 없다. 여기 남겨 두면 같은 상품의 평점이 한
+ * 화면에 두 번, 서로 다른 출처로 그려진다.
  */
 
 import type { AttributeValue } from '@shopping/shared'
@@ -59,8 +64,6 @@ export interface ProductInfoProps {
     readonly label: string
     readonly value: AttributeValue
   }[]
-  readonly ratingAvg: number
-  readonly ratingCount: number
   readonly messages: ProductInfoMessages
 }
 
@@ -93,14 +96,7 @@ function AttributeTable({
   )
 }
 
-export function ProductInfo({
-  density,
-  description,
-  attributes,
-  ratingAvg,
-  ratingCount,
-  messages,
-}: ProductInfoProps) {
+export function ProductInfo({ density, description, attributes, messages }: ProductInfoProps) {
   /**
    * The estimated arrival — a value only the **browser** has.
    *
@@ -154,23 +150,6 @@ export function ProductInfo({
             {messages.estimatedArrival.replace('{date}', arrival)}
           </p>
         ) : null}
-      </section>
-
-      <section className="flex flex-col gap-2">
-        <h2 className="text-fg text-base font-semibold">{messages.reviewsLabel}</h2>
-
-        {density === 1 ? (
-          <p className="text-fg-muted text-sm">{messages.reviewsLink}</p>
-        ) : (
-          <>
-            <p className="text-fg text-sm">
-              {messages.reviewsSummary
-                .replace('{score}', (ratingAvg / 100).toFixed(1))
-                .replace('{count}', ratingCount.toLocaleString('ko-KR'))}
-            </p>
-            <p className="text-fg-subtle text-sm">{messages.reviewsComingSoon}</p>
-          </>
-        )}
       </section>
 
       <section className="flex flex-col gap-2">
