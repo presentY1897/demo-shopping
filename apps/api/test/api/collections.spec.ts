@@ -400,20 +400,31 @@ describe('최근 본 상품 (TASK-0087)', () => {
   /**
    * **기록이 상세를 붙잡지 않는다** (F3).
    *
-   * 기준표는 「응답 시간 비교」라고 적었지만, 시간으로 재면 두 가지가 나쁘다. 공유
-   * 러너에서 벽시계는 부하를 함께 재므로 자기 변경과 무관하게 흔들리고(HANDOFF 의 A1
-   * 항목), 무엇보다 **빠른 기계에서는 틀린 구현도 통과한다** — 기록을 기다리는 코드는
-   * 데이터베이스가 한가한 날엔 몇 밀리초밖에 안 걸린다.
+   * 기준표는 「응답 시간 비교」라고 적었지만 시간으로 재면 빠른 기계에서 틀린 구현도
+   * 통과한다 — 기록을 기다리는 코드도 데이터베이스가 한가하면 몇 밀리초다. 그래서
+   * 시간 대신 **순서**를 잰다: 기록을 붙잡아 둔 채로 상세를 부르고, 답이 **기록보다
+   * 먼저** 왔는지 본다.
    *
-   * 그래서 시간 대신 **순서**를 잰다. 기록을 영원히 끝나지 않게 만들어 두고 상세를
-   * 부른다: 기다리지 않는 구현이면 답이 그대로 오고, `await` 하는 구현이면 이 검사가
-   * 영영 안 끝난다. 「유의미한 증가 없음」의 가장 강한 형태다.
+   * 붙잡은 것은 반드시 놓아준다. 안 놓으면 끝나지 않는 약속이 남고, 그것을 `void` 로
+   * 들고 있는 컨트롤러도 함께 남는다 — 검사가 끝난 뒤에 프로세스에 남는 쓰레기다.
+   *
+   * **`await` 하는 구현이면 이 검사는 시간 초과로 죽는다.** 그 실패는 느리고 메시지도
+   * 「timed out」뿐이라 좋은 실패는 아니지만, 답이 아예 오지 않는 구현을 그보다 빨리
+   * 알아낼 방법이 없다 — 답을 기다리는 것 말고는 물어볼 것이 없기 때문이다.
    */
-  it('기록이 끝나지 않아도 상세는 바로 답한다 (F3)', async () => {
+  it('기록을 기다리지 않고 상세를 답한다 (F3)', async () => {
     const collections = api.resolve<CollectionsService>(CollectionsService)
-    const hanging = vi
-      .spyOn(collections, 'recordView')
-      .mockReturnValue(new Promise<void>(() => undefined))
+
+    let release = (): void => undefined
+    let recorded = false
+
+    const blocked = new Promise<void>((resolve) => {
+      release = () => {
+        recorded = true
+        resolve()
+      }
+    })
+    const held = vi.spyOn(collections, 'recordView').mockReturnValue(blocked)
 
     try {
       const { product } = await client(me).request({
@@ -421,9 +432,13 @@ describe('최근 본 상품 (TASK-0087)', () => {
         schema: productDetailResponseSchema,
       })
 
+      // 답이 왔다 — 그리고 그때 기록은 아직 안 끝나 있었다. 뒤 줄이 이 검사의 전부다:
+      // 앞 줄만 있으면 기다리는 구현도 (느리게) 통과한다.
       expect(product.id).toBe(store.product.id)
+      expect(recorded).toBe(false)
     } finally {
-      hanging.mockRestore()
+      release()
+      held.mockRestore()
     }
   })
 
