@@ -199,6 +199,18 @@ describe('discountPercent', () => {
 })
 
 describe('ratingOf', () => {
+  /**
+   * **나누기를 먼저 하면 4.35 가 「4.3」으로 그려진다.** `435 / 100` 은 4.34999… 로
+   * 저장되고 `toFixed(1)` 이 그것을 내림한다 — 사람이 보기에 명백히 틀린 값인데
+   * 아무것도 실패하지 않는다.
+   */
+  it('rounds in integer space', () => {
+    expect(ratingOf(435)).toBe(4.4)
+    expect(ratingOf(434)).toBe(4.3)
+    // 별 하나가 최저값이다 — `Review_rating_check` 가 1~5 를 요구한다.
+    expect(ratingOf(100)).toBe(1)
+  })
+
   it('100분율 정수를 별점으로 되돌린다', () => {
     expect(ratingOf(450)).toBe(4.5)
     expect(ratingOf(500)).toBe(5)

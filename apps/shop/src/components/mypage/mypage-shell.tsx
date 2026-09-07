@@ -34,7 +34,7 @@ export function MyPageShell({
   readonly description: string
   readonly nav: MyPageNavMessages
   /** Which of the six routes is being shown, so it is not a link to itself. */
-  readonly current: 'orders' | 'coupons' | 'points' | 'settings' | 'addresses' | 'cards'
+  readonly current: 'orders' | 'coupons' | 'points' | 'reviews' | 'settings' | 'addresses' | 'cards'
   readonly children: ReactNode
 }) {
   return (
@@ -62,6 +62,16 @@ export function MyPageShell({
             label={nav.coupons}
           />
           <MyPageNavItem current={current === 'points'} href="/mypage/points" label={nav.points} />
+          {/*
+            리뷰 쓰기 (TASK-0083 F7). 주문 다음 무리에 있는 이유는 이것이 **주문
+            뒤에 하는 일**이기 때문이다 — 여기 오는 사람은 받은 물건에 대해 쓰러
+            온 것이고, 그 동선이 배송지·카드보다 주문에 가깝다.
+          */}
+          <MyPageNavItem
+            current={current === 'reviews'}
+            href="/mypage/reviews"
+            label={nav.reviews}
+          />
           <MyPageNavItem
             current={current === 'settings'}
             href="/mypage/settings"

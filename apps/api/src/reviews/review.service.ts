@@ -29,6 +29,7 @@ import type { ReviewImageRefusal, ReviewRefusal } from './review-rules.js'
 import {
   editable,
   maskAuthorName,
+  REVIEW_IMAGE_MAX_COUNT,
   REVIEW_WRITE_WINDOW_DAYS,
   reviewDecision,
   reviewImageDecision,
@@ -330,6 +331,14 @@ export class ReviewService {
     return { createdAt: review.createdAt, productId: review.productId }
   }
 
+  /**
+   * 사진 목록을 검사한다.
+   *
+   * **상한을 넘긴 거절은 그 상한을 함께 싣는다** (`params.max`). 화면이 숫자를 적어
+   * 두면 계약의 상한이 바뀌는 날 둘이 갈리고, 그때 사람은 「5장까지」라고 적힌
+   * 화면에서 여섯 번째가 거절되는 것을 본다 — 반품 사진의 `RETURN_PHOTO_TOO_MANY` 가
+   * 같은 이유로 같은 값을 싣는다.
+   */
   private assertImages(keys: readonly string[], userId: string): void {
     const decision = reviewImageDecision(keys, userId)
 
@@ -337,7 +346,12 @@ export class ReviewService {
 
     const { code, message } = IMAGE_REFUSAL[decision.reason]
 
-    throw new BadRequestException(domainFailure(code, message))
+    throw new BadRequestException(
+      domainFailure(code, message, {
+        field: 'imageKeys',
+        ...(decision.reason === 'too_many' ? { params: { max: REVIEW_IMAGE_MAX_COUNT } } : {}),
+      }),
+    )
   }
 
   /**

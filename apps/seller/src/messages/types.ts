@@ -33,6 +33,7 @@ import type { SellerClaimTab } from '@/lib/claims/claim-console'
 import type { CouponLiabilityUnbounded, SellerCouponScopeType } from '@/lib/coupons/coupon-console'
 import type { CouponFieldErrorMessages } from '@/lib/coupons/coupon-form'
 import type { SellerOrderTab } from '@/lib/orders/order-console'
+import type { ReplyFieldErrorMessages, ReplyRefusal } from '@/lib/reviews/review-console'
 import type { CalculationLineKey } from '@/lib/settlements/settlement-console'
 import type { StoreFieldErrorMessages } from '@/lib/sellers/store-form'
 import type { SessionRefusal } from '@/lib/auth/session-client'
@@ -187,6 +188,15 @@ export interface Messages {
    * 상세에서는 「지급됨」인 날이 온다.
    */
   readonly settlements: SettlementVocabularyMessages
+  /**
+   * 상품 리뷰 관리 (TASK-0085). 미답변 우선 목록 · 평점 필터 · 답변 쓰기.
+   *
+   * **`sellers` 의 「판매자 리뷰」와 다른 것이다.** 저쪽은 입점 심사 대기열이고
+   * (`SELLER_REVIEW_LIST_*`), 이쪽은 판매자가 자기 상품에 달린 구매자 리뷰에
+   * 답하는 화면이다. 이름을 길게 쓰는 이유가 그것이다 — 짧게 두면 두 화면이 같은
+   * 낱말을 서로 다른 뜻으로 쓰게 된다.
+   */
+  readonly reviewList: ReviewListMessages
 }
 
 /* ------------------------------------------- 매출 대시보드 (TASK-0082) -- */
@@ -1936,4 +1946,139 @@ export interface CouponFormFieldMessages {
   readonly issueLimitHint: string
   readonly withCodeLabel: string
   readonly withCodeHint: string
+}
+
+/* ------------------------------------------ 상품 리뷰 관리 (TASK-0085) -- */
+
+/**
+ * `/reviews` 가 그리는 모든 것.
+ *
+ * 미답변 뱃지(`unanswered`)가 목록의 슬라이스인 것은 두 값이 한 화면의 위아래에 있기
+ * 때문이다. 이 화면이 답하는 물음은 「무엇에 답해야 하는가」 하나이고, 뱃지는 그
+ * 물음의 요약이며 목록은 그 답이다.
+ */
+export interface ReviewListMessages {
+  readonly description: string
+  readonly loadingLabel: string
+  readonly unanswered: ReviewUnansweredMessages
+  readonly filters: ReviewFilterMessages
+  readonly card: ReviewCardMessages
+  readonly reply: ReviewReplyMessages
+  readonly pagination: PaginationMessages
+  readonly empty: EmptyStateMessages
+  readonly filteredEmpty: EmptyStateMessages
+  readonly errorTitle: string
+  readonly retry: string
+  /** 스토어가 없는 계정. 목록을 **부르지도 않는다** — 부르면 거절된다. */
+  readonly noStore: StoreAbsentMessages
+}
+
+/**
+ * 미답변 건수 뱃지 (F7).
+ *
+ * **`note` 가 이 슬라이스의 핵심이다.** 이 수는 필터를 걸어도 줄지 않는다 — 계약이
+ * 그렇게 보내고(`sellerProductReviewsResponseSchema`), 그 사실을 적지 않으면
+ * 「미답변만」을 켠 판매자는 목록의 줄 수와 뱃지가 다른 것을 버그로 읽는다.
+ */
+export interface ReviewUnansweredMessages {
+  readonly regionLabel: string
+  /** `{count}` — 답해야 할 리뷰의 수. 지금 화면에 몇 개인지가 아니다. */
+  readonly value: string
+  readonly note: string
+  /** 하나도 없다. 0을 큰 글씨로 쓰는 대신 문장으로 말한다. */
+  readonly none: string
+}
+
+/**
+ * 두 축 — 미답변만, 그리고 **이 별점 이하**.
+ *
+ * 4장이 정한 사용 패턴이 그대로 필터가 된다: 대응이 필요한 리뷰를 먼저 찾는 것.
+ * 「높은 평점만」이 없는 이유가 그것이고, 그 축은 이 화면에서 아무 일도 시키지 않는다.
+ */
+export interface ReviewFilterMessages {
+  readonly legend: string
+  readonly unansweredOnlyLabel: string
+  readonly maxRatingLabel: string
+  readonly maxRatingAll: string
+  /** `{rating}` — 「2점 이하」. 5점은 목록에 없다: 전체와 같은 뜻이기 때문이다. */
+  readonly maxRatingOption: string
+  readonly reset: string
+}
+
+/** 리뷰 한 장이 말하는 것. */
+export interface ReviewCardMessages {
+  readonly listLabel: string
+  /** `{rating}` — 별 다섯 개는 보조 기술에게 숫자가 아니다. 이 문장이 숫자다. */
+  readonly ratingValue: string
+  /** `{name}` — 어느 상품의 리뷰인가. 목록이 상품을 가로지르므로 줄마다 필요하다. */
+  readonly productLabel: string
+  /** `{option}` — 산 조합(「블랙 / M」). 주문 항목의 스냅샷에서 온다. */
+  readonly optionLabel: string
+  /** `{name}` — 가려진 이름(`홍*동`). 가리는 일은 서버가 이미 했다. */
+  readonly authorLabel: string
+  /** `{date}` */
+  readonly writtenAt: string
+  /**
+   * `{count}` — 사진이 **몇 장 붙어 있는지**.
+   *
+   * 그림을 그리지 않는 이유는 **판매자가 여기서 하는 일이 답을 쓰는 것**이기
+   * 때문이다. 계약은 주소를 함께 보내 주지만(`images[].url`), 사진은 그 판단에 거의
+   * 쓰이지 않으면서 목록의 높이를 몇 배로 만든다 — 사진을 봐야 하는 리뷰는 상품
+   * 상세에서 본다.
+   */
+  readonly photoCount: string
+  readonly unansweredBadge: string
+  readonly answeredBadge: string
+}
+
+/**
+ * 답변을 쓰고 · 고치고 · 지우는 자리 (F1 · F3).
+ *
+ * **「작성」과 「수정」이 같은 버튼이 아니다** — 문구만 갈리고 가는 곳은 하나다.
+ * 리뷰당 답변이 하나이고 그것을 기본키가 만들므로(`ReviewReply`), 두 번째 답변이
+ * 저장될 자리가 없다. 화면에 문을 둘 두면 하나는 언젠가 400 을 받는다.
+ */
+export interface ReviewReplyMessages {
+  readonly heading: string
+  /** `{brand}` — 구매자에게 이 답변이 누구의 것으로 보이는가. */
+  readonly authorLine: string
+  /** `{date}` */
+  readonly updatedAt: string
+  readonly writeLabel: string
+  readonly editLabel: string
+  readonly deleteLabel: string
+  readonly cancelLabel: string
+  readonly saveLabel: string
+  readonly contentLabel: string
+  /** `{max}` — 상한은 계약의 상수에서 온다. 문장에 숫자를 적지 않는다. */
+  readonly contentHint: string
+  readonly contentPlaceholder: string
+  readonly errors: ReplyFieldErrorMessages
+  readonly errorTitle: string
+  readonly submitFailed: string
+  readonly savedNotice: string
+  readonly deletedNotice: string
+  readonly failureTitle: string
+  readonly refusals: ReviewReplyRefusalMessages
+  readonly confirm: ReviewReplyConfirmMessages
+}
+
+/**
+ * 두 거절만 자기 문장을 갖는다 (F2).
+ *
+ * `other` 가 빠져 있는 것이 설계다 — 그 밖의 실패는 `errors` 카탈로그가 코드로
+ * 답하고, 여기에 문장을 하나 더 두면 이미 답한 것을 두 번째로 답하게 된다. 그 둘은
+ * 언젠가 갈리고, 그때 같은 500 이 화면마다 다른 말을 한다.
+ *
+ * `Exclude` 로 키를 잡아 두었으므로 거절이 하나 늘면 여기가 typecheck 에서 걸린다.
+ */
+export type ReviewReplyRefusalMessages = Readonly<Record<Exclude<ReplyRefusal, 'other'>, string>>
+
+/** 답변 삭제 확인. **되돌릴 수 없는 걸음**이라 묻는다. */
+export interface ReviewReplyConfirmMessages {
+  readonly title: string
+  readonly description: string
+  readonly confirm: string
+  readonly cancel: string
+  readonly closeLabel: string
 }

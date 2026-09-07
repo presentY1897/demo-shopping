@@ -15,6 +15,7 @@ import type {
   OrderStatus,
   PointTransactionType,
   ReturnReason,
+  ReviewSortKey,
   SearchSort,
   UserCouponStatus,
   UserFacingErrorCode,
@@ -26,14 +27,15 @@ import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { CardTransactionKind } from '@/lib/cards/cards-api'
 import type { ClaimDraftIssue } from '@/lib/claims/claim-draft'
-import type { ReturnPhotoRejection } from '@/lib/claims/return-photos'
-import type { ReturnPhotoStatus } from '@/lib/claims/use-return-photos'
 import type { HealthFailureReason } from '@/lib/health'
 import type { OrderPeriod, OrderStatusFilter } from '@/lib/orders/order-filters'
 import type { OrderStage, OrderStageState } from '@/lib/orders/order-stages'
 import type { CardBlock } from '@/lib/payment/cards'
 import type { CardStatus } from '@/lib/payment/payment-api'
 import type { TossConfirmFailure, TossFailureKind } from '@/lib/payment/toss-return'
+import type { ReviewDraftIssue } from '@/lib/reviews/review-draft'
+import type { PhotoUploadRejection } from '@/lib/uploads/photo-uploads'
+import type { PhotoUploadStatus } from '@/lib/uploads/use-photo-uploads'
 import type { OrderRefusal, PaymentRefusal, PaymentStep } from '@/lib/payment/use-payment'
 
 /**
@@ -165,6 +167,8 @@ export interface MyPageMessages {
   readonly orderDetail: OrderDetailMessages
   /** 취소·반품 신청 (TASK-0066). */
   readonly claim: ClaimRequestMessages
+  /** 리뷰 쓸 수 있는 주문과 작성 폼 (TASK-0083 F6 · F7). */
+  readonly reviews: ReviewWriteMessages
   /** A request that never got an answer. Keyed by the reason it did not. */
   readonly failures: Readonly<Record<ApiFailureReason, string>>
   /**
@@ -246,6 +250,26 @@ export const myPageErrorCodes = [
   'COUPON_ISSUE_EXHAUSTED',
   'COUPON_SUSPENDED',
   'COUPON_DEMO_ONLY',
+  /**
+   * 리뷰의 거절 일곱 (TASK-0083 F3 · F5 · F6).
+   *
+   * **일곱이 여기 있는 이유는 앞의 두 무리와 같다.** 배송을 기다리는 사람과, 이미 쓴
+   * 리뷰를 고쳐야 하는 사람과, 기한이 지나 할 수 있는 일이 없는 사람과, 주문 자체가
+   * 취소된 사람은 **다음에 할 일이 전부 다르다.** 계약이 코드를 넷으로 나눈 이유가 그
+   * 차이이므로(`error-codes.ts`), 화면이 하나로 뭉치면 서버가 한 일이 화면에서 없던
+   * 일이 된다.
+   *
+   * `REVIEW_IMAGE_TOO_MANY` 는 `params.max` 를 문장에 끼워 넣어야 한다 — 코드를 모르면
+   * 화면은 서버 문장을 그대로 흘려 **`{max}` 를 그대로 그린다.** `RETURN_PHOTO_TOO_MANY`
+   * 가 목록에 들어온 것과 같은 이유다.
+   */
+  'REVIEW_NOT_DELIVERED',
+  'REVIEW_ALREADY_WRITTEN',
+  'REVIEW_WINDOW_CLOSED',
+  'REVIEW_ORDER_CANCELED',
+  'REVIEW_EDIT_WINDOW_CLOSED',
+  'REVIEW_IMAGE_TOO_MANY',
+  'REVIEW_IMAGE_FOREIGN',
 ] as const satisfies readonly UserFacingErrorCode[]
 
 export type MyPageErrorCode = (typeof myPageErrorCodes)[number]
@@ -261,6 +285,8 @@ export interface MyPageNavMessages {
   readonly coupons: string
   /** 적립금 내역 (TASK-0077). */
   readonly points: string
+  /** 리뷰 쓸 수 있는 주문 (TASK-0083 F7). */
+  readonly reviews: string
 }
 
 /**
@@ -896,7 +922,7 @@ export interface ClaimRequestMessages {
    */
   readonly returnReasonLegend: string
   readonly returnReasons: Readonly<Record<ReturnReason, ToggleCopy>>
-  readonly photos: ClaimPhotoMessages
+  readonly photos: PhotoUploadMessages
   readonly submit: string
   readonly submitting: string
   readonly submitErrorTitle: string
@@ -908,12 +934,17 @@ export interface ClaimRequestMessages {
 }
 
 /**
- * 하자 반품의 증거 사진 (TASK-0067 F2).
+ * 사진을 붙이는 칸의 문구 (TASK-0067 F2 · TASK-0083 F6).
  *
- * **하자·오배송 사유에서만 그려진다.** 단순 변심에는 뒤집을 것이 없어 증거를 받을
- * 이유가 없고, 받아 두면 아무도 보지 않는 이미지와 지우지 못하는 개인정보만 쌓인다.
+ * **두 화면이 같은 모양을 쓰고 문장은 각자 갖는다.** 하자 반품의 증거 사진과 리뷰
+ * 사진은 올리는 흐름이 같아 컴포넌트가 하나지만(`components/uploads/photo-field.tsx`),
+ * 하는 말은 다르다 — 한쪽은 「하자가 보이는 사진」이고 다른 쪽은 「받은 물건의 사진」이다.
+ * 그래서 이 타입은 `mypage.claim.photos` 와 `mypage.reviews.form.photos` 두 곳에 놓인다.
+ *
+ * 반품 쪽은 **하자·오배송 사유에서만 그려진다.** 단순 변심에는 뒤집을 것이 없어 증거를
+ * 받을 이유가 없고, 받아 두면 아무도 보지 않는 이미지와 지우지 못하는 개인정보만 쌓인다.
  */
-export interface ClaimPhotoMessages {
+export interface PhotoUploadMessages {
   readonly legend: string
   /** 파일을 고르는 자리의 이름. 끌어다 놓는 것도 같은 자리다. */
   readonly dropLabel: string
@@ -927,21 +958,183 @@ export interface ClaimPhotoMessages {
    * 그래서 보이는 글자는 짧게 두고 접근 가능한 이름에 파일 이름을 넣는다 (P4).
    */
   readonly removeNamed: string
-  readonly statuses: Readonly<Record<ReturnPhotoStatus, string>>
+  readonly statuses: Readonly<Record<PhotoUploadStatus, string>>
   /**
    * 왜 못 올렸는가.
    *
-   * 넷을 나누는 기준은 **사람이 할 일이 다른가**다 — 형식과 크기는 다른 파일을
+   * 다섯을 나누는 기준은 **사람이 할 일이 다른가**다 — 형식과 크기는 다른 파일을
    * 고르는 일이고, 장수는 하나를 빼는 일이며, 마지막 둘은 다시 시도하는 일이다.
    *
    * `too_many` 만 `{max}` 를 갖는다. 계약의 상한을 화면이 숫자로 적어 두면 그 값이
    * 바뀌는 날 둘이 갈리고, 갈린 쪽은 **화면**이라 아무 검사도 실패하지 않는다.
    */
-  readonly failures: Readonly<Record<ClaimPhotoFailureKey, string>>
+  readonly failures: Readonly<Record<PhotoUploadFailureKey, string>>
 }
 
-export type ClaimPhotoFailureKey =
-  | ReturnPhotoRejection
+/**
+ * 리뷰 작성 화면 (TASK-0083 F6 · F7).
+ *
+ * ## 왜 「내가 쓴 리뷰」 목록이 아닌가
+ *
+ * 계약에 `GET /me/reviews` 가 없다 (`packages/shared/src/api/reviews.ts`). 있는 것은
+ * **쓸 수 있는 것**의 목록(`GET /me/reviewable-items`)과 리뷰 한 벌을 여는 문
+ * (`GET /reviews/:id`)뿐이다. 그래서 이 화면은 「쓸 수 있는 주문」을 늘어놓고, 방금
+ * 쓴 리뷰만 그 자리에서 고치거나 지운다 — 없는 라우트를 화면이 지어내면 서버가 절대
+ * 답하지 않는 요청이 생기고, 모킹한 검사는 그것을 통과시킨다 (CLAUDE.md 2장).
+ */
+export interface ReviewWriteMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly loadErrorTitle: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly listLabel: string
+  /** `{count}` — 지금 쓸 수 있는 주문의 수. */
+  readonly countLabel: string
+  readonly moreLabel: string
+  readonly moreLoading: string
+  /** `{date}` — 배송완료 시각. 기한을 세는 기준이 무엇인지 말한다. */
+  readonly deliveredAt: string
+  readonly window: ReviewWindowMessages
+  readonly writeLabel: string
+  readonly cancelLabel: string
+  readonly form: ReviewFormMessages
+  readonly written: ReviewWrittenMessages
+}
+
+/**
+ * 남은 기간, 세 갈래 (F7).
+ *
+ * **날짜를 화면이 만들지 않는다.** 서버가 `writableUntil` 을 계산해 내려보내므로
+ * (`reviewableItemSchema`) 여기서 하는 일은 그것을 오늘로부터 며칠인지로 옮기는 것뿐이고,
+ * 그 셋을 나누는 이유는 사람이 할 일이 다르기 때문이다 — 마지막 날에 「1일 남음」이라고
+ * 쓰면 내일도 되는 것처럼 읽힌다 (`lib/reviews/writable-window.ts`).
+ */
+export interface ReviewWindowMessages {
+  /** `{days}` */
+  readonly daysLeft: string
+  readonly lastDay: string
+  readonly expired: string
+  /** `{date}` — 언제까지인지. 남은 날과 함께 읽는다. */
+  readonly until: string
+}
+
+/** 별점·본문·사진을 받는 폼 (F6). */
+export interface ReviewFormMessages {
+  readonly legend: string
+  readonly ratingLegend: string
+  /** `{score}` — 별 하나의 접근 가능한 이름. 별은 그림이고 이름이 값을 나른다. */
+  readonly ratingOption: string
+  readonly contentLabel: string
+  /** `{max}` — 계약이 정한 글자 수. 화면이 숫자를 적어 두면 둘이 갈린다. */
+  readonly contentHint: string
+  readonly contentPlaceholder: string
+  /**
+   * 보내기 전에 걸리는 넷. 서버 규칙이 아니라 **요청이 되기 전의** 것이다
+   * (`lib/reviews/review-draft.ts`).
+   *
+   * `content_too_long` 만 `{max}` 를 갖는다. 계약의 상한을 화면이 숫자로 적어 두면 그
+   * 값이 바뀌는 날 둘이 갈리고, 갈린 쪽은 화면이라 아무 검사도 실패하지 않는다.
+   */
+  readonly issues: Readonly<Record<ReviewDraftIssue, string>>
+  readonly photos: PhotoUploadMessages
+  readonly submit: string
+  readonly submitting: string
+  readonly submitErrorTitle: string
+  readonly saveLabel: string
+  readonly saving: string
+}
+
+/**
+ * 방금 쓴 리뷰 (F4 · F5).
+ *
+ * **이 화면이 다루는 것은 이번에 쓴 리뷰뿐이라고 말한다.** 계약에 「내가 쓴 리뷰」
+ * 목록이 없어서 생긴 경계이고, 말하지 않으면 사람은 어제 쓴 리뷰를 여기서 찾다가
+ * 없다고 결론짓는다.
+ */
+export interface ReviewWrittenMessages {
+  readonly title: string
+  readonly body: string
+  readonly sessionOnlyNotice: string
+  readonly editLabel: string
+  readonly deleteLabel: string
+  readonly deleting: string
+  readonly deleteConfirm: string
+  readonly deleteConfirmOk: string
+  readonly deleteConfirmCancel: string
+  readonly deletedNotice: string
+  readonly changeErrorTitle: string
+}
+
+/**
+ * 상품 상세의 리뷰 (TASK-0084 F1 · F5 · F6).
+ *
+ * **평점 요약은 그래프 없이도 읽힌다** (F8). 분포 막대는 `aria-hidden` 이고, 같은
+ * 사실이 「별 다섯 12건 · 40%」처럼 글로도 놓인다 — 그래프만 있는 요약은 화면을 보지
+ * 않는 사람에게 아무 값도 전달하지 않는다.
+ */
+export interface ProductReviewsMessages {
+  readonly heading: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  /** 미니멀 단계의 「링크만」. `{count}` — 리뷰 수. */
+  readonly expandLabel: string
+  /** `{score}` · `{count}` — 그래프 없이 읽는 한 줄. */
+  readonly summaryLabel: string
+  /** `{score}` — 별 그림의 접근 가능한 이름. */
+  readonly starsLabel: string
+  readonly distributionLabel: string
+  /** `{rating}` · `{count}` · `{percentage}` — 막대 하나를 글로 옮긴 것. */
+  readonly bucketLabel: string
+  /**
+   * 분포와 평균은 **필터와 무관하다** (`ratingSummarySchema`).
+   *
+   * 「사진 리뷰만 보기」를 켜도 숫자가 그대로이므로, 말하지 않으면 사람은 화면이
+   * 필터를 무시했다고 읽는다.
+   */
+  readonly summaryScopeNotice: string
+  readonly sortLabel: string
+  readonly sorts: Readonly<Record<ReviewSortKey, string>>
+  /** `{count}` — 사진이 붙은 리뷰의 수. */
+  readonly photoOnlyLabel: string
+  readonly photoOnlyEmpty: string
+  /** `{count}` — 이 리뷰에 붙은 사진의 수. */
+  readonly photoCountBadge: string
+  readonly galleryLabel: string
+  /**
+   * 붙은 사진에 **주소가 없을 때** (`reviewImageSchema.url === null`).
+   *
+   * 저장소를 아직 붙이지 않은 배포에서 일어난다 (TASK-0011 4.5 가 그 상태를 지원되는
+   * 것으로 두었다). 그때 빈 `<img>` 를 그리면 깨진 그림이 뜨므로 사진만 빠지고, 이
+   * 문장이 왜 안 보이는지를 말한다 — 사진을 못 보는 것과 리뷰를 못 읽는 것은 다른
+   * 일이다.
+   */
+  readonly photosPending: string
+  /** `{index}` — 리뷰에 붙은 사진 하나의 대체 텍스트. */
+  readonly imageAlt: string
+  /** `{option}` — 산 조합. 리뷰를 읽는 사람이 가장 먼저 묻는 것이다. */
+  readonly optionLabel: string
+  /** `{count}` */
+  readonly helpfulLabel: string
+  readonly helpfulPressedLabel: string
+  /** `{count}` — 로그인하지 않은 사람에게. 수는 보이고, 누르면 401 이 아니라 로그인으로 간다. */
+  readonly helpfulSignInLabel: string
+  readonly helpfulErrorNotice: string
+  /** `{brand}` — 판매자 답변 (TASK-0085 이 쓴 것을 여기서 읽는다). */
+  readonly replyLabel: string
+  readonly reportLabel: string
+  readonly reportComingSoon: string
+  readonly listLabel: string
+  readonly moreLabel: string
+  readonly moreLoading: string
+}
+
+export type PhotoUploadFailureKey =
+  | PhotoUploadRejection
   /** presign 이 거절했다. 서버 문장이 이유를 말한다 */
   | 'api'
   /** 버킷이 거절했다. 봉투가 없으므로 우리가 할 말을 정한다 */
@@ -1511,6 +1704,8 @@ export interface ProductDetailMessages {
   readonly options: ProductOptionMessages
   readonly purchase: ProductPurchaseMessages
   readonly info: ProductInfoMessages
+  /** 리뷰와 평점 (TASK-0084). `info` 가 자리만 갖고 있던 것을 대신한다. */
+  readonly reviews: ProductReviewsMessages
 }
 
 export interface ProductGalleryMessages {
@@ -1570,11 +1765,6 @@ export interface ProductInfoMessages {
   readonly shippingDetailed: string
   /** `{date}` — maximal only. */
   readonly estimatedArrival: string
-  readonly reviewsLabel: string
-  /** `{score}` · `{count}` */
-  readonly reviewsSummary: string
-  readonly reviewsLink: string
-  readonly reviewsComingSoon: string
   readonly inquiriesLabel: string
   readonly inquiriesComingSoon: string
   readonly recommendationsLabel: string

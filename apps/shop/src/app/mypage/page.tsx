@@ -48,6 +48,11 @@ export default function MyPage() {
               </Link>
             </li>
             <li>
+              <Link className="text-primary text-sm font-medium underline" href="/mypage/reviews">
+                {nav.reviews}
+              </Link>
+            </li>
+            <li>
               <Link className="text-primary text-sm font-medium underline" href="/mypage/settings">
                 {nav.settings}
               </Link>

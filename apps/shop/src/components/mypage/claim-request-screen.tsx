@@ -14,7 +14,6 @@ import {
   Button,
   Checkbox,
   DataList,
-  ImageDropZone,
   Radio,
   RadioGroup,
   Select,
@@ -33,17 +32,12 @@ import {
   withQuantity,
 } from '@/lib/claims/claim-draft'
 import { refusalOfFailure, refusalSentence } from '@/lib/claims/claim-refusal'
-import { RETURN_PHOTO_ACCEPT, returnPhotosRequired } from '@/lib/claims/return-photos'
+import { returnPhotosRequired } from '@/lib/claims/return-photos'
 import { useClaimRequest } from '@/lib/claims/use-claim-request'
-import type { ReturnPhoto, ReturnPhotos } from '@/lib/claims/use-return-photos'
-import { useReturnPhotos } from '@/lib/claims/use-return-photos'
-import type {
-  ClaimPhotoFailureKey,
-  ClaimPhotoMessages,
-  ClaimRequestMessages,
-  ClaimTypeMessages,
-  MyPageMessages,
-} from '@/messages'
+import { usePhotoUploads } from '@/lib/uploads/use-photo-uploads'
+import type { ClaimRequestMessages, ClaimTypeMessages, MyPageMessages } from '@/messages'
+
+import { PhotoField } from '../uploads/photo-field'
 
 import { AccountLoadFailure, AccountLoading, AccountWriteFailure } from './account-notices'
 
@@ -131,7 +125,7 @@ function ClaimForm({
   const [reason, setReason] = useState('')
   const [fault, setFault] = useState<ClaimFault>('CUSTOMER')
   const [returnReason, setReturnReason] = useState<ReturnReason>('CHANGE_OF_MIND')
-  const photos = useReturnPhotos()
+  const photos = usePhotoUploads({ purpose: 'return-photo', maxCount: RETURN_PHOTO_MAX_COUNT })
   const [failure, setFailure] = useState<ApiFailure | null>(null)
   const [submitted, setSubmitted] = useState<Claim | null>(null)
   /**
@@ -345,7 +339,7 @@ function ClaimForm({
                               ? copy.issues.photo_uploading
                               : ''
                         }
-                        photos={photos}
+                        uploads={photos}
                       />
                     ) : null}
                   </>
@@ -397,142 +391,6 @@ function ClaimForm({
       </DataList>
     </div>
   )
-}
-
-/**
- * 사진을 고르고, 올라가는 것을 보여 주고, 뺀다 (TASK-0067 F2).
- *
- * **고르는 자리는 `ImageDropZone` 을 그대로 쓴다.** 그 컴포넌트가 이미 진짜
- * `<input type="file">` 을 탭 순서에 두고 패널을 그 라벨로 삼는다 — 끌어다 놓는
- * 것은 키보드로 못 하는 일이라 **더해진** 것일 뿐이라는 성질이 거기 적혀 있고,
- * 여기서 그것을 다시 만들면 그 성질을 한 벌 더 지켜야 한다.
- *
- * 반면 목록은 이 화면의 것이다. `ImageUploadList` 는 **순서가 모델**인 갤러리라
- * 「대표」와 앞뒤 이동을 갖는데, 증거 사진에 대표는 없다 — 없는 뜻을 가진 버튼을
- * 세 개 그리는 것보다 「무엇이 붙었고 무엇이 실패했는가」만 말하는 편이 낫다.
- *
- * **미리보기를 그리지 않는 것도 결정이다.** 하자 사진은 사람이 방금 고른 파일이고
- * 무엇을 골랐는지는 파일 이름이 말한다. 객체 URL 을 만들면 그것을 되돌려 주는 일
- * (`revokeObjectURL`)이 이 화면의 생애주기에 하나 더 붙는데, 그 값이 여기서는
- * 크지 않다.
- */
-function PhotoField({
-  copy,
-  invalid,
-  issue,
-  photos,
-}: {
-  readonly copy: ClaimPhotoMessages
-  readonly invalid: boolean
-  /** 지금 보일 문장. 없으면 빈 문자열이다 — 자리는 남는다 (U2). */
-  readonly issue: string
-  readonly photos: ReturnPhotos
-}) {
-  const hintId = useId()
-  const issueId = useId()
-  const full = photos.photos.length >= RETURN_PHOTO_MAX_COUNT
-
-  return (
-    <fieldset aria-describedby={`${hintId} ${issueId}`} className="flex flex-col gap-2">
-      <legend className="text-fg text-sm font-medium">{copy.legend}</legend>
-
-      <p className="text-fg-muted text-xs" id={hintId}>
-        {copy.hint.replace('{max}', String(RETURN_PHOTO_MAX_COUNT))}
-      </p>
-
-      {/*
-        상한을 채우면 고르는 자리를 **비활성**으로 둔다. 감추면 왜 못 고르는지
-        말할 자리가 사라지고, 한 장을 빼면 다시 나타나는 칸을 사람이 예측할 수 없다.
-      */}
-      <ImageDropZone
-        accept={RETURN_PHOTO_ACCEPT}
-        disabled={full}
-        dropLabel={copy.droppingLabel}
-        label={copy.dropLabel}
-        multiple
-        onFiles={(files) => {
-          photos.add(files)
-        }}
-      />
-
-      {photos.photos.length === 0 ? null : (
-        <ul aria-label={copy.listLabel} className="flex flex-col gap-2">
-          {photos.photos.map((photo) => (
-            <PhotoRow
-              copy={copy}
-              key={photo.id}
-              onRemove={() => {
-                photos.remove(photo.id)
-              }}
-              photo={photo}
-            />
-          ))}
-        </ul>
-      )}
-
-      <p className={invalid ? 'text-danger text-sm' : 'text-fg-muted text-sm'} id={issueId}>
-        {issue}
-      </p>
-    </fieldset>
-  )
-}
-
-/**
- * 한 장의 줄 — 이름, 지금 상태, 그리고 뺄 수 있는 버튼.
- *
- * **실패한 장도 목록에 남는다.** 조용히 사라지면 사람은 다섯 장을 골랐는데 네
- * 장만 붙은 이유를 알 수 없고, 그 넷 중 어느 것이 빠졌는지도 모른다.
- */
-function PhotoRow({
-  copy,
-  photo,
-  onRemove,
-}: {
-  readonly copy: ClaimPhotoMessages
-  readonly photo: ReturnPhoto
-  readonly onRemove: () => void
-}) {
-  return (
-    <li className="border-border bg-surface flex items-center gap-3 rounded-md border px-3 py-2">
-      <span className="text-fg min-w-0 flex-1 truncate text-sm">{photo.name}</span>
-
-      {/*
-        상태를 색이 아니라 **말**로 나른다 (WCAG 1.4.1).
-
-        `role="status"` 를 **줄이 살아 있는 내내** 둔다. 올라가는 동안에만 두면 다
-        올라간 순간에 살아 있는 영역 자체가 사라지므로 바뀐 문장이 읽히지 않고,
-        그 순간이야말로 화면을 안 보는 사람이 기다리던 순간이다.
-      */}
-      <span
-        className={photo.status === 'failed' ? 'text-danger text-xs' : 'text-fg-muted text-xs'}
-        role="status"
-      >
-        {photo.failure === null
-          ? copy.statuses[photo.status]
-          : copy.failures[failureKeyOf(photo.failure)].replace(
-              '{max}',
-              String(RETURN_PHOTO_MAX_COUNT),
-            )}
-      </span>
-
-      <Button
-        aria-label={copy.removeNamed.replace('{name}', photo.name)}
-        onClick={onRemove}
-        size="sm"
-        type="button"
-        variant="ghost"
-      >
-        {copy.remove}
-      </Button>
-    </li>
-  )
-}
-
-/** 실패 넷을 문장표의 열쇠로. 갈래가 늘면 `Record` 가 컴파일로 막는다. */
-function failureKeyOf(failure: NonNullable<ReturnPhoto['failure']>): ClaimPhotoFailureKey {
-  if (failure.kind === 'rejected') return failure.reason
-
-  return failure.kind
 }
 
 /** 제목과, 신청할 수 없으면 그 이유. 둘이 한 자리인 것은 둘 다 「무엇에 대한 화면인가」라서다. */

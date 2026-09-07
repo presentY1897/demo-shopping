@@ -283,10 +283,6 @@ export const ko: Messages = {
       shippingDetailed:
         '무료배송입니다. 오후 2시 이전 주문은 당일 출고되며, 평균 2~3일 안에 받아보실 수 있습니다.',
       estimatedArrival: '{date} 도착 예정',
-      reviewsLabel: '리뷰',
-      reviewsSummary: '{score} · 리뷰 {count}건',
-      reviewsLink: '리뷰 보기',
-      reviewsComingSoon: '리뷰는 준비 중입니다.',
       inquiriesLabel: '문의',
       inquiriesComingSoon: '상품 문의는 준비 중입니다.',
       recommendationsLabel: '함께 보면 좋은 상품',
@@ -296,6 +292,52 @@ export const ko: Messages = {
         rating: '평점 {score}',
         lowStock: '{count}개 남음',
       },
+    },
+    reviews: {
+      heading: '리뷰',
+      loadingLabel: '리뷰를 불러오는 중입니다',
+      errorTitle: '리뷰를 불러오지 못했습니다',
+      retryLabel: '다시 시도',
+      emptyTitle: '아직 리뷰가 없습니다',
+      emptyBody: '이 상품을 사고 받으신 분이 첫 리뷰를 남길 수 있습니다.',
+      // 미니멀 단계의 「링크만」. 리뷰 전용 라우트가 없으므로 그 자리에서 펼친다.
+      expandLabel: '리뷰 {count}건 보기',
+      // 그래프 없이도 평점을 알 수 있는 한 줄 (F8). 분포 막대는 이 문장의 그림이다.
+      summaryLabel: '평점 {score} · 리뷰 {count}건',
+      starsLabel: '5점 만점에 {score}점',
+      distributionLabel: '별점 분포',
+      bucketLabel: '{rating}점 {count}건 {percentage}%',
+      // 계약이 요약을 필터와 무관하게 내려보낸다. 말하지 않으면 사람은 화면이
+      // 필터를 무시했다고 읽는다.
+      summaryScopeNotice: '평점과 분포는 필터와 상관없이 전체 리뷰 기준입니다.',
+      sortLabel: '정렬',
+      sorts: {
+        latest: '최신순',
+        rating: '평점순',
+        helpful: '도움순',
+      },
+      photoOnlyLabel: '사진 리뷰만 보기 ({count})',
+      photoOnlyEmpty: '사진이 있는 리뷰가 아직 없습니다.',
+      photoCountBadge: '사진 {count}장',
+      galleryLabel: '사진 리뷰',
+      // 저장소를 아직 붙이지 않은 배포에서는 열쇠만 있고 주소가 없다. 사진만 빠지고
+      // 리뷰는 그대로 읽힌다 — 둘은 다른 일이다.
+      photosPending: '사진을 불러오지 못했습니다. 리뷰 내용은 그대로 확인할 수 있습니다.',
+      imageAlt: '리뷰 사진 {index}',
+      optionLabel: '구매 옵션: {option}',
+      helpfulLabel: '도움돼요 {count}',
+      helpfulPressedLabel: '도움돼요 취소',
+      // 수는 누구에게나 사실이라 로그인하지 않은 사람도 본다. 다만 누르는 자리는
+      // 버튼이 아니라 로그인으로 가는 링크다 — 눌러서 401 을 받는 것은 사람이 고칠
+      // 수 없는 실패다.
+      helpfulSignInLabel: '도움돼요 {count} · 로그인하고 누르기',
+      helpfulErrorNotice: '도움돼요를 반영하지 못했습니다. 잠시 후 다시 시도해주세요.',
+      replyLabel: '{brand} 답변',
+      reportLabel: '신고',
+      reportComingSoon: '리뷰 신고는 준비 중입니다.',
+      listLabel: '리뷰 목록',
+      moreLabel: '리뷰 더 보기',
+      moreLoading: '리뷰를 더 불러오는 중',
     },
   },
   cart: {
@@ -610,6 +652,7 @@ export const ko: Messages = {
       cards: '가상 카드',
       coupons: '쿠폰함',
       points: '적립금',
+      reviews: '리뷰 쓰기',
     },
     // 코드는 error.code 그대로다. 전수가 아니라 이 화면들이 실제로 분기하는
     // 것만 적는다 — 나머지는 서버 문장이 그대로 나온다(TASK-0112 4장).
@@ -642,6 +685,21 @@ export const ko: Messages = {
       COUPON_ISSUE_EXHAUSTED: '준비된 수량이 모두 나갔습니다.',
       COUPON_SUSPENDED: '발행이 멈춘 쿠폰입니다. 다시 열릴 수 있으니 나중에 시도해주세요.',
       COUPON_DEMO_ONLY: '체험 계정만 받을 수 있는 쿠폰입니다.',
+      // 리뷰의 거절 일곱 (TASK-0083). 문장이 일곱인 것은 **다음에 할 일이 일곱
+      // 가지로 다르기** 때문이다 — 기다리는 사람, 고치는 사람, 할 수 있는 일이
+      // 없는 사람, 사진을 빼야 하는 사람은 같은 문장을 읽어서는 안 된다.
+      REVIEW_NOT_DELIVERED: '배송이 완료된 뒤에 리뷰를 쓸 수 있습니다.',
+      REVIEW_ALREADY_WRITTEN: '이미 리뷰를 쓴 주문입니다. 쓴 리뷰를 고쳐주세요.',
+      REVIEW_WINDOW_CLOSED: '리뷰를 쓸 수 있는 기간이 지났습니다.',
+      REVIEW_ORDER_CANCELED: '취소된 주문에는 리뷰를 쓸 수 없습니다.',
+      REVIEW_EDIT_WINDOW_CLOSED:
+        '리뷰를 고칠 수 있는 기간(작성 후 30일)이 지났습니다. 지금 보이는 내용이 최종본입니다.',
+      // {max} 는 서버가 실어 보낸 값이다. 화면이 숫자를 적어 두면 계약의 상한이
+      // 바뀌는 날 둘이 갈린다.
+      REVIEW_IMAGE_TOO_MANY: '사진은 최대 {max}장까지 첨부할 수 있습니다.',
+      // 없는 사진인지 남의 사진인지 구분해 말하지 않는다. 열쇠가 곧 소유자라,
+      // 갈라 답하면 남의 열쇠를 넣어 보는 것만으로 존재를 알 수 있다.
+      REVIEW_IMAGE_FOREIGN: '첨부할 수 없는 사진입니다. 사진을 다시 첨부해주세요.',
     },
     failures: {
       network: 'API 서버에 닿지 못했습니다. 잠시 뒤 다시 시도해주세요.',
@@ -1352,6 +1410,89 @@ export const ko: Messages = {
         // 아직 하지 않는 일을 한 것처럼 말하지 않는다 (TASK-0068 · 0069).
         refundPending: '환불은 처리가 끝난 뒤 결제하신 수단으로 진행됩니다.',
         backToOrder: '주문 상세로 돌아가기',
+      },
+    },
+    reviews: {
+      title: '리뷰 쓰기',
+      description: '배송이 완료된 주문에 리뷰를 남길 수 있습니다.',
+      loadingLabel: '리뷰를 쓸 수 있는 주문을 불러오는 중입니다',
+      loadErrorTitle: '목록을 불러오지 못했습니다',
+      emptyTitle: '지금 쓸 수 있는 리뷰가 없습니다',
+      emptyBody: '배송이 완료되면 이 목록에 나타납니다. 이미 쓴 주문은 여기에 남지 않습니다.',
+      listLabel: '리뷰를 쓸 수 있는 주문',
+      countLabel: '{count}건',
+      moreLabel: '더 보기',
+      moreLoading: '더 불러오는 중',
+      deliveredAt: '{date} 배송완료',
+      window: {
+        // 기한은 서버가 계산해 보낸 값이다. 화면은 그것을 「며칠 남았나」로만 옮긴다.
+        daysLeft: '{days}일 남음',
+        // 마지막 날에 「1일 남음」이라고 쓰면 내일도 되는 것처럼 읽힌다.
+        lastDay: '오늘까지',
+        expired: '기간이 지났습니다',
+        until: '{date}까지',
+      },
+      writeLabel: '리뷰 쓰기',
+      cancelLabel: '접기',
+      form: {
+        legend: '리뷰 작성',
+        ratingLegend: '별점',
+        ratingOption: '{score}점',
+        contentLabel: '리뷰 내용',
+        contentHint: '{max}자까지 쓸 수 있습니다. 다른 분이 읽고 판단합니다.',
+        contentPlaceholder: '예) 사이즈는 정사이즈였고, 두께감이 생각보다 있었습니다.',
+        issues: {
+          rating_required: '별점을 골라주세요.',
+          content_required: '리뷰 내용을 입력해주세요.',
+          content_too_long: '리뷰는 {max}자까지 쓸 수 있습니다.',
+          photo_uploading: '사진을 다 올린 뒤에 등록할 수 있습니다.',
+        },
+        photos: {
+          legend: '사진 첨부',
+          dropLabel: '사진을 끌어다 놓거나 파일을 선택하세요',
+          droppingLabel: '여기에 놓으면 첨부됩니다',
+          // 장수를 화면이 정하지 않는다. 계약의 상한을 그대로 끼워 넣는다.
+          hint: 'JPG · PNG · WebP, 한 장당 5MB까지. 최대 {max}장 첨부할 수 있습니다.',
+          listLabel: '첨부한 사진',
+          remove: '첨부 취소',
+          // 같은 글자의 버튼이 여러 개라 읽어 주는 이름은 파일 이름으로 가른다 (P4).
+          removeNamed: '{name} 첨부 취소',
+          statuses: {
+            uploading: '올리는 중',
+            ready: '첨부됨',
+            failed: '올리지 못함',
+          },
+          failures: {
+            unsupported_type: 'JPG · PNG · WebP 사진만 첨부할 수 있습니다.',
+            too_large: '한 장당 5MB까지 첨부할 수 있습니다.',
+            too_many: '사진은 최대 {max}장까지 첨부할 수 있습니다.',
+            api: '사진을 올릴 수 없었습니다. 잠시 후 다시 시도해주세요.',
+            // 저장소는 우리 API 가 아니라 오류 봉투가 없다. 이유를 지어내는 대신
+            // 사람이 할 수 있는 일을 말한다.
+            storage: '사진 전송이 완료되지 않았습니다. 다시 첨부해주세요.',
+          },
+        },
+        submit: '리뷰 등록',
+        submitting: '등록하는 중',
+        submitErrorTitle: '리뷰를 등록하지 못했습니다',
+        saveLabel: '수정 저장',
+        saving: '저장하는 중',
+      },
+      written: {
+        title: '리뷰를 등록했습니다',
+        body: '상품 상세에서 바로 확인할 수 있습니다.',
+        // 계약에 「내가 쓴 리뷰」 목록이 없다. 말하지 않으면 어제 쓴 리뷰를 여기서
+        // 찾다가 없다고 결론짓는다.
+        sessionOnlyNotice:
+          '이 화면에서는 방금 쓴 리뷰만 고치거나 지울 수 있습니다. 지난 리뷰는 상품 상세에서 확인해주세요.',
+        editLabel: '수정',
+        deleteLabel: '삭제',
+        deleting: '삭제하는 중',
+        deleteConfirm: '이 리뷰를 지울까요? 지우면 같은 주문에 다시 쓸 수 없습니다.',
+        deleteConfirmOk: '삭제',
+        deleteConfirmCancel: '취소',
+        deletedNotice: '리뷰를 지웠습니다.',
+        changeErrorTitle: '리뷰를 바꾸지 못했습니다',
       },
     },
   },

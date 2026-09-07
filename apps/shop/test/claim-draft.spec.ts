@@ -28,7 +28,8 @@ import {
   withQuantity,
 } from '@/lib/claims/claim-draft'
 import { refusalOfFailure, refusalSentence } from '@/lib/claims/claim-refusal'
-import { checkReturnPhoto, returnPhotosRequired } from '@/lib/claims/return-photos'
+import { returnPhotosRequired } from '@/lib/claims/return-photos'
+import { checkPhotoUpload } from '@/lib/uploads/photo-uploads'
 import { messagesFor } from '@/messages'
 
 const sentences = messagesFor().mypage.claim.refusals
@@ -148,23 +149,35 @@ describe('1-1. 반품 신청서', () => {
  */
 describe('1-2. 고른 파일', () => {
   it('takes a jpeg under the cap', () => {
-    expect(checkReturnPhoto({ type: 'image/jpeg', size: 1024 }, 0)).toEqual({
-      ok: true,
-      contentType: 'image/jpeg',
-    })
+    expect(checkPhotoUpload({ type: 'image/jpeg', size: 1024 }, 0, RETURN_PHOTO_MAX_COUNT)).toEqual(
+      {
+        ok: true,
+        contentType: 'image/jpeg',
+      },
+    )
   })
 
   it('refuses a format the bucket does not accept', () => {
     // SVG 는 브라우저에서 실행되는 문서라 계약이 아예 받지 않는다.
-    expect(checkReturnPhoto({ type: 'image/svg+xml', size: 1024 }, 0)).toEqual({
+    expect(
+      checkPhotoUpload({ type: 'image/svg+xml', size: 1024 }, 0, RETURN_PHOTO_MAX_COUNT),
+    ).toEqual({
       ok: false,
       reason: 'unsupported_type',
     })
   })
 
   it('accepts a file exactly at the cap and refuses the next byte', () => {
-    expect(checkReturnPhoto({ type: 'image/png', size: UPLOAD_MAX_BYTES }, 0).ok).toBe(true)
-    expect(checkReturnPhoto({ type: 'image/png', size: UPLOAD_MAX_BYTES + 1 }, 0)).toEqual({
+    expect(
+      checkPhotoUpload({ type: 'image/png', size: UPLOAD_MAX_BYTES }, 0, RETURN_PHOTO_MAX_COUNT).ok,
+    ).toBe(true)
+    expect(
+      checkPhotoUpload(
+        { type: 'image/png', size: UPLOAD_MAX_BYTES + 1 },
+        0,
+        RETURN_PHOTO_MAX_COUNT,
+      ),
+    ).toEqual({
       ok: false,
       reason: 'too_large',
     })
@@ -172,7 +185,13 @@ describe('1-2. 고른 파일', () => {
 
   /** 장수를 먼저 보는 이유는 그 답이 파일과 무관하기 때문이다 — 여섯째는 무엇이든 안 된다. */
   it('refuses anything once the contract limit is already attached', () => {
-    expect(checkReturnPhoto({ type: 'image/png', size: 1 }, RETURN_PHOTO_MAX_COUNT)).toEqual({
+    expect(
+      checkPhotoUpload(
+        { type: 'image/png', size: 1 },
+        RETURN_PHOTO_MAX_COUNT,
+        RETURN_PHOTO_MAX_COUNT,
+      ),
+    ).toEqual({
       ok: false,
       reason: 'too_many',
     })

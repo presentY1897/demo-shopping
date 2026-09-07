@@ -21,6 +21,7 @@ import { messagesFor } from '@/messages'
 
 import { navigation } from './support/navigation'
 import { renderWithAuth } from './support/auth'
+import { stubReviewApi } from './support/reviews'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
 vi.mock('next/navigation', async () => {
@@ -45,6 +46,9 @@ function imagesWithoutAlt(): readonly string[] {
 beforeEach(() => {
   localStorage.clear()
   stubViewport(VIEWPORTS.desktop)
+  // 상품 상세가 리뷰 목록을 묻는다. 그 라우트는 `@shopping/api-mocks` 에 핸들러가
+  // 아직 없어 이 파일이 대역을 직접 세운다 (`test/support/reviews.ts`).
+  stubReviewApi()
 })
 
 afterEach(() => {
@@ -69,7 +73,7 @@ describe('F7 alt 누락 0건', () => {
   it('on a product, gallery and thumbnails included', async () => {
     navigation.start(`/products/${storefrontProductDetail.product.id}`)
 
-    render(
+    renderWithAuth(
       <DensityProvider>
         {await ProductPage({ params: Promise.resolve({ id: storefrontProductDetail.product.id }) })}
       </DensityProvider>,
@@ -98,7 +102,7 @@ describe('F7 alt 누락 0건', () => {
   it('gives a decorative thumbnail an empty alt rather than a description', async () => {
     navigation.start(`/products/${storefrontProductDetail.product.id}`)
 
-    render(
+    renderWithAuth(
       <DensityProvider>
         {await ProductPage({ params: Promise.resolve({ id: storefrontProductDetail.product.id }) })}
       </DensityProvider>,
