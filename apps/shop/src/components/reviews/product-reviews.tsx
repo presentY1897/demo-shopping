@@ -12,7 +12,7 @@ import { signInHref } from '@/lib/auth/next-path'
 import { REVIEW_PAGE_SIZE, reviewExposure } from '@/lib/reviews/exposure'
 import { ratingText } from '@/lib/reviews/rating'
 import { useProductReviews } from '@/lib/reviews/use-product-reviews'
-import type { ProductReviewsMessages } from '@/messages'
+import type { ProductReviewsMessages, RefusalMessages, ReportMessages } from '@/messages'
 
 import { RatingSummaryPanel } from './rating-summary'
 import { ReviewCard } from './review-card'
@@ -55,12 +55,17 @@ export function ProductReviews({
   productId,
   ratingAvg,
   ratingCount,
+  refusals,
+  report,
 }: {
   readonly copy: ProductReviewsMessages
   readonly productId: string
   /** 상품 상세가 이미 들고 있는 집계. 미니멀 단계는 이것만으로 그려진다. */
   readonly ratingAvg: number
   readonly ratingCount: number
+  /** 신고 다이얼로그가 쓰는 두 벌 (TASK-0091). 리뷰 한 장마다 하나가 붙는다. */
+  readonly refusals: RefusalMessages
+  readonly report: ReportMessages
 }) {
   const { density } = useDensity()
   const exposure = reviewExposure(density)
@@ -196,6 +201,8 @@ export function ProductReviews({
               exposureGallery={exposure.gallery}
               onHelpful={state.status === 'signedIn' ? reviews.toggleHelpful : null}
               photoOnly={reviews.photoOnly}
+              refusals={refusals}
+              report={report}
               reviews={shown}
               signIn={signIn}
             />
@@ -239,6 +246,8 @@ function ReviewBody({
   exposureGallery,
   onHelpful,
   photoOnly,
+  refusals,
+  report,
   reviews,
   signIn,
 }: {
@@ -246,6 +255,8 @@ function ReviewBody({
   readonly exposureGallery: boolean
   readonly onHelpful: ((reviewId: string, pressed: boolean) => void) | null
   readonly photoOnly: boolean
+  readonly refusals: RefusalMessages
+  readonly report: ReportMessages
   readonly reviews: readonly ReviewListEntry[]
   readonly signIn: string
 }) {
@@ -295,6 +306,8 @@ function ReviewBody({
             copy={copy}
             key={review.id}
             onHelpful={onHelpful}
+            refusals={refusals}
+            report={report}
             review={review}
             signInHref={signIn}
           />

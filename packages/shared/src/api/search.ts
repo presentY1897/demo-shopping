@@ -45,18 +45,41 @@ export const attributeFilterSchema = z.record(
 
 export type AttributeFilter = z.infer<typeof attributeFilterSchema>
 
+/**
+ * How many stores one search may hold down at once.
+ *
+ * The number is a **filter-expression** limit, not a product one: every id
+ * becomes a quoted clause in the string handed to the search engine, and that
+ * string has a length the engine will refuse. 50 is far past what a person
+ * follows and far short of that ceiling.
+ *
+ * A shopper who follows more than this sees the row built from their 50 most
+ * recent follows (TASK-0089 4.6) — a row of new arrivals is a prompt, not a
+ * ledger, so the oldest follows losing their place in it changes nothing the
+ * shopper can act on.
+ */
+export const SEARCH_SELLER_IDS_MAX = 50
+
 export const searchQuerySchema = z.object({
   q: searchTermSchema.optional(),
   categoryId: categoryIdSchema.optional(),
   /**
-   * One store's listings — the brand page (TASK-0044 4.2).
+   * These stores' listings — one held down is the brand page (TASK-0044 4.2),
+   * many is 「팔로우한 브랜드의 신상품」 on the home screen (TASK-0089 F6).
    *
    * The index has carried `sellerId` as a filterable field since TASK-0038; what
    * was missing was a way to ask for it. A brand page is a search with the store
    * held down, exactly as a category page is a search with the category held
    * down, so it is a filter here rather than an endpoint of its own.
+   *
+   * **It is a list, and there is only one of it.** The followed-brand row could
+   * have been an endpoint that reads the follows itself, but `pages.md` 「홈
+   * 섹션은 검색 API 다」 refuses that: a second name for the same query puts the
+   * definition of 「신상품」 in two places. So the caller says which stores, and
+   * a brand page says one. Matching is **OR** within the list — the same rule
+   * the attribute facets follow, because both are a row of checkboxes.
    */
-  sellerId: z.uuid().optional(),
+  sellerIds: z.array(z.uuid()).min(1).max(SEARCH_SELLER_IDS_MAX).optional(),
   priceMin: priceSchema.optional(),
   priceMax: priceSchema.optional(),
   /** `true` hides sold-out listings. Absent shows everything. */

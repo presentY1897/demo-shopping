@@ -178,6 +178,8 @@ class SellerStore {
       // the one `sessionSellerOwner`'s `own` scopes resolve against.
       id: this.row?.id ?? sellerPending.id,
       userId: this.row?.userId ?? sellerPending.userId,
+      // 갓 신청한 가게는 아직 아무도 팔로우하지 않았다.
+      followerCount: this.row?.followerCount ?? 0,
       brandName: input.brandName,
       slug: input.slug,
       introduction: input.introduction ?? null,

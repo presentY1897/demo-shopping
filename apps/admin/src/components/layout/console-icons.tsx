@@ -2,9 +2,10 @@
  * The two glyphs the top bar's reserved slots wear.
  *
  * In the app rather than in `packages/ui`: the shell owns its own furniture
- * (the nav toggle), but what goes in the slots is the app's business, and a
- * notification bell is not something every console will want in the same shape
- * once M11 gives it a real badge.
+ * (the nav toggle), but what goes in the slots is the app's business. The bell
+ * now carries a real unread badge, and the badge is drawn *around* this glyph by
+ * `NotificationSlot` rather than inside it — the icon stays a plain path, and
+ * the next console can wear it with a different count on it.
  *
  * The numbers are `viewBox` coordinates — geometry, not CSS lengths.
  */

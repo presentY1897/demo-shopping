@@ -6,6 +6,7 @@ import {
   productImageKey,
   resolveUploadExtension,
   returnPhotoKey,
+  reviewImageKey,
 } from './upload-rules.js'
 
 /**
@@ -125,10 +126,45 @@ describe('returnPhotoKey', () => {
   })
 
   it('never lands a return photo inside a store prefix', () => {
-    // The two builders exist so that the owner that was authorised and the
+    // The three builders exist so that the owner that was authorised and the
     // prefix that is written cannot be paired wrongly; this is that pairing,
-    // stated as an assertion rather than left to the reader of two signatures.
+    // stated as an assertion rather than left to the reader of three signatures.
     expect(returnPhotoKey(USER, OBJECT, 'png').startsWith('returns/')).toBe(true)
     expect(productImageKey(SELLER, OBJECT, 'png').startsWith('products/')).toBe(true)
+    expect(reviewImageKey(USER, OBJECT, 'png').startsWith('reviews/')).toBe(true)
+  })
+})
+
+describe('reviewImageKey', () => {
+  it('puts the person who will write the review in the key, not a store', () => {
+    // 사진은 리뷰를 만들기 **전에** 올라간다. 그래서 열쇠는 리뷰를 가리킬 수 없고,
+    // 열쇠 하나만 보고 누구 것인지 말할 수 있어야 남의 사진을 자기 리뷰에 붙이는
+    // 요청이 조용히 통과하지 않는다 (`isOwnImageKey`).
+    expect(reviewImageKey(USER, OBJECT, 'jpg')).toBe(`reviews/${USER}/${OBJECT}.jpg`)
+  })
+
+  it.each([
+    ['a user id that is not a UUID', 'user-1', OBJECT, 'png'],
+    ['an object id that is not a UUID', USER, 'object', 'png'],
+    ['an extension outside the whitelist', USER, OBJECT, 'exe'],
+    ['a user id carrying a path segment', `${USER}/..`, OBJECT, 'png'],
+  ])('refuses to build a key from %s', (_case, userId, objectId, extension) => {
+    expect(() => reviewImageKey(userId, objectId, extension)).toThrow(/스토리지 키/)
+  })
+
+  /**
+   * 세 접두어가 서로 겹치지 않는다.
+   *
+   * 겹치면 소유자 판정이 조회 없이 되는 근거가 무너진다 — 리뷰 사진 열쇠가 반품
+   * 접두어로도 읽히는 순간, 「이 사진은 내 것인가」에 두 가지 답이 생긴다.
+   */
+  it('keeps the three prefixes apart', () => {
+    const keys = [
+      productImageKey(SELLER, OBJECT, 'png'),
+      returnPhotoKey(USER, OBJECT, 'png'),
+      reviewImageKey(USER, OBJECT, 'png'),
+    ]
+
+    expect(new Set(keys.map((key) => key.split('/')[0])).size).toBe(3)
   })
 })

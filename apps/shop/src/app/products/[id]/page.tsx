@@ -151,8 +151,11 @@ export default async function ProductPage({
 
       <ProductDetail
         cartMessages={messages.cart}
+        collections={messages.collections}
         detail={detail}
         messages={messages.productDetail}
+        refusals={messages.refusals}
+        report={messages.report}
       />
     </>
   )

@@ -1,5 +1,6 @@
 import type { Seller, SellerStatus } from '@shopping/shared'
 import { Badge } from '@shopping/ui/components'
+import { fill } from '@/lib/products/product-form'
 import type { BadgeVariant } from '@shopping/ui/components'
 
 import type { StoreStatusMessages } from '@/messages'
@@ -46,7 +47,7 @@ export function StoreStatusNotice({
   /** So the section is named by its own heading rather than by a duplicate label. */
   readonly headingId: string
 }) {
-  const { status, statusReason } = seller
+  const { status, statusReason, followerCount } = seller
   const { title, body } = messages.notice[status]
 
   return (
@@ -62,6 +63,24 @@ export function StoreStatusNotice({
       </div>
 
       <p className="text-sm">{body}</p>
+
+      {/*
+       * 팔로워 수는 **영업 중일 때만** 보여준다 (TASK-0089 §3).
+       *
+       * 심사 중이거나 정지된 가게에서 이 수는 0이고, 0을 보여주는 것은 정보가 아니라
+       * 잡음이다 — 그 화면에서 사람이 알고 싶은 것은 심사가 어떻게 됐는가다.
+       *
+       * 여기 있는 이유: 없으면 판매자가 자기 팔로워 수를 보려고 **자기 가게의 공개
+       * 페이지를 열어야** 한다. 콘솔이 자기 가게에 대해 손님보다 모르는 상태가 된다.
+       */}
+      {status === 'ACTIVE' ? (
+        <dl className="text-sm">
+          <dt className="font-medium">{messages.followerLabel}</dt>
+          <dd className="tabular-nums">
+            {fill(messages.followerCount, { count: String(followerCount) })}
+          </dd>
+        </dl>
+      ) : null}
 
       {statusReason === null ? null : (
         <dl className="text-sm">

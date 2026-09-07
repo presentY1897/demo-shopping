@@ -14,6 +14,8 @@ import type {
   OauthNotice,
   OrderStatus,
   PointTransactionType,
+  ReportReason,
+  ReportTargetType,
   ReturnReason,
   ReviewSortKey,
   SearchSort,
@@ -27,6 +29,8 @@ import type { ComponentGalleryMessages } from '@shopping/ui/preview'
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { CardTransactionKind } from '@/lib/cards/cards-api'
 import type { ClaimDraftIssue } from '@/lib/claims/claim-draft'
+import type { QuestionDraftIssue } from '@/lib/questions/question-draft'
+import type { ReportDraftIssue } from '@/lib/reports/report-draft'
 import type { HealthFailureReason } from '@/lib/health'
 import type { OrderPeriod, OrderStatusFilter } from '@/lib/orders/order-filters'
 import type { OrderStage, OrderStageState } from '@/lib/orders/order-stages'
@@ -145,6 +149,21 @@ export interface Messages {
    * different screens and only this one is behind `RequireSignIn`.
    */
   readonly mypage: MyPageMessages
+  /**
+   * 찜 · 팔로우 · 최근 본 상품 (TASK-0086 · 0087 · 0089).
+   *
+   * 화면이 아니라 **컨트롤의 슬라이스**다. 셋 다 홈·상세·브랜드관에 흩어져 있어서
+   * 어느 화면의 것이라고 말할 수 없고, 화면별로 나누면 같은 낱말이 세 벌이 된다.
+   */
+  readonly collections: CollectionMessages
+  /** 신고 다이얼로그 (TASK-0091). 대상이 넷이라 어느 대상의 것도 아니다. */
+  readonly report: ReportMessages
+  /**
+   * 로그인하지 않은 사람도 서 있는 화면에서 나오는 거절 (TASK-0086~0091).
+   *
+   * `mypage.errors` 와 나누는 이유는 읽는 사람이 있는 자리가 다르기 때문이다.
+   */
+  readonly refusals: RefusalMessages
 }
 
 export interface MyPageMessages {
@@ -169,6 +188,16 @@ export interface MyPageMessages {
   readonly claim: ClaimRequestMessages
   /** 리뷰 쓸 수 있는 주문과 작성 폼 (TASK-0083 F6 · F7). */
   readonly reviews: ReviewWriteMessages
+  /** 위시리스트 — 품절·가격 변동·재입고 알림 (TASK-0086). */
+  readonly wishlist: WishlistScreenMessages
+  /** 최근 본 상품 — 개별·전체 삭제 (TASK-0087 F7). */
+  readonly recent: RecentScreenMessages
+  /** 내 문의 — 비공개든 아니든 전부 내 것이다 (TASK-0088 F7). */
+  readonly questions: MyQuestionsMessages
+  /** 팔로우한 브랜드 (TASK-0089). */
+  readonly following: FollowingScreenMessages
+  /** 알림함 — 헤더 드롭다운의 전체 목록 (TASK-0090). */
+  readonly notifications: NotificationScreenMessages
   /** A request that never got an answer. Keyed by the reason it did not. */
   readonly failures: Readonly<Record<ApiFailureReason, string>>
   /**
@@ -287,6 +316,16 @@ export interface MyPageNavMessages {
   readonly points: string
   /** 리뷰 쓸 수 있는 주문 (TASK-0083 F7). */
   readonly reviews: string
+  /** 위시리스트 (TASK-0086). */
+  readonly wishlist: string
+  /** 최근 본 상품 (TASK-0087). */
+  readonly recent: string
+  /** 내 문의 (TASK-0088 F7). */
+  readonly questions: string
+  /** 팔로우한 브랜드 (TASK-0089). */
+  readonly following: string
+  /** 알림함 (TASK-0090). */
+  readonly notifications: string
 }
 
 /**
@@ -1126,8 +1165,6 @@ export interface ProductReviewsMessages {
   readonly helpfulErrorNotice: string
   /** `{brand}` — 판매자 답변 (TASK-0085 이 쓴 것을 여기서 읽는다). */
   readonly replyLabel: string
-  readonly reportLabel: string
-  readonly reportComingSoon: string
   readonly listLabel: string
   readonly moreLabel: string
   readonly moreLoading: string
@@ -1458,6 +1495,13 @@ export interface LayoutMessages {
     readonly cart: string
     readonly mypage: string
   }
+  /**
+   * 헤더의 알림 드롭다운 (TASK-0090).
+   *
+   * `account` 옆이 아니라 자기 슬라이스인 이유는 이것이 **패널을 여는 컨트롤**이라
+   * 목록·빈 상태·실패 문장을 함께 갖기 때문이다. 두 낱말짜리 `account` 와 결이 다르다.
+   */
+  readonly notifications: NotificationMenuMessages
   readonly footer: FooterMessages
 }
 
@@ -1515,6 +1559,13 @@ export interface HomeMessages {
   readonly heroSearchCta: string
   readonly newTitle: string
   readonly popularTitle: string
+  /**
+   * 팔로우한 브랜드의 신상품 (TASK-0089 F6).
+   *
+   * 로그인하고 한 곳이라도 팔로우한 사람에게만 있는 줄이라, 제목이 **왜 나에게만
+   * 있는지**를 스스로 설명해야 한다.
+   */
+  readonly followedTitle: string
   readonly categoriesTitle: string
   readonly loadingLabel: string
   readonly sectionEmpty: string
@@ -1539,8 +1590,6 @@ export interface BrandMessages {
   readonly metaDescription: string
   readonly logoAlt: string
   readonly noIntroduction: string
-  readonly follow: string
-  readonly followComingSoon: string
   readonly productsTitle: string
   /** `{count}` */
   readonly productCount: string
@@ -1706,6 +1755,13 @@ export interface ProductDetailMessages {
   readonly info: ProductInfoMessages
   /** 리뷰와 평점 (TASK-0084). `info` 가 자리만 갖고 있던 것을 대신한다. */
   readonly reviews: ProductReviewsMessages
+  /**
+   * 상품 문의 (TASK-0088). `info.inquiries*` 가 자리만 갖고 있던 것을 대신한다.
+   *
+   * 리뷰와 나란한 자리인 이유는 **둘 다 밀도에 따라 요청까지 달라지는 화면**이라
+   * `ProductInfo` 의 정적인 블록 안에 들어갈 수 없기 때문이다.
+   */
+  readonly questions: ProductQuestionsMessages
 }
 
 export interface ProductGalleryMessages {
@@ -1740,7 +1796,6 @@ export interface ProductPurchaseMessages {
   readonly legend: string
   readonly addToCart: string
   readonly buyNow: string
-  readonly wishlist: string
   /** Said under the two buttons: they are placeholders until M07. */
   readonly comingSoon: string
   readonly quantityLabel: string
@@ -1765,8 +1820,6 @@ export interface ProductInfoMessages {
   readonly shippingDetailed: string
   /** `{date}` — maximal only. */
   readonly estimatedArrival: string
-  readonly inquiriesLabel: string
-  readonly inquiriesComingSoon: string
   readonly recommendationsLabel: string
   readonly recommendationsComingSoon: string
   readonly badges: ProductBadgeMessages
@@ -2108,4 +2161,348 @@ export interface TossFailureMessages {
   readonly backToCheckout: string
   /** 주문서 id 를 모를 때. 장바구니에서 다시 시작할 수 있다. */
   readonly backToCart: string
+}
+
+/* ------------------------------------------------- M13 회원 부가 (TASK-0086~0091) -- */
+
+/**
+ * 거절을 말하는 **상점 쪽 어휘** (TASK-0086~0091).
+ *
+ * `mypage.errors` 와 나누는 이유는 읽는 사람이 있는 자리가 다르기 때문이다 — 이쪽은
+ * 상품 상세와 리뷰 목록처럼 **로그인하지 않은 사람도 서 있는 화면**이고, 거기서
+ * 나오는 거절은 계정 화면의 것과 겹치지 않는다.
+ *
+ * `failures` 를 한 벌 더 두는 대신 `mypage.failures` 를 빌려 쓰는 길도 있었지만,
+ * 그러면 상점 화면의 문장이 「마이페이지」 슬라이스 안에 살게 되고 그 슬라이스를
+ * 손보는 사람이 자기가 무엇을 건드리는지 알 수 없다.
+ */
+export interface RefusalMessages {
+  readonly errors: Readonly<Record<StorefrontErrorCode, string>>
+  /** 답이 오지 않은 요청. 오지 않은 이유로 키가 나뉜다. */
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+/**
+ * 상점 화면이 **갈라지는** 거절들.
+ *
+ * `MyPageErrorCode` 와 같은 장치다 — `satisfies` 가 목록을 정직하게 유지하므로,
+ * `@shopping/shared` 에서 코드 이름이 바뀌면 여기서 `pnpm typecheck` 이 멈춘다.
+ * 목록에 없는 코드는 서버가 보낸 문장을 그대로 쓴다 (TASK-0023 이 상점에 전수
+ * 카탈로그를 거부한 이유).
+ */
+export const storefrontErrorCodes = [
+  'AUTH_REQUIRED',
+  'FORBIDDEN',
+  'NOT_FOUND',
+  'INTERNAL_ERROR',
+  /**
+   * 신고의 거절 둘 (TASK-0091 F1 · F2).
+   *
+   * **사람이 할 일이 서로 다르다.** 자기 글을 신고하려 한 사람이 찾는 것은 삭제
+   * 버튼이고, 이미 신고한 사람은 아무것도 더 할 것이 없다 — 한 문장으로 덮으면
+   * 서버가 코드를 둘로 나눈 일이 화면에서 없던 일이 된다.
+   */
+  'REPORT_OWN_CONTENT',
+  'REPORT_ALREADY_FILED',
+] as const satisfies readonly UserFacingErrorCode[]
+
+export type StorefrontErrorCode = (typeof storefrontErrorCodes)[number]
+
+/**
+ * 찜 · 팔로우 · 최근 본 상품 (TASK-0086 · 0087 · 0089).
+ *
+ * 한 슬라이스인 이유는 이 셋이 **한 화면의 것이 아니기** 때문이다 — 찜 버튼은 홈의
+ * 카드와 상세에, 팔로우 버튼은 브랜드관과 상세에, 최근 본 상품 스트립은 홈과 상세에
+ * 있다. 화면별 슬라이스에 흩으면 같은 낱말이 세 벌이 되고, 그중 하나만 고쳐지는 날
+ * 「찜하기」와 「찜 담기」가 한 화면에 함께 뜬다.
+ */
+export interface CollectionMessages {
+  readonly wishlist: WishlistButtonMessages
+  readonly follow: FollowButtonMessages
+  readonly recent: RecentlyViewedMessages
+}
+
+export interface WishlistButtonMessages {
+  /** 아직 담지 않았거나, **담았는지 모를 때**. */
+  readonly add: string
+  readonly added: string
+  /**
+   * 로그인하지 않은 사람의 자리 (F6 · R1).
+   *
+   * 버튼이 아니라 로그인으로 가는 링크다 — 눌러서 401 을 받는 것은 사람이 고칠 수
+   * 없는 실패이고, 비로그인 찜을 로컬에 담지 않는 것은 R1 의 판단이다.
+   */
+  readonly signIn: string
+  /**
+   * 낙관적 갱신을 되돌린 뒤 붙는 줄 (F2). 카드의 실패도 이 문장을 쓴다.
+   *
+   * 담겼다·빠졌다는 여기 없다 — 하트가 `aria-pressed` 로 직접 말한다(4.6). 실패만
+   * 남은 것은 **되돌아간 하트가 「원래 그랬던 것」과 구별되지 않기** 때문이고, 상품
+   * 이름이 들어가지 않는 것은 카드가 넘겨 주는 것이 id 하나뿐이기 때문이다.
+   */
+  readonly failedNotice: string
+}
+
+export interface FollowButtonMessages {
+  readonly follow: string
+  readonly following: string
+  readonly signIn: string
+  /**
+   * `{count}` — 지금 팔로워 수.
+   *
+   * 브랜드관은 **언제나** 그린다. 공개 응답(`GET /sellers/:id`)이 그 수를 싣기
+   * 때문이고, 아직 팔로우하지 않은 사람이 바로 이 수를 근거로 쓰는 사람이다 (4.3).
+   *
+   * 수를 넘길 수 없는 화면에서는 그리지 않는다 — 상품 상세의 판매자는 이름과 id
+   * 뿐이다. 그 자리에 0을 그리면 팔로워가 백 명인 브랜드에 대한 거짓말이 된다.
+   */
+  readonly followerCount: string
+  readonly failedNotice: string
+}
+
+export interface RecentlyViewedMessages {
+  readonly title: string
+  readonly listLabel: string
+  /** 전체 목록(`/mypage/recent`) 으로. */
+  readonly moreLabel: string
+  /** `{name}` — 카드의 접근 가능한 이름. */
+  readonly openLabel: string
+  readonly soldOut: string
+  /**
+   * 로그인하지 않은 사람의 이력은 **이 브라우저에만** 있다 (F6).
+   *
+   * 말하지 않으면 다른 기기에서 로그인한 사람이 「이력이 사라졌다」고 읽는다.
+   */
+  readonly localNotice: string
+}
+
+/**
+ * 상품 상세의 문의 (TASK-0088 F1 · F2 · F6).
+ *
+ * **밀도가 정하는 것은 노출량이고 문구는 한 벌이다** — 리뷰와 같은 규칙
+ * (`ProductReviewsMessages` 위의 `productDetail` 머리말).
+ */
+export interface ProductQuestionsMessages {
+  readonly heading: string
+  /**
+   * 표준·미니멀의 「접힘」을 펴는 버튼 (F6).
+   *
+   * **수를 싣지 않는다.** 리뷰의 `expandLabel` 은 상품이 이미 들고 있는
+   * `ratingCount` 로 「리뷰 12건 보기」를 그릴 수 있지만, 상품 상세 응답에는 문의
+   * 수가 없다 — 없는 수를 위해 목록을 미리 부르면 접어 둔 이유가 없어진다.
+   */
+  readonly expandLabel: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly listLabel: string
+  readonly moreLabel: string
+  readonly moreLoading: string
+  readonly privateBadge: string
+  readonly mineBadge: string
+  readonly answeredBadge: string
+  readonly pendingBadge: string
+  /** `{brand}` — 판매자 답변. */
+  readonly answerLabel: string
+  /**
+   * 남의 비공개 문의는 **줄 자체가 오지 않는다** (`questions.ts`).
+   *
+   * 그 사실을 말해 두지 않으면, 비공개로 남긴 사람이 목록에서 자기 문의만 보이는
+   * 것을 보고 「비공개가 안 걸렸나」로 읽는다.
+   */
+  readonly privacyNotice: string
+  readonly askLabel: string
+  readonly cancelAskLabel: string
+  readonly signInLabel: string
+  readonly form: QuestionFormMessages
+}
+
+export interface QuestionFormMessages {
+  readonly legend: string
+  readonly contentLabel: string
+  /** `{max}` — 계약의 상한. 화면이 숫자를 적어 두면 둘이 갈린다. */
+  readonly contentHint: string
+  readonly contentPlaceholder: string
+  readonly visibilityLegend: string
+  readonly publicLabel: string
+  readonly publicHint: string
+  readonly privateLabel: string
+  readonly privateHint: string
+  readonly submitLabel: string
+  readonly submittingLabel: string
+  readonly submittedNotice: string
+  readonly failureTitle: string
+  /** 보내기 전에 걸리는 것들. 화면은 첫 하나만 보인다. */
+  readonly issues: Readonly<Record<QuestionDraftIssue, string>>
+}
+
+/**
+ * 헤더의 알림 드롭다운 (TASK-0090 F3 · F4 · F8).
+ *
+ * `layout` 안에 있는 이유는 이것이 **모든 화면에 있는 셸의 일부**이기 때문이다 —
+ * 알림함 페이지의 문구는 `mypage.notifications` 이고, 둘은 같은 것을 다른 크기로
+ * 보이는 다른 화면이다.
+ */
+export interface NotificationMenuMessages {
+  /** 아이콘 버튼의 접근 가능한 이름. */
+  readonly label: string
+  /** `{count}` — 안 읽은 것이 있을 때의 이름. 배지의 숫자를 이름에 넣는다. */
+  readonly labelWithCount: string
+  readonly title: string
+  readonly closeLabel: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly listLabel: string
+  readonly readAllLabel: string
+  readonly allLabel: string
+  readonly failedNotice: string
+}
+
+/**
+ * 신고 다이얼로그 (TASK-0091 F1 · F2).
+ *
+ * 자기 슬라이스인 이유는 **대상이 넷**이기 때문이다 — 리뷰·문의·답변·상품. 리뷰
+ * 슬라이스에 두면 문의 신고가 리뷰의 문구를 읽게 되고, 넷에 각각 두면 같은 문장이
+ * 네 벌이 된다.
+ */
+export interface ReportMessages {
+  readonly triggerLabel: string
+  readonly title: string
+  /** `{target}` — 무엇을 신고하는지. `targets` 에서 온다. */
+  readonly description: string
+  readonly targets: Readonly<Record<ReportTargetType, string>>
+  readonly closeLabel: string
+  readonly cancelLabel: string
+  readonly reasonLegend: string
+  readonly reasons: Readonly<Record<ReportReason, string>>
+  readonly detailLabel: string
+  /** `{max}` — 계약의 상한. */
+  readonly detailHint: string
+  readonly detailPlaceholder: string
+  readonly submitLabel: string
+  readonly submittingLabel: string
+  readonly doneTitle: string
+  readonly doneBody: string
+  readonly failureTitle: string
+  /** 로그인하지 않은 사람에게. 신고에는 신고자가 있어야 한다. */
+  readonly signInLabel: string
+  readonly issues: Readonly<Record<ReportDraftIssue, string>>
+}
+
+/** `/mypage/wishlist` (TASK-0086 F3 · F4 · F5). */
+export interface WishlistScreenMessages {
+  readonly title: string
+  readonly description: string
+  readonly listLabel: string
+  readonly loadingLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly emptyAction: string
+  readonly soldOut: string
+  /** 가격을 그릴 수 없는 자리. 품절이라 팔 수 있는 조합이 없다. */
+  readonly noPrice: string
+  /** `{amount}` — 담을 때보다 내렸다 (F5). */
+  readonly priceDropped: string
+  /** `{amount}` — 담을 때보다 올랐다. */
+  readonly priceRaised: string
+  readonly restockOn: string
+  readonly restockOff: string
+  /** 신청해 둔 줄에 붙는 말. 버튼의 이름만으로는 상태가 전해지지 않는다. */
+  readonly restockNotice: string
+  /** `{name}` */
+  readonly removeLabel: string
+  /**
+   * 장바구니로 가는 자리.
+   *
+   * **바로 담지 않는다.** 장바구니는 조합(`variantId`)을 받는데
+   * (`addCartItemRequestSchema`) 찜 목록의 줄은 상품이라 조합이 없다 — 하나를
+   * 골라 담으면 화면이 사람 대신 색과 치수를 고르는 셈이 된다.
+   */
+  readonly openProduct: string
+  readonly openProductHint: string
+  readonly moreLabel: string
+  readonly moreLoading: string
+  readonly writeErrorTitle: string
+}
+
+/** `/mypage/recent` (TASK-0087 F7). */
+export interface RecentScreenMessages {
+  readonly title: string
+  readonly description: string
+  readonly listLabel: string
+  readonly loadingLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly soldOut: string
+  readonly noPrice: string
+  /** `{name}` */
+  readonly removeLabel: string
+  readonly clearLabel: string
+  readonly clearedNotice: string
+  readonly localNotice: string
+  readonly failedNotice: string
+}
+
+/** `/mypage/questions` (TASK-0088 F7). */
+export interface MyQuestionsMessages {
+  readonly title: string
+  readonly description: string
+  readonly listLabel: string
+  readonly loadingLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly privateBadge: string
+  readonly answeredBadge: string
+  readonly pendingBadge: string
+  /** `{brand}` */
+  readonly answerLabel: string
+  /** `{name}` — 어느 상품에 물었나. */
+  readonly openProduct: string
+  readonly moreLabel: string
+  readonly moreLoading: string
+}
+
+/** `/mypage/following` (TASK-0089). */
+export interface FollowingScreenMessages {
+  readonly title: string
+  readonly description: string
+  readonly listLabel: string
+  readonly loadingLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  readonly emptyAction: string
+  /** `{brand}` */
+  readonly logoAlt: string
+  /** `{count}` */
+  readonly followerCount: string
+  /** `{brand}` */
+  readonly unfollowLabel: string
+  readonly moreLabel: string
+  readonly moreLoading: string
+  readonly writeErrorTitle: string
+}
+
+/** `/mypage/notifications` (TASK-0090 F2 · F3 · F4). */
+export interface NotificationScreenMessages {
+  readonly title: string
+  readonly description: string
+  readonly listLabel: string
+  readonly loadingLabel: string
+  readonly emptyTitle: string
+  readonly emptyBody: string
+  /** `{count}` — 계정의 미읽음 수. 목록의 길이가 아니다. */
+  readonly unreadCount: string
+  readonly unreadBadge: string
+  readonly readAllLabel: string
+  /** `{title}` — 한 건을 읽음으로. */
+  readonly readLabel: string
+  readonly openLabel: string
+  readonly failedNotice: string
+  readonly moreLabel: string
+  readonly moreLoading: string
 }

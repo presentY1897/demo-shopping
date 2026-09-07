@@ -58,6 +58,19 @@ export class SearchController {
  * is a boolean. Doing it here rather than in the schema keeps the schema a
  * description of the *contract* rather than of a transport.
  */
+/**
+ * `a,b,c` → `['a','b','c']`.
+ *
+ * 빈 칸을 버리기만 하고 uuid 인지는 보지 않는다 — 그 판단은 스키마의 것이고, 여기서
+ * 한 번 더 하면 틀린 값이 **조용히 사라져** 「아무것도 못 찾았다」로 보인다.
+ */
+function splitIds(raw: string): string[] {
+  return raw
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter((entry) => entry !== '')
+}
+
 function readQuery(raw: Record<string, string>): Partial<SearchQuery> {
   const attributes: Record<string, string[]> = {}
 
@@ -76,7 +89,9 @@ function readQuery(raw: Record<string, string>): Partial<SearchQuery> {
   return {
     ...(raw.q === undefined ? {} : { q: raw.q.slice(0, SEARCH_QUERY_MAX_LENGTH) }),
     ...(raw.categoryId === undefined ? {} : { categoryId: Number(raw.categoryId) }),
-    ...(raw.sellerId === undefined ? {} : { sellerId: raw.sellerId }),
+    // 쉼표로 이어 붙인 uuid 들. 하나면 브랜드관, 여럿이면 홈의 팔로우 줄이고,
+    // 질의 문자열 위에서는 그 둘이 같은 열쇠다 (`searchQuerySchema.sellerIds`).
+    ...(raw.sellerIds === undefined ? {} : { sellerIds: splitIds(raw.sellerIds) }),
     ...(raw.priceMin === undefined ? {} : { priceMin: Number(raw.priceMin) }),
     ...(raw.priceMax === undefined ? {} : { priceMax: Number(raw.priceMax) }),
     ...(raw.inStock === undefined ? {} : { inStock: raw.inStock === 'true' }),

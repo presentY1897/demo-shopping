@@ -1,11 +1,13 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import type {
+  FollowIdsResponse,
   FollowListQueryParams,
   FollowListResponse,
   FollowResult,
   MergeRecentlyViewedRequest,
   RecentlyViewedResponse,
   ToggleResult,
+  WishlistIdsResponse,
   WishlistQueryParams,
   WishlistResponse,
 } from '@shopping/shared'
@@ -68,6 +70,35 @@ export class CollectionsService {
   }
 
   /** 내 찜 목록 (F3 · F4 · F5). */
+  /**
+   * 찜한 상품 id 전부 (TASK-0086 F1).
+   *
+   * ## 페이지가 없다
+   *
+   * 목록과 달리 자르지 않는다. 자르는 순간 「여기 없다」가 「찜하지 않았다」를 뜻하지
+   * 못하게 되고, 그러면 이 문이 존재하는 이유가 사라진다 — 화면은 다시 「모른다」를
+   * 그려야 하고 하트는 빈 채로 남는다.
+   *
+   * ## 자르지 않아도 되는 이유
+   *
+   * 줄 하나가 uuid 하나다. 찜 1,000개가 36KB 남짓이고, 같은 1,000개를 목록으로
+   * 받으면 이름·브랜드·썸네일 주소·가격 넷이 더 붙어 그 수십 배가 된다. **무게는
+   * 줄 수가 아니라 줄 폭이 만든다.**
+   *
+   * 그래도 사람이 담을 수 있는 수에는 위가 없으므로, 언젠가 위가 필요해지면 그때
+   * 필요한 것은 페이지가 아니라 **상한**이다 (찜 자체의 최대 개수) — 페이지를 붙이면
+   * 위의 문제가 다시 돌아온다.
+   */
+  async wishlistIds(userId: string): Promise<WishlistIdsResponse> {
+    const rows = await this.prisma.wishlist.findMany({
+      where: { userId },
+      select: { productId: true },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return { productIds: rows.map((row) => row.productId) }
+  }
+
   async wishlist(userId: string, params: WishlistQueryParams): Promise<WishlistResponse> {
     const limit = params.limit ?? WISHLIST_DEFAULT_LIMIT
     const rows = await this.prisma.$queryRaw<WishlistRow[]>`
@@ -269,6 +300,24 @@ export class CollectionsService {
   }
 
   /** 내가 팔로우한 브랜드. */
+  /**
+   * 팔로우한 가게 id 전부, **최근 순** (TASK-0089 F1 · F6).
+   *
+   * 순서가 계약의 일부다: 홈의 신상품 줄은 이 목록을 앞에서부터
+   * `SEARCH_SELLER_IDS_MAX` 개만 쓰므로, 순서가 없으면 50개를 넘겨 팔로우한 사람의
+   * 줄이 **새로고침할 때마다 다른 가게로** 채워진다. 최근에 팔로우한 쪽을 남기는
+   * 것은 그 사람이 방금 관심을 보인 가게이기 때문이다.
+   */
+  async followIds(userId: string): Promise<FollowIdsResponse> {
+    const rows = await this.prisma.sellerFollow.findMany({
+      where: { userId },
+      select: { sellerId: true },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return { sellerIds: rows.map((row) => row.sellerId) }
+  }
+
   async follows(userId: string, params: FollowListQueryParams): Promise<FollowListResponse> {
     const limit = params.limit ?? FOLLOW_LIST_DEFAULT_LIMIT
     const rows = await this.prisma.$queryRaw<FollowRow[]>`

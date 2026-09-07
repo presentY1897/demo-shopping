@@ -24,12 +24,12 @@ import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 
 import { ConsoleUserMenu } from '@/components/auth/console-user-menu'
+import { NotificationSlot } from '@/components/notifications/notification-slot'
 import { useAuthorization } from '@/lib/auth/authorization'
 import type { ConsoleLayoutMessages } from '@/messages'
 import { messagesFor } from '@/messages'
 
 import { AccountIcon, BellIcon } from './console-icons'
-import { ConsoleSlot } from './console-slots'
 
 export function AdminShell({
   messages,
@@ -38,10 +38,11 @@ export function AdminShell({
   readonly messages: ConsoleLayoutMessages
   readonly children: ReactNode
 }) {
-  // The account slot's copy is the `auth` slice's, not the layout's: it belongs
-  // to signing in rather than to the shell, and the shell is handed the rest of
-  // its strings by the caller (TASK-0019 4.9).
-  const account = messagesFor().auth.menu
+  // Neither slot's copy is the layout's. The account menu belongs to signing in
+  // and the bell belongs to the notification centre — both are screens of their
+  // own that the shell only borrows a control from, and the shell is handed the
+  // rest of its strings by the caller (TASK-0019 4.9).
+  const { auth, notifications } = messagesFor()
   const { can, ready } = useAuthorization()
 
   /**
@@ -74,11 +75,9 @@ export function AdminShell({
       linkComponent={Link}
       menu={menu}
       notifications={
-        <ConsoleSlot messages={messages.notifications}>
-          <BellIcon className="size-5" />
-        </ConsoleSlot>
+        <NotificationSlot icon={<BellIcon className="size-5" />} messages={notifications} />
       }
-      userMenu={<ConsoleUserMenu icon={<AccountIcon className="size-5" />} messages={account} />}
+      userMenu={<ConsoleUserMenu icon={<AccountIcon className="size-5" />} messages={auth.menu} />}
     >
       {children}
     </ConsoleShell>

@@ -83,6 +83,8 @@ function sellerAt(n: number): Seller {
     userId: `${OWNER_ID_PREFIX}${serial}`,
     brandName: `${HEAD[n % HEAD.length] ?? ''}${TAIL[(n * 3) % TAIL.length] ?? ''} ${serial}`,
     slug: `store-${serial}`,
+    // 가게마다 다른 수. 전부 같으면 「그리는가」와 「제 것을 그리는가」가 겹친다.
+    followerCount: n * 7,
     // Every third application skips the introduction and every fourth the logo:
     // both columns are nullable and a screen that never met a `null` would be
     // one nobody checked against the contract.

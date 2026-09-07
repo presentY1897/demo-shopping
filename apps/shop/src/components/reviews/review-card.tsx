@@ -5,8 +5,9 @@ import { Button, Tag } from '@shopping/ui/components'
 import { formatDate } from '@shopping/ui/format'
 import Link from 'next/link'
 
+import { ReportDialog } from '@/components/reports/report-dialog'
 import { filledStars, RATING_STARS } from '@/lib/reviews/rating'
-import type { ProductReviewsMessages } from '@/messages'
+import type { ProductReviewsMessages, RefusalMessages, ReportMessages } from '@/messages'
 
 const LOCALE = 'ko-KR'
 const TIME_ZONE = 'Asia/Seoul'
@@ -40,20 +41,26 @@ const TIME_ZONE = 'Asia/Seoul'
  * 없으면 **사진만** 빠지고 리뷰는 그대로 읽힌다 — 사진을 못 보는 것과 리뷰를 못 읽는
  * 것은 다른 일이다.
  *
- * ## 신고는 자리만 있다
+ * ## 신고는 이제 진짜 다이얼로그다
  *
- * TASK-0091 이 채운다. 감추지 않고 비활성으로 두는 것은 이 저장소의 규칙이다
- * (TASK-0023 4장) — 없는 기능은 없다고 말해야 「어디 있지」를 찾지 않는다.
+ * TASK-0091 이 「준비 중」이라고 적혀 있던 비활성 버튼을 대신했다. 다이얼로그는
+ * `packages/ui` 의 `Modal` 이고(포커스 가둠·Escape·바깥 클릭은 거기 있다), 로그인하지
+ * 않은 사람에게는 버튼 대신 로그인으로 가는 링크가 놓인다 — 신고에는 신고자가 있어야
+ * 중복 신고를 막을 수 있다.
  */
 export function ReviewCard({
   copy,
   onHelpful,
+  refusals,
+  report,
   review,
   signInHref,
 }: {
   readonly copy: ProductReviewsMessages
   /** 로그인한 사람만 받는다. `null` 이면 아래의 링크가 대신 그려진다. */
   readonly onHelpful: ((reviewId: string, pressed: boolean) => void) | null
+  readonly refusals: RefusalMessages
+  readonly report: ReportMessages
   readonly review: ReviewListEntry
   readonly signInHref: string
 }) {
@@ -129,14 +136,7 @@ export function ReviewCard({
           </Button>
         )}
 
-        {/*
-          `aria-disabled` 이지 `disabled` 가 아니다. 탭 순서에 남아야 그 옆의 「준비
-          중」을 읽을 수 있고, `disabled` 인 버튼은 아무에게도 이유를 말하지 못한다.
-        */}
-        <Button aria-disabled="true" size="sm" type="button" variant="ghost">
-          {copy.reportLabel}
-        </Button>
-        <span className="text-fg-subtle text-xs">{copy.reportComingSoon}</span>
+        <ReportDialog copy={report} refusals={refusals} targetId={review.id} targetType="REVIEW" />
       </div>
     </li>
   )

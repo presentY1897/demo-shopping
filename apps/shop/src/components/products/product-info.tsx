@@ -9,10 +9,14 @@
  * shipping line is one sentence, a summary, or the paragraph. Three separate
  * layouts would be three places to fix the next copy change.
  *
- * The inquiry and recommendation blocks are **placeholders with their milestone
- * named**. TASK-0023 4장 is explicit that an absent feature is shown and
- * explained rather than hidden — the point of the demo is that the shape of the
- * finished thing is visible.
+ * The recommendation block is a **placeholder with its milestone named**.
+ * TASK-0023 4장 is explicit that an absent feature is shown and explained rather
+ * than hidden — the point of the demo is that the shape of the finished thing is
+ * visible.
+ *
+ * **문의도 더 이상 여기 없다.** TASK-0088 이 그 자리를 진짜 목록으로 채웠고
+ * (`components/questions/product-questions.tsx`), 리뷰와 마찬가지로 밀도에 따라
+ * 요청까지 달라지는 화면이라 이 정적인 블록 안에 들어갈 수 없다.
  *
  * **리뷰는 더 이상 여기 없다.** TASK-0084 가 그 자리를 진짜 목록으로 채웠고
  * (`components/reviews/product-reviews.tsx`), 그것은 밀도에 따라 요청까지 달라지는
@@ -150,11 +154,6 @@ export function ProductInfo({ density, description, attributes, messages }: Prod
             {messages.estimatedArrival.replace('{date}', arrival)}
           </p>
         ) : null}
-      </section>
-
-      <section className="flex flex-col gap-2">
-        <h2 className="text-fg text-base font-semibold">{messages.inquiriesLabel}</h2>
-        <p className="text-fg-subtle text-sm">{messages.inquiriesComingSoon}</p>
       </section>
 
       {density === 3 ? (

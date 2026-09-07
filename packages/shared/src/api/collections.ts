@@ -165,6 +165,44 @@ export type FollowResult = z.infer<typeof followResultSchema>
  *
  * 알림이 나간 뒤에는 서버가 꺼 준다 — 한 번 알린 재입고를 다시 알릴 이유가 없다.
  */
+/**
+ * 「내가 가리킨 것들」의 **id 만**, 한 번에 전부 (TASK-0086 F1 · TASK-0089 F1).
+ *
+ * ## 목록이 있는데 왜 또 있는가
+ *
+ * 하트는 화면 하나에 스무 개씩 있고, 그 스무 개가 각자 「나 찜됐나」를 물을 문이
+ * 계약에 없다. 그렇다고 상품마다 한 번씩 묻는 문을 내면 홈 한 장에 요청이 열두 개
+ * 나간다. 그래서 답은 「전부 한 번에」인데, **목록으로 그것을 하면 틀린다** — 목록은
+ * 한 쪽이 100개까지이고 (`WISHLIST_MAX_LIMIT`), 101개를 담은 사람의 화면에서는 못 본
+ * 쪽의 상품이 「찜 안 함」으로 그려진다. 새로고침하면 하트가 빈다는 뜻이고, 그것이
+ * 바로 F1 이 지키라고 한 것이다.
+ *
+ * ## 그래서 무게를 덜어낸 것이 이것이다
+ *
+ * 줄마다 이름·썸네일·가격·담은 값이 붙는 목록과 달리 여기엔 id 뿐이라, 페이지를
+ * 나누지 않고 전부 보내도 된다. 1,000개를 담은 사람도 한 번에 온다.
+ *
+ * **페이지가 없는 것이 요점이다.** 페이지가 있으면 「여기 없다」가 「찜하지 않았다」를
+ * 뜻하지 못하고, 화면은 다시 「모른다」를 그려야 한다. 이 답은 언제나 완전하므로
+ * 여기 없는 id 는 **가리키지 않은 것**이다.
+ *
+ * 목록 쪽은 사라지지 않는다 — 위시리스트 화면은 이름과 가격을 그려야 하고, 그것은
+ * id 로 할 수 없다.
+ */
+export const wishlistIdsResponseSchema = z.object({
+  productIds: z.array(productIdSchema),
+})
+
+export type WishlistIdsResponse = z.infer<typeof wishlistIdsResponseSchema>
+
+/** 팔로우한 가게의 id 만, 전부. {@link wishlistIdsResponseSchema} 와 같은 이유다. */
+export const followIdsResponseSchema = z.object({
+  /** 최근에 팔로우한 순서. 홈의 신상품 줄이 앞에서부터 자르기 때문이다 (F6). */
+  sellerIds: z.array(sellerIdSchema),
+})
+
+export type FollowIdsResponse = z.infer<typeof followIdsResponseSchema>
+
 export const restockAlertResultSchema = z.object({ notifyRestock: z.boolean() })
 
 export type RestockAlertResult = z.infer<typeof restockAlertResultSchema>

@@ -1,8 +1,10 @@
 import { PageContainer } from '@shopping/ui/layout'
 
 import { ApiWakeGate } from '@/components/api-wake-gate'
+import { RecentlyViewedStrip } from '@/components/collections/recently-viewed-strip'
 import { CategoryShortcuts } from '@/components/home/category-shortcuts'
 import { DemoInvite } from '@/components/home/demo-invite'
+import { FollowedBrandSection } from '@/components/home/followed-brand-section'
 import { ProductSection } from '@/components/home/product-section'
 import { messagesFor } from '@/messages'
 
@@ -58,6 +60,23 @@ export default function HomePage() {
         sort="sales"
         title={home.popularTitle}
       />
+
+      {/*
+        팔로우한 브랜드의 신상품 (TASK-0089 F6). 이 페이지가 아무것도 기다리지
+        않는다는 성질을 지킨다 — 팔로우 목록도 상품도 마운트 뒤에 읽는다.
+        **로그인하지 않았거나 팔로우한 곳이 없으면 아무것도 그리지 않으므로**,
+        조건이 맞지 않는 사람의 홈에 빈 상자가 늘지 않는다.
+      */}
+      <FollowedBrandSection messages={home} />
+
+      {/*
+        최근 본 상품 (TASK-0087). 이 페이지가 아무것도 기다리지 않는다는 성질을
+        지킨다 — 스트립은 클라이언트 컴포넌트이고, 로그인하지 않은 사람에게는
+        브라우저의 이력을, 로그인한 사람에게는 마운트 뒤에 받은 것을 그린다.
+        **비어 있으면 아무것도 그리지 않으므로** 처음 온 사람의 홈에 빈 상자가
+        늘지 않는다.
+      */}
+      <RecentlyViewedStrip copy={messages.collections.recent} />
 
       {/*
         The cold-start panel stays (TASK-0101). It is what turns 「아직 비어 있는

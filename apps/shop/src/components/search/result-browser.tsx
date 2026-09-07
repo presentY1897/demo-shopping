@@ -16,13 +16,16 @@
  * CSS would give a screen reader every filter twice.
  */
 
-import { ProductCard, ProductList } from '@shopping/ui/catalog'
+import { ProductList } from '@shopping/ui/catalog'
 import { Button, Drawer, Select } from '@shopping/ui/components'
 import { useDensity } from '@shopping/ui/density'
 import { useViewportBand } from '@shopping/ui/layout'
 import { searchSorts } from '@shopping/shared'
 import { useState } from 'react'
 
+import { SearchHitCard } from '@/components/catalog/search-hit-card'
+import { CardWishlistNotice } from '@/components/collections/card-wishlist-notice'
+import { useCardWishlist } from '@/lib/collections/use-card-wishlist'
 import type { SearchController } from '@/lib/search/use-search'
 import { matchedApproximately, unmatchedTerms } from '@/lib/search/typo-notice'
 import type { SearchMessages } from '@/messages'
@@ -40,6 +43,9 @@ export function ResultBrowser({ controller, messages }: ResultBrowserProps) {
     controller
   const { density } = useDensity()
   const band = useViewportBand()
+  // 결과 스무 줄이 함께 쓰는 찜 핸들러 하나 (TASK-0086). 하트가 눌렸는지는 카드가
+  // 직접 표에서 읽는다 (`SearchHitCard`).
+  const wishlist = useCardWishlist()
   const [sheetOpen, setSheetOpen] = useState(false)
 
   const term = query.q ?? ''
@@ -123,6 +129,8 @@ export function ResultBrowser({ controller, messages }: ResultBrowserProps) {
             </p>
           ) : null}
 
+          <CardWishlistNotice failed={wishlist.failed} />
+
           <ProductList
             density={density}
             hasMore={results.status === 'ready' && results.nextCursor !== null}
@@ -134,21 +142,11 @@ export function ResultBrowser({ controller, messages }: ResultBrowserProps) {
           >
             {items.map((hit) => (
               <li key={hit.id}>
-                <ProductCard
+                <SearchHitCard
                   density={density}
-                  href={`/products/${hit.id}`}
+                  hit={hit}
                   labels={messages.card}
-                  product={{
-                    id: hit.id,
-                    name: hit.name,
-                    brandName: hit.brandName,
-                    price: hit.price,
-                    imageUrl: hit.thumbnailUrl,
-                    ratingAvg: hit.ratingAvg,
-                    ratingCount: hit.ratingCount,
-                    salesCount: hit.salesCount,
-                    inStock: hit.inStock,
-                  }}
+                  onWishlist={wishlist.toggle}
                 />
               </li>
             ))}

@@ -61,7 +61,10 @@ export interface ProductCardLabels {
   readonly salesCount: string
   /** `{count}` — 재고 임박. */
   readonly remaining: string
+  /** `{name}` — 담기. */
   readonly wishlist: string
+  /** `{name}` — 빼기. 담긴 카드의 버튼은 이 이름으로 불린다. */
+  readonly wishlistOn: string
   readonly quickAdd: string
   /** `{name}` — swatch list's accessible name. */
   readonly colorsLabel: string
@@ -73,8 +76,17 @@ export interface ProductCardProps {
   readonly density: DensityLevel
   readonly labels: ProductCardLabels
   readonly href: string
-  /** Placeholder until M13. Absent hides the control entirely. */
+  /** Absent hides the control entirely. */
   readonly onWishlist?: (id: string) => void
+  /**
+   * 담겼는가. `undefined` 는 **모른다** — 아직 답이 오지 않았거나 비로그인이다.
+   *
+   * 셋을 가르는 이유는 「모른다」를 「안 담김」으로 그리면 담아 둔 카드의 하트가
+   * 새로고침마다 한 번씩 비었다가 차기 때문이다(TASK-0086 F1). 모를 때는
+   * `aria-pressed` 를 **달지 않는다** — 누르지 않은 버튼이라고 말하는 것보다 말하지
+   * 않는 편이 참이다.
+   */
+  readonly wishlisted?: boolean
   /** Placeholder until M07. Level 3 only, and absent hides it. */
   readonly onQuickAdd?: (id: string) => void
   /** Rendered in place of `<img>`, so an app can pass `next/image`. */
@@ -127,6 +139,7 @@ export function ProductCard({
   labels,
   href,
   onWishlist,
+  wishlisted,
   onQuickAdd,
   renderImage,
   className,
@@ -175,14 +188,23 @@ export function ProductCard({
 
         {onWishlist === undefined ? null : (
           <button
-            aria-label={fill(labels.wishlist, { name: product.name })}
+            aria-label={fill(wishlisted === true ? labels.wishlistOn : labels.wishlist, {
+              name: product.name,
+            })}
+            // 모를 때는 속성 자체가 없다. `aria-pressed={undefined}` 가 그 뜻이다.
+            aria-pressed={wishlisted}
             className="bg-surface/85 text-fg absolute top-2 right-2 rounded-full p-1.5 text-sm"
             onClick={() => {
               onWishlist(product.id)
             }}
             type="button"
           >
-            ♡
+            {/*
+             * 색이 아니라 **모양**이 상태를 말한다. 채워진 하트와 빈 하트는 색을
+             * 못 보는 사람에게도 다르고, 대비만으로 상태를 알리는 카드는 9조합
+             * 검사(F7)의 축을 하나 놓친 것이다.
+             */}
+            {wishlisted === true ? '♥' : '♡'}
           </button>
         )}
       </div>

@@ -1,10 +1,10 @@
 import { ApiClientError } from '@shopping/shared'
-import { Button } from '@shopping/ui/components'
 import { PageContainer } from '@shopping/ui/layout'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { BrandProducts } from '@/components/brand/brand-products'
+import { FollowButton } from '@/components/collections/follow-button'
 import { CATALOGUE_REVALIDATE_SECONDS } from '@/lib/seo/revalidate'
 import { fetchStorefrontSeller } from '@/lib/storefront/seller-api'
 import { indexedMetadata } from '@/lib/seo/page-metadata'
@@ -89,24 +89,21 @@ export default async function BrandPage({
           <p className="text-fg-muted text-sm">{seller.introduction ?? copy.noIntroduction}</p>
         </div>
 
-        <div className="ml-auto flex shrink-0 flex-col items-end gap-1">
+        <div className="ml-auto shrink-0">
           {/*
-            Inert until M13. Shown and disabled with a reason rather than hidden
-            — TASK-0023 4장: the point of the demo is that the feature is visible.
-            `aria-disabled` keeps the tab stop, so the reason below is reachable.
+            비활성 버튼이었던 자리를 TASK-0089 가 채웠다. 클라이언트 컴포넌트인 것은
+            이 버튼만이 세션을 필요로 하기 때문이고, 그래서 이 페이지는 여전히 서버에서
+            렌더된다 — 크롤러가 읽는 것은 위의 브랜드명과 소개다.
+
+            팔로워 수는 **여기서** 넘어간다 (F3 · 4.3). 공개 응답이 그 수를 언제나
+            싣고, 그래서 아직 팔로우하지 않은 사람도 로그인하지 않은 사람도 그것을
+            본다 — 그 사람이 바로 이 수를 근거로 쓰는 사람이다.
           */}
-          <Button
-            aria-disabled
-            onClick={(event) => {
-              event.preventDefault()
-            }}
-            size="sm"
-            type="button"
-            variant="outline"
-          >
-            {copy.follow}
-          </Button>
-          <p className="text-fg-subtle text-xs">{copy.followComingSoon}</p>
+          <FollowButton
+            copy={messages.collections.follow}
+            followerCount={seller.followerCount}
+            sellerId={seller.id}
+          />
         </div>
       </div>
 

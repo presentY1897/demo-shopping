@@ -115,6 +115,16 @@ export const sellerSchema = z.object({
   introduction: z.string().nullable(),
   logoUrl: z.string().nullable(),
   status: sellerStatusSchema,
+  /**
+   * 이 가게를 팔로우한 사람 수 (TASK-0089 §3 「판매자가 자기 팔로워 수를 볼 수 있다」).
+   *
+   * 공개 브랜드관에도 같은 값이 있다(`storefrontSellerSchema`). 그런데도 여기 있어야
+   * 하는 이유는, 없으면 판매자가 **자기 가게의 공개 페이지를 열어야** 그 수를 볼 수
+   * 있기 때문이다 — 콘솔이 자기 가게에 대해 손님보다 모르는 상태가 된다.
+   *
+   * 누가 팔로우했는지는 여기에도 없다. 판매자에게도 그것은 남의 정보다.
+   */
+  followerCount: z.int().min(0),
   /** The reason behind the current status; `null` while none was given. */
   statusReason: z.string().nullable(),
   /**
@@ -164,6 +174,17 @@ export const storefrontSellerSchema = z.object({
   slug: z.string(),
   introduction: z.string().nullable(),
   logoUrl: z.string().nullable(),
+  /**
+   * 팔로워 수 (TASK-0089 F3).
+   *
+   * **공개 응답에 있는 이유**: 이 수가 팔로우 목록의 줄에만 있으면, 아직 팔로우하지
+   * 않은 사람에게는 브랜드관이 팔로워 수를 **아예 못 보여준다** — 그리고 그 사람이
+   * 바로 이 수를 근거로 쓰는 사람이다. 팔로우한 뒤에야 나타나는 수는 F3 의
+   * 「팔로워 수 정확」을 지킨 것이 아니라 물어볼 수 없게 만든 것이다.
+   *
+   * 개인을 드러내지 않는다 — 세어 놓은 값 하나이고 누가 팔로우했는지는 없다.
+   */
+  followerCount: z.int().min(0),
 })
 
 export type StorefrontSeller = z.infer<typeof storefrontSellerSchema>

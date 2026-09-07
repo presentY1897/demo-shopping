@@ -11,9 +11,13 @@ import type {
   CouponScopeType,
   DenialReason,
   HealthStatus,
+  NotificationType,
   OauthFailureReason,
   OauthNotice,
   OrderActor,
+  ReportReason,
+  ReportStatus,
+  ReportTargetType,
   ReturnReason,
   SellerStatus,
   SettlementApprovalFailure,
@@ -34,6 +38,9 @@ import type {
 import type { ReturnPhotoRejection } from '@/lib/claims/return-photos'
 import type { CommissionFieldErrorMessages } from '@/lib/commissions/form-schema'
 import type { BulkIssueOutcome, CouponCostGap } from '@/lib/coupons/platform-coupons'
+import type { HandleFieldErrorMessages } from '@/lib/reports/handle-form'
+import type { ReportEffect, ReportOutcome } from '@/lib/reports/outcomes'
+import type { ReportRefusal, ReportScope } from '@/lib/reports/report-console'
 import type { SellerDecision } from '@/lib/sellers/decisions'
 import type { SettlementExportColumns } from '@/lib/settlements/csv'
 import type { HoldFieldErrorMessages } from '@/lib/settlements/hold-form'
@@ -108,6 +115,18 @@ export interface Messages {
   readonly commissions: CommissionMessages
   /** 정산 승인·지급 (TASK-0081). */
   readonly settlements: SettlementMessages
+  /** 신고 목록과 처리 (TASK-0091). */
+  readonly reports: ReportMessages
+  /**
+   * 알림함 — 상단바의 드롭다운과 `/notifications` (TASK-0090).
+   *
+   * `layout` 이 아니라 자기 슬라이스인 이유는 이것이 **화면 하나**이기 때문이다.
+   * 셸이 빌려 쓰는 것은 상단바 슬롯의 이름 넷뿐이고(`slot`), 나머지는 페이지와
+   * 드롭다운이 함께 읽는 같은 문장들이다. TASK-0019 가 자리만 잡아 둔
+   * `layout.notifications` 팝오버를 대체한다 — 그 팝오버는 「알림함은 M11 에서 이
+   * 자리에 들어옵니다」라고 말하고 있었고, 이것이 그 M11 이다.
+   */
+  readonly notifications: NotificationMessages
   /**
    * One sentence per error code the API can answer with (TASK-0117).
    *
@@ -260,21 +279,6 @@ export interface ConsoleLayoutMessages {
    * it is handed. M04 puts a permission filter in front of this definition.
    */
   readonly menu: ConsoleMenu
-  readonly notifications: ConsoleSlotMessages
-}
-
-/**
- * A top-bar slot that is reserved but not filled.
- *
- * A disabled control would be worse than none (TASK-0018 4.5), so the slot is a
- * working popover that says which milestone fills it.
- */
-export interface ConsoleSlotMessages {
-  /** Accessible name of the icon button. */
-  readonly label: string
-  readonly title: string
-  readonly body: string
-  readonly closeLabel: string
 }
 
 export interface ConsolePlaceholderMessages {
@@ -2042,4 +2046,234 @@ export interface SettlementToastMessages {
   readonly bulkApproved: string
   readonly exported: string
   readonly failedTitle: string
+}
+
+/* --------------------------------------------------- 신고 처리 (TASK-0091) -- */
+
+export interface ReportMessages {
+  readonly title: string
+  readonly description: string
+  /**
+   * 이 화면을 아예 볼 수 없는 계정에게. **목록의 오류 제목과 다른 문장이다** —
+   * 「불러오지 못했어요」는 다시 시도하면 될 것처럼 읽히는데, 이것은 아무리 눌러도
+   * 되지 않는다.
+   */
+  readonly forbiddenTitle: string
+  /**
+   * 네 상태의 이름. `Record` 라 계약에 상태가 하나 늘면 여기가 typecheck 에서
+   * 걸린다 — 그리고 그 상태는 이름 없이 화면에 나타날 수 없다.
+   */
+  readonly statusLabels: Readonly<Record<ReportStatus, string>>
+  /** 신고할 수 있는 네 가지 대상. */
+  readonly targetTypeLabels: Readonly<Record<ReportTargetType, string>>
+  /**
+   * 왜 신고했나 — 계약이 목록을 고정한 다섯 가지.
+   *
+   * 자유 입력이 아닌 이유는 분류를 위해서다(`reports.ts`). 화면이 그 다섯을 이름으로
+   * 부르지 못하면 분류는 다시 한 건씩 읽는 일이 된다.
+   */
+  readonly reasonLabels: Readonly<Record<ReportReason, string>>
+  readonly list: ReportListMessages
+  readonly handle: ReportHandleMessages
+  /** 처리 뒤에 뜨는 짧은 알림. */
+  readonly toast: ReportToastMessages
+  /** 한 줄씩, API 가 답하기 **전에** 실패한 경우에 대해. */
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+/** 신고 목록 — 상태·대상으로 좁히고, 발췌와 신고 횟수로 판단한다. */
+export interface ReportListMessages {
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  /** 좁혀 놓고 아무것도 안 나왔을 때. 「없다」와 뜻이 다르다. */
+  readonly filteredEmptyTitle: string
+  readonly filteredEmptyDescription: string
+  readonly listLabel: string
+  readonly columns: {
+    readonly createdAt: string
+    readonly target: string
+    readonly reason: string
+    readonly status: string
+    readonly excerpt: string
+    readonly handle: string
+  }
+  /** 필터가 고를 수 있는 다섯 묶음의 이름. 「처리됨」이 셋을 한꺼번에 뜻한다. */
+  readonly scopeLabels: Readonly<Record<ReportScope, string>>
+  readonly filters: {
+    readonly legend: string
+    readonly scopeLabel: string
+    readonly scopeAll: string
+    readonly targetLabel: string
+    readonly targetAll: string
+    readonly reset: string
+  }
+  /**
+   * 처리 대기 건수 (필터 무관).
+   *
+   * **`scopeNotice` 를 빼면 이 숫자가 거짓말이 된다.** 「반려」만 보고 있는 화면
+   * 위에 12라는 숫자가 서 있는데 그 사실을 적지 않으면, 읽는 사람은 화면의 줄을
+   * 세어 보고 숫자가 틀렸다고 판단한다.
+   */
+  readonly pending: {
+    readonly title: string
+    readonly countValue: string
+    readonly scopeNotice: string
+    /** 대기 건만 보러 가는 버튼. 누르면 상태 필터가 「처리 대기」로 간다. */
+    readonly only: string
+    /** 대기가 0건이다 — 이 화면에서 가장 좋은 소식이다. */
+    readonly none: string
+  }
+  /** 이 대상이 몇 번 신고됐나. `{count}` 가 들어간다. */
+  readonly reportCount: string
+  /** 대상이 지금 가려져 있다. 자동 임시 숨김도 여기에 나타난다. */
+  readonly targetHidden: string
+  /** 신고된 내용이 오지 않았다 — 지워졌거나 읽을 수 없는 대상이다. */
+  readonly excerptEmpty: string
+  /** 처리 버튼과, 이미 처리된 줄의 자리. */
+  readonly handleLabel: string
+  readonly handledAt: string
+  readonly handledNote: string
+  readonly pagination: {
+    readonly label: string
+    readonly next: string
+    readonly previous: string
+    readonly pageUnit: string
+    readonly countUnit: string
+  }
+}
+
+/**
+ * 처리 대화상자 — 숨김 · 삭제 · 반려 (F4 · F5 · F6).
+ *
+ * **`outcomeEffects` 가 이 슬라이스의 핵심이다.** 세 버튼의 이름만 있으면 운영자는
+ * 반려를 「무시」로 읽고, 자동 임시 숨김이 걸린 대상은 아무도 복구하지 않는다.
+ */
+export interface ReportHandleMessages {
+  readonly title: string
+  readonly description: string
+  readonly closeLabel: string
+  readonly cancel: string
+  readonly submit: string
+  readonly submitting: string
+  /** 무엇에 대한 신고인지를 대화상자 안에서 다시 보여 주는 자리. */
+  readonly summary: {
+    readonly target: string
+    readonly reason: string
+    readonly detail: string
+    readonly excerpt: string
+    readonly reportCount: string
+    readonly createdAt: string
+    /** 값이 없다. 빈칸으로 두면 「없다」와 「못 읽었다」가 섞인다. */
+    readonly none: string
+  }
+  /** 대상이 이미 가려져 있다는 사실 — 반려가 **무엇을 되돌리는지**의 근거다. */
+  readonly hiddenNotice: string
+  /** 같은 대상의 다른 대기 신고도 함께 닫힌다 (TASK-0091 4.7). */
+  readonly siblingNotice: string
+  /** 상품에는 삭제가 없다는 사실 (TASK-0091 4.4). */
+  readonly productNotice: string
+  readonly outcomeLegend: string
+  readonly outcomeLabels: Readonly<Record<ReportOutcome, string>>
+  /**
+   * 각 처리가 **대상에** 하는 일.
+   *
+   * `Record<ReportEffect, string>` 이라 효과가 하나 늘면 문구가 없는 것을 typecheck
+   * 이 잡는다. 셋 중 `reveal` 이 가장 중요하다 — 그것이 「반려하면 다시 보인다」다.
+   */
+  readonly outcomeEffects: Readonly<Record<ReportEffect, string>>
+  readonly noteLabel: string
+  readonly noteHint: string
+  readonly notePlaceholder: string
+  /** 되돌릴 수 없는 처리 앞의 두 번째 걸음 (R1). */
+  readonly confirm: {
+    readonly title: string
+    readonly description: string
+    readonly confirm: string
+    readonly back: string
+    readonly noteLabel: string
+  }
+  readonly failedTitle: string
+  /**
+   * 이 화면이 따로 할 말이 있는 두 거절 (`refusalOf`).
+   *
+   * 나머지는 카탈로그가 코드로 문장을 고른다. 여기 둘을 적어 두는 이유는 그 문장이
+   * **다음 행동**을 담고 있어야 하기 때문이다 — 하나는 「이 계정으로는 안 된다」이고
+   * 다른 하나는 「목록을 다시 읽어라」다.
+   */
+  readonly refusals: Readonly<Record<ReportRefusal, string>>
+  /** 남이 먼저 처리했을 때 내미는 버튼. */
+  readonly refreshLabel: string
+  /** 서버가 이 폼의 어느 칸도 가리키지 않고 거절했을 때. */
+  readonly submitError: string
+  readonly errors: HandleFieldErrorMessages
+}
+
+export interface ReportToastMessages {
+  readonly regionLabel: string
+  readonly closeLabel: string
+  /** 처리 하나가 끝났다. `Record` 라 처리가 하나 늘면 여기가 걸린다. */
+  readonly handled: Readonly<Record<ReportOutcome, string>>
+  readonly failedTitle: string
+}
+
+/* ------------------------------------------------------ 알림함 (TASK-0090) -- */
+
+export interface NotificationMessages {
+  /** 상단바의 종. 셸이 빌려 쓰는 넷이다. */
+  readonly slot: {
+    readonly label: string
+    /** 안 읽은 것이 있을 때의 이름. `{count}` 가 들어간다 — 배지의 숫자는 그림이다. */
+    readonly labelWithCount: string
+    readonly title: string
+    readonly closeLabel: string
+  }
+  readonly title: string
+  readonly description: string
+  /**
+   * 유형별 이름.
+   *
+   * `Record<NotificationType, string>` 이라 계약에 유형이 하나 늘면 여기가
+   * typecheck 에서 걸린다. **관리자가 받지 않는 유형에도 문장이 있다** — 받는
+   * 사람의 역할이 유형에 묻어 있지만(`notifications.ts`) 그것은 서버의 규약이고,
+   * 이름 없는 유형이 화면에 나타나는 길을 열어 둘 이유는 없다.
+   */
+  readonly typeLabels: Readonly<Record<NotificationType, string>>
+  /** 배지가 상한을 넘었을 때. `{max}` 가 들어간다. */
+  readonly badgeOverflow: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  /** 「안 읽은 것만」을 켜 두고 아무것도 없을 때. 「없다」와 뜻이 다르다. */
+  readonly unreadEmptyTitle: string
+  readonly unreadEmptyDescription: string
+  readonly listLabel: string
+  /** 안 읽은 줄에 붙는 표시. 색만으로는 말하지 않는다 (P2). */
+  readonly unreadLabel: string
+  /** 안 읽은 것이 몇 건인가. `{count}` 가 들어간다. */
+  readonly unreadCount: string
+  readonly allReadLabel: string
+  readonly allReadDone: string
+  readonly markReadLabel: string
+  /** 드롭다운에서 알림함 전체로. */
+  readonly viewAll: string
+  readonly unreadOnlyLabel: string
+  readonly unreadOnlyDescription: string
+  /** 누를 곳이 없는 알림 — `link` 가 없는 것들이다. */
+  readonly noLink: string
+  readonly failedTitle: string
+  /** 로그인하기 전의 종. 배지도 목록도 없다. */
+  readonly signedOut: string
+  readonly pagination: {
+    readonly label: string
+    readonly next: string
+    readonly previous: string
+    readonly pageUnit: string
+    readonly countUnit: string
+  }
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
 }

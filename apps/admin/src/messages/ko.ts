@@ -1532,6 +1532,230 @@ export const ko: Messages = {
       unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
     },
   },
+  // 신고 처리 (TASK-0091). 이 화면에서 가장 조심스러운 문구는 **반려**다 —
+  // 「아무 일도 안 함」처럼 들리지만 실제로는 자동 임시 숨김을 **푸는** 처리이고,
+  // 그 사실이 문구에 없으면 운영자는 반려를 「무시」로 읽는다 (4.2). 그래서 처리
+  // 선택지마다 「대상에 무슨 일이 일어나는가」가 한 줄씩 붙는다.
+  reports: {
+    title: '신고 처리',
+    description:
+      '리뷰·문의·답변·상품에 들어온 신고를 검토하고 숨김·삭제·반려로 처리합니다. 처리 사유는 신고한 사람에게 그대로 전달됩니다.',
+    forbiddenTitle: '신고를 볼 수 없어요',
+    statusLabels: {
+      PENDING: '처리 대기',
+      HIDDEN: '숨김',
+      REMOVED: '삭제',
+      REJECTED: '반려',
+    },
+    targetTypeLabels: {
+      REVIEW: '리뷰',
+      QUESTION: '문의',
+      ANSWER: '답변',
+      PRODUCT: '상품',
+    },
+    reasonLabels: {
+      ABUSE: '욕설·비방',
+      SPAM: '스팸·광고',
+      FALSE_INFO: '허위 정보',
+      PRIVACY: '개인정보 노출',
+      OTHER: '기타',
+    },
+    list: {
+      loadingLabel: '신고를 불러오는 중',
+      errorTitle: '신고를 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      emptyTitle: '아직 들어온 신고가 없어요',
+      emptyDescription: '리뷰·문의·답변·상품이 신고되면 여기에 쌓입니다.',
+      filteredEmptyTitle: '이 조건에 맞는 신고가 없어요',
+      filteredEmptyDescription: '상태나 대상 유형을 바꾸거나 조건을 지워 보세요.',
+      listLabel: '신고 목록',
+      columns: {
+        createdAt: '신고 시각',
+        target: '대상',
+        reason: '사유',
+        status: '상태',
+        excerpt: '신고된 내용',
+        handle: '처리',
+      },
+      scopeLabels: {
+        PENDING: '처리 대기',
+        HANDLED: '처리됨',
+        HIDDEN: '숨김',
+        REMOVED: '삭제',
+        REJECTED: '반려',
+      },
+      filters: {
+        legend: '신고 검색 조건',
+        scopeLabel: '상태',
+        scopeAll: '전체',
+        targetLabel: '대상 유형',
+        targetAll: '전체',
+        reset: '조건 지우기',
+      },
+      pending: {
+        title: '처리 대기',
+        countValue: '{count}건',
+        // 이 한 줄이 없으면 「반려」만 보고 있는 화면 위의 숫자가 틀려 보인다.
+        scopeNotice: '지금 고른 조건과 무관하게, 아직 처리하지 않은 신고 전체의 건수입니다.',
+        only: '대기 건만 보기',
+        none: '처리를 기다리는 신고가 없습니다.',
+      },
+      // 다섯 번째 신고와 첫 신고는 같은 내용이어도 다른 무게를 갖는다.
+      reportCount: '신고 {count}번째',
+      targetHidden: '가려짐',
+      excerptEmpty: '내용을 읽을 수 없습니다.',
+      handleLabel: '처리하기',
+      handledAt: '처리 {datetime}',
+      handledNote: '사유: {note}',
+      pagination: {
+        label: '신고 목록 페이지',
+        next: '다음',
+        previous: '이전',
+        pageUnit: ' 페이지',
+        countUnit: '건',
+      },
+    },
+    handle: {
+      title: '신고 처리',
+      description: '무엇으로 처리할지 고르고, 신고한 사람에게 갈 사유를 적어 주세요.',
+      closeLabel: '창 닫기',
+      cancel: '취소',
+      submit: '처리하기',
+      submitting: '처리하는 중',
+      summary: {
+        target: '대상',
+        reason: '신고 사유',
+        detail: '신고자가 적은 내용',
+        excerpt: '신고된 내용',
+        reportCount: '이 대상의 신고 수',
+        createdAt: '신고 시각',
+        none: '—',
+      },
+      hiddenNotice:
+        '이 대상은 지금 가려져 있습니다. 신고가 여러 건 모여 자동으로 임시 숨김이 걸린 것일 수 있고, 반려하면 다시 보이게 됩니다.',
+      siblingNotice: '같은 대상에 대기 중인 다른 신고도 이 판단으로 함께 닫힙니다.',
+      productNotice:
+        '상품은 지울 수 없습니다. 주문·정산·리뷰가 가리키는 기록이라, 문제가 있는 상품에는 판매를 멈추는 숨김으로 답합니다.',
+      outcomeLegend: '어떻게 처리할까요',
+      outcomeLabels: {
+        HIDDEN: '숨김',
+        REMOVED: '삭제',
+        REJECTED: '반려',
+      },
+      // 셋 중 reveal 이 가장 중요하다 — 「반려」가 아무 일도 안 하는 것으로 읽히면
+      // 자동 임시 숨김이 걸린 멀쩡한 글이 영영 가려진 채 남는다.
+      outcomeEffects: {
+        hide: '대상을 가립니다. 구매자 화면에서 보이지 않고, 쓴 사람에게는 가려졌다는 표시와 함께 남습니다.',
+        remove: '대상을 지웁니다. 되돌릴 수 없습니다.',
+        reveal: '신고가 잘못됐다고 판단합니다. 자동 임시 숨김이 풀리고 대상이 다시 보이게 됩니다.',
+      },
+      noteLabel: '처리 사유',
+      noteHint: '신고한 사람에게 이 문장이 그대로 전달됩니다. 왜 그렇게 판단했는지 적어 주세요.',
+      notePlaceholder: '예) 상품 사용 후기의 범위를 벗어나지 않아 그대로 두었습니다.',
+      confirm: {
+        title: '정말 삭제할까요',
+        description: '{target} 하나를 지웁니다. 되돌릴 수 없습니다.',
+        confirm: '삭제',
+        back: '뒤로',
+        noteLabel: '신고자에게 갈 사유',
+      },
+      failedTitle: '신고를 처리하지 못했어요',
+      refusals: {
+        // F7. 목록은 읽히지만 어느 줄이 막히는지는 미리 알 수 없다 — 대상의 주인이
+        // 누구인지가 목록에 실려 오지 않는다.
+        forbidden:
+          '이 계정으로는 이 내용을 처리할 수 없어요. 데모 관리자는 체험 계정이 만든 내용만 가리거나 지울 수 있습니다.',
+        stale: '다른 관리자가 먼저 처리했어요. 목록을 새로고침한 뒤 다시 확인해 주세요.',
+      },
+      refreshLabel: '목록 새로고침',
+      submitError: '신고를 처리하지 못했어요. 잠시 후 다시 시도해 주세요.',
+      errors: {
+        outcomeRequired: '어떻게 처리할지 골라 주세요.',
+        noteRequired: '처리 사유를 적어 주세요. 신고한 사람에게 그대로 전달됩니다.',
+        noteTooLong: '사유는 {max}자까지 쓸 수 있어요.',
+      },
+    },
+    toast: {
+      regionLabel: '알림',
+      closeLabel: '닫기',
+      handled: {
+        HIDDEN: '대상을 가렸어요.',
+        REMOVED: '대상을 지웠어요.',
+        REJECTED: '신고를 반려했어요. 대상이 다시 보입니다.',
+      },
+      failedTitle: '신고를 처리하지 못했어요',
+    },
+    failures: {
+      network: '서버에 연결하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.',
+      timeout: '응답이 너무 늦어 요청을 멈췄어요. 잠시 후 다시 시도해 주세요.',
+      aborted: '요청을 취소했어요.',
+      malformed_response: '서버가 보낸 응답을 읽지 못했어요. 잠시 후 다시 시도해 주세요.',
+      configuration: '서버 주소 설정이 없어요. 개발 서버를 다시 실행해 주세요.',
+      unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+    },
+  },
+  // 알림함 (TASK-0090). 상단바의 종과 /notifications 가 같은 문장을 읽는다 —
+  // 드롭다운은 안 읽은 다섯 개를 30초마다 다시 묻고, 페이지는 전부를 넘겨 본다.
+  notifications: {
+    slot: {
+      label: '알림',
+      // 배지의 숫자는 그림이라 읽히지 않는다. 이름이 그 숫자를 말한다.
+      labelWithCount: '알림 (안 읽은 알림 {count}건)',
+      title: '알림',
+      closeLabel: '닫기',
+    },
+    title: '알림함',
+    description:
+      '입점 신청과 신고 처리 결과가 여기로 옵니다. 상단바의 종은 30초마다 새로 확인하고, 탭이 가려져 있는 동안에는 묻지 않습니다.',
+    typeLabels: {
+      ORDER_STATUS: '주문 상태',
+      CLAIM_STATUS: '취소·반품',
+      REVIEW_REPLY: '리뷰 답글',
+      QUESTION_ANSWER: '문의 답변',
+      RESTOCK: '재입고',
+      NEW_PRODUCT: '신상품',
+      SELLER_SETTLEMENT: '정산',
+      SELLER_ORDER: '새 주문',
+      SELLER_CLAIM: '클레임 접수',
+      ADMIN_SELLER_APPLICATION: '입점 신청',
+      REPORT_HANDLED: '신고 처리',
+    },
+    badgeOverflow: '{max}+',
+    loadingLabel: '알림을 불러오는 중',
+    errorTitle: '알림을 불러오지 못했어요',
+    retryLabel: '다시 시도',
+    emptyTitle: '아직 알림이 없어요',
+    emptyDescription: '입점 신청이 들어오거나 신고가 처리되면 여기에 쌓입니다.',
+    unreadEmptyTitle: '안 읽은 알림이 없어요',
+    unreadEmptyDescription: '「안 읽은 것만」을 끄면 지난 알림도 볼 수 있습니다.',
+    listLabel: '알림 목록',
+    unreadLabel: '안 읽음',
+    unreadCount: '안 읽은 알림 {count}건',
+    allReadLabel: '모두 읽음',
+    allReadDone: '모든 알림을 읽음으로 표시했어요.',
+    markReadLabel: '읽음으로 표시',
+    viewAll: '알림함 전체 보기',
+    unreadOnlyLabel: '안 읽은 것만',
+    unreadOnlyDescription: '켜면 아직 읽지 않은 알림만 보여 줍니다.',
+    noLink: '이 알림에는 이동할 화면이 없습니다.',
+    failedTitle: '알림을 처리하지 못했어요',
+    signedOut: '로그인하면 알림을 볼 수 있습니다.',
+    pagination: {
+      label: '알림 목록 페이지',
+      next: '다음',
+      previous: '이전',
+      pageUnit: ' 페이지',
+      countUnit: '건',
+    },
+    failures: {
+      network: '서버에 연결하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.',
+      timeout: '응답이 너무 늦어 요청을 멈췄어요. 잠시 후 다시 시도해 주세요.',
+      aborted: '요청을 취소했어요.',
+      malformed_response: '서버가 보낸 응답을 읽지 못했어요. 잠시 후 다시 시도해 주세요.',
+      configuration: '서버 주소 설정이 없어요. 개발 서버를 다시 실행해 주세요.',
+      unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+    },
+  },
   layout: {
     // 콘솔 이름. 사이드바 위와 모바일 시트 제목에 같은 문자열이 쓰인다.
     brand: '관리자 콘솔',
@@ -1566,7 +1790,10 @@ export const ko: Messages = {
           { href: '/products', label: '상품 관리', permission: 'product.read' },
           { href: '/orders', label: '주문 관리', permission: 'order.read' },
           { href: '/claims', label: '클레임 관리', permission: 'claim.read' },
-          { href: '/reports', label: '신고 처리' },
+          // 신고를 **하는** 것은 누구나 하고(report.write), 처리는 관리자만 한다.
+          // 메뉴가 요구하는 것은 화면이 부르는 목록 엔드포인트가 요구하는 것과 같은
+          // 값이어야 한다 (TASK-0091).
+          { href: '/reports', label: '신고 처리', permission: 'content.moderate' },
         ],
       },
       {
@@ -1592,12 +1819,6 @@ export const ko: Messages = {
         items: [{ href: '/demo', label: '데모 계정 관리', permission: 'demo.manage' }],
       },
     ],
-    notifications: {
-      label: '알림',
-      title: '알림',
-      body: '알림함은 M11 에서 이 자리에 들어옵니다.',
-      closeLabel: '닫기',
-    },
   },
   // 로그인과 권한 안내 (TASK-0023). 아래 레코드는 전부 @shopping/shared 가
   // 소유한 유니온으로 키가 잡혀 있어, 값이 하나 늘면 여기가 typecheck 에서

@@ -109,7 +109,12 @@ export const ko: Messages = {
           // 따로 없는 이유는 리뷰 자체가 로그인 없이도 읽는 공개 정보라서다 —
           // 판매자에게만 있는 능력은 「답한다」쪽이다.
           { href: '/reviews', label: '리뷰 관리', permission: 'review.reply' },
-          { href: '/questions', label: '문의 관리' },
+          // `question.answer` 다. 리뷰 관리와 같은 이유로 「읽기」가 아니다 —
+          // 이 화면이 API 에 처음 묻는 것이 목록이고, 그 목록을 여는 퍼미션이
+          // 답변을 쓰는 퍼미션과 같다 (`GET /seller-questions` 가 그것을
+          // 요구한다). 문의 자체는 공개 정보라 판매자에게만 있는 능력은
+          // 「답한다」쪽이다.
+          { href: '/questions', label: '문의 관리', permission: 'question.answer' },
         ],
       },
       {
@@ -126,12 +131,6 @@ export const ko: Messages = {
     // 않는다 — 신청자는 BUYER 이고 위 메뉴가 거는 *.read 를 거의 다 가진다
     // (TASK-0109 4장).
     onboardingMenu: [{ id: 'onboarding', items: [{ href: '/apply', label: '입점 신청' }] }],
-    notifications: {
-      label: '알림',
-      title: '알림',
-      body: '알림함은 M11 에서 이 자리에 들어옵니다.',
-      closeLabel: '닫기',
-    },
   },
   // 로그인과 권한 안내 (TASK-0023). 아래 레코드는 전부 @shopping/shared 가
   // 소유한 유니온으로 키가 잡혀 있어, 값이 하나 늘면 여기가 typecheck 에서
@@ -220,12 +219,6 @@ export const ko: Messages = {
     issueFailed: '잠시 후 다시 시도해주세요.',
     rateLimited: '조금 전에 여러 번 발급했습니다. 1분 뒤에 다시 시도해주세요.',
     unreachable: '서버에 연결하지 못했습니다. 잠시 후 다시 시도해주세요.',
-  },
-  placeholder: {
-    comingSoon: '준비 중',
-    body: '이 화면은 해당 도메인 마일스톤에서 열립니다. 지금은 콘솔 레이아웃을 확인하는 자리입니다.',
-    // 메뉴 항목이 아닌 하위 경로. 여기서만 제목이 필요하다.
-    productNew: '상품 등록',
   },
   // API 가 코드로 말하는 실패의 문장 (TASK-0117). 서버도 문장을 보내지만 그것은
   // 이 카탈로그에 없는 코드를 위한 대비책이다. 사용자가 한 행동의 언어로 쓰고,
@@ -506,6 +499,8 @@ export const ko: Messages = {
         },
       },
       reasonLabel: '사유',
+      followerLabel: '팔로워',
+      followerCount: '{count}명',
     },
     conflict: {
       title: '다른 곳에서 먼저 저장했습니다',
@@ -1994,5 +1989,177 @@ export const ko: Messages = {
       body: '입점 신청이 끝나면 내 상품에 달린 리뷰를 여기에서 볼 수 있습니다.',
       applyLabel: '입점 신청하러 가기',
     },
+  },
+  // 문의 관리 (TASK-0088). 위의 reviewList 와 **같은 순서, 같은 이름**으로 적는다 —
+  // 두 화면이 같은 일을 다른 대상에 하므로, 한쪽에만 있는 키가 생기는 순간이 둘이
+  // 갈리기 시작한 자리다.
+  questionList: {
+    description: '내 상품에 들어온 문의를 보고 답변합니다. 아직 답하지 않은 문의가 위에 옵니다.',
+    loadingLabel: '문의를 불러오는 중입니다',
+    unanswered: {
+      regionLabel: '답변할 문의',
+      value: '{count}건',
+      // 필터를 켜면 목록은 줄어드는데 이 수는 그대로다. 적지 않으면 그 차이가
+      // 버그로 읽힌다 — 뱃지는 「지금 화면에 몇 개」가 아니라 「할 일이 몇 개」다.
+      note: '아래 조건과 상관없이 내 상품 전체에서 셉니다.',
+      none: '답변하지 않은 문의가 없습니다.',
+    },
+    filters: {
+      legend: '문의 걸러 보기',
+      unansweredOnlyLabel: '답변하지 않은 문의만',
+      reset: '조건 지우기',
+    },
+    card: {
+      listLabel: '문의 목록',
+      productLabel: '상품: {name}',
+      authorLabel: '작성자 {name}',
+      askedAt: '{date} 작성',
+      unansweredBadge: '답변 대기',
+      answeredBadge: '답변 완료',
+      privateBadge: '비공개',
+      // 「못 본다」가 아니라 「남들은 못 본다」다. 답할 사람이 읽지 못하면 비공개
+      // 문의라는 것이 성립하지 않는다 (4.2).
+      privateNote: '작성자와 판매자만 볼 수 있는 문의입니다. 답변도 공개되지 않습니다.',
+    },
+    answer: {
+      heading: '내 답변',
+      authorLine: '{brand}',
+      updatedAt: '{date} 수정',
+      writeLabel: '답변 쓰기',
+      editLabel: '답변 수정',
+      deleteLabel: '답변 삭제',
+      cancelLabel: '취소',
+      saveLabel: '답변 저장',
+      contentLabel: '답변 내용',
+      contentHint: '{max}자까지 쓸 수 있습니다. 공개 문의라면 상품 상세에 그대로 보입니다.',
+      contentPlaceholder: '문의 주셔서 감사합니다. 확인한 내용을 알려드릴게요.',
+      errors: {
+        required: '답변 내용을 입력해주세요.',
+        tooLong: '답변은 {max}자까지 쓸 수 있어요.',
+      },
+      errorTitle: '답변을 저장하지 못했습니다',
+      submitFailed: '답변을 저장하지 못했습니다. 잠시 후 다시 시도해주세요.',
+      savedNotice: '답변을 저장했습니다.',
+      deletedNotice: '답변을 삭제했습니다.',
+      failureTitle: '처리하지 못했습니다.',
+      refusals: {
+        // 자기 목록에서는 열리지 않아야 하는 길이다. 그래도 문장이 있는 이유는
+        // 목록을 읽은 순간과 답변을 쓰는 순간 사이에 시간이 있기 때문이다.
+        forbidden: '내 스토어의 상품이 아니라서 답변할 수 없어요.',
+        // 다른 탭에서 지웠거나, 문의가 내려갔다. 할 일은 다시 읽는 것이다.
+        gone: '이 문의나 답변이 이미 사라졌어요. 목록을 새로고침해 주세요.',
+      },
+      confirm: {
+        title: '답변을 삭제할까요?',
+        description:
+          '삭제하면 문의에 달린 답변이 사라집니다. 되돌릴 수 없고, 다시 쓰려면 새로 작성해야 합니다.',
+        confirm: '삭제',
+        cancel: '취소',
+        closeLabel: '닫기',
+      },
+    },
+    pagination: {
+      label: '문의 목록 페이지 이동',
+      previous: '이전',
+      next: '다음',
+      page: '{page} 페이지',
+    },
+    empty: {
+      title: '아직 문의가 없어요.',
+      description: '구매자가 상품에 문의를 남기면 여기에서 답변할 수 있습니다.',
+    },
+    filteredEmpty: {
+      title: '조건에 맞는 문의가 없어요.',
+      description: '「답변하지 않은 문의만」을 꺼 보세요.',
+    },
+    errorTitle: '문의를 불러오지 못했습니다.',
+    retry: '다시 시도',
+    noStore: {
+      title: '아직 스토어가 없어요.',
+      body: '입점 신청이 끝나면 내 상품에 들어온 문의를 여기에서 볼 수 있습니다.',
+      applyLabel: '입점 신청하러 가기',
+    },
+  },
+  // 알림함 (TASK-0090). 상단바의 종이 M11 을 기다리던 자리를 대체한다.
+  notifications: {
+    menu: {
+      label: '알림',
+      // 배지의 숫자는 `aria-hidden` 이다. 보조 기술에게 「알림」 옆의 3은 아무
+      // 관계도 아니라서, 개수는 버튼의 이름 안에 문장으로 들어가야 한다.
+      labelWithUnread: '알림, 안 읽음 {count}건',
+      // 세 자리 숫자가 종 위에 얹히면 아이콘이 밀린다. 정확한 수는 위의 이름이
+      // 들고 있으므로, 줄어드는 것은 그림뿐이다.
+      badgeOverflow: '{max}+',
+      title: '알림',
+      closeLabel: '닫기',
+      listLabel: '안 읽은 알림',
+      loadingLabel: '알림을 불러오는 중입니다',
+      empty: '안 읽은 알림이 없습니다.',
+      errorTitle: '알림을 불러오지 못했습니다.',
+      retry: '다시 시도',
+      readAllLabel: '모두 읽음',
+      seeAllLabel: '알림 전체 보기',
+      moreNote: '안 읽은 알림이 {count}건 더 있습니다.',
+      // 로그인 전. 종을 지우는 대신 이 문장을 넣는다 — 세션이 도착할 때 컨트롤이
+      // 생겨나면 옆의 계정 메뉴가 통째로 밀린다.
+      unavailable: '로그인하면 알림을 볼 수 있습니다.',
+    },
+    page: {
+      // 사이드바에 없는 화면이라 제목을 여기서 든다 — 상단바의 종으로 들어온다.
+      title: '알림함',
+      description: '주문 · 취소·반품 · 정산 소식이 여기에 모입니다.',
+      loadingLabel: '알림을 불러오는 중입니다',
+      unread: {
+        regionLabel: '안 읽은 알림',
+        value: '{count}건',
+        note: '아래 조건과 상관없이 알림함 전체에서 셉니다.',
+        none: '안 읽은 알림이 없습니다.',
+      },
+      filters: {
+        legend: '알림 걸러 보기',
+        unreadOnlyLabel: '안 읽은 알림만',
+        reset: '조건 지우기',
+      },
+      listLabel: '알림 목록',
+      readAllLabel: '모두 읽음',
+      pagination: {
+        label: '알림 목록 페이지 이동',
+        previous: '이전',
+        next: '다음',
+        page: '{page} 페이지',
+      },
+      empty: {
+        title: '아직 받은 알림이 없어요.',
+        description: '주문이 들어오거나 정산이 확정되면 여기에서 알려드립니다.',
+      },
+      filteredEmpty: {
+        title: '안 읽은 알림이 없어요.',
+        description: '「안 읽은 알림만」을 끄면 지난 알림을 볼 수 있습니다.',
+      },
+      errorTitle: '알림을 불러오지 못했습니다.',
+      retry: '다시 시도',
+    },
+    item: {
+      unreadBadge: '안 읽음',
+      readLabel: '읽음',
+      openLabel: '보러 가기',
+      receivedAt: '{date}',
+      // 계약의 유형 전부. 판매자 계정도 물건을 살 수 있으므로 구매자 알림이
+      // 도착할 수 있고, 유형으로 걸러 감추면 그 알림이 어느 앱에서도 안 보인다.
+      types: {
+        ORDER_STATUS: '주문',
+        CLAIM_STATUS: '취소·반품',
+        REVIEW_REPLY: '리뷰 답변',
+        QUESTION_ANSWER: '문의 답변',
+        RESTOCK: '재입고',
+        NEW_PRODUCT: '신상품',
+        SELLER_SETTLEMENT: '정산',
+        SELLER_ORDER: '새 주문',
+        SELLER_CLAIM: '취소·반품 신청',
+        ADMIN_SELLER_APPLICATION: '입점 신청',
+        REPORT_HANDLED: '신고 처리',
+      },
+    },
+    readFailureTitle: '읽음 처리하지 못했습니다.',
   },
 }

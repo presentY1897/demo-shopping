@@ -49,6 +49,7 @@ const base = {
   slug: 'lumiere',
   introduction: '동네 원단 시장에서 고른 천으로 한 벌씩 짓습니다.',
   logoUrl: 'https://cdn.test.invalid/sellers/lumiere/logo.png',
+  followerCount: 128,
   statusReason: null,
   statusChangedAt: DECIDED_AT,
   createdAt: CREATED_AT,
@@ -119,5 +120,8 @@ export const storefrontSeller = defineFixture(storefrontSellerResponseSchema, {
     slug: base.slug,
     introduction: base.introduction,
     logoUrl: base.logoUrl,
+    // 0 이 아니다: 0 이면 「팔로워 수를 그리는가」와 「0을 숨기는가」가 한 값에
+    // 겹쳐, 수를 아예 안 그리는 화면도 이 픽스처로는 통과한다 (TASK-0089 F3).
+    followerCount: 128,
   },
 })
