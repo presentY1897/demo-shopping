@@ -24,9 +24,12 @@ export const ADMIN_REASON_MAX = 200
 
 export const adminReasonSchema = z.string().trim().min(1).max(ADMIN_REASON_MAX)
 
+/** 검색어의 상한. 화면의 입력 칸이 같은 수를 써야 400 대신 그 자리에서 막힌다. */
+export const USER_SEARCH_MAX = 120
+
 export const adminUserListQueryParamsSchema = z.object({
   /** 이메일 또는 이름의 일부. **가려진 값이 아니라 원본을 찾는다** — 아니면 검색이 안 된다. */
-  q: z.string().trim().min(1).max(120).optional(),
+  q: z.string().trim().min(1).max(USER_SEARCH_MAX).optional(),
   role: roleSchema.optional(),
   isDemo: z.boolean().optional(),
   suspended: z.boolean().optional(),
@@ -82,7 +85,7 @@ export const adminUserStatsSchema = z.object({
   paidAmount: wonSchema,
   reviewCount: z.int().min(0),
   questionCount: z.int().min(0),
-  pointBalance: z.int().min(0),
+  pointBalance: wonSchema,
   couponCount: z.int().min(0),
 })
 

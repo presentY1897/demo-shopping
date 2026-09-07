@@ -1,21 +1,23 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import type {
   AdminDemoAccount,
+  DemoSweepResponse,
   DemoAccountListResponse,
   DemoPolicy,
   DemoPolicyResponse,
   DemoStatsResponse,
 } from '@shopping/shared'
-import { ADMIN_LIST_DEFAULT_LIMIT } from '@shopping/shared'
+import {
+  ADMIN_LIST_DEFAULT_LIMIT,
+  DEMO_STATS_DEFAULT_DAYS,
+  DEMO_STATS_MAX_DAYS,
+} from '@shopping/shared'
 
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { fillDays, kstDate, rangeOf } from '../common/kst-days.js'
 import { DemoCleanupService } from '../demo/demo-cleanup.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
-
-const DEFAULT_DAYS = 14
-const MAX_DAYS = 90
 
 interface AccountRow {
   readonly userId: string
@@ -128,7 +130,7 @@ export class AdminDemoService {
   }
 
   /** 지금 한 번 정리한다 (F5). 실패한 계정은 이미 만료돼 있으므로 함께 집힌다. */
-  async sweep(): Promise<{ readonly swept: number; readonly failed: number }> {
+  async sweep(): Promise<DemoSweepResponse> {
     const report = await this.cleanup.sweep()
 
     return { swept: report.swept, failed: report.failed }
@@ -140,8 +142,8 @@ export class AdminDemoService {
     readonly to?: string
   }): Promise<DemoStatsResponse> {
     const range = rangeOf(params, this.clock.now(), {
-      defaultDays: DEFAULT_DAYS,
-      maxDays: MAX_DAYS,
+      defaultDays: DEMO_STATS_DEFAULT_DAYS,
+      maxDays: DEMO_STATS_MAX_DAYS,
     })
 
     const [days, byRole, activeAccounts, failedCleanups] = await Promise.all([

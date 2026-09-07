@@ -240,6 +240,25 @@ export const demoStatsDaySchema = z.object({
 export type DemoStatsDay = z.infer<typeof demoStatsDaySchema>
 
 /** 발급 통계 (F7). 일별과 역할별을 함께 답한다 — 두 축을 따로 물으면 합이 안 맞는다. */
+/**
+ * 지금 한 번 정리했을 때의 결과 (TASK-0096 F5).
+ *
+ * **계약에 있어야 하는 이유**: 없으면 화면이 응답 모양을 자기 파일에 다시 적게 되고,
+ * 그것이 게이트 C1 이 금지하는 「앱이 응답 타입을 다시 정의하는 것」이다 — 서버가
+ * 칸을 하나 더 보내기 시작해도 그 앱만 모른다.
+ */
+export const demoSweepResponseSchema = z.object({
+  swept: z.int().min(0),
+  /** 실패한 계정은 만료된 채로 남아 다음 주기가 다시 집는다. */
+  failed: z.int().min(0),
+})
+
+export type DemoSweepResponse = z.infer<typeof demoSweepResponseSchema>
+
+/** 발급 통계의 기본 기간과 상한. 서버가 넘치는 기간을 **조용히 접으므로** 화면이 알아야 한다. */
+export const DEMO_STATS_DEFAULT_DAYS = 14
+export const DEMO_STATS_MAX_DAYS = 90
+
 export const demoStatsResponseSchema = z.object({
   days: z.array(demoStatsDaySchema),
   byRole: z.record(z.string(), z.int().min(0)),
