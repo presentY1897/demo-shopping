@@ -22,6 +22,7 @@ import { PointsModule } from './points/points.module.js'
 import { ProfileModule } from './profile/profile.module.js'
 import { QuestionModule } from './questions/question.module.js'
 import { ReservationModule } from './reservation/reservation.module.js'
+import { ReportModule } from './reports/report.module.js'
 import { ReturnModule } from './claims/return.module.js'
 import { ReviewModule } from './reviews/review.module.js'
 import { SearchModule } from './search/search.module.js'
@@ -55,6 +56,7 @@ export class AppModule {
         PointsModule,
         ProfileModule,
         QuestionModule,
+        ReportModule,
         ReservationModule,
         ReturnModule,
         ReviewModule,

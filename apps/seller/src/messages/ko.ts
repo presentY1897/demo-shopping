@@ -341,6 +341,11 @@ export const ko: Messages = {
     REVIEW_EDIT_WINDOW_CLOSED: '리뷰를 고칠 수 있는 기간이 지났어요.',
     REVIEW_IMAGE_TOO_MANY: '사진은 최대 {max}장까지 첨부할 수 있어요.',
     REVIEW_IMAGE_FOREIGN: '첨부할 수 없는 사진이에요. 사진을 다시 첨부해 주세요.',
+    // 신고의 거절들 (TASK-0091).
+    REPORT_OWN_CONTENT: '자기 글은 신고할 수 없어요.',
+    REPORT_ALREADY_FILED: '이미 신고한 대상이에요.',
+    REPORT_ALREADY_HANDLED: '이미 처리된 신고예요. 목록을 새로고침해 주세요.',
+    REPORT_NOT_REMOVABLE: '상품은 지울 수 없어요. 숨김으로 처리해 주세요.',
     // 쿠폰 (TASK-0072). 판매자 콘솔이 실제로 만나는 실패다 — 발행 화면은
     // TASK-0074 이고, 서버는 그 화면 없이도 이 코드들을 답한다.
     COUPON_SCOPE_FORBIDDEN:

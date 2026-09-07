@@ -27,6 +27,7 @@ const ALL: readonly NotificationType[] = [
   'SELLER_ORDER',
   'SELLER_CLAIM',
   'ADMIN_SELLER_APPLICATION',
+  'REPORT_HANDLED',
 ]
 
 const BOTH_ON = { notifyOrder: true, notifyClaim: true }
@@ -50,7 +51,7 @@ describe('수신 설정 (F5)', () => {
    * **내가 물어본 것에 대한 답은 끄는 것이 뜻을 갖지 않는다.** 찜과 팔로우는 그 자체가
    * 신청이라, 끄는 방법이 이미 있다 — 찜을 빼거나 언팔로우하는 것.
    */
-  it.each(['REVIEW_REPLY', 'QUESTION_ANSWER', 'RESTOCK', 'NEW_PRODUCT'] as const)(
+  it.each(['REVIEW_REPLY', 'QUESTION_ANSWER', 'RESTOCK', 'NEW_PRODUCT', 'REPORT_HANDLED'] as const)(
     '%s 에는 스위치가 없다',
     (type) => {
       expect(NOTIFICATION_SWITCH[type]).toBeNull()

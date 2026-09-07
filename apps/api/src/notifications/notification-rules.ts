@@ -49,6 +49,14 @@ export const NOTIFICATION_SWITCH: Readonly<
   QUESTION_ANSWER: null,
   RESTOCK: null,
   NEW_PRODUCT: null,
+  /**
+   * 신고 처리 결과 — 스위치가 없다.
+   *
+   * 신고는 사람이 **자기가 낸 것**이고, 그 결과를 알리지 않으면 신고 버튼이 아무
+   * 데도 닿지 않는 버튼이 된다. 반려됐을 때가 특히 그렇다 — 「보고 아니라고
+   * 판단했다」는 말이 도착하지 않으면 신고자는 아무 일도 안 일어났다고 읽는다.
+   */
+  REPORT_HANDLED: null,
 }
 
 /** 받는 사람의 수신 설정 — 없으면 기본값(둘 다 켜짐)이다. */

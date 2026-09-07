@@ -25,6 +25,7 @@ export const notificationTypes = [
   'SELLER_ORDER',
   'SELLER_CLAIM',
   'ADMIN_SELLER_APPLICATION',
+  'REPORT_HANDLED',
 ] as const
 
 export type NotificationType = (typeof notificationTypes)[number]
