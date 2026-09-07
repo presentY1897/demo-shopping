@@ -26,7 +26,7 @@ import { SearchSlot } from './search-slot'
 
 export function MobileMenu({ messages }: { readonly messages: LayoutMessages }) {
   const [open, setOpen] = useState(false)
-  const categories = useCategoryMenu()
+  const { nodes: categories } = useCategoryMenu()
 
   // The sheet has to close itself: the route changes under it and Radix has no
   // reason to know that happened.

@@ -10,6 +10,8 @@ import { DemoBanner } from '@/components/demo/demo-banner'
 import { AccountDensityProvider } from '@/components/layout/account-density-provider'
 import { ShopFooter } from '@/components/layout/shop-footer'
 import { ShopHeader } from '@/components/layout/shop-header'
+import { densityHintBootScript } from '@/lib/density-hint'
+import { demoInviteBootScript } from '@/lib/demo/invite'
 import { metadataBase } from '@/lib/seo/site'
 import { DEFAULT_LOCALE, messagesFor } from '@/messages'
 
@@ -64,6 +66,20 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
           every navigation.
         */}
         <DensityScript serverDensity={initial} />
+
+        {/*
+          같은 이유로 같은 자리에 있다 (TASK-0097 F2): 데모 안내를 보일지는 이
+          브라우저의 저장소만 아는 사실이고, 마운트 뒤에 그리면 그 순간 홈의 아래가
+          197px 내려간다. 표를 여기서 붙여 두면 CSS 가 첫 페인트에 결정한다.
+        */}
+        <script
+          dangerouslySetInnerHTML={{ __html: demoInviteBootScript() }}
+          suppressHydrationWarning
+        />
+        <script
+          dangerouslySetInnerHTML={{ __html: densityHintBootScript() }}
+          suppressHydrationWarning
+        />
 
         {/*
           Above the shell, because the header's account menu reads it and so does

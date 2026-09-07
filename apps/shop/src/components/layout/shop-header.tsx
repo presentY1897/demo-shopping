@@ -153,7 +153,7 @@ function NotificationSlot({ messages }: { readonly messages: LayoutMessages }) {
  * fetched in the browser rather than rendered on the server.
  */
 function CategoryNav({ messages }: { readonly messages: LayoutMessages }) {
-  const categories = useCategoryMenu()
+  const { nodes: categories } = useCategoryMenu()
   const copy = messagesFor().category
 
   return (

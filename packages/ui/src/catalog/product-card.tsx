@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
+import { FOCUS_RING } from '../lib/styles'
 import type { DensityLevel } from '../density/density'
 import { formatMoney } from '../format/money'
 
@@ -101,6 +102,42 @@ const IMAGE_RATIO: Readonly<Record<DensityLevel, string>> = {
   3: 'aspect-square',
 }
 
+/**
+ * 카드가 올 자리를 **카드 모양으로** 비워 둔다 (TASK-0097 F2).
+ *
+ * 사진 비율만 그려 두면 글이 도착할 때 밑의 것이 전부 밀린다 — 360px 에서 재 보면
+ * 사진은 195px 이고 글은 98~120px 이라, **한 줄마다 100px 씩** 아래가 내려간다.
+ * 홈은 그런 줄이 넉 줄이었고 그것이 이 화면의 CLS 를 0.22 로 만들고 있었다.
+ *
+ * 그래서 같은 파일에 둔다. 카드의 본문이 한 줄 늘어나면 이 자리도 같이 늘려야 하고,
+ * 두 파일에 나뉘어 있으면 그 사실을 아무도 모른다.
+ *
+ * **미니멀은 한 줄, 나머지는 두 줄.** 카드가 넓을수록 이름이 적은 줄을 쓴다 —
+ * 미니멀은 한 화면에 한 장이라 320px 이고, 거기서는 이름이 대개 한 줄에 들어간다.
+ */
+export function ProductCardSkeleton({ density }: { readonly density: DensityLevel }) {
+  const bar = 'bg-surface-muted block animate-pulse rounded-sm'
+
+  return (
+    <div
+      aria-hidden="true"
+      className="border-border bg-surface flex flex-col overflow-hidden rounded-md border"
+      data-density={density}
+    >
+      <div className={cx('bg-surface-muted w-full animate-pulse', IMAGE_RATIO[density])} />
+
+      {/* 카드 본문과 같은 상자다 — 여백과 줄 간격이 어긋나면 높이도 어긋난다. */}
+      <div className="flex flex-1 flex-col gap-1 p-3">
+        <span className={cx(bar, 'h-3 w-1/3')} />
+        <span className={cx(bar, 'h-4 w-full')} />
+        {density === 1 ? null : <span className={cx(bar, 'h-4 w-2/3')} />}
+        <span className={cx(bar, 'h-5 w-1/2')} />
+        {density === 1 ? null : <span className={cx(bar, 'h-3 w-1/4')} />}
+      </div>
+    </div>
+  )
+}
+
 /** Discount, rounded down: claiming 30% for 29.6% is claiming too much. */
 export function discountPercent(
   price: number,
@@ -193,7 +230,10 @@ export function ProductCard({
             })}
             // 모를 때는 속성 자체가 없다. `aria-pressed={undefined}` 가 그 뜻이다.
             aria-pressed={wishlisted}
-            className="bg-surface/85 text-fg absolute top-2 right-2 rounded-full p-1.5 text-sm"
+            className={cx(
+              'bg-surface/85 text-fg absolute top-2 right-2 rounded-full p-1.5 text-sm',
+              FOCUS_RING,
+            )}
             onClick={() => {
               onWishlist(product.id)
             }}
@@ -227,7 +267,10 @@ export function ProductCard({
 
         <a
           aria-label={fill(labels.openLabel, { name: product.name })}
-          className="text-fg after:absolute after:inset-0 line-clamp-2 text-sm font-medium"
+          className={cx(
+            'text-fg after:absolute after:inset-0 line-clamp-2 text-sm font-medium',
+            FOCUS_RING,
+          )}
           href={href}
         >
           {product.name}
@@ -292,7 +335,10 @@ export function ProductCard({
             // `relative` lifts it above the link's stretched pseudo-element —
             // without it the whole card is one link and this button cannot be
             // clicked at all.
-            className="border-border text-fg hover:bg-surface-muted relative z-10 mt-2 rounded-sm border px-2 py-1 text-xs"
+            className={cx(
+              'border-border text-fg hover:bg-surface-muted relative z-10 mt-2 rounded-sm border px-2 py-1 text-xs',
+              FOCUS_RING,
+            )}
             onClick={() => {
               onQuickAdd(product.id)
             }}

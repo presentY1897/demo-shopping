@@ -26,7 +26,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import HomePage from '@/app/page'
 import { SECTION_FETCH_LIMIT, SECTION_ITEMS } from '@/components/home/product-section'
-import { DEMO_INVITE_KEY } from '@/lib/demo/invite'
+import { DEMO_INVITE_ATTRIBUTE, DEMO_INVITE_KEY, demoInviteBootScript } from '@/lib/demo/invite'
 import { resetCategoryMenuCache } from '@/lib/categories/use-category-menu'
 import { resetLocalHistoryCache } from '@/lib/collections/use-recently-viewed'
 import { messagesFor } from '@/messages'
@@ -88,6 +88,9 @@ let stub: CommunityApiStub
 
 beforeEach(() => {
   localStorage.clear()
+  // 데모 안내가 보이는지는 이제 `<html>` 의 표시가 정한다 — 문서는 스펙 사이에
+  // 살아남으므로 지우지 않으면 한 스펙의 결정이 다음 스펙으로 새어 간다.
+  document.documentElement.removeAttribute(DEMO_INVITE_ATTRIBUTE)
   resetCategoryMenuCache()
   resetLocalHistoryCache()
   // 찜 표와 팔로우 표는 모듈 수준에 한 벌이다. 되돌리지 않으면 한 스펙의 팔로우가
@@ -261,11 +264,26 @@ describe('F6 팔로우한 브랜드의 신상품 (TASK-0089)', () => {
   })
 })
 
+/**
+ * 안내가 **보이는가**는 `<html>` 의 표시가 답한다 (TASK-0097 F2).
+ *
+ * 예전에는 React 가 마운트 뒤에 그릴지 말지를 정했고, 그래서 「없다」를
+ * `queryByText` 로 물을 수 있었다. 지금은 표를 늘 그려 두고 CSS 가 감춘다 —
+ * 그렇게 해야 첫 페인트 전에 결정되고 화면이 움직이지 않는다. jsdom 에는
+ * 스타일시트가 없으므로 **보이는지를 정하는 그 값**을 직접 묻는다.
+ */
+function inviteShown(): boolean {
+  return document.documentElement.getAttribute(DEMO_INVITE_ATTRIBUTE) === 'owed'
+}
+
 describe('F5 데모 유도', () => {
   it('invites a signed-out visitor and links the demo flow', async () => {
     renderHome()
 
-    expect(await screen.findByText(home.demo.title)).toBeVisible()
+    expect(await screen.findByText(home.demo.title)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(inviteShown()).toBe(true)
+    })
     expect(screen.getByRole('link', { name: home.demo.cta })).toHaveAttribute('href', '/login')
   })
 
@@ -276,7 +294,7 @@ describe('F5 데모 유도', () => {
     await user.click(await screen.findByRole('button', { name: home.demo.dismiss }))
 
     await waitFor(() => {
-      expect(screen.queryByText(home.demo.title)).toBeNull()
+      expect(inviteShown()).toBe(false)
     })
 
     unmount()
@@ -284,8 +302,10 @@ describe('F5 데모 유도', () => {
 
     // A second visit that shows the same notice is not guidance, it is an
     // advertisement (R2).
-    expect(screen.queryByText(home.demo.title)).toBeNull()
-    expect(localStorage.getItem(DEMO_INVITE_KEY)).toBe('seen')
+    await waitFor(() => {
+      expect(localStorage.getItem(DEMO_INVITE_KEY)).toBe('seen')
+    })
+    expect(inviteShown()).toBe(false)
   })
 
   it('never appears for somebody already signed in', async () => {
@@ -300,6 +320,53 @@ describe('F5 데모 유도', () => {
 
     await sectionGrid(home.newTitle)
 
-    expect(screen.queryByText(home.demo.title)).toBeNull()
+    await waitFor(() => {
+      expect(inviteShown()).toBe(false)
+    })
+    // 「봤다」로 적지 않는다 — 로그아웃하면 이 사람도 처음 온 사람이다.
+    expect(localStorage.getItem(DEMO_INVITE_KEY)).toBeNull()
+  })
+})
+
+/**
+ * 첫 페인트 전에 도는 스크립트 (TASK-0097 F2).
+ *
+ * 눈으로 검토하는 대신 **실행해 본다** — `density-script.spec.ts` 가 같은 이유로
+ * 같은 모양이다. 이 스크립트가 틀리면 홈은 여전히 움직이는데, 그 사실은 화면에
+ * 아무 자국도 남기지 않는다.
+ */
+describe('데모 안내 부트 스크립트', () => {
+  function run(): void {
+    // 문자열로 내보낸 원문을 그대로 실행해 본다 — 눈으로 읽는 대신.
+    ;(0, eval)(demoInviteBootScript())
+  }
+
+  it('marks the invite owed on a first visit', () => {
+    run()
+
+    expect(document.documentElement.getAttribute(DEMO_INVITE_ATTRIBUTE)).toBe('owed')
+  })
+
+  it('leaves it alone once it has been seen', () => {
+    localStorage.setItem(DEMO_INVITE_KEY, 'seen')
+
+    run()
+
+    expect(document.documentElement.hasAttribute(DEMO_INVITE_ATTRIBUTE)).toBe(false)
+  })
+
+  it('treats an unreadable store as seen', () => {
+    const blocked = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('blocked')
+    })
+
+    try {
+      run()
+
+      // 기억할 수 없는 사람을 매번 붙잡는 쪽이 더 나쁘다.
+      expect(document.documentElement.hasAttribute(DEMO_INVITE_ATTRIBUTE)).toBe(false)
+    } finally {
+      blocked.mockRestore()
+    }
   })
 })
