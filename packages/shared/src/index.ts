@@ -552,6 +552,38 @@ export type {
   SellerStoreUpdateRequest,
 } from './api/sellers.js'
 export {
+  FOLLOW_LIST_DEFAULT_LIMIT,
+  FOLLOW_LIST_MAX_LIMIT,
+  RECENTLY_VIEWED_MAX,
+  RECENTLY_VIEWED_MERGE_MAX,
+  WISHLIST_DEFAULT_LIMIT,
+  WISHLIST_MAX_LIMIT,
+  followListQueryParamsSchema,
+  followListResponseSchema,
+  followResultSchema,
+  followedSellerSchema,
+  mergeRecentlyViewedRequestSchema,
+  recentlyViewedItemSchema,
+  recentlyViewedResponseSchema,
+  toggleResultSchema,
+  wishlistItemSchema,
+  wishlistQueryParamsSchema,
+  wishlistResponseSchema,
+} from './api/collections.js'
+export type {
+  FollowListQueryParams,
+  FollowListResponse,
+  FollowResult,
+  FollowedSeller,
+  MergeRecentlyViewedRequest,
+  RecentlyViewedItem,
+  RecentlyViewedResponse,
+  ToggleResult,
+  WishlistItem,
+  WishlistQueryParams,
+  WishlistResponse,
+} from './api/collections.js'
+export {
   REVIEW_CONTENT_MAX,
   REVIEW_REPLY_CONTENT_MAX,
   SELLER_PRODUCT_REVIEWS_DEFAULT_LIMIT,

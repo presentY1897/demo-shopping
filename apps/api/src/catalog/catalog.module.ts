@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 
 import { SearchModule } from '../search/search.module.js'
+import { CollectionsModule } from '../collections/collections.module.js'
 import { StockModule } from '../stock/stock.module.js'
 
 import { AttributeController } from './attribute.controller.js'
@@ -18,7 +19,9 @@ import { VariantStockController } from './variant-stock.controller.js'
   // Every change to a variant's stock goes through `StockService`, product
   // writes included (TASK-0036 4.7) — so the catalogue imports it rather than
   // writing the column itself.
-  imports: [StockModule, SearchModule],
+  // 상품 상세가 「본 것」을 적는다 (TASK-0087 F1). 답을 만든 뒤에 적고 기다리지
+  // 않으므로 조회의 비용에 들어가지 않는다 — 반대 방향의 의존은 없다.
+  imports: [StockModule, SearchModule, CollectionsModule],
   controllers: [
     CategoryController,
     AttributeController,
