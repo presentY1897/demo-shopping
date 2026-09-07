@@ -82,7 +82,15 @@ export default function HomePage() {
         The cold-start panel stays (TASK-0101). It is what turns 「아직 비어 있는
         홈」 into 「깨우는 중입니다」.
       */}
-      <section className="flex flex-col gap-3">
+      {/*
+        **자리를 미리 잡아 둔다.** 이 패널은 「깨우는 중」에서 「준비됐다」로 바뀌며
+        높이가 변하는데, 자리를 안 잡아 두면 그 순간 아래가 밀린다 — Lighthouse 가
+        홈에서 잰 레이아웃 이동 0.255 가 전부 이 한 번이었다.
+
+        비어 보이는 자리를 남기는 것보다 낫다: 이동은 **읽고 있던 사람의 눈이 따라가야
+        하는** 사고이고, 여백은 잠깐 비어 있을 뿐이다.
+      */}
+      <section className="flex min-h-64 flex-col gap-3">
         <ApiWakeGate health={messages.health} wake={messages.wake} />
         <p className="text-fg-subtle text-sm">{messages.health.notice}</p>
       </section>
