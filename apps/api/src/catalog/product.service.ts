@@ -40,6 +40,7 @@ import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import type { DomainFailurePayload } from '../common/domain-failure.js'
 import { domainFailure } from '../common/domain-failure.js'
+import { NotificationService } from '../notifications/notification.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { availableStock } from '../reservation/reservation-rules.js'
 import { StockService } from '../stock/stock.service.js'
@@ -232,6 +233,7 @@ export class ProductService {
     private readonly attributes: AttributeService,
     private readonly stock: StockService,
     private readonly outbox: SearchOutboxService,
+    private readonly notifications: NotificationService,
   ) {}
 
   /**
@@ -487,7 +489,39 @@ export class ProductService {
       }),
     )
 
+    // 팔로워에게 신상품을 알린다 (TASK-0089 F4 · TASK-0090). **판매 중일 때만** —
+    // 초안은 아직 아무도 살 수 없고, 그것을 알리면 눌러 들어간 사람이 404 를 만난다.
+    if (status === 'ACTIVE') void this.notifyFollowers(seller.id, id, input.name)
+
     return { product: await this.load(this.prisma, id) }
+  }
+
+  /**
+   * 이 스토어를 팔로우한 사람들에게 (TASK-0089 F4 · F5).
+   *
+   * **문장 수가 팔로워 수에 따라 늘지 않는다.** 조회 하나와 삽입 하나뿐이라,
+   * 팔로워가 100명이든 10,000명이든 상품 등록이 그만큼 느려지지 않는다 — 저쪽 F5 가
+   * 재는 것이 그것이다. 기다리지도 않는다.
+   */
+  private async notifyFollowers(
+    sellerId: string,
+    productId: string,
+    productName: string,
+  ): Promise<void> {
+    const followers = await this.prisma.sellerFollow.findMany({
+      where: { sellerId },
+      select: { userId: true },
+    })
+
+    await this.notifications.sendMany(
+      followers.map((row) => ({
+        userId: row.userId,
+        type: 'NEW_PRODUCT' as const,
+        title: '팔로우한 브랜드의 새 상품',
+        body: productName,
+        link: `/products/${productId}`,
+      })),
+    )
   }
 
   /**

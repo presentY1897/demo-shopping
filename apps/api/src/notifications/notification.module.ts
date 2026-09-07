@@ -4,6 +4,8 @@ import { ClockModule } from '../common/clock.module.js'
 import { PrismaModule } from '../prisma/prisma.module.js'
 import { NotificationController } from './notification.controller.js'
 import { NotificationService } from './notification.service.js'
+import { OrderStatusNotifier } from './order-status.notifier.js'
+import { RestockNotifier } from './restock.service.js'
 
 /**
  * 알림 (TASK-0090).
@@ -20,7 +22,7 @@ import { NotificationService } from './notification.service.js'
 @Module({
   imports: [PrismaModule, ClockModule],
   controllers: [NotificationController],
-  providers: [NotificationService],
-  exports: [NotificationService],
+  providers: [NotificationService, OrderStatusNotifier, RestockNotifier],
+  exports: [NotificationService, OrderStatusNotifier],
 })
 export class NotificationModule {}

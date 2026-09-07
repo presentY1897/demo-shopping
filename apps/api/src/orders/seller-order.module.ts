@@ -36,8 +36,9 @@ import { SellerOrderService } from './seller-order.service.js'
     // `seller-order-events.ts` 가 설명한다.
     // TASK-0059 가 남겨 둔 포트의 실제 구현 (TASK-0090). 여기 한 곳을 채우는 것으로
     // 발송 · 배송완료 · 취소 · 확정이 전부 알림을 갖는다 — 그 파일의 주석이 예상한
-    // 그대로다.
-    { provide: SELLER_ORDER_EVENTS, useClass: OrderStatusNotifier },
+    // 그대로다. 구현이 알림 모듈에 있는 이유는 그쪽이 전역이고, 이 모듈이 알림을
+    // 들여오면 방향이 거꾸로 되기 때문이다.
+    { provide: SELLER_ORDER_EVENTS, useExisting: OrderStatusNotifier },
     // M11 이 그 한 줄을 바꿨다 (TASK-0076). 정산(M12)이 붙을 때는 이 자리가 다시
     // 바뀐다 — 두 일을 한 구현에 합치지 말고, 둘 다 부르는 구현 하나를 여기에
     // 세운다. 실패의 뜻이 다르기 때문이고, 그것을 `order-confirmed-events.ts` 가

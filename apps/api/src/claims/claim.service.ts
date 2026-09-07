@@ -50,6 +50,7 @@ import { autoConfirmWindowMsOf } from '../orders/order-confirm.js'
 import type { SellerOrderStatusChanged } from '../orders/seller-order-events.js'
 import type { SellerOrderActor } from '../orders/seller-order-transitions.js'
 import { SellerOrderService } from '../orders/seller-order.service.js'
+import { NotificationService } from '../notifications/notification.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import type { CancelApproved, CancelRefundEvents, CancelRestockEvents } from './cancel-events.js'
 import { CANCEL_REFUND_EVENTS, CANCEL_RESTOCK_EVENTS } from './cancel-events.js'
@@ -424,6 +425,7 @@ export class ClaimService {
     @Inject(APP_CONFIG) private readonly config: AppConfig,
     @Inject(CANCEL_REFUND_EVENTS) private readonly refunds: CancelRefundEvents,
     @Inject(CANCEL_RESTOCK_EVENTS) private readonly restocks: CancelRestockEvents,
+    private readonly notifications: NotificationService,
   ) {}
 
   // ------------------------------------------------------------------ writes
@@ -656,6 +658,15 @@ export class ClaimService {
     })
 
     await this.publishMove(created.move)
+    // 판매자에게 알린다 (TASK-0090 F7). **신청이 들어온 것은 판매자가 할 일이 생긴
+    // 것**이고, 신청한 사람에게는 자기가 방금 한 일이라 알릴 것이 아니다.
+    void this.notifications.send({
+      userId: order.seller.userId,
+      type: 'SELLER_CLAIM',
+      title: type === 'CANCEL' ? '취소 신청이 들어왔어요' : '반품 신청이 들어왔어요',
+      body: '내용을 확인하고 처리해 주세요.',
+      link: `/claims/${created.claimId}`,
+    })
 
     return { claim: await this.load(created.claimId) }
   }

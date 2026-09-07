@@ -45,6 +45,13 @@ export const wishlistItemSchema = z.object({
    * 버튼을 띄운다.
    */
   soldOut: z.boolean(),
+  /**
+   * 재입고되면 알려 달라고 신청했는가 (F4).
+   *
+   * 찜과 나누는 이유는 **두 개의 다른 마음**이기 때문이다 — 담아 두는 것은 「나중에
+   * 살까」이고 알림 신청은 「지금 사고 싶은데 없다」다.
+   */
+  notifyRestock: z.boolean(),
   addedAt: z.iso.datetime(),
 })
 
@@ -149,3 +156,15 @@ export const followResultSchema = z.object({
 })
 
 export type FollowResult = z.infer<typeof followResultSchema>
+
+/**
+ * `POST /api/v1/me/wishlist/:productId/restock-alert` — 재입고 알림 신청을 켜고 끈다.
+ *
+ * **찜한 것에만 걸 수 있다.** 찜하지 않은 상품에 알림만 거는 길을 열면 「알림은
+ * 기다리는데 목록에는 없는」 상태가 생기고, 그것을 끄는 화면이 어디에도 없다.
+ *
+ * 알림이 나간 뒤에는 서버가 꺼 준다 — 한 번 알린 재입고를 다시 알릴 이유가 없다.
+ */
+export const restockAlertResultSchema = z.object({ notifyRestock: z.boolean() })
+
+export type RestockAlertResult = z.infer<typeof restockAlertResultSchema>

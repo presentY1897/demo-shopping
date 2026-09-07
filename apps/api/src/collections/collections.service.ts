@@ -77,6 +77,7 @@ export class CollectionsService {
              pi."url"         AS "thumbnailUrl",
              p."minPrice"     AS "price",
              w."addedPrice"   AS "addedPrice",
+             w."notifyRestock" AS "notifyRestock",
              w."createdAt"    AS "addedAt"
         FROM "Wishlist" w
         JOIN "Product" p ON p."id" = w."productId"
@@ -103,6 +104,7 @@ export class CollectionsService {
         // 같은 사실이지만, 화면이 그리는 것이 다르다 (가격 자리의 「—」와 재입고
         // 알림 버튼).
         soldOut: row.price === null,
+        notifyRestock: row.notifyRestock,
         addedAt: row.addedAt.toISOString(),
       })),
       nextCursor: rows.length > limit ? (page.at(-1)?.addedAt.toISOString() ?? null) : null,
@@ -131,6 +133,27 @@ export class CollectionsService {
     } catch (error) {
       this.log.warn(`최근 본 상품을 적지 못했습니다: ${productId}`, error)
     }
+  }
+
+  /**
+   * 재입고 알림 신청을 켜고 끈다 (TASK-0086 F4).
+   *
+   * **찜한 것에만 걸 수 있다.** 찜하지 않은 상품에 알림만 거는 길을 열면 「알림은
+   * 기다리는데 목록에는 없는」 상태가 생기고, 그것을 끄는 화면이 어디에도 없다.
+   */
+  async setRestockAlert(
+    userId: string,
+    productId: string,
+    on: boolean,
+  ): Promise<{ notifyRestock: boolean }> {
+    const changed = await this.prisma.wishlist.updateMany({
+      where: { userId, productId },
+      data: { notifyRestock: on },
+    })
+
+    if (changed.count === 0) throw new NotFoundException('찜한 상품이 아니에요.')
+
+    return { notifyRestock: on }
   }
 
   /** 최근 본 상품 (F5 — 최대 개수까지만). */
@@ -302,6 +325,7 @@ interface WishlistRow {
   readonly thumbnailUrl: string | null
   readonly price: number | null
   readonly addedPrice: number | null
+  readonly notifyRestock: boolean
   readonly addedAt: Date
 }
 
