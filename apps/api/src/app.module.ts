@@ -28,6 +28,7 @@ import { ReviewModule } from './reviews/review.module.js'
 import { SearchModule } from './search/search.module.js'
 import { SellersModule } from './sellers/sellers.module.js'
 import { AdminModule } from './admin/admin.module.js'
+import { ConsistencyModule } from './consistency/consistency.module.js'
 import { DashboardModule } from './dashboard/dashboard.module.js'
 import { SettlementModule } from './settlement/settlement.module.js'
 import { ShipmentModule } from './shipping/shipment.module.js'
@@ -67,6 +68,7 @@ export class AppModule {
         SettlementModule,
         DashboardModule,
         AdminModule,
+        ConsistencyModule,
         ShipmentModule,
         StockModule,
         StorageModule,
