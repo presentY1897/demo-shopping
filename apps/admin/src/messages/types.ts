@@ -3009,6 +3009,9 @@ export interface DemoStatsMessages {
 export interface DemoStatsSummaryMessages {
   readonly activeLabel: string
   readonly failedLabel: string
+  /** `{at}` `{swept}` `{failed}` — 마지막 정리가 무엇을 했는가 (F3). */
+  readonly lastCleanup: string
+  readonly lastCleanupNever: string
   /** `{count}` */
   readonly countValue: string
 }

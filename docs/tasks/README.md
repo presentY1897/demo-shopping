@@ -19,7 +19,7 @@
 | [M11](./M11-discount/) 할인 | 쿠폰(부담 주체), 적립금 원장, 적용·복구 | **7/7 완료** |
 | [M12](./M12-settlement/) 정산 | 수수료 정책, 정산서 배치, 승인·지급, 매출 대시보드 | **4/4 완료** |
 | [M13](./M13-community/) 회원 부가 | 리뷰, 위시리스트, Q&A, 팔로우, 알림, 신고 | **9/9 완료** |
-| [M14](./M14-admin/) 관리자 | 대시보드, 회원·판매자 관리, 전체 조회, 데모 관리 | 0/5 |
+| [M14](./M14-admin/) 관리자 | 대시보드, 회원·판매자 관리, 전체 조회, 데모 관리 | **5/5 완료** |
 | [M15](./M15-polish/) 마무리 | 성능·정합성, 접근성, E2E·데모 시나리오, 포트폴리오 문서 | 0/4 |
 
 ---
@@ -223,15 +223,15 @@
 
 </details>
 
-<details><summary><b>M14. 관리자</b> (0/5)</summary>
+<details><summary><b>M14. 관리자</b> (5/5 완료)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
-| [TASK-0092](./M14-admin/TASK-0092-admin-dashboard.md) | 관리자 대시보드 | 승인됨 |
-| [TASK-0093](./M14-admin/TASK-0093-user-management.md) | 회원 관리 | 승인됨 |
-| [TASK-0094](./M14-admin/TASK-0094-seller-management.md) | 판매자 관리 | 승인됨 |
-| [TASK-0095](./M14-admin/TASK-0095-global-catalog-orders.md) | 전체 상품 · 주문 조회 | 승인됨 |
-| [TASK-0096](./M14-admin/TASK-0096-demo-management.md) | 데모 계정 관리 | 승인됨 |
+| [TASK-0092](./M14-admin/TASK-0092-admin-dashboard.md) | 관리자 대시보드 | 완료 |
+| [TASK-0093](./M14-admin/TASK-0093-user-management.md) | 회원 관리 | 완료 |
+| [TASK-0094](./M14-admin/TASK-0094-seller-management.md) | 판매자 관리 | 완료 |
+| [TASK-0095](./M14-admin/TASK-0095-global-catalog-orders.md) | 전체 상품 · 주문 조회 | 완료 |
+| [TASK-0096](./M14-admin/TASK-0096-demo-management.md) | 데모 계정 관리 | 완료 |
 
 </details>
 

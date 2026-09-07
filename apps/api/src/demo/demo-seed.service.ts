@@ -81,7 +81,17 @@ export class DemoSeedService {
    * 번호 생성 규칙과 개수 제한이 여기 한 벌 더 생기고, 그 사본은 언젠가 갈린다.
    */
   private async seedVirtualCard(context: DemoSeedContext): Promise<void> {
-    await this.cards.issueFor(context.userId, DEMO_CARD_LIMIT, context.tx)
+    // 한도도 정책 행에서 온다 (F6). 없으면 예전 상수다.
+    const policy = await context.tx.demoPolicy.findUnique({
+      where: { id: 1 },
+      select: { virtualCardLimit: true },
+    })
+
+    await this.cards.issueFor(
+      context.userId,
+      policy?.virtualCardLimit ?? DEMO_CARD_LIMIT,
+      context.tx,
+    )
   }
 
   /**

@@ -4,6 +4,8 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
 import type { ApiClient } from '@shopping/shared'
 import {
+  adminOrderSearchResponseSchema,
+  adminSellerListResponseSchema,
   dashboardMetricsResponseSchema,
   dashboardPendingResponseSchema,
   dashboardSystemResponseSchema,
@@ -17,7 +19,7 @@ import type { TestCaller } from '../support/principal.js'
 import { recordStatements } from '../support/statements.js'
 
 /**
- * 관리자 대시보드의 A1·A5 (TASK-0092 F5).
+ * 관리자 콘솔의 A1·A5 (TASK-0092 F5 · TASK-0094 · TASK-0095 §6.2 3장).
  *
  * ## 왜 이 화면인가
  *
@@ -193,6 +195,60 @@ describe('주문이 늘어도 질의는 늘지 않는다 (A5)', () => {
     const many = await recordStatements(statements, () => metrics())
 
     expect(many.length).toBe(few.length)
+  })
+})
+
+describe('스토어가 늘어도 질의는 늘지 않는다 (TASK-0094 A5)', () => {
+  /**
+   * **4.4 가 걱정한 것이 정확히 이것이다.**
+   *
+   * 스토어마다 매출·클레임·상품 수를 따로 물으면 스무 곳일 때 조회가 예순 번이다 —
+   * 그리고 그 회귀는 기능 검사를 **하나도** 빨갛게 만들지 않는다. 목록은 여전히 맞는
+   * 수를 그리고, 다만 느려질 뿐이다.
+   */
+  it('costs the same number of statements for one store and for twenty', async () => {
+    const stores = client().request({
+      path: '/admin/stores?limit=100',
+      schema: adminSellerListResponseSchema,
+    })
+
+    await stores
+
+    const forFew = await recordStatements(statements, () =>
+      client().request({ path: '/admin/stores?limit=100', schema: adminSellerListResponseSchema }),
+    )
+
+    for (let index = 0; index < 20; index += 1) {
+      await createSeller(db, { userId: (await createUser(db)).id })
+    }
+
+    const forMany = await recordStatements(statements, () =>
+      client().request({ path: '/admin/stores?limit=100', schema: adminSellerListResponseSchema }),
+    )
+
+    expect(forMany.length).toBe(forFew.length)
+  })
+})
+
+describe('주문이 늘어도 묶음 조회는 한 번이다 (TASK-0095 A5)', () => {
+  /**
+   * 묶음을 주문마다 물으면 스무 줄이 스물한 번이 된다 (4.3). 화면은 맞게 그려지므로
+   * 그 회귀도 조용하다.
+   */
+  it('reads every bundle in one statement, whatever the page holds', async () => {
+    await fill()
+
+    const seen = await recordStatements(statements, () =>
+      client().request({
+        path: '/admin/orders?limit=50',
+        schema: adminOrderSearchResponseSchema,
+      }),
+    )
+    const bundleReads = seen.filter((statement) =>
+      /FROM\s+"public"\."SellerOrder"/iu.test(statement),
+    )
+
+    expect(bundleReads).toHaveLength(1)
   })
 })
 

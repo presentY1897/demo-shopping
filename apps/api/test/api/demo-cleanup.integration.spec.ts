@@ -411,6 +411,37 @@ describe('F6 — one account’s failure is one account’s', () => {
     expect(await rowExists('Address', second.address.id)).toBe(false)
   })
 
+  /**
+   * **왜 실패했는지가 그 계정에 남는다** (TASK-0096 F4).
+   *
+   * 로그에만 남기면 그 사실을 볼 수 있는 사람은 서버 로그를 여는 사람뿐이고, 운영
+   * 화면은 **정상이라고 말한다** — 실제로 그 상태였다. 실패한 계정이 화면에 뜨려면
+   * 이유가 행에 있어야 한다.
+   *
+   * 로그를 대신하지 않고 **함께** 남긴다: 로그는 스택을 들고 있고, 이 칸은 화면이
+   * 읽는다.
+   */
+  it('writes why it failed onto the account that failed', async () => {
+    const account = await demoStore({ expiresAt: PAST })
+    const prisma = api.resolve<PrismaService>(PrismaService)
+
+    const transaction = vi
+      .spyOn(prisma, '$transaction')
+      .mockRejectedValueOnce(new Error('외래키 위반'))
+
+    await sweeper().sweep()
+    transaction.mockRestore()
+
+    const [row] = await db.query<{ error: string | null; failedAt: Date | null }>(
+      `SELECT "demoCleanupError" AS "error", "demoCleanupFailedAt" AS "failedAt"
+         FROM "User" WHERE "id" = $1`,
+      [account.user.id],
+    )
+
+    expect(row?.error).toBe('외래키 위반')
+    expect(row?.failedAt).not.toBeNull()
+  })
+
   it('caps how many it takes in one tick (R2)', async () => {
     await demoStore({ expiresAt: PAST })
     await demoStore({ expiresAt: PAST })

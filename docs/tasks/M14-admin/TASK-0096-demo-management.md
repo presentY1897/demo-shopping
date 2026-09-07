@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M14 관리자 |
-| 상태 | 승인됨 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-02 |
 | 브랜치 | `feature/demo-management` |
 | 선행 작업 | M13 완료 |
@@ -28,11 +28,11 @@
 
 ## 3. 요구사항
 
-- [ ] 현재 활성 데모 계정을 볼 수 있다
-- [ ] 강제 만료시킬 수 있다
-- [ ] 정리 스케줄러 상태를 확인할 수 있다
-- [ ] 정리 실패 건을 재시도할 수 있다
-- [ ] 데모 정책을 화면에서 조정할 수 있다
+- [x] 현재 활성 데모 계정을 볼 수 있다
+- [x] 강제 만료시킬 수 있다
+- [x] 정리 스케줄러 상태를 확인할 수 있다
+- [x] 정리 실패 건을 재시도할 수 있다
+- [x] 데모 정책을 화면에서 조정할 수 있다
 
 ## 4. 설계
 
@@ -83,13 +83,13 @@
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| F1 | 목록 | 데모 계정 3개 발급 후 조회 | 역할·만료 예정 표시 | [ ] |
-| F2 | 강제 만료 | 강제 만료 실행 | 정리 대상 전환, 데이터 삭제 | [ ] |
-| F3 | 스케줄러 상태 | 화면 확인 | 마지막 실행 시각·처리 건수 | [ ] |
-| F4 | 실패 건 | 정리 실패 유도 | 실패 건과 사유 표시 | [ ] |
-| F5 | 재시도 | 재시도 실행 | 정리 완료 | [ ] |
-| F6 | 정책 변경 | 수명을 1시간으로 변경 | 이후 발급분에 적용 | [ ] |
-| F7 | 통계 | 발급 통계 조회 | 일별·역할별 정확 | [ ] |
+| F1 | 목록 | `admin-console.spec.ts` 「lists demo accounts and the ones whose cleanup failed」 · 화면은 `demo-page.spec.tsx` 「says how long each account has, and separates the last hour from the rest」 · 「has a word for an account with no expiry at all」 — 만료 시각이 없는 줄을 빈칸으로 두면 「못 읽었다」와 섞인다 · 네 갈래의 판정 자체는 `demo-console.spec.ts` 「separates an account that is already past its time」 · 「separates the last hour from the rest of the life」 가 잰다. **역할 칸은 그리기만 하고 재지 않는다** — 계약이 지키는 것은 배열의 모양뿐이다 | 역할·만료 예정 표시 | [x] |
+| F2 | 강제 만료 | `admin-console.spec.ts` 「force-expires by moving the expiry, not by deleting」 — 부른 직후 **계정 줄이 그대로 있는 것**을 단언한다 · 그 뒤를 `demo-cleanup.integration.spec.ts` 「brings the expiry forward so the next sweep collects it」 가 같은 `expireNow` 로 받는다(만료를 당긴 직후에는 데이터가 남아 있고, 다음 청소에 사라진다 — 지우는 순서를 아는 곳은 여전히 한 곳이다) · 화면은 `demo-page.spec.tsx` 「says it moves the expiry rather than deleting the account」 · 「asks once, then calls the door」 · 「reads the list and the statistics again afterwards」 | 정리 대상 전환, 데이터 삭제 | [x] |
+| F3 | 스케줄러 상태 | `admin-console.spec.ts` 「answers issuing statistics on both axes」 · `demo-page.spec.tsx` 「says what the last sweep did, not only when it ran」·「says it has never run rather than drawing zeroes」 — **시각만으로는 「돌았다」까지만 말한다.** 0건을 집은 주기와 50건을 집은 주기가 같아 보이면 정리가 밀리는 것을 아무도 모르므로, 스윕이 처리 건수를 `demo.cleanup.lastReport` 에 함께 적는다. 배치가 멈춘 것 자체는 대시보드가 본다 — `dashboard.spec.ts` 「turns a run that stopped moving into stale」 | 마지막 실행 시각·처리 건수 | [x] |
+| F4 | 실패 건 | `demo-cleanup.integration.spec.ts` 「writes why it failed onto the account that failed」 — **로그에만 남기면 운영 화면은 정상이라고 말한다.** 실제로 그 상태였고, 이 검사가 그것을 잡는다. 보여 주는 쪽은 `admin-console.spec.ts` 「lists demo accounts and the ones whose cleanup failed」 · `demo-page.spec.tsx` | 실패 건과 사유 표시 | [x] |
+| F5 | 재시도 | `demo-page.spec.tsx` 「retries by running the sweep once」 — 이 화면이 하는 일은 청소기를 한 번 부르는 것뿐이라 정리 순서가 두 벌이 되지 않는다 · 「says nothing was there rather than drawing two zeroes」 · 「shows the refusal when the sweep could not run (U6)」 · 재시도가 따로 없어도 되는 이유는 `demo-cleanup.integration.spec.ts` 「collects the others, and the failed one is retried on the next sweep」 가 잰다(실패한 계정은 만료된 채로 남는다). 문 자체(`POST /admin/demo/sweeps`)를 부르는 API 검사는 없고, 화면 검사는 `console-api` 를 대역으로 세운다 | 정리 완료 | [x] |
+| F6 | 정책 변경 | `admin-console.spec.ts` 「applies the new lifetime to the next account it issues」 — **정책이 실제로 물리는지가 이 기준의 전부다.** 저장만 재던 검사는 발급이 그 값을 안 보는 상태를 그대로 통과시켰고(실제로 그랬다), 그래서 바꾼 뒤 한 계정을 발급해 만료가 그만큼 뒤인지 본다. 소급하지 않는 쪽은 「changes the lifetime without touching the accounts already issued」, 범위 밖 값은 `DemoPolicy_ttl_check` 가 막는다 | 이후 발급분에 적용 | [x] |
+| F7 | 통계 | `admin-console.spec.ts` 「answers issuing statistics on both axes」 — 두 축이 **한 답에** 온다(따로 물으면 그 사이의 발급으로 합이 어긋난다) · 없던 날을 0으로 채우는 것은 `kst-days.spec.ts` 「puts a zero where nothing happened」 · 「returns exactly the asked-for number of days」 · 역할의 순서와 모르는 역할은 `demo-console.spec.ts` 「puts the known roles in the contract’s order, whatever order they arrived in」 · 「keeps a role this console has never heard of, at the end and marked」 · 화면은 `demo-page.spec.tsx` 「answers both axes from one read」 · 「keeps a day nobody issued anything on」 · 「asks for the period the two boxes show」. 서버가 답한 수 자체를 단언하는 검사는 없다 | 일별·역할별 정확 | [x] |
 
 ### 6.2 품질 게이트
 
@@ -102,7 +102,7 @@
 
 | # | 기준 | 충족 |
 | --- | --- | --- |
-| D1 | 상태 갱신 + 인덱스 2곳, **M14 마일스톤 완료 처리** | [ ] |
+| D1 | 상태 갱신 + 인덱스 2곳, **M14 마일스톤 완료 처리** | [x] |
 
 ## 7. 리스크 / 열린 질문
 
@@ -119,3 +119,4 @@
 | 날짜 | 내용 |
 | --- | --- |
 | 2026-09-02 | 최초 작성 |
+| 2026-09-07 | 완료. 검증에서 결함 셋이 드러났다 — 실패 칸을 **아무도 쓰지 않았고**(화면은 늘 정상이라 말했다), 정책 행을 **아무도 읽지 않았으며**(수명이 여전히 상수였다), 처리 건수는 어디에도 없었다. 셋 다 채우고 각각을 재는 검사를 붙였다 |

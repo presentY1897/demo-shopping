@@ -6,7 +6,7 @@ import { Badge, ErrorState, Skeleton, Table } from '@shopping/ui/components'
 
 import type { RoleCount } from '@/lib/demo/demo-console'
 import { roleCounts } from '@/lib/demo/demo-console'
-import { demoCount, demoDay } from '@/lib/demo/format'
+import { demoCount, demoDateTime, demoDay } from '@/lib/demo/format'
 import type { DemoStatsController } from '@/lib/demo/use-demo-console'
 import type { DemoConsoleMessages, UserMessages } from '@/messages'
 
@@ -147,6 +147,24 @@ function StatsBody({
           {copy.totalIssued.replace('{count}', demoCount(total))}
         </span>
       </div>
+
+      {/*
+       * 마지막 정리가 **무엇을 했는지** (F3).
+       *
+       * 시각만 그리면 0건을 집고 돌아온 주기와 50건을 집은 주기가 같아 보이고,
+       * 그러면 정리가 밀리는 것을 아무도 모른다 — 시각은 계속 갱신되기 때문이다.
+       *
+       * 한 번도 안 돌았을 때와 적힌 값을 못 읽었을 때를 가르지 않는다. 화면이 할 일이
+       * 같아서다: 둘 다 「아직 모른다」이다.
+       */}
+      <p className="text-fg-muted text-sm">
+        {data.lastCleanup.at === null
+          ? copy.summary.lastCleanupNever
+          : copy.summary.lastCleanup
+              .replace('{at}', demoDateTime(data.lastCleanup.at))
+              .replace('{swept}', demoCount(data.lastCleanup.report?.swept ?? 0))
+              .replace('{failed}', demoCount(data.lastCleanup.report?.failed ?? 0))}
+      </p>
 
       <Table
         caption={copy.daysCaption}

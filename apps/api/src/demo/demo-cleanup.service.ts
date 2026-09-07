@@ -10,6 +10,7 @@ import type { DemoCleanupReport } from './demo-cleanup.js'
 import {
   DEMO_CLEANUP_BATCH,
   DEMO_CLEANUP_INTERVAL_MS,
+  DEMO_CLEANUP_LAST_REPORT_KEY,
   DEMO_CLEANUP_LAST_RUN_KEY,
   DEMO_CLEANUP_REASON,
 } from './demo-cleanup.js'
@@ -113,15 +114,56 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
           // next tick picks it up again (F6).
           failed += 1
           this.logger.error(`데모 계정 정리 실패 — ${account.id}`, error)
+          await this.recordFailure(account.id, error, now)
         }
       }
 
       await this.recordRun(now)
+      await this.recordReport({ swept, failed })
 
       return { swept, failed, at: now }
     } finally {
       this.running = false
     }
+  }
+
+  /**
+   * 마지막 스윕이 집은 것과 실패한 것 (F3).
+   *
+   * 읽을 수 없는 값은 「없다」로 본다. `AppMeta.value` 는 문자열이라 모양을 DB 가
+   * 지켜 주지 않고, 여기서 던지면 **화면 전체가 한 칸 때문에 빈다.**
+   */
+  async lastReport(): Promise<{ readonly swept: number; readonly failed: number } | null> {
+    const row = await this.prisma.appMeta.findUnique({
+      where: { key: DEMO_CLEANUP_LAST_REPORT_KEY },
+      select: { value: true },
+    })
+
+    if (row === null) return null
+
+    try {
+      const parsed: unknown = JSON.parse(row.value)
+
+      if (typeof parsed !== 'object' || parsed === null) return null
+
+      const { swept, failed } = parsed as { swept?: unknown; failed?: unknown }
+
+      if (typeof swept !== 'number' || typeof failed !== 'number') return null
+
+      return { swept, failed }
+    } catch {
+      return null
+    }
+  }
+
+  private async recordReport(report: { swept: number; failed: number }): Promise<void> {
+    const value = JSON.stringify(report)
+
+    await this.prisma.appMeta.upsert({
+      where: { key: DEMO_CLEANUP_LAST_REPORT_KEY },
+      create: { key: DEMO_CLEANUP_LAST_REPORT_KEY, value },
+      update: { value },
+    })
   }
 
   /** When the last sweep finished, or `null` before the first one. */
@@ -146,6 +188,41 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
    * cost of a transaction it did not ask for, and would give two paths into the
    * same deletion for one of them to drift.
    */
+  /**
+   * 정리가 왜 실패했는지를 **그 계정에** 적는다 (TASK-0096 F4).
+   *
+   * ## 표가 아니라 칸인 이유
+   *
+   * 실패는 이 계정의 **지금 상태**이지 쌓아 둘 사건이 아니다. 표로 만들면 이미 정리된
+   * 계정의 옛 실패가 영영 남아 목록을 채운다 — 다음 주기가 성공하면 계정 행 자체가
+   * 사라지므로 칸도 함께 간다.
+   *
+   * ## 이 쓰기가 실패해도 삼킨다
+   *
+   * 여기까지 온 것은 이미 한 번 실패한 뒤다. 기록하려다 또 터져서 **스윕 전체가
+   * 멈추면** 남은 계정들이 이번 주기에 아예 안 집힌다 — 한 계정의 실패는 한 계정의
+   * 것이라는 이 함수 위의 규칙이 여기에도 적용된다.
+   */
+  private async recordFailure(userId: string, error: unknown, now: Date): Promise<void> {
+    try {
+      await this.prisma.user.updateMany({
+        where: { id: userId },
+        data: {
+          demoCleanupFailedAt: now,
+          // 사유는 짝이 없으면 안 된다 (`User_demo_cleanup_failure_check`). 메시지가
+          // 없는 오류도 있으므로 마지막 대비책까지 둔다 — 빈 문자열이면 제약이 아니라
+          // **화면이** 말할 것을 잃는다.
+          demoCleanupError:
+            (error instanceof Error ? error.message : String(error)).slice(0, 500) ||
+            '알 수 없는 오류',
+          updatedAt: now,
+        },
+      })
+    } catch (writeError) {
+      this.logger.error(`데모 정리 실패를 적지 못했습니다 — ${userId}`, writeError)
+    }
+  }
+
   async expireNow(userId: string): Promise<boolean> {
     const now = this.clock.now()
     const changed = await this.prisma.user.updateMany({

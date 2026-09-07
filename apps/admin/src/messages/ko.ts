@@ -2569,6 +2569,8 @@ export const ko: Messages = {
       summary: {
         activeLabel: '지금 남아 있는 계정',
         failedLabel: '정리에 실패한 계정',
+        lastCleanup: '마지막 정리 {at} — {swept}건 정리, {failed}건 실패',
+        lastCleanupNever: '아직 한 번도 정리하지 않았습니다.',
         countValue: '{count}개',
       },
       filters: {

@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M14 관리자 |
-| 상태 | 승인됨 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-02 |
 | 브랜치 | `feature/user-management` |
 | 선행 작업 | M13 완료 |
@@ -28,11 +28,11 @@
 
 ## 3. 요구사항
 
-- [ ] 회원을 검색하고 상세를 볼 수 있다
-- [ ] 역할을 부여·회수할 수 있다
-- [ ] 적립금 조정이 원장에 기록된다
-- [ ] 목록에서 개인정보가 마스킹된다
-- [ ] 데모 관리자는 파괴적 작업을 할 수 없다
+- [x] 회원을 검색하고 상세를 볼 수 있다
+- [x] 역할을 부여·회수할 수 있다
+- [x] 적립금 조정이 원장에 기록된다
+- [x] 목록에서 개인정보가 마스킹된다
+- [x] 데모 관리자는 파괴적 작업을 할 수 없다
 
 ## 4. 설계
 
@@ -104,14 +104,14 @@
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| F1 | 검색 | 이메일·이름으로 검색 | 정확히 조회 | [ ] |
-| F2 | 상세 요약 | 회원 상세 | 주문·리뷰·적립금 요약 정확 | [ ] |
-| F3 | 역할 부여 | SELLER 역할 부여 | 판매자 앱 접근 가능해짐 | [ ] |
-| F4 | 정지 | 계정 정지 | 로그인 차단 | [ ] |
-| F5 | 적립금 조정 | 사유 없이 조정 시도 | 차단. 사유 입력 시 원장 기록 | [ ] |
-| F6 | 마스킹 | 목록 확인 | 이메일·이름 마스킹 | [ ] |
-| F7 | 열람 로그 | 상세 열람 | 로그 기록 | [ ] |
-| F8 | 데모 제한 | 데모 관리자로 정지 시도 | 403 + UI 비활성 | [ ] |
+| F1 | 검색 | `admin-users.spec.ts` 「searches the real value, not the masked one」 — 가려진 문자열로는 **아무것도 안 나오는 것**까지 단언한다(4.2) · 「narrows by role and by demo」 · `user-console.spec.ts` 「carries every axis that was set, and trims the search」 · 「leaves an unset axis out of the query rather than sending undefined」 · 「sends a false as a value, not as an absence」 · 「is not narrowed by an empty filter, nor by whitespace somebody typed and erased」 · `users-page.spec.tsx` 「sends the search once, when it is submitted」 · 「narrows by role without a second press」 | 정확히 조회 | [x] |
+| F2 | 상세 요약 | `admin-users.spec.ts` 「summarises what the member did, as numbers only」 — 여섯 칸을 `toEqual` 로 통째로 못 박아 칸이 늘거나 빠지면 빨개진다. **다만 서버의 집계는 아직 0인 회원 하나로만 잰다** — 주문·리뷰가 있는 회원으로 수가 맞는지는 화면 쪽 고정 응답(`users-page.spec.tsx` 「summarises what the account did, as counts and money」)이 대신하고 있어, 그리는 것은 지켜지지만 세는 것은 안 지켜진다 · 「shows the unmasked values only after the reason was given」 | 주문·리뷰·적립금 요약 정확 | [x] |
+| F3 | 역할 부여 | `authorization.integration.spec.ts` 「grants and revokes for a super admin, idempotently」(`SELLER_OWNER` 로 잰다) · 「lets an operator read anyone, but grants nothing」 · 「refuses to let a super admin lock themselves out」 · `users-page.spec.tsx` 「grants an everyday role in one press」 · 「asks again before it hands over the whole console」(R1) · 「revokes a role the account already holds」 · `user-console.spec.ts` 「counts DEMO_ADMIN among the roles that need a confirmation」 — **「판매자 앱 접근 가능해짐」까지 한 검사로 걷는 것은 없다.** 역할이 붙으면 seller 가 들어온다는 것은 `google-auth.integration.spec.ts` 「역할이 있으면 seller 에서 안내가 사라진다」가 따로 재는데 그쪽은 역할을 DB 에 직접 넣고, 역할은 액세스 토큰에 실리므로(`access-token.resolver.ts`) 부여의 효력은 **다음 발급부터**다 | 판매자 앱 접근 가능해짐 | [x] |
+| F4 | 정지 | `admin-users.spec.ts` 「stops the account from getting a session again」 — 재려는 것이 칸이 아니라 **로그인**이라, 로그인·갱신 두 경로가 주인을 찾는 그 조건을 직접 걸어 0줄을 확인한다(라우트를 부르는 대신 조건을 복제하는 것이 이 검사의 값이자 한계다) · 「throws away the refresh tokens it finds」 — 살아 있는 세션을 안 끊으면 정지가 「다음 로그인부터」가 된다(4.4) · 「stores the reason with the suspension」 · 「tells "already suspended" apart from "no such member"」 · `users-page.spec.tsx` 「suspends with the reason, then lets the list say so」 · 「says the suspension is reversible and cuts the live session」 | 로그인 차단 | [x] |
+| F5 | 적립금 조정 | `admin-users.spec.ts` 「refuses an adjustment with no reason, and a zero one」 · 「writes the movement to the ledger with the reason」 — `PointTransaction` 이 `ADJUST` 로 남았는지를 원장에서 직접 읽는다(4.5) · 「takes only as much as there is」 — 차감은 잔액까지만 가고 음수를 만들지 않는다 · `users-page.spec.tsx` 「will not adjust without a reason」 · 「sends a signed amount and the reason through one door」 · 「says what actually moved when the balance clipped the deduction」 · `user-console.spec.ts` 「says clipped when the balance stopped a deduction short」 · 「tells an empty amount apart from a zero」 | 차단. 사유 입력 시 원장 기록 | [x] |
+| F6 | 마스킹 | `admin-users.spec.ts` 「masks the email and the name, and never sends the raw ones」 — 응답을 통째로 문자열로 훑어 원본이 **어디에도** 없음을 본다 · 규칙 자체는 `personal-data.spec.ts` 「keeps enough to tell two accounts apart」 · 「does not leak the length of a short local part」 · 「is the rule reviews already use」(D-246 의 함수를 다시 쓴다 — 규칙이 둘이면 두 화면이 같은 사람을 다르게 가린다) · `users-page.spec.tsx` 「shows the masked email and name, and no raw value anywhere」 · 「says the values are masked and that search looks at the real ones」 | 이메일·이름 마스킹 | [x] |
+| F7 | 열람 로그 | `admin-users.spec.ts` 「writes who opened it, whose it was and why」 · 「records every opening, not just the first」 — 열람은 상태가 아니라 사건이라, 마지막 한 줄만 남기면 한 번 본 것과 백 번 본 것이 같아진다(4.3) · 「refuses to open without a reason」 · 「does not log an admin opening their own row」 · `users-page.spec.tsx` 「asks why before it opens anything」 · 「starts with an empty reason and refuses to send one」 · 「sends the sentence the operator actually typed」 · 「identifies the account by its masked values, inside the dialog」 | 로그 기록 | [x] |
+| F8 | 데모 제한 | `admin-users.spec.ts` 「lets a demo admin read but not suspend」 · 「refuses an operator the writes only a super admin has」(4.6) · 「refuses a buyer, whose user.read is narrowed to their own row」 · `users-page.spec.tsx` 「blocks a demo administrator the same way」 · 「leaves an operator the reading and blocks every write, with a reason」 — 감추지 않고 `aria-disabled` 와 **왜 못 누르는지**를 함께 단언한다 · 「still renders a sentence when a 403 arrives at a live button」 — 미리 막는 것만으로는 부족하다(다른 탭에서 역할이 회수된 뒤) | 403 + UI 비활성 | [x] |
 
 ### 6.2 품질 게이트
 
@@ -123,7 +123,7 @@
 
 | # | 기준 | 충족 |
 | --- | --- | --- |
-| D1 | 상태 갱신 + 인덱스 2곳 | [ ] |
+| D1 | 상태 갱신 + 인덱스 2곳 | [x] |
 
 ## 7. 리스크 / 열린 질문
 
@@ -140,3 +140,4 @@
 | 날짜 | 내용 |
 | --- | --- |
 | 2026-09-02 | 최초 작성 |
+| 2026-09-07 | 완료. 정지에서 0줄을 한 가지로 답하고 있었다 — 「그런 회원이 없다」와 「다른 관리자가 방금 처리했다」는 **사람이 할 일이 다르다**(404 · 409). 상세를 `POST` 로 둔 이유는 4.3 에 적었다 |
