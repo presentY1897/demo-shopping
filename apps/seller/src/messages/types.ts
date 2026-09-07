@@ -10,6 +10,7 @@ import type {
   DenialReason,
   ErrorMessages,
   HealthStatus,
+  NotificationType,
   OauthFailureReason,
   OauthNotice,
   OrderActor,
@@ -33,6 +34,7 @@ import type { SellerClaimTab } from '@/lib/claims/claim-console'
 import type { CouponLiabilityUnbounded, SellerCouponScopeType } from '@/lib/coupons/coupon-console'
 import type { CouponFieldErrorMessages } from '@/lib/coupons/coupon-form'
 import type { SellerOrderTab } from '@/lib/orders/order-console'
+import type { AnswerFieldErrorMessages, AnswerRefusal } from '@/lib/questions/question-console'
 import type { ReplyFieldErrorMessages, ReplyRefusal } from '@/lib/reviews/review-console'
 import type { CalculationLineKey } from '@/lib/settlements/settlement-console'
 import type { StoreFieldErrorMessages } from '@/lib/sellers/store-form'
@@ -81,11 +83,6 @@ export interface Messages {
    * route, while everything else here belongs to one screen.
    */
   readonly layout: ConsoleLayoutMessages
-  /**
-   * Screens whose route exists so the sidebar has no dead ends, and whose
-   * content arrives with its own milestone (TASK-0019 4.10).
-   */
-  readonly placeholder: ConsolePlaceholderMessages
   /** Route-level loading, not-found and error states (P5). */
   readonly routeStates: RouteStateMessages
   /**
@@ -197,6 +194,24 @@ export interface Messages {
    * 낱말을 서로 다른 뜻으로 쓰게 된다.
    */
   readonly reviewList: ReviewListMessages
+  /**
+   * 상품 문의 관리 (TASK-0088). 미답변 우선 목록 · 미답변만 필터 · 답변 쓰기.
+   *
+   * **`reviewList` 와 짝이다.** 두 화면이 같은 일을 다른 대상에 하므로 슬라이스의
+   * 모양도 같게 두었다 — 한쪽에만 있는 키가 생기면 두 화면이 갈리기 시작한 자리다.
+   * 다른 점은 축이 하나뿐인 필터(문의에는 별점이 없다)와 **비공개 표시**이고, 그
+   * 둘이 이 슬라이스가 리뷰의 것을 그대로 쓰지 못하는 이유다.
+   */
+  readonly questionList: QuestionListMessages
+  /**
+   * 알림함 (TASK-0090). 상단바의 종과 `/notifications`.
+   *
+   * `layout` 이 아니라 여기 있다. 셸이 자리를 비워 두고 「M11 이 채운다」고 말하던
+   * 동안에는 그 팝오버가 셸의 가구였지만, 이제 알림함은 **자기 화면과 자기 계약을
+   * 가진 기능**이고 셸은 그중 종 하나를 슬롯에 꽂을 뿐이다 — M04 가 `layout.account`
+   * 를 `auth.menu` 로 옮긴 것과 같은 이동이다.
+   */
+  readonly notifications: NotificationCenterMessages
 }
 
 /* ------------------------------------------- 매출 대시보드 (TASK-0082) -- */
@@ -531,6 +546,10 @@ export interface StoreStatusMessages {
   readonly notice: Readonly<Record<SellerStatus, StoreStatusNoticeMessages>>
   /** Precedes the sentence an operator wrote into `statusReason`. */
   readonly reasonLabel: string
+  /** 팔로워 수 앞의 이름 (TASK-0089 §3). 영업 중인 스토어에만 그려진다. */
+  readonly followerLabel: string
+  /** `{count}` */
+  readonly followerCount: string
 }
 
 export interface StoreStatusNoticeMessages {
@@ -740,28 +759,6 @@ export interface ConsoleLayoutMessages {
    * off `ConsoleGuard`.
    */
   readonly onboardingMenu: ConsoleMenu
-  readonly notifications: ConsoleSlotMessages
-}
-
-/**
- * A top-bar slot that is reserved but not filled.
- *
- * A disabled control would be worse than none (TASK-0018 4.5), so the slot is a
- * working popover that says which milestone fills it.
- */
-export interface ConsoleSlotMessages {
-  /** Accessible name of the icon button. */
-  readonly label: string
-  readonly title: string
-  readonly body: string
-  readonly closeLabel: string
-}
-
-export interface ConsolePlaceholderMessages {
-  readonly comingSoon: string
-  readonly body: string
-  /** `/products/new` is not a menu entry, so its title lives here. */
-  readonly productNew: string
 }
 
 export interface RouteStateMessages {
@@ -2081,4 +2078,265 @@ export interface ReviewReplyConfirmMessages {
   readonly confirm: string
   readonly cancel: string
   readonly closeLabel: string
+}
+
+/* ------------------------------------------ 상품 문의 관리 (TASK-0088) -- */
+
+/**
+ * `/questions` 가 그리는 모든 것.
+ *
+ * **`ReviewListMessages` 를 그대로 옮긴 모양이다.** 두 화면이 같은 일을 다른 대상에
+ * 하기 때문이고(미답변 우선 목록 · 줄 안에서 열리는 답변 편집기 · 필터와 무관한
+ * 미답변 건수), 모양이 같아야 한쪽만 고쳐지는 날이 눈에 띈다.
+ *
+ * 다른 것은 둘뿐이다: 필터의 축이 하나이고(문의에는 별점이 없다), 줄에 **비공개
+ * 표시**가 붙는다.
+ */
+export interface QuestionListMessages {
+  readonly description: string
+  readonly loadingLabel: string
+  readonly unanswered: QuestionUnansweredMessages
+  readonly filters: QuestionFilterMessages
+  readonly card: QuestionCardMessages
+  readonly answer: QuestionAnswerMessages
+  readonly pagination: PaginationMessages
+  readonly empty: EmptyStateMessages
+  readonly filteredEmpty: EmptyStateMessages
+  readonly errorTitle: string
+  readonly retry: string
+  /** 스토어가 없는 계정. 목록을 **부르지도 않는다** — 부르면 거절된다. */
+  readonly noStore: StoreAbsentMessages
+}
+
+/**
+ * 미답변 건수 뱃지.
+ *
+ * **`note` 가 이 슬라이스의 핵심이다.** 이 수는 필터를 걸어도 줄지 않는다 — 계약이
+ * 그렇게 보내고(`sellerQuestionsResponseSchema`), 그 사실을 적지 않으면 「미답변만」을
+ * 켠 판매자는 목록의 줄 수와 뱃지가 다른 것을 버그로 읽는다.
+ */
+export interface QuestionUnansweredMessages {
+  readonly regionLabel: string
+  /** `{count}` — 답해야 할 문의의 수. 지금 화면에 몇 개인지가 아니다. */
+  readonly value: string
+  readonly note: string
+  /** 하나도 없다. 0을 큰 글씨로 쓰는 대신 문장으로 말한다. */
+  readonly none: string
+}
+
+/**
+ * 축이 **하나**다 — 미답변만.
+ *
+ * 계약이 판매자 목록에 허용하는 축이 그것뿐이고(`sellerQuestionsQueryParamsSchema`),
+ * 공개/비공개를 축으로 두지 않는 것은 판단이다: 비공개 문의도 똑같이 답해야 하는
+ * 것이라, 그 축으로 목록을 가르면 할 일이 두 화면으로 쪼개진다.
+ */
+export interface QuestionFilterMessages {
+  readonly legend: string
+  readonly unansweredOnlyLabel: string
+  readonly reset: string
+}
+
+/** 문의 한 장이 말하는 것. */
+export interface QuestionCardMessages {
+  readonly listLabel: string
+  /** `{name}` — 어느 상품의 문의인가. 목록이 상품을 가로지르므로 줄마다 필요하다. */
+  readonly productLabel: string
+  /** `{name}` — 가려진 이름(`홍*동`). 가리는 일은 서버가 이미 했다. */
+  readonly authorLabel: string
+  /** `{date}` */
+  readonly askedAt: string
+  readonly unansweredBadge: string
+  readonly answeredBadge: string
+  /**
+   * 비공개 문의라는 표시 (4.2).
+   *
+   * **판매자에게는 이 줄이 온다.** 가리는 대상은 제3자이지 답할 사람이 아니기
+   * 때문이다. 그래서 표시는 「못 본다」가 아니라 「남들은 못 본다」를 말해야 한다.
+   */
+  readonly privateBadge: string
+  /** 답변도 공개되지 않는다는 사실. 이것을 적지 않으면 답을 공개 글처럼 쓴다. */
+  readonly privateNote: string
+}
+
+/**
+ * 답변을 쓰고 · 고치고 · 지우는 자리 (4.3).
+ *
+ * **「작성」과 「수정」이 같은 버튼이다** — 문구만 갈리고 가는 곳은 하나다. 문의당
+ * 답변이 하나이고 그것을 기본키가 만드므로(`ProductAnswer`), 두 번째 답변이 저장될
+ * 자리가 없다. 화면에 문을 둘 두면 하나는 언젠가 400 을 받는다.
+ */
+export interface QuestionAnswerMessages {
+  readonly heading: string
+  /** `{brand}` — 구매자에게 이 답변이 누구의 것으로 보이는가. */
+  readonly authorLine: string
+  /** `{date}` */
+  readonly updatedAt: string
+  readonly writeLabel: string
+  readonly editLabel: string
+  readonly deleteLabel: string
+  readonly cancelLabel: string
+  readonly saveLabel: string
+  readonly contentLabel: string
+  /** `{max}` — 상한은 계약의 상수에서 온다. 문장에 숫자를 적지 않는다. */
+  readonly contentHint: string
+  readonly contentPlaceholder: string
+  readonly errors: AnswerFieldErrorMessages
+  readonly errorTitle: string
+  readonly submitFailed: string
+  readonly savedNotice: string
+  readonly deletedNotice: string
+  readonly failureTitle: string
+  readonly refusals: QuestionAnswerRefusalMessages
+  readonly confirm: QuestionAnswerConfirmMessages
+}
+
+/**
+ * 두 거절만 자기 문장을 갖는다 (F3).
+ *
+ * `other` 가 빠져 있는 것이 설계다 — 그 밖의 실패는 `errors` 카탈로그가 코드로
+ * 답하고, 여기에 문장을 하나 더 두면 이미 답한 것을 두 번째로 답하게 된다.
+ *
+ * `Exclude` 로 키를 잡아 두었으므로 거절이 하나 늘면 여기가 typecheck 에서 걸린다.
+ */
+export type QuestionAnswerRefusalMessages = Readonly<
+  Record<Exclude<AnswerRefusal, 'other'>, string>
+>
+
+/** 답변 삭제 확인. **되돌릴 수 없는 걸음**이라 묻는다. */
+export interface QuestionAnswerConfirmMessages {
+  readonly title: string
+  readonly description: string
+  readonly confirm: string
+  readonly cancel: string
+  readonly closeLabel: string
+}
+
+/* ---------------------------------------------- 알림함 (TASK-0090) -- */
+
+/**
+ * 알림이 그려지는 두 곳과, 그 둘이 나눠 쓰는 어휘.
+ *
+ * `menu` 와 `page` 를 가른 것은 **묻는 것이 다르기** 때문이다: 종은 「지금 나한테
+ * 할 일이 왔나」를 묻고 다섯 줄로 답하며, 알림함은 「무엇이 왔었나」를 묻고 페이지를
+ * 넘긴다. `item` 이 따로 있는 것은 그 둘이 **같은 줄**을 그리기 때문이고, 두 벌을
+ * 두면 종에서는 「읽음」이고 목록에서는 「확인」인 날이 온다.
+ */
+export interface NotificationCenterMessages {
+  readonly menu: NotificationMenuMessages
+  readonly page: NotificationPageMessages
+  readonly item: NotificationItemMessages
+  /** 읽음 처리가 거절됐다. 두 곳이 같은 제목을 쓴다. */
+  readonly readFailureTitle: string
+}
+
+/** 상단바의 종과 그 아래 열리는 패널. */
+export interface NotificationMenuMessages {
+  /** 종의 접근 가능한 이름. 안 읽은 것이 없을 때. */
+  readonly label: string
+  /**
+   * `{count}` — 안 읽은 것이 있을 때의 이름.
+   *
+   * **배지의 숫자는 장식이다.** 보조 기술에게 「알림」 옆의 3은 아무 관계도 아니라서,
+   * 개수는 버튼의 이름 안에 문장으로 들어가야 한다.
+   */
+  readonly labelWithUnread: string
+  /**
+   * `{max}` — 배지가 숫자로 적을 수 있는 상한을 넘었을 때의 그림(「99+」).
+   *
+   * **줄어드는 것은 그림뿐이다.** 정확한 수는 {@link labelWithUnread} 가 들고 있고,
+   * 거기에는 상한이 없다.
+   */
+  readonly badgeOverflow: string
+  readonly title: string
+  readonly closeLabel: string
+  readonly listLabel: string
+  readonly loadingLabel: string
+  /** 안 읽은 것이 없다. 패널이 비어 있는 것이 아니라 할 일이 없는 것이다. */
+  readonly empty: string
+  readonly errorTitle: string
+  readonly retry: string
+  readonly readAllLabel: string
+  readonly seeAllLabel: string
+  /** `{count}` — 다섯 줄에 다 담기지 않았을 때. 알림함으로 보내는 문장이다. */
+  readonly moreNote: string
+  /**
+   * 물을 수 없는 계정이 패널에서 읽는 한 줄.
+   *
+   * **종을 지우지 않는 이유는 자리다.** 세션이 도착할 때 컨트롤이 생겨나면 상단바의
+   * 오른쪽이 통째로 밀리고, 그것은 계정 슬롯이 세 상태에서 같은 크기를 지키는
+   * 이유이기도 하다 (`console-user-menu.tsx`). 다음 걸음(로그인)은 옆의 계정 메뉴가
+   * 이미 들고 있으므로 여기서는 사실만 말한다.
+   */
+  readonly unavailable: string
+}
+
+/** `/notifications` 한 화면. */
+export interface NotificationPageMessages {
+  /**
+   * 화면의 제목.
+   *
+   * 사이드바에서 읽어 오지 않는다(`screenTitle`) — 알림함은 **메뉴 항목이 아니라
+   * 상단바의 종**으로 들어오는 화면이고, `docs/design/pages.md` 2장의 판매자 경로
+   * 표에도 없다. `products.newTitle` 이 `/products/new` 를 같은 이유로 든다.
+   */
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly unread: NotificationUnreadMessages
+  readonly filters: NotificationFilterMessages
+  readonly listLabel: string
+  readonly readAllLabel: string
+  readonly pagination: PaginationMessages
+  readonly empty: EmptyStateMessages
+  readonly filteredEmpty: EmptyStateMessages
+  readonly errorTitle: string
+  readonly retry: string
+}
+
+/**
+ * 미읽음 건수 (F3).
+ *
+ * 리뷰·문의의 미답변 뱃지와 같은 규약이다 — **필터와 무관하다**(4.5). 「안 읽은 것만」을
+ * 켜면 목록은 좁아지는데 이 수는 그대로이고, 그 사실을 `note` 가 적지 않으면 차이가
+ * 버그로 읽힌다.
+ */
+export interface NotificationUnreadMessages {
+  readonly regionLabel: string
+  /** `{count}` */
+  readonly value: string
+  readonly note: string
+  readonly none: string
+}
+
+export interface NotificationFilterMessages {
+  readonly legend: string
+  readonly unreadOnlyLabel: string
+  readonly reset: string
+}
+
+/**
+ * 알림 한 줄이 말하는 것. 종과 알림함이 나눠 쓴다.
+ *
+ * 제목과 본문은 **서버가 만든 문장**이라 여기 없다 — 「새 주문이 들어왔어요」와
+ * 주문번호는 알림이 만들어질 때 굳는 값이고, 그것을 화면이 다시 조립하면 지난 알림이
+ * 오늘의 문구로 다시 쓰인다.
+ */
+export interface NotificationItemMessages {
+  readonly unreadBadge: string
+  /** 이 줄만 읽음 처리. */
+  readonly readLabel: string
+  /** 링크를 따라가는 문구. 경로는 알림이 들고 있다 (4.7). */
+  readonly openLabel: string
+  /** `{date}` */
+  readonly receivedAt: string
+  /**
+   * 유형의 이름.
+   *
+   * **`NotificationType` 전부를 키로 잡는다.** 판매자에게 실제로 오는 것은 `SELLER_`
+   * 셋이지만, 판매자 계정도 물건을 살 수 있고 그때 오는 것은 구매자 알림이다 —
+   * 유형으로 걸러 감추면 자기 주문의 배송 알림이 어느 앱에서도 보이지 않는다.
+   * 계약에 유형이 하나 늘면 여기가 typecheck 에서 걸린다.
+   */
+  readonly types: Readonly<Record<NotificationType, string>>
 }

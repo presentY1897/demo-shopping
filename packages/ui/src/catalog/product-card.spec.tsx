@@ -23,6 +23,7 @@ const labels: ProductCardLabels = {
   salesCount: '{count}개 판매',
   remaining: '{count}개 남음',
   wishlist: '{name} 찜하기',
+  wishlistOn: '{name} 찜 빼기',
   quickAdd: '바로 담기',
   colorsLabel: '{name} 색상',
   ratingLabel: '평점',
@@ -246,6 +247,74 @@ describe('F2 — 열 수는 매트릭스를 따른다', () => {
     expect(sizes.indexOf('1280px')).toBeLessThan(sizes.indexOf('768px'))
     // 6열이면 한 칸이 16vw 다.
     expect(sizes).toContain('16vw')
+  })
+
+  /**
+   * 담김 여부는 **세 가지**다: 담김 · 안 담김 · 아직 모름.
+   *
+   * 셋째를 둘째와 같이 그리면 담아 둔 카드의 하트가 새로고침마다 한 번씩 비었다가
+   * 찬다 — 그 깜빡임이 TASK-0086 F1 의 「새로고침 후 유지」가 깨진 모습이다. 그리고
+   * 그 실패는 **조용하다**: 렌더는 멀쩡하고, 하트도 눌리며, 누르면 이미 담은 것을
+   * 빼 버린다.
+   */
+  describe('찜 버튼이 자기 상태를 말한다 (TASK-0086 F1)', () => {
+    it('담겼으면 눌린 버튼이고, 빼는 이름으로 불린다', () => {
+      render(
+        <ProductCard
+          density={2}
+          href="/products/p1"
+          labels={labels}
+          onWishlist={() => undefined}
+          product={product}
+          wishlisted
+        />,
+      )
+
+      const button = screen.getByRole('button', { name: `${product.name} 찜 빼기` })
+
+      expect(button).toHaveAttribute('aria-pressed', 'true')
+      expect(button).toHaveTextContent('♥')
+    })
+
+    it('안 담겼으면 눌리지 않은 버튼이다', () => {
+      render(
+        <ProductCard
+          density={2}
+          href="/products/p1"
+          labels={labels}
+          onWishlist={() => undefined}
+          product={product}
+          wishlisted={false}
+        />,
+      )
+
+      const button = screen.getByRole('button', { name: `${product.name} 찜하기` })
+
+      expect(button).toHaveAttribute('aria-pressed', 'false')
+      expect(button).toHaveTextContent('♡')
+    })
+
+    it('모를 때는 눌렸다고도 안 눌렸다고도 말하지 않는다', () => {
+      render(
+        <ProductCard
+          density={2}
+          href="/products/p1"
+          labels={labels}
+          onWishlist={() => undefined}
+          product={product}
+        />,
+      )
+
+      expect(screen.getByRole('button', { name: `${product.name} 찜하기` })).not.toHaveAttribute(
+        'aria-pressed',
+      )
+    })
+
+    it('버튼 자체가 없으면 상태도 없다', () => {
+      renderCard(2)
+
+      expect(screen.queryByRole('button', { name: /찜/ })).toBeNull()
+    })
   })
 
   it('그리드는 이름을 가진 목록이다', () => {

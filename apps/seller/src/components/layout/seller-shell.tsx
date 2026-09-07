@@ -24,14 +24,15 @@ import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 
 import { ConsoleUserMenu } from '@/components/auth/console-user-menu'
+import { NotificationMenu } from '@/components/notifications/notification-menu'
 import { useAuthorization } from '@/lib/auth/authorization'
 import { useAuth } from '@/lib/auth/auth-context'
 import { mayEnterConsole } from '@/lib/auth/console-access'
+import { NotificationCenterProvider } from '@/lib/notifications/notification-center'
 import type { ConsoleLayoutMessages } from '@/messages'
 import { messagesFor } from '@/messages'
 
-import { AccountIcon, BellIcon } from './console-icons'
-import { ConsoleSlot } from './console-slots'
+import { AccountIcon } from './console-icons'
 
 export function SellerShell({
   messages,
@@ -40,10 +41,13 @@ export function SellerShell({
   readonly messages: ConsoleLayoutMessages
   readonly children: ReactNode
 }) {
-  // The account slot's copy is the `auth` slice's, not the layout's: it belongs
-  // to signing in rather than to the shell, and the shell is handed the rest of
-  // its strings by the caller (TASK-0019 4.9).
-  const account = messagesFor().auth.menu
+  // The two top-bar slots read their own slices rather than the layout's: both
+  // belong to a feature that has its own screens and its own contract, and the
+  // shell is handed the rest of its strings by the caller (TASK-0019 4.9).
+  // `auth.menu` replaced `layout.account` in M04; `notifications` replaces
+  // `layout.notifications` here, for the same reason.
+  const { auth, notifications } = messagesFor()
+  const account = auth.menu
   const { can, ready } = useAuthorization()
   const { state } = useAuth()
 
@@ -88,22 +92,28 @@ export function SellerShell({
   }, [messages.menu, messages.onboardingMenu, can, entering, ready])
 
   return (
-    <ConsoleShell
-      brand={messages.brand}
-      currentPath={usePathname()}
-      labels={messages.shell}
-      // `next/link` satisfies the shell's link contract as it stands — every
-      // prop the shell passes is a plain anchor prop.
-      linkComponent={Link}
-      menu={menu}
-      notifications={
-        <ConsoleSlot messages={messages.notifications}>
-          <BellIcon className="size-5" />
-        </ConsoleSlot>
-      }
-      userMenu={<ConsoleUserMenu icon={<AccountIcon className="size-5" />} messages={account} />}
-    >
-      {children}
-    </ConsoleShell>
+    /*
+     * 알림 폴링이 **여기 하나**다 (TASK-0090 R1).
+     *
+     * 셸이 감싸므로 상단바의 종과 그 안에 그려지는 화면이 같은 타이머를 본다 —
+     * `/notifications` 가 자기 목록을 따로 들면서도 배지를 즉시 갱신할 수 있는 것이
+     * 그 덕분이고, 그러지 않으면 방금 「모두 읽음」을 누른 사람의 머리 위에서 숫자가
+     * 최대 30초 동안 옛 값을 말한다.
+     */
+    <NotificationCenterProvider>
+      <ConsoleShell
+        brand={messages.brand}
+        currentPath={usePathname()}
+        labels={messages.shell}
+        // `next/link` satisfies the shell's link contract as it stands — every
+        // prop the shell passes is a plain anchor prop.
+        linkComponent={Link}
+        menu={menu}
+        notifications={<NotificationMenu messages={notifications} />}
+        userMenu={<ConsoleUserMenu icon={<AccountIcon className="size-5" />} messages={account} />}
+      >
+        {children}
+      </ConsoleShell>
+    </NotificationCenterProvider>
   )
 }

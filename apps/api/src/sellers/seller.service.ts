@@ -59,6 +59,7 @@ const SELLER_SELECT = {
   introduction: true,
   logoUrl: true,
   status: true,
+  followerCount: true,
   statusReason: true,
   statusChangedAt: true,
   version: true,
@@ -145,7 +146,18 @@ export class SellerService {
   async storefront(id: string): Promise<StorefrontSellerResponse> {
     const seller = await this.prisma.seller.findFirst({
       where: { id, status: 'ACTIVE' },
-      select: { id: true, brandName: true, slug: true, introduction: true, logoUrl: true },
+      // `followerCount` 는 세어 놓은 값이라 여기서 `SellerFollow` 를 세지 않는다 —
+      // 브랜드관은 콜드 스타트 뒤 첫 화면일 수 있고, 그 한 장에 팔로워 테이블을
+      // 훑는 집계를 붙이면 팔로워가 많은 가게일수록 느려진다 (TASK-0089 4.3 이
+      // 그 값을 열로 둔 이유가 이것이다).
+      select: {
+        id: true,
+        brandName: true,
+        slug: true,
+        introduction: true,
+        logoUrl: true,
+        followerCount: true,
+      },
     })
 
     if (seller === null) throw new NotFoundException('판매자를 찾을 수 없습니다.')
@@ -631,6 +643,7 @@ function toSeller(row: SellerRecord): Seller {
     introduction: row.introduction,
     logoUrl: row.logoUrl,
     status: row.status,
+    followerCount: row.followerCount,
     statusReason: row.statusReason,
     statusChangedAt: row.statusChangedAt?.toISOString() ?? null,
     version: row.version,

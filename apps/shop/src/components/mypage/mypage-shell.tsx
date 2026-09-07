@@ -33,8 +33,20 @@ export function MyPageShell({
   readonly title: string
   readonly description: string
   readonly nav: MyPageNavMessages
-  /** Which of the six routes is being shown, so it is not a link to itself. */
-  readonly current: 'orders' | 'coupons' | 'points' | 'reviews' | 'settings' | 'addresses' | 'cards'
+  /** Which of the routes is being shown, so it is not a link to itself. */
+  readonly current:
+    | 'orders'
+    | 'coupons'
+    | 'points'
+    | 'reviews'
+    | 'wishlist'
+    | 'recent'
+    | 'questions'
+    | 'following'
+    | 'notifications'
+    | 'settings'
+    | 'addresses'
+    | 'cards'
   readonly children: ReactNode
 }) {
   return (
@@ -71,6 +83,32 @@ export function MyPageShell({
             current={current === 'reviews'}
             href="/mypage/reviews"
             label={nav.reviews}
+          />
+          {/*
+            M13 이 더한 다섯 (TASK-0086~0090). 리뷰 뒤에 모여 있는 이유는 이것들이
+            전부 **주문과 무관한 개인 기록**이기 때문이다 — 담아 둔 것, 본 것, 물어본
+            것, 따라다니는 브랜드, 받은 알림. 주문 무리와 설정 무리 사이가 그 자리다.
+          */}
+          <MyPageNavItem
+            current={current === 'wishlist'}
+            href="/mypage/wishlist"
+            label={nav.wishlist}
+          />
+          <MyPageNavItem current={current === 'recent'} href="/mypage/recent" label={nav.recent} />
+          <MyPageNavItem
+            current={current === 'questions'}
+            href="/mypage/questions"
+            label={nav.questions}
+          />
+          <MyPageNavItem
+            current={current === 'following'}
+            href="/mypage/following"
+            label={nav.following}
+          />
+          <MyPageNavItem
+            current={current === 'notifications'}
+            href="/mypage/notifications"
+            label={nav.notifications}
           />
           <MyPageNavItem
             current={current === 'settings'}

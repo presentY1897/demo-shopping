@@ -61,6 +61,31 @@ describe('filterExpression', () => {
       'attr_note = "그는 \\"말\\"했다"',
     )
   })
+
+  /**
+   * 가게 목록도 **OR** 이다 (TASK-0089 4.6).
+   *
+   * 이것이 뒤집히면 조용히 틀린다. `AND` 로 이으면 「이 가게들 **전부**에 속한 상품」이
+   * 되고, 상품 하나는 가게 하나의 것이므로 답은 **언제나 빈 목록**이다 — 홈의 팔로우
+   * 줄은 오류 없이 사라지고, 그 화면은 「아직 신상품이 없나 보다」로 읽힌다. 검사
+   * 없이는 아무도 못 찾는다.
+   */
+  it('ors the stores, because a listing belongs to exactly one', () => {
+    expect(filterExpression({ sellerIds: ['a1', 'b2'] })).toBe(
+      '(sellerId = "a1" OR sellerId = "b2")',
+    )
+  })
+
+  it('does not wrap a single store in parentheses it does not need', () => {
+    // 브랜드관이 이 모양이다 — 한 곳을 눌러 둔 검색.
+    expect(filterExpression({ sellerIds: ['a1'] })).toBe('sellerId = "a1"')
+  })
+
+  it('ands the store list against everything else', () => {
+    expect(filterExpression({ sellerIds: ['a1', 'b2'], inStock: true })).toBe(
+      '(sellerId = "a1" OR sellerId = "b2") AND inStock = true',
+    )
+  })
 })
 
 describe('the cursor', () => {

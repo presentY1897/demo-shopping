@@ -1,5 +1,5 @@
 /**
- * The three glyphs this app's shell needs.
+ * The four glyphs this app's shell needs.
  *
  * `packages/ui` ships the icons its own components require and no more — a
  * shared package that grows an icon set becomes a dependency every app pays for
@@ -55,6 +55,21 @@ export function AccountIcon(props: IconProps) {
     <Icon {...props}>
       <circle cx="12" cy="8.5" r="3.5" />
       <path d="M5 20a7 7 0 0 1 14 0" />
+    </Icon>
+  )
+}
+
+/**
+ * 알림 (TASK-0090).
+ *
+ * 종이다. 「알림」을 뜻하는 그림 중 사람이 배우지 않고도 아는 것이 이것뿐이고,
+ * 개수는 그림이 아니라 옆의 배지와 버튼의 이름이 나른다.
+ */
+export function BellIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M6 9a6 6 0 0 1 12 0c0 3.2.7 4.9 1.5 5.9.4.5 0 1.1-.6 1.1H5.1c-.6 0-1-.6-.6-1.1C5.3 13.9 6 12.2 6 9Z" />
+      <path d="M10 19a2 2 0 0 0 4 0" />
     </Icon>
   )
 }

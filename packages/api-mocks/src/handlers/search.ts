@@ -13,12 +13,7 @@ import { http, HttpResponse } from 'msw'
 import { defineFixture } from '../define'
 import { mockPaths } from '../paths'
 import { answering } from './refusal'
-import {
-  categoryLineageIds,
-  SEARCH_CATALOGUE,
-  SEARCH_CATALOGUE_SELLER_ID,
-  searchFilters,
-} from './search-catalogue'
+import { categoryLineageIds, SEARCH_CATALOGUE, searchFilters } from './search-catalogue'
 
 /**
  * 검색 (TASK-0039 의 엔드포인트를 TASK-0041 의 화면이 보는 모양대로).
@@ -177,13 +172,15 @@ export const searchHandlers: readonly RequestHandler[] = [
           (hit) =>
             categoryId === null || categoryLineageIds(hit.categoryId).includes(Number(categoryId)),
         )
-        // Every listing in this catalogue belongs to one store, so the filter is
-        // all-or-nothing — which is exactly what a brand page needs checked.
-        .filter(
-          () =>
-            url.searchParams.get('sellerId') === null ||
-            url.searchParams.get('sellerId') === SEARCH_CATALOGUE_SELLER_ID,
-        )
+        // 줄마다 자기 가게를 보고 판정한다. 목록 **전체**를 한 값과 비교하던
+        // 예전 모양은 가게를 여럿 넘기는 순간(홈의 팔로우 줄, TASK-0089 F6) 문자열이
+        // 어느 id 와도 같지 않아 **아무것도 답하지 않았다** — 화면은 「신상품이 없나
+        // 보다」를 그리고, 대역과 화면이 함께 틀린 모양에 합의한다.
+        .filter((hit) => {
+          const asked = url.searchParams.get('sellerIds')
+
+          return asked === null || asked.split(',').includes(hit.sellerId)
+        })
         .filter((hit) => url.searchParams.get('inStock') !== 'true' || hit.inStock)
         .filter((hit) => matchesAttributes(hit, chosen))
 

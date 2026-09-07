@@ -51,7 +51,14 @@ export function filterExpression(query: SearchQuery): string | null {
   // (TASK-0042 4.1). A leaf is nobody's ancestor, so it still matches only its
   // own listings.
   if (query.categoryId !== undefined) clauses.push(`categoryIds = ${String(query.categoryId)}`)
-  if (query.sellerId !== undefined) clauses.push(`sellerId = ${quote(query.sellerId)}`)
+  // OR within the list, like the attribute facets below: 「이 가게들 중 아무데나」
+  // 이지 「이 가게들 전부」가 아니다 — 후자는 상품 하나가 가게 두 곳에 속해야 참이
+  // 되므로 언제나 빈 결과다 (TASK-0089 4.6).
+  if (query.sellerIds !== undefined) {
+    const any = query.sellerIds.map((id) => `sellerId = ${quote(id)}`).join(' OR ')
+
+    clauses.push(query.sellerIds.length === 1 ? any : `(${any})`)
+  }
   if (query.priceMin !== undefined) clauses.push(`price >= ${String(query.priceMin)}`)
   if (query.priceMax !== undefined) clauses.push(`price <= ${String(query.priceMax)}`)
   if (query.inStock === true) clauses.push('inStock = true')

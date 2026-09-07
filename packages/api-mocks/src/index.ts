@@ -142,6 +142,7 @@ export {
 export type { CardTransaction, IssuedCard, SellerRequestRecord } from './handlers'
 export {
   SEARCH_CATALOGUE,
+  SEARCH_CATALOGUE_SELLER_ID,
   SEARCH_COAT_CATEGORY,
   SEARCH_SHOE_CATEGORY,
   searchFilters,

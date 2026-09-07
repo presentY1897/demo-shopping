@@ -26,6 +26,7 @@ const labels: ProductCardLabels = {
   salesCount: '{count}개 판매',
   remaining: '{count}개 남음',
   wishlist: '{name} 찜하기',
+  wishlistOn: '{name} 찜 빼기',
   quickAdd: '바로 담기',
   colorsLabel: '{name} 색상',
   ratingLabel: '평점',

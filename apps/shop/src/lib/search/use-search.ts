@@ -60,8 +60,13 @@ export interface SearchController {
  * Pinning it here keeps `/categories/코트?attr.fit=슬림` honest — the address
  * says the category once, in the segment, and every other filter behaves exactly
  * as it does on the search screen because it *is* the same code.
+ *
+ * The store side is a **list** because the filter is one (TASK-0089 4.6): a brand
+ * page pins exactly one, and the followed-brand row on the home page pins many.
+ * One name for one filter — a second, single-store name would be a second
+ * definition of 「이 가게의 상품」.
  */
-export type PinnedQuery = Pick<SearchQuery, 'categoryId' | 'sellerId'>
+export type PinnedQuery = Pick<SearchQuery, 'categoryId' | 'sellerIds'>
 
 export function useSearch(pinned: PinnedQuery = {}): SearchController {
   const router = useRouter()
@@ -72,14 +77,17 @@ export function useSearch(pinned: PinnedQuery = {}): SearchController {
   // every render and an effect keyed on it would re-fetch forever.
   const search = params.toString()
   const pinnedCategory = pinned.categoryId
-  const pinnedSeller = pinned.sellerId
+  // The list folded into a string. A caller writes `{ sellerIds: [id] }` inline,
+  // which is a fresh array on every render — as a dependency it would re-run the
+  // search forever, while the string is the same value whenever the stores are.
+  const pinnedStores = pinned.sellerIds?.join(',') ?? ''
   const query = useMemo(
     () => ({
       ...readSearchParams(new URLSearchParams(search)),
       ...(pinnedCategory === undefined ? {} : { categoryId: pinnedCategory }),
-      ...(pinnedSeller === undefined ? {} : { sellerId: pinnedSeller }),
+      ...(pinnedStores === '' ? {} : { sellerIds: pinnedStores.split(',') }),
     }),
-    [search, pinnedCategory, pinnedSeller],
+    [search, pinnedCategory, pinnedStores],
   )
   const canonical = useMemo(() => writeSearchParams(query), [query])
 
@@ -185,12 +193,12 @@ export function useSearch(pinned: PinnedQuery = {}): SearchController {
       const written = writeSearchParams({
         ...next,
         ...(pinnedCategory === undefined ? {} : { categoryId: undefined }),
-        ...(pinnedSeller === undefined ? {} : { sellerId: undefined }),
+        ...(pinnedStores === '' ? {} : { sellerIds: undefined }),
       })
 
       router.push(written === '' ? pathname : `${pathname}?${written}`)
     },
-    [pathname, pinnedCategory, pinnedSeller, router],
+    [pathname, pinnedCategory, pinnedStores, router],
   )
 
   const nextCursor = results.status === 'ready' ? results.nextCursor : null

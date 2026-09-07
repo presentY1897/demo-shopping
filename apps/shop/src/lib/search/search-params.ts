@@ -1,6 +1,8 @@
 import type { SearchQuery, SearchSort } from '@shopping/shared'
 import { searchSorts } from '@shopping/shared'
 
+import { readSellerIds } from './seller-ids'
+
 /**
  * The URL **is** the state (TASK-0041 4장 「URL 동기화」).
  *
@@ -61,14 +63,16 @@ export function readSearchParams(params: URLSearchParams): SearchQuery {
   }
 
   const q = params.get('q')?.trim() ?? ''
-  const sellerId = params.get('sellerId')
+  // Comma-joined, and read through the same capping the followed-brand row uses:
+  // one mangled id in a shared link must cost that id, not the whole page.
+  const sellerIds = readSellerIds(params.get('sellerIds'))
 
   return {
     ...(q === '' ? {} : { q }),
     ...(positiveInt(params.get('categoryId')) === undefined
       ? {}
       : { categoryId: positiveInt(params.get('categoryId')) }),
-    ...(sellerId === null || sellerId === '' ? {} : { sellerId }),
+    ...(sellerIds === undefined ? {} : { sellerIds }),
     ...(nonNegativeInt(params.get('priceMin')) === undefined
       ? {}
       : { priceMin: nonNegativeInt(params.get('priceMin')) }),
@@ -93,7 +97,9 @@ export function writeSearchParams(query: SearchQuery): string {
 
   if (query.q !== undefined && query.q !== '') params.set('q', query.q)
   if (query.categoryId !== undefined) params.set('categoryId', String(query.categoryId))
-  if (query.sellerId !== undefined) params.set('sellerId', query.sellerId)
+  if (query.sellerIds !== undefined && query.sellerIds.length > 0) {
+    params.set('sellerIds', query.sellerIds.join(','))
+  }
   if (query.priceMin !== undefined) params.set('priceMin', String(query.priceMin))
   if (query.priceMax !== undefined) params.set('priceMax', String(query.priceMax))
   if (query.inStock === true) params.set('inStock', 'true')

@@ -1,10 +1,12 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query } from '@nestjs/common'
 import type {
+  FollowIdsResponse,
   FollowListResponse,
   RestockAlertResult,
   FollowResult,
   RecentlyViewedResponse,
   ToggleResult,
+  WishlistIdsResponse,
   WishlistResponse,
 } from '@shopping/shared'
 import {
@@ -95,6 +97,23 @@ export class CollectionsController {
     return this.collections.wishlist(principal.userId, parseInput(wishlistQueryParamsSchema, query))
   }
 
+  /**
+   * 찜한 상품의 id 만, 전부 (F1).
+   *
+   * 화면 한 장에 하트가 스무 개 있고 그 스무 개가 각자 자기 상태를 알아야 한다.
+   * 목록으로 그것을 하면 101개를 담은 사람의 하트가 조용히 빈 채로 그려진다 —
+   * `wishlistIdsResponseSchema` 에 왜 페이지가 없는지 적어 두었다.
+   *
+   * `me/wishlist/:productId` 는 `POST` 뿐이라 `ids` 가 상품 id 로 읽힐 자리는
+   * 없지만, 그래도 목록 바로 뒤에 둔다 — 나중에 그 자리에 `GET` 이 생기면 순서가
+   * 곧 답이 된다.
+   */
+  @Get('me/wishlist/ids')
+  @RequirePermission('collection.write')
+  wishlistIds(@Principal() principal: RequestPrincipal): Promise<WishlistIdsResponse> {
+    return this.collections.wishlistIds(principal.userId)
+  }
+
   /** 최근 본 상품 (TASK-0087). */
   @Get('me/recently-viewed')
   @RequirePermission('collection.write')
@@ -166,5 +185,19 @@ export class CollectionsController {
       principal.userId,
       parseInput(followListQueryParamsSchema, query),
     )
+  }
+
+  /**
+   * 팔로우한 가게의 id 만, 전부 (F1 · F6).
+   *
+   * 홈의 「팔로우한 브랜드의 신상품」 줄이 이것으로 시작한다: 여기서 받은 id 들을
+   * 검색에 그대로 넘긴다 (`searchQuerySchema.sellerIds`). 홈 전용 엔드포인트를
+   * 만들지 않기로 한 판단(`pages.md`)이 이 문을 이 모양으로 만들었다 — 이 문은
+   * 「무엇을 팔로우했나」만 답하고, 「그 가게들의 신상품」은 검색이 답한다.
+   */
+  @Get('me/follows/ids')
+  @RequirePermission('collection.write')
+  followIds(@Principal() principal: RequestPrincipal): Promise<FollowIdsResponse> {
+    return this.collections.followIds(principal.userId)
   }
 }

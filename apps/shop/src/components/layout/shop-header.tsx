@@ -24,8 +24,12 @@ import { Popover } from '@shopping/ui/components'
 import { PageContainer, useViewportBand } from '@shopping/ui/layout'
 
 import { UserMenu } from '@/components/auth/user-menu'
+import { NotificationMenu } from '@/components/notifications/notification-menu'
+import { useAuth } from '@/lib/auth/auth-context'
 import { useCartCount } from '@/lib/cart/cart-count'
 import { useCategoryMenu } from '@/lib/categories/use-category-menu'
+import { NOTIFICATION_MENU_LIMIT } from '@/lib/notifications/polling'
+import { useNotifications } from '@/lib/notifications/use-notifications'
 import type { LayoutMessages } from '@/messages'
 import { messagesFor } from '@/messages'
 
@@ -83,6 +87,8 @@ export function ShopHeader({
 
           <CartLink label={messages.account.cart} pendingLabel={messages.nav.pendingLabel} />
 
+          <NotificationSlot messages={messages} />
+
           {/*
             Was a plain link to `/mypage` until TASK-0023. It is a menu now
             because the header has to offer three things — the account screen,
@@ -100,6 +106,35 @@ export function ShopHeader({
       </PageContainer>
     </header>
   )
+}
+
+/**
+ * 알림 종 (TASK-0090).
+ *
+ * **로그인했을 때만 마운트된다.** 익명 방문자에게는 알림이 없고, 그 사람에게 종을
+ * 주면 그것은 30초마다 401 을 받는 장치가 된다 — 「자리는 두되 비활성」
+ * (TASK-0023 4장)과 다른 경우인 이유는 **없는 기능이 아니라 지금 당신의 것이 아닌
+ * 것**이기 때문이고, 로그인 안내는 바로 옆 계정 메뉴가 이미 한다.
+ *
+ * 컨트롤 하나가 늘어나는 것을 감수하는 이유는 4장이 알림센터를 「헤더 드롭다운 + 전체
+ * 목록 페이지」로 정했기 때문이다. 360px 의 여유는 이 줄이 `gap-1` 과 `sm` 컨트롤로
+ * 이미 벌어 둔 것이고(위의 머리말), 종은 **로그인한 사람에게만** 붙으므로 처음
+ * 방문자의 첫 화면은 예전과 같은 폭이다.
+ *
+ * 폴링이 이 자리에 있는 것도 의도다 — 헤더는 모든 라우트에 있으므로, 어느 화면을 보고
+ * 있든 배지가 30초 안에 움직인다 (F8).
+ */
+function NotificationSlot({ messages }: { readonly messages: LayoutMessages }) {
+  const { state } = useAuth()
+  const inbox = useNotifications({
+    limit: NOTIFICATION_MENU_LIMIT,
+    poll: true,
+    unreadOnly: true,
+  })
+
+  if (state.status !== 'signedIn') return null
+
+  return <NotificationMenu copy={messages.notifications} inbox={inbox} />
 }
 
 /**

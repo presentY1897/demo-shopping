@@ -97,11 +97,14 @@ interface CatalogueEntry {
 /**
  * Which store the whole catalogue belongs to (TASK-0044 4.2).
  *
- * `searchHitSchema` carries no `sellerId` — a card does not draw one — so the
- * double keeps it here beside the attributes, the same way it keeps the values a
- * facet filters on. Every listing is 루미에르's, which is what a brand page needs
- * to be checkable: asking for that store returns them all and asking for any
- * other returns none.
+ * 모든 줄이 루미에르의 것이라, 브랜드관은 「그 가게를 물으면 전부, 다른 가게를 물으면
+ * 아무것도」로 검사된다.
+ *
+ * **그래서 이 대역으로 확인할 수 없는 것이 하나 있다**: 가게를 여럿 넘겼을 때의 OR
+ * (TASK-0089 F6). 두 가게가 섞인 답을 재려면 여기에 두 번째 가게의 줄이 있어야 하고,
+ * 그것은 지금 결과 수를 세는 검사들을 전부 흔든다. 그 판정은 실제 검색 엔진을 쓰는
+ * `apps/api/test/api/search.integration.spec.ts` 가 한다 — 대역이 못 재는 것을 대역이
+ * 재는 척하지 않는 편이 낫다.
  */
 export const SEARCH_CATALOGUE_SELLER_ID = storefrontSeller.seller.id
 

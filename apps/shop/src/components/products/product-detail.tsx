@@ -29,8 +29,19 @@ import type { Selection } from '@/lib/products/variant-selection'
 import { useFreshDetail } from '@/lib/products/use-fresh-detail'
 import { choose, displayPrice, selectedVariant } from '@/lib/products/variant-selection'
 import { useAddToCart } from '@/lib/cart/use-add-to-cart'
-import type { CartMessages, ProductDetailMessages } from '@/messages'
+import { useRecordView } from '@/lib/collections/use-recently-viewed'
+import type {
+  CartMessages,
+  CollectionMessages,
+  ProductDetailMessages,
+  RefusalMessages,
+  ReportMessages,
+} from '@/messages'
 
+import { FollowButton } from '../collections/follow-button'
+import { RecentlyViewedStrip } from '../collections/recently-viewed-strip'
+import { WishlistButton } from '../collections/wishlist-button'
+import { ProductQuestions } from '../questions/product-questions'
 import { ProductReviews } from '../reviews/product-reviews'
 
 import { OptionPicker } from './option-picker'
@@ -45,13 +56,19 @@ const CURRENCY = 'KRW'
 const LOW_STOCK = 10
 
 export function ProductDetail({
+  collections,
   detail: cached,
   messages,
   cartMessages,
+  refusals,
+  report,
 }: {
+  readonly collections: CollectionMessages
   readonly detail: ProductDetailResponse
   readonly messages: ProductDetailMessages
   readonly cartMessages: CartMessages
+  readonly refusals: RefusalMessages
+  readonly report: ReportMessages
 }) {
   // The page is served from a cache up to a minute old (TASK-0102 R2). Price and
   // stock are the two things a minute is long enough to be wrong about, and the
@@ -64,6 +81,22 @@ export function ProductDetail({
   const [selection, setSelection] = useState<Selection>({})
   const [quantity, setQuantity] = useState(1)
   const cart = useAddToCart()
+
+  /**
+   * 로그인하지 않은 사람의 열람 이력 (TASK-0087 F6).
+   *
+   * **로그인한 사람의 것은 서버가 남긴다** — 상세 조회 뒤에 비동기로(4장). 여기서
+   * 함께 적으면 같은 조회가 두 곳에 기록되고, 로그인 다음 병합에서 그 둘이 다시
+   * 만난다. 그래서 이 훅은 익명일 때만 적는다.
+   */
+  useRecordView({
+    productId: product.id,
+    productName: product.name,
+    brandName: seller.brandName,
+    thumbnailUrl: product.images[0]?.url ?? null,
+    price: product.minPrice,
+    viewedAt: new Date().toISOString(),
+  })
 
   const variant = selectedVariant(product, selection)
   const shown = displayPrice(product, variant)
@@ -92,12 +125,19 @@ export function ProductDetail({
   const summary = (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <Link
-          className="text-fg-muted text-sm underline-offset-2 hover:underline"
-          href={`/brands/${seller.id}`}
-        >
-          {messages.brandLink.replace('{brand}', seller.brandName)}
-        </Link>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Link
+            className="text-fg-muted text-sm underline-offset-2 hover:underline"
+            href={`/brands/${seller.id}`}
+          >
+            {messages.brandLink.replace('{brand}', seller.brandName)}
+          </Link>
+          {/*
+            브랜드 링크 옆이다 (TASK-0089). 팔로우는 **이 브랜드에 대한 일**이지 이
+            상품에 대한 일이 아니고, 구매 영역에 두면 담기·사기와 같은 무게로 읽힌다.
+          */}
+          <FollowButton copy={collections.follow} sellerId={seller.id} />
+        </div>
         <h1 className="text-fg text-xl font-bold">{product.name}</h1>
       </div>
 
@@ -154,6 +194,12 @@ export function ProductDetail({
         </div>
       )}
 
+      {/*
+        찜 버튼 (TASK-0086). 옵션 위인 것은 찜이 **조합을 고르기 전에도 할 수 있는
+        일**이기 때문이다 — 계약이 상품 단위로 담는다(`POST /me/wishlist/:productId`).
+      */}
+      <WishlistButton copy={collections.wishlist} productId={product.id} />
+
       <OptionPicker
         messages={messages.options}
         onChoose={(optionId, valueId) => {
@@ -200,6 +246,26 @@ export function ProductDetail({
       productId={product.id}
       ratingAvg={product.ratingAvg}
       ratingCount={product.ratingCount}
+      refusals={refusals}
+      report={report}
+    />
+  )
+
+  /**
+   * 문의 (TASK-0088).
+   *
+   * 리뷰와 같은 자리 — 격자 밖, 본문 아래 전폭이다. 밀도 3에서 정보 블록이 세 번째
+   * 열로 빠지는데, 문의 목록이 그 열에 들어가면 답변 상자가 카드 폭으로 눌린다.
+   *
+   * 다만 **보이는 조건이 리뷰와 반대**다. 리뷰는 세 단계 모두에서 읽히는 것이고
+   * (미니멀은 펼쳐서), 문의 목록은 맥시멀에서만 펼쳐진 채로 시작한다 (F6).
+   */
+  const questions = (
+    <ProductQuestions
+      copy={messages.questions}
+      productId={product.id}
+      refusals={refusals}
+      report={report}
     />
   )
 
@@ -240,6 +306,14 @@ export function ProductDetail({
         )}
 
         {reviews}
+        {questions}
+
+        {/*
+          최근 본 상품 (TASK-0087). 지금 보고 있는 상품은 빼고 그린다 — 서버가 방금
+          기록했거나 브라우저가 방금 적었기 때문에, 빼지 않으면 「최근 본 상품」의 맨
+          앞이 지금 보는 상품이 된다.
+        */}
+        <RecentlyViewedStrip copy={collections.recent} exclude={product.id} />
       </PageContainer>
 
       {band === 'base' ? (
