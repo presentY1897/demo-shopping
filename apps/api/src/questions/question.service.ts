@@ -266,7 +266,8 @@ export class QuestionService {
              q."content"         AS "content",
              q."isPublic"        AS "isPublic",
              s."brandName"       AS "brandName",
-             a."content"         AS "answerContent",
+             -- 가려진 답변은 없는 것으로 내려간다 (TASK-0091 F3).
+             CASE WHEN a."hiddenAt" IS NULL THEN a."content" END AS "answerContent",
              a."createdAt"       AS "answerCreatedAt",
              a."updatedAt"       AS "answerUpdatedAt",
              q."createdAt"       AS "createdAt",
@@ -287,6 +288,14 @@ export class QuestionService {
          AND (
            NOT ${options.visibleOnly ?? false}
            OR q."isPublic"
+           OR q."userId" = ${options.viewerId}::uuid
+         )
+         -- 신고로 가려진 문의도 공개 목록에서 빠진다 (TASK-0091 F3). 쓴 사람에게는
+         -- 보인다 — 자기 글이 사라진 것과 가려진 것은 다른 일이고, 뒤엣것은 이의를
+         -- 제기할 수 있는 상태다.
+         AND (
+           NOT ${options.visibleOnly ?? false}
+           OR q."hiddenAt" IS NULL
            OR q."userId" = ${options.viewerId}::uuid
          )
          AND (NOT ${options.unansweredOnly ?? false} OR a."questionId" IS NULL)

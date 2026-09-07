@@ -60,6 +60,8 @@ const BUYER_GRANTS: readonly PermissionGrant[] = [
   // 문의를 남긴다 (TASK-0088). 읽기는 퍼미션이 없다 — 공개 문의는 상품 정보의 일부다.
   grant('question.write', 'own'),
   grant('notification.read', 'own'),
+  // 신고한다 (TASK-0091). 처리는 관리자만 한다.
+  grant('report.write', 'own'),
   grant('user.read', 'own'),
   grant('profile.write', 'own'),
   grant('profile.delete', 'own'),
@@ -103,6 +105,7 @@ const SELLER_OWNER_GRANTS: readonly PermissionGrant[] = [
   // 자기 상품에 달린 문의에 답한다 (TASK-0088).
   grant('question.answer', 'own'),
   grant('notification.read', 'own'),
+  grant('report.write', 'own'),
   // 자기 상품에 달린 리뷰에 답한다 (TASK-0085).
   grant('review.reply', 'own'),
   // **`coupon.platform` 은 없다.** 플랫폼 부담 쿠폰은 남의 돈으로 하는 할인이고,
@@ -139,6 +142,9 @@ const ADMIN_OPERATOR_GRANTS: readonly PermissionGrant[] = [
   // 신고된 리뷰를 가리는 것은 일상 운영이다 (TASK-0091). `DEMO_ADMIN` 은 아래에서
   // `demo` 로 좁혀지고, 그것이 방문자의 관리자가 실계정의 말을 못 지우는 자리다.
   grant('review.moderate', 'any'),
+  // 신고된 글을 가리거나 지운다 (TASK-0091). `DEMO_ADMIN` 은 아래에서 `demo` 로
+  // 좁혀지고, 그것이 방문자의 관리자가 실계정의 글을 못 지우는 자리다 (D-058).
+  grant('content.moderate', 'any'),
   // 판매자가 답하지 못하는 상황에서 운영자가 대신 답한다 — 상품 대리 수정과 같은 축.
   grant('review.reply', 'any'),
   grant('question.answer', 'any'),
@@ -160,6 +166,7 @@ const ADMIN_OPERATOR_GRANTS: readonly PermissionGrant[] = [
   // 관리자도 자기 알림함을 갖는다 (입점 신청 · 신고). `own` 인 것은 이 문이 남의
   // 알림함을 열 방법을 갖고 있지 않기 때문이다 — 넓혀도 닿을 것이 없다.
   grant('notification.read', 'own'),
+  grant('report.write', 'own'),
 ]
 
 /** The owner of the platform. Everything, everywhere. */

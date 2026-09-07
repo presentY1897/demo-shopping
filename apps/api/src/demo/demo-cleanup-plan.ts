@@ -28,6 +28,7 @@ export const ownedTables = [
   'UserPreference',
   'Address',
   'Notification',
+  'Report',
   'ProductQuestion',
   'Wishlist',
   'RecentlyViewed',
@@ -92,6 +93,13 @@ export const cleanupPlan: readonly CleanupStep[] = [
     scope: 'user',
     because:
       '잡아 둔 재고는 놓아 주어야 한다 — 계정이 사라지면 아무도 결제하지 않는다. `ProductVariant.reserved` 를 함께 되돌린다 (TASK-0048)',
+  },
+  {
+    table: 'Report',
+    kind: 'hard',
+    scope: 'user',
+    because:
+      '**신고는 낸 사람의 것이다** (TASK-0091). 데모 방문자가 낸 신고가 남으면 사라진 사람이 실계정의 글을 가리고 있는 상태가 되고, 그 신고를 취소할 사람이 없다. 관리자가 **처리한** 신고는 그 사람이 데모일 때만 문제인데, 데모 관리자는 실계정의 글을 처리할 수 없으므로(D-058) 남는 것은 데모 대상에 대한 처리뿐이고 그 대상도 함께 사라진다',
   },
   {
     table: 'Notification',
@@ -267,6 +275,7 @@ export function orderFault(
     Review: ['User'],
     ReviewHelpful: ['User', 'Review'],
     Notification: ['User'],
+    Report: ['User'],
     ProductQuestion: ['User', 'Product'],
     Wishlist: ['User', 'Product'],
     RecentlyViewed: ['User', 'Product'],

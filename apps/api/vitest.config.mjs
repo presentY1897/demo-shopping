@@ -1036,6 +1036,20 @@ export default defineConfig({
                 lines: 100,
                 statements: 100,
               },
+              /**
+               * TASK-0091. 신고의 임계치와 처리의 결과.
+               *
+               * **여기가 틀리면 두 가지 중 하나가 일어난다** — 신고 버튼 하나가 남의
+               * 글을 가리는 검열 도구가 되거나, 관리자가 자는 동안 악성 콘텐츠가
+               * 그대로 남는다. 그리고 반려가 복구를 뜻한다는 갈래가 닿지 않으면
+               * 「아니라고 판단했는데 계속 가려져 있는」 상태가 남는다.
+               */
+              'src/reports/report-rules.ts': {
+                branches: 100,
+                functions: 100,
+                lines: 100,
+                statements: 100,
+              },
             },
     },
   },

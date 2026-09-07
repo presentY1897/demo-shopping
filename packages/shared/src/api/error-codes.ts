@@ -456,6 +456,29 @@ export const domainErrorCodes = [
    * `RETURN_PHOTO_FOREIGN` 과 같은 판단).
    */
   'REVIEW_IMAGE_FOREIGN',
+  /**
+   * 자기 글은 신고할 수 없다 (TASK-0091).
+   *
+   * 지우거나 고치는 문이 따로 있고, 신고로 자기 글을 가리는 길을 열면 그것은 신고
+   * 통계를 흐리는 우회로가 된다.
+   */
+  'REPORT_OWN_CONTENT',
+  /** 같은 사람이 같은 대상을 두 번 신고할 수 없다 (F2). */
+  'REPORT_ALREADY_FILED',
+  /**
+   * 이미 처리된 신고다.
+   *
+   * **화면이 버튼을 가리고 있어도 온다** — 다른 관리자가 방금 처리했을 수 있고,
+   * 그때 이 답은 「당신이 틀렸다」가 아니라 「목록을 다시 읽어 보라」는 뜻이다.
+   */
+  'REPORT_ALREADY_HANDLED',
+  /**
+   * 상품은 지울 수 없다.
+   *
+   * 주문·정산·리뷰가 가리키는 행이고, 문제가 있는 상품에 대한 답은 판매를 멈추는
+   * 것이지 기록을 없애는 것이 아니다.
+   */
+  'REPORT_NOT_REMOVABLE',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]

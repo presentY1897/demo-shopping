@@ -173,6 +173,10 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
     await tx.refreshToken.deleteMany({ where: { userId } })
     await tx.userPreference.deleteMany({ where: { userId } })
     await tx.address.deleteMany({ where: { userId } })
+    // 신고 (TASK-0091). **신고는 낸 사람의 것이다** — 데모 방문자가 낸 신고가
+    // 남으면 사라진 사람이 실계정의 글을 가리고 있는 상태가 되고, 그 신고를 취소할
+    // 사람이 없다.
+    await tx.report.deleteMany({ where: { reporterId: userId } })
     // 알림 (TASK-0090). 「배송이 시작됐어요」는 남길 이력이 아니라 그때 읽으라고
     // 만든 것이고, 읽을 사람이 사라지면 남길 이유가 없다.
     await tx.notification.deleteMany({ where: { userId } })

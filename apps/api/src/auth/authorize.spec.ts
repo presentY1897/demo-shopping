@@ -80,8 +80,15 @@ describe('the role table', () => {
     // DECISIONS 2: "DEMO_ADMIN = ADMIN_OPERATOR + 스코프 demo", and erd.md 1:
     // "시드·실계정 데이터는 조회만". Both halves are asserted here so that the
     // derivation cannot be replaced by a hand written list that drifts.
+    // **`any` 인 쓰기만 좁힌다.** `own` 은 이미 그보다 좁고, `demo` 로 바꾸면 오히려
+    // 넓어진다 — `report.write:own` 은 「내 이름으로 신고한다」인데 `demo` 는 「체험
+    // 계정이 소유한 것에 대해」가 되어 뜻이 달라진다. 이 줄이 한동안 그냥
+    // `{ ...entry, scope: 'demo' }` 였고, 운영자에게 `own` 쓰기가 하나도 없던 동안은
+    // 두 식이 같은 답을 냈다 (TASK-0091 이 그 첫 번째를 더했다).
     const expected = rolePermissions.ADMIN_OPERATOR.map((entry) =>
-      isReadPermission(entry.permission) ? entry : { ...entry, scope: 'demo' },
+      isReadPermission(entry.permission) || entry.scope !== 'any'
+        ? entry
+        : { ...entry, scope: 'demo' },
     )
 
     expect(rolePermissions.DEMO_ADMIN).toEqual(expected)

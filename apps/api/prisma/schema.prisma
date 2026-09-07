@@ -191,6 +191,9 @@ model User {
   answers        ProductAnswer[]
   /// 이 사람에게 온 알림 (TASK-0090).
   notifications  Notification[]
+  /// 이 사람이 낸 신고와 처리한 신고 (TASK-0091).
+  reports        Report[] @relation("ReportReporter")
+  handledReports Report[] @relation("ReportHandler")
   paidSettlements     Settlement[] @relation("SettlementPayer")
   heldSettlements     Settlement[] @relation("SettlementHolder")
 
@@ -3431,6 +3434,13 @@ model ProductQuestion {
   /// 궁금해하는 다음 사람이 읽는다. 비공개는 고르는 것이지 기본이 아니다.
   isPublic Boolean @default(true)
 
+  /// 신고로 가려진 시각 (TASK-0091). `NULL` 이면 보인다.
+  ///
+  /// 상태 열거형이 아니라 시각인 이유는 **언제 가려졌나가 답이어야 하는 질문**이기
+  /// 때문이다 — 「가려짐」이라는 상태만 있으면 자동 임시 숨김과 관리자 확정 숨김을
+  /// 구분할 수 없고, 그 구분은 신고 쪽의 상태가 들고 있다.
+  hiddenAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -3458,6 +3468,9 @@ model ProductAnswer {
   authorId String @db.Uuid
 
   content String
+
+  /// 신고로 가려진 시각 (TASK-0091). `NULL` 이면 보인다.
+  hiddenAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -3506,6 +3519,8 @@ enum NotificationType {
   SELLER_CLAIM
   /// 입점 신청이 들어왔다 (관리자).
   ADMIN_SELLER_APPLICATION
+  /// 내가 낸 신고가 처리됐다 (TASK-0091).
+  REPORT_HANDLED
 }
 
 /// 앱 안에서 읽는 알림 하나.
@@ -3536,4 +3551,89 @@ model Notification {
   @@index([userId, readAt, id(sort: Desc)])
   /// 오래된 알림 정리 배치가 읽는다.
   @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// 신고 (TASK-0091)
+//
+// **자동 임시 숨김이 이 표의 존재 이유다.** 관리자가 즉시 대응할 수 없는 시간대에
+// 악성 콘텐츠가 노출된 채 남는 것을 막는다 — 임계치를 넘으면 일단 가리고, 반려하면
+// 복구된다. 그래서 「가려진 이유」가 신고 수에 있고, 그것을 세려면 신고가 행이어야
+// 한다.
+// ---------------------------------------------------------------------------
+
+/// 무엇을 신고했나.
+///
+/// 대상마다 표가 달라서 **외래키를 걸 수 없다.** 그 대가로 `targetId` 가 가리키는
+/// 행이 사라져도 신고가 남을 수 있는데, 대상들이 전부 소프트 삭제라 실제로는
+/// 사라지지 않는다 — 리뷰는 `DELETED` 로 남고 상품도 소프트 삭제다.
+enum ReportTargetType {
+  REVIEW
+  QUESTION
+  ANSWER
+  PRODUCT
+}
+
+/// 왜 신고했나. 목록을 고정하는 이유는 자유 입력이 분류를 불가능하게 만들기 때문이다.
+enum ReportReason {
+  /// 욕설 · 혐오 · 성적 표현.
+  ABUSE
+  /// 광고 · 도배.
+  SPAM
+  /// 사실과 다른 내용.
+  FALSE_INFO
+  /// 개인정보가 드러남.
+  PRIVACY
+  /// 위 어디에도 없음. `detail` 이 필수가 된다.
+  OTHER
+}
+
+/// 신고가 지나는 상태.
+enum ReportStatus {
+  /// 접수됐고 아직 아무도 보지 않았다.
+  PENDING
+  /// 관리자가 가렸다. 대상이 안 보인다.
+  HIDDEN
+  /// 관리자가 지웠다. 되돌릴 수 없다.
+  REMOVED
+  /// 관리자가 반려했다. **임시 숨김이 풀린다.**
+  REJECTED
+}
+
+/// 신고 하나.
+model Report {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  targetType ReportTargetType
+  /// 대상의 id. 표가 달라 외래키를 걸 수 없다 — 위 열거형의 주석에 그 대가가 있다.
+  targetId   String           @db.Uuid
+
+  reporterId String       @db.Uuid
+  reason     ReportReason
+  /// `OTHER` 일 때 필수. `Report_detail_check` 가 강제한다.
+  detail     String?
+
+  status ReportStatus @default(PENDING)
+
+  /// 누가 언제 어떻게 처리했나 (F6). 반려도 처리다 — 「아무 일도 없었다」가 아니라
+  /// 「보고 아니라고 판단했다」이고, 그 판단에도 사람과 시각이 있다.
+  handledById String?   @db.Uuid
+  handledAt   DateTime?
+  /// 처리 사유. 신고자에게 가는 알림이 이 문장을 싣는다.
+  handledNote String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// `Restrict`: 탈퇴해도 계정 행은 툼스톤으로 남으므로 끊기지 않는다.
+  reporter  User  @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Restrict)
+  handledBy User? @relation("ReportHandler", fields: [handledById], references: [id], onDelete: Restrict)
+
+  /// **같은 사람이 같은 대상을 두 번 신고할 수 없다** (F2). 막지 않으면 한 사람이
+  /// 임계치를 혼자 채운다.
+  @@unique([targetType, targetId, reporterId])
+  /// 관리자 목록: 처리 대기부터.
+  @@index([status, id(sort: Desc)])
+  /// **이 대상이 몇 번 신고됐나** — 임시 숨김의 임계치가 세는 값이다.
+  @@index([targetType, targetId, status])
 }
