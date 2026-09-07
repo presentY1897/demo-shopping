@@ -52,6 +52,15 @@ describe('읽기', () => {
     })
   })
 
+  it('reads the stores as a comma-joined list (TASK-0089 4.6)', () => {
+    const one = '019596d0-1f1c-7c2e-9a0e-200000000001'
+    const two = '019596d0-1f1c-7c2e-9a0e-200000000002'
+
+    // 브랜드관은 하나를, 홈의 팔로우 줄은 여럿을 눌러 둔다 — 같은 필터이고 이름은
+    // 하나다. 한 칸이 망가진 링크는 그 칸만 잃는다.
+    expect(read(`sellerIds=${one},깨짐,${two}`)).toEqual({ sellerIds: [one, two] })
+  })
+
   it('treats a blank term as no term, so the empty state is reachable', () => {
     expect(read('q=%20%20')).toEqual({})
   })
@@ -94,6 +103,7 @@ describe('쓰기', () => {
     const query = {
       q: '코트',
       categoryId: 31,
+      sellerIds: ['019596d0-1f1c-7c2e-9a0e-200000000001'],
       priceMin: 0,
       priceMax: 90_000,
       inStock: true,
@@ -102,6 +112,11 @@ describe('쓰기', () => {
     }
 
     expect(read(writeSearchParams(query))).toEqual(query)
+  })
+
+  it('leaves an empty store list out, because an empty one is no filter', () => {
+    // 빈 목록을 적으면 계약의 `min(1)` 에 걸려 서버가 400 으로 거절한다.
+    expect(writeSearchParams({ sellerIds: [] })).toBe('')
   })
 })
 

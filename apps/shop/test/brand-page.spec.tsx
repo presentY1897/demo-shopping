@@ -9,11 +9,12 @@
 
 import { storefrontSeller } from '@shopping/api-mocks'
 import { DensityProvider } from '@shopping/ui/density'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { messagesFor } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { navigation } from './support/navigation'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
@@ -33,7 +34,9 @@ async function renderBrand(sellerId: string = seller.id) {
   stubViewport(VIEWPORTS.desktop)
   navigation.start(`/brands/${sellerId}`)
 
-  return render(
+  // 팔로우 버튼이 세션을 읽는다 (TASK-0089). 세션 없이 렌더하면 `useAuth` 가
+  // 프로바이더 밖이라며 던지고, 그것은 이 화면의 결함이 아니라 이 스펙의 결함이다.
+  return renderWithAuth(
     <DensityProvider>{await BrandPage({ params: Promise.resolve({ sellerId }) })}</DensityProvider>,
   )
 }
@@ -85,16 +88,32 @@ describe('브랜드 소개', () => {
     expect(screen.getByText(seller.introduction ?? '')).toBeVisible()
   })
 
-  it('keeps the follow button visible, inert, and explained', async () => {
+  it('offers sign-in in place of the follow button for a visitor (TASK-0089)', async () => {
     await renderBrand()
 
-    const follow = screen.getByRole('button', { name: copy.follow })
+    // 「준비 중」이라고 적힌 비활성 버튼이 있던 자리다. 로그인하지 않은 사람에게
+    // 버튼을 주면 누르는 순간 401 이 돌아오고, 그것은 사람이 고칠 수 없는 실패다.
+    expect(
+      screen.getByRole('link', { name: messagesFor().collections.follow.signIn }),
+    ).toBeVisible()
+  })
 
-    // Shown and disabled with a reason rather than hidden (TASK-0023 4장): the
-    // point of the demo is that the feature is visible.
-    expect(follow).toHaveAttribute('aria-disabled', 'true')
-    expect(follow).not.toBeDisabled()
-    expect(screen.getByText(copy.followComingSoon)).toBeVisible()
+  it('shows the follower count to everybody, signed in or not (TASK-0089 F3)', async () => {
+    await renderBrand()
+
+    // 공개 응답이 그 수를 언제나 싣는다 (4.3). 한때는 팔로우 목록의 줄에만 있어서
+    // **아직 안 누른 사람에게는 아예 보이지 않았고**, 그 사람이 바로 이 수를 근거로
+    // 쓰는 사람이다. 픽스처가 0 이 아닌 것도 그래서다 — 0 이면 「안 그린다」와
+    // 「0을 그린다」가 한 값에 겹친다.
+    expect(seller.followerCount).toBeGreaterThan(0)
+    expect(
+      screen.getByText(
+        messagesFor().collections.follow.followerCount.replace(
+          '{count}',
+          seller.followerCount.toLocaleString('ko-KR'),
+        ),
+      ),
+    ).toBeVisible()
   })
 })
 

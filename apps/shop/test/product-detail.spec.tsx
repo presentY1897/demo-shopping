@@ -17,6 +17,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { messagesFor } from '@/messages'
 
 import { renderWithAuth } from './support/auth'
+import { stubCommunityApi } from './support/community'
 import { stubReviewApi } from './support/reviews'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
@@ -61,6 +62,12 @@ beforeEach(() => {
    * `test/support/reviews.ts` 가 그 자리를 대신하고, 왜 거기 있는지도 적혀 있다.
    */
   stubReviewApi()
+  /*
+   * M13 이 그 아래에 문의 목록과 최근 본 상품을 더했다 (TASK-0087 · 0088). 같은
+   * 이유로 같은 이음매를 하나 더 세운다 — 두 대역은 사슬이 되어, 각자 모르는 경로는
+   * 서로에게 넘긴다 (`test/support/community.ts`).
+   */
+  stubCommunityApi()
 })
 
 afterEach(() => {

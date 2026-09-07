@@ -92,6 +92,20 @@ export default {
         // spends a round trip on a file the API refuses, and answers with a 400
         // that cannot say which file was at fault.
         'src/lib/claims/return-photos.ts': complete,
+        // TASK-0091 의 판단들, 화면이 그려지기 전에 내려진 것. `outcomes.ts` 는
+        // `apps/api` 의 `report-rules.ts` 를 비추는 거울이라 닿지 않은 분기 하나가
+        // 상품에 삭제 버튼을 내거나 리뷰에서 그것을 감춘다. 그보다 나쁜 것은
+        // **반려의 효과**다 — 그것이 `reveal` 이 아니게 되는 날 화면은 「반려하면
+        // 다시 보입니다」를 멀쩡히 그리면서 아무것도 복구하지 않는다.
+        // `report-console.ts` 도 같은 성질이다: 상태 묶음이 어긋나면 「이 조건에
+        // 신고가 없습니다」가, 거절 분류가 어긋나면 데모 관리자의 403 이 「일시적인
+        // 문제가 생겼어요」가 되어 몇 번이고 다시 눌린다.
+        'src/lib/reports/outcomes.ts': complete,
+        'src/lib/reports/report-console.ts': complete,
+        // TASK-0090 의 폴링 판단. **틀려도 조용하다** — 화면은 멀쩡히 그려지고
+        // 달라지는 것은 배경 탭이 30초마다 서버를 두드리는 일뿐이며(R1), 배지
+        // 문자열이 틀리면 「할 일 0개」가 그려진 채 알림이 쌓인다.
+        'src/lib/notifications/notification-console.ts': complete,
       },
     },
   },

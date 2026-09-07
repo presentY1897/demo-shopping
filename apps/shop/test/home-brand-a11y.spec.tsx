@@ -8,8 +8,8 @@
 
 import { DENSITY_LEVELS, DENSITY_STORAGE_KEY } from '@shopping/ui'
 import { DensityProvider } from '@shopping/ui/density'
-import { storefrontSeller } from '@shopping/api-mocks'
-import { render, screen } from '@testing-library/react'
+import { sessionBuyer, storefrontSeller } from '@shopping/api-mocks'
+import { screen } from '@testing-library/react'
 import axe from 'axe-core'
 import type { RunOptions } from 'axe-core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -20,6 +20,7 @@ import { messagesFor } from '@/messages'
 
 import { navigation } from './support/navigation'
 import { renderWithAuth } from './support/auth'
+import { resetCommunityStores, stubCommunityApi } from './support/community'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
 vi.mock('next/navigation', async () => {
@@ -56,7 +57,8 @@ async function expectNoViolations(): Promise<void> {
 function renderHome({
   density = 2,
   width = VIEWPORTS.desktop,
-}: { density?: number; width?: number } = {}) {
+  signedIn = false,
+}: { density?: number; width?: number; signedIn?: boolean } = {}) {
   localStorage.setItem(DENSITY_STORAGE_KEY, String(density))
   document.documentElement.setAttribute('data-density', String(density))
   stubViewport(width)
@@ -65,12 +67,22 @@ function renderHome({
     <DensityProvider>
       <HomePage />
     </DensityProvider>,
+    { session: signedIn ? sessionBuyer : null },
   )
 }
+
+/** 밀도 셋 × 뷰포트 셋. 두 검사가 같은 아홉 조합을 돈다. */
+const NINE = DENSITY_LEVELS.flatMap((density) =>
+  Object.entries(VIEWPORTS).map(([name, width]) => [density, name, width] as const),
+)
 
 beforeEach(() => {
   localStorage.clear()
   resetCategoryMenuCache()
+  // 로그인한 사람의 홈은 찜·팔로우·최근 본 상품을 묻는다 (M13). `@shopping/api-mocks`
+  // 에 그 핸들러가 없고, 이 저장소의 대역은 「처리하지 않은 요청」을 실패로 친다.
+  resetCommunityStores()
+  stubCommunityApi()
 })
 
 afterEach(() => {
@@ -83,11 +95,7 @@ describe('F7 아홉 조합 — 홈', () => {
    * pixels — what can be is that every combination is a *complete* page: the
    * hero, the shortcuts, and both product sections with rows in them.
    */
-  it.each(
-    DENSITY_LEVELS.flatMap((density) =>
-      Object.entries(VIEWPORTS).map(([name, width]) => [density, name, width] as const),
-    ),
-  )('density %s at %s', async (density, _name, width) => {
+  it.each(NINE)('density %s at %s', async (density, _name, width) => {
     renderHome({ density, width })
 
     expect(screen.getByRole('heading', { level: 1, name: home.heroTitle })).toBeVisible()
@@ -97,6 +105,27 @@ describe('F7 아홉 조합 — 홈', () => {
       }),
     ).toHaveAttribute('data-density', String(density))
     await screen.findByRole('navigation', { name: home.categoriesTitle })
+  })
+})
+
+/**
+ * 팔로우한 브랜드의 신상품 줄 (TASK-0089 F6 · F7).
+ *
+ * 로그인하고 팔로우한 사람에게만 있는 줄이라 **아홉 조합을 따로 돈다** — 위의 사양이
+ * 그리는 홈에는 이 줄이 아예 없고, 그 홈만 재면 이 줄은 한 번도 확인되지 않는다.
+ */
+describe('F7 아홉 조합 — 팔로우한 브랜드의 신상품', () => {
+  it.each(NINE)('density %s at %s', async (density, _name, width) => {
+    renderHome({ density, signedIn: true, width })
+
+    const grid = await screen.findByRole('list', {
+      name: home.gridLabel.replace('{title}', home.followedTitle),
+    })
+
+    expect(grid).toHaveAttribute('data-density', String(density))
+    // 카드의 하트가 눌린 상태를 말한다 (TASK-0086 4.6). `aria-pressed` 를 잘못 붙이면
+    // axe 가 그것을 잡는다 — 이 줄은 로그인한 사람에게만 있으므로 그 검사도 여기 있다.
+    await expectNoViolations()
   })
 })
 
@@ -123,7 +152,8 @@ describe('브랜드관 접근성', () => {
     stubViewport(VIEWPORTS.desktop)
     navigation.start(`/brands/${storefrontSeller.seller.id}`)
 
-    render(
+    // 팔로우 버튼이 세션을 읽는다 (TASK-0089).
+    renderWithAuth(
       <DensityProvider>
         {await BrandPage({ params: Promise.resolve({ sellerId: storefrontSeller.seller.id }) })}
       </DensityProvider>,

@@ -14,13 +14,14 @@
 
 import { storefrontProductDetail, storefrontSeller } from '@shopping/api-mocks'
 import { DensityProvider } from '@shopping/ui/density'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { messagesFor } from '@/messages'
 
 import { navigation } from './support/navigation'
 import { renderWithAuth } from './support/auth'
+import { stubCommunityApi } from './support/community'
 import { stubReviewApi } from './support/reviews'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
@@ -49,6 +50,9 @@ beforeEach(() => {
   // 상품 상세가 리뷰 목록을 묻는다. 그 라우트는 `@shopping/api-mocks` 에 핸들러가
   // 아직 없어 이 파일이 대역을 직접 세운다 (`test/support/reviews.ts`).
   stubReviewApi()
+  // 상품 상세가 문의 목록과 최근 본 상품도 묻는다 (TASK-0087 · 0088). 같은 이유로
+  // 같은 이음매를 하나 더 세운다 (`test/support/community.ts`).
+  stubCommunityApi()
 })
 
 afterEach(() => {
@@ -88,7 +92,7 @@ describe('F7 alt 누락 0건', () => {
   it('on a brand page, logo included', async () => {
     navigation.start(`/brands/${storefrontSeller.seller.id}`)
 
-    render(
+    renderWithAuth(
       <DensityProvider>
         {await BrandPage({ params: Promise.resolve({ sellerId: storefrontSeller.seller.id }) })}
       </DensityProvider>,

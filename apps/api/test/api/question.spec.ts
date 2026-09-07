@@ -3,13 +3,15 @@ import {
   ApiClientError,
   answerResponseSchema,
   myQuestionsResponseSchema,
+  notificationListResponseSchema,
   productQuestionResponseSchema,
   questionListResponseSchema,
   sellerQuestionsResponseSchema,
 } from '@shopping/shared'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
 
+import { NotificationService } from '../../src/notifications/notification.service.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
 import { createSellableVariant, createSeller, createUser } from '../support/factories.js'
@@ -278,6 +280,104 @@ describe('답변 (F3 · F5)', () => {
         }),
       ),
     ).toBe(403)
+  })
+})
+
+/**
+ * 답변이 물어본 사람에게 닿는다 (F4).
+ *
+ * 서비스는 이것을 **기다리지 않고** 보낸다 (`question.service.ts` 의 `void`). 그래서
+ * 「답변이 저장됐다」만 재는 검사는 알림이 한 번도 안 나가도 초록이다 — 그 사이를
+ * 재는 검사가 없으면, 알림을 지워 버려도 아무것도 빨개지지 않는다.
+ */
+describe('답변 알림 (F4)', () => {
+  async function inbox(
+    caller: TestCaller,
+  ): Promise<readonly { type: string; link: string | null }[]> {
+    const answered = await client(caller).request({
+      path: '/me/notifications',
+      schema: notificationListResponseSchema,
+    })
+
+    return answered.notifications
+  }
+
+  /** 기다리지 않고 나가는 일이 끝나기를 기다린다. 없으면 가끔 빨간불이 된다. */
+  async function eventually(check: () => Promise<boolean>): Promise<void> {
+    for (let attempt = 0; attempt < 50; attempt += 1) {
+      if (await check()) return
+
+      await new Promise((resolve) => setTimeout(resolve, 20))
+    }
+
+    throw new Error('기다린 상태가 되지 않았습니다.')
+  }
+
+  function answer(questionId: string): Promise<unknown> {
+    return client(seller).request({
+      path: `/questions/${questionId}/answer`,
+      method: 'PUT',
+      body: { content: '265mm 까지 있습니다.' },
+      schema: answerResponseSchema,
+    })
+  }
+
+  it('물어본 사람에게 알림이 간다', async () => {
+    const id = await ask(asker)
+
+    await answer(id)
+    await eventually(async () => (await inbox(asker)).length === 1)
+
+    const [notification] = await inbox(asker)
+
+    expect(notification?.type).toBe('QUESTION_ANSWER')
+    // 문의는 상품에 붙어 있으므로 돌아갈 곳은 그 상품이다.
+    expect(notification?.link).toBe(`/products/${store.product.id}`)
+  })
+
+  /** 비공개 문의라고 알림이 없는 것은 아니다 — 물어본 사람에게는 자기 문의다. */
+  it('비공개 문의에도 간다', async () => {
+    const id = await ask(asker, false)
+
+    await answer(id)
+    await eventually(async () => (await inbox(asker)).length === 1)
+
+    expect((await inbox(asker))[0]?.type).toBe('QUESTION_ANSWER')
+  })
+
+  /** 남의 문의에 달린 답변은 남의 일이다. */
+  it('물어보지 않은 사람에게는 가지 않는다', async () => {
+    const id = await ask(asker)
+
+    await answer(id)
+    await eventually(async () => (await inbox(asker)).length === 1)
+
+    expect(await inbox(stranger)).toEqual([])
+  })
+
+  /**
+   * **알림이 터져도 답변은 저장된다** (D-242 · TASK-0090 F6).
+   *
+   * 답을 쓴 판매자에게 「저장에 실패했다」를 보이는 것이 알림 한 통을 놓치는 것보다
+   * 훨씬 나쁘다.
+   */
+  it('알림이 실패해도 답변은 남는다', async () => {
+    const id = await ask(asker)
+    const service = api.resolve<NotificationService>(NotificationService)
+    const broken = vi.spyOn(service, 'send').mockRejectedValue(new Error('알림 실패'))
+
+    try {
+      await answer(id)
+    } finally {
+      broken.mockRestore()
+    }
+
+    const { questions } = await client(asker).request({
+      path: '/me/questions',
+      schema: myQuestionsResponseSchema,
+    })
+
+    expect(questions[0]?.answer?.content).toBe('265mm 까지 있습니다.')
   })
 })
 

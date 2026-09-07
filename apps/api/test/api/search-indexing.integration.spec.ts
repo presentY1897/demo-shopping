@@ -216,6 +216,91 @@ describe('F1 · F2 — a change reaches the index', () => {
   })
 })
 
+/**
+ * 갱신된 평점이 검색까지 간다 (TASK-0084 F4).
+ *
+ * 사슬은 넷이다: 리뷰가 평점을 다시 세고 → 아웃박스에 사건을 남기고 → 색인이 문서를
+ * 다시 쓰고 → 평점순 정렬이 그 값을 쓴다. **양 끝은 이미 다른 곳에서 재고 있다** —
+ * 리뷰가 사건을 남기는 것은 `review-display.spec.ts` 가, `sort=rating` 이 어느 필드로
+ * 가는지는 `search-query.spec.ts` 가 본다. 여기서 재는 것은 **그 사이**다.
+ *
+ * 이 가운데 토막이 비어 있으면 증상이 조용하다: 리뷰는 저장되고 별점도 상세에 뜨는데
+ * **평점순 검색만 옛 순서로** 답한다. 어느 화면도 오류를 내지 않는다.
+ */
+describe('F4 — 갱신된 평점이 평점순 검색에 반영된다 (TASK-0084)', () => {
+  /** 평점순으로 물어보고 id 를 순서대로 돌려준다. */
+  async function byRating(): Promise<readonly string[]> {
+    const response = await fetch(`${searchHost()}/indexes/${searchIndexForTests()}/search`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ q: '', limit: 50, sort: ['ratingAvg:desc'] }),
+    })
+    const body = (await response.json()) as { hits?: readonly { id: string }[] }
+
+    return (body.hits ?? []).map((hit) => hit.id)
+  }
+
+  it('rewrites the document and reorders the results', async () => {
+    const quiet = await listing({ name: '조용한 코트' })
+    const praised = await listing({ name: '칭찬받은 코트' })
+
+    expect(await indexer().drain()).toBe(2)
+    await settled()
+
+    // 아직 둘 다 0점이다. 여기서 순서를 단언하지 않는 이유는 동점의 순서가 엔진의
+    // 것이어서다 — 재려는 것은 「바뀌었다」이지 「처음부터 이랬다」가 아니다.
+    const before = await byRating()
+
+    expect(before).toHaveLength(2)
+
+    // 리뷰가 평점을 다시 센 뒤의 상태. 그 계산 자체는 `review-display.spec.ts` 의 것이고,
+    // 여기서는 그 결과가 색인까지 가는지만 본다.
+    await db.execute(`UPDATE "Product" SET "ratingAvg" = 450, "ratingCount" = 3 WHERE "id" = $1`, [
+      praised.id,
+    ])
+    await enqueue(praised.id)
+
+    expect(await indexer().drain()).toBe(1)
+    await settled()
+
+    const after = await byRating()
+
+    expect(after[0]).toBe(praised.id)
+    expect(after[1]).toBe(quiet.id)
+  })
+
+  /**
+   * **평점이 내려가도 따라간다.** 올라가는 쪽만 재면, 문서를 지우고 새로 쓰는 대신
+   * 큰 값만 남기는 구현도 통과한다 — 리뷰를 지웠을 때 별점이 안 내려가는 버그다.
+   */
+  it('follows a rating back down when a review is removed', async () => {
+    const product = await listing({ name: '되돌아온 코트' })
+
+    await db.execute(`UPDATE "Product" SET "ratingAvg" = 500, "ratingCount" = 1 WHERE "id" = $1`, [
+      product.id,
+    ])
+    await enqueue(product.id)
+    await indexer().drain()
+    await settled()
+
+    await db.execute(`UPDATE "Product" SET "ratingAvg" = 0, "ratingCount" = 0 WHERE "id" = $1`, [
+      product.id,
+    ])
+    await enqueue(product.id)
+    await indexer().drain()
+    await settled()
+
+    const response = await fetch(`${searchHost()}/indexes/${searchIndexForTests()}/search`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ q: '되돌아온', limit: 1 }),
+    })
+    const body = (await response.json()) as { hits?: readonly { ratingAvg: number }[] }
+
+    expect(body.hits?.[0]?.ratingAvg).toBe(0)
+  })
+})
+
 describe('F3 — what must not be findable', () => {
   it('keeps a draft out of the index', async () => {
     const product = await listing({ name: '초안 셔츠', status: 'DRAFT' })

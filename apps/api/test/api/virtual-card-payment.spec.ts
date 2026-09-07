@@ -1,5 +1,10 @@
 import type { ApiClient } from '@shopping/shared'
-import { cartResponseSchema, checkoutResponseSchema, orderResponseSchema } from '@shopping/shared'
+import {
+  cartResponseSchema,
+  checkoutResponseSchema,
+  notificationListResponseSchema,
+  orderResponseSchema,
+} from '@shopping/shared'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import type { RequestPrincipal } from '../../src/auth/request-principal.js'
@@ -417,6 +422,65 @@ describe('정상 승인 (F1)', () => {
     expect(await sellerOrderStatuses(placed.orderId)).toEqual(['PAID'])
     // 이력도 두 줄 그대로다. 아무 일도 없었으므로 기록할 것도 없다.
     expect(await historyOf(placed.orderId)).toHaveLength(2)
+  })
+})
+
+/**
+ * 판 사람에게도 도착한다 (TASK-0090 F7).
+ *
+ * 같은 전이가 두 사람에게 **다른 말**을 한다. 구매자에게 `PAID` 는 방금 자기가 한
+ * 일이라 알릴 것이 아니고, 판매자에게는 그것이 「새 주문이 들어왔다」다 —
+ * `order.service.ts` 가 구매자용 포트를 지나지 않고 따로 보내는 이유다.
+ *
+ * 이 자리에 검사가 없으면 그 발송을 통째로 지워도 아무것도 빨개지지 않는다. 결제
+ * 스펙은 재고와 원장을 보고, 알림 스펙은 구매자만 보기 때문이다.
+ */
+describe('판매자 알림 (TASK-0090 F7)', () => {
+  async function ownerOf(orderId: string): Promise<TestCaller> {
+    const row = await db.one<{ userId: string }>(
+      `SELECT s."userId" FROM "SellerOrder" so JOIN "Seller" s ON s."id" = so."sellerId"
+        WHERE so."orderId" = $1`,
+      [orderId],
+    )
+
+    return { userId: row.userId, roles: ['SELLER_OWNER'] }
+  }
+
+  async function inbox(caller: TestCaller): Promise<readonly { type: string }[]> {
+    const answered = await client(caller).request({
+      path: '/me/notifications',
+      schema: notificationListResponseSchema,
+    })
+
+    return answered.notifications
+  }
+
+  /** 기다리지 않고 나가는 일이 끝나기를 기다린다. */
+  async function eventually(check: () => Promise<boolean>): Promise<void> {
+    for (let attempt = 0; attempt < 50; attempt += 1) {
+      if (await check()) return
+
+      await new Promise((resolve) => setTimeout(resolve, 20))
+    }
+
+    throw new Error('기다린 상태가 되지 않았습니다.')
+  }
+
+  it('결제가 끝나면 판매자에게 새 주문 알림이 간다', async () => {
+    const placed = await place({ quantity: 1, stock: 5 })
+    const card = await issueCard(placed.paidAmount)
+    const paymentId = await startPayment(placed, card.id)
+
+    await payments().authorize(principal, paymentId)
+    await payments().capture(principal, paymentId)
+
+    const owner = await ownerOf(placed.orderId)
+
+    await eventually(async () => (await inbox(owner)).length === 1)
+
+    expect((await inbox(owner))[0]?.type).toBe('SELLER_ORDER')
+    // 산 사람에게는 `PAID` 를 알리지 않는다 — 방금 자기가 한 일이다.
+    expect(await inbox(buyer)).toEqual([])
   })
 })
 

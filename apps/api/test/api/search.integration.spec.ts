@@ -356,7 +356,7 @@ describe('판매자로 좁히기 (TASK-0044 4.2)', () => {
 
     // The index has carried `sellerId` as filterable since TASK-0038; what was
     // missing was a way to ask for it.
-    const answer = await search(`?sellerId=${other.id}`)
+    const answer = await search(`?sellerIds=${other.id}`)
 
     expect(answer.items.map((item) => item.name)).toEqual(['다른 가게 코트'])
   })
@@ -373,11 +373,57 @@ describe('판매자로 좁히기 (TASK-0044 4.2)', () => {
       [seller],
     )
 
-    const coatsOnly = await search(`?sellerId=${owner.sellerId}&categoryId=${String(coats)}`)
-    const everything = await search(`?sellerId=${owner.sellerId}`)
+    const coatsOnly = await search(`?sellerIds=${owner.sellerId}&categoryId=${String(coats)}`)
+    const everything = await search(`?sellerIds=${owner.sellerId}`)
 
     expect(coatsOnly.items).toHaveLength(3)
     expect(everything.items).toHaveLength(5)
+  })
+
+  /**
+   * 여러 가게를 한 번에 — 홈의 「팔로우한 브랜드의 신상품」 (TASK-0089 F6).
+   *
+   * 홈 전용 엔드포인트를 만들지 않기로 한 판단(`pages.md` 「홈 섹션은 검색 API 다」)이
+   * 이 줄을 검색으로 만들었다. 그러니 검색이 **가게 여럿**을 받을 수 있어야 하고,
+   * 그것이 OR 이어야 한다 — AND 면 상품 하나가 두 가게에 속해야 참이 되어 답이 언제나
+   * 비고, 홈의 줄은 오류 없이 사라진다.
+   */
+  it('holds down several stores at once, matching any of them', async () => {
+    const other = await createSeller(db, { userId: (await createUser(db, {})).id })
+    const prisma = api.resolve<PrismaService>(PrismaService)
+    const outbox = api.resolve<SearchOutboxService>(SearchOutboxService)
+
+    const product = await createProduct(db, {
+      sellerId: other.id,
+      categoryId: coats,
+      name: '다른 가게 코트 둘',
+      status: 'ACTIVE',
+      minPrice: 130_000,
+    })
+
+    await createProductVariant(db, {
+      productId: product.id,
+      sellerId: other.id,
+      price: 130_000,
+      stock: 2,
+      isActive: true,
+    })
+    await outbox.publish(prisma, product.id, 'UPSERT')
+    await indexer().drain()
+    await settled()
+
+    const mine = (await search(`?categoryId=${String(coats)}`)).items[0]?.id
+    const owner = await db.one<{ sellerId: string }>(
+      'SELECT "sellerId" FROM "Product" WHERE "id" = $1',
+      [mine],
+    )
+
+    const both = await search(`?sellerIds=${owner.sellerId},${other.id}`)
+    const onlyOther = await search(`?sellerIds=${other.id}`)
+
+    // 두 가게를 합친 것이 각각보다 많다 — 「전부에 속한」이 아니라 「아무데나」다.
+    expect(both.items.length).toBeGreaterThan(onlyOther.items.length)
+    expect(both.items.map((item) => item.name)).toContain('다른 가게 코트 둘')
   })
 })
 
