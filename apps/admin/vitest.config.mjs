@@ -106,6 +106,18 @@ export default {
         // 달라지는 것은 배경 탭이 30초마다 서버를 두드리는 일뿐이며(R1), 배지
         // 문자열이 틀리면 「할 일 0개」가 그려진 채 알림이 쌓인다.
         'src/lib/notifications/notification-console.ts': complete,
+        // TASK-0092 의 판단들, 화면이 그려지기 전에 내려진 것. 셋 다 **틀려도
+        // 조용하다.** `dashboard-console.ts` 의 기간 산술이 하루 어긋나면 화면은
+        // 멀쩡한 그래프를 그리고, 증감의 분모가 0인 자리를 놓치면 「+100% 늘었어요」가
+        // 뜬다 — 그리고 운영자는 그 숫자를 보고 「이번 주는 괜찮다」고 판단한다.
+        // 처리 대기의 링크가 틀리면 건수는 맞는데 눌러도 엉뚱한 화면이 열린다.
+        // `schedulers.ts` 는 더하다: 이름을 못 붙인 배치를 **숨기는** 분기 하나가
+        // 멈춘 배치를 화면에서 지우고, 그것이 정확히 이 화면이 막으려던 일이다.
+        // `chart.ts` 의 좌표는 틀려도 선이 하나 그려진다 (`apps/seller` 의 같은
+        // 파일이 같은 이유로 같은 자리에 있다).
+        'src/lib/dashboard/dashboard-console.ts': complete,
+        'src/lib/dashboard/schedulers.ts': complete,
+        'src/lib/dashboard/chart.ts': complete,
       },
     },
   },

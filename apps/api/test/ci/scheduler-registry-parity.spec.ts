@@ -2,6 +2,8 @@ import { execFileSync } from 'node:child_process'
 
 import { describe, expect, it } from 'vitest'
 
+import { schedulerKeys } from '@shopping/shared'
+
 import { SCHEDULERS } from '../../src/dashboard/scheduler-registry.js'
 import { findRepoRoot } from '../../src/config/workspace.js'
 
@@ -40,6 +42,17 @@ describe('배치 목록 (dashboard/scheduler-registry.ts)', () => {
     // 못 찾으면 조용히 빈 배열이 되고, 위 검사는 「목록이 비어 있다」로 실패해 원인을
     // 엉뚱한 곳으로 가리킨다.
     expect(declaredKeys().length).toBeGreaterThan(0)
+  })
+
+  /**
+   * 계약의 열쇠 목록과도 같아야 한다.
+   *
+   * 화면의 이름표가 그 목록으로 `Record` 를 만든다 — 서버가 계약에 없는 열쇠를
+   * 보내면 화면은 점 찍힌 열쇠를 날것으로 그리고, 계약에만 있는 열쇠는 **영영 안
+   * 오는 줄**이 된다. 둘 다 아무 검사도 빨갛게 만들지 않는다.
+   */
+  it('matches the key list the contract publishes', () => {
+    expect([...SCHEDULERS.map((entry) => entry.key)].sort()).toEqual([...schedulerKeys].sort())
   })
 
   it('gives every scheduler a bound its own module declared', () => {

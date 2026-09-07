@@ -723,6 +723,7 @@ export {
   dashboardSellerSchema,
   dashboardSystemResponseSchema,
   schedulerHealthSchema,
+  schedulerKeys,
   schedulerStatuses,
   schedulerStatusSchema,
 } from './api/admin-dashboard.js'
@@ -736,6 +737,7 @@ export type {
   DashboardSeller,
   DashboardSystemResponse,
   SchedulerHealth,
+  SchedulerKey,
   SchedulerStatus,
 } from './api/admin-dashboard.js'
 export {

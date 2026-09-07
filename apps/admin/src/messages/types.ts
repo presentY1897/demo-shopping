@@ -19,6 +19,7 @@ import type {
   ReportStatus,
   ReportTargetType,
   ReturnReason,
+  SchedulerStatus,
   SellerStatus,
   SettlementApprovalFailure,
   SettlementItemType,
@@ -37,6 +38,8 @@ import type {
 } from '@/lib/claims/defect-return'
 import type { ReturnPhotoRejection } from '@/lib/claims/return-photos'
 import type { CommissionFieldErrorMessages } from '@/lib/commissions/form-schema'
+import type { PendingKey } from '@/lib/dashboard/dashboard-console'
+import type { SchedulerNames } from '@/lib/dashboard/schedulers'
 import type { BulkIssueOutcome, CouponCostGap } from '@/lib/coupons/platform-coupons'
 import type { HandleFieldErrorMessages } from '@/lib/reports/handle-form'
 import type { ReportEffect, ReportOutcome } from '@/lib/reports/outcomes'
@@ -127,6 +130,15 @@ export interface Messages {
    * 자리에 들어옵니다」라고 말하고 있었고, 이것이 그 M11 이다.
    */
   readonly notifications: NotificationMessages
+  /**
+   * `/` — 플랫폼 전체를 한 화면에서 (TASK-0092).
+   *
+   * 자기 슬라이스인 이유는 이것이 **화면 하나**이기 때문이고, 그 화면이 읽는 문이
+   * 셋이라 안에서 다시 셋으로 갈린다(`pending` · `metrics` · `system`). 셋을 하나로
+   * 접지 않는 것은 계약이 셋인 것과 같은 이유다 — 한 섹션이 실패해도 나머지는
+   * 그려지고, 그러려면 섹션마다 자기 오류 문장이 있어야 한다.
+   */
+  readonly dashboard: DashboardMessages
   /**
    * One sentence per error code the API can answer with (TASK-0117).
    *
@@ -307,7 +319,6 @@ export interface HealthMessages {
   readonly versionLabel: string
   readonly failureTitle: string
   readonly failures: Readonly<Record<HealthFailureReason, string>>
-  readonly notice: string
 }
 
 export interface WakeMessages {
@@ -2276,4 +2287,215 @@ export interface NotificationMessages {
     readonly countUnit: string
   }
   readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+/* --------------------------------------------------- 대시보드 (TASK-0092) -- */
+
+/**
+ * `/` — 지금 무엇을 해야 하고, 플랫폼은 어떻게 돌아가고 있는가.
+ *
+ * 안이 셋으로 갈린 것은 **계약이 셋이기 때문**이다(문 셋). 한 문이 실패해도 나머지
+ * 두 섹션은 그려져야 하고, 그러려면 오류 제목과 「다시 시도」가 섹션마다 있어야 한다 —
+ * 하나로 접으면 지표를 못 읽었을 때 처리 대기 항목까지 사라지고, 대시보드에서 그것은
+ * 「플랫폼이 죽었나」로 읽힌다.
+ */
+export interface DashboardMessages {
+  readonly description: string
+  /**
+   * 이 화면을 아예 볼 수 없는 계정에게 (F6).
+   *
+   * **섹션의 오류 제목과 다른 문장이다** — 「불러오지 못했어요」는 다시 시도하면 될
+   * 것처럼 읽히는데, 이것은 아무리 눌러도 되지 않는다. 서버도 같은 판단을 세 문 전부에
+   * 대해 내린다(`order.read` 의 스코프가 `any` 여야 한다).
+   */
+  readonly forbiddenTitle: string
+  readonly pending: DashboardPendingMessages
+  readonly metrics: DashboardMetricMessages
+  readonly chart: DashboardChartMessages
+  readonly rankings: DashboardRankingMessages
+  readonly system: DashboardSystemMessages
+  /** 한 줄씩, API 가 답하기 **전에** 실패한 경우에 대해. */
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+/**
+ * 처리 대기 — **이 화면의 목적** (F2).
+ *
+ * `labels` 가 `Record<PendingKey, string>` 이라 계약에 대기 항목이 하나 늘면 여기가
+ * typecheck 에서 걸린다. 이름 없는 줄이 대시보드 맨 위에 나타나는 길을 열어 둘 이유는
+ * 없다.
+ */
+export interface DashboardPendingMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  /** 네 줄이 전부 0이다 — 이 화면에서 가장 좋은 소식이라 표가 아니라 문장으로 적는다. */
+  readonly allClear: string
+  /** 다 합쳐 몇 건인가. `{count}` 가 들어간다. */
+  readonly totalCount: string
+  readonly labels: Readonly<Record<PendingKey, string>>
+  /** 줄 하나의 건수. `{count}` 가 들어간다. */
+  readonly countValue: string
+  readonly listLabel: string
+}
+
+/**
+ * 큰 숫자 넷과 그 증감 (F1 · F3).
+ *
+ * 단위가 항목마다 다른 것(건 · 명 · 곳)은 문법의 문제라 카탈로그의 몫이다. 컴포넌트가
+ * 숫자에 「건」을 붙이기 시작하면 그 순간부터 로케일이 하나뿐인 앱이 된다.
+ */
+export interface DashboardMetricMessages {
+  readonly title: string
+  readonly regionLabel: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly salesLabel: string
+  readonly orderCountLabel: string
+  readonly newUsersLabel: string
+  readonly activeSellersLabel: string
+  /** `{count}` 가 들어간다. 세 항목이 각자 다른 단위를 쓴다. */
+  readonly orderCountValue: string
+  readonly newUsersValue: string
+  readonly activeSellersValue: string
+  /** 「활성 판매자」가 등록된 스토어 수가 아니라는 사실. 안 적으면 틀린 수로 읽힌다. */
+  readonly activeSellersNote: string
+  readonly comparison: DashboardComparisonMessages
+  readonly filters: DashboardFilterMessages
+  /** 지금 보고 있는 기간. `{from}` · `{to}` 가 들어간다. */
+  readonly periodValue: string
+}
+
+/**
+ * 직전 같은 기간과의 비교.
+ *
+ * **`none` 이 실패가 아니다** — 직전 기간이 0이면 증감률은 없는 수다(`growthOf`).
+ * 부호를 화살표나 색으로만 말하지 않는 것도 여기서 정해진다: 문장이 「늘었어요 ·
+ * 줄었어요」를 들고 있고, 그 앞의 퍼센트는 언제나 절댓값이다 (P2).
+ */
+export interface DashboardComparisonMessages {
+  /** 무엇과 비교한 것인가. `{days}` 가 들어간다 — 「전월 대비」가 아니다. */
+  readonly label: string
+  /** `{percent}` */
+  readonly up: string
+  readonly down: string
+  readonly flat: string
+  readonly none: string
+}
+
+/** 기간 두 칸과 되돌리기 하나. 잘못 고른 기간은 **막지 않고 그 자리에서 말한다.** */
+export interface DashboardFilterMessages {
+  readonly legend: string
+  readonly fromLabel: string
+  readonly toLabel: string
+  readonly reset: string
+  readonly rangeReversed: string
+  /** 계약의 상한을 넘겼다. `{max}` 가 들어간다. */
+  readonly rangeTooLong: string
+}
+
+/**
+ * 거래액 추이 — **그림 하나와 표 하나** (F1).
+ *
+ * 표는 접혀 있을 수 있지만 **DOM 에서 사라지지 않는다.** 그림에는 `aria-hidden` 이
+ * 붙어 있어, 표가 없으면 스크린리더로 읽는 사람에게 이 섹션은 아무 데이터도 아니다.
+ */
+export interface DashboardChartMessages {
+  readonly title: string
+  /** 가장 많이 판 날의 금액. `{amount}` 가 들어간다. */
+  readonly peak: string
+  readonly empty: string
+  readonly caption: string
+  readonly tableCaption: string
+  readonly showTable: string
+  readonly hideTable: string
+  readonly dateHeader: string
+  readonly salesHeader: string
+  readonly orderCountHeader: string
+}
+
+/** 인기 상품·판매자. 계약이 다섯 줄까지만 보내므로 「전체」로 읽히지 않게 적는다. */
+export interface DashboardRankingMessages {
+  readonly productsTitle: string
+  readonly productsCaption: string
+  readonly productsEmpty: string
+  readonly sellersTitle: string
+  readonly sellersCaption: string
+  readonly sellersEmpty: string
+  readonly nameHeader: string
+  readonly brandHeader: string
+  readonly salesHeader: string
+  readonly orderCountHeader: string
+  /** 상위 몇 개까지인가. `{count}` 가 들어간다. */
+  readonly note: string
+}
+
+/**
+ * 시스템 상태 (F4).
+ *
+ * `names` 가 `Record<SchedulerKey, string>` 으로 **전수**라, 서버에 배치가 하나 늘고
+ * 여기에 이름을 안 적으면 `pnpm typecheck` 이 먼저 걸린다. 그것이 없으면 새 배치는
+ * `reservation.sweep.lastRunAt` 같은 점 찍힌 열쇠를 달고 조용히 표에 나타나고, 이
+ * 섹션은 개발자만 읽을 수 있는 표가 된다.
+ *
+ * `statusLabels` 도 `Record` 인 이유는 같다. 그리고 셋의 문장은 **서로 달라야 한다** —
+ * 「한 번도 안 돌았다」는 갓 뜬 프로세스의 정상 상태이고 「멈췄다」는 사고다.
+ */
+export interface DashboardSystemMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly summary: DashboardSystemSummaryMessages
+  readonly statusLabels: Readonly<Record<SchedulerStatus, string>>
+  readonly names: SchedulerNames
+  readonly caption: string
+  readonly nameHeader: string
+  readonly statusHeader: string
+  readonly lastRunHeader: string
+  /** 한 번도 안 돈 배치의 「마지막 실행」 칸. 빈칸으로 두면 「못 읽었다」와 섞인다. */
+  readonly neverRun: string
+  /** 밀린 일을 셀 수 없는 배치 (`backlog` 가 `null`). */
+  /** 색인 큐 — 배치가 아니라 줄 서 있는 일이라 따로 그린다. */
+  readonly searchIndex: {
+    readonly title: string
+    /** `{count}` */
+    readonly pending: string
+    /** `{at}` */
+    readonly oldest: string
+  }
+  /**
+   * 이 콘솔이 모르는 열쇠가 왔다.
+   *
+   * API 와 콘솔은 따로 배포되므로 **실제로 일어난다.** 그 줄을 숨기면 멈춘 배치가
+   * 아무 데도 안 보이게 되므로 열쇠라도 그리고, 왜 이름이 없는지를 이 문장이 말한다.
+   */
+  readonly unnamedNotice: string
+  readonly demo: DashboardDemoMessages
+}
+
+/**
+ * 섹션 머리의 한 문장 — 표를 읽지 않고도 알아야 하는 것.
+ *
+ * 셋이 서로 다른 행동을 부른다: `stopped` 는 지금 손봐야 하고, `idle` 은 방금 뜬
+ * 프로세스라 기다리면 되며, `ok` 는 아무것도 안 해도 된다.
+ */
+export interface DashboardSystemSummaryMessages {
+  /** `{count}` */
+  readonly stopped: string
+  readonly idle: string
+  readonly ok: string
+}
+
+/** 데모 계정 현황 요약. 자세한 것은 `/demo` 가 답한다. */
+export interface DashboardDemoMessages {
+  readonly title: string
+  /** `{count}` */
+  readonly activeAccounts: string
+  readonly expiringWithinHour: string
+  readonly link: string
 }
