@@ -7,13 +7,18 @@ import {
   productDetailResponseSchema,
   recentlyViewedResponseSchema,
   restockAlertResultSchema,
+  storefrontSellerResponseSchema,
   toggleResultSchema,
+  wishlistIdsResponseSchema,
   wishlistResponseSchema,
+  followIdsResponseSchema,
   RECENTLY_VIEWED_MAX,
+  WISHLIST_MAX_LIMIT,
 } from '@shopping/shared'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
 
+import { CollectionsService } from '../../src/collections/collections.service.js'
 import { RestockNotifier } from '../../src/notifications/restock.service.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
@@ -73,6 +78,14 @@ function wishlist(caller: TestCaller): Promise<{
   return client(caller).request({ path: '/me/wishlist', schema: wishlistResponseSchema })
 }
 
+function wishlistIds(caller: TestCaller): Promise<{ productIds: readonly string[] }> {
+  return client(caller).request({ path: '/me/wishlist/ids', schema: wishlistIdsResponseSchema })
+}
+
+function followIds(caller: TestCaller): Promise<{ sellerIds: readonly string[] }> {
+  return client(caller).request({ path: '/me/follows/ids', schema: followIdsResponseSchema })
+}
+
 async function failure(work: Promise<unknown>): Promise<number> {
   try {
     await work
@@ -130,6 +143,69 @@ describe('찜 (TASK-0086)', () => {
 
   it('없는 상품은 담을 수 없다', async () => {
     expect(await failure(toggleWishlist(me, '0192f0c1-0000-7000-8000-0000000000ff'))).toBe(404)
+  })
+})
+
+describe('찜한 것의 id 만 (TASK-0086 F1)', () => {
+  it('담은 것과 같은 것을 답한다', async () => {
+    await toggleWishlist(me, store.product.id)
+
+    expect((await wishlistIds(me)).productIds).toEqual([store.product.id])
+  })
+
+  it('빼면 사라진다', async () => {
+    await toggleWishlist(me, store.product.id)
+    await toggleWishlist(me, store.product.id)
+
+    expect((await wishlistIds(me)).productIds).toEqual([])
+  })
+
+  it('남의 찜은 섞이지 않는다', async () => {
+    await toggleWishlist(stranger, store.product.id)
+
+    expect((await wishlistIds(me)).productIds).toEqual([])
+  })
+
+  /**
+   * **이 검사가 이 문이 존재하는 이유다.**
+   *
+   * 목록은 한 쪽에 `WISHLIST_MAX_LIMIT` 개까지다. 화면이 「찜했나」를 목록으로 알아내면
+   * 101번째부터는 답을 못 받고, 그 상품의 하트는 새로고침할 때마다 빈 채로 그려진다 —
+   * F1 의 「새로고침 후 유지」가 깨진 모습이고, **화면에는 오류가 하나도 안 뜬다.**
+   *
+   * 그래서 여기서 재는 것은 「많이 담아도 동작한다」가 아니라 **「목록이 못 넘는 선을
+   * 이 문은 넘는다」**이다. 상한과 같은 수로 재면 검사는 통과하면서 버그는 남는다.
+   */
+  it('목록 한 쪽에 들어가지 않는 수도 전부 답한다', async () => {
+    const extra = WISHLIST_MAX_LIMIT + 1
+
+    await db.execute(
+      // `updatedAt` 은 Prisma 가 채우는 열이라 DB 에 기본값이 없다 — 서비스를 거치지
+      // 않고 넣는 행은 직접 적어야 한다.
+      `INSERT INTO "Product" ("id", "sellerId", "categoryId", "name", "status", "minPrice", "updatedAt")
+       SELECT gen_random_uuid(), p."sellerId", p."categoryId", '찜 ' || i, p."status", p."minPrice", now()
+         FROM "Product" p, generate_series(1, $2) AS i
+        WHERE p."id" = $1`,
+      [store.product.id, extra],
+    )
+    await db.execute(
+      // 복합 기본키라 대리키가 없다 — 사람 하나가 상품 하나를 두 번 담을 수 없다는
+      // 사실 자체가 키다.
+      `INSERT INTO "Wishlist" ("userId", "productId")
+       SELECT $1, p."id" FROM "Product" p WHERE p."name" LIKE '찜 %'`,
+      [me.userId],
+    )
+
+    const { items, nextCursor } = await client(me).request({
+      path: '/me/wishlist',
+      schema: wishlistResponseSchema,
+    })
+
+    // 목록은 한 쪽에 다 못 담는다 — 그 사실이 이 검사의 전제다.
+    expect(items.length).toBeLessThan(extra)
+    expect(nextCursor).not.toBeNull()
+
+    expect((await wishlistIds(me)).productIds).toHaveLength(extra)
   })
 })
 
@@ -283,6 +359,74 @@ describe('최근 본 상품 (TASK-0087)', () => {
     expect(answer.items.map((item) => item.productId)).not.toContain(products.at(-1))
   })
 
+  /**
+   * **기록이 터져도 상품은 보인다** (F4).
+   *
+   * 실패를 만드는 자리가 중요하다. `recordView` 자체를 가짜로 바꿔 거절시키면 그
+   * 함수 **안의** try/catch 는 한 번도 안 지나가므로, 그 catch 를 지워도 이 검사는
+   * 초록으로 남는다 — 컨트롤러가 기다리지 않는다는 사실만 재는 셈이다.
+   *
+   * 그래서 더 아래를 부순다: 기록이 쓰는 문을 던지게 만든다. 그러면 `recordView` 의
+   * catch 가 실제로 판정 대상이 되고, 그것을 지우는 순간 이 검사가 빨개진다.
+   */
+  it('기록이 실패해도 상품 상세는 정상이다 (F4)', async () => {
+    const collections = api.resolve<CollectionsService>(CollectionsService)
+    const prisma = (collections as unknown as { prisma: { recentlyViewed: { upsert: unknown } } })
+      .prisma
+    const broken = vi
+      .spyOn(prisma.recentlyViewed as { upsert: () => Promise<unknown> }, 'upsert')
+      .mockRejectedValue(new Error('이력을 적지 못했습니다'))
+
+    try {
+      const { product } = await client(me).request({
+        path: `/products/${store.product.id}/detail`,
+        schema: productDetailResponseSchema,
+      })
+
+      expect(product.id).toBe(store.product.id)
+      // 삼켰다는 증거 — 던졌다면 처리되지 않은 거절이 남는다.
+      await eventually(() => Promise.resolve(broken.mock.calls.length === 1))
+    } finally {
+      broken.mockRestore()
+    }
+
+    expect((await recent(me)).items).toEqual([])
+
+    // 그리고 다음 조회는 멀쩡하다: 한 번의 실패가 이력 기능을 망가뜨리지 않는다.
+    await view(me, store.product.id)
+    await eventually(async () => (await recent(me)).items.length === 1)
+  })
+
+  /**
+   * **기록이 상세를 붙잡지 않는다** (F3).
+   *
+   * 기준표는 「응답 시간 비교」라고 적었지만, 시간으로 재면 두 가지가 나쁘다. 공유
+   * 러너에서 벽시계는 부하를 함께 재므로 자기 변경과 무관하게 흔들리고(HANDOFF 의 A1
+   * 항목), 무엇보다 **빠른 기계에서는 틀린 구현도 통과한다** — 기록을 기다리는 코드는
+   * 데이터베이스가 한가한 날엔 몇 밀리초밖에 안 걸린다.
+   *
+   * 그래서 시간 대신 **순서**를 잰다. 기록을 영원히 끝나지 않게 만들어 두고 상세를
+   * 부른다: 기다리지 않는 구현이면 답이 그대로 오고, `await` 하는 구현이면 이 검사가
+   * 영영 안 끝난다. 「유의미한 증가 없음」의 가장 강한 형태다.
+   */
+  it('기록이 끝나지 않아도 상세는 바로 답한다 (F3)', async () => {
+    const collections = api.resolve<CollectionsService>(CollectionsService)
+    const hanging = vi
+      .spyOn(collections, 'recordView')
+      .mockReturnValue(new Promise<void>(() => undefined))
+
+    try {
+      const { product } = await client(me).request({
+        path: `/products/${store.product.id}/detail`,
+        schema: productDetailResponseSchema,
+      })
+
+      expect(product.id).toBe(store.product.id)
+    } finally {
+      hanging.mockRestore()
+    }
+  })
+
   it('하나씩 지우고 전부 지운다 (F7)', async () => {
     await client(me).request({
       path: '/me/recently-viewed',
@@ -382,6 +526,64 @@ describe('팔로우 (TASK-0089)', () => {
     })
 
     expect(answer.sellers).toEqual([])
+  })
+
+  /**
+   * 홈의 신상품 줄이 이 순서에 기댄다 (F6).
+   *
+   * 50곳을 넘겨 팔로우한 사람의 줄은 앞에서부터 잘리므로, 순서가 없으면 그 줄이
+   * 새로고침할 때마다 다른 가게로 채워진다 — 화면은 멀쩡하고 값만 흔들린다.
+   */
+  it('팔로우한 가게의 id 를 최근 순으로 답한다 (F1 · F6)', async () => {
+    const other = await createSeller(db, { userId: (await createUser(db)).id, status: 'ACTIVE' })
+
+    await toggleFollow(me, store.seller.id)
+    api.clock.advance(1_000)
+    await toggleFollow(me, other.id)
+
+    expect((await followIds(me)).sellerIds).toEqual([other.id, store.seller.id])
+  })
+
+  it('언팔로우하면 id 도 사라진다', async () => {
+    await toggleFollow(me, store.seller.id)
+    await toggleFollow(me, store.seller.id)
+
+    expect((await followIds(me)).sellerIds).toEqual([])
+  })
+
+  it('남의 팔로우는 섞이지 않는다', async () => {
+    await toggleFollow(stranger, store.seller.id)
+
+    expect((await followIds(me)).sellerIds).toEqual([])
+  })
+
+  /**
+   * 브랜드관은 **팔로우하지 않은 사람에게도** 팔로워 수를 보여야 한다 (F3).
+   *
+   * 이 수가 팔로우 목록의 줄에만 있으면, 아직 안 누른 사람에게는 아예 안 보인다 —
+   * 그리고 그 사람이 바로 이 수를 근거로 쓰는 사람이다. 「팔로우한 뒤에야 나타나는
+   * 수」는 F3 을 지킨 것이 아니라 물어볼 수 없게 만든 것이다.
+   *
+   * 로그인하지 않은 채로 묻는 것이 요점이다: 이 문은 공개이고, 세어 놓은 값 하나일
+   * 뿐 **누가 팔로우했는지는 실리지 않는다.**
+   */
+  it('공개 브랜드관이 팔로워 수를 싣는다 (F3)', async () => {
+    const before = await api.client.request({
+      path: `/sellers/${store.seller.id}`,
+      schema: storefrontSellerResponseSchema,
+    })
+
+    expect(before.seller.followerCount).toBe(0)
+
+    await toggleFollow(me, store.seller.id)
+    await toggleFollow(stranger, store.seller.id)
+
+    const after = await api.client.request({
+      path: `/sellers/${store.seller.id}`,
+      schema: storefrontSellerResponseSchema,
+    })
+
+    expect(after.seller.followerCount).toBe(2)
   })
 
   it('없는 스토어는 팔로우할 수 없다', async () => {

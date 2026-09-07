@@ -51,7 +51,14 @@ function open({
 
   renderWithAuth(
     <DensityProvider>
-      <ProductReviews copy={copy} productId={MOCK_PRODUCT_ID} ratingAvg={435} ratingCount={20} />
+      <ProductReviews
+        copy={copy}
+        productId={MOCK_PRODUCT_ID}
+        ratingAvg={435}
+        ratingCount={20}
+        refusals={messagesFor().refusals}
+        report={messagesFor().report}
+      />
     </DensityProvider>,
     { session: signedIn ? sessionBuyer : null },
   )
@@ -253,18 +260,16 @@ describe('F1 도움돼요 · 판매자 답변 · 신고', () => {
     expect(within(answered).getByText(/다음 입고 때 사이즈를/)).toBeVisible()
   })
 
-  it('keeps the report button reachable and says it is not ready yet (TASK-0091)', async () => {
-    open({ density: 2 })
+  it('opens a working report dialog on each review (TASK-0091)', async () => {
+    const user = open({ density: 2 })
     const [first] = await listShown()
 
     if (first === undefined) throw new Error('리뷰 카드가 없습니다.')
 
-    const report = within(first).getByRole('button', { name: copy.reportLabel })
+    // 「준비 중」이라고 적힌 비활성 버튼이 있던 자리다. 이제 진짜 다이얼로그를 연다.
+    await user.click(within(first).getByRole('button', { name: messagesFor().report.triggerLabel }))
 
-    // `aria-disabled` 이지 `disabled` 가 아니다 — 탭 순서에 남아야 그 옆의 「준비 중」을
-    // 읽을 수 있고, `disabled` 인 버튼은 아무에게도 이유를 말하지 못한다.
-    expect(report).toHaveAttribute('aria-disabled', 'true')
-    expect(within(first).getByText(copy.reportComingSoon)).toBeVisible()
+    expect(await screen.findByRole('dialog', { name: messagesFor().report.title })).toBeVisible()
   })
 
   it('draws the photos the server gave an address for', async () => {

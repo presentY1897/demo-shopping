@@ -24,21 +24,37 @@ import axe from 'axe-core'
 import type { RunOptions } from 'axe-core'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AdminShell } from '@/components/layout/admin-shell'
 import { messagesFor } from '@/messages'
 
 import { renderWithAuth } from './support/auth'
+import { notification, notificationList } from './support/notifications'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
-const { auth, layout } = messagesFor()
+const { auth, layout, notifications } = messagesFor()
 
 const pathname = vi.hoisted(() => ({ current: '/' }))
 
 vi.mock('next/navigation', () => ({
   usePathname: () => pathname.current,
 }))
+
+/**
+ * 상단바의 종은 이제 진짜 알림함이라 API 를 부른다 (TASK-0090).
+ *
+ * `packages/api-mocks` 에 `/me/notifications` 의 대역이 없고 이 TASK 는 `apps/admin`
+ * 밖을 고치지 않으므로, 이 스펙에서는 `lib/notifications/console-api` 를 대신 세운다
+ * — 이 파일이 재는 것은 메뉴와 슬롯이지 알림함이 아니다 (그쪽은
+ * `test/notifications.spec.tsx`).
+ */
+const notificationApi = vi.hoisted(() => ({
+  fetchNotifications: vi.fn(),
+  readNotifications: vi.fn(),
+}))
+
+vi.mock('@/lib/notifications/console-api', () => notificationApi)
 
 function renderShell(currentPath: string, width: number = VIEWPORTS.desktop) {
   pathname.current = currentPath
@@ -51,6 +67,13 @@ function renderShell(currentPath: string, width: number = VIEWPORTS.desktop) {
     { session: sessionAdminSuper },
   )
 }
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  // 종은 셸의 일부라 **모든** 렌더에서 한 번 묻는다. 답을 주지 않으면 그 훅이
+  // 해석되지 않은 값을 상태에 앉히고, 메뉴를 재는 검사들이 알림함 때문에 깨진다.
+  notificationApi.fetchNotifications.mockResolvedValue(notificationList([]))
+})
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -98,17 +121,26 @@ describe('the menu', () => {
 })
 
 describe('the notification slot', () => {
-  it('says which milestone fills it, rather than being disabled', async () => {
+  it('opens the inbox rather than being a dead control', async () => {
+    notificationApi.fetchNotifications.mockResolvedValue(
+      notificationList([notification()], { unreadCount: 1 }),
+    )
+
     const user = userEvent.setup()
     renderShell('/')
 
-    const trigger = screen.getByRole('button', { name: layout.notifications.label })
+    const trigger = await screen.findByRole('button', {
+      name: notifications.slot.labelWithCount.replace('{count}', '1'),
+    })
 
     expect(trigger).toBeEnabled()
 
     await user.click(trigger)
 
-    expect(await screen.findByText(layout.notifications.body)).toBeVisible()
+    expect(await screen.findByRole('link', { name: notifications.viewAll })).toHaveAttribute(
+      'href',
+      '/notifications',
+    )
   })
 })
 

@@ -194,6 +194,34 @@ describe('F2 — every status has a face', () => {
     expect(screen.getByRole('button', { name: action })).toBeVisible()
   })
 
+  /**
+   * 자기 팔로워 수를 콘솔에서 본다 (TASK-0089 §3).
+   *
+   * 없으면 판매자가 이 수를 보려고 **자기 가게의 공개 페이지를 열어야** 한다 —
+   * 콘솔이 자기 가게에 대해 손님보다 모르는 상태다.
+   */
+  it('shows the seller their own follower count', async () => {
+    await openApply(sellerActive)
+
+    expect(screen.getByText(copy.status.followerLabel)).toBeVisible()
+    expect(
+      screen.getByText(
+        copy.status.followerCount.replace('{count}', String(sellerActive.followerCount)),
+      ),
+    ).toBeVisible()
+  })
+
+  /**
+   * **영업 중일 때만.** 심사 중인 가게의 0명은 정보가 아니라 잡음이고, 그 화면에서
+   * 사람이 알고 싶은 것은 심사가 어떻게 됐는가다. 반대 실험이 없으면 「언제나
+   * 그린다」도 위 검사를 통과한다.
+   */
+  it('does not show a follower count for a store that is not trading yet', async () => {
+    await openApply(sellerPending)
+
+    expect(screen.queryByText(copy.status.followerLabel)).toBeNull()
+  })
+
   it('shows the reason a rejected or suspended store was given', async () => {
     await openApply(sellerRejected)
 

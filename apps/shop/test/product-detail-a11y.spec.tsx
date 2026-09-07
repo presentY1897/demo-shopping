@@ -24,6 +24,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { messagesFor } from '@/messages'
 
 import { renderWithAuth } from './support/auth'
+import { stubCommunityApi } from './support/community'
 import { stubReviewApi } from './support/reviews'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
@@ -80,6 +81,8 @@ beforeEach(() => {
    * `test/support/reviews.ts` 가 그 자리를 대신하고, 왜 거기 있는지도 적혀 있다.
    */
   stubReviewApi()
+  // 문의 목록과 최근 본 상품도 같은 화면에 있다 (TASK-0087 · 0088).
+  stubCommunityApi()
 })
 
 afterEach(() => {

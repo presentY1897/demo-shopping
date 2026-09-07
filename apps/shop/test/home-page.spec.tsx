@@ -22,13 +22,19 @@ import {
 import { APP_ID_HEADER, healthEntries } from '@shopping/shared'
 import { DensityProvider } from '@shopping/ui/density'
 import { screen, within } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import HomePage from '@/app/page'
 import { messagesFor } from '@/messages'
 
 import { renderWithAuth } from './support/auth'
 import { testServer } from './setup'
+
+vi.mock('next/navigation', async () => {
+  const { nextNavigationMock } = await import('./support/navigation')
+
+  return nextNavigationMock()
+})
 
 const { health, home, wake } = messagesFor()
 

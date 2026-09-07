@@ -10,10 +10,13 @@
  * spec here cannot import `http` even if it wanted to.
  *
  * TASK-0082's three routes (`/seller-revenue`, `/seller-settlement-outlook`,
- * `/settlements`) and TASK-0085's three (`/seller-product-reviews`, and the
- * reply written and removed at `/reviews/:id/reply`) have no handlers there yet,
- * and neither branch owns `packages/`. So the seam moves one layer up: instead
- * of intercepting the network, the specs replace `getApiClient` with a **real**
+ * `/settlements`), TASK-0085's three (`/seller-product-reviews`, and the reply
+ * written and removed at `/reviews/:id/reply`), TASK-0088's three
+ * (`/seller-questions`, and the answer written and removed at
+ * `/questions/:id/answer`) and TASK-0090's two (`/me/notifications` and
+ * `/me/notifications/read`) have no handlers there yet, and none of those
+ * branches owns `packages/`. So the seam moves one layer up: instead of
+ * intercepting the network, the specs replace `getApiClient` with a **real**
  * `createApiClient` whose `fetch` is this stub.
  *
  * What that keeps is the part that matters for gate C1 — **every answer is still
@@ -29,8 +32,9 @@
  * is the sentence somebody typed.
  *
  * **The answers are keyed by path alone, not by method.** `PUT` and `DELETE` on
- * `/reviews/:id/reply` therefore share one stub; a test that needs them to
- * answer differently has to be two tests, which is what they are.
+ * `/reviews/:id/reply` — and on `/questions/:id/answer` — therefore share one
+ * stub; a test that needs them to answer differently has to be two tests, which
+ * is what they are.
  *
  * **When handlers land in `@shopping/api-mocks`, delete this file** and move
  * these specs onto `testServer.server.use(...)` like every other screen.
@@ -81,6 +85,18 @@ export function apiCalls(): readonly ApiCall[] {
 
 function callsTo(path: string): readonly ApiCall[] {
   return seen.filter((call) => new URL(call.url).pathname === `${API_PATH_PREFIX}${path}`)
+}
+
+/**
+ * Every URL asked for whose path is `path`, in order.
+ *
+ * A count rather than a value is what the polling specs need: "did the 30s tick
+ * fire a second request" and "did the hidden tab stop firing them" are both
+ * questions about how many times a route was asked, and nothing else on the
+ * screen changes between them.
+ */
+export function requestsTo(path: string): readonly string[] {
+  return callsTo(path).map((call) => call.url)
 }
 
 /** The last URL asked for whose path is `path`, or `null`. */

@@ -21,12 +21,13 @@ import {
 } from '@shopping/ui'
 import { gridColumnsClass } from '@shopping/ui/catalog'
 import { DensityProvider } from '@shopping/ui/density'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { messagesFor } from '@/messages'
 
+import { renderWithAuth } from './support/auth'
 import { navigation, nextNavigationMock } from './support/navigation'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
@@ -42,7 +43,9 @@ function renderSearch(href: string, width: number = VIEWPORTS.desktop) {
   stubViewport(width)
   navigation.start(href)
 
-  return render(
+  // 목록의 찜 하트가 세션을 읽는다 (TASK-0086). 세션 없이 렌더하면 `useAuth` 가
+  // 프로바이더 밖이라며 던지고, 그것은 이 화면의 결함이 아니라 이 스펙의 결함이다.
+  return renderWithAuth(
     <DensityProvider>
       <SearchPage />
     </DensityProvider>,

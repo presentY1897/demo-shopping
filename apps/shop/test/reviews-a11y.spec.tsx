@@ -88,6 +88,8 @@ describe('상품 상세의 리뷰 — 9조합', () => {
             productId={MOCK_PRODUCT_ID}
             ratingAvg={435}
             ratingCount={20}
+            refusals={messages.refusals}
+            report={messages.report}
           />
         </DensityProvider>,
         { session: sessionBuyer },
@@ -113,6 +115,8 @@ describe('상품 상세의 리뷰 — 9조합', () => {
           productId={MOCK_PRODUCT_ID}
           ratingAvg={435}
           ratingCount={20}
+          refusals={messages.refusals}
+          report={messages.report}
         />
       </DensityProvider>,
       { session: sessionBuyer },

@@ -46,6 +46,28 @@ export default {
         // 보내기 전에 걸리는 넷. 하나를 놓치면 화면이 **서버가 거절할 요청**을 그대로
         // 보내고, 사람은 「필드 오류」라는 이름 없는 모양으로 그것을 받는다 (F6).
         'src/lib/reviews/review-draft.ts': complete,
+        // M13 이 더한 일곱. 성질이 위의 넷과 같다 — **틀려도 조용하다.**
+        //
+        // 담을 때 가격과 지금 가격을 거꾸로 빼면 인하가 인상으로 그려지고(F5),
+        // 로컬 이력의 순서를 잘못 세우면 로그인 직후의 「최근 본 상품」이 실제
+        // 순서를 잃으며(TASK-0087 F6), 밀도별 노출이 어긋나면 미니멀 상품 페이지에
+        // 문의 목록이 붙는다(TASK-0088 F6). 폴링이 멈추지 않아도 화면은 멀쩡하고
+        // (TASK-0090 R1), 판매자 알림을 거르지 않아도 링크를 눌러 보기 전까지는
+        // 아무 일도 없으며, 신고 폼의 검증이 빠져도 서버가 대신 거절해 준다.
+        // 어느 것도 빨간 검사를 만들지 않는다.
+        'src/lib/collections/price-change.ts': complete,
+        'src/lib/collections/local-history.ts': complete,
+        'src/lib/questions/qna-exposure.ts': complete,
+        'src/lib/questions/question-draft.ts': complete,
+        'src/lib/notifications/polling.ts': complete,
+        'src/lib/notifications/notification-scope.ts': complete,
+        'src/lib/reports/report-draft.ts': complete,
+        // 같은 성질의 하나가 더 늘었다 (TASK-0089 4.6). **가게 목록을 잘못 다듬으면
+        // 조용하다** — 계약 상한을 넘겨 보내면 서버가 400 으로 거절하고 그 거절은
+        // 홈에 **빈 줄**로만 나타나며(「아직 신상품이 없나 보다」로 읽힌다), 읽을 수
+        // 없는 id 를 그대로 넘기면 공유된 링크가 「다시 시도」밖에 없는 오류 화면이
+        // 된다. 어느 쪽도 빨간 검사를 만들지 않는다.
+        'src/lib/search/seller-ids.ts': complete,
       },
     },
   },

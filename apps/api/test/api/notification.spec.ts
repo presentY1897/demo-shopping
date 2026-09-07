@@ -1,7 +1,11 @@
 import { randomUUID } from 'node:crypto'
 
 import type { ApiClient, OrderStatus } from '@shopping/shared'
-import { notificationListResponseSchema, readNotificationsResponseSchema } from '@shopping/shared'
+import {
+  followResultSchema,
+  notificationListResponseSchema,
+  readNotificationsResponseSchema,
+} from '@shopping/shared'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { NotificationService } from '../../src/notifications/notification.service.js'
@@ -10,7 +14,12 @@ import { PrismaService } from '../../src/prisma/prisma.service.js'
 import { SellerOrderService } from '../../src/orders/seller-order.service.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
-import { createSellableVariant, createUser } from '../support/factories.js'
+import {
+  createCategory,
+  createSeller,
+  createSellableVariant,
+  createUser,
+} from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
 
 /**
@@ -41,6 +50,17 @@ beforeEach(async () => {
 
 function client(caller: TestCaller): ApiClient {
   return api.clientAs(caller)
+}
+
+/** 기다리지 않고 나가는 일이 끝나기를 기다린다. 없으면 검사가 가끔 빨간불이 된다. */
+async function eventually(check: () => Promise<boolean>): Promise<void> {
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    if (await check()) return
+
+    await new Promise((resolve) => setTimeout(resolve, 20))
+  }
+
+  throw new Error('기다린 상태가 되지 않았습니다.')
 }
 
 function notifications(): NotificationService {
@@ -167,6 +187,80 @@ describe('주문 알림 (F1 · F2)', () => {
     await move(sellerOrderId, 'PREPARING')
 
     expect((await inbox(buyer)).notifications).toEqual([])
+  })
+})
+
+/**
+ * 팔로우한 가게가 새 상품을 올리면 (TASK-0089 F4 · F5).
+ *
+ * `product.service.ts` 가 이것을 **기다리지 않고** 부르므로, 검사도 「상품 등록이
+ * 끝났다」와 「알림이 도착했다」를 따로 재야 한다 — 앞의 것만 보면 언제나 통과한다.
+ */
+describe('팔로우한 브랜드의 신상품 (TASK-0089 F4 · F5)', () => {
+  let owner: TestCaller
+  let categoryId: number
+
+  beforeEach(async () => {
+    const account = await createUser(db)
+    const shop = await createSeller(db, { userId: account.id, status: 'ACTIVE' })
+
+    owner = { userId: account.id, roles: ['SELLER_OWNER'], sellerId: shop.id }
+    categoryId = (await createCategory(db)).id
+  })
+
+  function follow(caller: TestCaller): Promise<unknown> {
+    return client(caller).request({
+      path: `/me/follows/${owner.sellerId ?? ''}`,
+      method: 'POST',
+      schema: followResultSchema,
+    })
+  }
+
+  function publish(status: 'ACTIVE' | 'DRAFT'): Promise<unknown> {
+    return client(owner).createProduct({
+      categoryId,
+      name: '새로 들어온 코트',
+      status,
+      variantDefaults: { price: 90_000, stock: 5 },
+    })
+  }
+
+  it('팔로워에게 신상품 알림이 도착한다 (F4)', async () => {
+    await follow(buyer)
+    await publish('ACTIVE')
+
+    await eventually(async () => (await inbox(buyer)).notifications.length === 1)
+
+    const [notification] = (await inbox(buyer)).notifications
+
+    expect(notification).toMatchObject({ type: 'NEW_PRODUCT', body: '새로 들어온 코트' })
+    expect(notification?.link).toMatch(/^\/products\//u)
+  })
+
+  /**
+   * **초안은 알리지 않는다.** 아직 아무도 살 수 없는 것을 알리면 눌러 들어간 사람이
+   * 404 를 만난다 (4.2). 반대 실험이 없으면 「전부 알린다」도 위 검사를 통과한다.
+   */
+  it('초안은 알리지 않는다', async () => {
+    await follow(buyer)
+    await publish('DRAFT')
+    await publish('ACTIVE')
+
+    await eventually(async () => (await inbox(buyer)).notifications.length === 1)
+
+    // 둘을 올렸는데 하나만 왔다 — 초안은 지나갔다는 뜻이다.
+    expect((await inbox(buyer)).notifications).toHaveLength(1)
+  })
+
+  it('팔로우하지 않은 사람에게는 오지 않는다', async () => {
+    const stranger: TestCaller = { userId: (await createUser(db)).id, roles: ['BUYER'] }
+
+    await follow(buyer)
+    await publish('ACTIVE')
+
+    await eventually(async () => (await inbox(buyer)).notifications.length === 1)
+
+    expect((await inbox(stranger)).notifications).toEqual([])
   })
 })
 

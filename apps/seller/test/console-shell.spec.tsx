@@ -22,15 +22,35 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { SellerShell } from '@/components/layout/seller-shell'
 import { messagesFor } from '@/messages'
 
+import type * as SellerApi from '@/lib/api'
+
 import { renderWithAuth } from './support/auth'
+import { answerJson, resetApiStub, stubApiClient } from './support/api-stub'
+import { unreadNotifications } from './support/notification-fixtures'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
-const { auth, layout } = messagesFor()
+/**
+ * The top bar now calls the API (TASK-0090).
+ *
+ * `@shopping/api-mocks` has no handler for `/me/notifications` yet and this
+ * branch does not own `packages/`, so the bell is served by the same stub the
+ * notification specs use (`support/api-stub.ts`). Without it the shell's own
+ * request reaches no handler and the whole file fails — which is what happened
+ * the moment the reserved slot became a real control.
+ */
+vi.mock('@/lib/api', async (importOriginal) => {
+  const original = await importOriginal<typeof SellerApi>()
+  const { stubApiClient: stub } = await import('./support/api-stub')
+
+  return { ...original, getApiClient: stub }
+})
+
+const { auth, layout, notifications } = messagesFor()
 
 const pathname = vi.hoisted(() => ({ current: '/' }))
 
@@ -50,6 +70,12 @@ function renderShell(currentPath: string, width: number = VIEWPORTS.desktop) {
   )
 }
 
+beforeEach(() => {
+  resetApiStub()
+  stubApiClient()
+  answerJson('/me/notifications', unreadNotifications)
+})
+
 afterEach(() => {
   vi.unstubAllGlobals()
 })
@@ -66,10 +92,11 @@ describe('the menu', () => {
   })
 
   it('leads to a route this app has', () => {
-    // A menu entry pointing at a 404 is the defect the placeholder screens
-    // exist to prevent (TASK-0019 4.10), and it is invisible until someone
-    // clicks. The filesystem is the router here, so the filesystem is what is
-    // asked.
+    // A menu entry pointing at a 404 is invisible until someone clicks. Until
+    // M13 the answer could be a placeholder screen (TASK-0019 4.10); the last
+    // one went away with `/questions`, so every entry below now leads to a
+    // screen that does its job. The filesystem is the router here, so the
+    // filesystem is what is asked.
     for (const item of consoleMenuItems(layout.menu)) {
       const segment = item.href === '/' ? '' : item.href
       expect(existsSync(join(import.meta.dirname, '..', 'src', 'app', segment, 'page.tsx'))).toBe(
@@ -93,17 +120,27 @@ describe('the menu', () => {
 })
 
 describe('the notification slot', () => {
-  it('says which milestone fills it, rather than being disabled', async () => {
+  /**
+   * The slot TASK-0019 reserved is filled (TASK-0090).
+   *
+   * What is checked here is the **seam** — that the shell puts a working
+   * notification control in its top bar and that the copy comes from the
+   * `notifications` slice rather than from `layout`. What the control *does* —
+   * the badge, the unread list, the 30s poll — is `notification-menu.spec.tsx`.
+   */
+  it('holds a real notification control now, not a "M11 fills this" popover', async () => {
     const user = userEvent.setup()
     renderShell('/')
 
-    const trigger = screen.getByRole('button', { name: layout.notifications.label })
+    const trigger = await screen.findByRole('button', {
+      name: new RegExp(notifications.menu.label),
+    })
 
     expect(trigger).toBeEnabled()
 
     await user.click(trigger)
 
-    expect(await screen.findByText(layout.notifications.body)).toBeVisible()
+    expect(await screen.findByRole('link', { name: notifications.menu.seeAllLabel })).toBeVisible()
   })
 })
 

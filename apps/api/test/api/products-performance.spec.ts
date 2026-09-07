@@ -319,6 +319,86 @@ describe('the indexes serve the queries (S3)', () => {
   })
 })
 
+/**
+ * 팔로워가 늘어도 상품 등록이 그만큼 비싸지지 않는다 (TASK-0089 F5).
+ *
+ * 기준표는 「팔로워 100명 · 응답 지연 없음」이라고 적었지만, 재는 것은 시간이 아니라
+ * **문장 수**다. 공유 러너의 벽시계는 부하를 함께 재므로 자기 변경과 무관하게
+ * 흔들리고(HANDOFF 의 A1 항목), 무엇보다 **빠른 기계에서는 틀린 구현도 통과한다** —
+ * 사람마다 한 문장을 내는 코드도 100명쯤은 순식간에 끝낸다. 문장 수는 그 모양을
+ * 그대로 드러낸다: 기울기가 0이 아니면 100명에서 이미 보인다.
+ */
+describe('팔로워가 늘어도 등록 비용은 그대로다 (TASK-0089 F5)', () => {
+  async function followers(count: number): Promise<void> {
+    const ids = await Promise.all(
+      Array.from({ length: count }, () => createUser(db).then((user) => user.id)),
+    )
+
+    await db.execute(
+      `INSERT INTO "SellerFollow" ("userId", "sellerId") SELECT unnest($1::uuid[]), $2::uuid`,
+      [ids, seller.sellerId],
+    )
+  }
+
+  function publish(name: string): Promise<unknown> {
+    return client().createProduct({
+      categoryId,
+      name,
+      status: 'ACTIVE',
+      variantDefaults: { price: 42_000, stock: 3 },
+    })
+  }
+
+  // Prisma 는 스키마를 붙여 `"public"."Notification"` 로 낸다 — 이름만 보면 안 잡힌다.
+  function notificationWrites(seen: readonly string[]): string[] {
+    return seen.filter((statement) =>
+      /INSERT INTO\s+(?:"[^"]+"\.)?"Notification"/iu.test(statement),
+    )
+  }
+
+  /**
+   * 알림이 실제로 들어올 때까지 기다린다.
+   *
+   * 없으면 이 검사는 **언제나 통과한다**: 발송이 기다려지지 않으므로 측정이 먼저 끝나
+   * 양쪽 다 0문장이 되고, 「같다」는 0 == 0 으로 참이 된다. 그래서 아래에서 절대
+   * 개수까지 함께 단언한다.
+   */
+  async function untilNotified(total: number): Promise<void> {
+    for (let attempt = 0; attempt < 50; attempt += 1) {
+      const [row] = await db.query<{ count: number }>(
+        `SELECT count(*)::int AS count FROM "Notification" WHERE "type" = 'NEW_PRODUCT'`,
+      )
+
+      if ((row?.count ?? 0) >= total) return
+
+      await new Promise((resolve) => setTimeout(resolve, 20))
+    }
+
+    throw new Error('알림이 들어오지 않았습니다.')
+  }
+
+  it('costs the same number of statements for one follower and for a hundred', async () => {
+    await followers(1)
+
+    const forOne = await statementsDuring(async () => {
+      await publish('한 명일 때')
+      await untilNotified(1)
+    })
+
+    await followers(99)
+
+    const forMany = await statementsDuring(async () => {
+      await publish('백 명일 때')
+      await untilNotified(1 + 100)
+    })
+
+    // **기울기 0이 이 검사의 전부다.** 사람마다 한 문장을 내는 구현이면 여기서
+    // 1 대 100 이 되고, 기능 검사는 하나도 빨개지지 않는다.
+    expect(notificationWrites(forMany)).toHaveLength(notificationWrites(forOne).length)
+    expect(notificationWrites(forMany)).toHaveLength(1)
+  })
+})
+
 describe('response time (A1)', () => {
   function p95Of(durations: readonly number[]): number {
     const sorted = [...durations].sort((left, right) => left - right)

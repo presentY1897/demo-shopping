@@ -11,6 +11,7 @@ import {
   APP_ID_HEADER,
   ApiClientError,
   brandNameAvailabilityResponseSchema,
+  notificationListResponseSchema,
   sellerResponseSchema,
   sellerReviewListResponseSchema,
 } from '@shopping/shared'
@@ -59,6 +60,26 @@ async function applicant(options: { readonly isDemo?: boolean } = {}): Promise<T
 
 function client(caller: TestCaller): ApiClient {
   return api.clientAs(caller)
+}
+
+/**
+ * 이 사람의 알림함에 이 유형이 올 때까지 기다린다.
+ *
+ * 발송은 기다려지지 않으므로(`void`), 곧바로 읽으면 아직 비어 있을 수 있다.
+ */
+async function eventuallyNotified(caller: TestCaller, type: string): Promise<void> {
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    const answer = await client(caller).request({
+      path: '/me/notifications',
+      schema: notificationListResponseSchema,
+    })
+
+    if (answer.notifications.some((notification) => notification.type === type)) return
+
+    await new Promise((resolve) => setTimeout(resolve, 20))
+  }
+
+  throw new Error(`알림이 오지 않았습니다: ${type}`)
 }
 
 function form(overrides: Partial<SellerApplicationRequest> = {}): SellerApplicationRequest {
@@ -721,6 +742,48 @@ describe('손님이 보는 브랜드관 (TASK-0044 4.2)', () => {
     expect(answer.seller.slug).toBe(seller.slug)
   })
 
+  /**
+   * 입점 신청이 들어오면 **운영자 전부**에게 알린다 (TASK-0090 F7).
+   *
+   * 받는 사람을 역할로 찾는 것이 요점이다 — 「관리자」라는 계정이 하나 정해져 있지
+   * 않고, 한 사람을 골라 보내면 그 사람이 자리를 비운 동안 신청이 쌓인다
+   * (`seller.service.ts` 의 `notifyOperators`).
+   *
+   * `callers` 의 고정 id 들은 데이터베이스에 없다. 그래서 이 검사는 **실제 역할 행을
+   * 만든다** — 역할로 찾는 구현이 맞는지는 역할 행이 있어야만 물어볼 수 있다.
+   */
+  it('입점 신청이 운영자들에게 알림으로 간다 (TASK-0090 F7)', async () => {
+    const operators = await Promise.all([createUser(db), createUser(db)])
+    const bystander = await createUser(db)
+
+    await db.execute(
+      `INSERT INTO "UserRole" ("id", "userId", "role")
+       SELECT gen_random_uuid(), unnest($1::uuid[]), 'ADMIN_OPERATOR'::"Role"`,
+      [operators.map((row) => row.id)],
+    )
+    await db.execute(
+      `INSERT INTO "UserRole" ("id", "userId", "role")
+       VALUES (gen_random_uuid(), $1, 'BUYER'::"Role")`,
+      [bystander.id],
+    )
+
+    await applyAs(await applicant(), form({ brandName: '새로 온 가게' }))
+
+    for (const operator of operators) {
+      const caller: TestCaller = { userId: operator.id, roles: ['ADMIN_OPERATOR'] }
+
+      await eventuallyNotified(caller, 'ADMIN_SELLER_APPLICATION')
+    }
+
+    // 운영자가 아닌 사람에게는 가지 않는다. 이 줄이 없으면 「전부에게 보낸다」도 통과한다.
+    const outsider = await client({ userId: bystander.id, roles: ['BUYER'] }).request({
+      path: '/me/notifications',
+      schema: notificationListResponseSchema,
+    })
+
+    expect(outsider.notifications).toEqual([])
+  })
+
   it('carries the brand page and nothing about the application behind it', async () => {
     const { seller } = await approved()
 
@@ -729,8 +792,14 @@ describe('손님이 보는 브랜드관 (TASK-0044 4.2)', () => {
     // The console's shape carries the status, the reason behind it, when it moved
     // and the owning account. Shipping that to every visitor would publish the
     // review history of every store.
+    //
+    // `followerCount` 는 그 선의 **안쪽**이다 (TASK-0089 F3): 세어 놓은 값 하나이고
+    // 누가 팔로우했는지는 실리지 않는다. 이 목록이 정확한 집합인 이유가 그것이다 —
+    // 공개 응답에 한 칸을 더하는 일은 언제나 판단이어야 하고, 이 검사가 그 판단을
+    // 하게 만든다.
     expect(Object.keys(answer.seller).sort()).toEqual([
       'brandName',
+      'followerCount',
       'id',
       'introduction',
       'logoUrl',

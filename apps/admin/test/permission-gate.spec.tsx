@@ -19,7 +19,7 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import axe from 'axe-core'
 import type { RunOptions } from 'axe-core'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import AttributesPage from '@/app/attributes/page'
 import CategoriesPage from '@/app/categories/page'
@@ -27,12 +27,31 @@ import { AdminShell } from '@/components/layout/admin-shell'
 import { messagesFor } from '@/messages'
 
 import { renderWithAuth } from './support/auth'
+import { notificationList } from './support/notifications'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
 const messages = messagesFor()
 const { auth, categories: categoryCopy, attributes: attributeCopy, layout } = messages
 
 vi.mock('next/navigation', () => ({ usePathname: () => '/categories' }))
+
+/**
+ * 셸의 종은 이제 진짜 알림함이라 API 를 부른다 (TASK-0090).
+ *
+ * `packages/api-mocks` 에 `/me/notifications` 의 대역이 없고 이 TASK 는 `apps/admin`
+ * 밖을 고치지 않으므로, 이 스펙에서는 `lib/notifications/console-api` 를 대신 세운다
+ * — 이 파일이 재는 것은 퍼미션이지 알림함이 아니다.
+ */
+const notificationApi = vi.hoisted(() => ({
+  fetchNotifications: vi.fn(),
+  readNotifications: vi.fn(),
+}))
+
+vi.mock('@/lib/notifications/console-api', () => notificationApi)
+
+beforeEach(() => {
+  notificationApi.fetchNotifications.mockResolvedValue(notificationList([]))
+})
 
 /** Opens the category console and selects a leaf, which is what 삭제 acts on. */
 async function selectLeaf(user: ReturnType<typeof userEvent.setup>): Promise<void> {
