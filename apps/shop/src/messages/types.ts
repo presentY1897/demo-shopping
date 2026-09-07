@@ -78,6 +78,8 @@ export interface Messages {
    */
   readonly layout: LayoutMessages
   /** 홈 (TASK-0044) — 히어로, 신상품·인기 섹션, 카테고리 바로가기, 데모 유도. */
+  /** 5분 둘러보기 (TASK-0099) — 세 역할을 차례로 여는 동선. */
+  readonly guide: GuideMessages
   readonly home: HomeMessages
   /** 브랜드관 (TASK-0044). */
   readonly brand: BrandMessages
@@ -1548,7 +1550,39 @@ export interface FooterMessages {
   readonly demoBody: string
   readonly densityTitle: string
   readonly densityBody: string
+  /** 5분 둘러보기로 가는 링크 (TASK-0099). 바닥글은 모든 화면에 있다. */
+  readonly guideLabel: string
   readonly copyright: string
+}
+
+/**
+ * 5분 둘러보기 (TASK-0099 F6 · F7).
+ *
+ * **걸음은 배열이고 순서가 뜻이다.** 앞의 걸음이 만든 것을 뒤의 걸음이 본다 —
+ * 주문을 넣지 않고 판매자 콘솔부터 열면 처리할 것이 없고, 그 화면은 「비어 있다」로만
+ * 읽힌다. 배열로 두면 화면이 순서를 매기고, 순서를 바꾸는 일이 한 곳에서 끝난다.
+ */
+export interface GuideStepMessages {
+  readonly title: string
+  readonly body: string
+  /** 이 걸음에 드는 시간. 합이 F7 의 5분 안이어야 한다 — 검사가 그 합을 센다. */
+  readonly minutes: number
+  readonly app: GuideAppName
+  /** 그 앱 안에서의 경로. 앱의 주소는 배포가 정하므로 여기 적지 않는다. */
+  readonly path: string
+}
+
+export type GuideAppName = 'shop' | 'seller' | 'admin'
+
+export interface GuideMessages {
+  readonly title: string
+  readonly description: string
+  readonly intro: string
+  readonly minutesLabel: string
+  readonly openLabel: string
+  readonly apps: Readonly<Record<GuideAppName, string>>
+  readonly steps: readonly GuideStepMessages[]
+  readonly caution: string
 }
 
 export interface HomeMessages {

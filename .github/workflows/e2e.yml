@@ -1,0 +1,104 @@
+name: e2e
+
+# 핵심 흐름 넷을 진짜 브라우저로 건넌다 (TASK-0099 F5).
+#
+# ## 왜 별도 워크플로인가
+#
+# 브라우저를 띄우고 **세 앱과 API 와 데이터베이스와 검색 엔진**을 함께 세우는 일이라
+# 다른 게이트보다 느리다. `ci.yml` 안에 넣으면 typecheck 한 줄 고친 PR 도 이만큼을
+# 기다린다. Lighthouse 워크플로가 같은 이유로 따로 있다.
+#
+# ## 모든 PR 에서 돈다 (D-057)
+#
+# `paths` 로 좁히지 않는다. 이 검사가 지키는 것은 한 파일의 동작이 아니라 **화면과
+# 화면 사이**이고, 그 사이는 어느 파일을 고쳐도 끊어질 수 있다 — 실제로 이 흐름을
+# 만들면서 찾은 결함 셋은 장바구니·주문서·레이아웃에 흩어져 있었다.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    # 시나리오 넷은 14초에 돈다 (F8 예산 10분). 20분은 스택을 세우고 빌드하는 시간까지
+    # 포함한 값이고, 여기에 걸리면 검사가 느려진 것이 아니라 **뭔가 멈춘 것**이다.
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17.11-alpine
+        env:
+          POSTGRES_USER: shopping
+          POSTGRES_PASSWORD: shopping
+          POSTGRES_DB: shopping
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd "pg_isready -U shopping -d shopping"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+      meilisearch:
+        image: getmeili/meilisearch:v1.24
+        env:
+          MEILI_MASTER_KEY: ci-master-key
+          MEILI_NO_ANALYTICS: 'true'
+          MEILI_ENV: development
+        ports:
+          - '7700:7700'
+        options: >-
+          --health-cmd "curl -fsS http://localhost:7700/health || exit 1"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      MEILI_MASTER_KEY: ci-master-key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Install the browser
+        run: pnpm --filter @shopping/e2e exec playwright install --with-deps chromium
+
+      - name: Migrate and seed
+        run: |
+          pnpm --filter @shopping/api exec prisma migrate deploy
+          pnpm --filter @shopping/api run db:seed
+          pnpm --filter @shopping/api run search:reindex
+
+      # 개발 서버가 아니라 운영 빌드를 세운다. `next dev` 는 요청마다 컴파일해서
+      # 화면이 늦게 뜨고, 그 기다림은 이 흐름이 재려는 것이 아니다.
+      - name: Build
+        run: pnpm build
+
+      - name: Start the stack
+        run: |
+          pnpm --filter @shopping/api run start &
+          pnpm --filter @shopping/shop run start &
+          pnpm --filter @shopping/seller run start &
+          pnpm --filter @shopping/admin run start &
+          npx --yes wait-on -t 180000 \
+            http://localhost:4000/api/v1/health \
+            http://localhost:3000 http://localhost:3001 http://localhost:3002
+
+      - name: Run the scenarios
+        run: pnpm --filter @shopping/e2e run e2e
+
+      # 실패한 것만 남는다 — 통과한 시나리오의 트레이스는 아무도 열지 않고 용량만 든다.
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+          retention-days: 7
