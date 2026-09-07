@@ -1,0 +1,116 @@
+name: lighthouse
+
+# 화면 성능과 접근성 점수 (TASK-0097 F1 · F2 · TASK-0098 F1).
+#
+# ## 배포된 사이트가 아니라 **CI 안에서 세운 스택**을 잰다
+#
+# 배포는 무료 인스턴스라 콜드 스타트가 최대 90초다. 그 수치를 예산으로 걸면 실패가
+# 코드와 무관하게 오가고, 몇 번 반복되면 사람이 그 빨간 불을 안 믿는다 — 이 저장소는
+# 공유 러너의 p95 변동으로 이미 세 번 겪었다 (HANDOFF 의 A1 항목).
+#
+# 대신 여기서 세우는 스택은 **재현 가능하다.** 못 재는 것도 분명하다: 실제 호스트까지의
+# 지연과 콜드 스타트 패널은 여기 없다. 그 둘은 배포된 URL 을 사람이 한 번 열어 보는
+# 것으로 확인한다 (OWNER-CHECKLIST).
+#
+# 예산과 그 강도는 `docs/design/performance.md` 에 있다 — 왜 LCP 만 경고인지도 거기
+# 적혀 있다. 한 줄로는 「지금 3.0초인데 Speed Index 는 0.76초다」이다.
+#
+# ## 왜 별도 워크플로인가
+#
+# 브라우저를 띄우고 세 서비스를 세우는 일이라 다른 게이트보다 느리다. `ci.yml` 안에
+# 넣으면 typecheck 하나 고친 PR 도 이만큼을 기다린다.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/shop/**'
+      - 'apps/api/**'
+      - 'packages/**'
+      - 'lighthouserc.json'
+      - '.github/workflows/lighthouse.yml'
+  push:
+    branches: [main]
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    name: lighthouse
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17.11-alpine
+        env:
+          POSTGRES_USER: shopping
+          POSTGRES_PASSWORD: shopping
+          POSTGRES_DB: shopping
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd "pg_isready -U shopping -d shopping"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+      meilisearch:
+        image: getmeili/meilisearch:v1.24
+        env:
+          MEILI_MASTER_KEY: ci-master-key
+          MEILI_NO_ANALYTICS: 'true'
+          MEILI_ENV: development
+        ports:
+          - '7700:7700'
+        options: >-
+          --health-cmd "curl -fsS http://localhost:7700/health || exit 1"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      MEILI_MASTER_KEY: ci-master-key
+      API_BASE: http://127.0.0.1:4000/api/v1
+      SHOP_BASE: http://127.0.0.1:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Migrate and seed
+        run: |
+          pnpm --filter @shopping/api exec prisma migrate deploy
+          pnpm --filter @shopping/api run db:seed
+
+      # 상점은 정적으로 프리렌더된다. 그것이 이 측정의 대상이므로 개발 서버가 아니라
+      # 운영 빌드를 세운다 — `next dev` 는 요청마다 컴파일해서 LCP 가 코드와 무관하게
+      # 커진다.
+      - name: Build the API and the shop
+        run: |
+          pnpm --filter @shopping/api run build
+          pnpm --filter @shopping/shop run build
+
+      - name: Start the stack
+        run: |
+          pnpm --filter @shopping/api run start &
+          pnpm --filter @shopping/shop run start &
+          npx --yes wait-on -t 120000 http://127.0.0.1:4000/api/v1/health http://127.0.0.1:3000
+
+      # 상품 id 와 카테고리 slug 를 워크플로에 적어 두면 시드가 바뀌는 날 조용히
+      # 404 를 재게 된다 — **404 는 아주 빠르고**, 예산은 그대로 통과한다.
+      - name: Resolve the six URLs
+        id: urls
+        run: |
+          {
+            echo 'list<<EOF'
+            node scripts/lighthouse-urls.mjs
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: ${{ steps.urls.outputs.list }}
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: false
