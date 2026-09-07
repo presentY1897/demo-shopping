@@ -18,7 +18,7 @@
 | [M10](./M10-claims/) 취소·반품·환불 | 부분 취소·반품, 환불 안분, 재고 복원, 클레임 처리 | **7/7 완료** |
 | [M11](./M11-discount/) 할인 | 쿠폰(부담 주체), 적립금 원장, 적용·복구 | **7/7 완료** |
 | [M12](./M12-settlement/) 정산 | 수수료 정책, 정산서 배치, 승인·지급, 매출 대시보드 | **4/4 완료** |
-| [M13](./M13-community/) 회원 부가 | 리뷰, 위시리스트, Q&A, 팔로우, 알림, 신고 | 0/9 |
+| [M13](./M13-community/) 회원 부가 | 리뷰, 위시리스트, Q&A, 팔로우, 알림, 신고 | **9/9 완료** |
 | [M14](./M14-admin/) 관리자 | 대시보드, 회원·판매자 관리, 전체 조회, 데모 관리 | 0/5 |
 | [M15](./M15-polish/) 마무리 | 성능·정합성, 접근성, E2E·데모 시나리오, 포트폴리오 문서 | 0/4 |
 
@@ -207,19 +207,19 @@
 
 </details>
 
-<details><summary><b>M13. 회원 부가</b> (0/9)</summary>
+<details><summary><b>M13. 회원 부가</b> (9/9 완료)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
-| [TASK-0083](./M13-community/TASK-0083-review-write.md) | 리뷰 스키마 · 작성 (구매 검증) | 승인됨 |
-| [TASK-0084](./M13-community/TASK-0084-review-display.md) | 리뷰 표시 · 평점 집계 | 승인됨 |
-| [TASK-0085](./M13-community/TASK-0085-review-reply.md) | 판매자 리뷰 답변 | 승인됨 |
-| [TASK-0086](./M13-community/TASK-0086-wishlist.md) | 위시리스트 | 승인됨 |
-| [TASK-0087](./M13-community/TASK-0087-recently-viewed.md) | 최근 본 상품 | 승인됨 |
-| [TASK-0088](./M13-community/TASK-0088-product-qna.md) | 상품 Q&A | 승인됨 |
-| [TASK-0089](./M13-community/TASK-0089-seller-follow.md) | 판매자 팔로우 | 승인됨 |
-| [TASK-0090](./M13-community/TASK-0090-notification.md) | 알림 시스템 | 승인됨 |
-| [TASK-0091](./M13-community/TASK-0091-report.md) | 신고 처리 | 승인됨 |
+| [TASK-0083](./M13-community/TASK-0083-review-write.md) | 리뷰 스키마 · 작성 (구매 검증) | 완료 |
+| [TASK-0084](./M13-community/TASK-0084-review-display.md) | 리뷰 표시 · 평점 집계 | 완료 |
+| [TASK-0085](./M13-community/TASK-0085-review-reply.md) | 판매자 리뷰 답변 | 완료 |
+| [TASK-0086](./M13-community/TASK-0086-wishlist.md) | 위시리스트 | 완료 |
+| [TASK-0087](./M13-community/TASK-0087-recently-viewed.md) | 최근 본 상품 | 완료 |
+| [TASK-0088](./M13-community/TASK-0088-product-qna.md) | 상품 Q&A | 완료 |
+| [TASK-0089](./M13-community/TASK-0089-seller-follow.md) | 판매자 팔로우 | 완료 |
+| [TASK-0090](./M13-community/TASK-0090-notification.md) | 알림 시스템 | 완료 |
+| [TASK-0091](./M13-community/TASK-0091-report.md) | 신고 처리 | 완료 |
 
 </details>
 

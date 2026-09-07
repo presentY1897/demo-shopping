@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M13 회원 부가 |
-| 상태 | 승인됨 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-02 |
 | 브랜치 | `feature/notification` |
 | 선행 작업 | M12 완료 |
@@ -30,11 +30,11 @@
 
 ## 3. 요구사항
 
-- [ ] 주문 상태가 바뀌면 구매자에게 알림이 온다
-- [ ] 알림을 클릭하면 관련 화면으로 이동한다
-- [ ] 미읽음 개수가 배지에 표시된다
-- [ ] 유형별로 수신을 끌 수 있다
-- [ ] 알림 생성이 원래 작업을 지연시키지 않는다
+- [x] 주문 상태가 바뀌면 구매자에게 알림이 온다
+- [x] 알림을 클릭하면 관련 화면으로 이동한다
+- [x] 미읽음 개수가 배지에 표시된다
+- [x] 유형별로 수신을 끌 수 있다
+- [x] 알림 생성이 원래 작업을 지연시키지 않는다
 
 ## 4. 설계
 
@@ -98,14 +98,14 @@ TASK-0059 가 `SellerOrderEvents` 포트를 남기며 「부르는 자리는 지
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| F1 | 주문 알림 | 판매자가 발송 처리 | 구매자에게 알림 생성 | [ ] |
-| F2 | 링크 이동 | 알림 클릭 | 해당 주문 상세로 이동 | [ ] |
-| F3 | 배지 | 미읽음 3건 | 배지에 3 표시 | [ ] |
-| F4 | 읽음 처리 | 개별·전체 읽음 | 배지 갱신 | [ ] |
-| F5 | 수신 설정 | 특정 유형 끄기 | 해당 알림 생성 안 됨 | [ ] |
-| F6 | 비동기 | 알림 생성 실패 유도 | 원래 작업은 정상 완료 | [ ] |
-| F7 | 역할별 | 판매자·관리자 알림 | 각 역할에 맞는 알림 도착 | [ ] |
-| F8 | 폴링 | 탭 2개로 상태 변경 | 30초 내 반대편 알림 표시 | [ ] |
+| F1 | 주문 알림 | `notification.spec.ts` 「발송 처리하면 구매자에게 알림이 온다」 · 「알릴 만하지 않은 전이에는 알림이 없다」 (4.3) | 구매자에게 알림 생성 | [x] |
+| F2 | 링크 이동 | `notification.spec.ts` 「알림이 그 주문으로 가는 경로를 싣는다 (F2)」 · `notifications.spec.tsx`(shop) 「uses the link as an app path, with no domain in front of it (F2)」 | 해당 주문 상세로 이동 | [x] |
+| F3 | 배지 | `notification.spec.ts` 「미읽음 수를 목록과 함께 답한다 (F3)」 (배지 전용 라우트가 없다 — 4.5) · `notifications.spec.tsx`(shop) 「carries the unread count inside the control’s own name」 · `notification-menu.spec.tsx`(seller) 「counts what the server counted, not the rows it was handed」 | 배지에 3 표시 | [x] |
+| F4 | 읽음 처리 | `notification.spec.ts` 「하나만 읽는다」 · 「id 를 주지 않으면 전부 읽는다 (F4)」 · `notification-inbox.spec.tsx`(seller) 「refreshes the top bar badge as soon as the inbox marks everything read」 | 배지 갱신 | [x] |
+| F5 | 수신 설정 | `notification.spec.ts` 「거래 알림을 끄면 오지 않는다」 — 알림함이 비어 있다(만들어 두고 화면에서 거르지 않는다, 4.4) · `notification-rules.spec.ts` 「한 스위치가 다른 유형을 끄지 않는다」 | 해당 알림 생성 안 됨 | [x] |
+| F6 | 비동기 | `notification.spec.ts` 「알림 생성이 실패해도 던지지 않는다」 — 없는 사용자로 외래키를 어겨 실패를 만든다 | 원래 작업은 정상 완료 | [x] |
+| F7 | 역할별 | 판매자: `virtual-card-payment.spec.ts` 「결제가 끝나면 판매자에게 새 주문 알림이 간다」 (같은 전이가 산 사람에게는 알릴 것이 아니라는 것까지 함께 단언) · 관리자: `sellers.integration.spec.ts` 「입점 신청이 운영자들에게 알림으로 간다 (TASK-0090 F7)」 (**실제 역할 행**을 만들어 확인 — 역할로 찾는 구현은 역할 행이 있어야만 물어볼 수 있다) + 화면 `notifications.spec.tsx`(shop) 「draws the shop’s own notifications and leaves the consoles’ out (F7)」 | 각 역할에 맞는 알림 도착 | [x] |
+| F8 | 폴링 | `notifications.spec.tsx`(shop) 「asks again after thirty seconds while the tab is visible」 · 「stops in a background tab and asks once on the way back (R1)」 · `notifications.spec.tsx`(admin) 「asks again thirty seconds later」 · `notification-menu.spec.tsx`(seller) 「asks again after 30 seconds」 — 탭 둘을 한 검사가 열지는 못한다. 반대편이 만드는 쪽은 F1 이 잰다 | 30초 내 반대편 알림 표시 | [x] |
 
 ### 6.2 품질 게이트
 
@@ -117,8 +117,8 @@ TASK-0059 가 `SellerOrderEvents` 포트를 남기며 「부르는 자리는 지
 
 | # | 기준 | 충족 |
 | --- | --- | --- |
-| D1 | 상태 갱신 + 인덱스 2곳 | [ ] |
-| D2 | 알림 유형 목록을 `docs/design/` 에 정리 | [ ] |
+| D1 | 상태 갱신 + 인덱스 2곳 | [x] |
+| D2 | 알림 유형 목록을 `docs/design/` 에 정리 | [x] |
 
 ## 7. 리스크 / 열린 질문
 
@@ -126,6 +126,7 @@ TASK-0059 가 `SellerOrderEvents` 포트를 남기며 「부르는 자리는 지
 | --- | --- | --- |
 | R1 | 폴링이 서버 부하 | 탭이 백그라운드면 폴링 중단. 30초 주기 유지 |
 | R2 | 알림이 너무 많아 피로 | 유형별 수신 설정 + 기본값을 보수적으로 |
+| R3 | **`CLAIM_STATUS` 를 만드는 코드가 없다** — 유형도 수신 스위치(`notifyClaim`)도 있는데 아무도 보내지 않는다. 취소·반품이 움직일 때 알림을 받는 것은 판매자(`SELLER_CLAIM`)뿐이고, 구매자는 주문 상세를 다시 열어야 안다 | F 표의 어느 줄도 이것을 요구하지 않아 이 TASK 를 막지는 않는다. **없다는 사실이 조용한 것**이 위험이라 `docs/design/notifications.md` 에 적어 두었다 — 화면들은 그 문구를 이미 갖고 있어 「오지 않는 알림」과 구별되지 않는다 |
 
 ## 8. 확정된 버전
 
@@ -136,3 +137,4 @@ TASK-0059 가 `SellerOrderEvents` 포트를 남기며 「부르는 자리는 지
 | 날짜 | 내용 |
 | --- | --- |
 | 2026-09-02 | 최초 작성 |
+| 2026-09-07 | 완료. F7 의 API 쪽(판매자·운영자 알림이 실제로 만들어지는가)을 재는 검사가 없어 더했다. D2 로 `docs/design/notifications.md` 를 쓰면서 `CLAIM_STATUS` 가 **계약에만 있고 만드는 코드가 없다**는 것이 드러났다 (7장) |
