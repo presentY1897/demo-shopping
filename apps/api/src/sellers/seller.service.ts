@@ -25,6 +25,7 @@ import { sellerOwnership, sellerOwnershipSelect } from '../auth/resource-ownersh
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
+import { NotificationService } from '../notifications/notification.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { assertSellerActive } from './seller-access.js'
 import type { SellerAction, SellerCapability } from './seller-status.js'
@@ -123,6 +124,7 @@ export class SellerService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
+    private readonly notifications: NotificationService,
   ) {}
 
   // ------------------------------------------------------------- the seller
@@ -209,7 +211,7 @@ export class SellerService {
     }
 
     if (existing === null) {
-      return this.answer(
+      const created = this.answer(
         await this.duplicateAware(() =>
           this.prisma.seller.create({
             data: { userId: principal.userId, ...fields, createdAt: now, updatedAt: now },
@@ -217,11 +219,15 @@ export class SellerService {
           }),
         ),
       )
+
+      void this.notifyOperators(input.brandName)
+
+      return created
     }
 
     assertResourceAccess(principal, 'seller.write', sellerOwnership(existing))
 
-    return this.answer(
+    const updated = this.answer(
       await this.duplicateAware(() =>
         this.prisma.seller.update({
           where: { id: existing.id },
@@ -229,6 +235,36 @@ export class SellerService {
           select: SELLER_SELECT,
         }),
       ),
+    )
+
+    void this.notifyOperators(input.brandName)
+
+    return updated
+  }
+
+  /**
+   * 심사할 사람들에게 알린다 (TASK-0090 F7).
+   *
+   * **역할로 받는 사람을 찾는다.** 「관리자」라는 계정이 하나 정해져 있지 않고, 심사를
+   * 하는 것은 운영자 전부다 — 한 사람을 골라 보내면 그 사람이 자리를 비운 동안 신청이
+   * 쌓인다.
+   *
+   * 기다리지 않는다. 알림이 늦는 것이 입점 신청을 되돌릴 이유는 아니다.
+   */
+  private async notifyOperators(brandName: string): Promise<void> {
+    const operators = await this.prisma.userRole.findMany({
+      where: { role: { in: ['ADMIN_OPERATOR', 'ADMIN_SUPER'] } },
+      select: { userId: true },
+    })
+
+    await this.notifications.sendMany(
+      operators.map((row) => ({
+        userId: row.userId,
+        type: 'ADMIN_SELLER_APPLICATION' as const,
+        title: '입점 신청이 들어왔어요',
+        body: `${brandName} 의 신청을 검토해 주세요.`,
+        link: '/sellers',
+      })),
     )
   }
 

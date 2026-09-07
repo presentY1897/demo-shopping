@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query } from '@nestjs/common'
 import type {
   FollowListResponse,
+  RestockAlertResult,
   FollowResult,
   RecentlyViewedResponse,
   ToggleResult,
@@ -48,6 +49,39 @@ export class CollectionsController {
     return this.collections.toggleWishlist(
       principal.userId,
       parseInput(productIdSchema, productId, 'productId'),
+    )
+  }
+
+  /**
+   * 재입고 알림 신청을 켜고 끈다 (F4).
+   *
+   * `DELETE` 가 끄고 `POST` 가 켠다 — 토글이 아닌 이유는 이 버튼이 **품절 화면에만**
+   * 있고, 그 화면에서 사람이 하려는 일은 언제나 「켜기」이기 때문이다. 끄는 것은
+   * 찜 목록에서 한다.
+   */
+  @Post('me/wishlist/:productId/restock-alert')
+  @RequirePermission('collection.write')
+  requestRestockAlert(
+    @Principal() principal: RequestPrincipal,
+    @Param('productId') productId: string,
+  ): Promise<RestockAlertResult> {
+    return this.collections.setRestockAlert(
+      principal.userId,
+      parseInput(productIdSchema, productId, 'productId'),
+      true,
+    )
+  }
+
+  @Delete('me/wishlist/:productId/restock-alert')
+  @RequirePermission('collection.write')
+  cancelRestockAlert(
+    @Principal() principal: RequestPrincipal,
+    @Param('productId') productId: string,
+  ): Promise<RestockAlertResult> {
+    return this.collections.setRestockAlert(
+      principal.userId,
+      parseInput(productIdSchema, productId, 'productId'),
+      false,
     )
   }
 

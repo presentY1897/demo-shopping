@@ -3,8 +3,10 @@ import {
   ApiClientError,
   followListResponseSchema,
   followResultSchema,
+  notificationListResponseSchema,
   productDetailResponseSchema,
   recentlyViewedResponseSchema,
+  restockAlertResultSchema,
   toggleResultSchema,
   wishlistResponseSchema,
   RECENTLY_VIEWED_MAX,
@@ -12,6 +14,7 @@ import {
 import { beforeEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
+import { RestockNotifier } from '../../src/notifications/restock.service.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
 import { createSellableVariant, createSeller, createUser } from '../support/factories.js'
@@ -64,6 +67,7 @@ function wishlist(caller: TestCaller): Promise<{
     soldOut: boolean
     price: number | null
     addedPrice: number | null
+    notifyRestock: boolean
   }[]
 }> {
   return client(caller).request({ path: '/me/wishlist', schema: wishlistResponseSchema })
@@ -387,5 +391,73 @@ describe('팔로우 (TASK-0089)', () => {
     await db.execute(`DELETE FROM "Seller" WHERE "id" = $1`, [gone.id])
 
     expect(await failure(toggleFollow(me, gone.id))).toBe(404)
+  })
+})
+
+describe('재입고 알림 (TASK-0086 F4)', () => {
+  function restockAlert(
+    caller: TestCaller,
+    productId: string,
+    method: 'POST' | 'DELETE',
+  ): Promise<{ notifyRestock: boolean }> {
+    return client(caller).request({
+      path: `/me/wishlist/${productId}/restock-alert`,
+      method,
+      schema: restockAlertResultSchema,
+    })
+  }
+
+  it('찜한 상품에 재입고 알림을 신청한다', async () => {
+    await toggleWishlist(me, store.product.id)
+
+    expect(await restockAlert(me, store.product.id, 'POST')).toEqual({ notifyRestock: true })
+    expect((await wishlist(me)).items[0]?.notifyRestock).toBe(true)
+  })
+
+  /** 「알림은 기다리는데 목록에는 없는」 상태를 만들지 않는다. */
+  it('찜하지 않은 상품에는 걸 수 없다', async () => {
+    expect(await failure(restockAlert(me, store.product.id, 'POST'))).toBe(404)
+  })
+
+  it('끌 수 있다', async () => {
+    await toggleWishlist(me, store.product.id)
+    await restockAlert(me, store.product.id, 'POST')
+
+    expect(await restockAlert(me, store.product.id, 'DELETE')).toEqual({ notifyRestock: false })
+  })
+
+  /** 다시 들어오면 알림이 가고, **신청은 꺼진다** — 같은 재입고를 두 번 알리지 않는다. */
+  it('다시 들어오면 알림이 가고 신청이 꺼진다', async () => {
+    await toggleWishlist(me, store.product.id)
+    await restockAlert(me, store.product.id, 'POST')
+
+    const sent = await api.resolve<RestockNotifier>(RestockNotifier).sweep()
+
+    expect(sent).toBe(1)
+    expect((await wishlist(me)).items[0]?.notifyRestock).toBe(false)
+
+    const inbox = await client(me).request({
+      path: '/me/notifications',
+      schema: notificationListResponseSchema,
+    })
+
+    expect(inbox.notifications[0]).toMatchObject({ type: 'RESTOCK' })
+  })
+
+  it('아직 품절이면 아무것도 보내지 않는다', async () => {
+    await toggleWishlist(me, store.product.id)
+    await restockAlert(me, store.product.id, 'POST')
+    await db.execute(
+      `UPDATE "Product" SET "minPrice" = NULL, "status" = 'DRAFT'::"ProductStatus" WHERE "id" = $1`,
+      [store.product.id],
+    )
+
+    expect(await api.resolve<RestockNotifier>(RestockNotifier).sweep()).toBe(0)
+  })
+
+  it('신청하지 않은 찜에는 보내지 않는다', async () => {
+    await toggleWishlist(me, store.product.id)
+
+    expect(await api.resolve<RestockNotifier>(RestockNotifier).sweep()).toBe(0)
   })
 })

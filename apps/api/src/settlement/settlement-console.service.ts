@@ -17,6 +17,7 @@ import { sellerOwnership, sellerOwnershipSelect } from '../auth/resource-ownersh
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { domainFailure } from '../common/domain-failure.js'
+import { NotificationService } from '../notifications/notification.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { sourcesOf } from './settlement-transitions.js'
 
@@ -110,6 +111,7 @@ export class SettlementConsoleService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
+    private readonly notifications: NotificationService,
   ) {}
 
   /**
@@ -270,7 +272,34 @@ export class SettlementConsoleService {
       )
     }
 
-    return toSettlement(await this.load(id))
+    const settlement = toSettlement(await this.load(id))
+
+    // 판매자에게 알린다 (TASK-0090 F7). **보류는 알리지 않는다** — 그것은 아직
+    // 판단이 끝나지 않았다는 뜻이고, 「정산이 멈췄다」를 사유 없이 통보하면 판매자가
+    // 할 수 있는 일이 없다. 승인·지급은 끝난 사실이다.
+    if (to !== 'HOLD') void this.notifySeller(settlement, to)
+
+    return settlement
+  }
+
+  /** 정산서가 승인·지급됐다는 사실 하나. 기다리지 않는다. */
+  private async notifySeller(settlement: Settlement, to: DbSettlementStatus): Promise<void> {
+    const seller = await this.prisma.seller.findUnique({
+      where: { id: settlement.sellerId },
+      select: { userId: true },
+    })
+
+    if (seller === null) return
+
+    const paid = to === 'PAID'
+
+    await this.notifications.send({
+      userId: seller.userId,
+      type: 'SELLER_SETTLEMENT',
+      title: paid ? '정산금이 지급됐어요' : '정산서가 승인됐어요',
+      body: `${settlement.payoutAmount.toLocaleString('ko-KR')}원`,
+      link: `/settlements/${settlement.id}`,
+    })
   }
 
   private async load(id: string): Promise<SettlementRow> {

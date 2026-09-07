@@ -3350,6 +3350,18 @@ model Wishlist {
   /// 가 그때 비어 있었다.
   addedPrice Int?
 
+  /**
+   * 재입고되면 알려 달라고 신청했는가 (TASK-0086 F4).
+   *
+   * 찜과 나누는 이유는 **두 개의 다른 마음**이기 때문이다 — 담아 두는 것은 「나중에
+   * 살까」이고 알림 신청은 「지금 사고 싶은데 없다」다. 담은 것 전부에 재입고 알림을
+   * 보내면 그것은 신청하지 않은 알림이 된다.
+   *
+   * 보낸 뒤에는 **꺼진다.** 한 번 알린 재입고를 다시 알릴 이유가 없고, 또 품절이
+   * 되면 사람이 다시 신청한다.
+   */
+  notifyRestock Boolean @default(false)
+
   createdAt DateTime @default(now())
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -3359,6 +3371,8 @@ model Wishlist {
   @@id([userId, productId])
   /// 「내 찜 목록」 — 최근에 담은 것부터.
   @@index([userId, createdAt(sort: Desc)])
+  /// 재입고 알림을 기다리는 줄들 — 그 배치가 읽는 유일한 축이다.
+  @@index([notifyRestock, productId])
 }
 
 /// 최근 본 상품 (TASK-0087).
