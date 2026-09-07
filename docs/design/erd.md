@@ -680,14 +680,23 @@ erDiagram
 | 테이블 | 목적 | 비고 |
 | --- | --- | --- |
 | `Review` | 리뷰 | `orderItemId` **unique** — 구매한 항목당 1개. 구매 검증이 스키마로 강제된다 |
-| `ReviewImage` / `ReviewReply` | 사진, 판매자 답변 | |
-| `Wishlist` / `RecentlyViewed` | 찜, 열람 이력 | |
-| `ProductQuestion` / `ProductAnswer` | 상품 문의 | 판매자가 답변, 비공개 문의 지원 |
-| `SellerFollow` | 브랜드 팔로우 | |
+| `ReviewImage` / `ReviewReply` | 사진, 판매자 답변 | 답변은 `reviewId` 가 기본키다 — 리뷰당 하나 |
+| `ReviewHelpful` | 「도움돼요」 | `(reviewId, userId)` 복합 기본키. 세는 값은 `Review.helpfulCount` 가 든다 |
+| `Wishlist` / `RecentlyViewed` | 찜, 열람 이력 | 둘 다 `(userId, productId)` 복합 기본키. 찜은 담을 때의 가격과 재입고 알림 신청을 함께 든다 |
+| `ProductQuestion` / `ProductAnswer` | 상품 문의 | 판매자가 답변, 비공개 문의 지원. 답변은 `questionId` 가 기본키다 |
+| `SellerFollow` | 브랜드 팔로우 | `(userId, sellerId)` 복합 기본키. 수는 `Seller.followerCount` 가 든다 |
 | `Notification` | 앱 내 알림 | 주문 상태 변경, 배송 시작, 재입고. 이메일·푸시는 범위 외 |
-| `Report` | 신고 | 리뷰·문의·상품 대상. 관리자가 처리 |
+| `Report` | 신고 | 리뷰·문의·답변·상품 대상. 관리자가 처리 |
 
 **리뷰의 구매 검증을 외래키로 처리하는 이유**: 애플리케이션에서 "주문했는지" 검사하는 대신 `orderItemId` 를 unique 로 걸면, 구매하지 않은 사람은 애초에 리뷰 행을 만들 수 없다. 중복 리뷰도 DB 가 막는다.
+
+**「이 상품의 리뷰」도 조회 없이 참이다** (TASK-0083). 주문 항목에 `productId` 를 적고 복합 외래키 `(variantId, productId) → ProductVariant(id, productId)` 로 조합의 상품에 못 박은 뒤, 리뷰가 `(orderItemId, productId) → OrderItem(id, productId)` 로 그 쌍을 다시 가리킨다 — **사지 않은 상품의 리뷰는 가리킬 행이 없어 저장될 수 없다.** 주문 항목마다 인덱스 하나를 더 쓰는 값이고, 그 값으로 사는 것은 거짓말할 수 없는 사본이다.
+
+**세 개의 「가리킴」 표가 복합 기본키를 쓰는 이유**: 찜·최근 본 상품·팔로우는 「사람이 무엇을 가리킨다」 하나뿐이다. 따로 id 를 두면 같은 짝이 두 번 들어올 수 있고 그것을 막는 유니크가 다시 필요해진다 — 열쇠가 곧 그 사실이면 막을 것이 없다.
+
+**신고의 대상에는 외래키가 없다**. 대상이 넷(리뷰·문의·답변·상품)이라 걸 수 없고, 그 대가로 `targetId` 가 가리키는 행이 사라져도 신고가 남을 수 있다. 실제로는 넷 다 소프트 삭제라 사라지지 않는다 — 리뷰는 `DELETED` 로 남고 상품도 소프트 삭제다.
+
+**자동 임시 숨김이 `Report` 가 행인 이유**: 임계치(3건)를 세려면 신고가 세어질 수 있어야 한다. 관리자가 즉시 대응할 수 없는 시간대에 악성 콘텐츠가 노출된 채 남는 것을 막고, **반려하면 복구된다** — 그 복구가 없으면 신고 한 번으로 남의 글을 영영 가리는 길이 된다.
 
 ---
 
