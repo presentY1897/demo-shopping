@@ -267,10 +267,30 @@ describe('정지 (F4)', () => {
     expect(user).toMatchObject({ suspendedAt: null, suspendedReason: null })
   })
 
-  it('refuses to suspend the same account twice', async () => {
+  /**
+   * **0줄을 한 가지로 답하지 않는다.**
+   *
+   * 「그런 회원이 없다」와 「다른 관리자가 방금 정지시켰다」는 다른 사실이고, 사람이
+   * 할 일도 다르다 — 앞은 잘못 찾은 것이고 뒤는 목록을 다시 읽으면 되는 것이다.
+   * 둘 다 404 로 답하면 화면은 그 둘을 구별해 말할 방법이 없다.
+   */
+  it('tells "already suspended" apart from "no such member"', async () => {
     await suspend(superAdmin, subjectId)
 
-    expect(await failure(suspend(superAdmin, subjectId))).toBe(404)
+    expect(await failure(suspend(superAdmin, subjectId))).toBe(409)
+    expect(await failure(suspend(superAdmin, '0192f0c1-0000-7000-8000-0000000000ff'))).toBe(404)
+  })
+
+  it('says the same about lifting a suspension that is not there', async () => {
+    expect(
+      await failure(
+        client(superAdmin).request({
+          path: `/admin/users/${subjectId}/suspension`,
+          method: 'DELETE',
+          schema: z.unknown(),
+        }),
+      ),
+    ).toBe(409)
   })
 })
 

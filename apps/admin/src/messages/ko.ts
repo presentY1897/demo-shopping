@@ -1900,6 +1900,380 @@ export const ko: Messages = {
       unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
     },
   },
+  // 회원 관리 (TASK-0093). 목록은 가려진 값만 그리고, 가리지 않은 값은 사유를 적은
+  // 뒤에만 열린다 — 막는 것이 아니라 **가르는 것**이 이 화면의 설계다 (4.1).
+  users: {
+    description:
+      '회원을 찾아 상세를 열고, 역할·정지·적립금을 조정합니다. 목록은 개인정보가 가려진 채로 보이고, 가려지지 않은 값을 열 때는 사유가 기록에 남습니다.',
+    forbiddenTitle: '회원을 볼 수 없어요',
+    roleNames: {
+      BUYER: '구매자',
+      SELLER_OWNER: '판매자',
+      ADMIN_OPERATOR: '운영자',
+      ADMIN_SUPER: '최고관리자',
+      DEMO_ADMIN: '데모 관리자',
+    },
+    list: {
+      loadingLabel: '회원을 불러오는 중',
+      errorTitle: '회원을 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      emptyTitle: '아직 가입한 회원이 없어요',
+      emptyDescription: '가입이 시작되면 여기에 쌓입니다.',
+      filteredEmptyTitle: '이 조건에 맞는 회원이 없어요',
+      filteredEmptyDescription: '검색어를 줄이거나 역할·상태 조건을 지워 보세요.',
+      listLabel: '회원 목록',
+      // 이 한 줄이 없으면 별이 박힌 문자열은 고장으로 읽히고, 사람은 그것을
+      // 그대로 검색창에 붙여 넣는다 (4.2).
+      maskedNotice:
+        '목록에는 이메일과 이름이 가려진 채로 보입니다. 검색은 가려지지 않은 원래 값으로 찾으니 아는 이메일을 그대로 입력해 주세요.',
+      columns: {
+        account: '회원',
+        roles: '역할',
+        status: '상태',
+        createdAt: '가입',
+        lastLoginAt: '마지막 로그인',
+        open: '상세',
+      },
+      filters: {
+        legend: '회원 검색 조건',
+        searchLabel: '이메일 · 이름',
+        searchPlaceholder: '예) hong@example.com',
+        searchHint: '가려지지 않은 원래 값으로 찾습니다.',
+        searchSubmit: '검색',
+        roleLabel: '역할',
+        roleAll: '전체',
+        demoLabel: '계정 종류',
+        demoAll: '전체',
+        demoOnly: '데모 계정만',
+        realOnly: '실계정만',
+        suspendedLabel: '상태',
+        suspendedAll: '전체',
+        suspendedOnly: '정지된 회원만',
+        activeOnly: '정상 회원만',
+        reset: '조건 지우기',
+      },
+      demoBadge: '데모',
+      suspendedBadge: '정지',
+      activeBadge: '정상',
+      neverLoggedIn: '기록 없음',
+      noRoles: '없음',
+      openLabel: '상세 보기',
+      pagination: {
+        label: '회원 목록 페이지',
+        next: '다음',
+        previous: '이전',
+        pageUnit: ' 페이지',
+        countUnit: '명',
+      },
+    },
+    view: {
+      title: '가려지지 않은 정보 열기',
+      description:
+        '이 회원의 이메일과 이름을 가려지지 않은 채로 봅니다. 왜 봐야 하는지 적어 주세요.',
+      closeLabel: '창 닫기',
+      cancel: '취소',
+      submit: '열기',
+      submitting: '여는 중',
+      targetLabel: '여는 회원',
+      reasonLabel: '열람 사유',
+      reasonHint: '적은 문장이 누가 언제 열었는지와 함께 그대로 남습니다.',
+      reasonPlaceholder: '예) 배송 사고 문의 접수(#12345) 확인을 위해 연락처를 확인합니다.',
+      // 미리 채워 두지 않는 이유를 사람에게도 말한다 — 알고 적는 것과 모르고 적는
+      // 것은 다른 문장이 된다.
+      notice:
+        '열람 기록은 지울 수 없고, 같은 회원을 여러 번 열면 그만큼 여러 줄이 남습니다. 나중에 읽는 사람이 이해할 수 있게 적어 주세요.',
+      failedTitle: '정보를 열지 못했어요',
+      submitError: '정보를 열지 못했어요. 잠시 후 다시 시도해 주세요.',
+      errors: {
+        reasonRequired: '열람 사유를 적어 주세요. 사유 없이는 열 수 없습니다.',
+        reasonTooLong: '사유는 {max}자까지 쓸 수 있어요.',
+      },
+    },
+    detail: {
+      title: '회원 상세',
+      closeLabel: '상세 닫기',
+      loadingLabel: '회원 정보를 여는 중',
+      emailLabel: '이메일',
+      nameLabel: '이름',
+      rolesLabel: '역할',
+      createdAtLabel: '가입',
+      lastLoginAtLabel: '마지막 로그인',
+      statusLabel: '상태',
+      neverLoggedIn: '기록 없음',
+      statusActive: '정상',
+      statusSuspended: '정지',
+      suspendedSince: '{datetime}부터',
+      suspendedReason: '사유: {reason}',
+      demoNotice:
+        '체험용으로 발급된 데모 계정입니다. 수명이 지나면 계정과 생성한 데이터가 함께 지워집니다.',
+      statsTitle: '이 회원의 활동',
+      // 계약이 숫자만 싣는 이유를 화면도 말한다 (`adminUserStatsSchema`).
+      statsNote:
+        '건수와 금액만 보여줍니다. 주문서나 리뷰 본문이 필요하면 각 화면에서 이 회원을 조건으로 찾아 주세요.',
+      stats: {
+        orderCount: '주문',
+        paidAmount: '결제 합계',
+        reviewCount: '리뷰',
+        questionCount: '문의',
+        pointBalance: '적립금 잔액',
+        couponCount: '보유 쿠폰',
+        countValue: '{count}건',
+      },
+    },
+    roles: {
+      title: '역할',
+      description: '역할을 부여하면 그 역할의 앱과 기능이 곧바로 열립니다.',
+      grantLabel: '부여할 역할',
+      grantSubmit: '부여',
+      grantPlaceholder: '역할을 고르세요',
+      revokeLabel: '{role} 회수',
+      none: '아직 아무 역할도 없습니다.',
+      exhausted: '더 부여할 역할이 없습니다.',
+      adminNotice:
+        '관리자 역할을 부여하면 이 콘솔 전체가 열립니다. 회수할 수는 있지만 그 사이에 한 일은 되돌아오지 않습니다.',
+      confirm: {
+        title: '관리자 역할을 부여할까요',
+        description: '{role} 역할을 부여합니다. 이 콘솔의 화면과 기능이 곧바로 열립니다.',
+        confirm: '부여',
+        cancel: '취소',
+        closeLabel: '창 닫기',
+      },
+      failedTitle: '역할을 바꾸지 못했어요',
+    },
+    suspension: {
+      title: '계정 정지',
+      description: '정지된 회원은 로그인할 수 없습니다.',
+      // 되돌릴 수 있다는 것과, 이미 로그인한 세션도 끊긴다는 것 (4.4).
+      notice:
+        '정지는 탈퇴가 아니라 되돌릴 수 있는 조치입니다. 정지하면 이미 로그인해 있던 세션도 함께 끊깁니다.',
+      suspendLabel: '정지하기',
+      reinstateLabel: '정지 해제',
+      submitting: '처리하는 중',
+      reasonLabel: '정지 사유',
+      reasonHint: '사유 없이는 정지할 수 없습니다. 나중에 해제를 판단할 근거가 이 문장입니다.',
+      reasonPlaceholder: '예) 반복적인 허위 리뷰 작성이 확인되어 정지합니다.',
+      activeTitle: '지금 정지된 계정입니다',
+      activeSince: '{datetime}부터',
+      activeReason: '사유: {reason}',
+      failedTitle: '정지 상태를 바꾸지 못했어요',
+      submitError: '정지 상태를 바꾸지 못했어요. 잠시 후 다시 시도해 주세요.',
+      errors: {
+        reasonRequired: '정지 사유를 적어 주세요. 사유 없이는 정지할 수 없습니다.',
+        reasonTooLong: '사유는 {max}자까지 쓸 수 있어요.',
+      },
+    },
+    points: {
+      title: '적립금 조정',
+      description: '지급은 양수로, 차감은 음수로 적습니다.',
+      notice:
+        '지급한 적립금에는 유효기간이 없습니다. 차감은 잔액까지만 가고 잔액이 모자라면 있는 만큼만 빠집니다.',
+      balanceLabel: '지금 잔액',
+      amountLabel: '조정 금액',
+      amountHint: '원 단위 정수로 적어 주세요. 지급은 1000, 차감은 -1000 처럼 씁니다.',
+      amountPlaceholder: '예) -1000',
+      reasonLabel: '조정 사유',
+      // 다른 사유와 무게가 다르다 — 주문도 클레임도 가리키지 않는 원장 줄이다 (4.5).
+      reasonHint: '이 줄은 주문도 클레임도 가리키지 않습니다. 적은 사유가 유일한 근거로 남습니다.',
+      reasonPlaceholder: '예) 배송 지연 보상으로 1,000원을 지급합니다.',
+      submitLabel: '조정하기',
+      submitting: '조정하는 중',
+      failedTitle: '적립금을 조정하지 못했어요',
+      submitError: '적립금을 조정하지 못했어요. 잠시 후 다시 시도해 주세요.',
+      errors: {
+        amountRequired: '조정 금액을 원 단위 정수로 적어 주세요.',
+        amountZero: '0원은 조정이 아닙니다. 지급은 양수로, 차감은 음수로 적어 주세요.',
+        reasonRequired: '조정 사유를 적어 주세요. 사유 없이는 조정할 수 없습니다.',
+        reasonTooLong: '사유는 {max}자까지 쓸 수 있어요.',
+      },
+      applied: {
+        exact: '{amount} 조정했어요.',
+        // 요청한 숫자를 그대로 그리면 거짓말이 된다 (`pointsOutcome`).
+        clipped: '{requested} 조정하려 했지만 잔액까지만 갈 수 있어 {applied} 만큼만 빠졌어요.',
+        none: '잔액이 없어 {requested} 차감이 반영되지 않았어요. 원장에도 남지 않았습니다.',
+      },
+    },
+    toast: {
+      regionLabel: '알림',
+      closeLabel: '닫기',
+      suspended: '계정을 정지했어요. 목록에서 상태를 확인할 수 있어요.',
+      reinstated: '정지를 해제했어요. 목록에서 상태를 확인할 수 있어요.',
+      granted: '{role} 역할을 부여했어요.',
+      revoked: '{role} 역할을 회수했어요.',
+    },
+    refusals: {
+      // F8. 데모 관리자는 `user.write` 를 아예 갖고 있지 않고, 운영자도 없다 (4.6).
+      forbidden:
+        '이 계정으로는 회원을 정지하거나 적립금을 바꿀 수 없어요. 최고관리자에게 요청해 주세요.',
+      stale: '이미 다른 관리자가 바꿔 놓았어요. 목록을 새로고침한 뒤 다시 확인해 주세요.',
+    },
+    failures: {
+      network: '서버에 연결하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.',
+      timeout: '응답이 너무 늦어 요청을 멈췄어요. 잠시 후 다시 시도해 주세요.',
+      aborted: '요청을 취소했어요.',
+      malformed_response: '서버가 보낸 응답을 읽지 못했어요. 잠시 후 다시 시도해 주세요.',
+      configuration: '서버 주소 설정이 없어요. 개발 서버를 다시 실행해 주세요.',
+      unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+    },
+  },
+  // 데모 계정 관리 (TASK-0096). 정리를 여기서 다시 만들지 않고 청소기의 문을
+  // 지난다 — 강제 만료도 재시도도 (4.1 · 4.2).
+  demoConsole: {
+    description:
+      '발급된 데모 계정과 정리 상태를 확인하고, 수명·초기 데이터·가상 카드 한도를 조정합니다.',
+    forbiddenTitle: '데모 계정 관리를 볼 수 없어요',
+    policy: {
+      title: '데모 정책',
+      description: '새로 발급되는 데모 계정에 적용할 값입니다.',
+      // R1. 말하지 않으면 「안 먹혔다」로 읽힌다 (4.4).
+      notice:
+        '바꾼 값은 이후 발급분부터 적용됩니다. 이미 발급된 계정의 만료 시각은 그대로 두므로, 쓰고 있던 사람의 데모가 갑자기 사라지지 않습니다.',
+      loadingLabel: '데모 정책을 불러오는 중',
+      errorTitle: '데모 정책을 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      fields: {
+        ttlHours: {
+          label: '계정 수명 (시간)',
+          hint: '발급 시각부터 이 시간이 지나면 정리 대상이 됩니다.',
+        },
+        seedOrders: {
+          label: '초기 주문 수',
+          hint: '발급할 때 미리 만들어 두는 주문 건수입니다.',
+        },
+        virtualCardLimit: {
+          label: '가상 카드 한도 (원)',
+          hint: '체험용 가상 카드에 실어 주는 금액입니다.',
+        },
+      },
+      errors: {
+        ttlHours: {
+          required: '계정 수명을 시간 단위 정수로 적어 주세요.',
+          range: '계정 수명은 {min}시간부터 {max}시간까지 정할 수 있어요.',
+        },
+        seedOrders: {
+          required: '초기 주문 수를 정수로 적어 주세요.',
+          range: '초기 주문 수는 {min}건부터 {max}건까지 정할 수 있어요.',
+        },
+        virtualCardLimit: {
+          required: '가상 카드 한도를 원 단위 정수로 적어 주세요.',
+          range: '가상 카드 한도는 {min}원부터 {max}원까지 정할 수 있어요.',
+        },
+      },
+      submitLabel: '정책 저장',
+      submitting: '저장하는 중',
+      failedTitle: '데모 정책을 저장하지 못했어요',
+      submitError: '데모 정책을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.',
+      current: {
+        title: '지금 적용 중',
+        ttlHours: '수명 {hours}시간',
+        seedOrders: '초기 주문 {count}건',
+        virtualCardLimit: '카드 한도 {amount}',
+      },
+    },
+    accounts: {
+      title: '데모 계정',
+      description: '지금 남아 있는 데모 계정입니다. 만료가 임박한 계정이 위에 옵니다.',
+      loadingLabel: '데모 계정을 불러오는 중',
+      errorTitle: '데모 계정을 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      emptyTitle: '남아 있는 데모 계정이 없어요',
+      emptyDescription: '누군가 데모를 발급받으면 여기에 나타납니다.',
+      filteredEmptyTitle: '정리에 실패한 계정이 없어요',
+      filteredEmptyDescription: '조건을 지우면 남아 있는 데모 계정 전체를 볼 수 있어요.',
+      listLabel: '데모 계정 목록',
+      columns: {
+        account: '계정',
+        roles: '역할',
+        createdAt: '발급',
+        expiresAt: '만료 예정',
+        cleanup: '정리',
+        actions: '처리',
+      },
+      failedOnlyLabel: '정리에 실패한 계정만 보기',
+      expiryLabels: {
+        none: '만료 시각 없음',
+        expired: '만료됨',
+        endingSoon: '곧 만료',
+        live: '사용 중',
+      },
+      noRoles: '없음',
+      cleanupNone: '정상',
+      cleanupFailedAt: '{datetime}에 실패',
+      // 실패는 표가 아니라 칸이다 (4.3).
+      cleanupNotice:
+        '정리에 실패한 계정은 만료된 채로 남아 다음 주기가 다시 집어 갑니다. 성공하면 이 칸은 그냥 비워집니다.',
+      expireLabel: '강제 만료',
+      // 지우지 않는다는 것 (4.1). 말하지 않으면 운영자는 실패로 읽는다.
+      expireNotice:
+        '강제 만료는 계정을 지우지 않고 만료 시각을 지금으로 당깁니다. 실제 삭제는 다음 정리가 하므로 목록에는 잠시 그대로 남습니다.',
+      confirm: {
+        title: '이 데모 계정을 만료시킬까요',
+        description:
+          '만료 시각을 지금으로 당깁니다. 다음 정리가 이 계정과 그 계정이 만든 데이터를 지웁니다.',
+        confirm: '강제 만료',
+        cancel: '취소',
+        closeLabel: '창 닫기',
+      },
+      sweepLabel: '지금 정리 실행',
+      sweeping: '정리하는 중',
+      sweepNotice:
+        '다음 주기를 기다리지 않고 정리를 한 번 돌립니다. 실패했던 계정도 함께 다시 시도합니다.',
+      failedTitle: '정리를 실행하지 못했어요',
+      pagination: {
+        label: '데모 계정 목록 페이지',
+        next: '다음',
+        previous: '이전',
+        pageUnit: ' 페이지',
+        countUnit: '개',
+      },
+    },
+    stats: {
+      title: '발급 통계',
+      description: '고른 기간에 발급된 데모 계정을 일별과 역할별로 함께 보여줍니다.',
+      loadingLabel: '발급 통계를 불러오는 중',
+      errorTitle: '발급 통계를 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      summary: {
+        activeLabel: '지금 남아 있는 계정',
+        failedLabel: '정리에 실패한 계정',
+        countValue: '{count}개',
+      },
+      filters: {
+        legend: '통계 기간',
+        fromLabel: '시작일',
+        toLabel: '종료일',
+        reset: '최근 2주로',
+        rangeIncomplete: '시작일과 종료일을 모두 골라 주세요.',
+        rangeReversed: '종료일이 시작일보다 앞이에요. 두 날짜를 바꿔 주세요.',
+        rangeTooLong: '기간은 최대 {max}일까지 볼 수 있어요.',
+      },
+      daysCaption: '일별 발급 수',
+      dateHeader: '날짜',
+      issuedHeader: '발급',
+      roleHeader: '역할',
+      byRoleCaption: '역할별 발급 수',
+      byRoleEmpty: '이 기간에 발급된 계정이 없어요.',
+      // 이름을 모르는 역할을 숨기면 합이 조용히 어긋난다.
+      unnamedRoleNotice:
+        '이 콘솔이 아직 이름을 모르는 역할이 있어 열쇠를 그대로 적었습니다. API 가 먼저 배포되면 생길 수 있습니다.',
+      totalIssued: '이 기간에 {count}개',
+    },
+    toast: {
+      regionLabel: '알림',
+      closeLabel: '닫기',
+      expired: '만료 시각을 지금으로 당겼어요. 다음 정리가 이 계정을 집어 갑니다.',
+      policySaved: '데모 정책을 저장했어요. 이후 발급분부터 적용됩니다.',
+      swept: '{swept}개를 정리했고 {failed}개가 실패했어요.',
+      sweptNothing: '지금 정리할 계정이 없었어요.',
+    },
+    failures: {
+      network: '서버에 연결하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.',
+      timeout: '응답이 너무 늦어 요청을 멈췄어요. 잠시 후 다시 시도해 주세요.',
+      aborted: '요청을 취소했어요.',
+      malformed_response: '서버가 보낸 응답을 읽지 못했어요. 잠시 후 다시 시도해 주세요.',
+      configuration: '서버 주소 설정이 없어요. 개발 서버를 다시 실행해 주세요.',
+      unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+    },
+  },
   layout: {
     // 콘솔 이름. 사이드바 위와 모바일 시트 제목에 같은 문자열이 쓰인다.
     brand: '관리자 콘솔',
@@ -2331,6 +2705,7 @@ export const ko: Messages = {
     REPORT_ALREADY_FILED: '이미 신고한 대상이에요.',
     REPORT_ALREADY_HANDLED: '이미 처리된 신고예요. 목록을 새로고침해 주세요.',
     REPORT_NOT_REMOVABLE: '상품은 지울 수 없어요. 숨김으로 처리해 주세요.',
+    USER_SUSPENSION_UNCHANGED: '이미 처리된 회원이에요. 목록을 다시 읽어 주세요.',
     PRODUCT_NOT_MODERATABLE:
       '지금 상태에서는 이 상품을 내리거나 올릴 수 없어요. 목록을 새로고침해 주세요.',
     // 쿠폰 (TASK-0072). 관리자 콘솔은 플랫폼 쿠폰을 내므로 범위 거절을 만날 일이

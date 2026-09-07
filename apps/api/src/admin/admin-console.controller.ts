@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query } from '@nestjs/common'
 import type {
   AdminOrderPaymentsResponse,
+  DemoSweepResponse,
   AdminOrderSearchResponse,
   AdminSellerListResponse,
   DemoAccountListResponse,
@@ -180,7 +181,7 @@ export class AdminConsoleController {
   /** 지금 한 번 정리한다 (F5). 실패한 계정은 이미 만료돼 있으므로 함께 집힌다. */
   @Post('demo/sweeps')
   @RequirePermission('demo.manage')
-  sweep(): Promise<{ readonly swept: number; readonly failed: number }> {
+  sweep(): Promise<DemoSweepResponse> {
     return this.demo.sweep()
   }
 }

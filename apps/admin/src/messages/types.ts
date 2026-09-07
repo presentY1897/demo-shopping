@@ -19,6 +19,7 @@ import type {
   ReportStatus,
   ReportTargetType,
   ReturnReason,
+  Role,
   SchedulerStatus,
   SellerStatus,
   SettlementApprovalFailure,
@@ -39,6 +40,7 @@ import type {
 import type { ReturnPhotoRejection } from '@/lib/claims/return-photos'
 import type { CommissionFieldErrorMessages } from '@/lib/commissions/form-schema'
 import type { PendingKey } from '@/lib/dashboard/dashboard-console'
+import type { ExpiryStatus, PolicyField } from '@/lib/demo/demo-console'
 import type { SchedulerNames } from '@/lib/dashboard/schedulers'
 import type { BulkIssueOutcome, CouponCostGap } from '@/lib/coupons/platform-coupons'
 import type { HandleFieldErrorMessages } from '@/lib/reports/handle-form'
@@ -49,6 +51,9 @@ import type { SettlementExportColumns } from '@/lib/settlements/csv'
 import type { HoldFieldErrorMessages } from '@/lib/settlements/hold-form'
 import type { CalculationLineKey } from '@/lib/settlements/settlement-console'
 import type { SettlementAction } from '@/lib/settlements/transitions'
+
+import type { PointsFieldErrorMessages, ReasonFieldErrorMessages } from '@/lib/users/forms'
+import type { UserRefusal } from '@/lib/users/user-console'
 
 import type { SessionRefusal } from '@/lib/auth/session-client'
 import type { HealthFailureReason } from '@/lib/health'
@@ -139,6 +144,23 @@ export interface Messages {
    * 그려지고, 그러려면 섹션마다 자기 오류 문장이 있어야 한다.
    */
   readonly dashboard: DashboardMessages
+  /**
+   * `/users` — 회원을 찾고, 사유를 적고 열어 보고, 조치한다 (TASK-0093).
+   *
+   * 자기 슬라이스인 이유는 이것이 **화면 하나**이기 때문이고, 그 안이 다시 갈리는
+   * 것은 이 화면이 하는 일이 **읽기 하나와 쓰기 넷**이라서다. 넷은 각자 다른 자격을
+   * 요구하고 각자 다른 사유를 받는다 — 한 덩어리로 접으면 「왜 이 버튼만 막혔는가」를
+   * 말할 자리가 사라진다.
+   */
+  readonly users: UserMessages
+  /**
+   * `/demo` — 발급된 데모 계정과 정리 상태 (TASK-0096).
+   *
+   * `demo` 슬라이스와 **다른 것이다.** 저쪽은 방문자가 데모 계정을 받는 배너와
+   * 버튼이고 루트 레이아웃이 모든 라우트에서 읽는다. 이쪽은 운영자가 그 계정들을
+   * 들여다보는 화면 하나다.
+   */
+  readonly demoConsole: DemoConsoleMessages
   /**
    * One sentence per error code the API can answer with (TASK-0117).
    *
@@ -2498,4 +2520,484 @@ export interface DashboardDemoMessages {
   readonly activeAccounts: string
   readonly expiringWithinHour: string
   readonly link: string
+}
+
+/* ------------------------------------------------- 회원 관리 (TASK-0093) -- */
+
+/**
+ * `/users` — 훑을 때는 가려진 값으로, 열 때는 사유를 적고.
+ *
+ * 안이 다섯으로 갈린 것은 이 화면이 하는 일이 **읽기 하나와 쓰기 넷**이기 때문이다.
+ * 열람(`view`)은 `user.read` 로 되지만 정지(`suspension`)와 적립금(`points`)은
+ * `user.write` 라 최고관리자만 하고, 역할(`roles`)은 거기에 확인 한 걸음이 더 붙는다
+ * (R1). 한 덩어리로 접으면 「왜 이 버튼만 막혔는가」를 말할 자리가 사라진다.
+ */
+export interface UserMessages {
+  readonly description: string
+  /**
+   * 이 화면을 아예 볼 수 없는 계정에게.
+   *
+   * **섹션의 오류 제목과 다른 문장이다** — 「불러오지 못했어요」는 다시 시도하면 될
+   * 것처럼 읽히는데, 이것은 아무리 눌러도 되지 않는다.
+   */
+  readonly forbiddenTitle: string
+  /**
+   * 역할의 한국어 이름 — **이 콘솔에서 한 벌**.
+   *
+   * `Record<Role, string>` 이라 역할이 하나 늘면 여기가 typecheck 에서 걸린다.
+   * `/demo` 의 역할별 통계도 이것을 읽는다(페이지가 넘겨준다): 두 화면이 같은 역할을
+   * 다르게 부르면 그것이 이 표가 하나인 이유다.
+   */
+  readonly roleNames: Readonly<Record<Role, string>>
+  readonly list: UserListMessages
+  readonly view: UserViewMessages
+  readonly detail: UserDetailMessages
+  readonly roles: UserRoleMessages
+  readonly suspension: UserSuspensionMessages
+  readonly points: UserPointsMessages
+  readonly toast: UserToastMessages
+  /** 이 화면이 따로 할 말이 있는 거절. 카탈로그의 한 줄로는 못 하는 말들이다. */
+  readonly refusals: Readonly<Record<UserRefusal, string>>
+  /** 한 줄씩, API 가 답하기 **전에** 실패한 경우에 대해. */
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+/**
+ * 목록 — **가려진 값만 있는 표** (F6).
+ *
+ * `maskedNotice` 가 없으면 `hong***@example.com` 은 고장으로 읽힌다. 가려져 있다는
+ * 것과 **왜 가려져 있는지**, 그리고 검색은 원본을 찾는다는 사실을 화면이 말해야
+ * 사람이 별이 박힌 문자열을 검색창에 붙여 넣지 않는다 (4.2).
+ */
+export interface UserListMessages {
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  readonly filteredEmptyTitle: string
+  readonly filteredEmptyDescription: string
+  readonly listLabel: string
+  readonly maskedNotice: string
+  readonly columns: UserColumnMessages
+  readonly filters: UserFilterMessages
+  readonly demoBadge: string
+  readonly suspendedBadge: string
+  readonly activeBadge: string
+  /** 한 번도 로그인하지 않았다. 빈칸은 「못 읽었다」와 섞인다. */
+  readonly neverLoggedIn: string
+  readonly noRoles: string
+  readonly openLabel: string
+  readonly pagination: UserPaginationMessages
+}
+
+export interface UserColumnMessages {
+  readonly account: string
+  readonly roles: string
+  readonly status: string
+  readonly createdAt: string
+  readonly lastLoginAt: string
+  readonly open: string
+}
+
+/**
+ * 네 축과 되돌리기 하나.
+ *
+ * 검색은 **누른 뒤에** 나간다. 글자마다 보내면 「hong」을 치는 사이에 요청이 네 번
+ * 나가고, 그중 셋은 아무도 보지 않을 답이다. 나머지 셋은 고르는 즉시 나간다 —
+ * 셀렉트에는 「다 골랐다」는 순간이 있다.
+ */
+export interface UserFilterMessages {
+  readonly legend: string
+  readonly searchLabel: string
+  readonly searchPlaceholder: string
+  /** 검색은 **가려지지 않은 원본**을 찾는다는 사실 (4.2). */
+  readonly searchHint: string
+  readonly searchSubmit: string
+  readonly roleLabel: string
+  readonly roleAll: string
+  readonly demoLabel: string
+  readonly demoAll: string
+  readonly demoOnly: string
+  readonly realOnly: string
+  readonly suspendedLabel: string
+  readonly suspendedAll: string
+  readonly suspendedOnly: string
+  readonly activeOnly: string
+  readonly reset: string
+}
+
+/** Composed as `2 페이지 · 20건`, by concatenation rather than a placeholder. */
+export interface UserPaginationMessages {
+  readonly label: string
+  readonly next: string
+  readonly previous: string
+  readonly pageUnit: string
+  readonly countUnit: string
+}
+
+/**
+ * 열람 사유를 받는 대화상자 (F7).
+ *
+ * **미리 채워 두지 않는다.** 「운영 확인」 같은 기본 문장이 들어 있으면 그 기록은
+ * 아무것도 증명하지 못하고, 그때 남는 것은 감사 기록이 아니라 감사 기록의 모양이다.
+ * `notice` 가 그 사실을 미리 말한다 — 적은 문장이 남는다는 것을 알고 적는 것과
+ * 모르고 적는 것은 다른 문장이 된다.
+ */
+export interface UserViewMessages {
+  readonly title: string
+  readonly description: string
+  readonly closeLabel: string
+  readonly cancel: string
+  readonly submit: string
+  readonly submitting: string
+  /** 어떤 계정을 여는지 — **가려진 값으로.** 여기서 원본을 보여 주면 문이 없어진다. */
+  readonly targetLabel: string
+  readonly reasonLabel: string
+  readonly reasonHint: string
+  readonly reasonPlaceholder: string
+  readonly notice: string
+  readonly failedTitle: string
+  readonly submitError: string
+  readonly errors: ReasonFieldErrorMessages
+}
+
+/**
+ * 열린 계정 — 가려지지 않은 값과 요약 (F2).
+ *
+ * `statsNote` 는 계약이 **숫자만** 싣는 이유를 말한다. 주문 목록이나 리뷰 본문까지
+ * 여기 있으면 「요약을 보려고 연 화면」이 사실상 그 사람의 전부를 여는 화면이 되고,
+ * 열람 기록 하나가 그 전부를 덮는다 (`adminUserStatsSchema`).
+ */
+export interface UserDetailMessages {
+  readonly title: string
+  readonly closeLabel: string
+  readonly loadingLabel: string
+  readonly emailLabel: string
+  readonly nameLabel: string
+  readonly rolesLabel: string
+  readonly createdAtLabel: string
+  readonly lastLoginAtLabel: string
+  readonly statusLabel: string
+  readonly neverLoggedIn: string
+  readonly statusActive: string
+  readonly statusSuspended: string
+  /** `{datetime}` */
+  readonly suspendedSince: string
+  /** `{reason}` */
+  readonly suspendedReason: string
+  readonly demoNotice: string
+  readonly statsTitle: string
+  readonly statsNote: string
+  readonly stats: UserStatsMessages
+}
+
+export interface UserStatsMessages {
+  readonly orderCount: string
+  readonly paidAmount: string
+  readonly reviewCount: string
+  readonly questionCount: string
+  readonly pointBalance: string
+  readonly couponCount: string
+  /** `{count}` 가 들어간다. 금액이 아닌 것들이 단위를 갖는다. */
+  readonly countValue: string
+}
+
+/**
+ * 역할 부여·회수 (F3 · R1).
+ *
+ * 관리자 역할에는 확인이 한 걸음 더 붙는다. 부여하는 순간 이 콘솔 전체가 열리므로
+ * 목록에서 잘못 고른 한 번이 곧 최고관리자 한 명이고, 회수는 되지만 **그 사이에
+ * 일어난 일은 되돌아오지 않는다.**
+ */
+export interface UserRoleMessages {
+  readonly title: string
+  readonly description: string
+  readonly grantLabel: string
+  readonly grantSubmit: string
+  readonly grantPlaceholder: string
+  /** `{role}` */
+  readonly revokeLabel: string
+  readonly none: string
+  readonly exhausted: string
+  readonly adminNotice: string
+  readonly confirm: UserRoleConfirmMessages
+  readonly failedTitle: string
+}
+
+export interface UserRoleConfirmMessages {
+  readonly title: string
+  /** `{role}` */
+  readonly description: string
+  readonly confirm: string
+  readonly cancel: string
+  readonly closeLabel: string
+}
+
+/**
+ * 정지와 해제 (F4).
+ *
+ * `notice` 가 **정지는 탈퇴가 아니라는 것**과 **살아 있는 세션도 끊긴다는 것**을
+ * 말한다. 앞엣것을 안 말하면 운영자가 되돌릴 수 있는 조치를 되돌릴 수 없는 것으로
+ * 알고 망설이고, 뒤엣것을 안 말하면 「정지했는데 아직 쓰고 있다」를 의심하게 된다 —
+ * 실제로는 그렇지 않다 (4.4).
+ */
+export interface UserSuspensionMessages {
+  readonly title: string
+  readonly description: string
+  readonly notice: string
+  readonly suspendLabel: string
+  readonly reinstateLabel: string
+  readonly submitting: string
+  readonly reasonLabel: string
+  readonly reasonHint: string
+  readonly reasonPlaceholder: string
+  readonly activeTitle: string
+  /** `{datetime}` */
+  readonly activeSince: string
+  /**
+   * `{reason}` — 정지 때 적힌 사유.
+   *
+   * 계약이 `suspendedReason` 을 따로 nullable 로 싣기 때문에 **없을 수 있는 줄**이다
+   * (데이터베이스는 `User_suspended_reason_check` 로 둘을 묶어 두었다). 없을 때
+   * 빈칸이나 「없음」을 그리는 대신 줄 자체를 그리지 않는다 — 사유 없는 정지는
+   * 이 설계가 만들지 않는 것이라, 그 자리에 무엇이든 적으면 거짓이 된다.
+   */
+  readonly activeReason: string
+  readonly failedTitle: string
+  readonly submitError: string
+  readonly errors: ReasonFieldErrorMessages
+}
+
+/**
+ * 적립금 수동 조정 (F5).
+ *
+ * `applied` 셋이 이 슬라이스의 핵심이다. 차감은 **잔액까지만** 가므로, 요청한 숫자를
+ * 그대로 그리면 화면이 거짓말을 한다 — 5만원을 빼려 했고 1만원만 빠졌는데 화면은
+ * 「-50,000원 조정했어요」라고 말한다 (`pointsOutcome`).
+ */
+export interface UserPointsMessages {
+  readonly title: string
+  readonly description: string
+  readonly notice: string
+  readonly balanceLabel: string
+  readonly amountLabel: string
+  readonly amountHint: string
+  readonly amountPlaceholder: string
+  readonly reasonLabel: string
+  readonly reasonHint: string
+  readonly reasonPlaceholder: string
+  readonly submitLabel: string
+  readonly submitting: string
+  readonly failedTitle: string
+  readonly submitError: string
+  readonly errors: PointsFieldErrorMessages
+  readonly applied: UserPointsAppliedMessages
+}
+
+export interface UserPointsAppliedMessages {
+  /** `{amount}` — 요청한 만큼 그대로 움직였다. */
+  readonly exact: string
+  /** `{requested}` · `{applied}` — 잔액까지만 갔다. */
+  readonly clipped: string
+  /** `{requested}` — 잔액이 없어 **아무 줄도 남지 않았다.** */
+  readonly none: string
+}
+
+export interface UserToastMessages {
+  readonly regionLabel: string
+  readonly closeLabel: string
+  readonly suspended: string
+  readonly reinstated: string
+  /** `{role}` */
+  readonly granted: string
+  readonly revoked: string
+}
+
+/* -------------------------------------------- 데모 계정 관리 (TASK-0096) -- */
+
+/**
+ * `/demo` — 발급 현황과 정리 상태.
+ *
+ * 안이 셋으로 갈린 것은 **문이 셋이기 때문**이다(정책 · 계정 · 통계). 한 문이
+ * 실패해도 나머지 두 섹션은 그려져야 하고, 그러려면 오류 제목과 「다시 시도」가
+ * 섹션마다 있어야 한다.
+ */
+export interface DemoConsoleMessages {
+  readonly description: string
+  readonly forbiddenTitle: string
+  readonly policy: DemoPolicyMessages
+  readonly accounts: DemoAccountsMessages
+  readonly stats: DemoStatsMessages
+  readonly toast: DemoToastMessages
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+/**
+ * 정책 세 칸 (F6).
+ *
+ * `notice` 가 **이후 발급분에만 적용된다**는 사실을 말한다. 말하지 않으면 운영자는
+ * 수명을 1시간으로 줄인 뒤 목록에서 24시간이 남은 계정들을 보고 「안 먹혔다」고
+ * 읽는다 — 실제로는 쓰고 있던 사람의 데모를 눈앞에서 지우지 않으려고 그렇게 한 것이다
+ * (4.4 · R1).
+ *
+ * `fields` 와 `errors` 가 `Record<PolicyField, …>` 라, 계약에 칸이 하나 늘면 여기가
+ * typecheck 에서 걸린다.
+ */
+export interface DemoPolicyMessages {
+  readonly title: string
+  readonly description: string
+  readonly notice: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly fields: Readonly<Record<PolicyField, DemoPolicyFieldMessages>>
+  readonly errors: Readonly<Record<PolicyField, DemoPolicyFieldErrorMessages>>
+  readonly submitLabel: string
+  readonly submitting: string
+  readonly failedTitle: string
+  readonly submitError: string
+  readonly current: DemoPolicyCurrentMessages
+}
+
+export interface DemoPolicyFieldMessages {
+  readonly label: string
+  readonly hint: string
+}
+
+export interface DemoPolicyFieldErrorMessages {
+  readonly required: string
+  /** `{min}` · `{max}` — 계약의 스키마에서 읽은 값이 들어간다 (`policy-form.ts`). */
+  readonly range: string
+}
+
+/** 지금 저장되어 있는 값, 사람이 읽는 단위로. */
+export interface DemoPolicyCurrentMessages {
+  readonly title: string
+  /** `{hours}` */
+  readonly ttlHours: string
+  /** `{count}` */
+  readonly seedOrders: string
+  /** `{amount}` */
+  readonly virtualCardLimit: string
+}
+
+/**
+ * 계정 목록과 그 위의 두 버튼 (F1 · F2 · F4 · F5).
+ *
+ * `expireNotice` 가 **강제 만료는 지우는 것이 아니라는 것**을 말한다. 만료 시각을
+ * 지금으로 당길 뿐이고 실제 삭제는 다음 정리가 하므로, 누른 직후 목록에 그 계정이
+ * 그대로 있다 — 말하지 않으면 운영자는 실패로 읽는다 (4.1).
+ *
+ * `cleanupNotice` 는 실패가 **표가 아니라 칸**이라는 것을 말한다. 다음 주기가
+ * 성공하면 그 칸은 그냥 비워진다 (4.3).
+ */
+export interface DemoAccountsMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  readonly filteredEmptyTitle: string
+  readonly filteredEmptyDescription: string
+  readonly listLabel: string
+  readonly columns: DemoAccountColumnMessages
+  readonly failedOnlyLabel: string
+  /** 넷 다 서로 다른 행동을 부른다 — 만료 시각이 없는 계정까지 (`expiryStatus`). */
+  readonly expiryLabels: Readonly<Record<ExpiryStatus, string>>
+  readonly noRoles: string
+  readonly cleanupNone: string
+  /** `{datetime}` */
+  readonly cleanupFailedAt: string
+  readonly cleanupNotice: string
+  readonly expireLabel: string
+  readonly expireNotice: string
+  readonly confirm: DemoExpireConfirmMessages
+  readonly sweepLabel: string
+  readonly sweeping: string
+  readonly sweepNotice: string
+  readonly failedTitle: string
+  readonly pagination: UserPaginationMessages
+}
+
+export interface DemoAccountColumnMessages {
+  readonly account: string
+  readonly roles: string
+  readonly createdAt: string
+  readonly expiresAt: string
+  readonly cleanup: string
+  readonly actions: string
+}
+
+export interface DemoExpireConfirmMessages {
+  readonly title: string
+  readonly description: string
+  readonly confirm: string
+  readonly cancel: string
+  readonly closeLabel: string
+}
+
+/**
+ * 발급 통계 (F7).
+ *
+ * 일별과 역할별을 **한 답에서** 그린다 — 두 축을 따로 물으면 두 요청 사이에 발급이
+ * 일어나 합이 안 맞는다 (4.5). `unnamedRoleNotice` 는 이 콘솔이 이름을 모르는 역할이
+ * 왔을 때의 문장이다: 그 줄을 숨기면 역할별 합이 조용히 전체와 어긋난다.
+ */
+export interface DemoStatsMessages {
+  readonly title: string
+  readonly description: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly summary: DemoStatsSummaryMessages
+  readonly filters: DemoStatsFilterMessages
+  readonly daysCaption: string
+  readonly dateHeader: string
+  readonly issuedHeader: string
+  readonly roleHeader: string
+  readonly byRoleCaption: string
+  readonly byRoleEmpty: string
+  readonly unnamedRoleNotice: string
+  /** `{count}` */
+  readonly totalIssued: string
+}
+
+export interface DemoStatsSummaryMessages {
+  readonly activeLabel: string
+  readonly failedLabel: string
+  /** `{count}` */
+  readonly countValue: string
+}
+
+/** 기간 두 칸과 되돌리기 하나. 잘못 고른 기간은 **막지 않고 그 자리에서 말한다.** */
+export interface DemoStatsFilterMessages {
+  readonly legend: string
+  readonly fromLabel: string
+  readonly toLabel: string
+  readonly reset: string
+  /**
+   * 날짜 칸이 비어 있거나 아직 다 채워지지 않았다.
+   *
+   * **가장 흔한 상태다.** 칸을 지우거나 고치는 도중 브라우저는 빈 문자열을 주고, 그
+   * 값을 그대로 보내면 서버가 400 으로 답한다 — 그때 화면이 할 수 있는 말은 어느
+   * 칸인지도 못 짚는 한 줄뿐이다.
+   */
+  readonly rangeIncomplete: string
+  readonly rangeReversed: string
+  /** `{max}` */
+  readonly rangeTooLong: string
+}
+
+export interface DemoToastMessages {
+  readonly regionLabel: string
+  readonly closeLabel: string
+  readonly expired: string
+  readonly policySaved: string
+  /** `{swept}` · `{failed}` */
+  readonly swept: string
+  /** 아무것도 집히지 않았다. 0을 두 번 그리는 대신 한 문장으로 말한다. */
+  readonly sweptNothing: string
 }

@@ -489,6 +489,14 @@ export const domainErrorCodes = [
    * 받은 관리자가 그 상품을 다시 보러 오지 않기 때문이다.
    */
   'PRODUCT_NOT_MODERATABLE',
+  /**
+   * 정지 상태가 이미 그렇다 (TASK-0093 F4).
+   *
+   * 「그런 회원이 없다」(404)와 가르는 이유는 **사람이 할 일이 다르기** 때문이다 —
+   * 앞은 잘못 찾은 것이고, 이것은 다른 관리자가 먼저 처리한 것이라 목록을 다시
+   * 읽으면 된다.
+   */
+  'USER_SUSPENSION_UNCHANGED',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]

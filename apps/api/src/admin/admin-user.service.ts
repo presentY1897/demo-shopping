@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common'
 import type {
   AdjustPointsRequest,
   AdjustPointsResponse,
@@ -13,6 +13,7 @@ import type {
 import { ADMIN_USER_LIST_DEFAULT_LIMIT, grantedScopes } from '@shopping/shared'
 
 import { accessDenied } from '../auth/access-denied.js'
+import { domainFailure } from '../common/domain-failure.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
@@ -181,9 +182,31 @@ export class AdminUserService {
       data: { suspendedAt: now, suspendedReason: request.reason, updatedAt: now },
     })
 
-    if (changed.count === 0) throw new NotFoundException('정지할 회원을 찾을 수 없습니다.')
+    // **0줄을 한 가지로 답하지 않는다.** 「그런 회원이 없다」와 「다른 관리자가 방금
+    // 정지시켰다」는 다른 사실이고, 사람이 할 일도 다르다 — 앞은 잘못 찾은 것이고
+    // 뒤는 목록을 다시 읽으면 되는 것이다. 조건을 못 맞춘 이유를 한 번 더 물어
+    // 가른다 (D-260 의 「사람이 눌러서 하는 일은 답한다」).
+    if (changed.count === 0) await this.refuseSuspension(userId, 'suspend')
 
     await this.prisma.refreshToken.deleteMany({ where: { userId } })
+  }
+
+  private async refuseSuspension(userId: string, action: 'suspend' | 'reinstate'): Promise<never> {
+    const row = await this.prisma.user.findFirst({
+      where: { id: userId, deletedAt: null },
+      select: { suspendedAt: true },
+    })
+
+    if (row === null) throw new NotFoundException('회원을 찾을 수 없습니다.')
+
+    throw new ConflictException(
+      domainFailure(
+        'USER_SUSPENSION_UNCHANGED',
+        action === 'suspend'
+          ? '이미 정지된 회원이에요. 목록을 다시 읽어 주세요.'
+          : '정지 상태가 아니에요. 목록을 다시 읽어 주세요.',
+      ),
+    )
   }
 
   async reinstate(userId: string): Promise<void> {
@@ -193,7 +216,7 @@ export class AdminUserService {
       data: { suspendedAt: null, suspendedReason: null, updatedAt: now },
     })
 
-    if (changed.count === 0) throw new NotFoundException('정지된 회원을 찾을 수 없습니다.')
+    if (changed.count === 0) await this.refuseSuspension(userId, 'reinstate')
   }
 
   /**
