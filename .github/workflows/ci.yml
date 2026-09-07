@@ -54,6 +54,14 @@ jobs:
       - uses: ./.github/actions/setup
       - run: pnpm build
 
+      # 빌드가 방금 만든 것을 그대로 잰다 (TASK-0097 F6). 별도 job 으로 두면 세 앱을
+      # 다시 빌드해야 하고, 그것은 같은 일을 두 번 하는 데 3분이다.
+      #
+      # 재는 것은 **어느 화면을 열든 반드시 내려가는 공통 청크**다. 화면 하나가 무거운
+      # 것은 그 화면의 문제지만, 공통분이 무거우면 모든 화면이 무겁다.
+      - name: Bundle budget
+        run: node scripts/bundle-budget.mjs
+
   # The suite is sharded across runners, and the three jobs below are one gate.
   #
   # It ran as a single job until 2026-09-06, and by then it took 9m18s–9m42s
