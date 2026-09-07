@@ -252,6 +252,80 @@ describe('주문이 늘어도 묶음 조회는 한 번이다 (TASK-0095 A5)', ()
   })
 })
 
+describe('인덱스가 질의를 받는다 (S3 · TASK-0097 F5)', () => {
+  async function planOf(sql: string, values: readonly unknown[] = []): Promise<string> {
+    const rows = await db.query<Record<string, string>>(`EXPLAIN ${sql}`, values)
+
+    return rows.map((row) => Object.values(row).join(' ')).join('\n')
+  }
+
+  /**
+   * **CS 가 가장 먼저 손에 쥐는 값이 주문번호다.** 그것을 훑어서 찾으면 주문이 쌓일수록
+   * 느려지고, 그 느려짐은 「문의 전화를 받은 사람이 기다리는 시간」으로 나타난다.
+   */
+  it('plans a unique index scan for an order number', async () => {
+    await fill()
+    await db.execute(`ANALYZE "Order"`)
+
+    const [order] = await db.query<{ orderNumber: string }>(
+      `SELECT "orderNumber" FROM "Order" LIMIT 1`,
+    )
+    const plan = await planOf(`SELECT "id" FROM "Order" WHERE "orderNumber" = $1`, [
+      order?.orderNumber,
+    ])
+
+    expect(plan).toContain('Order_orderNumber_key')
+    expect(plan).not.toContain('Seq Scan')
+  })
+
+  /**
+   * 주문의 묶음을 한 번에 읽는 질의 (`bundlesOf`).
+   *
+   * **표를 크게 만들어 놓고 잰다.** 500행짜리 표에서는 순차 스캔이 옳은 계획이라,
+   * 작은 픽스처로 재면 그 검사는 인덱스가 아니라 **픽스처를 재는 것**이 된다 —
+   * 상품 쪽 S3 검사가 같은 이유로 카테고리와 스토어를 흩어 놓는다.
+   */
+  it('plans an index scan for the bundles of a page of orders', async () => {
+    // 스토어가 있어야 묶음이 만들어진다 — 없으면 아래 INSERT 가 0행을 넣고, 표가
+    // 작아 순차 스캔이 옳은 계획이 되어 **검사가 픽스처를 재게 된다.**
+    await fill()
+    await db.execute(
+      `INSERT INTO "Order"
+         ("id", "orderNumber", "userId", "checkoutId", "recipientName", "recipientPhone",
+          "postalCode", "addressLine1", "totalProductAmount", "paidAmount", "updatedAt")
+       -- 주문번호는 형식을 DB 가 지킨다 (\`Order_orderNumber_format_check\`):
+       -- 8자리 날짜 + Crockford base32 8자. 대량 행도 그 형식이어야 한다.
+       SELECT gen_random_uuid(), '20260925-' || lpad(to_char(n, 'FM99999999'), 8, '0'),
+              u."id", gen_random_uuid(),
+              '홍길동', '010-0000-0000', '06234', '서울시 강남구', 10000, 10000, now()
+         FROM generate_series(1, 20000) AS n,
+              LATERAL (SELECT "id" FROM "User" LIMIT 1) AS u`,
+    )
+    await db.execute(
+      `INSERT INTO "SellerOrder"
+         ("id", "orderId", "sellerId", "status", "brandName", "productAmount", "paidAmount",
+          "shippingFee", "updatedAt")
+       SELECT gen_random_uuid(), o."id", s."id", 'CONFIRMED'::"SellerOrderStatus",
+              '대량', 10000, 10000, 0, now()
+         FROM "Order" o, LATERAL (SELECT "id" FROM "Seller" LIMIT 1) AS s
+        WHERE o."orderNumber" LIKE '20260925-%'`,
+    )
+    await db.execute(`ANALYZE "SellerOrder"`)
+
+    const ids = await db.query<{ id: string }>(
+      `SELECT "id" FROM "Order" WHERE "orderNumber" LIKE '20260925-%' LIMIT 20`,
+    )
+    const plan = await planOf(`SELECT "id" FROM "SellerOrder" WHERE "orderId" = ANY($1::uuid[])`, [
+      ids.map((row) => row.id),
+    ])
+
+    // `@@unique([orderId, sellerId])` 가 만드는 인덱스가 이것을 받는다. 없으면 한
+    // 페이지를 그릴 때마다 판매자 몫 표 전체를 훑는다.
+    expect(plan).toContain('SellerOrder_orderId_sellerId_key')
+    expect(plan).not.toContain('Seq Scan on "SellerOrder"')
+  })
+})
+
 describe('시스템 상태는 데이터 양과 무관하다', () => {
   /** 배치 표와 큐 깊이는 주문 수를 보지 않는다 — 늘어도 같은 값이어야 한다. */
   it('costs the same however many orders there are', async () => {
