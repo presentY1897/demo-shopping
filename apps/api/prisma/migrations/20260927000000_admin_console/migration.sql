@@ -62,8 +62,6 @@ ALTER TABLE "PersonalDataAccess" ADD CONSTRAINT "PersonalDataAccess_subjectId_fk
 -- AddForeignKey
 ALTER TABLE "SellerStatusHistory" ADD CONSTRAINT "SellerStatusHistory_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "Seller"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
--- AddForeignKey
-ALTER TABLE "SellerStatusHistory" ADD CONSTRAINT "SellerStatusHistory_actorId_fkey" FOREIGN KEY ("actorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- 마지막 방어선은 DB (CLAUDE.md 3장).
 

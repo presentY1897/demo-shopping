@@ -157,7 +157,6 @@ model User {
   seller        Seller?
   personalDataViewed    PersonalDataAccess[] @relation("PersonalDataActor")
   personalDataViewedBy  PersonalDataAccess[] @relation("PersonalDataSubject")
-  sellerStatusDecisions SellerStatusHistory[] @relation("SellerStatusActor")
   addresses     Address[]
   preference    UserPreference?
   refreshTokens RefreshToken[]
@@ -1328,6 +1327,11 @@ model SellerStatusHistory {
   toStatus   SellerStatus
 
   /// 결정한 관리자. 시스템이 옮긴 것이면 `null`.
+  ///
+  /// **외래키를 걸지 않는다** — `OrderStatusHistory` · `ClaimStatusHistory` 와 같다.
+  /// 이력은 append-only 이고 주체가 사라져도 남아야 하는데, 외래키를 걸면 그 주체가
+  /// 실재해야만 **상태를 옮길 수 있게** 된다. 기록을 남기는 일이 기록되는 일을
+  /// 막아서는 안 된다.
   actorId String? @db.Uuid
   /// 그때 적은 사유. 승인처럼 사유가 없는 결정도 있다.
   reason  String?
@@ -1335,7 +1339,6 @@ model SellerStatusHistory {
   createdAt DateTime @default(now())
 
   seller Seller @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  actor  User?  @relation("SellerStatusActor", fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([sellerId, createdAt(sort: Desc)])
 }

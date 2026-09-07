@@ -20,6 +20,7 @@ import type {
 } from '@shopping/shared'
 import { SELLER_REVIEW_LIST_DEFAULT_LIMIT } from '@shopping/shared'
 
+import { AdminSellerService } from '../admin/admin-seller.service.js'
 import { assertResourceAccess } from '../auth/access-denied.js'
 import { sellerOwnership, sellerOwnershipSelect } from '../auth/resource-ownership.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
@@ -400,6 +401,18 @@ export class SellerService {
 
     await this.prisma.$transaction(async (tx) => {
       await this.transition(tx, seller, action, target, input)
+
+      // 이력은 **같은 트랜잭션 안에서** 남는다 (TASK-0094 F6). 밖에 두면 「상태는
+      // 바뀌었는데 이력은 없다」가 가능해지고, 그 조합이 정확히 이 표가 막으려던
+      // 것이다 — 정지·해제를 반복한 스토어의 기록이 조용히 비게 된다.
+      await AdminSellerService.record(tx, {
+        sellerId: seller.id,
+        fromStatus: seller.status,
+        toStatus: target,
+        actorId: principal.userId,
+        reason: input.reason ?? null,
+        now: this.clock.now(),
+      })
 
       if (action === 'approve') await this.grantOwnerRole(tx, seller.userId)
     })
