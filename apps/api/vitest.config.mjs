@@ -1022,6 +1022,20 @@ export default defineConfig({
                 lines: 100,
                 statements: 100,
               },
+              /**
+               * TASK-0090. 어떤 알림을 어떤 스위치가 끄는가.
+               *
+               * **여기가 틀리면 사람이 끈 알림이 오거나, 켜 둔 알림이 안 온다.**
+               * 뒤엣것이 특히 조용하다 — 안 오는 알림은 아무 화면에도 나타나지 않고,
+               * 그것을 알아채는 사람은 「배송이 시작됐는지 아무도 안 알려 줬다」고
+               * 말할 뿐이다.
+               */
+              'src/notifications/notification-rules.ts': {
+                branches: 100,
+                functions: 100,
+                lines: 100,
+                statements: 100,
+              },
             },
     },
   },

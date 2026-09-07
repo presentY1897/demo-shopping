@@ -17,6 +17,7 @@ import type { RequestPrincipal } from '../auth/request-principal.js'
 import { sellerOwnership, sellerOwnershipSelect } from '../auth/resource-ownership.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
+import { NotificationService } from '../notifications/notification.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { maskAuthorName } from '../reviews/review-rules.js'
 
@@ -59,6 +60,7 @@ export class QuestionService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
+    private readonly notifications: NotificationService,
   ) {}
 
   /** 문의를 남긴다 (F1). */
@@ -187,6 +189,10 @@ export class QuestionService {
     content: string,
   ): Promise<AnswerResponse> {
     const seller = await this.sellerOf(principal, questionId)
+    const asked = await this.prisma.productQuestion.findUniqueOrThrow({
+      where: { id: questionId },
+      select: { userId: true, productId: true },
+    })
     const now = this.clock.now()
     const saved = await this.prisma.productAnswer.upsert({
       where: { questionId },
@@ -200,6 +206,15 @@ export class QuestionService {
       },
       update: { content, authorId: principal.userId, updatedAt: now },
       select: { questionId: true, content: true, createdAt: true, updatedAt: true },
+    })
+
+    // 물어본 사람에게 알린다 (TASK-0088 F4 · TASK-0090). 기다리지 않는다.
+    void this.notifications.send({
+      userId: asked.userId,
+      type: 'QUESTION_ANSWER',
+      title: '문의에 답변이 달렸어요',
+      body: `${seller.brandName} 가 회원님의 문의에 답했어요.`,
+      link: `/products/${asked.productId}`,
     })
 
     return {

@@ -12,6 +12,7 @@ import type { RequestPrincipal } from '../auth/request-principal.js'
 import { sellerOwnership, sellerOwnershipSelect } from '../auth/resource-ownership.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
+import { NotificationService } from '../notifications/notification.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { ReviewImageUrls } from './review-images.js'
 import { maskAuthorName } from './review-rules.js'
@@ -55,6 +56,7 @@ export class ReviewReplyService {
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
     private readonly images: ReviewImageUrls,
+    private readonly notifications: NotificationService,
   ) {}
 
   /** 답변을 쓰거나 고친다 (F1 · F2 · F3). */
@@ -64,6 +66,10 @@ export class ReviewReplyService {
     content: string,
   ): Promise<ReviewReply> {
     const seller = await this.sellerOf(principal, reviewId)
+    const review = await this.prisma.review.findUniqueOrThrow({
+      where: { id: reviewId },
+      select: { userId: true, productId: true },
+    })
     const now = this.clock.now()
     const saved = await this.prisma.reviewReply.upsert({
       where: { reviewId },
@@ -77,6 +83,16 @@ export class ReviewReplyService {
       },
       update: { content, authorId: principal.userId, updatedAt: now },
       select: { reviewId: true, content: true, createdAt: true, updatedAt: true },
+    })
+
+    // 쓴 사람에게 알린다 (TASK-0090). **기다리지 않는다** — 알림이 늦거나 실패하는
+    // 것이 답변 저장을 되돌릴 이유는 아니다.
+    void this.notifications.send({
+      userId: review.userId,
+      type: 'REVIEW_REPLY',
+      title: '리뷰에 답변이 달렸어요',
+      body: `${seller.brandName} 가 회원님의 리뷰에 답했어요.`,
+      link: `/products/${review.productId}`,
     })
 
     return { ...saved, brandName: seller.brandName, ...toIso(saved) }

@@ -27,6 +27,7 @@ export const ownedTables = [
   'RefreshToken',
   'UserPreference',
   'Address',
+  'Notification',
   'ProductQuestion',
   'Wishlist',
   'RecentlyViewed',
@@ -91,6 +92,13 @@ export const cleanupPlan: readonly CleanupStep[] = [
     scope: 'user',
     because:
       '잡아 둔 재고는 놓아 주어야 한다 — 계정이 사라지면 아무도 결제하지 않는다. `ProductVariant.reserved` 를 함께 되돌린다 (TASK-0048)',
+  },
+  {
+    table: 'Notification',
+    kind: 'hard',
+    scope: 'user',
+    because:
+      '온전히 그 사람의 것이고 아무것도 참조하지 않는다 (TASK-0090). 「배송이 시작됐어요」는 남길 이력이 아니라 그때 읽으라고 만든 것이고, 읽을 사람이 사라지면 남길 이유가 없다',
   },
   {
     table: 'ProductQuestion',
@@ -258,6 +266,7 @@ export function orderFault(
     Address: ['User'],
     Review: ['User'],
     ReviewHelpful: ['User', 'Review'],
+    Notification: ['User'],
     ProductQuestion: ['User', 'Product'],
     Wishlist: ['User', 'Product'],
     RecentlyViewed: ['User', 'Product'],

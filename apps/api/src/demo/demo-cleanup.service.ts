@@ -173,6 +173,9 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
     await tx.refreshToken.deleteMany({ where: { userId } })
     await tx.userPreference.deleteMany({ where: { userId } })
     await tx.address.deleteMany({ where: { userId } })
+    // 알림 (TASK-0090). 「배송이 시작됐어요」는 남길 이력이 아니라 그때 읽으라고
+    // 만든 것이고, 읽을 사람이 사라지면 남길 이유가 없다.
+    await tx.notification.deleteMany({ where: { userId } })
     // 상품 문의 (TASK-0088). **남의 상품에 남긴 물음이지만 그 사람의 것이다** —
     // 데모 방문자의 문의가 실계정 상품에 영원히 남으면 답할 사람도 지울 방법이 없다.
     // 답변은 `ProductAnswer` 가 Cascade 로 함께 간다.
