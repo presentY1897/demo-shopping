@@ -21,8 +21,19 @@ import { APPS, isCi } from './support/apps.js'
  */
 export default defineConfig({
   testDir: './tests',
-  // 시나리오는 서로의 데이터를 건드리지 않는다 — 각자 자기 데모 계정을 발급받는다.
-  fullyParallel: true,
+  /**
+   * **한 번에 하나씩 돈다.**
+   *
+   * 데모 계정 발급이 한 주소에서 1분에 다섯 개로 묶여 있고(`DEMO_ISSUE_LIMIT`),
+   * 시나리오 넷이 합쳐 딱 다섯 개를 받는다. 동시에 돌리면 그 다섯이 같은 몇 초에
+   * 몰려 뒤쪽이 거절당한다 — 코드가 아니라 순서 때문에 빨개지는 검사가 된다.
+   *
+   * 한도를 검사용으로 낮추거나 끄지 않는 이유는, 그러면 이 흐름이 실제로 열리는
+   * 문과 다른 문을 지나게 되기 때문이다. 시나리오 하나가 5초 남짓이라 직렬로도
+   * F8 의 10분 안에 넉넉히 들어온다.
+   */
+  fullyParallel: false,
+  workers: 1,
   forbidOnly: isCi,
   retries: isCi ? 1 : 0,
   // F8 은 10분이다. 넉넉해 보이지만 **넘으면 실패로 만든다** — 예산이 없으면
