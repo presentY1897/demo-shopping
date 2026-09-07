@@ -324,6 +324,24 @@ describe('인덱스가 질의를 받는다 (S3 · TASK-0097 F5)', () => {
     expect(plan).toContain('SellerOrder_orderId_sellerId_key')
     expect(plan).not.toContain('Seq Scan on "SellerOrder"')
   })
+
+  /**
+   * **불려 놓은 표를 되돌린다.**
+   *
+   * 행은 다음 검사의 `beforeEach` 가 지우지만 **통계는 지우지 않는다** — 방금 돌린
+   * `ANALYZE` 가 「이 표에 2만 행이 있다」를 남기고, 비어 있는 표에 그 통계가 붙어
+   * 있으면 뒤따르는 질의가 엉뚱한 계획을 받는다. 시간을 재는 검사가 같은 워커를
+   * 쓰므로(`--maxWorkers=1`) 그 대가는 **다른 파일의 p95** 로 나타나고, 그때는
+   * 원인이 여기라는 것을 아무도 모른다.
+   *
+   * 이 저장소가 실제로 겪었다: 이 검사를 넣은 PR 에서 대시보드 p95 가 500ms 예산에
+   * 702ms 로 걸렸고, 로컬에서는 통과했다.
+   */
+  afterAll(async () => {
+    await db.execute(`TRUNCATE TABLE "SellerOrder", "Order" RESTART IDENTITY CASCADE`)
+    await db.execute(`ANALYZE "SellerOrder"`)
+    await db.execute(`ANALYZE "Order"`)
+  })
 })
 
 describe('시스템 상태는 데이터 양과 무관하다', () => {
