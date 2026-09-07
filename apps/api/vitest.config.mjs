@@ -699,6 +699,14 @@ export default defineConfig({
               // subset of filenames rather than a failing test. The upload rules and
               // the environment reader are the other two pieces that decide something
               // without asking anybody — QUALITY-GATES Q5's 순수 로직 row.
+              // 판매자 매출과 관리자 대시보드가 **같은 파일**을 쓴다. 틀리면 둘이
+              // 함께 틀리므로 서로를 검증해 주지 못한다 (TASK-0092 4장).
+              'src/common/kst-days.ts': {
+                branches: 100,
+                functions: 100,
+                lines: 100,
+                statements: 100,
+              },
               'src/storage/sigv4.ts': {
                 branches: 100,
                 functions: 100,

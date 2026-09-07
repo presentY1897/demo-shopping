@@ -449,6 +449,80 @@ export class PointsService {
     return { taken, shortfall }
   }
 
+  /**
+   * 관리자가 손으로 움직이는 적립금 (TASK-0093 F5).
+   *
+   * ## 왜 여기 있는가
+   *
+   * 관리자 서비스가 원장을 직접 쓰면 잔액과 통(lot)의 관계를 그쪽에서 다시 구현하게
+   * 되고, 두 구현은 어긋난다 — 그 어긋남은 다음 사용에서 「쓸 수 있다는데 잔액이
+   * 모자란다」로 나타난다 (P5). 원장을 아는 곳은 이 파일 하나여야 한다.
+   *
+   * ## 지급과 차감이 한 문이다
+   *
+   * 사람이 하는 조정에서 「더하기」와 「빼기」는 같은 판단의 두 방향이고, 문을 둘로
+   * 나누면 화면이 부호를 보고 어느 쪽을 부를지 정하게 된다 — 그 분기가 틀리면 더하려던
+   * 것이 빠진다.
+   *
+   * **지급에는 유효기간이 없다.** 통을 만들지 않는다는 뜻이고, 그래서 이 적립금은
+   * 만료 배치가 건드리지 않는다 — 관리자가 사과의 뜻으로 준 것이 한 달 뒤에 조용히
+   * 사라지면 그것은 사과를 무르는 일이다. 대신 쓸 때는 통 없는 잔액이 먼저 쓰이지
+   * 않으므로(`planConsumption` 은 통만 본다) **통의 합과 잔액이 갈린다** — 그
+   * 어긋남은 이미 `balanceOf` 가 두 값을 함께 답해 드러내고 있다.
+   *
+   * ## 차감은 잔액까지만 간다
+   *
+   * 음수 잔액을 만들지 않는다. 이미 써 버린 적립금은 되가져올 수 없고, 마이너스로
+   * 두면 그 사람은 다음에 적립받는 만큼을 잃는데 그 사실을 아무 화면도 설명하지
+   * 못한다 (`clawbackWithin` 이 같은 판단을 먼저 했다). 실제로 움직인 몫을 답한다.
+   */
+  async adjustByAdmin(input: {
+    readonly userId: string
+    readonly amount: number
+    readonly reason: string
+  }): Promise<number> {
+    if (input.amount === 0) return 0
+
+    const accountId = await this.accountIdFor(input.userId)
+    const now = this.clock.now()
+
+    return this.prisma.$transaction(async (tx) => {
+      const account = await this.lock(tx, accountId)
+      const applied = input.amount > 0 ? input.amount : -Math.min(-input.amount, account.balance)
+
+      if (applied === 0) return 0
+
+      const balanceAfter = account.balance + applied
+
+      if (applied < 0) {
+        const plan = planConsumption(await this.liveLots(tx, account.id, now), -applied)
+
+        // 잔액은 있는데 살아 있는 통이 모자라다 — 통 없는 조정 지급이 섞인 계정이
+        // 정확히 이 상태다. 통에서 뺄 수 있는 만큼만 빼고 나머지는 잔액에서만 빠진다.
+        if (plan.outcome !== 'refused') {
+          for (const draw of plan.draws) await this.drawLot(tx, draw.lotId, draw.remainingAfter)
+        }
+      }
+
+      await this.record(tx, account.id, {
+        draft: {
+          type: 'ADJUST',
+          amount: applied,
+          // 주문도 클레임도 가리키지 않는다. 사람의 판단이 유일한 근거이고, 그래서
+          // 이유 칸이 비면 나중에 아무도 이 줄을 설명할 수 없다.
+          refType: null,
+          refId: null,
+          reason: input.reason,
+        },
+        balanceAfter,
+        lot: null,
+        now,
+      })
+
+      return applied
+    })
+  }
+
   // ------------------------------------------------------------------ 읽기
 
   /** 이 사람의 잔액과, 원장이 말하는 잔액. 둘 다 나가는 이유는 계약에 적었다. */

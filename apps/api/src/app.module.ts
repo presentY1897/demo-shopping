@@ -27,6 +27,8 @@ import { ReturnModule } from './claims/return.module.js'
 import { ReviewModule } from './reviews/review.module.js'
 import { SearchModule } from './search/search.module.js'
 import { SellersModule } from './sellers/sellers.module.js'
+import { AdminModule } from './admin/admin.module.js'
+import { DashboardModule } from './dashboard/dashboard.module.js'
 import { SettlementModule } from './settlement/settlement.module.js'
 import { ShipmentModule } from './shipping/shipment.module.js'
 import { StockModule } from './stock/stock.module.js'
@@ -63,6 +65,8 @@ export class AppModule {
         SearchModule,
         SellersModule,
         SettlementModule,
+        DashboardModule,
+        AdminModule,
         ShipmentModule,
         StockModule,
         StorageModule,
