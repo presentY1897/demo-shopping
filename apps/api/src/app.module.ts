@@ -19,6 +19,7 @@ import { OrderModule } from './orders/order.module.js'
 import { PaymentModule } from './payment/payment.module.js'
 import { PointsModule } from './points/points.module.js'
 import { ProfileModule } from './profile/profile.module.js'
+import { QuestionModule } from './questions/question.module.js'
 import { ReservationModule } from './reservation/reservation.module.js'
 import { ReturnModule } from './claims/return.module.js'
 import { ReviewModule } from './reviews/review.module.js'
@@ -51,6 +52,7 @@ export class AppModule {
         PaymentModule,
         PointsModule,
         ProfileModule,
+        QuestionModule,
         ReservationModule,
         ReturnModule,
         ReviewModule,

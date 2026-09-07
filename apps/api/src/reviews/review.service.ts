@@ -24,6 +24,7 @@ import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { SearchOutboxService } from '../search/search-outbox.service.js'
 import { ratingAverage } from './review-console.js'
+import { ReviewImageUrls } from './review-images.js'
 import type { ReviewImageRefusal, ReviewRefusal } from './review-rules.js'
 import {
   editable,
@@ -136,6 +137,7 @@ export class ReviewService {
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
     private readonly outbox: SearchOutboxService,
+    private readonly images: ReviewImageUrls,
   ) {}
 
   /** 산 것에 리뷰를 쓴다 (F1 · F2 · F3 · F6). */
@@ -174,7 +176,7 @@ export class ReviewService {
       return review
     })
 
-    return toReview(created)
+    return toReview(created, this.images)
   }
 
   /** 기한 안에서 고친다 (F4 · F5). */
@@ -213,7 +215,7 @@ export class ReviewService {
       return review
     })
 
-    return toReview(updated)
+    return toReview(updated, this.images)
   }
 
   /**
@@ -271,7 +273,7 @@ export class ReviewService {
       throw new NotFoundException('리뷰를 찾을 수 없어요.')
     }
 
-    return toReview(review)
+    return toReview(review, this.images)
   }
 
   /**
@@ -405,7 +407,7 @@ function toReviewable(row: ReviewableRow): ReviewableItem {
   }
 }
 
-function toReview(row: ReviewRow): Review {
+function toReview(row: ReviewRow, images: ReviewImageUrls): Review {
   return {
     id: row.id,
     productId: row.productId,
@@ -414,7 +416,7 @@ function toReview(row: ReviewRow): Review {
     status: row.status,
     authorName: maskAuthorName(row.user.name),
     optionLabel: optionLabelOf(row.orderItem.productSnapshot),
-    imageKeys: row.images.map((image) => image.key),
+    images: images.of(row.images.map((image) => image.key)),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   }
