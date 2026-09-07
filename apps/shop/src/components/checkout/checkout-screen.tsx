@@ -410,6 +410,9 @@ function Recipients({
   )
 }
 
+/** 버튼과 그 이유를 묶는 id. 주문서는 한 쪽에 하나라 고정값으로 충분하다. */
+const REASON_ID = 'checkout-place-reason'
+
 function Summary({
   checkout,
   messages,
@@ -488,16 +491,37 @@ function Summary({
         }}
       />
 
-      <Button disabled={!ready} loading={placing} onClick={onPlace} type="button">
+      <Button
+        // 아직 누를 수 없을 때는 `aria-disabled` 다 (`disabled` 가 아니다). 진짜
+        // `disabled` 는 **탭 순서에서 사라져** 마우스를 쓰지 않는 사람이 버튼에도
+        // 그 아래 이유에도 닿지 못한다 — TASK-0099 의 키보드 완주가 여기서 막혔다.
+        // 담기 버튼이 먼저 같은 판단을 했다(`purchase-controls.tsx`).
+        //
+        // 요청이 도는 동안은 진짜 `disabled` 다: 그때는 읽을 이유가 없고, 두 번
+        // 눌리면 주문이 두 번 나간다.
+        aria-describedby={ready ? undefined : REASON_ID}
+        aria-disabled={!ready}
+        disabled={placing}
+        loading={placing}
+        onClick={() => {
+          // `aria-disabled` 는 클릭을 막지 않는다 — 막는 것은 여기다.
+          if (!ready) return
+
+          onPlace()
+        }}
+        type="button"
+      >
         {placing ? messages.placing : messages.placeOrder}
       </Button>
 
       {/*
         누를 수 없는 이유를 그 아래 적는다. 이유 없는 비활성 컨트롤을 보면 사람은
-        자기 화면이 고장 났다고 생각한다.
+        자기 화면이 고장 났다고 생각한다. `aria-describedby` 로 버튼에 묶여 있어
+        **버튼에 초점이 갔을 때 함께 읽힌다** — 화면을 못 보는 사람에게는 「아래」가
+        없다.
       */}
       {ready ? null : (
-        <p className="text-fg-subtle text-xs">
+        <p className="text-fg-subtle text-xs" id={REASON_ID}>
           {reasonOf({ messages, missingMethod, missingRecipient, repricing })}
         </p>
       )}

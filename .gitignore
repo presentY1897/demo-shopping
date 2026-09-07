@@ -66,3 +66,8 @@ yarn.lock
 
 # Lighthouse 실행 결과. 워크플로가 아티팩트로 올리므로 저장소에 둘 이유가 없다.
 .lighthouseci/
+
+# Playwright 가 실패했을 때만 남기는 것들 (TASK-0099).
+e2e/test-results/
+e2e/playwright-report/
+e2e/blob-report/

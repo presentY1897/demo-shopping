@@ -18,11 +18,19 @@ import { messagesFor } from '@/messages'
  * 진행 문장과 같은 이유는 그 경계가 보이지 않아야 하기 때문이다 — 여기 도착한
  * 사람이 기다리는 것은 하나뿐이다.
  */
+/*
+ * `<div>` 이지 `<main>` 이 아니다 (TASK-0099 가 찾은 것).
+ *
+ * 바깥 레이아웃이 이미 `<main id="main">` 을 그린다. 여기서 또 그리면 **랜드마크가
+ * 둘**이 되고, 스크린리더의 랜드마크 목록에 「본문」이 두 개 뜬다 — 「본문 바로가기」가
+ * 데려다주는 곳이 그중 어느 쪽인지는 아무도 모른다. Lighthouse 의 기본 접근성
+ * 항목에는 이 규칙이 없어서 점수 1.00 인 채로 남아 있었다.
+ */
 export default function TossSuccessPage() {
   const messages = messagesFor().checkout
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-4 py-6">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-4 py-6">
       <h1 className="text-fg text-xl font-bold">{messages.tossSuccess.title}</h1>
       <Suspense
         fallback={
@@ -33,6 +41,6 @@ export default function TossSuccessPage() {
       >
         <TossSuccessScreen messages={messages.tossSuccess} />
       </Suspense>
-    </main>
+    </div>
   )
 }
