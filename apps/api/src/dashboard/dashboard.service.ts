@@ -24,6 +24,7 @@ import { fillDays, previousRange, rangeOf } from '../common/kst-days.js'
 import type { AppConfig } from '../config/app-config.js'
 import { APP_CONFIG } from '../config/app-config.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { SearchOutboxService } from '../search/search-outbox.service.js'
 import { SCHEDULERS, statusOf } from './scheduler-registry.js'
 
 /** 기본 조회 기간 — 최근 30일. */
@@ -71,6 +72,7 @@ const NO_TOTALS: TotalsRow = { salesAmount: 0, orderCount: 0, activeSellers: 0 }
 export class DashboardService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly outbox: SearchOutboxService,
     @Inject(APP_CONFIG) private readonly config: AppConfig,
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
@@ -171,7 +173,9 @@ export class DashboardService {
     })
     const byKey = new Map(rows.map((row) => [row.key, row.value]))
 
-    const [activeAccounts, expiringWithinHour] = await Promise.all([
+    const [indexBacklog, activeAccounts, expiringWithinHour] = await Promise.all([
+      // 색인 큐는 배치가 아니라 **줄 서 있는 일**이라 따로 답한다 (2장 「인덱싱 큐」).
+      this.outbox.backlog(),
       this.prisma.user.count({ where: { isDemo: true, deletedAt: null } }),
       this.prisma.user.count({
         where: {
@@ -190,9 +194,12 @@ export class DashboardService {
           key: entry.key,
           status: statusOf(lastRunAt, now, entry.staleAfterMs),
           lastRunAt: lastRunAt?.toISOString() ?? null,
-          backlog: null,
         }
       }),
+      searchIndex: {
+        pending: indexBacklog.pending,
+        oldestAt: indexBacklog.oldestAt?.toISOString() ?? null,
+      },
       demo: { activeAccounts, expiringWithinHour },
     }
   }

@@ -30,7 +30,7 @@ import type { AdminClaimListItem } from '@shopping/shared'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { UserEvent } from '@testing-library/user-event'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import ClaimsPage from '@/app/claims/page'
 import HomePage from '@/app/page'
@@ -42,6 +42,20 @@ import { testServer } from './setup'
 import { stubViewport, VIEWPORTS } from './support/viewport'
 
 const { claims: copy } = messagesFor()
+
+/**
+ * The dashboard's three doors, held open (TASK-0092).
+ *
+ * `HomePage` now mounts `DashboardWorkspace`, and `packages/api-mocks` carries
+ * no handler for `/admin/dashboard/*` — an unhandled request fails the whole
+ * file. The stub answers **nothing**, so each dashboard section stays in its
+ * loading state and this file keeps measuring the claim panel it is about.
+ */
+vi.mock('@/lib/dashboard/console-api', () => ({
+  fetchDashboardMetrics: vi.fn(() => new Promise(() => undefined)),
+  fetchDashboardPending: vi.fn(() => new Promise(() => undefined)),
+  fetchDashboardSystem: vi.fn(() => new Promise(() => undefined)),
+}))
 
 /** Every request the app made, newest last. Reset before each test. */
 const requests: string[] = []

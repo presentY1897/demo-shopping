@@ -34,7 +34,6 @@ export const ko: Messages = {
       configuration: 'API 주소 설정이 없습니다. pnpm dev 로 실행했는지 확인해주세요.',
       unknown: '알 수 없는 오류가 발생했습니다.',
     },
-    notice: '기동 확인용 임시 페이지입니다. 실제 화면은 M03 에서 대체됩니다.',
   },
   wake: {
     loadingLabel: 'API 연결 상태를 불러오는 중입니다.',
@@ -1756,6 +1755,151 @@ export const ko: Messages = {
       unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
     },
   },
+  // 대시보드 (TASK-0092). 문이 셋이라 슬라이스도 셋으로 갈린다 — 한 섹션이
+  // 실패해도 나머지는 그려져야 하고, 그러려면 오류 제목과 「다시 시도」가
+  // 섹션마다 있어야 한다.
+  dashboard: {
+    description: '지금 처리해야 할 일과 플랫폼 전체 지표를 한 화면에서 봅니다.',
+    forbiddenTitle: '대시보드를 볼 수 없습니다',
+    // 처리 대기 — 이 화면의 목적이다. 그래서 맨 위에 있고, 각 줄이 그 일을
+    // 처리하는 화면으로 바로 간다.
+    pending: {
+      title: '처리 대기',
+      description: '기간과 무관합니다. 3주 전에 들어온 신청도 아직 안 봤으면 오늘 할 일이에요.',
+      loadingLabel: '처리 대기 항목을 불러오는 중입니다',
+      errorTitle: '처리 대기 항목을 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      allClear: '지금 처리를 기다리는 일이 없어요.',
+      totalCount: '모두 {count}건',
+      labels: {
+        sellerApplications: '판매자 승인',
+        claims: '클레임 개입',
+        reports: '신고 처리',
+        settlements: '정산 승인',
+      },
+      countValue: '{count}건',
+      listLabel: '처리 대기 항목',
+    },
+    metrics: {
+      title: '핵심 지표',
+      regionLabel: '지표 요약',
+      loadingLabel: '지표를 불러오는 중입니다',
+      errorTitle: '지표를 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      salesLabel: '거래액',
+      orderCountLabel: '주문 수',
+      newUsersLabel: '신규 가입',
+      activeSellersLabel: '활성 판매자',
+      orderCountValue: '{count}건',
+      newUsersValue: '{count}명',
+      activeSellersValue: '{count}곳',
+      activeSellersNote: '기간 안에 한 건이라도 판 스토어입니다. 등록된 스토어 수가 아니에요.',
+      // 직전 같은 길이 기간과 비교한다. 「전월 대비」가 아닌 이유는 기간을 사람이
+      // 고르기 때문이다 — 7일을 보고 있는 사람에게 지난달과의 비교는 화면의 어느
+      // 것과도 짝이 맞지 않는다.
+      comparison: {
+        label: '직전 {days}일 대비',
+        up: '{percent}% 늘었어요',
+        down: '{percent}% 줄었어요',
+        flat: '변화 없어요',
+        none: '직전 기간에 기록이 없어 비교할 수 없어요',
+      },
+      filters: {
+        legend: '조회 기간',
+        fromLabel: '시작일',
+        toLabel: '종료일',
+        reset: '최근 30일로',
+        rangeReversed: '종료일이 시작일보다 앞서 있어요. 두 날짜를 확인해 주세요.',
+        rangeTooLong: '한 번에 최대 {max}일까지 볼 수 있어요. 기간을 줄여 주세요.',
+      },
+      periodValue: '{from} ~ {to}',
+    },
+    // 그림은 장식이고 표가 내용이다. 표는 접혀도 DOM 에서 사라지지 않는다.
+    chart: {
+      title: '거래액 추이',
+      peak: '가장 많이 판 날 {amount}',
+      empty: '이 기간에는 그릴 거래가 없어요.',
+      caption: '그래프는 장식입니다. 같은 숫자가 아래 표에 있어요.',
+      tableCaption: '날짜별 거래액과 주문 수',
+      showTable: '표로 보기',
+      hideTable: '표 접기',
+      dateHeader: '날짜',
+      salesHeader: '거래액',
+      orderCountHeader: '주문 수',
+    },
+    rankings: {
+      productsTitle: '인기 상품',
+      productsCaption: '거래액 상위 상품',
+      productsEmpty: '이 기간에 팔린 상품이 없어요.',
+      sellersTitle: '인기 판매자',
+      sellersCaption: '거래액 상위 판매자',
+      sellersEmpty: '이 기간에 판 스토어가 없어요.',
+      nameHeader: '상품',
+      brandHeader: '스토어',
+      salesHeader: '거래액',
+      orderCountHeader: '주문 수',
+      note: '거래액 기준 상위 {count}개까지만 보여줍니다.',
+    },
+    // 시스템 상태. never 와 stale 을 가른다 — 한 번도 안 돈 것은 갓 뜬 프로세스의
+    // 정상 상태이고, 돌다가 멈춘 것은 사고다. 둘을 같은 색으로 칠하면 배포
+    // 직후마다 빨간 화면을 보게 되고, 몇 번 반복되면 사람은 그 색을 안 믿는다.
+    system: {
+      title: '시스템 상태',
+      description: '배치가 하나 멈추면 조용히 문제가 쌓입니다. 여기서 먼저 보입니다.',
+      loadingLabel: '시스템 상태를 불러오는 중입니다',
+      errorTitle: '시스템 상태를 불러오지 못했어요',
+      retryLabel: '다시 시도',
+      summary: {
+        stopped: '배치 {count}개가 멈춰 있어요. 지금 확인이 필요합니다.',
+        idle: '배치 {count}개가 아직 한 번도 돌지 않았어요. 방금 배포했다면 정상입니다.',
+        ok: '모든 배치가 제때 돌고 있어요.',
+      },
+      statusLabels: {
+        ok: '정상',
+        stale: '멈춤',
+        never: '실행 전',
+      },
+      // 배치 하나당 한국어 이름. 전수라 서버에 배치가 하나 늘면 여기가
+      // typecheck 에서 걸린다.
+      names: {
+        'reservation.sweep.lastRunAt': '재고 예약 만료 정리',
+        'order.confirm.lastRunAt': '구매 확정 처리',
+        'shipping.delivery.lastRunAt': '배송 진행 시뮬레이션',
+        'payment.reconcile.lastRunAt': '결제 대사',
+        'payment.straggler.lastRunAt': '미승인 결제 정리',
+        'settlement.batch.lastRunAt': '정산 회차 생성',
+        'claims.refund.lastRunAt': '환불 재시도',
+        'point.expiry.lastRunAt': '적립금 소멸',
+        'coupon.expiry.lastRunAt': '쿠폰 만료 처리',
+        'demo.cleanup.lastRunAt': '데모 계정 정리',
+      },
+      caption: '배치별 마지막 실행 시각',
+      nameHeader: '배치',
+      statusHeader: '상태',
+      lastRunHeader: '마지막 실행',
+      neverRun: '아직 없음',
+      searchIndex: {
+        title: '검색 색인 큐',
+        pending: '대기 {count}건',
+        oldest: '가장 오래 기다린 줄 {at}',
+      },
+      unnamedNotice: '이 콘솔이 아직 이름을 모르는 배치예요. 콘솔을 최신으로 올려주세요.',
+      demo: {
+        title: '데모 계정',
+        activeAccounts: '사용 중 {count}개',
+        expiringWithinHour: '1시간 안에 만료 {count}개',
+        link: '데모 계정 관리로',
+      },
+    },
+    failures: {
+      network: '서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.',
+      timeout: '응답이 너무 늦어 요청을 멈췄어요. 잠시 후 다시 시도해 주세요.',
+      aborted: '요청을 취소했어요.',
+      malformed_response: '서버가 보낸 응답을 읽지 못했어요. 잠시 후 다시 시도해 주세요.',
+      configuration: '서버 주소 설정이 없어요. 개발 서버를 다시 실행해 주세요.',
+      unknown: '알 수 없는 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+    },
+  },
   layout: {
     // 콘솔 이름. 사이드바 위와 모바일 시트 제목에 같은 문자열이 쓰인다.
     brand: '관리자 콘솔',
@@ -2187,6 +2331,8 @@ export const ko: Messages = {
     REPORT_ALREADY_FILED: '이미 신고한 대상이에요.',
     REPORT_ALREADY_HANDLED: '이미 처리된 신고예요. 목록을 새로고침해 주세요.',
     REPORT_NOT_REMOVABLE: '상품은 지울 수 없어요. 숨김으로 처리해 주세요.',
+    PRODUCT_NOT_MODERATABLE:
+      '지금 상태에서는 이 상품을 내리거나 올릴 수 없어요. 목록을 새로고침해 주세요.',
     // 쿠폰 (TASK-0072). 관리자 콘솔은 플랫폼 쿠폰을 내므로 범위 거절을 만날 일이
     // 없지만, 카탈로그가 전수라 문장이 있어야 한다 — 그리고 관리자가 판매자를
     // 대신해 발행하는 길이 열려 있어 아주 없는 것도 아니다.

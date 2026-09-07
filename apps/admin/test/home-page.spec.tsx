@@ -22,13 +22,29 @@ import {
 } from '@shopping/api-mocks'
 import { APP_ID_HEADER, healthEntries } from '@shopping/shared'
 import { screen, within } from '@testing-library/react'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import HomePage from '@/app/page'
 import { messagesFor, screenTitle } from '@/messages'
 
 import { renderWithAuth } from './support/auth'
 import { testServer } from './setup'
+
+/**
+ * The dashboard's three doors, held open (TASK-0092).
+ *
+ * This page now mounts `DashboardWorkspace`, and `packages/api-mocks` carries no
+ * handler for `/admin/dashboard/*` — an unhandled request fails the whole file.
+ * The stub answers **nothing**: each section stays in its loading state, which
+ * adds a skeleton and a heading and no text that could collide with what this
+ * file is actually about. What the dashboard itself renders is
+ * `dashboard-page.spec.tsx`'s subject, against the same module.
+ */
+vi.mock('@/lib/dashboard/console-api', () => ({
+  fetchDashboardMetrics: vi.fn(() => new Promise(() => undefined)),
+  fetchDashboardPending: vi.fn(() => new Promise(() => undefined)),
+  fetchDashboardSystem: vi.fn(() => new Promise(() => undefined)),
+}))
 
 const { health, wake } = messagesFor()
 

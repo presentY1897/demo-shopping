@@ -117,6 +117,32 @@ export const dashboardPendingResponseSchema = z.object({
 
 export type DashboardPendingResponse = z.infer<typeof dashboardPendingResponseSchema>
 
+/**
+ * 대시보드가 지켜보는 배치들의 열쇠 (TASK-0092 F4).
+ *
+ * **계약에 있는 이유**: 서버의 목록(`scheduler-registry.ts`)과 화면의 이름표가
+ * 따로 놀면, 배치가 하나 늘었을 때 화면은 점 찍힌 열쇠를 날것으로 그리고 **아무
+ * 검사도 빨개지지 않는다.** 여기 한 벌만 두면 이름표가 `Record<SchedulerKey, string>`
+ * 이 되어, 새 배치는 typecheck 에서 걸린다.
+ *
+ * 서버가 이 목록을 **다 덮는지**는 `scheduler-registry-parity.spec.ts` 가 소스를
+ * 읽어 확인한다. 그래서 양쪽이 이 한 줄에 묶인다.
+ */
+export const schedulerKeys = [
+  'reservation.sweep.lastRunAt',
+  'order.confirm.lastRunAt',
+  'shipping.delivery.lastRunAt',
+  'payment.reconcile.lastRunAt',
+  'payment.straggler.lastRunAt',
+  'settlement.batch.lastRunAt',
+  'claims.refund.lastRunAt',
+  'point.expiry.lastRunAt',
+  'coupon.expiry.lastRunAt',
+  'demo.cleanup.lastRunAt',
+] as const
+
+export type SchedulerKey = (typeof schedulerKeys)[number]
+
 export const schedulerStatuses = ['ok', 'stale', 'never'] as const
 
 export type SchedulerStatus = (typeof schedulerStatuses)[number]
@@ -131,11 +157,15 @@ export const schedulerStatusSchema = z.enum(schedulerStatuses)
  * 되고, 그것이 몇 번 반복되면 사람은 그 색을 안 믿는다.
  */
 export const schedulerHealthSchema = z.object({
+  /**
+   * **`z.enum` 이 아니다.** 이름표는 {@link schedulerKeys} 로 전수를 강제하지만,
+   * 응답은 열어 둔다 — 서버와 콘솔은 따로 배포되므로 서버가 먼저 배치를 하나 늘리는
+   * 순간이 있고, 그때 `enum` 이면 **시스템 상태 패널이 통째로 파싱에 실패한다.**
+   * 배치 하나의 이름을 못 붙이는 것과 화면 전체가 비는 것은 다른 크기의 사고다.
+   */
   key: z.string().min(1),
   status: schedulerStatusSchema,
   lastRunAt: z.iso.datetime().nullable(),
-  /** 이 배치가 밀려 있는 일의 수. 셀 수 없는 배치는 `null`. */
-  backlog: z.int().min(0).nullable(),
 })
 
 export type SchedulerHealth = z.infer<typeof schedulerHealthSchema>
@@ -149,6 +179,22 @@ export type SchedulerHealth = z.infer<typeof schedulerHealthSchema>
  */
 export const dashboardSystemResponseSchema = z.object({
   schedulers: z.array(schedulerHealthSchema),
+  /**
+   * 색인 큐 (TASK-0092 2장 「인덱싱 큐」).
+   *
+   * **배치 목록에 없다.** 저 열 개는 주기적으로 도는 일이고 이것은 **줄 서 있는 일**
+   * 이라, 「마지막으로 언제 돌았나」로는 상태를 말할 수 없다 — 방금 돌았어도 큐가
+   * 만 건이면 색인은 뒤처져 있다.
+   *
+   * `pending` 이 안 줄면 멈춘 것이고 줄고 있으면 바쁜 것이다. 그 판정을 서버가 하지
+   * 않는 이유는 한 번의 응답으로는 **줄고 있는지 알 수 없기** 때문이다 — 두 번을 본
+   * 사람만 아는 사실이라 화면에 맡긴다. `oldestAt` 이 그 대신 쓰인다: 가장 오래
+   * 기다린 줄이 언제 들어왔는지는 한 번만 봐도 뜻이 있다.
+   */
+  searchIndex: z.object({
+    pending: z.int().min(0),
+    oldestAt: z.iso.datetime().nullable(),
+  }),
   /** 데모 계정 현황 요약 — 자세한 것은 TASK-0096 의 화면이 답한다. */
   demo: z.object({
     activeAccounts: z.int().min(0),
