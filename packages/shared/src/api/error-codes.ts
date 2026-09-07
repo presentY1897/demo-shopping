@@ -479,6 +479,16 @@ export const domainErrorCodes = [
    * 것이지 기록을 없애는 것이 아니다.
    */
   'REPORT_NOT_REMOVABLE',
+  /**
+   * 지금 상태에서는 내리거나 올릴 수 없다 (TASK-0095 F2).
+   *
+   * 판매 중인 것만 내리고, 내려진 것만 다시 올린다 — 초안을 판매 중으로 만들면
+   * 값이 없는 상품이 진열되고, 그것은 데이터베이스가 막는다.
+   *
+   * **조용히 넘어가지 않고 답하는 이유**는, 아무 일도 안 일어났는데 「내렸다」를
+   * 받은 관리자가 그 상품을 다시 보러 오지 않기 때문이다.
+   */
+  'PRODUCT_NOT_MODERATABLE',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]

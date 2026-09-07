@@ -1,7 +1,13 @@
 import { Module } from '@nestjs/common'
 
+import { DemoModule } from '../demo/demo.module.js'
 import { PointsModule } from '../points/points.module.js'
 import { PrismaModule } from '../prisma/prisma.module.js'
+import { SearchModule } from '../search/search.module.js'
+import { AdminCatalogService } from './admin-catalog.service.js'
+import { AdminConsoleController } from './admin-console.controller.js'
+import { AdminDemoService } from './admin-demo.service.js'
+import { AdminSellerService } from './admin-seller.service.js'
 import { AdminUserController } from './admin-user.controller.js'
 import { AdminUserService } from './admin-user.service.js'
 
@@ -12,8 +18,8 @@ import { AdminUserService } from './admin-user.service.js'
  * (`points.service.ts` 의 `adjustByAdmin`).
  */
 @Module({
-  imports: [PrismaModule, PointsModule],
-  controllers: [AdminUserController],
-  providers: [AdminUserService],
+  imports: [PrismaModule, PointsModule, SearchModule, DemoModule],
+  controllers: [AdminUserController, AdminConsoleController],
+  providers: [AdminUserService, AdminSellerService, AdminCatalogService, AdminDemoService],
 })
 export class AdminModule {}

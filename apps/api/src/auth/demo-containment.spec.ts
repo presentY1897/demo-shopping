@@ -50,6 +50,26 @@ const ALLOWED = [
   // Nothing else in that task names it: the plan is a list of tables, the health
   // reporter reads a timestamp, and the force-expiry endpoint narrows by id.
   'apps/api/src/demo/demo-cleanup.service.ts',
+  // M14, and the same review. 관리자 콘솔에서 데모는 **판정 조건이 아니라 주제**다 —
+  // 「데모 계정만 보기」(TASK-0093), 「데모 스토어 구분 표시」(TASK-0094 F7),
+  // 「데모 계정 현황」(TASK-0092 · TASK-0096)이 화면이 답해야 할 질문 자체이고,
+  // 그것을 스코프로는 물어볼 수 없다. 스코프는 「이 사람이 이 행을 만져도 되는가」에
+  // 답하지 「이 행이 데모인가」에 답하지 않는다.
+  //
+  // **권한 판정은 이 파일들에 없다.** 상품 강제 숨김의 데모 제한은 매퍼를 지난다
+  // (`admin-catalog.service.ts` 의 `accountOwnershipSelect`) — 그래서 그 파일은
+  // 이 목록에 없다. 여기 있는 넷은 전부 읽어서 **보여 주기만** 한다.
+  'apps/api/src/admin/admin-user.service.ts',
+  'apps/api/src/admin/admin-user.controller.ts',
+  'apps/api/src/admin/admin-seller.service.ts',
+  'apps/api/src/dashboard/dashboard.service.ts',
+  'apps/api/src/admin/admin-demo.service.ts',
+  'apps/api/src/admin/admin-console.controller.ts',
+  // 계약도 같은 이유다. 「데모 여부」가 목록의 **필터이자 표시 항목**이므로 질의와
+  // 응답의 모양에 이름이 나온다 — 화면이 물어볼 수 있어야 하는 것을 계약이 숨기면
+  // 화면은 그 질문을 못 한다.
+  'packages/shared/src/api/admin-users.ts',
+  'packages/shared/src/api/admin-console.ts',
 ] as const
 
 const SCANNED = ['apps/api/src', 'packages/shared/src'] as const

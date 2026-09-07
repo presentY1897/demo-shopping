@@ -339,6 +339,8 @@ export const ko: Messages = {
     REPORT_ALREADY_FILED: '이미 신고한 대상이에요.',
     REPORT_ALREADY_HANDLED: '이미 처리된 신고예요. 목록을 새로고침해 주세요.',
     REPORT_NOT_REMOVABLE: '상품은 지울 수 없어요. 숨김으로 처리해 주세요.',
+    PRODUCT_NOT_MODERATABLE:
+      '지금 상태에서는 이 상품을 내리거나 올릴 수 없어요. 목록을 새로고침해 주세요.',
     // 쿠폰 (TASK-0072). 판매자 콘솔이 실제로 만나는 실패다 — 발행 화면은
     // TASK-0074 이고, 서버는 그 화면 없이도 이 코드들을 답한다.
     COUPON_SCOPE_FORBIDDEN:
