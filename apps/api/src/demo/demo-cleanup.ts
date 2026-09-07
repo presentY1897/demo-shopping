@@ -11,6 +11,16 @@ export const DEMO_CLEANUP_LAST_RUN_KEY = 'demo.cleanup.lastRunAt'
 export const DEMO_CLEANUP_INTERVAL_MS = 15 * 60_000
 
 /**
+ * 이보다 오래 안 돌았으면 멈춘 것으로 본다 (TASK-0092 F4).
+ *
+ * 다른 아홉 배치와 같은 5주기다. `/health` 는 이 판정을 하지 않고 시각만 내보내
+ * 읽는 쪽에 맡겼는데(`health.ts` 의 `demoCleanup` 주석), **이제 그 읽는 쪽이
+ * 생겼다** — 관리자 대시보드다. 판정을 그쪽에 두면 배치의 주기를 바꾼 사람이 고쳐야
+ * 할 자리가 다른 파일에 생기므로, 주기 바로 옆에 둔다.
+ */
+export const DEMO_CLEANUP_STALE_AFTER_MS = 5 * DEMO_CLEANUP_INTERVAL_MS
+
+/**
  * How many accounts one sweep collects (R2).
  *
  * A cap rather than "all of them": a demo that went viral overnight would

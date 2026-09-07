@@ -266,7 +266,12 @@ export class GoogleAuthService {
     const user = await this.prisma.user.findFirst({
       // Matches the partial index: a withdrawn account releases its identity so
       // the same person can sign up again (`erd.md` 2장).
-      where: { googleSub: sub, deletedAt: null },
+      //
+      // 정지된 계정은 **여기서 못 찾는다** (TASK-0093 F4). 그래서 로그인이 실패하고,
+      // 새로 가입되지도 않는다 — `googleSub` 이 그대로 남아 있어 만들기 쪽이
+      // 유일 제약에 걸린다. 정지가 탈퇴와 다른 점이 이것이다: 탈퇴는 신원을 놓아
+      // 주지만 정지는 쥐고 있는다.
+      where: { googleSub: sub, deletedAt: null, suspendedAt: null },
       select: {
         id: true,
         roles: { select: { role: true } },

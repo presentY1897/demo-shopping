@@ -15,12 +15,11 @@ import type { RequestPrincipal } from '../auth/request-principal.js'
 import { sellerOwnership, sellerOwnershipSelect } from '../auth/resource-ownership.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
+import type { DayRange } from '../common/kst-days.js'
+import { fillDays, rangeOf, shiftDate } from '../common/kst-days.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { amountsOf } from './settlement-calc.js'
 import { loadSettlementSources } from './settlement-sources.js'
-
-const DAY_MS = 24 * 60 * 60 * 1_000
-const KST_OFFSET_MS = 9 * 60 * 60 * 1_000
 
 /** 기본 조회 기간 — 최근 30일. */
 const DEFAULT_DAYS = 30
@@ -255,63 +254,17 @@ export class SellerRevenueService {
   }
 
   /** 조회 기간. 주지 않으면 오늘까지의 최근 30일이다. */
-  private rangeOf(params: SellerRevenueQueryParams): {
-    from: string
-    to: string
-    dayCount: number
-  } {
-    const to = params.to ?? kstDate(this.clock.now())
-    const from = params.from ?? shiftDate(to, -(DEFAULT_DAYS - 1))
-    const span = dayIndexOf(to) - dayIndexOf(from) + 1
-
-    // 뒤집힌 기간은 하루짜리로 접는다. 던지지 않는 이유는 이것이 **읽기**이기
-    // 때문이다 — 날짜 두 칸을 잘못 고른 사람에게 화면이 빈 답을 주면 그만이고,
-    // 500 을 내면 그 사람은 자기가 무엇을 잘못했는지 알 수 없다.
-    if (span < 1) return { from: to, to, dayCount: 1 }
-
-    // 너무 긴 기간은 잘라 낸다. 상한이 없으면 한 요청이 몇 년치를 하루씩 그린다.
-    if (span > REVENUE_MAX_DAYS) {
-      return { from: shiftDate(to, -(REVENUE_MAX_DAYS - 1)), to, dayCount: REVENUE_MAX_DAYS }
-    }
-
-    return { from, to, dayCount: span }
+  private rangeOf(params: SellerRevenueQueryParams): DayRange {
+    return rangeOf(params, this.clock.now(), {
+      defaultDays: DEFAULT_DAYS,
+      maxDays: REVENUE_MAX_DAYS,
+    })
   }
 }
 
-/** 이 순간의 KST 달력 날짜, `YYYY-MM-DD`. */
-function kstDate(instant: Date): string {
-  return new Date(instant.getTime() + KST_OFFSET_MS).toISOString().slice(0, 10)
-}
-
-/** 1970-01-01 부터 센 일수. 문자열 날짜의 산술은 전부 여기를 지난다. */
-function dayIndexOf(date: string): number {
-  return Math.floor(Date.parse(`${date}T00:00:00.000Z`) / DAY_MS)
-}
-
-function shiftDate(date: string, days: number): string {
-  return new Date((dayIndexOf(date) + days) * DAY_MS).toISOString().slice(0, 10)
-}
-
-/**
- * 판매가 없던 날을 0으로 채운다.
- *
- * 빈 날을 빼면 그래프가 그 구간을 건너뛰어 그리고, 「이 주에 3일 쉬었다」가 「매출이
- * 완만했다」로 보인다. 화면마다 다시 채우게 두지 않는 이유는 그 채우기가 조용히
- * 서로 다르게 되기 때문이다.
- */
+/** 판매가 없던 날을 0으로 채운다 (`kst-days.ts` 의 `fillDays`). */
 function fillGaps(rows: readonly DayRow[], from: string, dayCount: number): readonly RevenueDay[] {
-  const byDate = new Map(rows.map((row) => [row.date, row]))
-
-  return Array.from({ length: dayCount }, (_unused, offset) => {
-    const date = shiftDate(from, offset)
-    const row = byDate.get(date)
-
-    return {
-      date,
-      salesAmount: row?.salesAmount ?? 0,
-      orderCount: row?.orderCount ?? 0,
-    }
-  })
+  return fillDays(rows, from, dayCount, (date) => ({ date, salesAmount: 0, orderCount: 0 }))
 }
 
 /** 평균 주문금액을 붙인다. **주문이 없으면 0이다** — 0으로 나누지 않는다. */

@@ -201,6 +201,11 @@ export const untouchedTables: Readonly<Record<string, string>> = {
   Category: '공용이다. 데모 계정은 카테고리를 만들지 않는다',
   AttributeDefinition: '공용이다',
   AppMeta: '계정 소유가 아니다',
+  DemoPolicy: '계정 소유가 아니다 — 데모 **정책**이지 데모 계정의 데이터가 아니다 (TASK-0096)',
+  PersonalDataAccess:
+    '**감사 기록은 지워지면 감사 기록이 아니다** (TASK-0093 F7). 데모 관리자가 남긴 열람 기록이라도 지우지 않는다 — 지울 수 있는 기록이면 지우고 볼 수도 있기 때문이다. `User` 가 툼스톤으로 남으므로 두 `RESTRICT` 외래키도 끊기지 않는다',
+  SellerStatusHistory:
+    'Seller 에 Cascade 로 매달려 있는데, 정리는 스토어를 **정지만** 하고 지우지 않는다 (위 `Seller` 단계). 행이 남으므로 이력도 남는다 — 그리고 그 마지막 줄이 「데모 만료로 닫혔다」는 사실 자체다 (TASK-0094 F6)',
   SearchLog:
     '검색어 집계다. 계정을 적지 않으므로 소유자가 없다 — 그것이 이 표를 안전하게 만드는 이유다 (TASK-0039)',
   SearchOutbox:

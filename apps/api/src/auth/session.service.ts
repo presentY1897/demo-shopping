@@ -326,7 +326,11 @@ export class SessionService {
     const user = await this.prisma.user.findFirst({
       // A withdrawn account keeps its rows for order history but must not be
       // able to sign in again (`erd.md` 2장).
-      where: { id: userId, deletedAt: null },
+      //
+      // 정지도 같은 자리에서 막는다 (TASK-0093 F4). 세션을 지우는 것만으로는
+      // **다음 로그인이 그대로 되므로** 정지가 「한 번 쫓아냄」이 된다. 여기가
+      // 갱신이 지나는 문이라, 살아 있던 토큰도 다음 갱신에서 끊긴다.
+      where: { id: userId, deletedAt: null, suspendedAt: null },
       select: { id: true, roles: { select: { role: true } }, seller: { select: { id: true } } },
     })
 
