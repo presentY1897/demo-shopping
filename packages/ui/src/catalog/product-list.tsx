@@ -5,10 +5,10 @@ import type { ReactNode } from 'react'
 import { DataList } from '../components/data-list'
 import { EmptyState } from '../components/empty-state'
 import { ErrorState } from '../components/error-state'
-import { Skeleton } from '../components/skeleton'
 import { useInfiniteScroll } from '../components/use-infinite-scroll'
 import type { DensityLevel } from '../density/density'
 import { DENSITY_GRID_COLUMNS } from '../density/density'
+import { ProductCardSkeleton } from './product-card'
 import { ProductGrid } from './product-grid'
 
 /**
@@ -108,14 +108,18 @@ export function ProductList({
  *
  * As many placeholders as the widest viewport shows at this density: fewer would
  * leave the fold half empty while it loads, and more would push the footer down
- * and then pull it back up.
+ * and then pull it back up. **A caller that already knows its own count says
+ * so** — the home sections show a fixed number per step, and guessing there
+ * costs a shift in whichever direction the guess was wrong (TASK-0097 F2).
  */
 export function ProductListSkeleton({
   density,
   label,
+  count,
 }: {
   readonly density: DensityLevel
   readonly label: string
+  readonly count?: number
 }) {
   const columns = DENSITY_GRID_COLUMNS[density]
 
@@ -125,9 +129,9 @@ export function ProductListSkeleton({
         {label}
       </span>
       <ProductGrid className="pointer-events-none" density={density} label={label}>
-        {Array.from({ length: columns.xl * 2 }, (_unused, index) => (
+        {Array.from({ length: count ?? columns.xl * 2 }, (_unused, index) => (
           <li key={index}>
-            <Skeleton className="aspect-[4/5]" shape="block" />
+            <ProductCardSkeleton density={density} />
           </li>
         ))}
       </ProductGrid>

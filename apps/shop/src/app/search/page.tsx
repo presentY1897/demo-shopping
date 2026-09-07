@@ -1,3 +1,6 @@
+import { DEFAULT_DENSITY } from '@shopping/ui'
+import { ProductListSkeleton } from '@shopping/ui/catalog'
+import { PageContainer } from '@shopping/ui/layout'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
@@ -10,9 +13,13 @@ import { messagesFor } from '@/messages'
  *
  * The screen reads the query string with `useSearchParams`, which Next requires
  * to sit under a `Suspense` boundary — without one the whole route opts out of
- * static rendering, and this page's shell has nothing dynamic in it. The
- * fallback is the same skeleton the workspace shows while its first search is in
- * flight, so the boundary is invisible.
+ * static rendering, and this page's shell has nothing dynamic in it.
+ *
+ * **대기 화면은 결과가 올 자리만큼 자리를 잡는다** (TASK-0097 F2). 예전에는 한 줄
+ * 짜리 글이었고, 그래서 첫 페인트에 바닥글이 화면 안(317px)에 보였다가 결과가
+ * 도착하면서 4,300px 아래로 내려갔다 — 이 화면의 레이아웃 이동 0.366 이 그 한
+ * 번이었다. 자리를 잡아 두면 바닥글은 처음부터 화면 밖이고, 그 뒤의 움직임은
+ * 보이지 않는다.
  *
  * Copy is resolved here, on the server, and handed down. The workspace is a
  * client component and importing the catalog from inside it would ship every
@@ -34,17 +41,34 @@ export const metadata: Metadata = hiddenMetadata({
   description: messagesFor().search.promptBody,
 })
 
+/**
+ * 결과가 올 자리.
+ *
+ * 밀도는 **기본값으로 그린다** — 이 대기 화면은 서버가 그리고, 이 방문자가 고른
+ * 단계는 브라우저만 안다. 다른 단계를 쓰는 사람에게는 열 수가 한 번 바뀌지만 그것은
+ * 하이드레이션 한 틱 동안이고, 바닥글은 그 사이 내내 화면 밖에 있다.
+ */
+function SearchFallback({ messages }: { readonly messages: ReturnType<typeof messagesFor> }) {
+  return (
+    <PageContainer className="flex flex-col gap-4 py-6">
+      <div className="flex flex-col gap-3">
+        <h1 className="text-2xl font-bold">{messages.search.title}</h1>
+        <div
+          aria-hidden="true"
+          className="bg-surface-muted h-control-lg animate-pulse rounded-md"
+        />
+      </div>
+
+      <ProductListSkeleton density={DEFAULT_DENSITY} label={messages.search.list.loading} />
+    </PageContainer>
+  )
+}
+
 export default function SearchPage() {
   const messages = messagesFor()
 
   return (
-    <Suspense
-      fallback={
-        <p className="p-6 text-sm" role="status">
-          {messages.search.list.loading}
-        </p>
-      }
-    >
+    <Suspense fallback={<SearchFallback messages={messages} />}>
       <SearchWorkspace boxMessages={messages.layout.search} messages={messages.search} />
     </Suspense>
   )

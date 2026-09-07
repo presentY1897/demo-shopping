@@ -44,14 +44,25 @@ export function resetCategoryMenuCache(): void {
   cached = null
 }
 
-export function useCategoryMenu(): readonly CategoryTreeNode[] {
-  const [nodes, setNodes] = useState<readonly CategoryTreeNode[]>([])
+/**
+ * 「아직 안 왔다」와 「없다」는 다른 답이다.
+ *
+ * 둘 다 빈 배열이면 부르는 쪽은 자리를 비워 둘지 접을지 고를 수 없다 — 홈의
+ * 바로가기가 그것 때문에 도착하는 순간 아래를 116px 밀고 있었다 (TASK-0097 F2).
+ */
+export interface CategoryMenu {
+  readonly nodes: readonly CategoryTreeNode[]
+  readonly loading: boolean
+}
+
+export function useCategoryMenu(): CategoryMenu {
+  const [menu, setMenu] = useState<CategoryMenu>({ nodes: [], loading: true })
 
   useEffect(() => {
     let live = true
 
     void load().then((loaded) => {
-      if (live) setNodes(loaded)
+      if (live) setMenu({ nodes: loaded, loading: false })
     })
 
     return () => {
@@ -59,5 +70,5 @@ export function useCategoryMenu(): readonly CategoryTreeNode[] {
     }
   }, [])
 
-  return nodes
+  return menu
 }

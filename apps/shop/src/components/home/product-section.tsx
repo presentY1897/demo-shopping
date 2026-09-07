@@ -71,7 +71,11 @@ export function ProductSection({
       </div>
 
       {state.status === 'loading' ? (
-        <ProductListSkeleton density={density} label={messages.loadingLabel} />
+        <ProductListSkeleton
+          count={SECTION_ITEMS[density]}
+          density={density}
+          label={messages.loadingLabel}
+        />
       ) : shown.length === 0 ? (
         <p className="text-fg-subtle text-sm">{messages.sectionEmpty}</p>
       ) : (

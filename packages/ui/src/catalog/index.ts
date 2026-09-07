@@ -7,7 +7,7 @@
  * search, a category page and the home page share one card.
  */
 
-export { discountPercent, ProductCard, ratingOf } from './product-card'
+export { discountPercent, ProductCard, ProductCardSkeleton, ratingOf } from './product-card'
 export type { ProductCardLabels, ProductCardProduct, ProductCardProps } from './product-card'
 export { gridColumnsClass, gridImageSizes, ProductGrid } from './product-grid'
 export type { ProductGridProps } from './product-grid'
