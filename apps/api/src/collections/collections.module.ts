@@ -1,3 +1,4 @@
+import { FollowConsistencyService } from './follow-consistency.service.js'
 import { Module } from '@nestjs/common'
 
 import { ClockModule } from '../common/clock.module.js'
@@ -18,7 +19,7 @@ import { CollectionsService } from './collections.service.js'
 @Module({
   imports: [PrismaModule, ClockModule],
   controllers: [CollectionsController],
-  providers: [CollectionsService],
-  exports: [CollectionsService],
+  providers: [FollowConsistencyService, CollectionsService],
+  exports: [CollectionsService, FollowConsistencyService],
 })
 export class CollectionsModule {}

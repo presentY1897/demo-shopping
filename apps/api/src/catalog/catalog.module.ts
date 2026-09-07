@@ -1,3 +1,4 @@
+import { CatalogConsistencyService } from './catalog-consistency.service.js'
 import { Module } from '@nestjs/common'
 
 import { SearchModule } from '../search/search.module.js'
@@ -33,10 +34,16 @@ import { VariantStockController } from './variant-stock.controller.js'
     SellerProductController,
     VariantStockController,
   ],
-  providers: [CategoryService, AttributeService, ProductService, SellerProductService],
+  providers: [
+    CatalogConsistencyService,
+    CategoryService,
+    AttributeService,
+    ProductService,
+    SellerProductService,
+  ],
   // `AttributeService.validateAttributes` is the only sanctioned way to judge a
   // product's `attributes` (TASK-0030 4장), so the module that will save
   // products (TASK-0032) has to be able to inject it.
-  exports: [AttributeService, ProductService],
+  exports: [AttributeService, ProductService, CatalogConsistencyService],
 })
 export class CatalogModule {}
