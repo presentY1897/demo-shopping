@@ -19,11 +19,12 @@ import {
   updateProductRequestSchema,
 } from '@shopping/shared'
 
-import { Principal } from '../auth/principal.decorator.js'
+import { OptionalPrincipal, Principal } from '../auth/principal.decorator.js'
 import { PublicEndpoint } from '../auth/public-endpoint.decorator.js'
 import { RequirePermission } from '../auth/require-permission.decorator.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import { parseInput } from '../common/parse-input.js'
+import { CollectionsService } from '../collections/collections.service.js'
 import { ProductService } from './product.service.js'
 
 /**
@@ -42,7 +43,10 @@ import { ProductService } from './product.service.js'
  */
 @Controller({ path: 'products', version: '1' })
 export class ProductController {
-  constructor(private readonly products: ProductService) {}
+  constructor(
+    private readonly products: ProductService,
+    private readonly collections: CollectionsService,
+  ) {}
 
   /**
    * A page of listings.
@@ -75,8 +79,20 @@ export class ProductController {
    */
   @Get(':id/detail')
   @PublicEndpoint()
-  storefrontDetail(@Param('id') id: string): Promise<ProductDetailResponse> {
-    return this.products.storefrontDetail(parseInput(productIdSchema, id, 'id'))
+  async storefrontDetail(
+    @OptionalPrincipal() principal: RequestPrincipal | null,
+    @Param('id') id: string,
+  ): Promise<ProductDetailResponse> {
+    const productId = parseInput(productIdSchema, id, 'id')
+    const detail = await this.products.storefrontDetail(productId)
+
+    // **답을 만든 뒤에 적는다** (TASK-0087 F3 · F4). 기다리지 않는 이유는 이력이
+    // 곁다리이기 때문이고, `recordView` 가 던지지 않는 이유도 같다 — 사람이 보려던
+    // 것은 상품이지 이력이 아니다. 로그인하지 않은 사람의 이력은 브라우저가 들고
+    // 있다가 로그인할 때 합쳐진다 (F6).
+    if (principal !== null) void this.collections.recordView(principal.userId, productId)
+
+    return detail
   }
 
   @Post()

@@ -173,6 +173,23 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
     await tx.refreshToken.deleteMany({ where: { userId } })
     await tx.userPreference.deleteMany({ where: { userId } })
     await tx.address.deleteMany({ where: { userId } })
+    // 찜과 최근 본 상품 (TASK-0086 · 0087). 온전히 그 사람의 것이고 아무것도
+    // 참조하지 않는다 — 남길 이력이 없다.
+    await tx.wishlist.deleteMany({ where: { userId } })
+    await tx.recentlyViewed.deleteMany({ where: { userId } })
+    // 팔로우 (TASK-0089). **팔로워 수가 그 사람을 세고 있어서** 남으면 사라진
+    // 계정이 브랜드의 팔로워 수에 영원히 포함된다. 지운 뒤 다시 센다.
+    const followed = await tx.sellerFollow.findMany({
+      where: { userId },
+      select: { sellerId: true },
+    })
+
+    await tx.sellerFollow.deleteMany({ where: { userId } })
+    await tx.$executeRaw`
+      UPDATE "Seller" s
+         SET "followerCount" = (
+               SELECT COUNT(*)::int FROM "SellerFollow" f WHERE f."sellerId" = s."id")
+       WHERE s."id" = ANY(${followed.map((row) => row.sellerId)}::uuid[])`
     // 「도움돼요」 (TASK-0084). **남의 리뷰에 누른 것도 그 사람의 것이다** — 남으면
     // 실계정 리뷰의 순서가 사라진 사람의 손에 남는다. 지운 뒤 그 리뷰들의 세는
     // 값을 **다시 센다**: 누적하면 어긋난 값을 되돌릴 방법이 없다.

@@ -181,6 +181,11 @@ model User {
   reviewHelpfuls ReviewHelpful[]
   /// 이 사람이 쓴 리뷰 답변 (TASK-0085).
   reviewReplies  ReviewReply[]
+  /// 찜 · 최근 본 상품 · 팔로우 (M13). 전부 `Cascade` 다 — 온전히 그 사람의 것이고
+  /// 남길 이력이 없다.
+  wishlists      Wishlist[]
+  recentlyViewed RecentlyViewed[]
+  follows        SellerFollow[]
   paidSettlements     Settlement[] @relation("SettlementPayer")
   heldSettlements     Settlement[] @relation("SettlementHolder")
 
@@ -216,6 +221,13 @@ model Seller {
   slug         String  @unique
   introduction String?
   logoUrl      String?
+
+  /// 팔로워 수 (TASK-0089 F3).
+  ///
+  /// **매번 세지 않는 이유는 브랜드관이 이 값을 그리기** 때문이다 — 페이지마다
+  /// `SellerFollow` 를 세면 그 비용이 팔로워 수에 비례한다. 캐시라 어긋날 수 있고,
+  /// 그 마지막 방어선이 `Seller_followerCount_check` 다.
+  followerCount Int @default(0)
 
   status          SellerStatus @default(PENDING)
   /// Why the store was rejected or suspended, shown back to the seller.
@@ -272,6 +284,8 @@ model Seller {
 
   /// 이 스토어가 쓴 리뷰 답변 (TASK-0085).
   reviewReplies ReviewReply[]
+  /// 이 스토어를 팔로우한 사람들 (TASK-0089). 수는 `followerCount` 가 들고 있다.
+  followers     SellerFollow[]
 }
 
 /// An entry in a user's address book.
@@ -746,6 +760,9 @@ model Product {
   images   ProductImage[]
   /// 이 상품의 리뷰 (TASK-0083). `ratingAvg`·`ratingCount` 가 이것의 요약이다.
   reviews  Review[]
+  /// 이 상품을 담아 둔 사람들 · 최근에 본 사람들 (TASK-0086 · 0087).
+  wishlists      Wishlist[]
+  recentlyViewed RecentlyViewed[]
   options  ProductOption[]
   variants ProductVariant[]
 
@@ -3299,4 +3316,72 @@ model ReviewReply {
 
   /// 「이 스토어의 답변들」 — 관리 화면이 읽는다.
   @@index([sellerId, createdAt(sort: Desc)])
+}
+
+// ---------------------------------------------------------------------------
+// 회원 부가 기능 — 찜 · 최근 본 상품 · 팔로우 (TASK-0086 · 0087 · 0089)
+//
+// 셋 다 「사람이 무엇을 가리킨다」 하나뿐인 표이고, 그래서 **복합 기본키**를 쓴다.
+// 따로 id 를 두면 같은 짝이 두 번 들어올 수 있고, 그것을 막는 유니크가 다시
+// 필요해진다 — 열쇠가 곧 그 사실이면 막을 것이 없다.
+// ---------------------------------------------------------------------------
+
+/// 찜 (TASK-0086).
+model Wishlist {
+  userId    String @db.Uuid
+  productId String @db.Uuid
+
+  /// 담을 때의 최저가.
+  ///
+  /// **가격 변동을 보여 주려면 그때의 값이 있어야 한다** (F5). 지금 값만 알면
+  /// 「내렸다」를 말할 수 없고, 상품의 가격 이력을 뒤지는 것은 찜 목록 한 장에
+  /// 상품마다 조회를 더하는 일이다.
+  ///
+  /// `NULL` 은 담을 때 팔 수 있는 조합이 하나도 없었다는 뜻이다 — `Product.minPrice`
+  /// 가 그때 비어 있었다.
+  addedPrice Int?
+
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// `Restrict`: 찜이 가리키는 상품은 지워지지 않는다 — 상품 삭제는 소프트 삭제다.
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@id([userId, productId])
+  /// 「내 찜 목록」 — 최근에 담은 것부터.
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+/// 최근 본 상품 (TASK-0087).
+model RecentlyViewed {
+  userId    String @db.Uuid
+  productId String @db.Uuid
+
+  /// 마지막으로 본 시각. **같은 상품을 열 번 봐도 행은 하나**다.
+  viewedAt DateTime
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@id([userId, productId])
+  /// 「최근 본 상품」과 **정리 대상 찾기**가 같은 인덱스를 쓴다.
+  @@index([userId, viewedAt(sort: Desc)])
+}
+
+/// 브랜드 팔로우 (TASK-0089).
+model SellerFollow {
+  userId   String @db.Uuid
+  sellerId String @db.Uuid
+
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// `Restrict`: 팔로우가 가리키는 스토어는 지워지지 않는다 — 만료는 정지이지 삭제가 아니다.
+  seller Seller @relation(fields: [sellerId], references: [id], onDelete: Restrict)
+
+  @@id([userId, sellerId])
+  /// 「내가 팔로우한 브랜드」.
+  @@index([userId, createdAt(sort: Desc)])
+  /// 「이 브랜드의 팔로워」 — 신상품 알림이 읽는다 (TASK-0090).
+  @@index([sellerId])
 }

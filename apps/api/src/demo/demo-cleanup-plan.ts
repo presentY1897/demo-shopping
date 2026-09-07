@@ -27,6 +27,9 @@ export const ownedTables = [
   'RefreshToken',
   'UserPreference',
   'Address',
+  'Wishlist',
+  'RecentlyViewed',
+  'SellerFollow',
   'ReviewHelpful',
   'Review',
   'UserRole',
@@ -87,6 +90,26 @@ export const cleanupPlan: readonly CleanupStep[] = [
     scope: 'user',
     because:
       '잡아 둔 재고는 놓아 주어야 한다 — 계정이 사라지면 아무도 결제하지 않는다. `ProductVariant.reserved` 를 함께 되돌린다 (TASK-0048)',
+  },
+  {
+    table: 'Wishlist',
+    kind: 'hard',
+    scope: 'user',
+    because:
+      '온전히 그 사람의 것이고 아무것도 참조하지 않는다 (TASK-0086). 담아 둔 목록은 남길 이력이 아니다',
+  },
+  {
+    table: 'RecentlyViewed',
+    kind: 'hard',
+    scope: 'user',
+    because: '온전히 그 사람의 것이다 (TASK-0087). 무엇을 봤는지는 특히 남길 이유가 없다',
+  },
+  {
+    table: 'SellerFollow',
+    kind: 'hard',
+    scope: 'user',
+    because:
+      '**팔로워 수가 그 사람을 세고 있다** (TASK-0089). 남으면 사라진 계정이 브랜드의 팔로워 수에 영원히 포함되고, 그 수는 아무도 검증할 수 없는 값이 된다 — 지우면서 `Seller.followerCount` 를 다시 센다',
   },
   {
     table: 'ReviewHelpful',
@@ -225,6 +248,9 @@ export function orderFault(
     Address: ['User'],
     Review: ['User'],
     ReviewHelpful: ['User', 'Review'],
+    Wishlist: ['User', 'Product'],
+    RecentlyViewed: ['User', 'Product'],
+    SellerFollow: ['User', 'Seller'],
     UserRole: ['User'],
   }
   const position = new Map(plan.map((step, index) => [step.table, index]))

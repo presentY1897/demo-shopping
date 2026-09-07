@@ -44,6 +44,7 @@
 | `commission.write` | — | — | — | `any` | — |
 | `settlement.run` | — | — | — | `any` | — |
 | `review.write` | `own` | `own` | — | `any` | — |
+| `collection.write` | `own` | `own` | — | `any` | — |
 | `review.reply` | — | `own` | `any` | `any` | `demo` |
 | `review.moderate` | — | — | `any` | `any` | `demo` |
 | `user.read` | `own` | `own` | `any` | `any` | `any` |
@@ -61,11 +62,11 @@
 
 ### BUYER
 
-퍼미션 16개 — `catalog.read:any` · `product.read:any` · `seller.read:any` · `cart.read:own` · `cart.write:own` · `order.read:own` · `order.write:own` · `claim.read:own` · `coupon.read:own` · `coupon.claim:own` · `media.upload:own` · `review.write:own` · `user.read:own` · `profile.write:own` · `profile.delete:own` · `seller.write:own`
+퍼미션 17개 — `catalog.read:any` · `product.read:any` · `seller.read:any` · `cart.read:own` · `cart.write:own` · `order.read:own` · `order.write:own` · `claim.read:own` · `coupon.read:own` · `coupon.claim:own` · `media.upload:own` · `review.write:own` · `collection.write:own` · `user.read:own` · `profile.write:own` · `profile.delete:own` · `seller.write:own`
 
 ### SELLER_OWNER
 
-퍼미션 21개 — `catalog.read:any` · `product.read:own` · `product.write:own` · `product.delete:own` · `media.upload:own` · `order.read:own` · `order.write:own` · `claim.read:own` · `claim.handle:own` · `coupon.read:own` · `coupon.write:own` · `coupon.claim:own` · `review.write:own` · `review.reply:own` · `coupon.delete:own` · `settlement.read:own` · `seller.read:own` · `seller.write:own` · `user.read:own` · `profile.write:own` · `profile.delete:own`
+퍼미션 22개 — `catalog.read:any` · `product.read:own` · `product.write:own` · `product.delete:own` · `media.upload:own` · `order.read:own` · `order.write:own` · `claim.read:own` · `claim.handle:own` · `coupon.read:own` · `coupon.write:own` · `coupon.claim:own` · `review.write:own` · `collection.write:own` · `review.reply:own` · `coupon.delete:own` · `settlement.read:own` · `seller.read:own` · `seller.write:own` · `user.read:own` · `profile.write:own` · `profile.delete:own`
 
 ### ADMIN_OPERATOR
 
@@ -73,7 +74,7 @@
 
 ### ADMIN_SUPER
 
-퍼미션 38개 — `catalog.read:any` · `catalog.write:any` · `catalog.delete:any` · `product.read:any` · `product.write:any` · `product.delete:any` · `media.upload:any` · `cart.read:any` · `cart.write:any` · `order.read:any` · `order.write:any` · `reservation.sweep:any` · `claim.read:any` · `claim.handle:any` · `coupon.read:any` · `coupon.write:any` · `coupon.platform:any` · `coupon.claim:any` · `coupon.delete:any` · `settlement.read:any` · `settlement.approve:any` · `settlement.pay:any` · `commission.read:any` · `commission.write:any` · `settlement.run:any` · `review.write:any` · `review.reply:any` · `review.moderate:any` · `user.read:any` · `user.write:any` · `user.delete:any` · `profile.write:any` · `profile.delete:any` · `seller.read:any` · `seller.write:any` · `seller.approve:any` · `seller.suspend:any` · `demo.manage:any`
+퍼미션 39개 — `catalog.read:any` · `catalog.write:any` · `catalog.delete:any` · `product.read:any` · `product.write:any` · `product.delete:any` · `media.upload:any` · `cart.read:any` · `cart.write:any` · `order.read:any` · `order.write:any` · `reservation.sweep:any` · `claim.read:any` · `claim.handle:any` · `coupon.read:any` · `coupon.write:any` · `coupon.platform:any` · `coupon.claim:any` · `coupon.delete:any` · `settlement.read:any` · `settlement.approve:any` · `settlement.pay:any` · `commission.read:any` · `commission.write:any` · `settlement.run:any` · `review.write:any` · `collection.write:any` · `review.reply:any` · `review.moderate:any` · `user.read:any` · `user.write:any` · `user.delete:any` · `profile.write:any` · `profile.delete:any` · `seller.read:any` · `seller.write:any` · `seller.approve:any` · `seller.suspend:any` · `demo.manage:any`
 
 ### DEMO_ADMIN
 
@@ -81,5 +82,5 @@
 
 ---
 
-퍼미션 38개 · 역할 5개.
+퍼미션 39개 · 역할 5개.
 `DEMO_ADMIN` 은 `ADMIN_OPERATOR` 에서 파생된다 — 쓰기 권한만 `demo` 로 좁히고 읽기는 그대로 둔다.
