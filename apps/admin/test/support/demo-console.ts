@@ -73,6 +73,9 @@ export function demoStats(overrides: Partial<DemoStatsResponse> = {}): DemoStats
     byRole: { BUYER: 5, SELLER_OWNER: 2 },
     activeAccounts: 7,
     failedCleanups: 1,
+    // 시각만으로는 「돌았다」까지만 말할 수 있다 — 0건과 50건이 화면에서 같아 보이면
+    // 운영자는 정리가 밀리는 것을 모른다 (TASK-0096 F3).
+    lastCleanup: { at: '2026-09-07T02:45:00.000Z', report: { swept: 3, failed: 1 } },
     ...overrides,
   })
 }

@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M14 관리자 |
-| 상태 | 승인됨 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-02 |
 | 브랜치 | `feature/admin-dashboard` |
 | 선행 작업 | M13 완료 |
@@ -28,10 +28,10 @@
 
 ## 3. 요구사항
 
-- [ ] 지표가 실제 데이터와 일치한다
-- [ ] 처리 대기 항목에서 바로 해당 화면으로 이동한다
-- [ ] 시스템 이상을 대시보드에서 알 수 있다
-- [ ] 집계가 느리지 않다
+- [x] 지표가 실제 데이터와 일치한다
+- [x] 처리 대기 항목에서 바로 해당 화면으로 이동한다
+- [x] 시스템 이상을 대시보드에서 알 수 있다
+- [x] 집계가 느리지 않다
 
 ## 4. 설계
 
@@ -90,12 +90,12 @@
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| F1 | 지표 정확성 | 시드 데이터와 대조 | 거래액·주문 수 일치 | [ ] |
-| F2 | 처리 대기 | 각 항목 생성 후 확인 | 건수 정확, 링크 이동 | [ ] |
-| F3 | 증감 | 기간 비교 | 증감률 정확 | [ ] |
-| F4 | 시스템 상태 | 스케줄러 중지 | 대시보드에 이상 표시 | [ ] |
-| F5 | 성능 | 주문 500건 기준 | 로딩 p95 500ms 이하 | [ ] |
-| F6 | 권한 | 비관리자 접근 | 403 | [ ] |
+| F1 | 지표 정확성 | `dashboard.spec.ts` 「sums every store’s sales, not one store’s」 · 「leaves out what was never paid for」 · 「counts a store as active only when it sold something in the window」(등록된 스토어 수는 한 번 오르면 안 내려간다) · 「does not count a demo account as a sign-up」 · 「puts each day in its own KST bucket and fills the gaps」 — 다만 이 줄이 묻는 것은 시드와 맞는가가 아니라 **모든 판매자 매출의 합인가**라, `dashboard-parity.spec.ts` 「is the same list on both dashboards」 · 「counts a returned order as a sale that happened」 · 「leaves out what was never paid for」가 두 소스 파일의 `SOLD_STATUSES` 를 읽어 견주고(묶지 않고 견주는 이유는 4.3), 날짜 자르기는 공용 모듈 하나로 모아 `kst-days.spec.ts` 「puts the small hours of a Korean morning on the right day」 외 16개가 지킨다 — `vitest.config.mjs` 가 이 파일에만 분기 100% 문턱을 건다 · 화면은 `dashboard-page.spec.tsx` 「shows the four headline numbers」 · 「draws the line the same days produced」 | 거래액·주문 수 일치 | [x] |
+| F2 | 처리 대기 | `dashboard.spec.ts` 「counts what is waiting for a person, each in its own bucket」 · 「still counts an application that has been waiting for weeks」 — 기간을 받지 않는 것이 이 줄의 요점이라 3주 묵은 신청으로 잰다(4.2) · 링크는 `dashboard-console.spec.ts` 「carries the console route for each of the four queues」 · 「keeps the contract order rather than sorting by count」 · `dashboard-page.spec.tsx` 「gives every queue its count and the console screen that handles it」 · 「stands above the headline numbers, not below them」 · 「asks for the queue without a period」 · 「says so in one sentence when there is nothing to do」 | 건수 정확, 링크 이동 | [x] |
+| F3 | 증감 | `dashboard.spec.ts` 「compares against the same number of days immediately before」 · 「answers zero rather than nothing when the previous period was empty」 · `dashboard-console.spec.ts` 「reads a rise and a fall as the same shape with opposite directions」 · 「keeps the direction the raw difference had, even when the percent rounds to zero」 · 「refuses a percentage when the previous period was zero」 — 0으로 나눈 자리에 0% 를 적으면 「안 변했다」가 되어 사실과 반대다 · `dashboard-page.spec.tsx` 「reads the change against the previous period as a sentence, not a colour」 · 「refuses a percentage when the previous period had nothing in it」 | 증감률 정확 | [x] |
+| F4 | 시스템 상태 | `dashboard.spec.ts` 「reports every scheduler, and says which never ran」 · 「turns a recent run into ok」 · 「turns a run that stopped moving into stale」 · `dashboard-page.spec.tsx` 「puts a stopped scheduler at the top and says so above the table」 · 「does not call a scheduler that has never run a stopped one」 · `dashboard-schedulers.spec.ts` 「paints a stopped scheduler differently from one that has never run」 — `never` 와 `stale` 을 가르는 것이 4.4 의 판단이다 · 목록에서 빠진 배치는 **화면이 멀쩡히 그려지므로** `scheduler-registry-parity.spec.ts` 「watches every scheduler that records a last run」 · 「matches the key list the contract publishes」 · 「gives every scheduler a bound its own module declared」가 소스의 `_LAST_RUN_KEY` 선언을 세어 견준다 | 대시보드에 이상 표시 | [x] |
+| F5 | 성능 | `dashboard-performance.spec.ts` 「answers the headline metrics well inside 500ms at p95 over 500 orders」 · 「answers the queue much faster than the metrics」(처리 대기는 화면이 돌아올 때마다 다시 읽힌다) — 시계만으로는 부족해 같은 파일이 **문장 수**도 센다: 「costs the same number of statements with no orders and with five hundred」 · 「costs the same however many orders there are」. 주문마다 조회가 하나씩 느는 구현도 500건에서는 500ms 안에 답하고, 무너지는 것은 5,000건일 때다(A5) | 로딩 p95 500ms 이하 | [x] |
+| F6 | 권한 | `dashboard.spec.ts` 「refuses a buyer at /%s」 — 지표·처리 대기·시스템 **세 문 모두**에 대해 돈다 · 「lets a demo admin read, because reading is not writing」(D-058) — 데코레이터는 퍼미션 이름만 보므로 `order.read:own` 인 구매자를 막는 것은 서비스의 스코프 확인이고, 그것이 없었으면 전체 지표가 200으로 나갔다(4.5) · `dashboard-page.spec.tsx` 「renders a refusal for a buyer and knocks on no door at all」 | 403 | [x] |
 
 ### 6.2 품질 게이트
 
@@ -108,7 +108,7 @@
 
 | # | 기준 | 충족 |
 | --- | --- | --- |
-| D1 | 상태 갱신 + 인덱스 2곳 | [ ] |
+| D1 | 상태 갱신 + 인덱스 2곳 | [x] |
 
 ## 7. 리스크 / 열린 질문
 
@@ -125,3 +125,4 @@
 | 날짜 | 내용 |
 | --- | --- |
 | 2026-09-02 | 최초 작성 |
+| 2026-09-07 | 완료. 배치 열쇠를 계약으로 옮겼다 — 거울로 두면 서버에 배치가 하나 늘 때 화면이 점 찍힌 열쇠를 날것으로 그리고 **아무 검사도 안 빨개진다.** `backlog` 은 채울 방법이 없어 지우고, 2장이 요구한 인덱싱 큐를 제 자리에 뒀다 |

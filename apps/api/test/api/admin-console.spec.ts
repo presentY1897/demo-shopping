@@ -69,7 +69,13 @@ function client(caller: TestCaller): ApiClient {
   return api.clientAs(caller)
 }
 
-async function seedOrder(options: { claim?: boolean } = {}): Promise<string> {
+async function seedOrder(
+  options: {
+    readonly claim?: boolean
+    /** 두 번째 스토어의 몫도 함께 만든다 — 갈린 주문을 재는 검사가 쓴다. */
+    readonly alsoSeller?: string
+  } = {},
+): Promise<string> {
   sequence += 1
 
   const orderId = randomUUID()
@@ -91,6 +97,17 @@ async function seedOrder(options: { claim?: boolean } = {}): Promise<string> {
              $4::timestamptz, now())`,
     [sellerOrderId, orderId, sellerId, NOW],
   )
+
+  if (options.alsoSeller !== undefined) {
+    await db.execute(
+      `INSERT INTO "SellerOrder"
+         ("id", "orderId", "sellerId", "status", "brandName", "productAmount", "paidAmount",
+          "shippingFee", "createdAt", "updatedAt")
+       VALUES (gen_random_uuid(), $1, $2, 'CONFIRMED'::"SellerOrderStatus", '다른 브랜드',
+               10000, 10000, 0, $3::timestamptz, now())`,
+      [orderId, options.alsoSeller, NOW],
+    )
+  }
 
   if (options.claim === true) {
     await db.execute(
@@ -350,8 +367,13 @@ describe('전체 상품 검색 (TASK-0095 2장)', () => {
 })
 
 describe('주문 조회 (TASK-0095 F4 · F5 · F6)', () => {
+  /**
+   * **묶음이 하나만 보이면 다중 판매자 주문의 절반이 사라진다.** 그래서 이 검사는
+   * 일부러 두 스토어에 걸친 주문을 만든다 — 한 묶음짜리로 재면 「전부 싣는다」가
+   * 증명되지 않고, 정작 CS 가 만나는 것은 갈린 주문이다.
+   */
   it('finds an order by its number, with every seller bundle', async () => {
-    const orderId = await seedOrder()
+    const orderId = await seedOrder({ alsoSeller: quietSellerId })
     const [order] = await db.query<{ orderNumber: string }>(
       `SELECT "orderNumber" FROM "Order" WHERE "id" = $1`,
       [orderId],
@@ -363,7 +385,10 @@ describe('주문 조회 (TASK-0095 F4 · F5 · F6)', () => {
     })
 
     expect(answer.orders).toHaveLength(1)
-    expect(answer.orders[0]?.sellerOrders).toHaveLength(1)
+    expect(answer.orders[0]?.sellerOrders).toHaveLength(2)
+    expect(new Set(answer.orders[0]?.sellerOrders.map((bundle) => bundle.sellerId))).toEqual(
+      new Set([sellerId, quietSellerId]),
+    )
     // 훑어보는 화면이라 산 사람은 가려서 나간다.
     expect(answer.orders[0]?.maskedBuyerName).not.toBe('홍길동')
   })
@@ -430,6 +455,37 @@ describe('데모 관리 (TASK-0096)', () => {
 
     // 앞서 발급된 계정의 만료는 그대로다.
     expect(row?.demoExpiresAt).not.toBeNull()
+  })
+
+  /**
+   * **정책이 실제로 물리는지가 F6 의 전부다.**
+   *
+   * 행을 쓰고 되읽는 검사만 있으면 「저장된다」만 증명하고, 발급이 그 값을 안 보는
+   * 상태는 그대로 통과한다 — 실제로 그랬다. 그래서 바꾼 뒤 **한 계정을 발급해**
+   * 만료가 그만큼 뒤인지 본다.
+   */
+  it('applies the new lifetime to the next account it issues', async () => {
+    await client(superAdmin).request({
+      path: '/admin/demo/policy',
+      method: 'PUT',
+      body: { ttlHours: 1, seedOrders: 0, virtualCardLimit: 10_000 },
+      schema: demoPolicyResponseSchema,
+    })
+
+    await api.client.request({
+      path: '/auth/demo',
+      method: 'POST',
+      body: { role: 'BUYER' },
+      schema: z.unknown(),
+    })
+
+    const [row] = await db.query<{ hours: number }>(
+      `SELECT EXTRACT(EPOCH FROM ("demoExpiresAt" - "createdAt")) / 3600 AS "hours"
+         FROM "User" WHERE "isDemo" = true ORDER BY "createdAt" DESC LIMIT 1`,
+      [],
+    )
+
+    expect(Math.round(Number(row?.hours ?? 0))).toBe(1)
   })
 
   it('refuses a lifetime the database would refuse anyway', async () => {

@@ -80,7 +80,16 @@ export class DemoService {
    */
   async issue(role: DemoRole, app: AppId, meta: SessionRequestMeta = {}): Promise<IssuedDemo> {
     const now = this.clock.now()
-    const expiresAt = new Date(now.getTime() + DEMO_ACCOUNT_TTL_HOURS * 60 * 60 * 1000)
+    // **수명은 정책 행에서 온다** (TASK-0096 F6). 상수였을 때는 「1시간짜리 데모로
+    // 바꿔 본다」가 배포를 뜻했고, 데모를 보여 주는 자리에서 필요한 것은 지금 바꾸는
+    // 일이다. 행이 없으면 예전 상수로 답한다 — 없다는 이유로 발급이 멈추면 그 증상은
+    // 「데모가 안 된다」로만 보인다.
+    const policy = await this.prisma.demoPolicy.findUnique({
+      where: { id: 1 },
+      select: { ttlHours: true },
+    })
+    const ttlHours = policy?.ttlHours ?? DEMO_ACCOUNT_TTL_HOURS
+    const expiresAt = new Date(now.getTime() + ttlHours * 60 * 60 * 1000)
     const token = demoToken((size) => randomBytes(size))
     const address = issueAddress(meta.ipAddress)
 

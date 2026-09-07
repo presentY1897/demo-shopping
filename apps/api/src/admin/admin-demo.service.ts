@@ -146,8 +146,9 @@ export class AdminDemoService {
       maxDays: DEMO_STATS_MAX_DAYS,
     })
 
-    const [days, byRole, activeAccounts, failedCleanups] = await Promise.all([
-      this.prisma.$queryRaw<{ date: string; issued: number }[]>`
+    const [days, byRole, activeAccounts, failedCleanups, lastRunAt, lastReport] = await Promise.all(
+      [
+        this.prisma.$queryRaw<{ date: string; issued: number }[]>`
         SELECT to_char((u."createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Seoul')::date,
                        'YYYY-MM-DD') AS "date",
                COUNT(*)::int         AS "issued"
@@ -157,7 +158,7 @@ export class AdminDemoService {
                BETWEEN ${range.from}::date AND ${range.to}::date
          GROUP BY 1
          ORDER BY 1`,
-      this.prisma.$queryRaw<{ role: string; issued: number }[]>`
+        this.prisma.$queryRaw<{ role: string; issued: number }[]>`
         SELECT r."role"::text AS "role", COUNT(DISTINCT u."id")::int AS "issued"
           FROM "User" u
           JOIN "UserRole" r ON r."userId" = u."id"
@@ -165,17 +166,22 @@ export class AdminDemoService {
            AND (u."createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Seoul')::date
                BETWEEN ${range.from}::date AND ${range.to}::date
          GROUP BY 1`,
-      this.prisma.user.count({ where: { isDemo: true, deletedAt: null } }),
-      this.prisma.user.count({
-        where: { isDemo: true, deletedAt: null, demoCleanupFailedAt: { not: null } },
-      }),
-    ])
+        this.prisma.user.count({ where: { isDemo: true, deletedAt: null } }),
+        this.prisma.user.count({
+          where: { isDemo: true, deletedAt: null, demoCleanupFailedAt: { not: null } },
+        }),
+        // 청소기가 자기 실행을 적는다 — 여기서 다시 세지 않는다.
+        this.cleanup.lastRunAt(),
+        this.cleanup.lastReport(),
+      ],
+    )
 
     return {
       days: fillDays(days, range.from, range.dayCount, (date) => ({ date, issued: 0 })),
       byRole: Object.fromEntries(byRole.map((row) => [row.role, row.issued])),
       activeAccounts,
       failedCleanups,
+      lastCleanup: { at: lastRunAt?.toISOString() ?? null, report: lastReport },
     }
   }
 

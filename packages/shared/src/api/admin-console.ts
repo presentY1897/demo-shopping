@@ -264,6 +264,20 @@ export const demoStatsResponseSchema = z.object({
   byRole: z.record(z.string(), z.int().min(0)),
   activeAccounts: z.int().min(0),
   failedCleanups: z.int().min(0),
+  /**
+   * 마지막 정리가 언제, 무엇을 했는가 (TASK-0096 F3).
+   *
+   * **시각만으로는 「돌았다」까지만 말할 수 있다.** 0건을 집고 돌아온 주기와 50건을
+   * 집은 주기가 화면에서 같아 보이면, 운영자는 정리가 밀리고 있는 것을 알 수 없다 —
+   * 시각은 계속 갱신되기 때문이다.
+   *
+   * `report` 가 `null` 인 것은 한 번도 안 돌았거나 적힌 값을 읽지 못한 경우다. 둘을
+   * 가르지 않는 이유는 화면이 할 일이 같아서다 — 둘 다 「아직 모른다」이다.
+   */
+  lastCleanup: z.object({
+    at: z.iso.datetime().nullable(),
+    report: z.object({ swept: z.int().min(0), failed: z.int().min(0) }).nullable(),
+  }),
 })
 
 export type DemoStatsResponse = z.infer<typeof demoStatsResponseSchema>
