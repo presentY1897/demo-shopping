@@ -13,6 +13,7 @@ import { sellerOwnership, sellerOwnershipSelect } from '../auth/resource-ownersh
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { ReviewImageUrls } from './review-images.js'
 import { maskAuthorName } from './review-rules.js'
 
 interface ConsoleRow {
@@ -53,6 +54,7 @@ export class ReviewReplyService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
+    private readonly images: ReviewImageUrls,
   ) {}
 
   /** 답변을 쓰거나 고친다 (F1 · F2 · F3). */
@@ -116,7 +118,7 @@ export class ReviewReplyService {
     const page = rows.slice(0, limit)
 
     return {
-      reviews: page.map((row) => toConsoleReview(row)),
+      reviews: page.map((row) => toConsoleReview(row, this.images)),
       nextCursor: rows.length > limit ? (page.at(-1)?.id ?? null) : null,
       unansweredCount,
     }
@@ -208,7 +210,7 @@ function toIso(reply: { createdAt: Date; updatedAt: Date }): {
   return { createdAt: reply.createdAt.toISOString(), updatedAt: reply.updatedAt.toISOString() }
 }
 
-function toConsoleReview(row: ConsoleRow): SellerProductReview {
+function toConsoleReview(row: ConsoleRow, images: ReviewImageUrls): SellerProductReview {
   return {
     id: row.id,
     productId: row.productId,
@@ -218,7 +220,7 @@ function toConsoleReview(row: ConsoleRow): SellerProductReview {
     status: 'PUBLISHED',
     authorName: maskAuthorName(row.authorName),
     optionLabel: row.optionLabel,
-    imageKeys: [...row.imageKeys],
+    images: images.of(row.imageKeys),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
     reply:

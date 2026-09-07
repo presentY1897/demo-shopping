@@ -27,6 +27,7 @@ export const ownedTables = [
   'RefreshToken',
   'UserPreference',
   'Address',
+  'ProductQuestion',
   'Wishlist',
   'RecentlyViewed',
   'SellerFollow',
@@ -90,6 +91,13 @@ export const cleanupPlan: readonly CleanupStep[] = [
     scope: 'user',
     because:
       '잡아 둔 재고는 놓아 주어야 한다 — 계정이 사라지면 아무도 결제하지 않는다. `ProductVariant.reserved` 를 함께 되돌린다 (TASK-0048)',
+  },
+  {
+    table: 'ProductQuestion',
+    kind: 'hard',
+    scope: 'user',
+    because:
+      '**남의 상품에 남긴 물음이지만 그 사람의 것이다** (TASK-0088). 답이 달린 문의도 함께 간다 — 답변은 그 물음에 대한 것이라, 물음이 사라지면 설명할 대상이 없다(`ProductAnswer` 가 Cascade 다). 데모 방문자의 문의가 실계정 상품에 영원히 남으면 답할 사람도 지울 방법이 없다',
   },
   {
     table: 'Wishlist',
@@ -166,6 +174,8 @@ export const untouchedTables: Readonly<Record<string, string>> = {
   StockLedger: 'append-only. 사라진 상품의 재고 이력이 남는 것이 옳다',
   ProductImage: 'Product 에 Cascade 로 매달려 있고, 상품이 소프트 삭제라 함께 숨는다',
   CartItem: 'Cart 에 Cascade 로 매달려 있다. 장바구니가 지워지면 함께 간다 (TASK-0045)',
+  ProductAnswer:
+    'ProductQuestion 에 Cascade 로 매달려 있다 (TASK-0088). **데모 판매자가 쓴 답변도 남는다** — 그 스토어는 정지되고 상품은 소프트 삭제되므로 그 답변을 볼 사람이 없다',
   ReviewReply:
     'Review 에 Cascade 로 매달려 있다 (TASK-0085). **데모 판매자가 쓴 답변도 남는다** — 그 스토어는 정지되고 상품은 소프트 삭제되므로 답변이 달린 리뷰를 볼 사람이 없고, 남의 리뷰에 달린 남의 말을 계정 만료로 지울 이유도 없다',
   ReviewImage:
@@ -248,6 +258,7 @@ export function orderFault(
     Address: ['User'],
     Review: ['User'],
     ReviewHelpful: ['User', 'Review'],
+    ProductQuestion: ['User', 'Product'],
     Wishlist: ['User', 'Product'],
     RecentlyViewed: ['User', 'Product'],
     SellerFollow: ['User', 'Seller'],

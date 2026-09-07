@@ -3,7 +3,9 @@ import { Module } from '@nestjs/common'
 import { ClockModule } from '../common/clock.module.js'
 import { PrismaModule } from '../prisma/prisma.module.js'
 import { SearchModule } from '../search/search.module.js'
+import { StorageModule } from '../storage/storage.module.js'
 import { ReviewController } from './review.controller.js'
+import { ReviewImageUrls } from './review-images.js'
 import { ReviewListService } from './review-list.service.js'
 import { ReviewReplyService } from './review-reply.service.js'
 import { ReviewService } from './review.service.js'
@@ -20,9 +22,9 @@ import { ReviewService } from './review.service.js'
  * 트랜잭션 안에서** 남기므로 롤백되면 사건도 함께 사라진다.
  */
 @Module({
-  imports: [PrismaModule, ClockModule, SearchModule],
+  imports: [PrismaModule, ClockModule, SearchModule, StorageModule],
   controllers: [ReviewController],
-  providers: [ReviewService, ReviewListService, ReviewReplyService],
+  providers: [ReviewService, ReviewListService, ReviewReplyService, ReviewImageUrls],
   exports: [ReviewService],
 })
 export class ReviewModule {}

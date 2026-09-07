@@ -139,7 +139,7 @@ function write(
     rating: number
     authorName: string
     optionLabel: string | null
-    imageKeys: readonly string[]
+    images: readonly { key: string; url: string | null }[]
   }
 }> {
   return client(caller).request({
@@ -272,7 +272,7 @@ describe('사진 (F6)', () => {
     const keys = [key(buyer.userId, 1), key(buyer.userId, 2), key(buyer.userId, 3)]
     const { review } = await write(buyer, item.orderItemId, { imageKeys: keys })
 
-    expect(review.imageKeys).toEqual(keys)
+    expect(review.images.map((image) => image.key)).toEqual(keys)
   })
 
   /** 열쇠가 곧 소유자다 — 두 번째 조회 없이 남의 사진을 막는다. */
@@ -349,7 +349,7 @@ describe('수정과 삭제 (F4 · F5)', () => {
       schema: reviewResponseSchema,
     })
 
-    expect(read.review.imageKeys).toEqual([second])
+    expect(read.review.images.map((image) => image.key)).toEqual([second])
   })
 
   /** 지운 뒤에는 다시 쓸 수 없다 — 행이 남아 유니크가 그대로 막는다. */

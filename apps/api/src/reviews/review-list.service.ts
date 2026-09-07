@@ -11,6 +11,7 @@ import type {
 import { REVIEW_LIST_DEFAULT_LIMIT } from '@shopping/shared'
 
 import { PrismaService } from '../prisma/prisma.service.js'
+import { ReviewImageUrls } from './review-images.js'
 import { maskAuthorName } from './review-rules.js'
 import type { ReviewCursor } from './review-console.js'
 import {
@@ -62,7 +63,10 @@ const ORDER_BY: Readonly<Record<ReviewSortKey, Prisma.Sql>> = {
  */
 @Injectable()
 export class ReviewListService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly images: ReviewImageUrls,
+  ) {}
 
   async list(
     productId: string,
@@ -84,7 +88,7 @@ export class ReviewListService {
     const last = page.at(-1)
 
     return {
-      reviews: page.map((row) => toEntry(row)),
+      reviews: page.map((row) => toEntry(row, this.images)),
       nextCursor:
         rows.length > limit && last !== undefined
           ? encodeReviewCursor({ rank: rankOf(sort, last), id: last.id })
@@ -270,7 +274,7 @@ function sortRank(sort: ReviewSortKey): Prisma.Sql {
   return Prisma.sql`0`
 }
 
-function toEntry(row: ListRow): ReviewListEntry {
+function toEntry(row: ListRow, images: ReviewImageUrls): ReviewListEntry {
   return {
     id: row.id,
     productId: row.productId,
@@ -279,7 +283,7 @@ function toEntry(row: ListRow): ReviewListEntry {
     status: 'PUBLISHED',
     authorName: maskAuthorName(row.authorName),
     optionLabel: row.optionLabel,
-    imageKeys: [...row.imageKeys],
+    images: images.of(row.imageKeys),
     helpfulCount: row.helpfulCount,
     helpfulByMe: row.helpfulByMe,
     // 답변을 목록과 **함께** 싣는다 (TASK-0085 F4). 따로 받으면 리뷰 한 장마다

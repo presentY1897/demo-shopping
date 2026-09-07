@@ -173,6 +173,10 @@ export class DemoCleanupService implements OnModuleInit, OnModuleDestroy {
     await tx.refreshToken.deleteMany({ where: { userId } })
     await tx.userPreference.deleteMany({ where: { userId } })
     await tx.address.deleteMany({ where: { userId } })
+    // 상품 문의 (TASK-0088). **남의 상품에 남긴 물음이지만 그 사람의 것이다** —
+    // 데모 방문자의 문의가 실계정 상품에 영원히 남으면 답할 사람도 지울 방법이 없다.
+    // 답변은 `ProductAnswer` 가 Cascade 로 함께 간다.
+    await tx.productQuestion.deleteMany({ where: { userId } })
     // 찜과 최근 본 상품 (TASK-0086 · 0087). 온전히 그 사람의 것이고 아무것도
     // 참조하지 않는다 — 남길 이력이 없다.
     await tx.wishlist.deleteMany({ where: { userId } })

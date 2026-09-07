@@ -39,6 +39,24 @@ export const reviewStatusSchema = z.enum(reviewStatuses)
  */
 export const reviewImageKeysSchema = z.array(reviewImageKeySchema)
 
+/**
+ * 붙은 사진 하나 — 열쇠와 **그릴 수 있는 주소**.
+ *
+ * 열쇠만 내려보내던 시절이 잠깐 있었고, 그때 화면은 사진을 그릴 방법이 없었다. 열쇠를
+ * 주소로 바꾸는 규칙은 저장소 설정에 달려 있고 그 설정은 서버에만 있다 — 화면이
+ * 주소를 조립하면 저장소를 옮기는 날 모든 화면이 함께 틀린다.
+ *
+ * **저장소가 설정되지 않은 배포에서는 `url` 이 `null`** 이다 (TASK-0011 4.5). 클레임
+ * 사진이 같은 판단을 하고 그 이유가 `claimPhotoSchema` 에 적혀 있다 — 사진을 못 보는
+ * 것과 화면이 열리지 않는 것은 다른 일이다.
+ */
+export const reviewImageSchema = z.object({
+  key: reviewImageKeySchema,
+  url: z.url().nullable(),
+})
+
+export type ReviewImage = z.infer<typeof reviewImageSchema>
+
 /** 리뷰 한 벌. 상품 상세와 마이페이지가 같은 모양으로 읽는다. */
 export const reviewSchema = z.object({
   id: z.uuid(),
@@ -55,7 +73,7 @@ export const reviewSchema = z.object({
   authorName: z.string(),
   /** 산 조합의 이름 (`블랙 / M`). 주문 항목의 스냅샷에서 온다. */
   optionLabel: z.string().nullable(),
-  imageKeys: z.array(z.string()),
+  images: z.array(reviewImageSchema),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
 })
