@@ -2414,6 +2414,8 @@ export interface DashboardFilterMessages {
   readonly fromLabel: string
   readonly toLabel: string
   readonly reset: string
+  /** 날짜 칸을 비웠을 때. 서버의 400 은 어느 칸인지 말할 수 없다. */
+  readonly rangeIncomplete: string
   readonly rangeReversed: string
   /** 계약의 상한을 넘겼다. `{max}` 가 들어간다. */
   readonly rangeTooLong: string

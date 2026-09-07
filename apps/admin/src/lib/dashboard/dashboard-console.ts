@@ -68,9 +68,14 @@ export function dayCount(period: DashboardPeriod): number {
  * 「거래액 0원」이나 **자기가 고른 적 없는 90일**을 그리게 되고, 둘 다 「날짜를
  * 거꾸로 골랐다」와 전혀 다른 문장이다.
  */
-export type PeriodProblem = 'reversed' | 'tooLong'
+export type PeriodProblem = 'incomplete' | 'reversed' | 'tooLong'
 
 export function periodProblem(period: DashboardPeriod): PeriodProblem | null {
+  // **빈 칸이 먼저다.** 날짜 칸을 지우면 `''` 가 되고, 그것은 `to < from` 비교에서는
+  // 조용히 통과한 뒤 `from=` 으로 나가 서버가 400 으로 답한다 — 그 400 은 **어느
+  // 칸이 문제인지 말할 수 없는** 문장이라 사람이 고칠 데를 못 찾는다.
+  if (Number.isNaN(Date.parse(period.from))) return 'incomplete'
+  if (Number.isNaN(Date.parse(period.to))) return 'incomplete'
   if (period.to < period.from) return 'reversed'
   // 계약의 상한을 화면이 먼저 잰다. 서버도 같은 값으로 접는다 — 그쪽이 원본이다.
   if (dayCount(period) > DASHBOARD_MAX_DAYS) return 'tooLong'
