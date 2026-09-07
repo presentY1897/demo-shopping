@@ -15,12 +15,15 @@ import type {
   OauthFailureReason,
   OauthNotice,
   OrderActor,
+  OrderStatus,
+  ProductStatus,
   ReportReason,
   ReportStatus,
   ReportTargetType,
   ReturnReason,
   Role,
   SchedulerStatus,
+  SellerSortKey,
   SellerStatus,
   SettlementApprovalFailure,
   SettlementItemType,
@@ -52,6 +55,9 @@ import type { HoldFieldErrorMessages } from '@/lib/settlements/hold-form'
 import type { CalculationLineKey } from '@/lib/settlements/settlement-console'
 import type { SettlementAction } from '@/lib/settlements/transitions'
 
+import type { OrderFilterIssue } from '@/lib/catalog/order-console'
+import type { ProductRefusal } from '@/lib/catalog/product-console'
+import type { StoreEventKind } from '@/lib/stores/store-console'
 import type { PointsFieldErrorMessages, ReasonFieldErrorMessages } from '@/lib/users/forms'
 import type { UserRefusal } from '@/lib/users/user-console'
 
@@ -153,6 +159,33 @@ export interface Messages {
    * 말할 자리가 사라진다.
    */
   readonly users: UserMessages
+  /**
+   * `/sellers` 의 두 번째 탭 — **스토어 지표와 제재 이력** (TASK-0094).
+   *
+   * `sellers` 슬라이스와 **다른 것이다.** 저쪽은 「이 신청을 승인할까」를 묻는 M04 의
+   * 심사 콘솔이고, 이쪽은 「어느 스토어를 봐야 하나」를 묻는다 — 계약의 경로가
+   * `admin/sellers` 와 `admin/stores` 로 갈린 것과 같은 이유다 (4.3). 상태의 한국어
+   * 이름만은 저쪽 것을 빌려 쓴다: 두 탭이 같은 상태를 다르게 부르면 그것이 한 화면인
+   * 이유가 없어진다.
+   */
+  readonly stores: StoreMessages
+  /**
+   * `/products` — 모든 스토어의 상품, 그리고 강제로 내리기 (TASK-0095).
+   *
+   * 자기 슬라이스인 이유는 이것이 **화면 하나**이기 때문이고, 그 안이 갈리는 것은 이
+   * 화면이 하는 일이 **읽기 하나와 쓰기 하나**라서다. 읽기는 `product.read` 이고
+   * 쓰기는 `catalog.write` 인데, 데모 관리자에게는 그 쓰기가 `demo` 로 좁혀져 있다
+   * (F8 · D-058) — 한 덩어리로 접으면 「왜 이것만 거절됐는가」를 말할 자리가 사라진다.
+   */
+  readonly adminProducts: AdminProductMessages
+  /**
+   * `/orders` — 모든 주문을 가로질러, 그리고 결제와 환불 (TASK-0095).
+   *
+   * **상태를 바꾸는 문구가 없고, 없다는 사실을 말하는 문구가 있다** (F7 · 4.4).
+   * 버튼이 그냥 없으면 읽는 사람은 그것을 자기 권한 문제로 읽고 다른 계정으로 다시
+   * 들어와 본다.
+   */
+  readonly adminOrders: AdminOrderMessages
   /**
    * `/demo` — 발급된 데모 계정과 정리 상태 (TASK-0096).
    *
@@ -704,6 +737,12 @@ export interface AttributeToastMessages {
  * which is being rendered as `{brandName}` at somebody.
  */
 export interface SellerReviewMessages {
+  /**
+   * 심사 탭의 이름.
+   *
+   * `/sellers` 가 두 가지를 하게 되면서(TASK-0094) 이 문자열은 페이지의 제목이 아니라
+   * **탭 하나의 이름**이 되었다. 페이지의 제목은 사이드바에서 나온다 (`screenTitle`).
+   */
   readonly title: string
   readonly description: string
   /** Names the table and the region that scrolls it. */
@@ -3002,4 +3041,392 @@ export interface DemoToastMessages {
   readonly swept: string
   /** 아무것도 집히지 않았다. 0을 두 번 그리는 대신 한 문장으로 말한다. */
   readonly sweptNothing: string
+}
+
+/* ----------------------------------------------- 스토어 지표 (TASK-0094) -- */
+
+/**
+ * `/sellers` 의 두 번째 탭 — **어느 스토어를 봐야 하나.**
+ *
+ * 안이 셋으로 갈린 것은 이 화면이 답하는 질문이 셋이기 때문이다: 목록은 「어느
+ * 스토어인가」, 이력은 「이 스토어가 몇 번 정지됐나」(F6), 그리고 `metricNotice` 는
+ * **숫자에 없는 것이 무엇인가**를 말한다 — 클레임률의 빈칸이 0%가 아니라는 사실은
+ * 표만 봐서는 알 수 없고, 그것을 모르면 정렬의 맨 위가 무엇인지도 오해한다 (4.5).
+ */
+export interface StoreMessages {
+  readonly tabLabel: string
+  readonly description: string
+  /** 이 탭을 아예 볼 수 없는 계정에게. 「불러오지 못했어요」와 다른 문장이다. */
+  readonly forbiddenTitle: string
+  readonly list: StoreListMessages
+  readonly history: StoreHistoryMessages
+  /** 한 줄씩, API 가 답하기 **전에** 실패한 경우에 대해. */
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+/**
+ * 지표 표 (F1 · F2 · F7).
+ *
+ * `noSales` 와 `noRatings` 가 이 화면의 핵심 문장이다. 계약은 주문이 없는 스토어의
+ * 클레임률을 `null` 로 싣고, 리뷰가 없는 스토어의 평점은 0으로 싣는다 — 둘 다 0으로
+ * 그리면 **아직 아무것도 안 한 스토어가 「완벽한 스토어」이거나 「최악의 스토어」로**
+ * 목록의 끝에 선다 (4.5).
+ */
+export interface StoreListMessages {
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  readonly filteredEmptyTitle: string
+  readonly filteredEmptyDescription: string
+  readonly listLabel: string
+  /** 표를 읽기 전에 알아야 하는 것 — 빈칸이 0이 아니라는 사실 (4.5). */
+  readonly metricNotice: string
+  readonly demoBadge: string
+  /** 주문이 한 건도 없어 클레임률을 낼 수 없다. **0%가 아니다.** */
+  readonly noSales: string
+  /** 리뷰가 한 건도 없다. 0.0점이 아니다. */
+  readonly noRatings: string
+  /** `{score}` · `{count}` */
+  readonly ratingValue: string
+  /** `{count}` */
+  readonly countValue: string
+  readonly productCountValue: string
+  readonly followerValue: string
+  readonly historyLabel: string
+  readonly columns: StoreColumnMessages
+  readonly filters: StoreFilterMessages
+  readonly pagination: StorePaginationMessages
+}
+
+export interface StoreColumnMessages {
+  readonly store: string
+  readonly status: string
+  readonly sales: string
+  readonly orders: string
+  readonly claimRate: string
+  readonly rating: string
+  readonly products: string
+  readonly followers: string
+  readonly createdAt: string
+  readonly history: string
+}
+
+/**
+ * 두 축과 정렬 하나.
+ *
+ * 정렬이 필터와 같은 자리에 있는 이유는 이 화면에서 그것이 **같은 일**이기 때문이다 —
+ * 「문제 판매자를 지표로 찾는다」는 요구는 좁히기가 아니라 줄 세우기로 답한다 (F2).
+ */
+export interface StoreFilterMessages {
+  readonly legend: string
+  readonly statusLabel: string
+  readonly statusAll: string
+  readonly demoLabel: string
+  readonly demoAll: string
+  readonly demoOnly: string
+  readonly realOnly: string
+  readonly sortLabel: string
+  readonly sortNames: Readonly<Record<SellerSortKey, string>>
+  readonly reset: string
+}
+
+/** `2 페이지 · 20곳`, 자리 표시자 없이 이어 붙인다. */
+export interface StorePaginationMessages {
+  readonly label: string
+  readonly next: string
+  readonly previous: string
+  readonly pageUnit: string
+  readonly countUnit: string
+}
+
+/**
+ * 제재 이력 (F6).
+ *
+ * `kinds` 가 상태 두 칸을 사람의 말로 옮긴다. 「SUSPENDED → ACTIVE」를 그대로 그리면
+ * 읽는 사람이 매번 머릿속에서 「해제」로 옮기게 되고, 표의 뜻이 읽는 사람의 번역에
+ * 달려 있으면 그 번역은 언젠가 틀린다.
+ *
+ * `summary` 는 **이 표가 생긴 이유**를 한 줄로 말한다 — 몇 번 정지됐는가. `Seller` 는
+ * 지금 상태와 사유만 들고 있어 정지와 해제를 반복하면 앞의 것이 덮이고, 그러면 반복
+ * 위반과 한 번의 실수를 구별할 수 없다 (4.6).
+ */
+export interface StoreHistoryMessages {
+  readonly title: string
+  readonly closeLabel: string
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  readonly listLabel: string
+  readonly kinds: Readonly<Record<StoreEventKind, string>>
+  readonly columns: StoreHistoryColumnMessages
+  /** `{count}` — 정지된 횟수. */
+  readonly summary: string
+  readonly noSanction: string
+  /** 사유가 적히지 않은 줄. 빈칸은 「못 읽었다」와 섞인다. */
+  readonly noReason: string
+  /** 사람이 아니라 시스템이 옮겼다 (`actorId` 가 `null`). */
+  readonly systemActor: string
+  readonly adminActor: string
+}
+
+export interface StoreHistoryColumnMessages {
+  readonly movedAt: string
+  readonly change: string
+  readonly reason: string
+  readonly actor: string
+}
+
+/* --------------------------------------------- 전체 상품 (TASK-0095) -- */
+
+/**
+ * `/products` — 모든 스토어의 상품, 그리고 강제로 내리기.
+ *
+ * `statusLabels` 가 여기 있는 이유는 이 콘솔에서 상품 상태를 그리는 화면이 여기
+ * 하나뿐이기 때문이다. `hiddenNotice` 는 **내려진 상품이 어떤 상태로 남는가**를
+ * 말한다 — 강제 숨김은 `SUSPENDED` 이고, 판매자가 스스로 내린 `INACTIVE` 와 다르다.
+ */
+export interface AdminProductMessages {
+  readonly description: string
+  readonly forbiddenTitle: string
+  readonly statusLabels: Readonly<Record<ProductStatus, string>>
+  readonly list: AdminProductListMessages
+  readonly hide: ProductHideMessages
+  readonly restore: ProductRestoreMessages
+  readonly toast: AdminProductToastMessages
+  /** 화면에 남은 거절을 사람이 치우는 버튼. 토스트와 달리 저절로 사라지지 않는다. */
+  readonly dismissLabel: string
+  /** 이 화면이 따로 할 말이 있는 거절. 카탈로그의 한 줄로는 못 하는 말들이다. */
+  readonly refusals: Readonly<Record<ProductRefusal, string>>
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+export interface AdminProductListMessages {
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  readonly filteredEmptyTitle: string
+  readonly filteredEmptyDescription: string
+  readonly listLabel: string
+  /**
+   * 이름으로 못 찾는다는 사실 (4.1).
+   *
+   * `GET /products` 의 계약에 검색어가 없다. 없는 칸을 그리지 않는 것만으로는
+   * 부족하다 — 찾으러 온 사람은 칸이 없으면 **자기가 못 찾는 것**이라고 생각하고
+   * 같은 화면을 몇 번이고 다시 연다.
+   */
+  readonly hiddenBadge: string
+  readonly noPrice: string
+  readonly unknownSeller: string
+  readonly unknownCategory: string
+  /** `{count}` */
+  readonly stockValue: string
+  readonly variantValue: string
+  /** 내릴 수도 올릴 수도 없는 상태의 줄에 (4.2). */
+  readonly notModeratable: string
+  readonly hideLabel: string
+  readonly restoreLabel: string
+  readonly columns: AdminProductColumnMessages
+  readonly filters: AdminProductFilterMessages
+  readonly pagination: StorePaginationMessages
+}
+
+export interface AdminProductColumnMessages {
+  readonly product: string
+  readonly seller: string
+  readonly category: string
+  readonly status: string
+  readonly price: string
+  readonly stock: string
+  readonly action: string
+}
+
+export interface AdminProductFilterMessages {
+  /** 이름 검색 (TASK-0095 2장). 색인이 못 찾는 것을 찾으므로 목록이 직접 받는다. */
+  readonly searchLabel: string
+  readonly searchPlaceholder: string
+  readonly searchHint: string
+  readonly searchAction: string
+  readonly legend: string
+  readonly sellerLabel: string
+  readonly sellerAll: string
+  readonly sellerLoading: string
+  /** 목록이 잘렸다는 사실 — 스토어가 상한을 넘으면 셀렉트에 없는 스토어가 생긴다. */
+  readonly sellerNotice: string
+  readonly categoryLabel: string
+  readonly categoryAll: string
+  readonly categoryLoading: string
+  readonly statusLabel: string
+  readonly statusAll: string
+  readonly reset: string
+}
+
+/**
+ * 내리기 전에 **사유를 묻는다** (F3).
+ *
+ * 미리 채워 두지 않는다. 「부적절」 같은 기본 문장이 들어 있으면 남는 것은 근거가
+ * 아니라 근거의 모양이고, 그 상품의 판매자에게 설명할 것이 아무것도 없다 (4.2).
+ */
+export interface ProductHideMessages {
+  readonly title: string
+  readonly description: string
+  readonly closeLabel: string
+  readonly cancel: string
+  readonly submit: string
+  readonly submitting: string
+  readonly targetLabel: string
+  readonly reasonLabel: string
+  readonly reasonHint: string
+  readonly reasonPlaceholder: string
+  /** 내리면 무슨 일이 일어나는가 — 검색 색인에서도 함께 빠진다 (4.2). */
+  readonly notice: string
+  readonly submitError: string
+  readonly errors: ReasonFieldErrorMessages
+}
+
+/** 다시 올릴 때는 사유를 받지 않는다 — 되돌린다는 사실 자체가 근거다. */
+export interface ProductRestoreMessages {
+  readonly title: string
+  readonly description: string
+  readonly confirm: string
+  readonly cancel: string
+  readonly closeLabel: string
+  readonly targetLabel: string
+}
+
+export interface AdminProductToastMessages {
+  readonly regionLabel: string
+  readonly closeLabel: string
+  readonly hidden: string
+  readonly restored: string
+}
+
+/* --------------------------------------------- 전체 주문 (TASK-0095) -- */
+
+/**
+ * `/orders` — 주문을 사람·스토어·기간으로 가로질러.
+ *
+ * `detail.statusNotice` 가 이 화면에서 가장 중요한 문장이다. 주문 상태를 바꾸는 문은
+ * **일부러 없고**(F7 · 4.4), 없다는 사실과 그 이유와 대신 갈 곳을 화면이 말하지
+ * 않으면 읽는 사람은 그것을 자기 권한 문제로 읽는다 — 그리고 다른 계정으로 다시
+ * 들어와 같은 화면을 본다.
+ */
+export interface AdminOrderMessages {
+  readonly description: string
+  readonly forbiddenTitle: string
+  readonly statusLabels: Readonly<Record<OrderStatus, string>>
+  readonly list: AdminOrderListMessages
+  readonly detail: AdminOrderDetailMessages
+  readonly failures: Readonly<Record<ApiFailureReason, string>>
+}
+
+export interface AdminOrderListMessages {
+  readonly loadingLabel: string
+  readonly errorTitle: string
+  readonly retryLabel: string
+  readonly emptyTitle: string
+  readonly emptyDescription: string
+  readonly filteredEmptyTitle: string
+  readonly filteredEmptyDescription: string
+  readonly listLabel: string
+  /** 산 사람의 이름이 가려져 있다는 사실 (4.3). 없으면 별이 고장으로 읽힌다. */
+  readonly maskedNotice: string
+  /** `{count}` — 이 주문이 몇 개의 판매자 묶음으로 갈렸는가 (F5). */
+  readonly bundleValue: string
+  readonly openLabel: string
+  readonly columns: AdminOrderColumnMessages
+  readonly filters: AdminOrderFilterMessages
+  readonly pagination: StorePaginationMessages
+}
+
+export interface AdminOrderColumnMessages {
+  readonly orderNumber: string
+  readonly buyer: string
+  readonly bundles: string
+  readonly paidAmount: string
+  readonly createdAt: string
+  readonly open: string
+}
+
+/**
+ * CS 가 손에 쥐는 값들 (F4).
+ *
+ * 주문번호는 **정확히 일치**로 찾는다. 부분 일치로 두면 비슷한 번호가 섞여 나오고,
+ * CS 는 그중 어느 것이 그 주문인지 알 방법이 없다 (4.3). `orderNumberHint` 가 그
+ * 사실을 미리 말한다 — 모르면 앞 몇 글자만 치고 「없다」를 받는다.
+ */
+export interface AdminOrderFilterMessages {
+  readonly legend: string
+  readonly orderNumberLabel: string
+  readonly orderNumberPlaceholder: string
+  readonly orderNumberHint: string
+  readonly buyerIdLabel: string
+  readonly buyerIdPlaceholder: string
+  readonly buyerIdHint: string
+  readonly sellerLabel: string
+  readonly sellerAll: string
+  readonly sellerLoading: string
+  readonly fromLabel: string
+  readonly toLabel: string
+  readonly submit: string
+  readonly reset: string
+  /** 보내기 전에 그 자리에서 돌려보내는 것들 (`orderIssuesOf`). */
+  readonly issues: Readonly<Record<OrderFilterIssue, string>>
+}
+
+/**
+ * 주문 하나 — **묶음 전부**와 결제 내역, 그리고 바꿀 수 없다는 말 (F5 · F6 · F7).
+ *
+ * 묶음은 목록의 줄이 이미 들고 있으므로 다시 묻지 않는다. 여기서 새로 읽는 것은
+ * 결제뿐이다.
+ */
+export interface AdminOrderDetailMessages {
+  readonly title: string
+  readonly closeLabel: string
+  readonly orderNumberLabel: string
+  readonly buyerLabel: string
+  readonly createdAtLabel: string
+  readonly paidAmountLabel: string
+  readonly bundlesTitle: string
+  readonly bundlesLabel: string
+  readonly bundleColumns: AdminOrderBundleColumnMessages
+  readonly paymentsTitle: string
+  readonly paymentsLabel: string
+  readonly paymentColumns: AdminOrderPaymentColumnMessages
+  readonly paymentsLoadingLabel: string
+  readonly paymentsErrorTitle: string
+  readonly paymentsRetryLabel: string
+  readonly paymentsEmptyTitle: string
+  readonly paymentsEmptyDescription: string
+  readonly refundedLabel: string
+  /** 아직 승인되지 않은 결제. 빈칸은 「못 읽었다」와 섞인다. */
+  readonly notApproved: string
+  /**
+   * 상태를 여기서 바꿀 수 없다는 것과 **왜**, 그리고 대신 갈 곳 (F7 · 4.4).
+   *
+   * 「권한이 없어서」가 아니다. 손으로 옮기면 재고·정산·환불이 따라오지 않고, 그
+   * 어긋남은 몇 단계 뒤에 「정산 금액이 이상하다」로 나타난다 — 원인과 증상이 멀어서
+   * 아무도 그 둘을 잇지 못한다.
+   */
+  readonly statusNotice: string
+  readonly claimsLinkLabel: string
+}
+
+export interface AdminOrderBundleColumnMessages {
+  readonly brand: string
+  readonly status: string
+  readonly paidAmount: string
+}
+
+export interface AdminOrderPaymentColumnMessages {
+  readonly provider: string
+  readonly status: string
+  readonly amount: string
+  readonly canceledAmount: string
+  readonly approvedAt: string
 }

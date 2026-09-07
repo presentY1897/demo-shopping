@@ -272,6 +272,16 @@ export const productSummarySchema = z.object({
   /** Total stock across live variants — the console's "재고" column. */
   stock: z.int().min(0),
   thumbnailUrl: z.string().nullable(),
+  /**
+   * 관리자가 강제로 내린 시각과 사유 (TASK-0095 F2 · F3).
+   *
+   * **되돌리는 화면이 이유를 볼 수 있어야 한다.** 없으면 운영자는 자기가 아닌 누가
+   * 왜 내렸는지 모른 채 그 판단을 무르게 되고, 그것은 되돌리기가 아니라 덮어쓰기다.
+   *
+   * 신고를 통해 내려진 상품은 여기가 비어 있다 — 그쪽 근거는 신고 행이 들고 있다.
+   */
+  moderatedAt: z.iso.datetime().nullable(),
+  moderationReason: z.string().nullable(),
   version: z.int().min(0),
 })
 
@@ -336,7 +346,12 @@ export const PRODUCT_LIST_MAX_LIMIT = 100
 export const PRODUCT_LIST_DEFAULT_LIMIT = 20
 
 /** Query of `GET /api/v1/products`, as a caller writes it. */
+/** 상품 이름 검색어의 상한. 화면의 입력 칸이 같은 수를 써야 400 대신 그 자리에서 막힌다. */
+export const PRODUCT_SEARCH_MAX = 120
+
 export const productListQuerySchema = z.object({
+  /** 상품 이름의 일부 (TASK-0095 2장). 자세한 것은 `productListQueryParamsSchema`. */
+  q: z.string().trim().min(1).max(PRODUCT_SEARCH_MAX).optional(),
   /** Omitted means "every seller", which only an operator's grants allow. */
   sellerId: z.uuid().optional(),
   categoryId: categoryIdSchema.optional(),
@@ -354,6 +369,14 @@ export type ProductListQuery = z.infer<typeof productListQuerySchema>
  * cannot drift: adding a parameter to one without the other stops compiling.
  */
 export const productListQueryParamsSchema = z.object({
+  /**
+   * 상품 이름의 일부 (TASK-0095 2장 「검색」).
+   *
+   * **검색 엔진이 대신할 수 없다.** 색인은 `ACTIVE` 만 담으므로(TASK-0038), 관리자가
+   * 정작 찾으려는 것 — 초안이거나 강제로 내려진 상품 — 은 거기 없다. 이 목록은
+   * 데이터베이스를 직접 보므로 상태와 무관하게 찾는다.
+   */
+  q: z.string().trim().min(1).max(PRODUCT_SEARCH_MAX).optional(),
   sellerId: z.uuid().optional(),
   categoryId: z.coerce.number().int().positive().optional(),
   status: productStatusSchema.optional(),

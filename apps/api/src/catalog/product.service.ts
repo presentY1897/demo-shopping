@@ -42,6 +42,7 @@ import type { DomainFailurePayload } from '../common/domain-failure.js'
 import { domainFailure } from '../common/domain-failure.js'
 import { NotificationService } from '../notifications/notification.service.js'
 import { PrismaService } from '../prisma/prisma.service.js'
+import { nameSearchPattern } from './seller-product-filters.js'
 import { availableStock } from '../reservation/reservation-rules.js'
 import { StockService } from '../stock/stock.service.js'
 import { SearchOutboxService } from '../search/search-outbox.service.js'
@@ -272,10 +273,17 @@ export class ProductService {
     const categoryId = query.categoryId ?? null
     const status = query.status ?? null
     const cursor = query.cursor ?? null
+    // 이름 검색 (TASK-0095 2장). **검색 엔진이 대신할 수 없다** — 색인은 `ACTIVE`
+    // 만 담으므로 관리자가 정작 찾으려는 초안이나 내려진 상품은 거기 없다.
+    //
+    // 판매자 목록과 **같은 함수**로 패턴을 만든다. `%` 를 이스케이프하지 않으면
+    // 「50%」로 찾는 사람이 전부를 받고, 그 필터는 조용히 「필터 없음」이 된다.
+    const pattern = nameSearchPattern(query.q)
 
     const rows = await this.prisma.$queryRaw<ProductSummary[]>`
       SELECT p."id", p."sellerId", p."categoryId", p."name", p."status", p."minPrice",
              p."ratingAvg", p."ratingCount", p."salesCount", p."version",
+             p."moderatedAt", p."moderationReason",
              v."variantCount", v."stock", i."url" AS "thumbnailUrl"
         FROM "Product" p
         LEFT JOIN LATERAL (
@@ -294,6 +302,7 @@ export class ProductService {
          AND (${categoryId}::int IS NULL OR p."categoryId" = ${categoryId}::int)
          AND (${status}::"ProductStatus" IS NULL OR p."status" = ${status}::"ProductStatus")
          AND (${hidden}::boolean OR p."status" = 'ACTIVE')
+         AND (${pattern}::text IS NULL OR p."name" ILIKE ${pattern}::text ESCAPE '\\')
          AND (${cursor}::uuid IS NULL OR p."id" < ${cursor}::uuid)
        ORDER BY p."id" DESC
        LIMIT ${limit + 1}::int

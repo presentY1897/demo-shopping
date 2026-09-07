@@ -9,6 +9,7 @@ import {
   demoAccountListResponseSchema,
   demoPolicyResponseSchema,
   demoStatsResponseSchema,
+  productListResponseSchema,
   productModerationResponseSchema,
   sellerStatusHistoryResponseSchema,
 } from '@shopping/shared'
@@ -283,6 +284,68 @@ describe('상품 강제 숨김 (TASK-0095 F2 · F3 · F8)', () => {
     }
 
     expect(await failure(hide(demoAdmin))).toBe(403)
+  })
+})
+
+describe('전체 상품 검색 (TASK-0095 2장)', () => {
+  /**
+   * **검색 엔진이 대신할 수 없다.** 색인은 `ACTIVE` 만 담으므로(TASK-0038), 관리자가
+   * 정작 찾으려는 것 — 초안이거나 강제로 내려진 상품 — 은 거기 없다. 이 목록은
+   * 데이터베이스를 직접 보므로 상태와 무관하게 찾는다.
+   */
+  it('finds a listing that is not on sale, which the index cannot', async () => {
+    await db.execute(
+      `UPDATE "Product" SET "name" = '숨겨진 코트', "status" = 'DRAFT'::"ProductStatus"
+        WHERE "id" = $1`,
+      [store.product.id],
+    )
+
+    const answer = await client(operator).request({
+      path: '/products?q=숨겨진',
+      schema: productListResponseSchema,
+    })
+
+    expect(answer.products.map((item) => item.name)).toEqual(['숨겨진 코트'])
+  })
+
+  /** 이스케이프하지 않으면 「50%」로 찾는 사람이 전부를 받고, 필터가 조용히 사라진다. */
+  it('treats a percent sign as a character, not a wildcard', async () => {
+    await db.execute(`UPDATE "Product" SET "name" = '50% 할인 코트' WHERE "id" = $1`, [
+      store.product.id,
+    ])
+
+    const hit = await client(operator).request({
+      path: `/products?q=${encodeURIComponent('50%')}`,
+      schema: productListResponseSchema,
+    })
+    const miss = await client(operator).request({
+      path: `/products?q=${encodeURIComponent('9%')}`,
+      schema: productListResponseSchema,
+    })
+
+    expect(hit.products).toHaveLength(1)
+    expect(miss.products).toEqual([])
+  })
+
+  /**
+   * 되돌리는 화면이 **왜 내려졌는지** 볼 수 있어야 한다. 없으면 운영자는 누가 왜
+   * 내렸는지 모른 채 그 판단을 무르게 되고, 그것은 되돌리기가 아니라 덮어쓰기다.
+   */
+  it('carries the moderation reason into the list', async () => {
+    await client(superAdmin).request({
+      path: `/admin/products/${store.product.id}/hidden`,
+      method: 'POST',
+      body: { reason: '위조품 신고 확인' },
+      schema: productModerationResponseSchema,
+    })
+
+    const answer = await client(operator).request({
+      path: '/products?status=SUSPENDED',
+      schema: productListResponseSchema,
+    })
+
+    expect(answer.products[0]).toMatchObject({ moderationReason: '위조품 신고 확인' })
+    expect(answer.products[0]?.moderatedAt).not.toBeNull()
   })
 })
 
