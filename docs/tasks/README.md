@@ -239,7 +239,7 @@
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
-| [TASK-0097](./M15-polish/TASK-0097-performance.md) | 성능 최적화 · 측정 | 승인됨 |
+| [TASK-0097](./M15-polish/TASK-0097-performance.md) | 성능 최적화 · 측정 | 완료 |
 | [TASK-0098](./M15-polish/TASK-0098-accessibility.md) | 접근성 점검 | 승인됨 |
 | [TASK-0099](./M15-polish/TASK-0099-e2e-demo.md) | E2E 테스트 · 데모 시나리오 | 승인됨 |
 | [TASK-0100](./M15-polish/TASK-0100-portfolio-docs.md) | README · 포트폴리오 문서 | 승인됨 |
