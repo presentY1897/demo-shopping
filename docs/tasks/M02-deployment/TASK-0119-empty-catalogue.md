@@ -270,11 +270,12 @@ GET /indexes/products/stats  (없는 인덱스)
 | 3b | **`size()` 가 `index_not_found` 를 0 으로 읽게** (4.7) · `configure()` 주석 정정 | `apps/api/src/search/search-index.ts` · `search-indexer.service.ts` |
 | 4b | 인덱스가 사라진 뒤 자동 복구되는 스펙 | `apps/api/src/search/*.spec.ts` |
 | 5 | 배포 절차에 시드 단계 추가 (B절) | `docs/OWNER-CHECKLIST.md` |
-| 6 | 프로덕션 시드 실행 (소유자 · `DATABASE_URL` 필요) | — |
+| 6 | 프로덕션 시드 실행 — **소유자 전용** (R3) | — |
 | 7 | 세 지표 확인 · 6.3 기록 | — |
 
-**6번은 소유자 작업이다.** `DATABASE_URL` 은 `render.yaml` 에 `sync: false` 로 두어 저장소에
-없다. 1~5 는 그 값 없이 끝낼 수 있고, 6 이전에 PR 을 낼 수 있다.
+**6번은 소유자 작업이고, 위임할 수 없다.** `DATABASE_URL` 은 DB 비밀번호를 담은 자격증명이라
+`render.yaml` 에 `sync: false` 로 두어 저장소에 없다 — 그 값을 누군가에게 넘기는 순간 저장소 밖에
+두기로 한 결정이 무의미해진다. **1~5 는 그 값 없이 전부 끝난다.**
 
 ## 6. 완료 기준
 
@@ -375,7 +376,7 @@ GET /indexes/products/stats  → 404
 | --- | --- | --- |
 | R1 | **R2 미설정으로 시드가 이미지를 건너뛴다** | 열림 → TASK-0011 진행중. 상품은 보이고 이미지 자리만 빈다. F5~F7 은 이미지와 무관하므로 이 TASK 는 그대로 닫을 수 있다. 시드 로그의 `images.skipped` 로 확인한다 |
 | R2 | `full`(상품 800)이 Neon 무료 용량·커넥션에 부담 | 열림. `DATABASE_POOL_SIZE=5` 이고 시드는 단일 프로세스다. 넘치면 `--scale=small`(50) 로 내린다 — 데모 목적에는 그것도 성립한다 |
-| R3 | `DATABASE_URL` 을 사람이 셸에 붙여 넣는다 | 명령 앞에 공백을 두어 히스토리에 남기지 않도록 체크리스트에 명시한다. 값 자체는 저장소에 들어가지 않는다 (`sync: false`) |
+| R3 | **`DATABASE_URL` 은 DB 비밀번호를 포함한 자격증명이다** | 6단계는 **소유자 전용**이다. 값을 대신 실행할 사람에게 넘기지 않는다 — 명령이 두 줄뿐이라 넘길 이유가 없다. 셸 히스토리는 명령 앞 공백으로 막고, 채팅·이슈·PR 반입 금지를 체크리스트에 명시했다. 노출 시 Neon 비밀번호 회전 + Render env 갱신을 함께 한다 |
 | R4 | `settlementBatch: degraded` 로 전체 `status` 가 `degraded` 다 | **범위 밖 · 별건.** `lastRunAt: null` 이라 배치가 한 번도 안 돈 것으로 보인다. 이 TASK 는 `search` 만 다룬다. 별도 TASK 로 잡아야 한다 |
 | R5 | 4.4 를 넣으면 시드 전까지 TASK-0009 F3 가 미충족이다 | 감수. F3 는 "`search: "ok"` 를 볼 수 있다"이고, 시드 뒤에 충족된다. **거짓 `ok` 로 충족을 유지하는 것보다 낫다** |
 | R8 | **4.7 은 승인된 범위 밖에서 발견됐다** | **해소.** D-037 대로 문서를 먼저 고치고 승인을 받은 뒤 3b·4b 를 넣었다. 빨강→초록을 확인했다 (6.3) |
