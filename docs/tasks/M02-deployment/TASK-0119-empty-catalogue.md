@@ -33,7 +33,9 @@
 
 ### 제외 (이번에 하지 않는 것)
 - **시드 내용 변경** — TASK-0037 소유. 이 TASK 는 **언제·어떻게 실행하는가**만 다룬다
-- **색인 파이프라인 변경** — TASK-0038 소유. 자동 재색인은 이미 있고 정상 동작한다 (4.1)
+- **색인 파이프라인 변경** — TASK-0038 소유. **예외 하나**: `size()` 가 없는 인덱스와 닿지 않는
+  엔진을 구별하지 못해 자동 복구가 막히는 것 (4.7). 오늘 장애의 직접 원인 중 하나이고 수정이
+  4.3 과 같은 줄기라 이 TASK 가 가져온다. 그 밖의 파이프라인 변경은 그대로 제외한다
 - **R2 이미지** — TASK-0011 진행중. 시드가 이미지를 건너뛰어도 이 TASK 의 완료 기준은 충족된다 (R1)
 - **콜드 스타트 재시도 예산** — TASK-0118. 증상이 같은 화면에 나타날 뿐 원인이 다르다
 - **유료 플랜 전환**
@@ -61,7 +63,8 @@
 | Neon PostgreSQL (카탈로그) | **남는다** | 필요 없다 — 1회 주입이면 끝 | **비어 있다** |
 | Meilisearch 인덱스 | **사라진다** (영구 디스크 없음, TASK-0009) | `ensurePopulated()` 자동 재색인 | 비어 있다 |
 
-**자동 재색인은 이미 있고 정상 동작한다.** 없는 것은 그것이 읽을 **원본**이다.
+**자동 재색인은 이미 있다.** 없는 것은 그것이 읽을 **원본**이다 — 다만 구현 중에 그 복구 자체에
+구멍이 있다는 것이 드러났다. 4.7 에 적었고, 이 절의 "정상 동작한다"는 그만큼 약해진다.
 
 ```ts
 async ensurePopulated(): Promise<boolean> {
@@ -178,6 +181,77 @@ export const EXPECTED_SEARCH_INDEXES: readonly string[] = ['products']
 **시드를 먼저 돌리면 1·2 를 검증할 수 없다.** 데이터가 들어온 뒤에는 두 버그 모두 증상이 사라지고,
 다음 재기동 때 다시 나타난다. 고쳤는지 알 수 없는 수정은 고치지 않은 것과 같다.
 
+### 4.7 자동 복구가 막혀 있다 — 구현 중 발견
+
+**4.1 은 "자동 재색인은 이미 있고 정상 동작한다"로 적었다. 절반만 맞았다.**
+
+복구 경로는 이렇게 생겼다.
+
+```
+onApplicationBootstrap()
+  → configure()          인덱스를 만들고 설정을 넣는다 (ensureIndex: true)
+  → ensureCurrentShape()
+  → ensurePopulated()    비어 있으면 다시 채운다
+tick()  (1초마다)
+  → drain()
+  → 60틱마다 ensurePopulated()
+```
+
+`configure()` 는 **부팅에서 한 번만** 불린다 (`search-indexer.service.ts:103`). 주기 경로에는
+없다. 그런데 그 한 번이 실패할 수 있고, 실패는 조용하다.
+
+```ts
+} catch (error) {
+  // A cold engine is the normal state of a fresh deployment. The next tick
+  // and the next boot both try again.
+  this.logger.warn(`검색 인덱스 설정을 적용하지 못했습니다: ${String(error)}`)
+}
+```
+
+**주석이 틀렸다. 다음 tick 은 `configure()` 를 부르지 않는다.** 그리고 `configure()` 없이는
+인덱스가 만들어지지 않는다.
+
+남은 복구 후보는 `ensurePopulated()` 하나인데, 그쪽도 막혀 있다.
+
+```ts
+const size = await this.index.size()
+if (size === null || size > 0) return false   // ← 없는 인덱스는 여기서 걸린다
+```
+
+`size()` 는 `/indexes/products/stats` 를 부르고, **없는 인덱스에 대한 404 를 다른 모든 실패와
+함께 삼켜 `null` 을 돌려준다.** `null` 은 "닿지 못했다"는 뜻으로 설계된 값이라 (R5 — 네트워크가
+한 번 튀었다고 전체 재색인을 돌리지 않기 위한 것) `ensurePopulated()` 는 재구축하지 않는다.
+
+**그래서 엔진이 API 부팅 시점에 자고 있으면 인덱스는 영원히 만들어지지 않는다.** 그리고 그것은
+드문 일이 아니라 **정상 경로**다 — 검색 엔진은 별도의 무료 서비스이고 API 보다 약 75초 늦게
+깨어난다 (TASK-0101 4.6). API 부팅 시점의 엔진은 대개 자고 있다.
+
+로컬 엔진으로 확인했다.
+
+```
+GET /indexes/products/stats  (없는 인덱스)
+→ HTTP 404
+  {"message":"Index `products` not found.","code":"index_not_found", ...}
+```
+
+#### 고치는 방법
+
+4.3 이 이미 `SearchEngineError` 에 엔진의 `code` 를 실어 두었다. `size()` 가 그것을 읽으면 된다.
+
+| 엔진 응답 | 지금 `size()` | 바꾼 뒤 |
+| --- | --- | --- |
+| `index_not_found` | `null` (닿지 못함) | **`0`** — 인덱스가 없다는 것은 문서가 0건이라는 확정이다 |
+| 그 밖의 실패 · 타임아웃 | `null` | `null` (그대로) |
+
+`0` 이 되면 `ensurePopulated()` → `reindexAll()` → `rebuild()` → `configure()` 로 이어져
+**인덱스가 만들어지고 채워진다.** R5 가 지키려던 것("네트워크 하나 튀었다고 전체 재색인 금지")은
+그대로 남는다 — 그쪽은 여전히 `null` 이다.
+
+**이 수정 없이는 4.3 만으로 증상이 가려진다.** 500 이 빈 화면으로 바뀌긴 하지만 검색은 영영
+돌아오지 않는다. 시드가 그것을 덮는 이유는 상품 쓰기가 `upsert` 를 태우고 Meilisearch 가 문서
+쓰기 시점에 인덱스를 자동 생성하기 때문인데, **그것은 복구가 아니라 우연이다.** 엔진이 재기동한
+뒤 아무도 상품을 수정하지 않으면 검색은 계속 비어 있다.
+
 ### 4.6 데이터 모델 · API · 화면
 
 - 데이터 모델 변경: **없음.** 마이그레이션이 없다
@@ -193,6 +267,8 @@ export const EXPECTED_SEARCH_INDEXES: readonly string[] = ['products']
 | 2 | 배포 헬스가 `search: "degraded"` 로 바뀌는 것 확인 (4.5) | — |
 | 3 | `index_not_found` 를 빈 결과로 — 코드 기반 판별 | `apps/api/src/search/search-index.ts` · `search.service.ts` |
 | 4 | 인덱스 없는 상태의 검색 스펙 추가 | `apps/api/src/search/*.spec.ts` |
+| 3b | **`size()` 가 `index_not_found` 를 0 으로 읽게** (4.7) · `configure()` 주석 정정 | `apps/api/src/search/search-index.ts` · `search-indexer.service.ts` |
+| 4b | 인덱스가 사라진 뒤 자동 복구되는 스펙 | `apps/api/src/search/*.spec.ts` |
 | 5 | 배포 절차에 시드 단계 추가 (B절) | `docs/OWNER-CHECKLIST.md` |
 | 6 | 프로덕션 시드 실행 (소유자 · `DATABASE_URL` 필요) | — |
 | 7 | 세 지표 확인 · 6.3 기록 | — |
@@ -215,6 +291,8 @@ export const EXPECTED_SEARCH_INDEXES: readonly string[] = ['products']
 | F7 | 카테고리 트리가 채워진다 | `/api/v1/categories/tree` | `nodes` 비어 있지 않음 | [ ] |
 | F8 | 시드 재실행 안전 | 같은 DB 에 2회 실행 | 2회차 `created: 0` · 데이터 손실 0 | [ ] |
 | F9 | 부팅 경로 불변 | `startCommand` diff | 변경 없음 (4.2) | [ ] |
+| F10 | **인덱스가 사라져도 자동 복구된다** (4.7) | 인덱스 삭제 후 `ensurePopulated()` | 재구축 실행 · 인덱스 재생성 | [ ] |
+| F11 | 닿지 않는 엔진은 재구축을 부르지 않는다 | 엔진 정지 상태의 `size()` | `null` · 재구축 0회 (R5 유지) | [ ] |
 
 **F2 를 F1 과 나란히 둔 이유.** F1 만 있으면 "검색 오류를 전부 빈 결과로 바꾸기"가 가장 쉬운
 통과 방법이 된다. 그 수정은 오늘의 문제 — 고장이 정상으로 보고되는 것 — 를 더 넓게 재현한다.
@@ -275,6 +353,7 @@ export const EXPECTED_SEARCH_INDEXES: readonly string[] = ['products']
 | R3 | `DATABASE_URL` 을 사람이 셸에 붙여 넣는다 | 명령 앞에 공백을 두어 히스토리에 남기지 않도록 체크리스트에 명시한다. 값 자체는 저장소에 들어가지 않는다 (`sync: false`) |
 | R4 | `settlementBatch: degraded` 로 전체 `status` 가 `degraded` 다 | **범위 밖 · 별건.** `lastRunAt: null` 이라 배치가 한 번도 안 돈 것으로 보인다. 이 TASK 는 `search` 만 다룬다. 별도 TASK 로 잡아야 한다 |
 | R5 | 4.4 를 넣으면 시드 전까지 TASK-0009 F3 가 미충족이다 | 감수. F3 는 "`search: "ok"` 를 볼 수 있다"이고, 시드 뒤에 충족된다. **거짓 `ok` 로 충족을 유지하는 것보다 낫다** |
+| R8 | **4.7 은 승인된 범위 밖에서 발견됐다** | D-037 대로 문서를 먼저 고쳤다. 승인 전까지 3b·4b 는 착수하지 않는다. 나머지(4.3·4.4·시드 절차)는 원안 그대로 끝냈다 |
 | R6 | **TASK-0038 에서 인계 한 줄이 떨어졌다 — 다른 인계도 떨어졌을 수 있다** | 열림. 완료된 TASK 의 "다음 TASK 가 켠다" 항목을 한 번 훑어야 한다. 이 TASK 의 범위는 아니지만, 오늘 장애의 진짜 교훈이 이것이다 |
 | R7 | 시드는 소유자만 돌릴 수 있어 F5~F7 이 PR 시점에 미충족이다 | 1~5 를 먼저 머지하고 6~7 을 뒤에 둔다. 상태는 F7 확인 후에 `완료` 로 바꾼다 |
 
@@ -288,4 +367,5 @@ export const EXPECTED_SEARCH_INDEXES: readonly string[] = ['products']
 
 | 날짜 | 내용 |
 | --- | --- |
+| 2026-09-09 | **구현 중 4.7 추가 (D-037).** `size()` 가 없는 인덱스와 닿지 않는 엔진을 구별하지 못해 `ensurePopulated()` 의 자동 복구가 막혀 있다는 것을 발견했다. 4.1 의 "정상 동작한다"가 절반만 맞았다. 범위를 한 항목 넓히는 제안이므로 승인을 기다린다 (R8) |
 | 2026-09-09 | 최초 작성. "상품이 없다" 신고에서 출발해 원인을 프로덕션 시드 미실행으로 확정하고, 그것을 가린 두 가지(빈 인덱스의 500, 빈 기대 목록의 거짓 `ok`)를 함께 범위에 넣음 |
