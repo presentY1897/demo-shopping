@@ -1,0 +1,184 @@
+{
+  "snapshotDate": "2026-09-09",
+  "source": "local isolated shopping_image_preview database; ACTIVE products and sellers, non-demo owners",
+  "candidates": [
+    {
+      "priority": 1,
+      "productId": "01a07b26-0cc8-7522-8db1-9a3245187ae5",
+      "name": "클래식 가디건",
+      "category": "니트",
+      "attributes": {
+        "fit": "루즈",
+        "color": ["베이지", "버건디", "화이트"],
+        "sleeve": "긴소매",
+        "material": "면"
+      },
+      "options": [
+        {
+          "name": "색상",
+          "values": ["베이지", "버건디", "화이트"]
+        },
+        {
+          "name": "사이즈",
+          "values": ["S", "L", "XL"]
+        }
+      ],
+      "currentImageUrls": [
+        "https://cdn.demo-shopping.com/seed/catalog/819df5666b60a4075cc204112dbd1b71.svg",
+        "https://cdn.demo-shopping.com/seed/catalog/bb5b6c68edb3d5f6665d8b939236cd19.svg"
+      ],
+      "plannedImages": 24,
+      "reason": "니트 조직·단추·앞여밈과 3색 변형을 함께 검증하기 좋음",
+      "beforeGeneration": "넥라인, 단추 수, 포켓 유무, 짜임",
+      "status": "candidate"
+    },
+    {
+      "priority": 2,
+      "productId": "01a07b26-187a-74dc-addc-702a6a315414",
+      "name": "경량 블레이저",
+      "category": "재킷",
+      "attributes": {
+        "fit": "레귤러",
+        "color": ["블랙", "카키"],
+        "material": "면"
+      },
+      "options": [
+        {
+          "name": "색상",
+          "values": ["블랙", "카키"]
+        },
+        {
+          "name": "사이즈",
+          "values": ["S", "M", "L", "XL"]
+        }
+      ],
+      "currentImageUrls": [
+        "https://cdn.demo-shopping.com/seed/catalog/f9e0319c6e6380f225be63b5cb1f54b7.svg",
+        "https://cdn.demo-shopping.com/seed/catalog/d0505a676b1f15ec657552b63248b5a6.svg"
+      ],
+      "plannedImages": 16,
+      "reason": "코트에서 검증한 재킷 구조를 활용하면서 라펠·포켓 일관성을 확인",
+      "beforeGeneration": "라펠 형태, 단추 수, 포켓과 뒤트임",
+      "status": "candidate"
+    },
+    {
+      "priority": 3,
+      "productId": "01a07b26-190e-7088-b1f7-0af27e1357c8",
+      "name": "오버핏 밴드카라 셔츠",
+      "category": "셔츠",
+      "attributes": {
+        "fit": "오버사이즈",
+        "color": ["네이비"],
+        "sleeve": "반소매",
+        "material": "린넨"
+      },
+      "options": [
+        {
+          "name": "색상",
+          "values": ["네이비"]
+        },
+        {
+          "name": "사이즈",
+          "values": ["L", "XL"]
+        }
+      ],
+      "currentImageUrls": [
+        "https://cdn.demo-shopping.com/seed/catalog/a5db78f0568b218909f6a383a741db02.svg",
+        "https://cdn.demo-shopping.com/seed/catalog/67581fbcf637e53b3dd5b6e93325e45e.svg"
+      ],
+      "plannedImages": 8,
+      "reason": "린넨 질감과 밴드카라·반소매를 한 컬러 8컷으로 검증",
+      "beforeGeneration": "앞여밈, 포켓, 밑단 형태",
+      "status": "candidate"
+    },
+    {
+      "priority": 4,
+      "productId": "01a07b26-1e91-73ea-b15b-53f146e6d377",
+      "name": "오버핏 크롭 티셔츠",
+      "category": "티셔츠",
+      "attributes": {
+        "fit": "오버사이즈",
+        "color": ["버건디", "블랙", "카키"],
+        "material": "면"
+      },
+      "options": [
+        {
+          "name": "색상",
+          "values": ["버건디", "블랙", "카키"]
+        },
+        {
+          "name": "사이즈",
+          "values": ["M", "L", "XL"]
+        }
+      ],
+      "currentImageUrls": [
+        "https://cdn.demo-shopping.com/seed/catalog/94a8b0e83f2791ba7947802c2df168f1.svg",
+        "https://cdn.demo-shopping.com/seed/catalog/2d812d51dcfc23409534cbcd95f35767.svg"
+      ],
+      "plannedImages": 24,
+      "reason": "단순한 실루엣의 3색 변형과 크롭 기장 유지 확인",
+      "beforeGeneration": "소매 길이와 넥라인이 미지정; 먼저 제작 사양에 명시",
+      "status": "candidate"
+    },
+    {
+      "priority": 5,
+      "productId": "01a07b26-0d0e-7528-825d-03279a3e5f14",
+      "name": "봄가을 베이식 크롭 슬랙스",
+      "category": "슬랙스",
+      "attributes": {
+        "fit": "테이퍼드",
+        "rise": "하이",
+        "color": ["그레이", "네이비"],
+        "material": "면"
+      },
+      "options": [
+        {
+          "name": "색상",
+          "values": ["그레이", "네이비"]
+        },
+        {
+          "name": "사이즈",
+          "values": ["26", "30", "32"]
+        }
+      ],
+      "currentImageUrls": [
+        "https://cdn.demo-shopping.com/seed/catalog/dc6479ac16d103721151a33a348ec5be.svg",
+        "https://cdn.demo-shopping.com/seed/catalog/50b381357641f9640a1cc5eafd85a0d0.svg"
+      ],
+      "plannedImages": 16,
+      "reason": "상의에서 하의로 확장해 하이웨이스트·테이퍼드 핏과 착용 각도 검증",
+      "beforeGeneration": "턱, 허리 여밈, 포켓; 하의에 맞는 프롬프트 조정",
+      "status": "candidate"
+    },
+    {
+      "priority": 6,
+      "productId": "01a07b26-20f9-74cd-bc51-130fd9a44d8d",
+      "name": "미니멀 크롭 데님",
+      "category": "청바지",
+      "attributes": {
+        "fit": "테이퍼드",
+        "rise": "하이",
+        "color": ["카키"],
+        "material": "데님"
+      },
+      "options": [
+        {
+          "name": "색상",
+          "values": ["카키"]
+        },
+        {
+          "name": "사이즈",
+          "values": ["26", "28", "32", "34"]
+        }
+      ],
+      "currentImageUrls": [
+        "https://cdn.demo-shopping.com/seed/catalog/4a4b7e965f58c6856442bb2dbf08e8f4.svg",
+        "https://cdn.demo-shopping.com/seed/catalog/d58913dc0224e481beeff9264b275bba.svg"
+      ],
+      "plannedImages": 8,
+      "reason": "데님 조직·스티치·카키 염색의 근접 컷 검증",
+      "beforeGeneration": "워싱, 스티치 색, 포켓 구조; 하의에 맞는 프롬프트 조정",
+      "status": "candidate"
+    }
+  ]
+}
