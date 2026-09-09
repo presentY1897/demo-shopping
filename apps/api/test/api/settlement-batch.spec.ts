@@ -221,6 +221,23 @@ async function refundReturn(
   )
 }
 
+/**
+ * 반품 하나를 **정산 줄이 적힌 뒤에** 심는다.
+ *
+ * 시계를 한 걸음 옮기고 그 시각으로 환불을 적는다. 고정된 `NOW` 를 그대로 넘기면 방금
+ * 만들어진 정산 줄과 **같은 순간**이 되고, F7 의 판정은 `>` 이므로 거짓이 된다 —
+ * 「뒤에 온 반품」이라는 이야기를 시각이 하지 않는 것이다.
+ *
+ * 예전에는 `NOW` 를 그대로 넘겨도 통과했다. 정산 줄의 시각이 앱 시계가 아니라
+ * **데이터베이스 시계**에서 나왔고, 검사를 오전에 돌리는 한 그쪽이 우연히 앞서
+ * 있었기 때문이다. 그래서 이 검사는 오후에만 실패했다 (TASK-0120 4.2 · 4.3).
+ */
+async function refundAfterSettlement(seeded: Seeded, quantity: number): Promise<void> {
+  api.clock.advance(60_000)
+
+  await refundReturn(seeded, { quantity, refundedAt: api.clock.now().toISOString() })
+}
+
 async function approveAll(): Promise<void> {
   await db.execute(
     `UPDATE "Settlement"
@@ -404,7 +421,7 @@ describe('반품 (F7)', () => {
     const seeded = await seed({ quantity: 2, confirmedAt: IN_PERIOD })
 
     await batch().run()
-    await refundReturn(seeded, { quantity: 1, refundedAt: NOW })
+    await refundAfterSettlement(seeded, 1)
 
     const tally = await batch().run()
 
@@ -422,7 +439,7 @@ describe('반품 (F7)', () => {
 
     await batch().run()
     await approveAll()
-    await refundReturn(seeded, { quantity: 1, refundedAt: NOW })
+    await refundAfterSettlement(seeded, 1)
     api.clock.set(NEXT_WEEK)
 
     const tally = await batch().run()
@@ -445,7 +462,7 @@ describe('반품 (F7)', () => {
 
     await batch().run()
     await approveAll()
-    await refundReturn(seeded, { quantity: 1, refundedAt: NOW })
+    await refundAfterSettlement(seeded, 1)
     api.clock.set(NEXT_WEEK)
     await batch().run()
     await batch().run()
@@ -466,10 +483,10 @@ describe('반품 (F7)', () => {
 
     await batch().run()
     await approveAll()
-    await refundReturn(seeded, { quantity: 1, refundedAt: NOW })
+    await refundAfterSettlement(seeded, 1)
     api.clock.set(NEXT_WEEK)
     await batch().run()
-    await refundReturn(seeded, { quantity: 1, refundedAt: NEXT_WEEK })
+    await refundAfterSettlement(seeded, 1)
     await batch().run()
 
     const rows = await settlements()
@@ -484,7 +501,7 @@ describe('반품 (F7)', () => {
 
     await batch().run()
     await approveAll()
-    await refundReturn(seeded, { quantity: 2, refundedAt: NOW })
+    await refundAfterSettlement(seeded, 2)
     api.clock.set(NEXT_WEEK)
     await batch().run()
 

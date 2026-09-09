@@ -258,6 +258,16 @@ export class SettlementBatchService implements OnModuleInit, OnModuleDestroy {
     return 'adjusted'
   }
 
+  /**
+   * 정산 줄 하나를 적는다.
+   *
+   * **`createdAt` 을 주입된 시계에서 채운다.** 넘기지 않으면 Prisma 가 열 기본값에
+   * 맡기고, 그러면 이 시각만 데이터베이스 시계에서 나온다 — 같은 배치가 만드는
+   * `Settlement.createdAt` 은 앱 시계에서 나오는데도. 그 시각은 기록이 아니라
+   * **판정**에 쓰인다: `cr."refundedAt" > si."createdAt"` 이 「이 줄이 적힌 뒤에 온
+   * 반품인가」를 가른다(`amendable`). 판정에 쓰이는 값이 두 시계에서 나오면 두 기계의
+   * 시계가 어긋난 만큼 오판한다 (TASK-0120 4.1).
+   */
   private async insert(
     tx: Tx,
     settlementId: string,
@@ -266,7 +276,7 @@ export class SettlementBatchService implements OnModuleInit, OnModuleDestroy {
     amounts: SettlementAmounts,
   ): Promise<void> {
     await tx.settlementItem.create({
-      data: { settlementId, sellerOrderId, type, ...amounts },
+      data: { settlementId, sellerOrderId, type, ...amounts, createdAt: this.clock.now() },
     })
   }
 
