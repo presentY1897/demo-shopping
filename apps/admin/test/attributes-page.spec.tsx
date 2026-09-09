@@ -14,6 +14,7 @@
  */
 
 import {
+  gatedFailureOn,
   httpFailureOn,
   mockPaths,
   networkFailureAfterOn,
@@ -553,17 +554,6 @@ describe('deleting a definition (F5)', () => {
   })
 })
 
-/**
- * How long the save request stays in flight while the clicks land.
- *
- * Long enough that three awaited clicks cannot outlast it — `await user.click()`
- * is not instant, and at the original 40ms the first submit had already settled
- * before the second click on a loaded machine. Short enough that teardown does
- * not sit waiting for it: the request is still pending when the test ends, and
- * that wait is charged to the suite.
- */
-const IN_FLIGHT_MS = 1_500
-
 describe('the form guards its own submit', () => {
   it('sends one request however many times save is pressed (U3)', async () => {
     const user = userEvent.setup()
@@ -574,12 +564,15 @@ describe('the form guards its own submit', () => {
       if (request.method === 'POST') posts += 1
     })
     // The request has to still be in flight while all three clicks land, or the
-    // test is not measuring the guard at all. `await user.click()` is not
-    // instant — on a loaded machine one takes longer than 40ms did, so the
-    // first submit had already settled and released the guard before the second
-    // click, and two requests went out from correct code. The guard itself is a
-    // ref set synchronously (`use-form.ts`), which React batching cannot defeat.
-    testServer.server.use(networkFailureAfterOn('post', mockPaths.attributes, IN_FLIGHT_MS))
+    // test is not measuring the guard at all. This used to be a delay, and the
+    // delay kept growing — 40ms, then 1,500ms — because `await user.click()` is
+    // not instant and a loaded machine let the first submit settle before the
+    // second click, releasing the guard and sending a second request from
+    // correct code. Holding the response shut removes the race instead of
+    // outrunning it (TASK-0121 4.3). The guard itself is a ref set synchronously
+    // (`use-form.ts`), which React batching cannot defeat.
+    const failure = gatedFailureOn('post', mockPaths.attributes)
+    testServer.server.use(failure.handler)
 
     await fillNewAttribute(user, { key: 'origin', label: '원산지', type: copy.typeLabels.TEXT })
     const save = screen.getByRole('button', { name: copy.form.save })
@@ -590,6 +583,10 @@ describe('the form guards its own submit', () => {
     await waitFor(() => {
       expect(posts).toBe(1)
     })
+
+    // Released rather than left pending: a spec that ends with the request still
+    // open charges its teardown to the suite.
+    failure.release()
   })
 
   it('names the inputs it is missing rather than the form (U2)', async () => {

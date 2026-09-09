@@ -14,9 +14,9 @@
 
 import {
   categoryTreeEmpty,
+  gatedFailureOn,
   httpFailureOn,
   mockPaths,
-  networkFailureAfterOn,
   networkFailureOn,
   neverAnswersOn,
   resetCategoryStore,
@@ -304,14 +304,21 @@ describe('moving a category (F3, F4, F7)', () => {
     await openConsole()
 
     const before = itemNames()
-    testServer.server.use(networkFailureAfterOn('post', mockPaths.categoryReorder, 50))
+    // Held shut rather than delayed. The optimistic frame has to be observable
+    // between the move and the failure, and buying that window with a timer is a
+    // bet on how fast the machine is — one this spec lost under a full test run
+    // (TASK-0121 4.1). Nothing answers until `release()`.
+    const failure = gatedFailureOn('post', mockPaths.categoryReorder)
+    testServer.server.use(failure.handler)
 
     item('여성').focus()
     await user.keyboard('{Alt>}{ArrowDown}{/Alt}')
 
     // It moved first — that is the point of an optimistic update, and the
-    // failure is still in flight while this is asserted.
+    // failure cannot have arrived yet.
     expect(itemNames()[0]).toContain('남성')
+
+    failure.release()
 
     expect(await screen.findByText(copy.toast.moveFailed)).toBeVisible()
     expect(screen.getByText(copy.toast.restored, { exact: false })).toBeVisible()
