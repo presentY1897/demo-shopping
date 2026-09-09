@@ -2,12 +2,12 @@
 
 > 이어받을 것과 이월된 항목은 [`docs/HANDOFF.md`](../HANDOFF.md) 에 있다.
 
-전체 **118개** TASK — 유효 **114개** + 폐기 4개(D-208 레이어 분할). **51개 완료**, TASK-0009 · TASK-0011 **진행중**(외부 계정 대기), **60개 승인됨**. 승인 대기 0개.
+전체 **119개** TASK — 유효 **115개** + 폐기 4개(D-208 레이어 분할). **51개 완료**, TASK-0009 · TASK-0011 **진행중**(외부 계정 대기) · TASK-0119 **진행중**(소유자 시드 대기), **60개 승인됨**. 승인 대기 0개.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
 | [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | **7/7 완료** |
-| [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 3/7 |
+| [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 3/8 |
 | [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, Radix 컴포넌트, 폼, 레이아웃, Storybook | **7/7 완료** |
 | [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점, 테스트 기반 | **14/14 완료** |
 | [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | **13/13 완료** |
@@ -38,7 +38,7 @@
 
 </details>
 
-<details><summary><b>M02. 배포 파이프라인</b> (3/7)</summary>
+<details><summary><b>M02. 배포 파이프라인</b> (3/8)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -49,6 +49,7 @@
 | [TASK-0012](./M02-deployment/TASK-0012-cd-pipeline.md) | 배포 자동화 · 환경변수 관리 | 승인됨 |
 | [TASK-0013](./M02-deployment/TASK-0013-observability.md) | 로그 · 에러 추적 · 모니터링 | 승인됨 |
 | [TASK-0101](./M02-deployment/TASK-0101-cold-start.md) | 콜드 스타트 대응 · 서버 웨이크업 UX | 완료 |
+| [TASK-0119](./M02-deployment/TASK-0119-empty-catalogue.md) | 배포 카탈로그 부트스트랩 · 빈 카탈로그 신호 | 진행중 |
 
 </details>
 
