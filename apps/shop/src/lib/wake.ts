@@ -1,6 +1,7 @@
 import type { HealthResult } from './health'
 import { loadHealth } from './health'
 import type { WakePolicy } from './wake-policy'
+import { backoffFor } from './wake-policy'
 
 /** Told which attempt is starting, so the screen can show progress. */
 export type WakeAttemptListener = (attempt: number) => void
@@ -55,16 +56,24 @@ export async function wakeApi(
   signal: AbortSignal,
   onAttempt: WakeAttemptListener,
 ): Promise<HealthResult> {
-  let result: HealthResult = { ok: false, endpoint: '', reason: 'unknown' }
+  const startedAt = Date.now()
+  // Assigned on the first pass, before anything can read it. Declaring it
+  // without a value says that: an initialiser here would be dead code standing
+  // in for a state this function never has.
+  let result: HealthResult
 
-  for (const [index, timeoutMs] of policy.attemptTimeoutsMs.entries()) {
-    onAttempt(index + 1)
+  for (let attempt = 1; ; attempt += 1) {
+    onAttempt(attempt)
 
-    result = await loadHealth({ timeoutMs, signal })
+    result = await loadHealth({ timeoutMs: policy.attemptTimeoutMs, signal })
     if (!isWorthRetrying(result)) return result
 
-    const backoffMs = policy.backoffMs[index]
-    if (backoffMs === undefined) break
+    // **The budget is spent in wall-clock time, not in attempts.** A refusal
+    // that comes back in 0.3s costs the budget 0.3s, so a platform that says
+    // "not yet" quickly gets asked again rather than exhausting the policy —
+    // which is what a booting instance needs (TASK-0118 4.4).
+    const backoffMs = backoffFor(policy, attempt)
+    if (Date.now() - startedAt + backoffMs >= policy.budgetMs) break
 
     await sleep(backoffMs, signal)
     if (signal.aborted) return { ok: false, endpoint: result.endpoint, reason: 'aborted' }

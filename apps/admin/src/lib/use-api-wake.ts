@@ -11,9 +11,15 @@ import { WAKE_POLICY } from './wake-policy'
 export interface WakeState {
   /** `null` while the API has not answered yet — the loading state. */
   readonly result: HealthResult | null
-  /** 1-based, so the screen can say which of the attempts is running. */
+  /**
+   * 1-based, kept for logging and for a spec to assert the loop is turning.
+   *
+   * **Not shown to the visitor.** The total is no longer knowable up front — the
+   * budget is wall-clock, not a count — and "7번째 시도" answers a question
+   * nobody asked. The elapsed counter and the progress bar say the thing the
+   * visitor wants to know (TASK-0118 4.7).
+   */
   readonly attempt: number
-  readonly attempts: number
   readonly elapsedMs: number
   /** Automatic search re-checks already spent. Equal to the budget means done. */
   readonly searchRechecks: number
@@ -152,7 +158,6 @@ export function useApiWake(policy: WakePolicy = WAKE_POLICY): WakeState {
 
   return {
     attempt,
-    attempts: policy.attemptTimeoutsMs.length,
     elapsedMs,
     result,
     retry,

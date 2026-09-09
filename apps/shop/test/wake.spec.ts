@@ -13,6 +13,7 @@ import {
   mockPaths,
   networkFailure,
   neverAnswers,
+  sleepingInstance,
   wakesAfter,
 } from '@shopping/api-mocks'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -29,7 +30,13 @@ import { testServer } from './setup'
  */
 const FAST: WakePolicy = {
   ...WAKE_POLICY,
-  attemptTimeoutsMs: [40, 40, 40],
+  attemptTimeoutMs: 20,
+  // **Wide enough that a slow machine cannot change the answer.** An attempt
+  // against a silent API costs its whole deadline, so a budget only a few
+  // deadlines wide turns "how many attempts" into "how loaded is this box" —
+  // the family of flake TASK-0121 removed. At 20ms a deadline this holds at
+  // least three attempts even if each one takes five times as long as it should.
+  budgetMs: 400,
   backoffMs: [5, 10],
   tickMs: 5,
 }
@@ -71,23 +78,59 @@ describe('a warm API', () => {
 })
 
 describe('an API that never answers', () => {
-  it('spends every attempt and reports the timeout', async () => {
+  it('tries more than once and reports the timeout', async () => {
     testServer.server.use(neverAnswers(mockPaths.health))
     const { seen, onAttempt } = attemptRecorder()
 
     const result = await wakeApi(FAST, new AbortController().signal, onAttempt)
 
     expect(result).toMatchObject({ ok: false, reason: 'timeout' })
-    expect(seen).toEqual([1, 2, 3])
-    expect(requests).toHaveLength(3)
+    expect(seen.length).toBeGreaterThan(1)
+    expect(seen).toEqual(seen.map((_, index) => index + 1))
   })
 
-  it('makes no fourth request', async () => {
+  it('stops once the budget cannot fit another wait', async () => {
     testServer.server.use(neverAnswers(mockPaths.health))
 
     await wakeApi(FAST, new AbortController().signal, () => undefined)
 
-    expect(requests).toHaveLength(FAST.attemptTimeoutsMs.length)
+    // **A bound, not a count.** Each attempt costs at least its 20ms deadline
+    // plus at least the 5ms backoff, so 400ms of budget cannot hold more than
+    // sixteen — and a loaded machine only makes it fewer. Asserting the exact
+    // number would make this spec fail for being run on a busy box.
+    expect(requests.length).toBeGreaterThan(1)
+    expect(requests.length).toBeLessThanOrEqual(20)
+  })
+})
+
+/**
+ * **The failure this task exists to remove.**
+ *
+ * A platform that refuses instantly costs the budget almost nothing per
+ * attempt, so the loop has to keep going rather than stop after three. Budgeted
+ * by attempt, these requests were spent in under four seconds against a boot
+ * that needed ninety (TASK-0118 4.3).
+ */
+describe('an API that refuses instantly while it boots', () => {
+  it('keeps trying rather than spending the budget on three fast refusals', async () => {
+    testServer.server.use(sleepingInstance(mockPaths.health, 10_000, healthOk))
+    const patient: WakePolicy = { ...FAST, budgetMs: 500, backoffMs: [5] }
+
+    await wakeApi(patient, new AbortController().signal, () => undefined)
+
+    // A refusal costs the budget almost nothing, so 500ms of it at 5ms a wait
+    // buys far more than the three attempts the old policy allowed. The bound
+    // is deliberately loose — the claim is "many", not a number.
+    expect(requests.length).toBeGreaterThan(10)
+  })
+
+  it('recovers when the instance comes up mid sequence', async () => {
+    testServer.server.use(sleepingInstance(mockPaths.health, 60, healthOk))
+    const patient: WakePolicy = { ...FAST, budgetMs: 2_000, backoffMs: [10] }
+
+    const result = await wakeApi(patient, new AbortController().signal, () => undefined)
+
+    expect(result).toMatchObject({ ok: true, response: healthOk })
   })
 })
 
@@ -151,6 +194,6 @@ describe('failures that another attempt cannot fix', () => {
 
     await expect(pending).resolves.toMatchObject({ ok: false })
     expect(seen.length).toBeLessThan(4)
-    expect(requests.length).toBeLessThan(FAST.attemptTimeoutsMs.length)
+    expect(requests.length).toBeLessThan(3)
   })
 })

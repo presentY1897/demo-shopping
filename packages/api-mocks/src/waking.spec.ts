@@ -12,7 +12,13 @@ import { describe, expect, it } from 'vitest'
 import { healthOk } from './fixtures/health'
 import { setupTestServer } from './node'
 import { mockPaths } from './paths'
-import { neverAnswers, sleepingInstance, slowResponse, wakesAfter } from './waking'
+import {
+  heldRequestInstance,
+  neverAnswers,
+  sleepingInstance,
+  slowResponse,
+  wakesAfter,
+} from './waking'
 
 const testServer = setupTestServer()
 
@@ -23,6 +29,11 @@ async function healthFailure(timeoutMs: number): Promise<unknown> {
     () => null,
     (error: unknown) => error,
   )
+}
+
+/** Waits `ms` of real time — the helper under test uses the real clock. */
+async function delayFor(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 /** The client's failure category, or `null` when the call unexpectedly worked. */
@@ -81,8 +92,46 @@ describe('wakesAfter', () => {
 })
 
 describe('sleepingInstance', () => {
+  /**
+   * **The refusal is instant, and that is the whole point of this helper.**
+   * A retry policy that budgets by attempt looks patient against a held request
+   * and spends its whole budget in about a second against this (TASK-0118 4.3).
+   */
+  it('refuses immediately while the instance boots', async () => {
+    testServer.server.use(sleepingInstance(mockPaths.health, 10_000, healthOk))
+
+    const startedAt = performance.now()
+    expect(kindOf(await healthFailure(5_000))).toBe('network')
+
+    // Nowhere near the 10s boot, and nowhere near the 5s deadline either.
+    expect(performance.now() - startedAt).toBeLessThan(1_000)
+  })
+
+  it('answers normally once the instance is up', async () => {
+    testServer.server.use(sleepingInstance(mockPaths.health, 60, healthOk))
+
+    expect(kindOf(await healthFailure(500))).toBe('network')
+    await delayFor(80)
+
+    await expect(client.getHealth({ timeoutMs: 500 })).resolves.toEqual(healthOk)
+  })
+
+  it('keeps refusing every caller that lands in the window', async () => {
+    testServer.server.use(sleepingInstance(mockPaths.health, 10_000, healthOk))
+
+    const kinds = await Promise.all([
+      healthFailure(5_000).then(kindOf),
+      healthFailure(5_000).then(kindOf),
+      healthFailure(5_000).then(kindOf),
+    ])
+
+    expect(kinds).toEqual(['network', 'network', 'network'])
+  })
+})
+
+describe('heldRequestInstance', () => {
   it('answers every waiting caller at one shared deadline', async () => {
-    testServer.server.use(sleepingInstance(mockPaths.health, 120, healthOk))
+    testServer.server.use(heldRequestInstance(mockPaths.health, 120, healthOk))
 
     // The first caller gives up early; the spin-up it started keeps going.
     const startedAt = performance.now()

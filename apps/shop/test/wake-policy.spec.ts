@@ -13,7 +13,13 @@
 
 import { describe, expect, it } from 'vitest'
 
-import { elapsedSeconds, WAKE_POLICY, wakeNoticeLevel, wakeProgress } from '@/lib/wake-policy'
+import {
+  backoffFor,
+  elapsedSeconds,
+  WAKE_POLICY,
+  wakeNoticeLevel,
+  wakeProgress,
+} from '@/lib/wake-policy'
 
 const MEASURED_COLD_START_MS = 90_000
 
@@ -35,33 +41,58 @@ describe('the notice thresholds', () => {
 })
 
 describe('the retry budget', () => {
-  it('is three attempts, as the spec requires', () => {
-    expect(WAKE_POLICY.attemptTimeoutsMs).toHaveLength(3)
+  it('is measured in wall-clock time, not in attempts', () => {
+    // The old policy was three attempts whose deadlines summed to 143s. Against
+    // a platform that refuses in 0.3s those three were spent in under four
+    // seconds — the sum was never the thing being spent (TASK-0118 4.3).
+    expect(WAKE_POLICY.budgetMs).toBeGreaterThan(MEASURED_COLD_START_MS)
   })
 
-  it('backs off exponentially, once between each pair of attempts', () => {
-    expect(WAKE_POLICY.backoffMs).toHaveLength(WAKE_POLICY.attemptTimeoutsMs.length - 1)
-    expect(WAKE_POLICY.backoffMs).toEqual([1_000, 2_000])
+  it('lets one attempt sit through a whole spin-up', () => {
+    // If the platform holds the request open instead of refusing it, a single
+    // attempt has to be able to ride it out.
+    expect(WAKE_POLICY.attemptTimeoutMs).toBeGreaterThanOrEqual(MEASURED_COLD_START_MS)
+    expect(WAKE_POLICY.attemptTimeoutMs).toBeLessThanOrEqual(WAKE_POLICY.budgetMs)
   })
 
-  it('gives each attempt longer than the one before it', () => {
-    // Render holds a request aimed at a sleeping instance open until it answers,
-    // so the last attempt has to be willing to sit through a whole spin-up.
-    const sorted = [...WAKE_POLICY.attemptTimeoutsMs].sort((a, b) => a - b)
+  it('backs off exponentially and then stops growing', () => {
+    const backoffs = WAKE_POLICY.backoffMs
 
-    expect(WAKE_POLICY.attemptTimeoutsMs).toEqual(sorted)
-    expect(new Set(WAKE_POLICY.attemptTimeoutsMs).size).toBe(3)
+    expect(backoffs).toEqual([1_000, 2_000, 4_000, 8_000])
+    expect(backoffs).toEqual([...backoffs].sort((a, b) => a - b))
   })
 
-  it('can outlast the measured cold start', () => {
-    const total =
-      WAKE_POLICY.attemptTimeoutsMs.reduce((sum, ms) => sum + ms, 0) +
-      WAKE_POLICY.backoffMs.reduce((sum, ms) => sum + ms, 0)
+  it('repeats the last wait rather than growing past it', () => {
+    const last = WAKE_POLICY.backoffMs.at(-1)
 
-    expect(total).toBeGreaterThan(MEASURED_COLD_START_MS)
-    // The last attempt alone covers it, so a wake-up that finishes on time is
-    // caught without depending on two earlier attempts having been spent.
-    expect(WAKE_POLICY.attemptTimeoutsMs.at(-1)).toBeGreaterThanOrEqual(MEASURED_COLD_START_MS)
+    expect(backoffFor(WAKE_POLICY, WAKE_POLICY.backoffMs.length)).toBe(last)
+    expect(backoffFor(WAKE_POLICY, 50)).toBe(last)
+  })
+
+  it('caps how long a finished boot can go unnoticed', () => {
+    // The ceiling is the stretch a visitor can spend after the instance is
+    // already up, watching a bar that is not moving. 8s on a 90s wait is 9%.
+    const ceiling = WAKE_POLICY.backoffMs.at(-1) ?? 0
+
+    expect(ceiling / MEASURED_COLD_START_MS).toBeLessThan(0.1)
+  })
+
+  it('bounds how many requests one cold start can make', () => {
+    // TASK-0009 R8. Instance hours are charged for time awake rather than for
+    // requests, and a booting instance does not boot faster for being asked
+    // again — but an unbounded loop is still a loop, so the number is pinned.
+    let elapsed = 0
+    let attempts = 1
+
+    for (;;) {
+      const backoff = backoffFor(WAKE_POLICY, attempts)
+      if (elapsed + backoff >= WAKE_POLICY.budgetMs) break
+
+      elapsed += backoff
+      attempts += 1
+    }
+
+    expect(attempts).toBeLessThanOrEqual(25)
   })
 
   it("records the measured cold start as the progress bar's reference", () => {
@@ -89,7 +120,8 @@ describe('the free plan budget', () => {
 
   it('keeps every wait finite, so no code path can idle forever', () => {
     const everyWait = [
-      ...WAKE_POLICY.attemptTimeoutsMs,
+      WAKE_POLICY.attemptTimeoutMs,
+      WAKE_POLICY.budgetMs,
       ...WAKE_POLICY.backoffMs,
       ...WAKE_POLICY.searchRecheckDelaysMs,
       WAKE_POLICY.searchRecheckTimeoutMs,

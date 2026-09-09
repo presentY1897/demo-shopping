@@ -8,8 +8,6 @@ interface WakeWaitingProps {
   readonly messages: WakeMessages
   readonly policy: WakePolicy
   readonly elapsedMs: number
-  readonly attempt: number
-  readonly attempts: number
 }
 
 /**
@@ -21,14 +19,7 @@ interface WakeWaitingProps {
  * page gets reloaded — which throws away the spin-up already in progress and
  * starts the 90 seconds over (TASK-0101 4.2).
  */
-export function WakeWaiting({
-  title,
-  messages,
-  policy,
-  elapsedMs,
-  attempt,
-  attempts,
-}: WakeWaitingProps) {
+export function WakeWaiting({ title, messages, policy, elapsedMs }: WakeWaitingProps) {
   const level = wakeNoticeLevel(policy, elapsedMs)
   const percent = wakeProgress(policy, elapsedMs)
 
@@ -93,7 +84,7 @@ export function WakeWaiting({
 
           <p className="text-fg-subtle text-sm">
             {messages.elapsedLabel} {elapsedSeconds(elapsedMs)}
-            {messages.secondsUnit} · {messages.attemptLabel} {attempt}/{attempts}
+            {messages.secondsUnit}
           </p>
         </div>
       )}
