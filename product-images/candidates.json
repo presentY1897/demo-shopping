@@ -30,7 +30,10 @@
       "plannedImages": 24,
       "reason": "니트 조직·단추·앞여밈과 3색 변형을 함께 검증하기 좋음",
       "beforeGeneration": "넥라인, 단추 수, 포켓 유무, 짜임",
-      "status": "candidate"
+      "status": "candidate",
+      "categoryPath": "여성 > 상의 > 니트",
+      "audience": "womenswear",
+      "modelPlan": "성인 여성 모델 1명"
     },
     {
       "priority": 2,
@@ -59,7 +62,10 @@
       "plannedImages": 16,
       "reason": "코트에서 검증한 재킷 구조를 활용하면서 라펠·포켓 일관성을 확인",
       "beforeGeneration": "라펠 형태, 단추 수, 포켓과 뒤트임",
-      "status": "candidate"
+      "status": "candidate",
+      "categoryPath": "여성 > 아우터 > 재킷",
+      "audience": "womenswear",
+      "modelPlan": "성인 여성 모델 1명"
     },
     {
       "priority": 3,
@@ -89,7 +95,10 @@
       "plannedImages": 8,
       "reason": "린넨 질감과 밴드카라·반소매를 한 컬러 8컷으로 검증",
       "beforeGeneration": "앞여밈, 포켓, 밑단 형태",
-      "status": "candidate"
+      "status": "candidate",
+      "categoryPath": "남성 > 상의 > 셔츠",
+      "audience": "menswear",
+      "modelPlan": "성인 남성 모델 1명"
     },
     {
       "priority": 4,
@@ -118,7 +127,10 @@
       "plannedImages": 24,
       "reason": "단순한 실루엣의 3색 변형과 크롭 기장 유지 확인",
       "beforeGeneration": "소매 길이와 넥라인이 미지정; 먼저 제작 사양에 명시",
-      "status": "candidate"
+      "status": "candidate",
+      "categoryPath": "여성 > 상의 > 티셔츠",
+      "audience": "womenswear",
+      "modelPlan": "성인 여성 모델 1명"
     },
     {
       "priority": 5,
@@ -148,7 +160,10 @@
       "plannedImages": 16,
       "reason": "상의에서 하의로 확장해 하이웨이스트·테이퍼드 핏과 착용 각도 검증",
       "beforeGeneration": "턱, 허리 여밈, 포켓; 하의에 맞는 프롬프트 조정",
-      "status": "candidate"
+      "status": "candidate",
+      "categoryPath": "여성 > 하의 > 슬랙스",
+      "audience": "womenswear",
+      "modelPlan": "성인 여성 모델 1명"
     },
     {
       "priority": 6,
@@ -178,7 +193,91 @@
       "plannedImages": 8,
       "reason": "데님 조직·스티치·카키 염색의 근접 컷 검증",
       "beforeGeneration": "워싱, 스티치 색, 포켓 구조; 하의에 맞는 프롬프트 조정",
-      "status": "candidate"
+      "status": "candidate",
+      "categoryPath": "여성 > 하의 > 청바지",
+      "audience": "womenswear",
+      "modelPlan": "성인 여성 모델 1명"
+    },
+    {
+      "priority": 7,
+      "productId": "01a07b26-150b-755a-ac1e-73fa862a048b",
+      "name": "데일리 블레이저",
+      "category": "재킷",
+      "attributes": {
+        "fit": "레귤러",
+        "color": ["블랙"],
+        "season": ["가을"],
+        "material": "울"
+      },
+      "options": [
+        {
+          "name": "색상",
+          "values": ["블랙"]
+        },
+        {
+          "name": "사이즈",
+          "values": ["S", "M", "L", "XL"]
+        }
+      ],
+      "currentImageUrls": [
+        "https://cdn.demo-shopping.com/seed/catalog/9f08f624ad20e34745cc99fe2cdb8348.svg"
+      ],
+      "plannedImages": 8,
+      "reason": "남성 레귤러 울 블레이저: 라펠·봉제·착용핏 검증",
+      "beforeGeneration": "넥라인/라펠, 여밈, 포켓 형태를 가상 상품 제작 사양에 명시",
+      "status": "candidate",
+      "categoryPath": "남성 > 아우터 > 재킷",
+      "audience": "menswear",
+      "modelPlan": "성인 남성 모델 1명"
+    },
+    {
+      "priority": 8,
+      "productId": "01a07b25-ffc6-71a8-b75f-4087dbc89016",
+      "name": "스탠다드 포켓 티셔츠",
+      "category": "티셔츠",
+      "attributes": {
+        "fit": "레귤러",
+        "color": ["네이비", "버건디", "그레이"],
+        "sleeve": "반소매",
+        "material": "린넨"
+      },
+      "options": [
+        {
+          "name": "색상",
+          "values": ["네이비", "버건디", "그레이"]
+        },
+        {
+          "name": "사이즈",
+          "values": ["S", "M", "L", "XL"]
+        }
+      ],
+      "currentImageUrls": [
+        "https://cdn.demo-shopping.com/seed/catalog/6f20f3ff2cb03828a0eddf1bddcb156b.svg"
+      ],
+      "plannedImages": 24,
+      "reason": "남성 반소매 린넨 포켓 티셔츠: 3색과 포켓 위치 유지 검증",
+      "beforeGeneration": "넥라인/라펠, 여밈, 포켓 형태를 가상 상품 제작 사양에 명시",
+      "status": "candidate",
+      "categoryPath": "남성 > 상의 > 티셔츠",
+      "audience": "menswear",
+      "modelPlan": "성인 남성 모델 1명"
     }
-  ]
+  ],
+  "unisexPlanningCandidates": [
+    {
+      "name": "베이식 크루넥 티셔츠",
+      "status": "proposal_not_catalog_verified"
+    },
+    {
+      "name": "오버핏 스웨트셔츠/후디",
+      "status": "proposal_not_catalog_verified"
+    }
+  ],
+  "unisexModelProposal": {
+    "productShots": 4,
+    "modelShotsPerModel": 4,
+    "models": 2,
+    "imagesPerColor": 12,
+    "status": "proposal; requires an explicit unisex product specification and extending the current single-model job schema"
+  }
 }
