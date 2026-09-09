@@ -11,6 +11,7 @@ export {
   apiErrorBody,
   driftedHealthPayload,
   httpFailure,
+  gatedFailureOn,
   httpFailureOn,
   malformedResponse,
   MOCK_REQUEST_ID,
@@ -19,6 +20,7 @@ export {
   networkFailureAfterOn,
   networkFailureOn,
 } from './failures'
+export type { GatedFailure } from './failures'
 export {
   addressRowsSnapshot,
   adminClaimHandlers,

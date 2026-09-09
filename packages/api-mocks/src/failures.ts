@@ -105,6 +105,65 @@ export function networkFailureAfterOn(
   })
 }
 
+/** A failure the spec holds shut until it says otherwise. */
+export interface GatedFailure {
+  readonly handler: RequestHandler
+  /** Lets the held request answer, as a network failure. */
+  readonly release: () => void
+}
+
+/**
+ * Fails, but not until the spec says so.
+ *
+ * **The counterpart to {@link networkFailureAfterOn}, and the reason to prefer
+ * it.** Both exist to keep an optimistic frame observable — the screen draws the
+ * change, the failure arrives, the screen puts it back — and a spec has to be
+ * able to look between those two moments. `networkFailureAfterOn` buys that
+ * window with a delay, which is a **bet on how fast the machine is**: the
+ * assertion has to run inside `ms`, and under a full test run it does not.
+ * Measured on this repository — one such assertion passed alone and in its own
+ * package, and failed only when six packages ran at once (TASK-0121 4.1).
+ *
+ * Here the window has no clock in it. The request cannot answer before
+ * `release()` is called, so "the failure has not arrived yet" stops being a
+ * hope and becomes a property of the double.
+ *
+ * ```ts
+ * const failure = gatedFailureOn('post', mockPaths.categoryReorder)
+ * testServer.server.use(failure.handler)
+ *
+ * await user.keyboard('{Alt>}{ArrowDown}{/Alt}')
+ * expect(itemNames()[0]).toContain('남성')   // the optimistic frame
+ *
+ * failure.release()
+ * expect(await screen.findByText(copy.toast.moveFailed)).toBeVisible()
+ * ```
+ *
+ * **Release it.** A spec that returns without calling `release()` leaves the
+ * request open until the runner's own timeout, and that failure reads as "the
+ * screen never showed the error" rather than as "the spec forgot".
+ */
+export function gatedFailureOn(method: MockMethod, path: MockPath): GatedFailure {
+  // The executor runs synchronously, so `open` is assigned before this function
+  // returns. The compiler cannot see that, and `?.()` is a cheaper way to say so
+  // than an assertion — the optional call is unreachable in practice.
+  let open: (() => void) | undefined
+  const released = new Promise<void>((resolve) => {
+    open = resolve
+  })
+
+  return {
+    handler: http[method](path, async () => {
+      await released
+
+      return HttpResponse.error()
+    }),
+    release: () => {
+      open?.()
+    },
+  }
+}
+
 /**
  * Answers `path` with 200 and a body that does not match its schema.
  *
