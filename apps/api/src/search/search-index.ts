@@ -143,9 +143,16 @@ export class MeilisearchIndex implements SearchIndex {
 
       return 0
     } catch (error) {
+      // An index that does not exist holds nothing, and saying so is what lets
+      // the indexer rebuild it: `ensurePopulated` treats `null` as "unknown" and
+      // declines to act on it, so answering `null` here left a restarted engine
+      // with no index and no path back to one (TASK-0119 4.7).
+      if (error instanceof SearchEngineError && error.code === INDEX_NOT_FOUND) return 0
+
       // An engine that cannot be reached has an *unknown* size, not an empty
       // one — answering 0 would make the auto-reindex fire against a healthy
-      // index every time the network hiccups (R5).
+      // index every time the network hiccups (R5). That distinction is the whole
+      // reason the branch above reads the engine's code and not the status.
       this.logger.warn(`인덱스 크기를 읽지 못했습니다: ${String(error)}`)
 
       return null

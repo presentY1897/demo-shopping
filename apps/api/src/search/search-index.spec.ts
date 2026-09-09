@@ -106,6 +106,39 @@ describe('search against a real fault', () => {
   })
 })
 
+describe('size of a missing index', () => {
+  /**
+   * `ensurePopulated` declines to act on `null`, so this answer is what decides
+   * whether a restarted engine ever gets its index back (TASK-0119 4.7).
+   */
+  it('is zero, so the indexer rebuilds', async () => {
+    answerWith({ code: 'index_not_found' }, { ok: false, status: 404 })
+
+    await expect(new MeilisearchIndex(CONFIG).size()).resolves.toBe(0)
+  })
+
+  it('is unknown when the engine cannot be reached (R5)', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.reject(new Error('connect ECONNREFUSED'))),
+    )
+
+    await expect(new MeilisearchIndex(CONFIG).size()).resolves.toBeNull()
+  })
+
+  it('is unknown when the engine refuses for another reason (R5)', async () => {
+    answerWith({ code: 'invalid_api_key' }, { ok: false, status: 403 })
+
+    await expect(new MeilisearchIndex(CONFIG).size()).resolves.toBeNull()
+  })
+
+  it('is the document count when the index is there', async () => {
+    answerWith({ numberOfDocuments: 42 })
+
+    await expect(new MeilisearchIndex(CONFIG).size()).resolves.toBe(42)
+  })
+})
+
 describe('search against a healthy index', () => {
   it('reads hits and totals unchanged', async () => {
     answerWith({ hits: [{ id: 'p1' }], estimatedTotalHits: 1, facetDistribution: {} })

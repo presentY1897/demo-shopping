@@ -127,8 +127,15 @@ export class SearchIndexerService implements OnApplicationBootstrap, OnModuleDes
         productsIndexSettings(keys.map((key) => `${ATTRIBUTE_FACET_PREFIX}${key}`)),
       )
     } catch (error) {
-      // A cold engine is the normal state of a fresh deployment. The next tick
-      // and the next boot both try again.
+      // A cold engine is the normal state of a fresh deployment — the search
+      // service is a separate instance that wakes about 75 seconds after this
+      // one (TASK-0101 4.6), so this call usually finds it asleep.
+      //
+      // **The retry is `ensurePopulated`, not the next tick.** `tick()` does not
+      // call this method; `rebuild()` does, and `ensurePopulated` reaches it
+      // once `size()` reports an absent index as empty. Before TASK-0119 4.7
+      // that report was `null`, nothing retried, and an engine that restarted
+      // while this deployment ran never got its index back.
       this.logger.warn(`검색 인덱스 설정을 적용하지 못했습니다: ${String(error)}`)
     }
   }
