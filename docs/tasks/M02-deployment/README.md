@@ -13,3 +13,4 @@
 | [TASK-0012](./TASK-0012-cd-pipeline.md) | 배포 자동화 · 환경변수 관리 | 승인됨 | 0010 |
 | [TASK-0013](./TASK-0013-observability.md) | 로그 · 에러 추적 · 모니터링 | 승인됨 | 0012 |
 | [TASK-0101](./TASK-0101-cold-start.md) | 콜드 스타트 대응 · 웨이크업 UX | 완료 | 0010 |
+| [TASK-0119](./TASK-0119-empty-catalogue.md) | 배포 카탈로그 부트스트랩 · 빈 카탈로그 신호 | 진행중 | 0037 · 0038 |
