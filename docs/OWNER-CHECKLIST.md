@@ -161,23 +161,42 @@ openssl rand -base64 32
    Neon 에 브랜치가 여러 개면 **Render 에 들어 있는 값**을 그대로 씁니다 — 다른 브랜치를 시드하면
    명령은 성공하는데 사이트는 그대로 비어 있고, 그 실패는 눈에 띄지 않습니다.
 
-2. 저장소를 받은 폴더에서 확인부터 합니다. **명령 맨 앞의 빈칸은 오타가 아닙니다** — 빈칸으로
-   시작하는 명령은 셸 기록에 남지 않아, 연결 문자열이 `~/.zsh_history` 에 남지 않습니다.
+2. 저장소를 받은 폴더에서, **값을 명령줄에 적지 않고** 변수로 한 번만 읽습니다.
 
-   ```bash
-    DATABASE_URL='<붙여넣기>' pnpm db:seed:verify
+   ```zsh
+   cd ~/project/demo-project/shopping/main
+   pnpm install
+
+   read -rs "DBURL?DATABASE_URL 붙여넣기: "     # 화면에도 기록에도 남지 않는다
    ```
 
-3. 비어 있다고 나오면 넣습니다. 5~10분 걸립니다.
+   **명령 앞에 빈칸을 두는 요령은 쓰지 않습니다.** 그것은 `HIST_IGNORE_SPACE` 가 켜져 있을 때만
+   동작하는데 zsh 는 기본이 꺼짐이고, 이 환경의 `~/.zshrc` 에도 없습니다. 그대로 하면 비밀번호가
+   `~/.zsh_history` 에 평문으로 남습니다. 위 `read` 방식은 셸 설정과 무관하게 안전합니다 —
+   기록에 남는 것은 `read -rs ...` 와 `DATABASE_URL="$DBURL" ...` 뿐이고 값은 어디에도 없습니다.
 
-   ```bash
-    DATABASE_URL='<붙여넣기>' pnpm db:seed
+3. 확인부터 합니다.
+
+   ```zsh
+   DATABASE_URL="$DBURL" pnpm db:seed:verify
+   ```
+
+4. 비어 있다고 나오면 넣습니다. 5~10분 걸립니다.
+
+   ```zsh
+   DATABASE_URL="$DBURL" pnpm db:seed
+   ```
+
+5. 끝나면 변수를 지웁니다. 터미널 창을 닫아도 같습니다.
+
+   ```zsh
+   unset DBURL
    ```
 
    **두 번 돌려도 안전합니다.** 시드는 없는 것만 만들고 기존 데이터를 지우지 않습니다.
    상품 800개·판매자 15명이 기본이고, 너무 무거우면 뒤에 `--scale=small`(50개·5명)을 붙입니다.
 
-4. 확인 — 1분쯤 기다린 뒤 브라우저로 엽니다. 검색 색인은 API 가 1분 안에 알아서 채웁니다.
+6. 확인 — 1분쯤 기다린 뒤 브라우저로 엽니다. 검색 색인은 API 가 1분 안에 알아서 채웁니다.
 
    ```
    https://api.demo-shopping.com/api/v1/categories/tree   → nodes 가 비어 있지 않다
