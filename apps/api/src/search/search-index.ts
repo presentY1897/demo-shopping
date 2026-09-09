@@ -51,9 +51,50 @@ export interface SearchIndex {
   }) => Promise<SearchAnswer>
 }
 
-/** Meilisearch's own error body, as far as anything here cares. */
-function messageOf(status: number, body: string): string {
-  return `검색 엔진이 ${String(status)} 로 거절했습니다: ${body.slice(0, 300)}`
+/** Meilisearch's code for a query aimed at an index that does not exist. */
+const INDEX_NOT_FOUND = 'index_not_found'
+
+/** An absent index and an empty one hold the same number of documents: none. */
+const EMPTY_ANSWER: SearchAnswer = { hits: [], total: 0, facets: {} }
+
+/**
+ * A refusal from the engine, carrying the engine's own error code.
+ *
+ * **The code is the part that matters**, because the status cannot tell the
+ * cases apart: Meilisearch answers 404 both for `index_not_found` and for a
+ * mistyped route, and 403 for a key mismatch. Treating every 404 as "no index
+ * yet" would turn a wrong host or a bad path into a silent empty page — the
+ * same failure this task exists to remove, one layer down (TASK-0119 4.3 · F2).
+ */
+export class SearchEngineError extends Error {
+  constructor(
+    readonly status: number,
+    /** Meilisearch's `code` field, or `null` when the body carries none. */
+    readonly code: string | null,
+    body: string,
+  ) {
+    super(`검색 엔진이 ${String(status)} 로 거절했습니다: ${body.slice(0, 300)}`)
+    this.name = 'SearchEngineError'
+  }
+}
+
+/**
+ * Meilisearch answers every error as JSON with a stable `code`. Anything in
+ * front of it — a proxy, a platform error page — answers HTML, and HTML has no
+ * code to read. A body without a code is never `index_not_found`.
+ */
+function codeOf(body: string): string | null {
+  try {
+    const parsed: unknown = JSON.parse(body)
+
+    if (typeof parsed !== 'object' || parsed === null || !('code' in parsed)) return null
+
+    const code: unknown = (parsed as { readonly code: unknown }).code
+
+    return typeof code === 'string' ? code : null
+  } catch {
+    return null
+  }
 }
 
 @Injectable()
@@ -123,16 +164,30 @@ export class MeilisearchIndex implements SearchIndex {
     readonly limit: number
     readonly facets: readonly string[]
   }): Promise<SearchAnswer> {
-    const body = await this.send('POST', `/indexes/${this.index}/search`, {
-      q: request.q,
-      offset: request.offset,
-      limit: request.limit,
-      ...(request.filter === null ? {} : { filter: request.filter }),
-      ...(request.sort.length === 0 ? {} : { sort: [...request.sort] }),
-      ...(request.facets.length === 0 ? {} : { facets: [...request.facets] }),
-    })
+    try {
+      const body = await this.send('POST', `/indexes/${this.index}/search`, {
+        q: request.q,
+        offset: request.offset,
+        limit: request.limit,
+        ...(request.filter === null ? {} : { filter: request.filter }),
+        ...(request.sort.length === 0 ? {} : { sort: [...request.sort] }),
+        ...(request.facets.length === 0 ? {} : { facets: [...request.facets] }),
+      })
 
-    return readAnswer(body)
+      return readAnswer(body)
+    } catch (error) {
+      // The free-plan engine has no persistent disk, so a restart leaves no
+      // index behind (TASK-0009) and the indexer refills it. A query that lands
+      // in that window is looking at a catalogue that holds nothing yet — an
+      // empty page, not a fault. 500 takes the whole screen down for it.
+      if (error instanceof SearchEngineError && error.code === INDEX_NOT_FOUND) {
+        this.logger.warn(`색인 '${this.index}' 이 아직 없어 빈 결과를 돌려줍니다.`)
+
+        return EMPTY_ANSWER
+      }
+
+      throw error
+    }
   }
 
   private async ensureIndex(): Promise<void> {
@@ -173,7 +228,11 @@ export class MeilisearchIndex implements SearchIndex {
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
     })
 
-    if (!response.ok) throw new Error(messageOf(response.status, await response.text()))
+    if (!response.ok) {
+      const body = await response.text()
+
+      throw new SearchEngineError(response.status, codeOf(body), body)
+    }
 
     return response.json()
   }

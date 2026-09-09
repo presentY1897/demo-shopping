@@ -7,7 +7,7 @@ const CONFIG = {
   search: { host: 'http://localhost:7740/', masterKey: 'x'.repeat(8), timeoutMs: 200 },
 } as AppConfig
 
-/** No expected index — the state of the repository until TASK-0038 lands. */
+/** Defaults to no expected index, so each test states the list it is about. */
 function indicator(indexes: readonly string[] = []): SearchHealthIndicator {
   return new SearchHealthIndicator(CONFIG, indexes)
 }

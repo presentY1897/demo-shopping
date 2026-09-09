@@ -91,9 +91,10 @@ export class SearchHealthIndicator implements HealthIndicator {
   /**
    * `ok` when every expected index can serve a query.
    *
-   * With no expected index the loop is vacuous and no request is sent — which is
-   * the state today (see `EXPECTED_SEARCH_INDEXES`), so this costs the probe
-   * nothing until TASK-0038 lands.
+   * With no expected index the loop is vacuous and no request is sent. That was
+   * the state until TASK-0119, and it is why this probe answered `ok` while every
+   * query returned 500 — see `EXPECTED_SEARCH_INDEXES` for why the list was
+   * empty and what filled it.
    */
   private async indexReadiness(base: string): Promise<HealthStatus> {
     if (this.indexes.length === 0) return 'ok'
