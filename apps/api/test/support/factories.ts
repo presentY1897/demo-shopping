@@ -75,6 +75,16 @@ export interface UserOptions {
   readonly isDemo?: boolean
   readonly demoExpiresAt?: Date | null
   readonly deletedAt?: Date | null
+  /**
+   * When this account signed up. Defaults to the database's clock.
+   *
+   * **Pass it whenever the spec asserts about a period.** The dashboard counts
+   * sign-ups inside a KST day range derived from the *injected* clock
+   * (`kst-days.ts`), so a row stamped by the database is only inside that range
+   * while the calendar happens to agree — and it stops agreeing at KST midnight,
+   * permanently, without anyone touching the code (TASK-0122 4.2).
+   */
+  readonly createdAt?: Date | string
 }
 
 /**
@@ -101,8 +111,10 @@ export async function createUser(db: Database, options: UserOptions = {}): Promi
     options.googleSub !== undefined ? options.googleSub : isDemo ? null : unique('sub')
 
   return db.one<UserRow>(
-    `INSERT INTO "User" ("id", "googleSub", "email", "name", "isDemo", "demoExpiresAt", "deletedAt", "updatedAt")
-     VALUES ($1, $2, $3, $4, $5, $6, $7, now())
+    // `COALESCE` keeps the column default for every caller that does not care
+    // when the account was made — which is most of them.
+    `INSERT INTO "User" ("id", "googleSub", "email", "name", "isDemo", "demoExpiresAt", "deletedAt", "createdAt", "updatedAt")
+     VALUES ($1, $2, $3, $4, $5, $6, $7, COALESCE($8::timestamptz, now()), now())
      RETURNING "id", "googleSub", "email", "isDemo", "demoExpiresAt", "deletedAt"`,
     [
       options.id ?? randomUUID(),
@@ -112,6 +124,7 @@ export async function createUser(db: Database, options: UserOptions = {}): Promi
       isDemo,
       demoExpiresAt,
       options.deletedAt ?? null,
+      options.createdAt ?? null,
     ],
   )
 }
