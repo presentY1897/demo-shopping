@@ -1667,7 +1667,6 @@ export interface WakeMessages {
   readonly coldStartNotice: string
   readonly elapsedLabel: string
   readonly secondsUnit: string
-  readonly attemptLabel: string
   readonly progressLabel: string
   readonly failureTitle: string
   readonly failureHint: string

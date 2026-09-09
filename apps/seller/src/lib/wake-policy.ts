@@ -15,14 +15,32 @@
  */
 export interface WakePolicy {
   /**
-   * Deadline for each attempt, in order. Its length is the attempt count.
+   * Deadline for **one** attempt.
    *
-   * The deadlines grow. Render holds a request aimed at a sleeping instance open
-   * until the instance answers, so the first attempt is only asking "is it awake
-   * but slow?", and the last one sits through a full spin-up.
+   * One value rather than a rising list, because the list existed only to make
+   * the deadlines *sum* to the budget — and {@link WakePolicy.budgetMs} now says
+   * that directly. What is left is the question a single attempt asks, and the
+   * answer has to be long enough to sit through a spin-up in case the platform
+   * holds the request open rather than refusing it (TASK-0118 4.4).
    */
-  readonly attemptTimeoutsMs: readonly number[]
-  /** Wait before attempt n+1. Exponential, and one shorter than the attempts. */
+  readonly attemptTimeoutMs: number
+  /**
+   * How long the app keeps trying, measured on the **wall clock**.
+   *
+   * **Not a count of attempts.** A refusal comes back in about 0.3 seconds, so
+   * three attempts budgeted by count are spent in under four — while the
+   * instance behind them needs a minute and a half. Counting elapsed time
+   * instead means a fast failure costs the budget nothing, which is the correct
+   * response to a platform that says "not yet" quickly (TASK-0118 4.3).
+   */
+  readonly budgetMs: number
+  /**
+   * Wait before each retry, in order. **The last value repeats.**
+   *
+   * Repeating the last entry is what caps the wait: without a ceiling an
+   * exponential schedule eventually sleeps past the moment the instance came up,
+   * and the visitor is left looking at a finished boot.
+   */
   readonly backoffMs: readonly number[]
   /** When the wait stops looking like a normal load and gets a notice. */
   readonly noticeAfterMs: number
@@ -45,10 +63,16 @@ export interface WakePolicy {
 }
 
 export const WAKE_POLICY: WakePolicy = {
-  // 10s catches "awake but slow". 40s and 90s sit through the spin-up; with the
-  // backoffs the budget totals 143s, 60% above the measured 90s.
-  attemptTimeoutsMs: [10_000, 40_000, 90_000],
-  backoffMs: [1_000, 2_000],
+  // Long enough to ride out a spin-up if the platform holds the request rather
+  // than refusing it. Against a refusal it never comes into play.
+  attemptTimeoutMs: 90_000,
+  // 150s against a measured boot of about 90s. The old policy computed 143s the
+  // same way and never spent it (4.3).
+  budgetMs: 150_000,
+  // 1 → 2 → 4 → 8, then 8 forever. The ceiling is the time a visitor can spend
+  // *after* the instance is already up without knowing it: 8s on a 90s wait is
+  // 9%, and it is the stretch where the progress bar sits still (4.5).
+  backoffMs: [1_000, 2_000, 4_000, 8_000],
   noticeAfterMs: 3_000,
   // Past 3s it is almost certainly a cold start, but saying "up to two minutes"
   // that early invents a problem for someone whose network merely hiccuped.
@@ -67,6 +91,13 @@ export function wakeNoticeLevel(policy: WakePolicy, elapsedMs: number): WakeNoti
   if (elapsedMs >= policy.noticeAfterMs) return 'waking'
 
   return 'none'
+}
+
+/** The wait before retry `attempt`; the schedule's last entry repeats. */
+export function backoffFor(policy: WakePolicy, attempt: number): number {
+  const index = Math.min(attempt - 1, policy.backoffMs.length - 1)
+
+  return policy.backoffMs[index] ?? 0
 }
 
 /**

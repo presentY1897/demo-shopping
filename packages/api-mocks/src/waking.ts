@@ -76,20 +76,70 @@ export function wakesAfter(
 }
 
 /**
- * An instance that is asleep and boots once, the way Render actually behaves.
+ * An instance that is asleep and boots once, **as measured against Render**.
  *
- * The distinction from {@link slowResponse} decides whether a replay means
- * anything. Render does not reject a request aimed at a sleeping service: it
- * holds it, starts the instance, and answers every request that arrived in the
- * meantime as soon as the instance is up. So the deadline is **shared** — a
- * caller that gives up after 10 seconds and asks again does not restart the
- * 90 second wait, it joins one already 10 seconds along.
+ * The first request starts the instance and is **refused immediately** — the
+ * platform edge answers 502 with its own HTML page while the container boots,
+ * and keeps doing so until the health check passes. Every request that lands in
+ * that window gets the same instant refusal. Then the instance is up and answers
+ * normally.
  *
- * A per-request delay models the opposite, and a retry policy tested against it
- * can never succeed no matter how patient it is. The clock starts on the first
- * request, exactly as the spin-up does.
+ * ```
+ * t=0      first request  → 502 in ~0.3s, boot starts
+ * t=…      more requests  → 502, each in ~0.3s
+ * t=boot   the edge starts routing → 200
+ * ```
+ *
+ * **This is the second model this helper has had, and the first one was wrong.**
+ * It held requests open until the instance answered — see
+ * {@link heldRequestInstance}, which keeps that behaviour — and a retry policy
+ * that budgets by *attempt* passes against it while failing in production: three
+ * attempts against a held request spend their full deadlines, three attempts
+ * against an instant 502 spend about a second between them (TASK-0118 4.1).
+ *
+ * The clock starts on the first request, exactly as the spin-up does.
  */
 export function sleepingInstance(
+  path: MockPath,
+  wakesAfterMs: number,
+  body: JsonBodyType,
+): RequestHandler {
+  let readyAt: number | null = null
+
+  // Not `async`: the refusal is what this helper is *for*, and it involves no
+  // waiting at all — which is exactly the difference from the model it replaced.
+  return http.get(path, () => {
+    readyAt ??= Date.now() + wakesAfterMs
+
+    // **A transport failure, not a 502 — and the difference is the browser.**
+    //
+    // On the wire the edge answers 502 with its own HTML page. That page carries
+    // no `Access-Control-Allow-Origin`, so the browser rejects it before the app
+    // sees anything: `fetch` throws and the console reports a CORS violation
+    // (TASK-0118 4.2). Modelling the 502 itself would be *less* faithful here —
+    // these specs drive a browser app, and a browser never receives it.
+    //
+    // It matters which one the double produces: a 502 body reaching the client
+    // classifies as `malformed_response`, which the wake-up loop treats as final
+    // and does not retry (TASK-0118 R8).
+    if (Date.now() < readyAt) return HttpResponse.error()
+
+    return HttpResponse.json(body)
+  })
+}
+
+/**
+ * A sleeping instance that **holds** the request until it is up.
+ *
+ * The model {@link sleepingInstance} used to have, kept because a platform may
+ * behave this way — the deadline is shared, so a caller that gives up and asks
+ * again joins a wait already in progress rather than restarting it.
+ *
+ * **A wake-up policy has to survive both.** Which one a deployment gets is not
+ * something the front end can choose, and the replay runs against each
+ * (TASK-0118 4.6).
+ */
+export function heldRequestInstance(
   path: MockPath,
   wakesAfterMs: number,
   body: JsonBodyType,

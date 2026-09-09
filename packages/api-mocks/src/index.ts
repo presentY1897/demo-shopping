@@ -161,5 +161,12 @@ export { mockMethods, mockPaths, MOCK_STORAGE_ORIGIN, MOCK_STORAGE_PUBLIC_ORIGIN
 export type { MockMethod, MockPath } from './paths'
 export { fixtureRegistry } from './registry'
 export type { RegisteredFixture } from './registry'
-export { neverAnswers, neverAnswersOn, sleepingInstance, slowResponse, wakesAfter } from './waking'
+export {
+  heldRequestInstance,
+  neverAnswers,
+  neverAnswersOn,
+  sleepingInstance,
+  slowResponse,
+  wakesAfter,
+} from './waking'
 export * from './fixtures'

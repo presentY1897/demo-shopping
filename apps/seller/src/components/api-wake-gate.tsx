@@ -42,8 +42,6 @@ export function ApiWakeGate({ health, wake, policy = WAKE_POLICY }: ApiWakeGateP
   if (state.result === null) {
     return (
       <WakeWaiting
-        attempt={state.attempt}
-        attempts={state.attempts}
         elapsedMs={state.elapsedMs}
         messages={wake}
         policy={policy}
@@ -64,7 +62,7 @@ export function ApiWakeGate({ health, wake, policy = WAKE_POLICY }: ApiWakeGateP
           status={state.result.response.search}
         />
       ) : (
-        <WakeFailure attempts={state.attempts} messages={wake} onRetry={state.retry} />
+        <WakeFailure messages={wake} onRetry={state.retry} />
       )}
     </>
   )
