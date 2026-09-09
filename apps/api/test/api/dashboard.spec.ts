@@ -185,11 +185,16 @@ describe('지표 (F1)', () => {
   it('does not count a demo account as a sign-up', async () => {
     const before = (await metrics(operator)).current.newUsers
 
-    await createUser(db, { isDemo: true })
+    // **`createdAt` is the fact this test is about.** The metric counts sign-ups
+    // inside a KST day range taken from the injected clock, so the accounts have
+    // to be stamped by that same clock — left to the database they land wherever
+    // the wall clock is, and fall outside the range the moment the calendar
+    // moves past `NOW` (TASK-0122).
+    await createUser(db, { isDemo: true, createdAt: NOW })
 
     expect((await metrics(operator)).current.newUsers).toBe(before)
 
-    await createUser(db)
+    await createUser(db, { createdAt: NOW })
 
     expect((await metrics(operator)).current.newUsers).toBe(before + 1)
   })
