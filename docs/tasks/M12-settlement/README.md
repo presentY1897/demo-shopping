@@ -18,3 +18,4 @@
 | [TASK-0080](./TASK-0080-settlement-batch.md) | 정산서 생성 배치 | 완료 | 0079 |
 | [TASK-0081](./TASK-0081-settlement-admin.md) | 관리자 정산 승인 · 지급 | 완료 | 0080 |
 | [TASK-0082](./TASK-0082-seller-settlement.md) | 판매자 정산 내역 · 매출 대시보드 | 완료 | 0080 |
+| [TASK-0120](./TASK-0120-settlement-clock.md) | 정산 줄의 시각을 주입된 시계로 | 완료 | 0080 |
