@@ -1,0 +1,10 @@
+Use case: product-mockup
+Product: 오버핏 울 발마칸 코트
+Design invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.
+Base color: camel brown
+Base material: brushed wool blend
+Studio: warm light gray seamless studio, soft diffused daylight
+Adult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views
+Match framing and pose of the first reference. Change only color to deep navy blue, visibly blue rather than black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.
+One separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.
+Reference 1 defines exact MACRO pocket crop and wool fibers. Reference 2 defines navy color only. Keep macro scale and natural fuzzy wool fibers, recolor to navy. Do not zoom out or add decorative patterns. One square photo.

@@ -1,0 +1,30 @@
+{
+  "products": [
+    {
+      "id": "camel-wool-coat",
+      "name": "오버핏 울 발마칸 코트",
+      "design": "Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.",
+      "color": "camel brown",
+      "material": "brushed wool blend",
+      "model": "One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views",
+      "highlights": ["여유 있는 실루엣", "래글런 소매", "카멜 컬러"],
+      "variants": [
+        {
+          "id": "navy",
+          "kind": "color",
+          "value": "deep navy blue, visibly blue rather than black"
+        },
+        {
+          "id": "charcoal",
+          "kind": "color",
+          "value": "neutral charcoal gray, medium-dark gray without blue undertone"
+        },
+        {
+          "id": "herringbone",
+          "kind": "material",
+          "value": "camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+Use case: product-mockup
+Product: 오버핏 울 발마칸 코트
+Design invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.
+Base color: camel brown
+Base material: brushed wool blend
+Studio: warm light gray seamless studio, soft diffused daylight
+Match framing and pose of the first reference. Change only material to camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.
+One separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.
+Reference 1 controls EXACT model identity/face, hair, hands-in-pockets pose, trousers, shoes, framing and coat silhouette. Reference 2 defines the target camel/tan herringbone wool with regular V-shaped woven chevrons. Replace only the coat fabric in reference 1 with the exact material and color of reference 2. Match herringbone scale consistently on collar, sleeves and body. Keep face, background and outfit unchanged; no new construction. Square full-body photograph.

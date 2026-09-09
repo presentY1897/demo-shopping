@@ -480,6 +480,7 @@ export class ProductService {
         await this.writeImages(tx, created.id, images, now)
 
         const stored = await this.writeAxes(tx, created.id, axes, now)
+        await this.writeOptionMetadata(tx, created.id, input.options, now)
 
         await this.createVariants(tx, {
           productId: created.id,
@@ -615,6 +616,7 @@ export class ProductService {
         }
 
         await this.reviseVariants(tx, product, input, now, principal.userId)
+        await this.writeOptionMetadata(tx, id, input.options, now)
         await this.settle(tx, id, status, 1)
       }),
     )
@@ -836,6 +838,24 @@ export class ProductService {
         })),
       }
     })
+  }
+
+  /** Preserve presentation extras without changing how option combinations are planned. */
+  private async writeOptionMetadata(
+    tx: Tx,
+    productId: string,
+    options: CreateProductRequest['options'],
+    now: Date,
+  ): Promise<void> {
+    for (const option of options ?? []) {
+      for (const value of option.values) {
+        if (value.meta === undefined) continue
+        await tx.productOptionValue.updateMany({
+          where: { value: value.value, option: { productId, name: option.name } },
+          data: { meta: value.meta, updatedAt: now },
+        })
+      }
+    }
   }
 
   /** Inserts one variant per plan, together with its combination mapping. */

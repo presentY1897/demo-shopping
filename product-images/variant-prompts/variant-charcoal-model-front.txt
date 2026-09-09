@@ -1,0 +1,9 @@
+Use case: product-mockup
+Product: 오버핏 울 발마칸 코트
+Design invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.
+Base color: camel brown
+Base material: brushed wool blend
+Studio: warm light gray seamless studio, soft diffused daylight
+Match framing and pose of the first reference. Change only color to neutral charcoal gray, medium-dark gray without blue undertone. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.
+One separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.
+Reference 1: exact model identity, hair, pose with hands in pockets, off-white trousers, shoes and studio. Reference 2: authoritative neutral charcoal coat color. Recolor ONLY the coat fabric in reference 1 to match reference 2. Keep exact face, styling, pose and framing. Neutral gray rather than blue, preserve wool surface and garment construction. Square full-body view.

@@ -28,6 +28,7 @@ import { useState } from 'react'
 import type { Selection } from '@/lib/products/variant-selection'
 import { useFreshDetail } from '@/lib/products/use-fresh-detail'
 import { choose, displayPrice, selectedVariant } from '@/lib/products/variant-selection'
+import { imagesForSelection } from '@/lib/products/selection-images'
 import { useAddToCart } from '@/lib/cart/use-add-to-cart'
 import { useRecordView } from '@/lib/collections/use-recently-viewed'
 import type {
@@ -269,9 +270,11 @@ export function ProductDetail({
     />
   )
 
+  const galleryImages = imagesForSelection(product, selection)
   const gallery = (
     <ProductGallery
-      images={product.images}
+      key={galleryImages.map((image) => image.id).join(',')}
+      images={galleryImages}
       messages={messages.gallery}
       productName={product.name}
     />

@@ -1,0 +1,4 @@
+interface:
+  display_name: '상품 이미지 세트'
+  short_description: '기준 이미지를 유지하며 상품컷·착용샷·옵션별 이미지와 소개 페이지를 생성'
+  default_prompt: 'Use $product-image-set to create a consistent product image set and introduction page from my product specifications.'

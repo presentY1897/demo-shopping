@@ -1,0 +1,10 @@
+Use case: product-mockup
+Product: 오버핏 울 발마칸 코트
+Design invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.
+Base color: camel brown
+Base material: brushed wool blend
+Studio: warm light gray seamless studio, soft diffused daylight
+Adult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views
+Full body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.
+One separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.
+Reference 1: front garment construction and color. Reference 2: authoritative REAR coat design with raglan seams, central seam and single lower center vent. Reference 3: same adult model identity, haircut, off-white trousers, dark shoes, studio and length on body. Direct 180-degree rear view of this SAME model standing naturally, head and shoes fully in square frame; hands relaxed at sides. Match rear construction exactly; no belt or flap.

@@ -94,7 +94,7 @@ export function ProductGallery({
     messages.imageAlt.replace('{name}', productName).replace('{index}', String(position + 1))
 
   return (
-    <section aria-label={messages.label} className="flex flex-col gap-2">
+    <section aria-label={messages.label} className="flex min-w-0 flex-col gap-2">
       <div className="relative">
         <div
           className="scrollbar-none flex w-full snap-x snap-mandatory scroll-smooth overflow-x-auto rounded-md motion-reduce:scroll-auto"
@@ -177,8 +177,8 @@ export function ProductGallery({
                 aria-current={position === index ? 'true' : undefined}
                 className={
                   position === index
-                    ? 'border-primary size-16 overflow-hidden rounded-md border-2'
-                    : 'border-border size-16 overflow-hidden rounded-md border'
+                    ? 'border-primary relative size-16 overflow-hidden rounded-md border-2'
+                    : 'border-border relative size-16 overflow-hidden rounded-md border'
                 }
                 onClick={() => {
                   scrollTo(position)

@@ -1,0 +1,9 @@
+Use case: product-mockup
+Product: 오버핏 울 발마칸 코트
+Design invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.
+Base color: camel brown
+Base material: brushed wool blend
+Studio: warm light gray seamless studio, soft diffused daylight
+Macro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.
+One separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.
+Reference 1 is authoritative for camel wool surface and welt pocket. A square close-up photograph of the welt pocket opening and its existing seam with surrounding soft brushed wool fibers. Tight crop of fabric ONLY, no complete garment, no people. Natural subtle fiber irregularity, no decorative paisley pattern, no new buttons, no text. Match the warm camel color and soft diffuse light.
