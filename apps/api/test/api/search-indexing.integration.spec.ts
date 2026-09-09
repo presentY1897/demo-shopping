@@ -126,6 +126,23 @@ async function search(query: string, filter?: string): Promise<readonly string[]
 }
 
 /**
+ * Deletes the index itself, which is what a restart of the engine amounts to.
+ *
+ * `clear()` empties an index that still exists; the free plan has no persistent
+ * disk, so a restart leaves **no index at all** (TASK-0009). The two states look
+ * the same from a query and are very different to `size()` — which is where the
+ * recovery used to stop (TASK-0119 4.7).
+ */
+async function dropIndex(): Promise<void> {
+  await fetch(`${searchHost()}/indexes/${searchIndexForTests()}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  })
+
+  await settled()
+}
+
+/**
  * Suggestions through the **service**, not through a raw engine call.
  *
  * TASK-0103's whole mechanism is the step before the engine — classifying what
@@ -390,6 +407,19 @@ describe('F5 · F5b · F5c — rebuilding', () => {
     await settled()
 
     expect(await search('자동')).toHaveLength(1)
+  })
+
+  it('recreates an index that is gone, not only one that is empty (F10)', async () => {
+    await listing({ name: '색인 소실' })
+    await indexer().drain()
+    await settled()
+
+    await dropIndex()
+
+    expect(await indexer().ensurePopulated()).toBe(true)
+    await settled()
+
+    expect(await search('소실')).toHaveLength(1)
   })
 
   it('does not rebuild an index that already has documents (R5)', async () => {
