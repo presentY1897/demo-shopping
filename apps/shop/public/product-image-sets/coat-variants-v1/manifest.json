@@ -1,0 +1,269 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "camel-wool-coat",
+        "name": "오버핏 울 발마칸 코트",
+        "design": "Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.",
+        "color": "camel brown",
+        "material": "brushed wool blend",
+        "model": "One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views",
+        "highlights": ["여유 있는 실루엣", "래글런 소매", "카멜 컬러"],
+        "variants": [
+          {
+            "id": "navy",
+            "kind": "color",
+            "value": "deep navy blue, visibly blue rather than black",
+            "views": ["front", "model-front"]
+          },
+          {
+            "id": "charcoal",
+            "kind": "color",
+            "value": "neutral charcoal gray, medium-dark gray without blue undertone",
+            "views": ["front", "model-front"]
+          },
+          {
+            "id": "herringbone",
+            "kind": "material",
+            "value": "camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color",
+            "views": ["front", "model-front", "texture"]
+          }
+        ],
+        "shots": ["front", "texture", "model-front"]
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "camel-wool-coat/front",
+      "productId": "camel-wool-coat",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/camel-wool-coat/front.png",
+      "sha256": "9709e8a931c9830d131f952479ebf28cd17d5de8277d54f7fef7b423c09eedd5",
+      "history": [
+        {
+          "note": "Reused and visually inspected previously accepted camel reference; original generation prompt retained.",
+          "status": "accepted",
+          "prompt": "Generated with the built-in image_gen tool, 2026-09-09.\nSample imagery for a fictional demo product.\n\nUse case: product-mockup\nAsset type: Korean fashion ecommerce product photograph, square image suitable for square detail gallery and centered 3:4 card crop.\nPrimary request: One photorealistic catalog photograph of a camel brown oversized wool balmacaan coat, front view.\nSubject: Single long coat, relaxed raglan sleeves, classic convertible collar, concealed single-breasted button placket with one visible dark horn top button, two welt pockets, subtle natural drape, dense brushed wool texture.\nScene/backdrop: seamless warm light gray studio background.\nComposition/framing: entire garment visible centered, sleeves relaxed slightly apart, hem and collar fully in frame. Coat occupies central 65% of width and 85% of height, leaving margins for portrait cropping. Invisible mannequin presentation, realistic volume.\nLighting/mood: soft diffused studio daylight, restrained natural shadow, premium minimalist Korean fashion catalog.\nConstraints: one coat only; no person, mannequin parts, hanger, accessories, text, logo, watermark, borders or collage. Accurate fabric texture and believable construction.\n"
+        }
+      ]
+    },
+    {
+      "id": "camel-wool-coat/texture",
+      "productId": "camel-wool-coat",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["camel-wool-coat/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/camel-wool-coat/texture.png",
+      "sha256": "25a00d3b4771c6c394d3a4e45016f169f7ab86ec2749fc98ca725e58164d0466",
+      "history": [
+        {
+          "note": "Reused and visually inspected previously accepted camel reference; original generation prompt retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1 is authoritative for camel wool surface and welt pocket. A square close-up photograph of the welt pocket opening and its existing seam with surrounding soft brushed wool fibers. Tight crop of fabric ONLY, no complete garment, no people. Natural subtle fiber irregularity, no decorative paisley pattern, no new buttons, no text. Match the warm camel color and soft diffuse light.\n"
+        }
+      ]
+    },
+    {
+      "id": "camel-wool-coat/model-front",
+      "productId": "camel-wool-coat",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["camel-wool-coat/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/camel-wool-coat/model-front.png",
+      "sha256": "a841ffc86bb45f8fca24f358e9e5f01ec9d46579e4d89556b958fe88cc89101f",
+      "history": [
+        {
+          "note": "Reused and visually inspected previously accepted camel reference; original generation prompt retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1 is the user-approved garment design and material. Keep the coat buttoned as in reference. Full body adult model, square photograph, head and shoes fully visible."
+        }
+      ]
+    },
+    {
+      "id": "camel-wool-coat/variant-navy-front",
+      "productId": "camel-wool-coat",
+      "label": "deep navy blue, visibly blue rather than black · 정면",
+      "variant": {
+        "id": "navy",
+        "kind": "color",
+        "value": "deep navy blue, visibly blue rather than black",
+        "views": ["front", "model-front"]
+      },
+      "dependencies": ["camel-wool-coat/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views\nMatch framing and pose of the first reference. Change only color to deep navy blue, visibly blue rather than black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/camel-wool-coat/variant-navy-front.png",
+      "sha256": "3829442e6a144fa4a852d0e8b8f3b8cfb8152c0ba7557f0f5ae67dfb46bf5fe4",
+      "history": [
+        {
+          "note": "Reviewed deep blue navy, identical collar, raglan seams, pockets, placket and square framing. No human added.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to deep navy blue, visibly blue rather than black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1: exact garment-only front photograph. Precise color-only edit: recolor ALL coat fabric to deep navy blue, preserving the original soft brushed wool surface. Keep exact collar shape, raglan cut, pockets, seams, single dark top button, silhouette, position, lighting and gray background. NO human or mannequin parts. Match the source front camera and square framing. Do not change material or add patterns. Navy should retain visibly blue midtones.\n"
+        }
+      ]
+    },
+    {
+      "id": "camel-wool-coat/variant-navy-model-front",
+      "productId": "camel-wool-coat",
+      "label": "deep navy blue, visibly blue rather than black · 모델 정면",
+      "variant": {
+        "id": "navy",
+        "kind": "color",
+        "value": "deep navy blue, visibly blue rather than black",
+        "views": ["front", "model-front"]
+      },
+      "dependencies": ["camel-wool-coat/model-front", "camel-wool-coat/variant-navy-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views\nMatch framing and pose of the first reference. Change only color to deep navy blue, visibly blue rather than black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/camel-wool-coat/variant-navy-model-front.png",
+      "sha256": "461fc85186640046a189c8d524f76ead1fba95298aef28c7791ce0c9d4a09d13",
+      "history": [
+        {
+          "note": "Reviewed same model face/hair, pose, off-white trousers and shoes; coat navy matches variant anchor; collar/placket/pockets preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to deep navy blue, visibly blue rather than black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1 is authoritative for the EXACT adult model face, hair, hands-in-pockets pose, off-white trousers, dark shoes, coat length and camera. Reference 2 defines the navy coat color and garment detail. Edit ONLY coat color in reference 1 to match reference 2. Keep face, skin, pose, shoes, trousers and background unchanged. Full body square photo, head and feet included. Keep brushed wool texture, not a new fabric.\n"
+        }
+      ]
+    },
+    {
+      "id": "camel-wool-coat/variant-charcoal-front",
+      "productId": "camel-wool-coat",
+      "label": "neutral charcoal gray, medium-dark gray without blue undertone · 정면",
+      "variant": {
+        "id": "charcoal",
+        "kind": "color",
+        "value": "neutral charcoal gray, medium-dark gray without blue undertone",
+        "views": ["front", "model-front"]
+      },
+      "dependencies": ["camel-wool-coat/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views\nMatch framing and pose of the first reference. Change only color to neutral charcoal gray, medium-dark gray without blue undertone. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/camel-wool-coat/variant-charcoal-front.png",
+      "sha256": "6b6a95c9febee4354806ad090fe8aff674de45dfcfc9f7a6cb5e0a554dc8cb8e",
+      "history": [
+        {
+          "note": "Reviewed neutral charcoal gray distinct from navy, unchanged silhouette/collar/pockets and consistent studio framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to neutral charcoal gray, medium-dark gray without blue undertone. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1: exact garment-only front photograph. Color-only edit: ALL coat fabric neutral charcoal gray. Preserve exact wool surface, collar, raglan seams, two pockets, button, silhouette, camera, position and gray studio. NO human or mannequin parts. Charcoal must look neutral medium-dark gray, clearly distinct from navy and black. Keep source square framing.\n"
+        }
+      ]
+    },
+    {
+      "id": "camel-wool-coat/variant-charcoal-model-front",
+      "productId": "camel-wool-coat",
+      "label": "neutral charcoal gray, medium-dark gray without blue undertone · 모델 정면",
+      "variant": {
+        "id": "charcoal",
+        "kind": "color",
+        "value": "neutral charcoal gray, medium-dark gray without blue undertone",
+        "views": ["front", "model-front"]
+      },
+      "dependencies": ["camel-wool-coat/model-front", "camel-wool-coat/variant-charcoal-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views\nMatch framing and pose of the first reference. Change only color to neutral charcoal gray, medium-dark gray without blue undertone. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/camel-wool-coat/variant-charcoal-model-front.png",
+      "sha256": "4e184f93ca6f5d46ec98c058a3434592a9d38e0a5ddba9c8a1a07d9b794b6a86",
+      "history": [
+        {
+          "note": "Reviewed same adult model/pose/outfit and front framing. Neutral gray coat matches charcoal anchor; construction preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to neutral charcoal gray, medium-dark gray without blue undertone. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1: exact model identity, hair, pose with hands in pockets, off-white trousers, shoes and studio. Reference 2: authoritative neutral charcoal coat color. Recolor ONLY the coat fabric in reference 1 to match reference 2. Keep exact face, styling, pose and framing. Neutral gray rather than blue, preserve wool surface and garment construction. Square full-body view.\n"
+        }
+      ]
+    },
+    {
+      "id": "camel-wool-coat/variant-herringbone-front",
+      "productId": "camel-wool-coat",
+      "label": "camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color · 정면",
+      "variant": {
+        "id": "herringbone",
+        "kind": "material",
+        "value": "camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color",
+        "views": ["front", "model-front", "texture"]
+      },
+      "dependencies": ["camel-wool-coat/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views\nMatch framing and pose of the first reference. Change only material to camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/camel-wool-coat/variant-herringbone-front.png",
+      "sha256": "be540fda5c0b9368d0917167bbaac5ec698971f69775671931507d1726a1ed60",
+      "history": [
+        {
+          "note": "Reviewed camel/tan fine herringbone chevrons, unchanged overall silhouette, collar, raglan cut, pockets and placket. Material visibly differs from brushed wool.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only material to camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1: exact garment-only front design and overall warm camel color. Change ONLY the coat material to a finely woven camel-and-tan herringbone wool. Clearly visible regular small V-shaped chevrons (fine tailoring-scale weave, NOT large stripes, NOT paisley or swirls). Preserve tailoring, raglan sleeves, collar, two welt pockets, concealed placket, button and entire outline. Garment ONLY, no human or visible mannequin. Same studio and square framing. Keep average color camel, do not turn gray.\n"
+        }
+      ]
+    },
+    {
+      "id": "camel-wool-coat/variant-herringbone-model-front",
+      "productId": "camel-wool-coat",
+      "label": "camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color · 모델 정면",
+      "variant": {
+        "id": "herringbone",
+        "kind": "material",
+        "value": "camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color",
+        "views": ["front", "model-front", "texture"]
+      },
+      "dependencies": ["camel-wool-coat/model-front", "camel-wool-coat/variant-herringbone-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views\nMatch framing and pose of the first reference. Change only material to camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/camel-wool-coat/variant-herringbone-model-front.png",
+      "sha256": "fb418deebca566c874c705541667f2e6bc9f1bb9b2c672bda53937853c441ed8",
+      "history": [
+        {
+          "note": "Reviewed same adult model identity, pose and outfit; regular camel herringbone wool follows folds and matches material anchor; collar and construction preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only material to camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1 controls EXACT model identity/face, hair, hands-in-pockets pose, trousers, shoes, framing and coat silhouette. Reference 2 defines the target camel/tan herringbone wool with regular V-shaped woven chevrons. Replace only the coat fabric in reference 1 with the exact material and color of reference 2. Match herringbone scale consistently on collar, sleeves and body. Keep face, background and outfit unchanged; no new construction. Square full-body photograph.\n"
+        }
+      ]
+    },
+    {
+      "id": "camel-wool-coat/variant-herringbone-texture",
+      "productId": "camel-wool-coat",
+      "label": "camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color · 소재 확대",
+      "variant": {
+        "id": "herringbone",
+        "kind": "material",
+        "value": "camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color",
+        "views": ["front", "model-front", "texture"]
+      },
+      "dependencies": ["camel-wool-coat/texture", "camel-wool-coat/variant-herringbone-front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult fashion model, short dark hair, natural appearance, off-white straight trousers and understated dark shoes, no accessories; preserve the same person and styling across all views\nMatch framing and pose of the first reference. Change only material to camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected: macro retains the original fuzzy diagonal weave; repeating V-shaped herringbone organization is not sufficiently visible to match variant anchor.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only material to camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1: exact macro framing of existing welt pocket seam. Reference 2: target camel/tan herringbone wool material. Replace ONLY the wool material in reference 1 with the same fine V-shaped herringbone weave as reference 2. Keep pocket placement, stitching geometry, light and crop. Macro detail should show real-looking alternating diagonal woven yarns forming chevrons, not printed zigzags. No human, text or added hardware. Same overall warm camel hue.\n"
+        },
+        {
+          "note": "Reviewed corrected macro with clearly repeating alternating V-shaped herringbone yarn organization, same camel tone, welt pocket geometry and seam.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 오버핏 울 발마칸 코트\nDesign invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.\nBase color: camel brown\nBase material: brushed wool blend\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only material to camel brown herringbone wool with fine repeating V-shaped woven chevrons, same overall camel color. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nMATERIAL REPLACEMENT IS THE MAIN TASK. Reference 1 supplies ONLY welt-pocket shape and macro composition; DO NOT copy its fluffy fabric. Reference 2 is the AUTHORITATIVE HERRINGBONE FABRIC to magnify. Photograph its pocket at macro distance. Cover the entire surface with clearly resolved tiny alternating diagonal yarn bands that reverse direction every few millimeters, forming rows of crisp repeating V V V chevrons in camel and tan. Pattern must be visibly recognizable as classic woven herringbone, including on the pocket welt. Less fuzzy nap so the organized weave is readable. NOT plain wool, NOT one-direction twill, NOT random diagonal fibers. Same pocket and seams, same warm camel average hue. One square macro photograph.\n"
+        }
+      ],
+      "output": "images/camel-wool-coat/variant-herringbone-texture.png",
+      "sha256": "32ef08b1cfcf53cfdb33b20b40e5e5bd677df85421c4a42f919174c1233feac7"
+    }
+  ]
+}

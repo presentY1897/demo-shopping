@@ -153,6 +153,23 @@ async function countOf(table: string, column: string, value: string): Promise<nu
 }
 
 describe('F1 — 한 번에 저장', () => {
+  it('persists option metadata when creating and updating a product', async () => {
+    const meta = {
+      hex: '#1b2c4b',
+      gallery: JSON.stringify([{ url: 'https://cdn.test.invalid/navy.png' }]),
+    }
+    const product = await create({
+      options: [{ name: '색상', values: [{ value: '네이비', meta }] }],
+    })
+    expect(product.options[0]?.values[0]?.meta).toEqual(meta)
+    const updatedMeta = { ...meta, galleryPriority: 10 }
+    const { product: updated } = await api.clientAs(seller).updateProduct(product.id, {
+      version: product.version,
+      options: [{ name: '색상', values: [{ value: '네이비', meta: updatedMeta }] }],
+    })
+    expect(updated.options[0]?.values[0]?.meta).toEqual(updatedMeta)
+  })
+
   it('writes the product, its gallery, both axes and all twelve variants', async () => {
     const product = await create({
       options: COLOUR_AND_SIZE,

@@ -1,0 +1,9 @@
+Use case: product-mockup
+Product: 오버핏 울 발마칸 코트
+Design invariants: Long oversized balmacaan coat, raglan sleeves, convertible collar, concealed single-breasted button placket, one visible dark horn top button, two welt pockets. Match the user-approved front reference exactly.
+Base color: camel brown
+Base material: brushed wool blend
+Studio: warm light gray seamless studio, soft diffused daylight
+True side catalog view of the same garment, showing silhouette, length and sleeve volume.
+One separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.
+Reference 1 is the coat ONLY. Create a SINGLE PRODUCT-ONLY studio catalog photograph of this camel coat from the TRUE SIDE, 90 degrees. EMPTY CLOTHING / INVISIBLE MANNEQUIN: coat floats naturally in space with an empty neckline and empty cuffs. NO HUMAN, NO FACE, NO HEAD, NO HANDS, NO LEGS, NO TROUSERS, NO SHOES, NO VISIBLE MANNEQUIN. Nothing but this coat and gray studio background. Front points left. Entire coat and hem visible, square canvas. Disregard all prior model images; this is a still-life garment photograph.

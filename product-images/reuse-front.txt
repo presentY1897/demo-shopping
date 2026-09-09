@@ -1,0 +1,11 @@
+Generated with the built-in image_gen tool, 2026-09-09.
+Sample imagery for a fictional demo product.
+
+Use case: product-mockup
+Asset type: Korean fashion ecommerce product photograph, square image suitable for square detail gallery and centered 3:4 card crop.
+Primary request: One photorealistic catalog photograph of a camel brown oversized wool balmacaan coat, front view.
+Subject: Single long coat, relaxed raglan sleeves, classic convertible collar, concealed single-breasted button placket with one visible dark horn top button, two welt pockets, subtle natural drape, dense brushed wool texture.
+Scene/backdrop: seamless warm light gray studio background.
+Composition/framing: entire garment visible centered, sleeves relaxed slightly apart, hem and collar fully in frame. Coat occupies central 65% of width and 85% of height, leaving margins for portrait cropping. Invisible mannequin presentation, realistic volume.
+Lighting/mood: soft diffused studio daylight, restrained natural shadow, premium minimalist Korean fashion catalog.
+Constraints: one coat only; no person, mannequin parts, hanger, accessories, text, logo, watermark, borders or collage. Accurate fabric texture and believable construction.
