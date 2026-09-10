@@ -1283,3 +1283,6 @@ export type {
   PricingItem,
   ShippingPolicy,
 } from './pricing/types.js'
+
+export { checkoutDraftSchema, checkoutDraftResponseSchema } from './api/orders.js'
+export type { CheckoutDraft } from './api/orders.js'

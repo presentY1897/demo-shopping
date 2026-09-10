@@ -4,7 +4,10 @@ import type { Address, AppliedCoupon, Checkout } from '@shopping/shared'
 import { Button, Checkbox, EmptyState, ErrorState } from '@shopping/ui/components'
 import { formatMoney } from '@shopping/ui/format'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { closeCheckoutOnLeave } from '@/lib/checkout/checkout-api'
+import { useCheckoutDraft } from '@/lib/checkout/use-checkout-draft'
+import { useEffect, useState } from 'react'
 
 import { CouponSection } from '@/components/checkout/coupon-section'
 import { PaymentSection } from '@/components/checkout/payment-section'
@@ -74,6 +77,7 @@ export interface CheckoutScreenProps {
  */
 export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
   const {
+    restoreSelection,
     chooseCoupon,
     chooseRecommended,
     coupons,
@@ -85,10 +89,18 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
     state,
   } = useCheckout(id)
   const addresses = useAddressBook()
+  const router = useRouter()
+  const draft = useCheckoutDraft(id, restoreSelection)
+  const draftReady = draft.ready
+  const updateDraft = draft.update
+  useEffect(() => {
+    if (draftReady) updateDraft({ userCouponIds: [...selection] })
+  }, [draftReady, selection, updateDraft])
   // 주문이 생기는 순간 주문서 훅에게 알린다 — 그때부터 이 화면은 그 예약의 주인이
   // 아니고, 떠날 때 풀어서도 안 된다 (TASK-0054 4.3).
   const payment = usePayment(placed, id)
-  const [chosen, setChosen] = useState<string | null>(null)
+  const chosen = draft.draft.addressId
+  const setChosen = (addressId: string) => draft.update({ addressId })
   const [chosenMethod, setChosenMethod] = useState<string | null>(null)
   const [agreed, setAgreed] = useState(false)
 
@@ -107,7 +119,16 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
     )
   }
 
-  if (state.status === 'loading' || payment.restoring) {
+  if (draft.loadFailed)
+    return (
+      <ErrorState
+        title={messages.failedTitle}
+        description={messages.draftFailed}
+        action={<Button onClick={draft.retry}>{messages.retryDraft}</Button>}
+      />
+    )
+
+  if (state.status === 'loading' || payment.restoring || !draft.ready || addresses.loading) {
     return (
       <p aria-live="polite" className="text-fg-muted py-16 text-center text-sm">
         {messages.loading}
@@ -160,6 +181,7 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
     if (!ready || address === undefined || method === null) return
 
     payment.pay({
+      deliveryNote: draft.draft.deliveryNote,
       addressId: address.id,
       amount: checkout.paidAmount,
       checkoutId: checkout.id,
@@ -181,6 +203,29 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
       <div className="flex min-w-0 flex-1 flex-col gap-4">
         <Timer messages={messages} remaining={remaining} />
+        {payment.ordered === null ? (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              closeCheckoutOnLeave(id)
+              router.push('/cart')
+            }}
+          >
+            {messages.cancelCheckout}
+          </Button>
+        ) : null}
+        {draft.failed ? (
+          <div role="alert">
+            {messages.draftFailed}
+            <Button
+              onClick={() => {
+                void draft.flush().catch(() => undefined)
+              }}
+            >
+              {messages.retryDraft}
+            </Button>
+          </div>
+        ) : null}
         <Items checkout={checkout} messages={messages} />
 
         <fieldset disabled={payment.ordered !== null || paying}>
@@ -189,12 +234,24 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
               {payment.ordered.recipient.name} · {payment.ordered.recipient.addressLine1}{' '}
               {payment.ordered.recipient.addressLine2}
             </p>
+          ) : addresses.failed ? (
+            <ErrorState
+              title={messages.failedTitle}
+              description={messages.failedBody}
+              action={<Button onClick={addresses.retry}>{messages.retryDraft}</Button>}
+            />
           ) : (
             <Recipients
               chosen={address?.id ?? null}
               messages={messages}
               onChoose={setChosen}
               rows={addresses.rows}
+              note={draft.draft.deliveryNote}
+              onNote={(deliveryNote) => draft.update({ deliveryNote })}
+              onAdd={async () => {
+                await draft.flush()
+                router.push('/mypage/addresses')
+              }}
             />
           )}
 
@@ -371,10 +428,16 @@ function Recipients({
   chosen,
   messages,
   onChoose,
+  note,
+  onNote,
+  onAdd,
 }: {
   readonly rows: readonly Address[]
   readonly chosen: string | null
   readonly messages: CheckoutMessages
+  readonly note: string
+  readonly onNote: (value: string) => void
+  readonly onAdd: () => Promise<void>
   readonly onChoose: (id: string) => void
 }) {
   return (
@@ -384,7 +447,14 @@ function Recipients({
       {rows.length === 0 ? (
         <p className="text-fg-muted text-sm">
           {messages.recipientNone}{' '}
-          <Link className="text-accent underline" href="/mypage/addresses">
+          <Link
+            className="text-accent underline"
+            href="/mypage/addresses"
+            onClick={(event) => {
+              event.preventDefault()
+              void onAdd().catch(() => undefined)
+            }}
+          >
             {messages.recipientAdd}
           </Link>
         </p>
@@ -418,7 +488,14 @@ function Recipients({
           </fieldset>
 
           <p className="pt-2">
-            <Link className="text-accent text-sm underline" href="/mypage/addresses">
+            <Link
+              className="text-accent text-sm underline"
+              href="/mypage/addresses"
+              onClick={(event) => {
+                event.preventDefault()
+                void onAdd().catch(() => undefined)
+              }}
+            >
               {messages.recipientAdd}
             </Link>
           </p>
@@ -429,6 +506,8 @@ function Recipients({
         <span className="text-fg-muted">{messages.noteLabel}</span>
         <input
           className="border-border h-control-md text-fg rounded-md border px-3"
+          value={note}
+          onChange={(event) => onNote(event.target.value)}
           maxLength={100}
           placeholder={messages.notePlaceholder}
           type="text"

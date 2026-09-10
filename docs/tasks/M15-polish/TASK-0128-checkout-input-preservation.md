@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M15 마무리 |
-| 상태 | 승인됨 |
+| 상태 | 진행중 |
 | 작성일 | 2026-09-10 |
 | 구현 브랜치(예정) | `feature/checkout-input-preservation` |
 | 구현 worktree(예정) | `feature-checkout-input-preservation` |
@@ -89,3 +89,7 @@
 | 2026-09-10 | 사용자 요청으로 TASK-0124 후속 계획 초안 작성. 초안 작성 후 사용자 일괄 승인 |
 
 | 2026-09-10 | 사용자 TASK-0125~0131 일괄 승인. 각 작업의 선행 조건에 따라 구현 진행 |
+
+### 구현 계약 확정
+
+예약 행의 checkoutDraft JSON으로 주소 ID·배송 요청·쿠폰 선택을 인증된 서버에 저장한다. GET/PATCH /checkouts/:id/draft는 유효 예약의 소유자를 확인한다. 클라이언트 저장은 순차 요청으로 처리하고 주소록 이동 전에 flush한다. pagehide에서는 마지막 초안을 keepalive로 저장하되 예약을 해제하지 않는다. 예약은 명시 취소와 TTL로 종료한다. 배송 메모는 주문 스냅샷의 deliveryNote로 저장한다.

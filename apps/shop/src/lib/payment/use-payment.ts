@@ -167,6 +167,7 @@ export type PaymentState =
   | { readonly status: 'leaving' }
 
 export interface PaymentInput {
+  readonly deliveryNote?: string
   readonly checkoutId: string
   readonly addressId: string
   readonly method: PaymentMethod
@@ -493,6 +494,7 @@ export function usePayment(
             next.checkoutId,
             next.addressId,
             next.userCouponIds,
+            next.deliveryNote,
           )
 
           setOrdered(made)

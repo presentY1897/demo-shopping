@@ -1926,6 +1926,9 @@ export interface CartMessages {
 
 /** 주문서 화면 (TASK-0050). */
 export interface CheckoutMessages {
+  readonly retryDraft: string
+  readonly draftFailed: string
+  readonly cancelCheckout: string
   readonly title: string
   /** 남은 시간. `{time}` — `12:05`. */
   readonly remaining: string

@@ -1477,6 +1477,7 @@ enum ReservationStatus {
 
 /// 한 Variant 에 대해 한 사람이 잡아 둔 수량.
 model StockReservation {
+  checkoutDraft Json?
   sourceCartItemId String? @db.Uuid
   sourceCartUpdatedAt DateTime?
   id        String @id @default(uuid(7)) @db.Uuid
@@ -1546,6 +1547,7 @@ enum SellerOrderStatus {
 /// 여러 판매자의 물건이 한 주문에 섞이지만 결제는 한 번이다. 그래서 금액의 합계는
 /// 여기 있고, 상태는 여기 없다 — 상태는 `SellerOrder` 가 갖는다.
 model Order {
+  deliveryNote String? @db.VarChar(100)
   cartCleanedAt DateTime?
   id String @id @default(uuid(7)) @db.Uuid
 

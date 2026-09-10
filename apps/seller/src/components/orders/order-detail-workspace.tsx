@@ -267,6 +267,9 @@ function OrderDetailScreen({
                 <dd>
                   [{ready.order.recipient.postalCode}] {ready.order.recipient.addressLine1}{' '}
                   {ready.order.recipient.addressLine2 ?? ''}
+                  {ready.order.recipient.deliveryNote ? (
+                    <p>{ready.order.recipient.deliveryNote}</p>
+                  ) : null}
                 </dd>
               </dl>
             </section>

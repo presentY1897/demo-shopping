@@ -363,6 +363,7 @@ function OrderRecipientPanel({
         <dd className="text-fg">
           ({recipient.postalCode}) {recipient.addressLine1}
           {recipient.addressLine2 === null ? '' : ` ${recipient.addressLine2}`}
+          {recipient.deliveryNote ? <p>{recipient.deliveryNote}</p> : null}
         </dd>
       </dl>
     </section>

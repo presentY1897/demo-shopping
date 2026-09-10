@@ -492,6 +492,9 @@ export const ko: Messages = {
     changeFailed: '변경하지 못했어요. 다시 시도해 주세요.',
   },
   checkout: {
+    cancelCheckout: '주문서 취소',
+    retryDraft: '다시 시도',
+    draftFailed: '입력 내용을 저장하지 못했어요. 연결을 확인한 뒤 다시 시도해 주세요.',
     title: '주문서',
     remaining: '{time} 안에 주문해 주세요',
     remainingUrgent: '{time} 뒤에 예약이 풀려요',
