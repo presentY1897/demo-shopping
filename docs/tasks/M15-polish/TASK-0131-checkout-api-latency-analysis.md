@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M15 마무리 |
-| 상태 | 승인됨 |
+| 상태 | 진행 중 |
 | 작성일 | 2026-09-10 |
 | 구현 브랜치(예정) | `feature/checkout-api-latency-analysis` |
 | 구현 worktree(예정) | `feature-checkout-api-latency-analysis` |
@@ -91,3 +91,7 @@
 | 2026-09-10 | 사용자 요청으로 TASK-0124 후속 계획 초안 작성. 초안 작성 후 사용자 일괄 승인 |
 
 | 2026-09-10 | 사용자 TASK-0125~0131 일괄 승인. 각 작업의 선행 조건에 따라 구현 진행 |
+
+### 측정 결과
+
+[실측 보고서](../../reviews/2026-09-10-checkout-latency-measurements.md)에 실제 HTTP 7개 요청별 warm 30/32표본, 연결 획득/쿼리/transaction/provider/서비스 계측과 미분리 잔여를 기록했다. 로컬에서는 수초 지연을 재현하지 못했고 운영 trace가 없어 운영 원인은 미해결이다. 실제 cold start와 JWT 경로의 운영 계측이 남아 있어 완료로 처리하지 않는다.
