@@ -1,0 +1,14 @@
+{
+  "environment": "isolated local PostgreSQL; simulated response delay only during capture",
+  "itemCount": 2,
+  "delayMs": 210,
+  "timeout": 5000,
+  "status": 201,
+  "ms": 5788.219209000001,
+  "queries": 33,
+  "transactionErrors": [],
+  "transactionMs": [1076.7363450000003, 3207.8330130000004],
+  "paymentStatus": "PAID",
+  "sellerStatuses": ["PAID", "PAID"],
+  "cartItemCount": 0
+}

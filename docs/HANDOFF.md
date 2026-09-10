@@ -1447,3 +1447,5 @@ TASK-0125~0131은 사용자 일괄 승인 후 개별 worktree에서 구현하여
 TASK-0129는 임의 상품 검증으로 기존 시드 CDN 객체 누락을 확인하고 원본 바이트와 동일한 정적 자산을 제공한다. 검증 조건과 범위는 [썸네일 복구 기록](reviews/2026-09-10-seed-thumbnail-recovery.md)에 있다.
 
 TASK-0131은 PR #137 운영 trace에서 DB 왕복 약210ms를 관찰했다. 단일 상품은 PAID/장바구니 비움 성공, 두 상품 capture는500이었다. 격리된 실 PostgreSQL에210ms를 주입하면 기본 transaction5초에서 P2028·payment PAID/주문 PAYMENT_PENDING/장바구니 잔류가 재현되고, 테스트 제한30초에서는 완료된다. 운영 처리 제한은 변경하지 않았다. 후속은 markPaid의 반복 DB 왕복·transaction 경계를 개선하는 것이며, 단순 제한 증가만으로 속도나 최대100개 항목을 해결했다고 보면 안 된다. 실제 cold start와 운영 오류 로그는 아직 미확보다. [측정·재현 근거](reviews/2026-09-10-checkout-latency-measurements.md).
+
+TASK-0132는 `feature-payment-finalization-batching`에서 주문 잠금/단일 transaction을 유지하며 원본 장바구니 삭제·예약/재고 원장·판매자 주문 상태/이력을 일괄 처리한다. 210ms 주입에서 2개/100개 모두 완료, 후처리 약3.2초이며 기본5초 제한은 그대로다. [검증 기록](reviews/2026-09-11-payment-finalization.md). PR/배포 확인 전에는 완료 처리하지 않는다. 전체 capture 약5.8초와 cart/checkout 조회 지연, 실제 cold start는 남은 범위다.
