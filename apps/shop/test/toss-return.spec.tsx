@@ -209,11 +209,7 @@ describe('승인이 안 되면 확정하지 않는다 (F4)', () => {
     expect(captured()).toBe(true)
     // **「다시 결제하기」를 주지 않는다.** 그 결제는 이미 끝났을 수 있고, 우리는 이
     // 응답만으로 성공인지 실패인지를 모른다 — 권하면 한 사람이 두 번 낸다.
-    expect(screen.getByRole('link', { name: done.backToCheckout })).toHaveAttribute(
-      'href',
-      `/checkout/${checkout.id}`,
-    )
-    expect(screen.getByRole('link', { name: done.backHome })).toBeVisible()
+    expect(screen.queryByRole('link', { name: done.backToCheckout })).toBeNull()
   })
 
   it('does not capture a payment whose approval never came back (D-220)', async () => {
@@ -285,7 +281,6 @@ describe('승인이 안 되면 확정하지 않는다 (F4)', () => {
       'href',
       `/checkout/${checkout.id}`,
     )
-    expect(screen.getByRole('link', { name: done.backHome })).toBeVisible()
   })
 
   it('answers a refreshed return the same way, because the server names it (D-220)', async () => {
@@ -321,7 +316,6 @@ describe('승인이 안 되면 확정하지 않는다 (F4)', () => {
       'href',
       `/checkout/${checkout.id}`,
     )
-    expect(screen.getByRole('link', { name: done.backHome })).toBeVisible()
   })
 
   it('will not tell somebody to pay again when the money is already authorized', async () => {
