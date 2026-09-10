@@ -23,6 +23,6 @@ CHECKOUT_REMOTE_DIAGNOSTIC=1 CHECKOUT_REMOTE_PREPARATION=1 CHECKOUT_REMOTE_ITEMS
 - 기존 장바구니·주문서·주문·멱등·후처리·성능105개 통과.
 - 기존 Prisma select와 신규 SQL projection의 실제 결과 대조: UTC 삭제 시각, 옵션과 선택값, 대표 이미지 동점 정렬, 가격/정책/카테고리 동일. 빈/남의/없는 항목은 반환하지 않는다.
 - 1/2/100개 각각 예약 INSERT1회, 판매자 주문/항목/초기 이력 INSERT 각각1회. 같은 주문 재시도/롤백·재고 대사도 함께 확인한다.
-- 쿠폰·요율·예약·만료81개 회귀 통과. 전체 게이트·배포·모바일 전체 구매는 결과 확인 뒤 기록한다.
+- 쿠폰·요율·예약·만료81개 회귀 통과. 전체 typecheck/lint/build/format 통과. API4,358개(진단2개 skip), shared103개, UI956개, api-mocks472개, admin1,164개, seller867개, shop1,259개(1개 skip) 통과. 배포·모바일 전체 구매는 결과 확인 뒤 기록한다.
 
 TASK-0132 배포 뒤 확인한 [운영 앞 단계 응답 중단](2026-09-11-payment-finalization.md)을 해결하는 후속이다. 연결 획득 지연과 실제 cold start는 별도 원인이라 과대 해석하지 않는다.
