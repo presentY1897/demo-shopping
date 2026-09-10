@@ -1,0 +1,50 @@
+{
+  "products": [
+    {
+      "id": "womens-oversized-crop-tee",
+      "name": "여성 오버핏 크롭 코튼 티셔츠",
+      "sourceProductId": "01a07b26-1e91-73ea-b15b-53f146e6d377",
+      "audience": "womenswear",
+      "color": "deep burgundy wine red",
+      "material": "opaque matte cotton jersey",
+      "design": "Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.",
+      "model": "One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.",
+      "highlights": ["오버사이즈 핏", "크롭 기장", "면 소재"],
+      "variants": [
+        {
+          "id": "black",
+          "kind": "color",
+          "value": "solid black"
+        },
+        {
+          "id": "khaki",
+          "kind": "color",
+          "value": "muted olive khaki green"
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee",
+      "name": "남성 스탠다드 린넨 포켓 티셔츠",
+      "sourceProductId": "01a07b25-ffc6-71a8-b75f-4087dbc89016",
+      "audience": "menswear",
+      "color": "deep navy blue",
+      "material": "opaque matte linen knit with subtle natural slub texture",
+      "design": "Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.",
+      "model": "One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.",
+      "highlights": ["레귤러 핏", "가슴 포켓", "린넨 소재"],
+      "variants": [
+        {
+          "id": "burgundy",
+          "kind": "color",
+          "value": "deep burgundy wine red"
+        },
+        {
+          "id": "gray",
+          "kind": "color",
+          "value": "medium neutral gray"
+        }
+      ]
+    }
+  ]
+}

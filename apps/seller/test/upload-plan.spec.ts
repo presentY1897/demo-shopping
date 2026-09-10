@@ -363,7 +363,11 @@ describe('admitFiles', () => {
   })
 
   it('counts what is already in the gallery against the cap', () => {
-    const admission = admitFiles([file('a.png'), file('b.png')], 9, PRODUCT_MAX_IMAGES)
+    const admission = admitFiles(
+      [file('a.png'), file('b.png')],
+      PRODUCT_MAX_IMAGES - 1,
+      PRODUCT_MAX_IMAGES,
+    )
 
     expect(admission.accepted.map((entered) => entered.name)).toEqual(['a.png'])
     expect(admission.rejected).toEqual([{ name: 'b.png', reason: 'tooManyImages' }])

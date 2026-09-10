@@ -46,6 +46,34 @@ def valid_output(root, job):
     return job['status'] == 'accepted' and path.is_file() and digest(path) == job.get('sha256')
 
 
+def shot_entries(product):
+    shots = product.get('shots', list(SHOTS))
+    profiles = product.get('models')
+    if profiles is not None and 'model' in product:
+        raise ValueError('Use either model or models, not both')
+    if profiles is None:
+        return [(shot, *SHOTS[shot]) for shot in shots]
+    if not isinstance(profiles, list) or not profiles:
+        raise ValueError('models must be a nonempty list')
+    seen = set()
+    entries = [(shot, *SHOTS[shot]) for shot in shots if not shot.startswith('model-') and shot != 'editorial']
+    for model in profiles:
+        mid = slug(model['id'])
+        if mid in seen or not isinstance(model.get('description'), str) or not model['description'].strip():
+            raise ValueError('Each model needs a unique id and description')
+        seen.add(mid)
+        def key(shot):
+            if shot == 'editorial': return f'model-{mid}-editorial'
+            if shot.startswith('model-'): return f"model-{mid}-{shot[6:]}"
+            return shot
+        for shot in shots:
+            if not shot.startswith('model-') and shot != 'editorial': continue
+            label, deps, direction = SHOTS[shot]
+            entries.append((key(shot), f'{mid} · {label}', [key(d) for d in deps],
+                            direction + f"\nThis model profile only: {model['description']}. Never use another profile's identity."))
+    return entries
+
+
 def plan(spec_path, out):
     spec = read(spec_path)
     products = spec['products']
@@ -68,18 +96,20 @@ def plan(spec_path, out):
                 raise ValueError(f'{pid}/{shot}: missing dependency in shots')
         context = (f"Product: {product['name']}\nDesign invariants: {product['design']}\n"
                    f"Base color: {product['color']}\nBase material: {product['material']}\n"
-                   f"Studio: {product.get('studio', 'warm light gray seamless studio, soft diffused daylight')}\n"
-                   f"Adult model styling: {product.get('model', 'adult model, natural appearance, neutral styling without accessories obscuring the garment')}\n")
+                   f"Studio: {product.get('studio', 'warm light gray seamless studio, soft diffused daylight')}\n")
         def add(key, label, deps, direction, variant=None):
+            styling = ''
+            if product.get('model') and ('model-' in key or key.endswith('editorial')):
+                styling = f"Adult model styling: {product['model']}\n"
             jobs.append({'id': f'{pid}/{key}', 'productId': pid, 'label': label,
                          'variant': variant, 'dependencies': [f'{pid}/{d}' for d in deps],
                          'status': 'pending', 'attempts': 0,
-                         'prompt': 'Use case: product-mockup\n' + context + direction +
+                         'prompt': 'Use case: product-mockup\n' + context + styling + direction +
                          '\nOne separate photorealistic image only; no collage, text, logos or watermark. '
                          'Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. '
                          'For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.'})
-        for shot in shots:
-            label, deps, direction = SHOTS[shot]
+        entries = shot_entries(product)
+        for shot, label, deps, direction in entries:
             add(shot, label, deps, direction)
         variant_ids = set()
         for variant in product.get('variants', []):
@@ -96,9 +126,9 @@ def plan(spec_path, out):
                 raise ValueError('Variant views must be unique selected base shots')
             if 'front' not in views:
                 raise ValueError('Variant views must include front as variant anchor')
-            for view in ['front'] + [v for v in views if v != 'front']:
+            for view, label, _, _ in entries:
                 deps = [view] if view == 'front' else [view, f'variant-{vid}-front']
-                add(f'variant-{vid}-{view}', f"{variant['value']} · {SHOTS[view][0]}", deps,
+                add(f'variant-{vid}-{view}', f"{variant['value']} · {label}", deps,
                     f"Match framing and pose of the first reference. Change only {variant['kind']} to {variant['value']}. "
                     'For material changes alter texture and plausible drape only; preserve tailoring. '
                     'If a second reference is present it defines the target variant appearance.', variant)
@@ -114,7 +144,7 @@ def plan(spec_path, out):
 def coverage(data, root):
     expected = []
     for product in data['spec']['products']:
-        shots = product.get('shots', list(SHOTS))
+        shots = [entry[0] for entry in shot_entries(product)]
         prefixes = [''] + [f"variant-{v['id']}-" for v in product.get('variants', [])]
         expected.extend(f"{product['id']}/{prefix}{shot}" for prefix in prefixes for shot in shots)
     by_id = {j['id']: j for j in data['jobs']}

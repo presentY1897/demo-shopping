@@ -13,3 +13,5 @@ export { gridColumnsClass, gridImageSizes, ProductGrid } from './product-grid'
 export type { ProductGridProps } from './product-grid'
 export { ProductList, ProductListSkeleton } from './product-list'
 export type { ProductListLabels, ProductListProps } from './product-list'
+
+export { ProductImagePlaceholder } from './product-image-placeholder'

@@ -1,0 +1,148 @@
+{
+  "products": [
+    {
+      "id": "cobalt-round-coin-case",
+      "name": "코발트 라운드 코인 케이스",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 액세서리",
+      "color": "cobalt blue",
+      "colorLabel": "코발트",
+      "hex": "#2453bd",
+      "material": "fine-grain leather",
+      "price": 19000,
+      "design": "Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.",
+      "sizes": [],
+      "skuPrefix": "DOZEN-01",
+      "highlights": ["코발트 컬러", "가상 기획 상품"],
+      "description": "코발트 라운드 코인 케이스 가상 기획 샘플입니다. AI 생성 이미지로 형태와 사용 장면을 표현했습니다.",
+      "shotDirections": {
+        "front": "Closed front three-quarter showing round face and upper zipper.",
+        "back": "Closed rear three-quarter showing plain circular back.",
+        "side": "Edge-on side profile showing shallow cylindrical gusset and zipper.",
+        "texture": "Macro cobalt leather grain tonal stitching and zipper seam.",
+        "model-front": "Open zippered circular case on tabletop with one plain silver coin inside sole blue compartment.",
+        "model-side": "Adult hand holding same closed coin case for scale, ivory sleeve.",
+        "model-back": "Top oblique open empty case showing single blue compartment and two round halves.",
+        "editorial": "Closed round coin case on pale oak desk beside one plain silver coin."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "oat-canvas-bottle-bag",
+      "name": "오트 캔버스 보틀 백",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 가방",
+      "color": "oat beige",
+      "colorLabel": "오트",
+      "hex": "#cbbd9d",
+      "material": "cotton canvas",
+      "price": 23000,
+      "design": "Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.",
+      "sizes": [],
+      "skuPrefix": "DOZEN-02",
+      "highlights": ["오트 컬러", "가상 기획 상품"],
+      "description": "오트 캔버스 보틀 백 가상 기획 샘플입니다. AI 생성 이미지로 형태와 사용 장면을 표현했습니다.",
+      "shotDirections": {
+        "front": "Empty upright front three-quarter showing one short arch handle and cylindrical body.",
+        "back": "Empty rear three-quarter showing plain cylindrical back and same single arch handle.",
+        "side": "Empty side profile showing cylinder and single short handle.",
+        "texture": "Macro oat canvas weave and vertical seam.",
+        "model-front": "Upright bag containing one plain slim stainless steel capped bottle, same single handle visible.",
+        "model-side": "Adult hand carrying same bag by its single short handle with same stainless bottle inside.",
+        "model-back": "Top oblique empty open cylindrical bag showing round bottom and single handle.",
+        "editorial": "Same bag containing same stainless bottle on pale stone bench in daylight."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "rose-leather-cord-wrap",
+      "name": "로즈 레더 코드 랩",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 액세서리",
+      "color": "dusty rose",
+      "colorLabel": "로즈",
+      "hex": "#b87883",
+      "material": "smooth matte leather",
+      "price": 9000,
+      "design": "Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.",
+      "sizes": [],
+      "skuPrefix": "DOZEN-03",
+      "highlights": ["로즈 컬러", "가상 기획 상품"],
+      "description": "로즈 레더 코드 랩 가상 기획 샘플입니다. AI 생성 이미지로 형태와 사용 장면을 표현했습니다.",
+      "shotDirections": {
+        "front": "Unfastened elongated oval strip lying flat front-up, both ends and two mating halves of single snap visible.",
+        "back": "Unfastened strip lying flat reverse-up showing plain reverse and matching snap backs.",
+        "side": "Low edge-on view of unfastened flat strip showing thin leather thickness.",
+        "texture": "Extreme macro rose leather edge and silver snap detail.",
+        "model-front": "Same strip folded at middle and single snap fastened around one neatly coiled plain white charging cable.",
+        "model-side": "Adult fingers holding same closed wrap around same white cable coil for scale.",
+        "model-back": "Top-down unfastened strip beside same white cable coil showing its two mating snap components.",
+        "editorial": "Same fastened rose wrap around white cable coil on pale oak desk."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "olive-fold-glasses-case",
+      "name": "올리브 폴드 안경 케이스",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 액세서리",
+      "color": "muted olive green",
+      "colorLabel": "올리브",
+      "hex": "#78805b",
+      "material": "fine-grain matte leather",
+      "price": 27000,
+      "design": "Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.",
+      "sizes": [],
+      "skuPrefix": "DOZEN-04",
+      "highlights": ["올리브 컬러", "가상 기획 상품"],
+      "description": "올리브 폴드 안경 케이스 가상 기획 샘플입니다. AI 생성 이미지로 형태와 사용 장면을 표현했습니다.",
+      "shotDirections": {
+        "front": "Closed three-quarter front showing elongated triangular prism and one centered silver snap on straight flap.",
+        "back": "Closed rear three-quarter showing plain rear sloped panel and triangular end.",
+        "side": "End-on side view showing triangular cross section.",
+        "texture": "Macro olive leather grain tonal edge stitching and silver snap.",
+        "model-front": "Open long flap with one plain thin metal-frame pair of glasses resting inside beige sole compartment.",
+        "model-side": "Adult hand holding same closed triangular glasses case for scale.",
+        "model-back": "Open empty case with long flap lifted showing plain beige sole compartment and triangular end walls.",
+        "editorial": "Same closed triangular case beside thin metal-frame glasses on pale stone desk."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "products": [
+    {
+      "id": "navy-utility-tote",
+      "name": "네이비 유틸리티 토트백",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 가방",
+      "color": "navy blue",
+      "colorLabel": "네이비",
+      "hex": "#283b55",
+      "material": "cotton canvas",
+      "price": 39000,
+      "design": "Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+      "sizes": [],
+      "skuPrefix": "SIX-01",
+      "highlights": ["네이비 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Front three-quarter standing bag, both handles upright, one front patch pocket visible.",
+        "back": "Rear view showing plain back and two handles.",
+        "side": "Side profile showing rectangular gusset.",
+        "texture": "Macro canvas weave and patch-pocket stitching.",
+        "model-front": "Adult torso in ivory shirt carrying tote by both handles at hip, bag fully visible.",
+        "model-side": "Same adult side view holding tote, exact handles and pocket preserved.",
+        "model-back": "Top-down open bag showing empty cream-lined single compartment.",
+        "editorial": "Tote standing on pale stone bench, daylight."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "네이비 유틸리티 토트백 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "mint-drawstring-pouch",
+      "name": "민트 드로스트링 파우치",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 액세서리",
+      "color": "muted mint green",
+      "colorLabel": "민트",
+      "hex": "#9abfb0",
+      "material": "cotton poplin",
+      "price": 15000,
+      "design": "Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+      "sizes": [],
+      "skuPrefix": "SIX-02",
+      "highlights": ["민트 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Closed gathered pouch front three-quarter, cords visible.",
+        "back": "Plain back of same gathered pouch.",
+        "side": "Side profile showing soft depth.",
+        "texture": "Macro mint cotton texture and drawstring channel stitching.",
+        "model-front": "Adult hand holding closed pouch for scale, cream sleeve.",
+        "model-side": "Same hand and pouch side angle.",
+        "model-back": "Top view with mouth opened, empty matching mint interior, cords still threaded.",
+        "editorial": "Pouch on linen cloth beside plain wooden comb."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "민트 드로스트링 파우치 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "espresso-passport-cover",
+      "name": "에스프레소 패스포트 커버",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 지갑",
+      "color": "espresso brown",
+      "colorLabel": "에스프레소",
+      "hex": "#4b352b",
+      "material": "smooth matte leather",
+      "price": 32000,
+      "design": "Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+      "sizes": [],
+      "skuPrefix": "SIX-03",
+      "highlights": ["에스프레소 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Closed front three-quarter portrait orientation.",
+        "back": "Closed plain rear.",
+        "side": "Closed narrow side showing fold.",
+        "texture": "Macro leather grain and edge stitches.",
+        "model-front": "Open flat showing exactly two broad vertical sleeves, empty.",
+        "model-side": "Adult hands holding closed passport cover for scale.",
+        "model-back": "Open cover with one plain blank navy booklet partly inserted into right sleeve, left sleeve empty.",
+        "editorial": "Closed cover on oak table beside plain travel pen."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "에스프레소 패스포트 커버 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "brick-loop-luggage-tag",
+      "name": "브릭 루프 러기지 태그",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 액세서리",
+      "color": "brick red",
+      "colorLabel": "브릭",
+      "hex": "#ad5549",
+      "material": "fine-grain leather",
+      "price": 16000,
+      "design": "Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+      "sizes": [],
+      "skuPrefix": "SIX-04",
+      "highlights": ["브릭 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Plain front three-quarter complete tag and buckled strap.",
+        "back": "Rear showing single clear rectangular ID window with blank card.",
+        "side": "Thin side profile with strap arranged visibly.",
+        "texture": "Macro leather stitching and silver buckle.",
+        "model-front": "Tag attached by its strap to handle of plain beige suitcase, close crop emphasizing tag.",
+        "model-side": "Same tag and suitcase handle from side, attachment loop clear.",
+        "model-back": "Rear close view of ID window with blank card, no readable lettering.",
+        "editorial": "Tag lying beside unbranded cream travel pouch."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "브릭 루프 러기지 태그 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    }
+  ]
+}

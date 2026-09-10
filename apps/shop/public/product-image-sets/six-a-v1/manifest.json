@@ -1,0 +1,787 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "navy-utility-tote",
+        "name": "네이비 유틸리티 토트백",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 가방",
+        "color": "navy blue",
+        "colorLabel": "네이비",
+        "hex": "#283b55",
+        "material": "cotton canvas",
+        "price": 39000,
+        "design": "Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+        "sizes": [],
+        "skuPrefix": "SIX-01",
+        "highlights": ["네이비 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Front three-quarter standing bag, both handles upright, one front patch pocket visible.",
+          "back": "Rear view showing plain back and two handles.",
+          "side": "Side profile showing rectangular gusset.",
+          "texture": "Macro canvas weave and patch-pocket stitching.",
+          "model-front": "Adult torso in ivory shirt carrying tote by both handles at hip, bag fully visible.",
+          "model-side": "Same adult side view holding tote, exact handles and pocket preserved.",
+          "model-back": "Top-down open bag showing empty cream-lined single compartment.",
+          "editorial": "Tote standing on pale stone bench, daylight."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "네이비 유틸리티 토트백 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "mint-drawstring-pouch",
+        "name": "민트 드로스트링 파우치",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 액세서리",
+        "color": "muted mint green",
+        "colorLabel": "민트",
+        "hex": "#9abfb0",
+        "material": "cotton poplin",
+        "price": 15000,
+        "design": "Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+        "sizes": [],
+        "skuPrefix": "SIX-02",
+        "highlights": ["민트 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Closed gathered pouch front three-quarter, cords visible.",
+          "back": "Plain back of same gathered pouch.",
+          "side": "Side profile showing soft depth.",
+          "texture": "Macro mint cotton texture and drawstring channel stitching.",
+          "model-front": "Adult hand holding closed pouch for scale, cream sleeve.",
+          "model-side": "Same hand and pouch side angle.",
+          "model-back": "Top view with mouth opened, empty matching mint interior, cords still threaded.",
+          "editorial": "Pouch on linen cloth beside plain wooden comb."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "민트 드로스트링 파우치 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "espresso-passport-cover",
+        "name": "에스프레소 패스포트 커버",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 지갑",
+        "color": "espresso brown",
+        "colorLabel": "에스프레소",
+        "hex": "#4b352b",
+        "material": "smooth matte leather",
+        "price": 32000,
+        "design": "Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+        "sizes": [],
+        "skuPrefix": "SIX-03",
+        "highlights": ["에스프레소 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Closed front three-quarter portrait orientation.",
+          "back": "Closed plain rear.",
+          "side": "Closed narrow side showing fold.",
+          "texture": "Macro leather grain and edge stitches.",
+          "model-front": "Open flat showing exactly two broad vertical sleeves, empty.",
+          "model-side": "Adult hands holding closed passport cover for scale.",
+          "model-back": "Open cover with one plain blank navy booklet partly inserted into right sleeve, left sleeve empty.",
+          "editorial": "Closed cover on oak table beside plain travel pen."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "에스프레소 패스포트 커버 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "brick-loop-luggage-tag",
+        "name": "브릭 루프 러기지 태그",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 액세서리",
+        "color": "brick red",
+        "colorLabel": "브릭",
+        "hex": "#ad5549",
+        "material": "fine-grain leather",
+        "price": 16000,
+        "design": "Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+        "sizes": [],
+        "skuPrefix": "SIX-04",
+        "highlights": ["브릭 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Plain front three-quarter complete tag and buckled strap.",
+          "back": "Rear showing single clear rectangular ID window with blank card.",
+          "side": "Thin side profile with strap arranged visibly.",
+          "texture": "Macro leather stitching and silver buckle.",
+          "model-front": "Tag attached by its strap to handle of plain beige suitcase, close crop emphasizing tag.",
+          "model-side": "Same tag and suitcase handle from side, attachment loop clear.",
+          "model-back": "Rear close view of ID window with blank card, no readable lettering.",
+          "editorial": "Tag lying beside unbranded cream travel pouch."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "브릭 루프 러기지 태그 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "navy-utility-tote/front",
+      "productId": "navy-utility-tote",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: navy blue\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-utility-tote/front.png",
+      "sha256": "9f7bc6c80ba27a8d007cafa6d9669489d7ded7b7e47d910f79bbd27b6c35cdea",
+      "history": [
+        {
+          "note": "Navy canvas, two handles, single square pocket, cream open lining and complete margins verified.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: navy blue. Material: cotton canvas.\nRequired view: Front three-quarter standing bag, both handles upright, one front patch pocket visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "navy-utility-tote/back",
+      "productId": "navy-utility-tote",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["navy-utility-tote/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: navy blue\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-utility-tote/back.png",
+      "sha256": "4a78cbb377091a72cb8c7ca821de8aae4e3b3a3fd8fc8e065732ceb71055f017",
+      "history": [
+        {
+          "note": "Plain rear without pocket, consistent two handles navy canvas and cream lining.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: navy blue. Material: cotton canvas.\nRequired view: Rear view showing plain back and two handles.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "navy-utility-tote/side",
+      "productId": "navy-utility-tote",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["navy-utility-tote/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: navy blue\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-utility-tote/side.png",
+      "sha256": "f1b17ffc522b4f84964137551f19313b8ebb14349cea78d8c7ea00520f590e89",
+      "history": [
+        {
+          "note": "Narrow gusset side, pocket edge only, matching navy and cream lining.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: navy blue. Material: cotton canvas.\nRequired view: Side profile showing rectangular gusset.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "navy-utility-tote/texture",
+      "productId": "navy-utility-tote",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["navy-utility-tote/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: navy blue\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-utility-tote/texture.png",
+      "sha256": "f7ce042620cb6a05be98dd8b474795b0de9c9b037a86d0156efb034b235e5e29",
+      "history": [
+        {
+          "note": "Macro navy weave and matching pocket stitching fill frame, no whole-product duplicate.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: navy blue. Material: cotton canvas.\nRequired view: Macro canvas weave and patch-pocket stitching.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "navy-utility-tote/model-front",
+      "productId": "navy-utility-tote",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["navy-utility-tote/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: navy blue\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-utility-tote/model-front.png",
+      "sha256": "ff47a3802c28e7591326f065034c892d84731064f85cc44a6e99981d0685d902",
+      "history": [
+        {
+          "note": "Ivory shirt adult torso, anatomically plausible hands, full tote with two handles and single pocket preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: navy blue. Material: cotton canvas.\nRequired view: Adult torso in ivory shirt carrying tote by both handles at hip, bag fully visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "navy-utility-tote/model-side",
+      "productId": "navy-utility-tote",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["navy-utility-tote/front", "navy-utility-tote/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: navy blue\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-utility-tote/model-side.png",
+      "sha256": "591ed2730cf6a0aad2c22026564dacc8b860fa9c343d206728841676e72663dd",
+      "history": [
+        {
+          "note": "Adult side pose consistent ivory shirt and natural grip, tote handles pocket and full margins preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: navy blue. Material: cotton canvas.\nRequired view: Same adult side view holding tote, exact handles and pocket preserved.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "navy-utility-tote/model-back",
+      "productId": "navy-utility-tote",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "navy-utility-tote/front",
+        "navy-utility-tote/back",
+        "navy-utility-tote/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: navy blue\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-utility-tote/model-back.png",
+      "sha256": "1742dbecbc46bb186efee02c8a43c1311aea931c676af0cee2af219014c45b84",
+      "history": [
+        {
+          "note": "Elevated top view clearly exposes empty cream single compartment, no interior pockets, two handles intact.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: navy blue. Material: cotton canvas.\nRequired view: Top-down open bag showing empty cream-lined single compartment.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "navy-utility-tote/editorial",
+      "productId": "navy-utility-tote",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["navy-utility-tote/front", "navy-utility-tote/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: navy blue\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-utility-tote/editorial.png",
+      "sha256": "237754318666254a2afaa7c465c4ea73d9c2de8bd60e8ff6fe518c34b209d567",
+      "history": [
+        {
+          "note": "Tote on pale stone bench daylight, construction and navy color match anchor.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 유틸리티 토트백\nDesign invariants: Fictional concept sample. Rectangular navy canvas tote with flat gusset base, two short navy webbing handles, one square exterior patch pocket centered on front, plain rear, open top, cream lining with no interior pockets. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: navy blue. Material: cotton canvas.\nRequired view: Tote standing on pale stone bench, daylight.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-drawstring-pouch/front",
+      "productId": "mint-drawstring-pouch",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted mint green\nBase material: cotton poplin\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-drawstring-pouch/front.png",
+      "sha256": "11b62964ab155334f39fc8b2858967bd1b8581740856379531cc491c403bb3a9",
+      "history": [
+        {
+          "note": "Mint body, gathered channel, two opposed cream knotted cords, rounded base and margins verified.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted mint green. Material: cotton poplin.\nRequired view: Closed gathered pouch front three-quarter, cords visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "mint-drawstring-pouch/back",
+      "productId": "mint-drawstring-pouch",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["mint-drawstring-pouch/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted mint green\nBase material: cotton poplin\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-drawstring-pouch/back.png",
+      "sha256": "d4cf494e03b7aa050ee19df39188060ae91b10c3ce35845992fc8a9d18b12224",
+      "history": [
+        {
+          "note": "Plain pouch rear, consistent mint color gathered channel and two cream cord ends.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted mint green. Material: cotton poplin.\nRequired view: Plain back of same gathered pouch.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-drawstring-pouch/side",
+      "productId": "mint-drawstring-pouch",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["mint-drawstring-pouch/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted mint green\nBase material: cotton poplin\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-drawstring-pouch/side.png",
+      "sha256": "8e46ae82599cb86af7ed5aa781fdff1236c335761b9df62656cf79f4a415634c",
+      "history": [
+        {
+          "note": "Side angle clearly shows soft depth and seam, both cream cord ends consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted mint green. Material: cotton poplin.\nRequired view: Side profile showing soft depth.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-drawstring-pouch/texture",
+      "productId": "mint-drawstring-pouch",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["mint-drawstring-pouch/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted mint green\nBase material: cotton poplin\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-drawstring-pouch/texture.png",
+      "sha256": "e7157683e5617ba21fec90009dbecc0636616a980743e1fe502da129db74bfdc",
+      "history": [
+        {
+          "note": "Macro mint weave and gathered drawstring-channel stitches clearly shown.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted mint green. Material: cotton poplin.\nRequired view: Macro mint cotton texture and drawstring channel stitching.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-drawstring-pouch/model-front",
+      "productId": "mint-drawstring-pouch",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["mint-drawstring-pouch/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted mint green\nBase material: cotton poplin\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-drawstring-pouch/model-front.png",
+      "sha256": "920a7d8cb0da67698032d4e8b07c27a9c26491fa7a6af4883853b658c7a761ed",
+      "history": [
+        {
+          "note": "Closed mint pouch on natural adult hand, cream sleeve, proportions and cord counts preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted mint green. Material: cotton poplin.\nRequired view: Adult hand holding closed pouch for scale, cream sleeve.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-drawstring-pouch/model-side",
+      "productId": "mint-drawstring-pouch",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["mint-drawstring-pouch/front", "mint-drawstring-pouch/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted mint green\nBase material: cotton poplin\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-drawstring-pouch/model-side.png",
+      "sha256": "3f31347a4e0fcab3106aec8e78fb260af484f28c0bfe51c3a16056c2d012a3d2",
+      "history": [
+        {
+          "note": "Same hand cream knit sleeve and mint pouch, changed side angle with visible seam and intact cords.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted mint green. Material: cotton poplin.\nRequired view: Same hand and pouch side angle.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-drawstring-pouch/model-back",
+      "productId": "mint-drawstring-pouch",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "mint-drawstring-pouch/front",
+        "mint-drawstring-pouch/back",
+        "mint-drawstring-pouch/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted mint green\nBase material: cotton poplin\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-drawstring-pouch/model-back.png",
+      "sha256": "abb69cd2bd78ecdfde1a9c8122d80a52653d218908313e28a876812dc83d4c87",
+      "history": [
+        {
+          "note": "Open mouth top view, empty mint interior and opposed threaded cream cords preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted mint green. Material: cotton poplin.\nRequired view: Top view with mouth opened, empty matching mint interior, cords still threaded.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-drawstring-pouch/editorial",
+      "productId": "mint-drawstring-pouch",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["mint-drawstring-pouch/front", "mint-drawstring-pouch/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted mint green\nBase material: cotton poplin\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-drawstring-pouch/editorial.png",
+      "sha256": "bac2a15fc31974b9dc603a0c289022a9bdae415003a50915a4d781cec2584715",
+      "history": [
+        {
+          "note": "Pouch with plain wooden comb on linen, correct mint and two cord knots, complete margins.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 드로스트링 파우치\nDesign invariants: Fictional concept sample. Small mint cotton drawstring pouch, softly rectangular body with rounded bottom corners, one gathered top channel, two cream cords exiting opposite sides with plain knotted ends, no logo pockets or hardware. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted mint green. Material: cotton poplin.\nRequired view: Pouch on linen cloth beside plain wooden comb.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "espresso-passport-cover/front",
+      "productId": "espresso-passport-cover",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: espresso brown\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/espresso-passport-cover/front.png",
+      "sha256": "72d0abb348e2b9a632a713c92607d24d72d95df6a31bbe6645f4cb4e4b60330f",
+      "history": [
+        {
+          "note": "Plain espresso book-fold cover with tonal stitching and rounded corners, no hardware or text.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: espresso brown. Material: smooth matte leather.\nRequired view: Closed front three-quarter portrait orientation.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "espresso-passport-cover/back",
+      "productId": "espresso-passport-cover",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["espresso-passport-cover/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: espresso brown\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/espresso-passport-cover/back.png",
+      "sha256": "6309d4c709fda5dcf63b746f2cd96fc40e817a665ba3c4e32616bdefce6a533e",
+      "history": [
+        {
+          "note": "Closed plain rear with spine now opposite side, espresso and stitching match.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: espresso brown. Material: smooth matte leather.\nRequired view: Closed plain rear.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "espresso-passport-cover/side",
+      "productId": "espresso-passport-cover",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["espresso-passport-cover/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: espresso brown\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/espresso-passport-cover/side.png",
+      "sha256": "e58a16a2545a9d38407bd2b5d434358e1a765f80d42fcf5c3e64193fc3c09681",
+      "history": [
+        {
+          "note": "Narrow spine side with folded layers and espresso matte finish preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: espresso brown. Material: smooth matte leather.\nRequired view: Closed narrow side showing fold.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "espresso-passport-cover/texture",
+      "productId": "espresso-passport-cover",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["espresso-passport-cover/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: espresso brown\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/espresso-passport-cover/texture.png",
+      "sha256": "16ac0dc135c248a1ebae21a1fc6244916733edc8ef1d4871f01feb4a8a4fab8b",
+      "history": [
+        {
+          "note": "Extreme macro espresso leather grain and tonal corner stitches clear.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: espresso brown. Material: smooth matte leather.\nRequired view: Macro leather grain and edge stitches.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "espresso-passport-cover/model-front",
+      "productId": "espresso-passport-cover",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["espresso-passport-cover/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: espresso brown\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/espresso-passport-cover/model-front.png",
+      "sha256": "ff5cda16b0d250217d017a02d4652e7818489ce772ba81318f40bacce1ce24cb",
+      "history": [
+        {
+          "note": "Open cover shows exactly two full-height broad inward-opening sleeves and no extra slots.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: espresso brown. Material: smooth matte leather.\nRequired view: Open flat showing exactly two broad vertical sleeves, empty.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "espresso-passport-cover/model-side",
+      "productId": "espresso-passport-cover",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["espresso-passport-cover/front", "espresso-passport-cover/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: espresso brown\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/espresso-passport-cover/model-side.png",
+      "sha256": "d3d62dcd9812e5f2cfdc15afcf818e715f21a7933c8e065fbb7a8c1b044dc037",
+      "history": [
+        {
+          "note": "Natural adult hands hold closed espresso cover for scale, rounded edges and stitching preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: espresso brown. Material: smooth matte leather.\nRequired view: Adult hands holding closed passport cover for scale.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "espresso-passport-cover/model-back",
+      "productId": "espresso-passport-cover",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "espresso-passport-cover/front",
+        "espresso-passport-cover/back",
+        "espresso-passport-cover/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: espresso brown\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Right sleeve changed from full-height inward side opening to horizontal top opening; retry must preserve authoritative interior geometry.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: espresso brown. Material: smooth matte leather.\nRequired view: Open cover with one plain blank navy booklet partly inserted into right sleeve, left sleeve empty.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Corrected full-height right sleeve preserved behind navy booklet with rear cover inserted; empty left sleeve unchanged.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: espresso brown. Material: smooth matte leather.\nRequired view: Open cover with one plain blank navy booklet partly inserted into right sleeve, left sleeve empty.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCRITICAL CORRECTION: Image 3 defines BOTH full-height sleeve panels with VERTICAL openings facing the center spine. Keep the right panel full height from top to bottom exactly as Image 3. Insert only the back cover of a closed blank navy booklet horizontally behind the right panel through its LEFT vertical edge. The navy booklet front remains visible lying OVER the sleeve. No horizontal pocket mouth, no shortened right panel. Left sleeve stays empty and unchanged."
+        }
+      ],
+      "output": "images/espresso-passport-cover/model-back.png",
+      "sha256": "f60fb81f2c51826ef40ee746dbb350f589fb22e0dd2f713f3303f5060d1ec838"
+    },
+    {
+      "id": "espresso-passport-cover/editorial",
+      "productId": "espresso-passport-cover",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["espresso-passport-cover/front", "espresso-passport-cover/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: espresso brown\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/espresso-passport-cover/editorial.png",
+      "sha256": "067e353fb0401a021f19a3cebc6c610539090c24ab7d32f5bcf7fe468332e8f2",
+      "history": [
+        {
+          "note": "Closed plain espresso cover on oak with unbranded pen, original outline and stitches consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 에스프레소 패스포트 커버\nDesign invariants: Fictional concept sample. Slim espresso leather passport cover, tall rounded rectangle folding like a book, tonal edge stitching, completely plain outside, open interior with one broad vertical passport sleeve on each side, no card slots snaps or zipper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: espresso brown. Material: smooth matte leather.\nRequired view: Closed cover on oak table beside plain travel pen.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "brick-loop-luggage-tag/front",
+      "productId": "brick-loop-luggage-tag",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: brick red\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/brick-loop-luggage-tag/front.png",
+      "sha256": "675b954f1ccc7a96c3c2f02c315bcddd0f9fdc73a8f906aca380562a18f4d14b",
+      "history": [
+        {
+          "note": "Brick tag plain face, elongated rounded plate, one top slot and silver buckle, full frame.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: brick red. Material: fine-grain leather.\nRequired view: Plain front three-quarter complete tag and buckled strap.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "brick-loop-luggage-tag/back",
+      "productId": "brick-loop-luggage-tag",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["brick-loop-luggage-tag/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: brick red\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/brick-loop-luggage-tag/back.png",
+      "sha256": "d6bffe189ee3c126c3bac817774674385aaafbcbf7c33cffa098a014d3b7dfa5",
+      "history": [
+        {
+          "note": "Rear clear ID window and blank cream card, same brick plate strap and single buckle.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: brick red. Material: fine-grain leather.\nRequired view: Rear showing single clear rectangular ID window with blank card.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "brick-loop-luggage-tag/side",
+      "productId": "brick-loop-luggage-tag",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["brick-loop-luggage-tag/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: brick red\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/brick-loop-luggage-tag/side.png",
+      "sha256": "f80661aa6dc772fcca081f5e9016ee8a7d8624e7dc806c38c267bf215bc2f937",
+      "history": [
+        {
+          "note": "Thin tag profile, single loop strap and buckle visible, brick finish preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: brick red. Material: fine-grain leather.\nRequired view: Thin side profile with strap arranged visibly.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "brick-loop-luggage-tag/texture",
+      "productId": "brick-loop-luggage-tag",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["brick-loop-luggage-tag/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: brick red\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/brick-loop-luggage-tag/texture.png",
+      "sha256": "54726cf61c88cad80c0748df267a96156c90bf62c992f7f123cf5f858dc704e5",
+      "history": [
+        {
+          "note": "Macro silver buckle, brick leather and matching seam detail consistent with anchor.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: brick red. Material: fine-grain leather.\nRequired view: Macro leather stitching and silver buckle.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "brick-loop-luggage-tag/model-front",
+      "productId": "brick-loop-luggage-tag",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["brick-loop-luggage-tag/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: brick red\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/brick-loop-luggage-tag/model-front.png",
+      "sha256": "871855d912d38e0c9f5844ec50e50b885d1f9c928efda54fecb98d6bc3fb49fe",
+      "history": [
+        {
+          "note": "Single brick tag attached around beige suitcase handle with matching strap and one buckle.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: brick red. Material: fine-grain leather.\nRequired view: Tag attached by its strap to handle of plain beige suitcase, close crop emphasizing tag.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "brick-loop-luggage-tag/model-side",
+      "productId": "brick-loop-luggage-tag",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["brick-loop-luggage-tag/front", "brick-loop-luggage-tag/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: brick red\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/brick-loop-luggage-tag/model-side.png",
+      "sha256": "10c537b4a6937067fea0444db6a68ae3e6558258220b1151508f4cff3701af50",
+      "history": [
+        {
+          "note": "Same beige suitcase handle and brick tag seen obliquely, loop attachment and one buckle clear.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: brick red. Material: fine-grain leather.\nRequired view: Same tag and suitcase handle from side, attachment loop clear.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "brick-loop-luggage-tag/model-back",
+      "productId": "brick-loop-luggage-tag",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "brick-loop-luggage-tag/front",
+        "brick-loop-luggage-tag/back",
+        "brick-loop-luggage-tag/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: brick red\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/brick-loop-luggage-tag/model-back.png",
+      "sha256": "5c2822ab8d16fb0a813998506dea6f308bf35dfa24f690951fe04f36c5296c7e",
+      "history": [
+        {
+          "note": "Rear detail shows clear single ID window blank cream card and matching brick strap with single buckle.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: brick red. Material: fine-grain leather.\nRequired view: Rear close view of ID window with blank card, no readable lettering.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "brick-loop-luggage-tag/editorial",
+      "productId": "brick-loop-luggage-tag",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["brick-loop-luggage-tag/front", "brick-loop-luggage-tag/model-front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: brick red\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Tag leans upright against pouch; requested tag lying beside travel pouch. Retry for flat placement.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: brick red. Material: fine-grain leather.\nRequired view: Tag lying beside unbranded cream travel pouch.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Corrected tag plate lies flat face-up beside cream travel pouch, clear tabletop gap and single silver buckle.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 브릭 루프 러기지 태그\nDesign invariants: Fictional concept sample. Brick red leather luggage tag, elongated rounded rectangular plate, short matching strap through single slot at top with one small silver buckle, plain front, rear rectangular clear ID window containing blank cream card, no text. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: brick red. Material: fine-grain leather.\nRequired view: Tag lying beside unbranded cream travel pouch.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCRITICAL PLACEMENT: tag plate lies FLAT face up on the horizontal tabletop next to the cream travel pouch, with visible tabletop gap between plate and pouch. Do not prop or lean tag against the pouch. View from elevated three-quarter angle so full flat tag face and its loop strap remain visible."
+        }
+      ],
+      "output": "images/brick-loop-luggage-tag/editorial.png",
+      "sha256": "1c74efdb5d5dae2f3f3ea9fffbfa48b42b1e865192ad28b26c2e661177b1ff92"
+    }
+  ]
+}

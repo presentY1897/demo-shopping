@@ -1,0 +1,148 @@
+{
+  "products": [
+    {
+      "id": "amber-drop-bud-vase",
+      "name": "앰버 드롭 버드 베이스",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "transparent amber",
+      "colorLabel": "앰버",
+      "hex": "#b77d3c",
+      "material": "transparent tinted glass",
+      "price": 24000,
+      "design": "Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+      "sizes": [],
+      "skuPrefix": "SIX-09",
+      "highlights": ["앰버 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Front three-quarter empty vase, entire silhouette and mouth visible.",
+        "back": "Rear three-quarter of same empty vase.",
+        "side": "Eye-level side silhouette of empty vase.",
+        "texture": "Macro amber glass lip and smooth curved surface.",
+        "model-front": "Vase holding one slender green stem with single small white flower, visible physical insertion into mouth.",
+        "model-side": "Same vase, stem and flower from side.",
+        "model-back": "Top-down empty vase showing single circular mouth and glass wall.",
+        "editorial": "Same vase with same white flower on pale stone windowsill."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "앰버 드롭 버드 베이스 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "oat-felt-laptop-sleeve",
+      "name": "오트 펠트 노트북 슬리브",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 가방",
+      "color": "oatmeal beige",
+      "colorLabel": "오트",
+      "hex": "#c3b69e",
+      "material": "dense wool felt",
+      "price": 35000,
+      "design": "Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+      "sizes": [],
+      "skuPrefix": "SIX-10",
+      "highlights": ["오트 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Front three-quarter empty sleeve lying flat, opening visible.",
+        "back": "Plain rear of sleeve.",
+        "side": "Low side showing flat felt thickness.",
+        "texture": "Macro felt fibers and edge stitching.",
+        "model-front": "Plain unbranded silver laptop partly slid into open top, entire sleeve visible.",
+        "model-side": "Adult hands holding same sleeve containing laptop, no visible logo.",
+        "model-back": "Top oblique empty sleeve showing single open compartment.",
+        "editorial": "Sleeve and closed plain silver laptop on oak desk."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "오트 펠트 노트북 슬리브 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "cherry-dice-paperweight",
+      "name": "체리 다이스 페이퍼웨이트",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "natural cherry wood",
+      "colorLabel": "체리",
+      "hex": "#a46d45",
+      "material": "oiled cherry wood",
+      "price": 19000,
+      "design": "Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+      "sizes": [],
+      "skuPrefix": "SIX-11",
+      "highlights": ["체리 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Three-quarter cube showing top with single dimple and two plain sides.",
+        "back": "Opposite rear three-quarter preserving only one top dimple.",
+        "side": "Eye-level side showing plain square face.",
+        "texture": "Macro cherry grain and edge of sole shallow top dimple.",
+        "model-front": "Cube resting on corner of a small stack of blank cream papers, dimple upward.",
+        "model-side": "Same cube and paper stack from low side, contact visible.",
+        "model-back": "Top-down cube showing exactly one centered shallow circular dimple.",
+        "editorial": "Cube on blank paper beside unbranded wooden pencil, daylight."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "체리 다이스 페이퍼웨이트 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "teal-elastic-book-band",
+      "name": "틸 엘라스틱 북 밴드",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 독서 소품",
+      "color": "deep teal",
+      "colorLabel": "틸",
+      "hex": "#35716d",
+      "material": "woven elastic textile",
+      "price": 13000,
+      "design": "Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+      "sizes": [],
+      "skuPrefix": "SIX-12",
+      "highlights": ["틸 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Closed elastic loop laid in neat oval, single leather tab visible.",
+        "back": "Opposite side of oval loop with seam area visible.",
+        "side": "Low side view showing flat strap thickness and oval loop.",
+        "texture": "Macro elastic weave and single stitched leather tab.",
+        "model-front": "One band wrapped vertically around a closed blank ivory notebook, tab centered on front cover.",
+        "model-side": "Same band and notebook held by adult hand, natural grip.",
+        "model-back": "Top-down same closed notebook and single teal band, tab visible.",
+        "editorial": "Banded ivory notebook on oak desk beside plain pencil."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "틸 엘라스틱 북 밴드 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    }
+  ]
+}

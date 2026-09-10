@@ -1,0 +1,33 @@
+{
+  "products": [
+    {
+      "id": "womens-cropped-cotton-slacks",
+      "name": "여성 베이식 크롭 코튼 슬랙스",
+      "sourceProductId": "01a07b26-0d0e-7528-825d-03279a3e5f14",
+      "audience": "womenswear",
+      "color": "medium neutral gray",
+      "material": "matte smooth cotton twill",
+      "design": "Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.",
+      "model": "One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.",
+      "highlights": ["하이웨이스트", "테이퍼드 핏", "면 소재"],
+      "variants": [
+        {
+          "id": "navy",
+          "kind": "color",
+          "value": "deep navy blue; preserve dark gray button"
+        }
+      ]
+    },
+    {
+      "id": "womens-khaki-cropped-denim",
+      "name": "여성 미니멀 카키 크롭 데님",
+      "sourceProductId": "01a07b26-20f9-74cd-bc51-130fd9a44d8d",
+      "audience": "womenswear",
+      "color": "muted olive khaki green",
+      "material": "subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading",
+      "design": "Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.",
+      "model": "One adult female fashion model with dark hair in a low ponytail, plain black short-sleeve crew-neck top tucked into jeans, simple white low-top sneakers, no belt or accessories. Same identity and styling throughout.",
+      "highlights": ["하이웨이스트", "테이퍼드 핏", "카키 데님"]
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "products": [
+    {
+      "id": "charcoal-zip-tech-pouch",
+      "name": "차콜 집 테크 파우치",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 액세서리",
+      "color": "charcoal gray",
+      "colorLabel": "차콜",
+      "hex": "#4c5054",
+      "material": "matte nylon",
+      "price": 26000,
+      "design": "Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "EIGHT-01",
+      "highlights": ["차콜 컬러", "가상 기획 상품"],
+      "description": "차콜 집 테크 파우치 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+      "shotDirections": {
+        "front": "Closed front three-quarter with zipper visible.",
+        "back": "Closed rear three-quarter showing plain back.",
+        "side": "End-on profile showing gusset depth and side loop.",
+        "texture": "Macro nylon weave and zipper seam.",
+        "model-front": "Open top zipper showing single compartment containing one neatly coiled plain white cable.",
+        "model-side": "Adult hand holding closed pouch for scale, ivory sleeve.",
+        "model-back": "Top-down open empty pouch, single gray compartment.",
+        "editorial": "Closed pouch on pale oak desk beside same coiled white cable."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "sand-linen-book-cover",
+      "name": "샌드 리넨 북 커버",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 독서 소품",
+      "color": "sand beige",
+      "colorLabel": "샌드",
+      "hex": "#c0ad8c",
+      "material": "linen fabric",
+      "price": 24000,
+      "design": "Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "EIGHT-02",
+      "highlights": ["샌드 컬러", "가상 기획 상품"],
+      "description": "샌드 리넨 북 커버 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+      "shotDirections": {
+        "front": "Closed book-shaped cover around a blank plain book, front three-quarter.",
+        "back": "Closed plain rear with same book inside.",
+        "side": "Side profile showing fabric spine and cream pages.",
+        "texture": "Macro linen weave and perimeter stitching.",
+        "model-front": "Open cover with blank book inside, ribbon resting on blank pages.",
+        "model-side": "Adult hands holding same covered closed book, no logos.",
+        "model-back": "Open empty cover showing exactly two broad inward-facing sleeves and one ribbon at top spine.",
+        "editorial": "Same covered closed book on cream cloth beside plain pencil."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "steel-ribbon-bookmark",
+      "name": "스틸 리본 북마크",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 독서 소품",
+      "color": "brushed silver",
+      "colorLabel": "실버",
+      "hex": "#a9adaf",
+      "material": "brushed stainless steel and cotton ribbon",
+      "price": 14000,
+      "design": "Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "EIGHT-03",
+      "highlights": ["실버 컬러", "가상 기획 상품"],
+      "description": "스틸 리본 북마크 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+      "shotDirections": {
+        "front": "Top three-quarter whole bookmark lying flat, hole and ribbon visible.",
+        "back": "Back surface lying flat, same ribbon.",
+        "side": "Very low edge-on profile showing thin metal and ribbon.",
+        "texture": "Macro brushed metal at circular hole and navy ribbon fibers.",
+        "model-front": "Bookmark inserted between closed book pages with navy ribbon extending beyond top edge.",
+        "model-side": "Adult fingers holding same bookmark by metal body above blank open book.",
+        "model-back": "Top-down bookmark fully visible on blank open notebook.",
+        "editorial": "Bookmark beside closed linen book in daylight."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "sage-tablet-envelope",
+      "name": "세이지 태블릿 엔벨로프",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 가방",
+      "color": "sage gray green",
+      "colorLabel": "세이지",
+      "hex": "#8e9b8c",
+      "material": "fine-grain matte leather",
+      "price": 49000,
+      "design": "Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "EIGHT-04",
+      "highlights": ["세이지 컬러", "가상 기획 상품"],
+      "description": "세이지 태블릿 엔벨로프 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+      "shotDirections": {
+        "front": "Closed front three-quarter, triangular flap and single snap visible.",
+        "back": "Closed plain rear.",
+        "side": "Low side showing thin folded envelope construction.",
+        "texture": "Macro leather grain stitching and one snap.",
+        "model-front": "Open flap with one plain black-screen unbranded tablet partly inserted into sole compartment.",
+        "model-side": "Adult hands holding same closed sleeve for scale.",
+        "model-back": "Top oblique open empty cream-lined sleeve with triangular flap lifted.",
+        "editorial": "Closed sleeve on pale stone desk beside plain pen."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    }
+  ]
+}

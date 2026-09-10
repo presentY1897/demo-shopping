@@ -1,0 +1,45 @@
+{
+  "products": [
+    {
+      "id": "mens-navy-band-collar-shirt",
+      "name": "남성 오버핏 밴드카라 린넨 셔츠",
+      "audience": "menswear",
+      "sourceProductId": "01a07b26-190e-7088-b1f7-0af27e1357c8",
+      "color": "deep navy blue",
+      "material": "matte linen",
+      "design": "Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.",
+      "model": "One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories",
+      "highlights": ["밴드카라", "반소매 오버핏", "린넨 소재"]
+    },
+    {
+      "id": "womens-beige-cardigan",
+      "name": "여성 클래식 코튼 가디건",
+      "audience": "womenswear",
+      "sourceProductId": "01a07b26-0cc8-7522-8db1-9a3245187ae5",
+      "color": "warm light beige",
+      "material": "plain fine-gauge cotton knit",
+      "design": "Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.",
+      "model": "One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories",
+      "highlights": ["루즈핏", "긴소매", "코튼 니트"]
+    },
+    {
+      "id": "unisex-ivory-tee",
+      "name": "유니섹스 베이식 크루넥 티셔츠",
+      "audience": "unisex",
+      "color": "warm ivory",
+      "material": "matte cotton jersey",
+      "design": "Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.",
+      "models": [
+        {
+          "id": "male",
+          "description": "One adult male, short dark hair, navy straight trousers, clean white low-top shoes, no accessories"
+        },
+        {
+          "id": "female",
+          "description": "One adult female, shoulder-length dark bob, navy straight trousers, clean white low-top shoes, no accessories"
+        }
+      ],
+      "highlights": ["남녀 공용 가상 상품", "여유 있는 스트레이트 핏", "코튼 저지"]
+    }
+  ]
+}

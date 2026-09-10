@@ -1,0 +1,590 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "plum-glasses-sleeve",
+        "name": "플럼 안경 슬리브",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 액세서리",
+        "color": "muted plum",
+        "colorLabel": "플럼",
+        "hex": "#78556c",
+        "material": "soft fine-grain leather",
+        "price": 21000,
+        "design": "Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.",
+        "sizes": [],
+        "skuPrefix": "PAR-05",
+        "highlights": ["플럼 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Front three-quarter empty sleeve, curved opening visible.",
+          "back": "Plain rear view.",
+          "side": "Narrow side profile showing soft thickness.",
+          "texture": "Macro fine grain and edge stitches.",
+          "model-front": "Pair of plain dark eyeglasses partly inserted into sleeve, temples folded inside.",
+          "model-side": "Adult hand holding same sleeve with partially inserted glasses.",
+          "model-back": "Top oblique looking into empty beige lining.",
+          "editorial": "Sleeve and glasses beside closed blank book on stone table."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "플럼 안경 슬리브 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "sand-roll-pencil-case",
+        "name": "샌드 롤 펜슬 케이스",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "sand beige",
+        "colorLabel": "샌드",
+        "hex": "#c7b18b",
+        "material": "cotton canvas",
+        "price": 18000,
+        "design": "Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.",
+        "sizes": [],
+        "skuPrefix": "PAR-06",
+        "highlights": ["샌드 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Closed front three-quarter entire cylinder and zipper.",
+          "back": "Rear view showing plain canvas back and circular end.",
+          "side": "End-on profile showing circular end and small loop.",
+          "texture": "Macro canvas weave and brown zipper.",
+          "model-front": "Open zipper revealing ivory interior with three plain wooden pencils.",
+          "model-side": "Adult hand holding closed cylindrical case for scale.",
+          "model-back": "Top-down unzipped empty case with single lined compartment.",
+          "editorial": "Closed case and one pencil on pale oak desk beside blank paper."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "샌드 롤 펜슬 케이스 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "cream-cloud-bookmark",
+        "name": "크림 클라우드 북마크",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 독서 소품",
+        "color": "warm cream",
+        "colorLabel": "크림",
+        "hex": "#eee4cf",
+        "material": "matte coated metal",
+        "price": 12000,
+        "design": "Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.",
+        "sizes": [],
+        "skuPrefix": "PAR-07",
+        "highlights": ["크림 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Top three-quarter full bookmark lying flat, cloud top clear.",
+          "back": "Back surface full bookmark.",
+          "side": "Low side angle showing thin flat metal.",
+          "texture": "Macro cream coating and cloud outline.",
+          "model-front": "Bookmark stem inserted between closed book pages with cloud protruding above top edge.",
+          "model-side": "Adult hand holding bookmark by cloud above open blank book.",
+          "model-back": "Top-down bookmark lying on open blank book, full silhouette visible.",
+          "editorial": "Bookmark on closed linen book beside plain reading glasses."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "크림 클라우드 북마크 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "plum-glasses-sleeve/front",
+      "productId": "plum-glasses-sleeve",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 플럼 안경 슬리브\nDesign invariants: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nBase color: muted plum\nBase material: soft fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/plum-glasses-sleeve/front.png",
+      "sha256": "7ed9601cee213bbea71b9e26bf833faaee6b94e5b34271fa45c3aab322af5a9a",
+      "history": [
+        {
+          "note": "Accepted full plum sleeve; curved scoop, beige lining, stitched rounded edges and no hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nColor: muted plum. Material: soft fine-grain leather.\nRequired view: Front three-quarter empty sleeve, curved opening visible.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views."
+        }
+      ]
+    },
+    {
+      "id": "plum-glasses-sleeve/back",
+      "productId": "plum-glasses-sleeve",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["plum-glasses-sleeve/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 플럼 안경 슬리브\nDesign invariants: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nBase color: muted plum\nBase material: soft fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/plum-glasses-sleeve/back.png",
+      "sha256": "d38e75361dd4d7b963888954a5f874cc80004ca56d4174d9e8d5c78334cd634a",
+      "history": [
+        {
+          "note": "Rear plain panel shown with consistent plum grain, rounded stitched bottom and no added hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nColor: muted plum. Material: soft fine-grain leather.\nRequired view: Plain rear view.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "plum-glasses-sleeve/side",
+      "productId": "plum-glasses-sleeve",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["plum-glasses-sleeve/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 플럼 안경 슬리브\nDesign invariants: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nBase color: muted plum\nBase material: soft fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/plum-glasses-sleeve/side.png",
+      "sha256": "e39667483fd44622789203e2180429b724170cdd44d4cd7d76dcf162fc8c7808",
+      "history": [
+        {
+          "note": "Narrow side angle shows thin soft construction and continuous edge stitching; scoop and lining remain consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nColor: muted plum. Material: soft fine-grain leather.\nRequired view: Narrow side profile showing soft thickness.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "plum-glasses-sleeve/texture",
+      "productId": "plum-glasses-sleeve",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["plum-glasses-sleeve/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 플럼 안경 슬리브\nDesign invariants: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nBase color: muted plum\nBase material: soft fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/plum-glasses-sleeve/texture.png",
+      "sha256": "4b4a89260ec54a1177ffc44fc643248d642c105f8f7dcf8b6b789ca1d4ad0d9a",
+      "history": [
+        {
+          "note": "Macro clearly resolves fine plum grain, scoop edge stitches and beige lining without hardware additions.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nColor: muted plum. Material: soft fine-grain leather.\nRequired view: Macro fine grain and edge stitches.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "plum-glasses-sleeve/model-front",
+      "productId": "plum-glasses-sleeve",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["plum-glasses-sleeve/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 플럼 안경 슬리브\nDesign invariants: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nBase color: muted plum\nBase material: soft fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/plum-glasses-sleeve/model-front.png",
+      "sha256": "9adbfca19a1a22dc2921f0c001f210511bcc4801c196d8aaa2a9a8ae10b7fbfb",
+      "history": [
+        {
+          "note": "Folded dark eyeglasses partially inserted in same curved opening; sleeve shape, lining and plum grain consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nColor: muted plum. Material: soft fine-grain leather.\nRequired view: Pair of plain dark eyeglasses partly inserted into sleeve, temples folded inside.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "plum-glasses-sleeve/model-side",
+      "productId": "plum-glasses-sleeve",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["plum-glasses-sleeve/front", "plum-glasses-sleeve/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 플럼 안경 슬리브\nDesign invariants: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nBase color: muted plum\nBase material: soft fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/plum-glasses-sleeve/model-side.png",
+      "sha256": "670ff441407c5392fb250866c6ca1c25845c7f5a503c19b174c24fe38d75cb4a",
+      "history": [
+        {
+          "note": "Adult hand has plausible five digits and holds unchanged plum sleeve; dark folded glasses match usage anchor.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nColor: muted plum. Material: soft fine-grain leather.\nRequired view: Adult hand holding same sleeve with partially inserted glasses.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object; Image 2: accepted usage scene anchor; preserve same product and matching props where requested. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "plum-glasses-sleeve/model-back",
+      "productId": "plum-glasses-sleeve",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "plum-glasses-sleeve/front",
+        "plum-glasses-sleeve/back",
+        "plum-glasses-sleeve/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 플럼 안경 슬리브\nDesign invariants: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nBase color: muted plum\nBase material: soft fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/plum-glasses-sleeve/model-back.png",
+      "sha256": "4497a3fe3e7fc81e87c239f4528a88eff1070395bbc88beac1a47eae1971386e",
+      "history": [
+        {
+          "note": "Top oblique reveals empty single beige-lined cavity; plum scoop and stitched perimeter retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nColor: muted plum. Material: soft fine-grain leather.\nRequired view: Top oblique looking into empty beige lining.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object; Image 2: authoritative rear construction reference; Image 3: accepted usage scene anchor; preserve same product and matching props where requested. Change only requested camera angle or usage scene.\n"
+        }
+      ]
+    },
+    {
+      "id": "plum-glasses-sleeve/editorial",
+      "productId": "plum-glasses-sleeve",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["plum-glasses-sleeve/front", "plum-glasses-sleeve/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 플럼 안경 슬리브\nDesign invariants: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nBase color: muted plum\nBase material: soft fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/plum-glasses-sleeve/editorial.png",
+      "sha256": "3e4727f01bb8b44ca08cddb436e045bf831a5c641be7d609089f44148febbfc7",
+      "history": [
+        {
+          "note": "Editorial flatlay retains plum sleeve shape and beige lining with matching glasses, blank closed book and stone table.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.\nColor: muted plum. Material: soft fine-grain leather.\nRequired view: Sleeve and glasses beside closed blank book on stone table.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object; Image 2: accepted usage scene anchor; preserve same product and matching props where requested. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "sand-roll-pencil-case/front",
+      "productId": "sand-roll-pencil-case",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 롤 펜슬 케이스\nDesign invariants: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: sand beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-roll-pencil-case/front.png",
+      "sha256": "065ff849d9d07c3cd52246eb52e864329b03b31d6ffb29be629ee2219d5dbfaa",
+      "history": [
+        {
+          "note": "Full closed sand canvas cylinder with circular end panels, one brown zipper/tan pull and single loop; all edges in frame.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: sand beige. Material: cotton canvas.\nRequired view: Closed front three-quarter entire cylinder and zipper.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views."
+        }
+      ]
+    },
+    {
+      "id": "sand-roll-pencil-case/back",
+      "productId": "sand-roll-pencil-case",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["sand-roll-pencil-case/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 롤 펜슬 케이스\nDesign invariants: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: sand beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-roll-pencil-case/back.png",
+      "sha256": "fbd3f37e80f2318f0b332319d63d879e0de8961657f103facf255987054c2cde",
+      "history": [
+        {
+          "note": "Opposite side plain canvas shown; circular end with one loop and one zipper pull retained, complete cylinder in frame.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: sand beige. Material: cotton canvas.\nRequired view: Rear view showing plain canvas back and circular end.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "sand-roll-pencil-case/side",
+      "productId": "sand-roll-pencil-case",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["sand-roll-pencil-case/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 롤 펜슬 케이스\nDesign invariants: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: sand beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-roll-pencil-case/side.png",
+      "sha256": "456e1b87b6a6a4e66e4c95862f0bb2508c10d4929bca124fb83142189b89e834",
+      "history": [
+        {
+          "note": "End-on shot shows circular piped end, single canvas loop and same brown zipper with tan pull.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: sand beige. Material: cotton canvas.\nRequired view: End-on profile showing circular end and small loop.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "sand-roll-pencil-case/texture",
+      "productId": "sand-roll-pencil-case",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["sand-roll-pencil-case/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 롤 펜슬 케이스\nDesign invariants: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: sand beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-roll-pencil-case/texture.png",
+      "sha256": "8a9b4624a4d3839f5ba6a5918e9bc8ca17438e687131806bdf6dd737b320d01e",
+      "history": [
+        {
+          "note": "Macro resolves sand cotton weave, brown zipper teeth, single tan stitched pull and circular end piping.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: sand beige. Material: cotton canvas.\nRequired view: Macro canvas weave and brown zipper.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "sand-roll-pencil-case/model-front",
+      "productId": "sand-roll-pencil-case",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["sand-roll-pencil-case/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 롤 펜슬 케이스\nDesign invariants: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: sand beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-roll-pencil-case/model-front.png",
+      "sha256": "0d1a80f99d8401233eeb578e98c408b94ba8aebc33b81e0f95cb85f177637033",
+      "history": [
+        {
+          "note": "Open case has single ivory-lined compartment and three plain wooden pencils, same circular ends and one zipper pull.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: sand beige. Material: cotton canvas.\nRequired view: Open zipper revealing ivory interior with three plain wooden pencils.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "sand-roll-pencil-case/model-side",
+      "productId": "sand-roll-pencil-case",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["sand-roll-pencil-case/front", "sand-roll-pencil-case/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 롤 펜슬 케이스\nDesign invariants: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: sand beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-roll-pencil-case/model-side.png",
+      "sha256": "7ef24ed154574c446d075c78ba83dd4011841d1932c7f8e03bd5a1aacd198782",
+      "history": [
+        {
+          "note": "Plausible adult hand supports full closed cylinder; loop, end piping, canvas and single zipper match anchor.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: sand beige. Material: cotton canvas.\nRequired view: Adult hand holding closed cylindrical case for scale.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object; Image 2: accepted usage scene anchor; preserve same product and matching props where requested. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "sand-roll-pencil-case/model-back",
+      "productId": "sand-roll-pencil-case",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "sand-roll-pencil-case/front",
+        "sand-roll-pencil-case/back",
+        "sand-roll-pencil-case/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 롤 펜슬 케이스\nDesign invariants: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: sand beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-roll-pencil-case/model-back.png",
+      "sha256": "6b18322611522fbc73cc1865569173e5edafb1241651a3cda4e2ffc183555f9a",
+      "history": [
+        {
+          "note": "High-angle empty ivory compartment clearly visible with no inner pockets; circular end structure and one zipper maintained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: sand beige. Material: cotton canvas.\nRequired view: Top-down unzipped empty case with single lined compartment.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object; Image 2: accepted usage scene anchor; preserve same product and matching props where requested; Image 3: accepted usage scene anchor; preserve same product and matching props where requested. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "sand-roll-pencil-case/editorial",
+      "productId": "sand-roll-pencil-case",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["sand-roll-pencil-case/front", "sand-roll-pencil-case/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 롤 펜슬 케이스\nDesign invariants: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: sand beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-roll-pencil-case/editorial.png",
+      "sha256": "658949d6602cbf3699aeab06375a20b5bed70264cd543a1327dde644ef0664f4",
+      "history": [
+        {
+          "note": "Closed sand canvas case, single plain wooden pencil and blank paper on oak desk; hardware and color consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: sand beige. Material: cotton canvas.\nRequired view: Closed case and one pencil on pale oak desk beside blank paper.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object; Image 2: accepted usage scene anchor; preserve same product and matching props where requested. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "cream-cloud-bookmark/front",
+      "productId": "cream-cloud-bookmark",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 클라우드 북마크\nDesign invariants: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nBase color: warm cream\nBase material: matte coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-cloud-bookmark/front.png",
+      "sha256": "038ec4005f7070e8d6cc55b355754bbbb618ded50e27c2fc9ec429651ba7e25b",
+      "history": [
+        {
+          "note": "Full flat cream bookmark with three rounded cloud lobes, long stem and rounded bottom; no holes or engraving.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nColor: warm cream. Material: matte coated metal.\nRequired view: Top three-quarter full bookmark lying flat, cloud top clear.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views."
+        }
+      ]
+    },
+    {
+      "id": "cream-cloud-bookmark/back",
+      "productId": "cream-cloud-bookmark",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["cream-cloud-bookmark/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 클라우드 북마크\nDesign invariants: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nBase color: warm cream\nBase material: matte coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-cloud-bookmark/back.png",
+      "sha256": "03af409c34f705eff2320f2b56193270309abc4d8189ea9be45cbb62bd147524",
+      "history": [
+        {
+          "note": "Plain reverse surface consistent with symmetric flat cream bookmark; three lobes and rounded stem end fully visible.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nColor: warm cream. Material: matte coated metal.\nRequired view: Back surface full bookmark.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "cream-cloud-bookmark/side",
+      "productId": "cream-cloud-bookmark",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["cream-cloud-bookmark/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 크림 클라우드 북마크\nDesign invariants: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nBase color: warm cream\nBase material: matte coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected: camera remains high overhead rather than low side profile; edge thickness needs clearer side presentation.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nColor: warm cream. Material: matte coated metal.\nRequired view: Low side angle showing thin flat metal.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene."
+        },
+        {
+          "note": "Retry accepted: low horizontal side angle clearly reveals thin continuous metal edge with cream coating and cloud silhouette.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nColor: warm cream. Material: matte coated metal.\nRequired view: Low side angle showing thin flat metal.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene.\nCorrection: Camera only 5 degrees above tabletop looking across the long edge, near edge-on profile, entire thin bookmark horizontal across center. Strong foreshortening of top surface; do not repeat overhead flat lay."
+        }
+      ],
+      "output": "images/cream-cloud-bookmark/side.png",
+      "sha256": "0753ef13be056891825a961378ffaf981cf13043159830bf6a63faf286659863"
+    },
+    {
+      "id": "cream-cloud-bookmark/texture",
+      "productId": "cream-cloud-bookmark",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["cream-cloud-bookmark/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 클라우드 북마크\nDesign invariants: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nBase color: warm cream\nBase material: matte coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-cloud-bookmark/texture.png",
+      "sha256": "0fdc309a4895bc031ead851e9d1ab3b35b4111fed795de59b5d4fb1377a7ed1b",
+      "history": [
+        {
+          "note": "Macro reveals subtle matte cream coating and smooth three-lobed cloud perimeter with thin metal edge.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nColor: warm cream. Material: matte coated metal.\nRequired view: Macro cream coating and cloud outline.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "cream-cloud-bookmark/model-front",
+      "productId": "cream-cloud-bookmark",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["cream-cloud-bookmark/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 클라우드 북마크\nDesign invariants: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nBase color: warm cream\nBase material: matte coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-cloud-bookmark/model-front.png",
+      "sha256": "7903528188ea91505dad0d282df73189440b17c20b33823393e8f89ee720351d",
+      "history": [
+        {
+          "note": "Cream cloud protrudes above closed linen book pages with stem inserted naturally between pages; no invented clip or engraving.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nColor: warm cream. Material: matte coated metal.\nRequired view: Bookmark stem inserted between closed book pages with cloud protruding above top edge.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "cream-cloud-bookmark/model-side",
+      "productId": "cream-cloud-bookmark",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["cream-cloud-bookmark/front", "cream-cloud-bookmark/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 클라우드 북마크\nDesign invariants: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nBase color: warm cream\nBase material: matte coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-cloud-bookmark/model-side.png",
+      "sha256": "8a8c78b3e2915656baf3abdcd13d915afff67168d414ca03d6dabc30af1fdc54",
+      "history": [
+        {
+          "note": "Adult hand plausibly pinches cloud top above blank open book; complete cream stem and rounded bottom preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nColor: warm cream. Material: matte coated metal.\nRequired view: Adult hand holding bookmark by cloud above open blank book.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object; Image 2: accepted usage scene anchor; preserve same product and matching props where requested. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "cream-cloud-bookmark/model-back",
+      "productId": "cream-cloud-bookmark",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "cream-cloud-bookmark/front",
+        "cream-cloud-bookmark/back",
+        "cream-cloud-bookmark/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 클라우드 북마크\nDesign invariants: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nBase color: warm cream\nBase material: matte coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-cloud-bookmark/model-back.png",
+      "sha256": "3f83e6ab46881df2358af1a2187cd9621c058753203e597cd078c52da8226921",
+      "history": [
+        {
+          "note": "Full cream cloud bookmark lies on blank open page, all three lobes and rounded bottom visible with matching matte finish.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nColor: warm cream. Material: matte coated metal.\nRequired view: Top-down bookmark lying on open blank book, full silhouette visible.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object; Image 2: accepted usage scene anchor; preserve same product and matching props where requested; Image 3: accepted usage scene anchor; preserve same product and matching props where requested. Change only requested camera angle or usage scene."
+        }
+      ]
+    },
+    {
+      "id": "cream-cloud-bookmark/editorial",
+      "productId": "cream-cloud-bookmark",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["cream-cloud-bookmark/front", "cream-cloud-bookmark/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 클라우드 북마크\nDesign invariants: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nBase color: warm cream\nBase material: matte coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-cloud-bookmark/editorial.png",
+      "sha256": "867696267ba9b88da73aa49a59898c72b6bc99991744d1311a6d23b8d4b8d540",
+      "history": [
+        {
+          "note": "Editorial shows full cream cloud bookmark on closed linen book beside reading glasses; silhouette and unmarked matte coating consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Generate exactly ONE photorealistic separate square ecommerce photograph, not a collage. Fictional concept product.\nDesign: Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.\nColor: warm cream. Material: matte coated metal.\nRequired view: Bookmark on closed linen book beside plain reading glasses.\nLighting: soft diffused daylight, warm pale neutral studio surface except requested lifestyle setting. Safe square composition with the entire main object inside central 70% width and 85% height (macro texture exception). No text, logos, watermark, added hardware, extra compartments, or decorative patterns. Preserve identical silhouette, material, color, seams and construction across views.\nOrdered references: Image 1: authoritative product front anchor; preserve exact object; Image 2: accepted usage scene anchor; preserve same product and matching props where requested. Change only requested camera angle or usage scene."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1193 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "womens-oversized-crop-tee",
+        "name": "여성 오버핏 크롭 코튼 티셔츠",
+        "sourceProductId": "01a07b26-1e91-73ea-b15b-53f146e6d377",
+        "audience": "womenswear",
+        "color": "deep burgundy wine red",
+        "material": "opaque matte cotton jersey",
+        "design": "Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.",
+        "model": "One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.",
+        "highlights": ["오버사이즈 핏", "크롭 기장", "면 소재"],
+        "variants": [
+          {
+            "id": "black",
+            "kind": "color",
+            "value": "solid black"
+          },
+          {
+            "id": "khaki",
+            "kind": "color",
+            "value": "muted olive khaki green"
+          }
+        ]
+      },
+      {
+        "id": "mens-standard-linen-pocket-tee",
+        "name": "남성 스탠다드 린넨 포켓 티셔츠",
+        "sourceProductId": "01a07b25-ffc6-71a8-b75f-4087dbc89016",
+        "audience": "menswear",
+        "color": "deep navy blue",
+        "material": "opaque matte linen knit with subtle natural slub texture",
+        "design": "Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.",
+        "model": "One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.",
+        "highlights": ["레귤러 핏", "가슴 포켓", "린넨 소재"],
+        "variants": [
+          {
+            "id": "burgundy",
+            "kind": "color",
+            "value": "deep burgundy wine red"
+          },
+          {
+            "id": "gray",
+            "kind": "color",
+            "value": "medium neutral gray"
+          }
+        ]
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "womens-oversized-crop-tee/front",
+      "productId": "womens-oversized-crop-tee",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/front.png",
+      "sha256": "20f0375e97332f896b17342ce4db29e8eddbe6ecee1cb91b8914c1f8159875ac",
+      "history": [
+        {
+          "note": "Burgundy front anchor: boxy crop, dropped shoulders, broad short sleeves, rib crew neck and plain double-stitched hem; fully inside square.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: . Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/back",
+      "productId": "womens-oversized-crop-tee",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["womens-oversized-crop-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/back.png",
+      "sha256": "6e501898d17a72224e3c333aa917377204829788ca0478525fcfd1e9bad2421a",
+      "history": [
+        {
+          "note": "Burgundy rear is plain, with higher back neck, matching dropped sleeves, boxy crop and straight hem.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only. CRITICAL rear view: show plain back of T-shirt, no chest pocket on back."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/side",
+      "productId": "womens-oversized-crop-tee",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["womens-oversized-crop-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/side.png",
+      "sha256": "9ed7047921b875c1b23c4f4411f3f395ab41daf15224bf6c233cdf4b2c000cea",
+      "history": [
+        {
+          "note": "Side view shows dropped shoulder seam, wide sleeve opening, boxy cropped body and clean double hem in burgundy.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/texture",
+      "productId": "womens-oversized-crop-tee",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["womens-oversized-crop-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/texture.png",
+      "sha256": "1a4dbd8e19cd588c89c22c9703aee5eda7e580785de0c46920750c2a31796979",
+      "history": [
+        {
+          "note": "Single macro shows burgundy cotton knit, rib neck and folded sleeve double stitching; no collage, logos or text.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only. CRITICAL extreme macro crop, T-shirt fabric texture and collar/hem stitching, NOT a full garment shot."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/model-front",
+      "productId": "womens-oversized-crop-tee",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["womens-oversized-crop-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/model-front.png",
+      "sha256": "ac33b7bec2001cf1ce9a8e03d3da4976a351cdfe3d6cdb669c07f2bba578fe22",
+      "history": [
+        {
+          "note": "Female front wearing anchor: chin-length bob, ivory wide trousers, white shoes, untucked burgundy crop meeting waistband; broad sleeves and full square framing.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/model-side",
+      "productId": "womens-oversized-crop-tee",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["womens-oversized-crop-tee/front", "womens-oversized-crop-tee/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/model-side.png",
+      "sha256": "cd717bb0d2b4a8d5f306e376dab77f81b929cc152753f676777269cb3eb50097",
+      "history": [
+        {
+          "note": "Side wearing view keeps bob identity, ivory trousers and white shoes, wide sleeves and waist-level cropped hem.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/model-back",
+      "productId": "womens-oversized-crop-tee",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "womens-oversized-crop-tee/front",
+        "womens-oversized-crop-tee/back",
+        "womens-oversized-crop-tee/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/model-back.png",
+      "sha256": "22097838071482018377b45e826889197af63933cb1feca0d57026171b95f437",
+      "history": [
+        {
+          "note": "Rear wearing view preserves bob, ivory outfit, plain burgundy back and waist crop, no added logos or pockets.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = back reference; Image 3 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment. CRITICAL rear view: show plain back of T-shirt, no chest pocket on back."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/editorial",
+      "productId": "womens-oversized-crop-tee",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["womens-oversized-crop-tee/front", "womens-oversized-crop-tee/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/editorial.png",
+      "sha256": "3bf45f098f062b591430883a794e375ea911787da5214aeb42045141d3616c29",
+      "history": [
+        {
+          "note": "Editorial three-quarter step pose is distinct, with same bob model and ivory styling; burgundy crop and broad sleeves maintained.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment. Distinct editorial pose: gentle three-quarter turn, relaxed arms and one foot a small step forward. Do not repeat the model-front pose."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-black-front",
+      "productId": "womens-oversized-crop-tee",
+      "label": "solid black · 정면",
+      "variant": {
+        "id": "black",
+        "kind": "color",
+        "value": "solid black"
+      },
+      "dependencies": ["womens-oversized-crop-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to solid black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-black-front.png",
+      "sha256": "1fb2787b659f6d73f978487eedb9c942339fb3addab762ff72f28f5370f10d3a",
+      "history": [
+        {
+          "note": "Black front retains base crop, rib neck, dropped sleeves and framing; fabric color changed only.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to solid black. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: front. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-black-back",
+      "productId": "womens-oversized-crop-tee",
+      "label": "solid black · 후면",
+      "variant": {
+        "id": "black",
+        "kind": "color",
+        "value": "solid black"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/back",
+        "womens-oversized-crop-tee/variant-black-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to solid black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-black-back.png",
+      "sha256": "5bc1b94f5a7395bfe894db11bb2173901a11b16af2b7e96c406bada4a8c161c2",
+      "history": [
+        {
+          "note": "Black back preserves plain rear neck and crop, matching burgundy silhouette and black anchor tone.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to solid black. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: back. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only. CRITICAL rear view: show plain back of T-shirt, no chest pocket on back."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-black-side",
+      "productId": "womens-oversized-crop-tee",
+      "label": "solid black · 측면",
+      "variant": {
+        "id": "black",
+        "kind": "color",
+        "value": "solid black"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/side",
+        "womens-oversized-crop-tee/variant-black-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to solid black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-black-side.png",
+      "sha256": "96a277e924df55a76a652f150f742d90afceb6becca6d538b5c2698d598ef0ce",
+      "history": [
+        {
+          "note": "Black side maintains exact sleeve opening, dropped shoulder, side seam and cropped hem from burgundy source.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to solid black. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: side. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-black-texture",
+      "productId": "womens-oversized-crop-tee",
+      "label": "solid black · 소재 확대",
+      "variant": {
+        "id": "black",
+        "kind": "color",
+        "value": "solid black"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/texture",
+        "womens-oversized-crop-tee/variant-black-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to solid black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-black-texture.png",
+      "sha256": "4a2e2f8d6eb535c479b6f53ca54568ef31355cd40fa60f258aa926523320a37b",
+      "history": [
+        {
+          "note": "Black macro preserves knit, ribbed collar and folded sleeve composition; fabric detail remains readable.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to solid black. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: texture. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only. CRITICAL extreme macro crop, T-shirt fabric texture and collar/hem stitching, NOT a full garment shot."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-black-model-front",
+      "productId": "womens-oversized-crop-tee",
+      "label": "solid black · 모델 정면",
+      "variant": {
+        "id": "black",
+        "kind": "color",
+        "value": "solid black"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/model-front",
+        "womens-oversized-crop-tee/variant-black-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to solid black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-black-model-front.png",
+      "sha256": "957daea28630d801b1e9079778856c203d45c9ed99215bfc6ad2268bb63ddb9a",
+      "history": [
+        {
+          "note": "Black front wearing keeps exact model, pose and ivory outfit; crop, neckline and broad sleeve proportions match.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to solid black. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-front. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-black-model-side",
+      "productId": "womens-oversized-crop-tee",
+      "label": "solid black · 모델 측면",
+      "variant": {
+        "id": "black",
+        "kind": "color",
+        "value": "solid black"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/model-side",
+        "womens-oversized-crop-tee/variant-black-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to solid black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-black-model-side.png",
+      "sha256": "3a34a1c734c45b7b49aad08bedd88f18c09ad912fc31de6799cb9edfaf9a80d1",
+      "history": [
+        {
+          "note": "Black side wearing preserves source pose, face, bob and ivory styling with identical crop.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to solid black. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-side. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-black-model-back",
+      "productId": "womens-oversized-crop-tee",
+      "label": "solid black · 모델 후면",
+      "variant": {
+        "id": "black",
+        "kind": "color",
+        "value": "solid black"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/model-back",
+        "womens-oversized-crop-tee/variant-black-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to solid black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-black-model-back.png",
+      "sha256": "f9ef6b2a801bd3dead8857b5a7c6d28be724fd079a55560d29df14bebf9cccc1",
+      "history": [
+        {
+          "note": "Black rear wearing preserves plain back, shoulder width, crop and same bob and ivory outfit.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to solid black. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-back. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment. CRITICAL rear view: show plain back of T-shirt, no chest pocket on back."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-black-editorial",
+      "productId": "womens-oversized-crop-tee",
+      "label": "solid black · 소개용 연출",
+      "variant": {
+        "id": "black",
+        "kind": "color",
+        "value": "solid black"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/editorial",
+        "womens-oversized-crop-tee/variant-black-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to solid black. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-black-editorial.png",
+      "sha256": "ac031cfc0acb97340d5ccebd7ff5e4aef77d098e5c6a1f57103c12b01f8c7d7f",
+      "history": [
+        {
+          "note": "Black editorial retains same three-quarter step, model face and ivory outfit with matching cropped shirt.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to solid black. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: editorial. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-khaki-front",
+      "productId": "womens-oversized-crop-tee",
+      "label": "muted olive khaki green · 정면",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green"
+      },
+      "dependencies": ["womens-oversized-crop-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to muted olive khaki green. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-khaki-front.png",
+      "sha256": "58224e008d28f71832728b215c2dd1309ec2cc37e9446d99baa26a237b662919",
+      "history": [
+        {
+          "note": "Khaki front anchor preserves crop proportions, collar, sleeves and original framing; muted olive tone.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to muted olive khaki green. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: front. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-khaki-back",
+      "productId": "womens-oversized-crop-tee",
+      "label": "muted olive khaki green · 후면",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/back",
+        "womens-oversized-crop-tee/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to muted olive khaki green. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-khaki-back.png",
+      "sha256": "4e76c9996aca44720e805f5956c9884a2eb87890e63f6e1c53bf56ffccb0f0b5",
+      "history": [
+        {
+          "note": "Khaki rear matches base shape, plain back, rib neck and olive anchor color.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to muted olive khaki green. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: back. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only. CRITICAL rear view: show plain back of T-shirt, no chest pocket on back."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-khaki-side",
+      "productId": "womens-oversized-crop-tee",
+      "label": "muted olive khaki green · 측면",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/side",
+        "womens-oversized-crop-tee/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to muted olive khaki green. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-khaki-side.png",
+      "sha256": "6dc9d96000382c2a391fb42a833ff1436801bb7510d43ae68ec93e9232260b80",
+      "history": [
+        {
+          "note": "Khaki side retains source seam placement, wide sleeve opening and cropped body.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to muted olive khaki green. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: side. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-khaki-texture",
+      "productId": "womens-oversized-crop-tee",
+      "label": "muted olive khaki green · 소재 확대",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/texture",
+        "womens-oversized-crop-tee/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to muted olive khaki green. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-khaki-texture.png",
+      "sha256": "a0c2a8ac8eecf061d671515fb395518af13b1f136d7d1cc71040fe9cd7867514",
+      "history": [
+        {
+          "note": "Khaki macro preserves original rib collar, cotton knit and sleeve stitching composition.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to muted olive khaki green. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: texture. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only. CRITICAL extreme macro crop, T-shirt fabric texture and collar/hem stitching, NOT a full garment shot."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-khaki-model-front",
+      "productId": "womens-oversized-crop-tee",
+      "label": "muted olive khaki green · 모델 정면",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/model-front",
+        "womens-oversized-crop-tee/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to muted olive khaki green. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-khaki-model-front.png",
+      "sha256": "05a12b4880ebb4ed817c38dfe3f81562b3b48e4190d74435c132886cda9227eb",
+      "history": [
+        {
+          "note": "Khaki front wearing matches face, stance, outfit and tee crop of original, with muted olive fabric.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to muted olive khaki green. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-front. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-khaki-model-side",
+      "productId": "womens-oversized-crop-tee",
+      "label": "muted olive khaki green · 모델 측면",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/model-side",
+        "womens-oversized-crop-tee/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to muted olive khaki green. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-khaki-model-side.png",
+      "sha256": "cf1a18ad8b3694ff276ee75f839c9db0ee79cf4e818686d04b9a73ac9a78c265",
+      "history": [
+        {
+          "note": "Khaki side wearing keeps model profile, hair, ivory outfit, sleeve and cropped hem unchanged.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to muted olive khaki green. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-side. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-khaki-model-back",
+      "productId": "womens-oversized-crop-tee",
+      "label": "muted olive khaki green · 모델 후면",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/model-back",
+        "womens-oversized-crop-tee/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to muted olive khaki green. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-khaki-model-back.png",
+      "sha256": "746c7cd5bc0a5b72587cf1fcb728daacfcc683feec7113245eb9f24e42ee1ac1",
+      "history": [
+        {
+          "note": "Khaki rear wearing preserves bob, plain back, crop, sleeve width and ivory clothing.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to muted olive khaki green. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-back. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment. CRITICAL rear view: show plain back of T-shirt, no chest pocket on back."
+        }
+      ]
+    },
+    {
+      "id": "womens-oversized-crop-tee/variant-khaki-editorial",
+      "productId": "womens-oversized-crop-tee",
+      "label": "muted olive khaki green · 소개용 연출",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green"
+      },
+      "dependencies": [
+        "womens-oversized-crop-tee/editorial",
+        "womens-oversized-crop-tee/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 오버핏 크롭 코튼 티셔츠\nDesign invariants: Fictional sample: oversized boxy cropped T-shirt ending at natural waist, ribbed crew neck, dropped shoulders, wide short sleeves ending just above elbows, straight double-stitched bottom hem, plain front and back, no pocket, no logos or prints. Preserve sleeve width, cropped length and collar in every view.\nBase color: deep burgundy wine red\nBase material: opaque matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female model with straight chin-length dark bob, ivory high-waisted wide-leg trousers and white low-top sneakers, no accessories. Tee untucked, hem meeting trouser waistband. Same model identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to muted olive khaki green. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-oversized-crop-tee/variant-khaki-editorial.png",
+      "sha256": "2ca6e34bed9e686709bf23847358c0ec1c59e7164a5791d9ce6c4df7ff9f5f07",
+      "history": [
+        {
+          "note": "Khaki editorial keeps original stepping pose, bob identity, crop and ivory styling; consistent olive color.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to muted olive khaki green. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: editorial. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/front",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/front.png",
+      "sha256": "6985e2faa0096a3bc067602bd9aa25083135fe794b4e26af27bf67660c8a4cb0",
+      "history": [
+        {
+          "note": "Navy front anchor shows regular length, set-in shoulders, rib crew neck, single wearer-left chest patch pocket and linen slub texture; no logos.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: . Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/back",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["mens-standard-linen-pocket-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/back.png",
+      "sha256": "41df0d37e19a6866a75d95cf1c9b0ec356abb4b49881a57a6445845b23f7672e",
+      "history": [
+        {
+          "note": "Navy rear plain with no pocket, consistent set-in shoulders, hip-length body and slub texture.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only. CRITICAL rear view: show plain back of T-shirt, no chest pocket on back."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/side",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["mens-standard-linen-pocket-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/side.png",
+      "sha256": "bb5e9499886362cea0225efc99026c08b87a123288aae62a5ff92cbd81678538",
+      "history": [
+        {
+          "note": "Navy left side shows single chest pocket edge, set-in sleeve and straight hem; coherent slub texture.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/texture",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["mens-standard-linen-pocket-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/texture.png",
+      "sha256": "123153ad0b4ef6099ecc783146e250f1280b51bb12bc01fe6fc24e1f8ab85755",
+      "history": [
+        {
+          "note": "Navy macro shows slub linen knit and rib crew-neck stitching in a single close-up without inset.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only. CRITICAL extreme macro crop, T-shirt fabric texture and collar/hem stitching, NOT a full garment shot."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/model-front",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["mens-standard-linen-pocket-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/model-front.png",
+      "sha256": "008831691acc9f874cf9c6a759a5bdb7d5536394e5dd28a6b1fa59aa3170386b",
+      "history": [
+        {
+          "note": "Male wearing anchor: navy single left chest pocket, slub texture, untucked regular tee, beige chinos and white sneakers, full body square.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/model-side",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/front",
+        "mens-standard-linen-pocket-tee/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/model-side.png",
+      "sha256": "3ee9ffcea703a88602c1890dbf4303c01d3a451519242465b4bffc3edf4c5dee",
+      "history": [
+        {
+          "note": "Navy side wearing retains male identity, beige chinos, white sneakers and chest pocket; regular tee length and sleeves consistent.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/model-back",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/front",
+        "mens-standard-linen-pocket-tee/back",
+        "mens-standard-linen-pocket-tee/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/model-back.png",
+      "sha256": "b69199a036af4c8c66e1e8e862181894a10c04ed37b5dac822cdc4d28048f1c2",
+      "history": [
+        {
+          "note": "후면 전신 구도, 네이비 무지 뒷면과 린넨 질감, 동일 남성 모델 및 베이지 팬츠 스타일링을 확인했습니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = back reference; Image 3 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment. CRITICAL rear view: show plain back of T-shirt, no chest pocket on back."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/editorial",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/front",
+        "mens-standard-linen-pocket-tee/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/editorial.png",
+      "sha256": "61db777251fd7dcfc51e968c15f95910e8791304b55d68badf6f539842dd40ed",
+      "history": [
+        {
+          "note": "소개용 3/4 전신 포즈가 기본 정면과 구별되고, 동일 네이비 포켓 티셔츠와 모델 스타일링이 유지됩니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment. Distinct editorial pose: gentle three-quarter turn, relaxed arms and one foot a small step forward. Do not repeat the model-front pose."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-burgundy-front",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "deep burgundy wine red · 정면",
+      "variant": {
+        "id": "burgundy",
+        "kind": "color",
+        "value": "deep burgundy wine red"
+      },
+      "dependencies": ["mens-standard-linen-pocket-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to deep burgundy wine red. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-burgundy-front.png",
+      "sha256": "88972b80840f6fbc43c69b0002a4e249fb2018cb7b54ecfb0151538a927deb49",
+      "history": [
+        {
+          "note": "버건디 정면에서 원본 포켓, 실루엣, 넥라인과 린넨 슬럽 질감이 유지되며 상품 단독 구도입니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to deep burgundy wine red. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: front. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-burgundy-back",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "deep burgundy wine red · 후면",
+      "variant": {
+        "id": "burgundy",
+        "kind": "color",
+        "value": "deep burgundy wine red"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/back",
+        "mens-standard-linen-pocket-tee/variant-burgundy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to deep burgundy wine red. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-burgundy-back.png",
+      "sha256": "f8caa690ce1d1c0eb54f5cab1682ae42d62d8c31b7138339f7058ce65e37c999",
+      "history": [
+        {
+          "note": "버건디 무지 후면, 소매와 밑단 봉제 및 원본 실루엣을 확인했습니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to deep burgundy wine red. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: back. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only. CRITICAL rear view: show plain back of T-shirt, no chest pocket on back."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-burgundy-side",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "deep burgundy wine red · 측면",
+      "variant": {
+        "id": "burgundy",
+        "kind": "color",
+        "value": "deep burgundy wine red"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/side",
+        "mens-standard-linen-pocket-tee/variant-burgundy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to deep burgundy wine red. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-burgundy-side.png",
+      "sha256": "d1150f7745e56cabec03ab28c76ef7b85a20ab9e94c94ba2d36099dde9cb24e3",
+      "history": [
+        {
+          "note": "버건디 측면이 원본 측면 구도와 포켓 위치, 소매 길이 및 실루엣을 유지합니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to deep burgundy wine red. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: side. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-burgundy-texture",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "deep burgundy wine red · 소재 확대",
+      "variant": {
+        "id": "burgundy",
+        "kind": "color",
+        "value": "deep burgundy wine red"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/texture",
+        "mens-standard-linen-pocket-tee/variant-burgundy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to deep burgundy wine red. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-burgundy-texture.png",
+      "sha256": "2c151f517eae16929eda06219385b6d5dca4e20babab324f5f8b3c0b91ce869d",
+      "history": [
+        {
+          "note": "버건디 소재 확대 컷에서 원본 넥라인 크롭, 린넨 슬럽 조직과 봉제가 유지됩니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to deep burgundy wine red. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: texture. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only. CRITICAL extreme macro crop, T-shirt fabric texture and collar/hem stitching, NOT a full garment shot."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-burgundy-model-front",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "deep burgundy wine red · 모델 정면",
+      "variant": {
+        "id": "burgundy",
+        "kind": "color",
+        "value": "deep burgundy wine red"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/model-front",
+        "mens-standard-linen-pocket-tee/variant-burgundy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to deep burgundy wine red. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-burgundy-model-front.png",
+      "sha256": "577ab00d51c68f2e714e82122f793d265930ffc8c93829638c7653b9c7a55ffd",
+      "history": [
+        {
+          "note": "버건디 착용 정면은 동일 모델, 포즈와 베이지 팬츠를 유지하며 티셔츠만 목표 색상으로 변경되었습니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to deep burgundy wine red. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-front. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-burgundy-model-side",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "deep burgundy wine red · 모델 측면",
+      "variant": {
+        "id": "burgundy",
+        "kind": "color",
+        "value": "deep burgundy wine red"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/model-side",
+        "mens-standard-linen-pocket-tee/variant-burgundy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to deep burgundy wine red. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-burgundy-model-side.png",
+      "sha256": "7a09ebfbc6865540bb5504e78e75172acf3d4570dadb2fe39fc63e0d06cd8676",
+      "history": [
+        {
+          "note": "버건디 착용 측면에서 원본 모델, 전신 구도와 옆선 및 밑단 길이가 유지됩니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to deep burgundy wine red. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-side. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-burgundy-model-back",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "deep burgundy wine red · 모델 후면",
+      "variant": {
+        "id": "burgundy",
+        "kind": "color",
+        "value": "deep burgundy wine red"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/model-back",
+        "mens-standard-linen-pocket-tee/variant-burgundy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to deep burgundy wine red. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-burgundy-model-back.png",
+      "sha256": "66dafdf30f7180c516fd7bf9a218f04ee6e356d772dbe82e995ddec4655a8f6d",
+      "history": [
+        {
+          "note": "버건디 착용 후면의 무지 등판, 동일 모델 체형과 원본 전신 구도가 유지됩니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to deep burgundy wine red. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-back. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment. CRITICAL rear view: show plain back of T-shirt, no chest pocket on back."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-burgundy-editorial",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "deep burgundy wine red · 소개용 연출",
+      "variant": {
+        "id": "burgundy",
+        "kind": "color",
+        "value": "deep burgundy wine red"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/editorial",
+        "mens-standard-linen-pocket-tee/variant-burgundy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to deep burgundy wine red. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-burgundy-editorial.png",
+      "sha256": "ba2859d63390cd4ef96d63d2169c6356cbf51404bf2cd37131f7cbe198d11e85",
+      "history": [
+        {
+          "note": "버건디 소개용 컷은 원본 3/4 포즈와 전신 프레이밍, 포켓 및 모델 정체성을 유지합니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to deep burgundy wine red. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: editorial. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-gray-front",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "medium neutral gray · 정면",
+      "variant": {
+        "id": "gray",
+        "kind": "color",
+        "value": "medium neutral gray"
+      },
+      "dependencies": ["mens-standard-linen-pocket-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to medium neutral gray. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-gray-front.png",
+      "sha256": "0b232c8512ecbee5e6c145a556f48d2964a12c939ad61f3785dbcc05005dc922",
+      "history": [
+        {
+          "note": "그레이 정면은 중간 회색 톤으로 변경되었으며 원본 포켓, 넥라인과 린넨 슬럽 질감을 유지합니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to medium neutral gray. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: front. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-gray-back",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "medium neutral gray · 후면",
+      "variant": {
+        "id": "gray",
+        "kind": "color",
+        "value": "medium neutral gray"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/back",
+        "mens-standard-linen-pocket-tee/variant-gray-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to medium neutral gray. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-gray-back.png",
+      "sha256": "f5dead046da66ae1d797b84b66f55af1f93112540f771265b10cf718a74c8faa",
+      "history": [
+        {
+          "note": "그레이 후면의 무지 등판과 밑단 및 소매 봉제, 원본 상품 단독 구도를 확인했습니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to medium neutral gray. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: back. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only. CRITICAL rear view: show plain back of T-shirt, no chest pocket on back."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-gray-side",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "medium neutral gray · 측면",
+      "variant": {
+        "id": "gray",
+        "kind": "color",
+        "value": "medium neutral gray"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/side",
+        "mens-standard-linen-pocket-tee/variant-gray-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to medium neutral gray. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-gray-side.png",
+      "sha256": "8f0b9f8f1f750b12e671343a6a307b6c992abe12acd342092d32355dbfcdd428",
+      "history": [
+        {
+          "note": "그레이 측면에서 원본 구도와 옆선, 패치 포켓과 소매 형태가 유지됩니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to medium neutral gray. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: side. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-gray-texture",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "medium neutral gray · 소재 확대",
+      "variant": {
+        "id": "gray",
+        "kind": "color",
+        "value": "medium neutral gray"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/texture",
+        "mens-standard-linen-pocket-tee/variant-gray-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to medium neutral gray. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-gray-texture.png",
+      "sha256": "5c348ca73a5b0fb3ad8af6f74cacd269432b73e28dbdce75de5fe7d72bcd53c2",
+      "history": [
+        {
+          "note": "그레이 소재 확대는 동일 넥라인 크롭과 린넨 조직을 유지하고 회색으로 일관되게 변경되었습니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to medium neutral gray. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: texture. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. T-shirt only. CRITICAL extreme macro crop, T-shirt fabric texture and collar/hem stitching, NOT a full garment shot."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-gray-model-front",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "medium neutral gray · 모델 정면",
+      "variant": {
+        "id": "gray",
+        "kind": "color",
+        "value": "medium neutral gray"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/model-front",
+        "mens-standard-linen-pocket-tee/variant-gray-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to medium neutral gray. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-gray-model-front.png",
+      "sha256": "2b43b646280bd964c0197cb9135b4a2e6d94fb850a023ae5ce61be989e2f0493",
+      "history": [
+        {
+          "note": "그레이 착용 정면에서 원본 남성 모델, 전신 포즈와 스타일링 및 포켓 디테일이 유지됩니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to medium neutral gray. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-front. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-gray-model-side",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "medium neutral gray · 모델 측면",
+      "variant": {
+        "id": "gray",
+        "kind": "color",
+        "value": "medium neutral gray"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/model-side",
+        "mens-standard-linen-pocket-tee/variant-gray-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to medium neutral gray. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-gray-model-side.png",
+      "sha256": "2b3635c789e1b2e5386c9e716524f426e3e979538247591875bb04ed13539a47",
+      "history": [
+        {
+          "note": "그레이 착용 측면은 동일 모델과 자세를 유지하며 티셔츠의 옆선과 기장을 확인할 수 있습니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to medium neutral gray. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-side. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-gray-model-back",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "medium neutral gray · 모델 후면",
+      "variant": {
+        "id": "gray",
+        "kind": "color",
+        "value": "medium neutral gray"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/model-back",
+        "mens-standard-linen-pocket-tee/variant-gray-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to medium neutral gray. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-gray-model-back.png",
+      "sha256": "efcf6246f716b96db8531d950288c7023dfdc2f77a30c92b04c9f410b3ee1c41",
+      "history": [
+        {
+          "note": "그레이 착용 후면은 원본 전신 구도와 무지 등판 및 소매 기장을 유지합니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to medium neutral gray. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-back. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment. CRITICAL rear view: show plain back of T-shirt, no chest pocket on back."
+        }
+      ]
+    },
+    {
+      "id": "mens-standard-linen-pocket-tee/variant-gray-editorial",
+      "productId": "mens-standard-linen-pocket-tee",
+      "label": "medium neutral gray · 소개용 연출",
+      "variant": {
+        "id": "gray",
+        "kind": "color",
+        "value": "medium neutral gray"
+      },
+      "dependencies": [
+        "mens-standard-linen-pocket-tee/editorial",
+        "mens-standard-linen-pocket-tee/variant-gray-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 스탠다드 린넨 포켓 티셔츠\nDesign invariants: Fictional sample: regular-fit hip-length short-sleeve T-shirt, narrow ribbed crew neck, set-in shoulder seams, one plain rectangular patch pocket on wearer LEFT chest with straight open top, straight double-stitched sleeve and bottom hems, no logos or prints. Keep single left chest pocket position, regular fit and length across all views.\nBase color: deep navy blue\nBase material: opaque matte linen knit with subtle natural slub texture\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male model with short dark hair neatly brushed back, light beige straight chinos and plain white low-top sneakers, no accessories. T-shirt untucked. Same identity and outfit throughout.\nMatch framing and pose of the first reference. Change only color to medium neutral gray. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-standard-linen-pocket-tee/variant-gray-editorial.png",
+      "sha256": "7e61dbbd28b0065762a427158b1e2b5bbcb435964b4a5f59f303ea9be67e280f",
+      "history": [
+        {
+          "note": "그레이 소개용 컷은 원본 3/4 포즈와 모델 및 스타일링을 유지하고 목표 색상과 포켓 티셔츠 구조가 일치합니다.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY T-shirt fabric color to medium neutral gray. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: editorial. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. T-shirt is the featured garment."
+        }
+      ]
+    }
+  ]
+}

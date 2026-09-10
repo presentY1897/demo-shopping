@@ -39,3 +39,7 @@ python3 -m http.server 3016 --directory output/product-images/v1 --bind 0.0.0.0
 A product introduction should use its name, provided highlights and material/color data alongside the editorial, model, texture and gallery images. Preserve empty/unknown facts instead of making up size charts, wash instructions, percentages or benefits.
 
 `check` exits nonzero until every required base and variant cut has an accepted, checksum-valid file. `next` also reports `complete`, `required`, and `missing`; zero ready jobs alone is never evidence of completion.
+
+## Multiple model profiles
+
+Optional `models: [{"id":"male","description":"Adult male, short dark hair, navy trousers"},{"id":"female","description":"Adult female, shoulder-length dark hair, navy trousers"}]` expands model-front/side/back/editorial per profile. Do not also supply a conflicting singular `model`. Four garment shots stay shared; two profiles yield 12 cuts per color/material. Keys are `model-male-front`, `model-male-side`, `model-male-back`, `model-male-editorial`, and corresponding female keys. Each profile references its own model-front. The default without `models` stays at eight shots.

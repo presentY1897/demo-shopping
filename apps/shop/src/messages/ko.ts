@@ -210,6 +210,7 @@ export const ko: Messages = {
       quickAdd: '장바구니 담기',
       colorsLabel: '{name} 색상',
       ratingLabel: '평점',
+      imageUnavailable: '상품 이미지 준비 중',
     },
     gridLabel: '{title} 목록',
   },
@@ -290,6 +291,7 @@ export const ko: Messages = {
       quickAdd: '장바구니 담기',
       colorsLabel: '{name} 색상',
       ratingLabel: '평점',
+      imageUnavailable: '상품 이미지 준비 중',
     },
   },
   category: {
@@ -319,7 +321,7 @@ export const ko: Messages = {
       zoomIn: '이미지 확대',
       zoomOut: '확대 해제',
       imageAlt: '{name} 이미지 {index}',
-      empty: '등록된 이미지가 없습니다',
+      empty: '상품 이미지 준비 중',
       position: '{index} / {total}',
     },
     options: {

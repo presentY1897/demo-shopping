@@ -1,0 +1,777 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "butter-mini-bucket-bag",
+        "name": "버터 미니 버킷백",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 가방",
+        "color": "butter yellow",
+        "colorLabel": "버터",
+        "hex": "#e8cf80",
+        "material": "matte fine-grain leather",
+        "price": 59000,
+        "design": "Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.",
+        "sizes": [],
+        "skuPrefix": "PAR-01",
+        "highlights": ["버터 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Standing front three-quarter with handle upright and drawstring loosely closed.",
+          "back": "Rear view with handle and circular base visible.",
+          "side": "True side view.",
+          "texture": "Macro leather grain and handle attachment brass ring.",
+          "model-front": "Adult woman ivory blouse, cropped torso carrying bag by short handle at hip, no face.",
+          "model-side": "Same clothing and bag carried in hand from side, entire handle visible.",
+          "model-back": "Top-down open bag showing cream lining and empty single compartment.",
+          "editorial": "Bag standing on pale stone bench in daylight."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "버터 미니 버킷백 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "ink-envelope-card-wallet",
+        "name": "잉크 엔벨로프 카드지갑",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 지갑",
+        "color": "ink navy",
+        "colorLabel": "잉크",
+        "hex": "#25334b",
+        "material": "smooth matte leather",
+        "price": 27000,
+        "design": "Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.",
+        "sizes": [],
+        "skuPrefix": "PAR-02",
+        "highlights": ["잉크 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Closed front three-quarter showing triangular flap and snap.",
+          "back": "Plain stitched rectangular rear.",
+          "side": "Closed thin side profile.",
+          "texture": "Macro leather stitching and silver snap.",
+          "model-front": "Open triangular flap revealing single empty compartment.",
+          "model-side": "Adult hand holding closed wallet for scale, ivory sleeve.",
+          "model-back": "Open wallet with one blank cream card partly inserted into single compartment.",
+          "editorial": "Closed wallet on pale oak beside blank notebook."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "잉크 엔벨로프 카드지갑 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "terracotta-wave-tray",
+        "name": "테라코타 웨이브 트레이",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "terracotta",
+        "colorLabel": "테라코타",
+        "hex": "#b96549",
+        "material": "matte glazed ceramic",
+        "price": 24000,
+        "design": "Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.",
+        "sizes": [],
+        "skuPrefix": "PAR-03",
+        "highlights": ["테라코타 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Front three-quarter entire empty tray.",
+          "back": "Rear three-quarter empty tray.",
+          "side": "Low side profile showing shallow basin and continuous rim.",
+          "texture": "Macro matte glaze and curved rim.",
+          "model-front": "Tray holding one plain key and two simple silver rings, overhead angled view.",
+          "model-side": "Same tray and objects from low side, objects resting inside basin.",
+          "model-back": "Top-down empty tray showing oval wavy outline.",
+          "editorial": "Tray on cream console beside folded linen, tray dominates."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "테라코타 웨이브 트레이 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "forest-folding-bookend",
+        "name": "포레스트 아치 북엔드",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 독서 소품",
+        "color": "forest green",
+        "colorLabel": "포레스트",
+        "hex": "#355d49",
+        "material": "powder-coated steel",
+        "price": 23000,
+        "design": "Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.",
+        "sizes": [],
+        "skuPrefix": "PAR-04",
+        "highlights": ["포레스트 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Front three-quarter of single empty bookend with base visible.",
+          "back": "Rear three-quarter of arch plate.",
+          "side": "True side showing simple right-angle L profile.",
+          "texture": "Macro powder coating and rounded plate edge.",
+          "model-front": "Single bookend supporting three upright blank linen books, base under books, circular hole visible.",
+          "model-side": "Same bookend and books viewed from side, base under books.",
+          "model-back": "Top oblique empty bookend showing rectangular base and upright arch.",
+          "editorial": "Bookend with same three blank books on oak shelf."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "포레스트 아치 북엔드 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "butter-mini-bucket-bag/front",
+      "productId": "butter-mini-bucket-bag",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: butter yellow\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/butter-mini-bucket-bag/front.png",
+      "sha256": "3eb566832fd1335882fc55e726d411a707faefbbd09bc5e900431374db2b0920",
+      "history": [
+        {
+          "note": "Accepted: butter leather cylinder, circular base, one upright handle with two brass rings, drawstring and cream lining; full safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: butter yellow; Material: matte fine-grain leather\nRequested view: Standing front three-quarter with handle upright and drawstring loosely closed.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products."
+        }
+      ]
+    },
+    {
+      "id": "butter-mini-bucket-bag/back",
+      "productId": "butter-mini-bucket-bag",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["butter-mini-bucket-bag/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: butter yellow\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/butter-mini-bucket-bag/back.png",
+      "sha256": "8316afca4049cd649c793b881fcd5b2e61550b624a646927b62ca3dd8c4dbfa4",
+      "history": [
+        {
+          "note": "Accepted rear: no front dangling drawstring, matching cylinder, leather, two rings and full handle.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: butter yellow; Material: matte fine-grain leather\nRequested view: Rear view with handle and circular base visible.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "butter-mini-bucket-bag/side",
+      "productId": "butter-mini-bucket-bag",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["butter-mini-bucket-bag/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: butter yellow\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/butter-mini-bucket-bag/side.png",
+      "sha256": "1f091071be8ec0f4e4bcf6f7cf0f677cefdf3e1bed7a1608b495664269dae7a8",
+      "history": [
+        {
+          "note": "Accepted true side: edge-on handle, side seam and near brass ring, same color and drawstring; safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: butter yellow; Material: matte fine-grain leather\nRequested view: True side view.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "butter-mini-bucket-bag/texture",
+      "productId": "butter-mini-bucket-bag",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["butter-mini-bucket-bag/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: butter yellow\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/butter-mini-bucket-bag/texture.png",
+      "sha256": "37ebc052a887f78c4cf2240e7d222d0f8006272edd09695542fd41a4b35bf9d4",
+      "history": [
+        {
+          "note": "Accepted macro: fine grain butter leather, brass ring and attachment stitching, cream lining; consistent hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: butter yellow; Material: matte fine-grain leather\nRequested view: Macro leather grain and handle attachment brass ring.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "butter-mini-bucket-bag/model-front",
+      "productId": "butter-mini-bucket-bag",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["butter-mini-bucket-bag/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: butter yellow\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/butter-mini-bucket-bag/model-front.png",
+      "sha256": "795b4ed08ddca0267c5b8679c3da8fc59c6cb9d91de3e7e77b20d618cc5bfb2a",
+      "history": [
+        {
+          "note": "Accepted usage front: ivory blouse adult torso, natural hand grip, entire bag and original rings/drawstring preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: butter yellow; Material: matte fine-grain leather\nRequested view: Adult woman ivory blouse, cropped torso carrying bag by short handle at hip, no face.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "butter-mini-bucket-bag/model-side",
+      "productId": "butter-mini-bucket-bag",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["butter-mini-bucket-bag/front", "butter-mini-bucket-bag/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: butter yellow\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/butter-mini-bucket-bag/model-side.png",
+      "sha256": "42a8d4cf640990ab20dcb7507ea51d5ea47651a39bfa31104a54d6f9081d5cd6",
+      "history": [
+        {
+          "note": "Accepted side carrying: matching ivory blouse/trousers and natural relaxed hand, whole handle and consistent bag visible.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: butter yellow; Material: matte fine-grain leather\nRequested view: Same clothing and bag carried in hand from side, entire handle visible.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware; Image 2: authoritative model-front view for same product geometry, color and hardware and same clothing/person or usage objects. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "butter-mini-bucket-bag/model-back",
+      "productId": "butter-mini-bucket-bag",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "butter-mini-bucket-bag/front",
+        "butter-mini-bucket-bag/back",
+        "butter-mini-bucket-bag/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: butter yellow\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/butter-mini-bucket-bag/model-back.png",
+      "sha256": "121237b14bd398d07dd2c56fb7e8f8d2204914827594c64d5105b74f32ed841f",
+      "history": [
+        {
+          "note": "Accepted open top: single empty cream compartment and circular bottom, no invented pocket or divider, original handle and drawstring.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: butter yellow; Material: matte fine-grain leather\nRequested view: Top-down open bag showing cream lining and empty single compartment.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware; Image 2: authoritative back view for same product geometry, color and hardware; Image 3: authoritative model-front view for same product geometry, color and hardware and same clothing/person or usage objects. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "butter-mini-bucket-bag/editorial",
+      "productId": "butter-mini-bucket-bag",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["butter-mini-bucket-bag/front", "butter-mini-bucket-bag/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nBase color: butter yellow\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/butter-mini-bucket-bag/editorial.png",
+      "sha256": "de438fa39362585f60280d0a6c63cfd2818c76149915fa76cb32e850fd7ad5da",
+      "history": [
+        {
+          "note": "Accepted editorial: matching butter cylinder, single handle and two rings on pale stone bench, daylight, safe full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 버터 미니 버킷백\nDesign invariants: Fictional concept sample. Small cylindrical bucket handbag, flat circular base, open top with one simple leather drawstring, one short curved handle attached at opposite sides by two brass rings, plain cream lining, no pockets. No logos or lettering. Preserve shape and all hardware counts.\nColor: butter yellow; Material: matte fine-grain leather\nRequested view: Bag standing on pale stone bench in daylight.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware; Image 2: authoritative model-front view for same product geometry, color and hardware and same clothing/person or usage objects. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "ink-envelope-card-wallet/front",
+      "productId": "ink-envelope-card-wallet",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nBase color: ink navy\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ink-envelope-card-wallet/front.png",
+      "sha256": "f7b9aabc6dbf5d825ab8f80f3382d1f5ce3f98c8c62a751f9b4912b584ad937f",
+      "history": [
+        {
+          "note": "Accepted wallet front: navy matte leather, single triangular flap and silver snap, stitched rectangle, no logo or zipper.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nColor: ink navy; Material: smooth matte leather\nRequested view: Closed front three-quarter showing triangular flap and snap.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products."
+        }
+      ]
+    },
+    {
+      "id": "ink-envelope-card-wallet/back",
+      "productId": "ink-envelope-card-wallet",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["ink-envelope-card-wallet/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nBase color: ink navy\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ink-envelope-card-wallet/back.png",
+      "sha256": "03bae37701780e367b0fd1ce330ebd1141de1bfac06189850558c4c9be517b46",
+      "history": [
+        {
+          "note": "Accepted rear: plain navy stitched rectangular back, thin matching proportions, no added slot or snap.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nColor: ink navy; Material: smooth matte leather\nRequested view: Plain stitched rectangular rear.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "ink-envelope-card-wallet/side",
+      "productId": "ink-envelope-card-wallet",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["ink-envelope-card-wallet/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nBase color: ink navy\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ink-envelope-card-wallet/side.png",
+      "sha256": "70a85fc1604c234736132fc1cee4bb1738e59d0c59dbe49bcc4d584edab068bf",
+      "history": [
+        {
+          "note": "Accepted thin closed side profile: folded flap and silver snap edge, cream inner lining, no added compartments.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nColor: ink navy; Material: smooth matte leather\nRequested view: Closed thin side profile.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "ink-envelope-card-wallet/texture",
+      "productId": "ink-envelope-card-wallet",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["ink-envelope-card-wallet/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nBase color: ink navy\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ink-envelope-card-wallet/texture.png",
+      "sha256": "73136708396899500579eb88afad5cf364b3494eba894e36122d7fdf1a03efaa",
+      "history": [
+        {
+          "note": "Accepted macro: navy leather texture and stitched triangular tip with single brushed silver snap, consistent color.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nColor: ink navy; Material: smooth matte leather\nRequested view: Macro leather stitching and silver snap.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "ink-envelope-card-wallet/model-front",
+      "productId": "ink-envelope-card-wallet",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["ink-envelope-card-wallet/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nBase color: ink navy\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ink-envelope-card-wallet/model-front.png",
+      "sha256": "ac634f1535c57ff6e988d1cb2d0e23dd7a67cf40bb1eee9a178ae36afd71ce4b",
+      "history": [
+        {
+          "note": "Accepted open wallet: triangular flap lifted, single cream-lined empty compartment, matching snap halves and perimeter stitching.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nColor: ink navy; Material: smooth matte leather\nRequested view: Open triangular flap revealing single empty compartment.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "ink-envelope-card-wallet/model-side",
+      "productId": "ink-envelope-card-wallet",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["ink-envelope-card-wallet/front", "ink-envelope-card-wallet/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nBase color: ink navy\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ink-envelope-card-wallet/model-side.png",
+      "sha256": "c8983838a5e1d031feceed5efeab8ffbdbf61081575ee87f87495f47e44b2163",
+      "history": [
+        {
+          "note": "Accepted hand scale: natural adult hand and ivory cuff, complete closed navy envelope wallet and one silver snap.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nColor: ink navy; Material: smooth matte leather\nRequested view: Adult hand holding closed wallet for scale, ivory sleeve.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware; Image 2: authoritative model-front view for same product geometry, color and hardware and same clothing/person or usage objects. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "ink-envelope-card-wallet/model-back",
+      "productId": "ink-envelope-card-wallet",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "ink-envelope-card-wallet/front",
+        "ink-envelope-card-wallet/back",
+        "ink-envelope-card-wallet/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nBase color: ink navy\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ink-envelope-card-wallet/model-back.png",
+      "sha256": "b5bd2fd096428a0b6d2d40641dfe5cc080de618bfa3e814ffc67468098f14af1",
+      "history": [
+        {
+          "note": "Accepted card insertion: one blank cream card partly inside single compartment, preserved open triangular flap and snap geometry.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nColor: ink navy; Material: smooth matte leather\nRequested view: Open wallet with one blank cream card partly inserted into single compartment.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware; Image 2: authoritative back view for same product geometry, color and hardware; Image 3: authoritative model-front view for same product geometry, color and hardware and same clothing/person or usage objects. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "ink-envelope-card-wallet/editorial",
+      "productId": "ink-envelope-card-wallet",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["ink-envelope-card-wallet/front", "ink-envelope-card-wallet/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nBase color: ink navy\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ink-envelope-card-wallet/editorial.png",
+      "sha256": "736f4c6c6a4cab56058ddbf17f417470641cff5c53a44ad82a7d0965765a6ce1",
+      "history": [
+        {
+          "note": "Accepted editorial: closed navy envelope wallet on pale oak beside blank notebook, matching stitching/snap and safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 잉크 엔벨로프 카드지갑\nDesign invariants: Fictional concept sample. Small flat navy envelope card wallet, rectangular body, triangular flap centered with one small brushed silver snap, stitched perimeter, one cream-lined card compartment, no zipper. No logos or lettering. Preserve shape and all hardware counts.\nColor: ink navy; Material: smooth matte leather\nRequested view: Closed wallet on pale oak beside blank notebook.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware; Image 2: authoritative model-front view for same product geometry, color and hardware and same clothing/person or usage objects. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-wave-tray/front",
+      "productId": "terracotta-wave-tray",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: terracotta\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-wave-tray/front.png",
+      "sha256": "d80381aaaa4b5e490392e3a844099d5a025e9360529d8b1f4dfa2995406be5e9",
+      "history": [
+        {
+          "note": "Accepted tray anchor: terracotta matte ceramic, shallow elongated oval basin and continuous wavy rim; entire object within frame, no feet/holes.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: terracotta; Material: matte glazed ceramic\nRequested view: Front three-quarter entire empty tray.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-wave-tray/back",
+      "productId": "terracotta-wave-tray",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["terracotta-wave-tray/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: terracotta\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-wave-tray/back.png",
+      "sha256": "a2388bc11a9011c6878714623037b85cf0aacdc4ceee7b01b43b143975c44f7a",
+      "history": [
+        {
+          "note": "Accepted reverse oblique tray: same elongated shallow basin and continuous wavy rim, terracotta glaze and one-piece base.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: terracotta; Material: matte glazed ceramic\nRequested view: Rear three-quarter empty tray.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-wave-tray/side",
+      "productId": "terracotta-wave-tray",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["terracotta-wave-tray/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: terracotta\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-wave-tray/side.png",
+      "sha256": "26e4b079f13e8979f3eb16d7a0ea2b37de335d394117dd2f0182fb6441a4de62",
+      "history": [
+        {
+          "note": "Accepted low side profile: shallow continuous ceramic wall, wavy upper rim and flat underside, same terracotta finish.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: terracotta; Material: matte glazed ceramic\nRequested view: Low side profile showing shallow basin and continuous rim.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-wave-tray/texture",
+      "productId": "terracotta-wave-tray",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["terracotta-wave-tray/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: terracotta\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-wave-tray/texture.png",
+      "sha256": "8d037ce0c1f57d0cb291e7d3787b65bf969fbdad69407fb7a21b3402585d7334",
+      "history": [
+        {
+          "note": "Accepted glaze macro: matte terracotta surface and rounded wavy rim clearly detailed, single continuous material.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: terracotta; Material: matte glazed ceramic\nRequested view: Macro matte glaze and curved rim.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-wave-tray/model-front",
+      "productId": "terracotta-wave-tray",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["terracotta-wave-tray/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: terracotta\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-wave-tray/model-front.png",
+      "sha256": "c30eb2cc7505f308b2a7d48a67edb9179eddb227755cb2b377bd58e32ff4582b",
+      "history": [
+        {
+          "note": "Accepted usage: exactly one plain key and two silver rings resting in same shallow wavy terracotta tray, no intersections.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: terracotta; Material: matte glazed ceramic\nRequested view: Tray holding one plain key and two simple silver rings, overhead angled view.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-wave-tray/model-side",
+      "productId": "terracotta-wave-tray",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["terracotta-wave-tray/front", "terracotta-wave-tray/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: terracotta\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-wave-tray/model-side.png",
+      "sha256": "9f81d9263d27a4db6f7070fca925069cc8b7b4f498092b3ad351c6473f56ce8e",
+      "history": [
+        {
+          "note": "Accepted low usage angle: same plain key plus two matching rings inside basin, preserved wavy rim and shallow ceramic profile.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: terracotta; Material: matte glazed ceramic\nRequested view: Same tray and objects from low side, objects resting inside basin.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware; Image 2: authoritative model-front view for same product geometry, color and hardware and same clothing/person or usage objects. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-wave-tray/model-back",
+      "productId": "terracotta-wave-tray",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "terracotta-wave-tray/front",
+        "terracotta-wave-tray/back",
+        "terracotta-wave-tray/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: terracotta\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-wave-tray/model-back.png",
+      "sha256": "93d3cc2d80075c361bbc8ddc1b0cf797dd84e27db4b1542621deffef3f63ed2b",
+      "history": [
+        {
+          "note": "Accepted high overhead empty tray: elongated oval outline with wavy long edges and recessed single basin visible; original terracotta finish.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: terracotta; Material: matte glazed ceramic\nRequested view: Top-down empty tray showing oval wavy outline.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware; Image 2: authoritative back view for same product geometry, color and hardware; Image 3: authoritative model-front view for same product geometry, color and hardware and same clothing/person or usage objects. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-wave-tray/editorial",
+      "productId": "terracotta-wave-tray",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["terracotta-wave-tray/front", "terracotta-wave-tray/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: terracotta\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-wave-tray/editorial.png",
+      "sha256": "47292d0e59e59d2a8829c28539ab67247e60e9e358810c0b9126b3f953cc1eae",
+      "history": [
+        {
+          "note": "Accepted editorial: matching terracotta tray dominates cream console with folded linen, original one key/two rings and coherent resting contact.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 테라코타 웨이브 트레이\nDesign invariants: Fictional concept sample. Shallow elongated oval ceramic catchall tray, continuous gently wavy rim, smooth recessed basin, plain flat underside, one solid piece, no feet or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: terracotta; Material: matte glazed ceramic\nRequested view: Tray on cream console beside folded linen, tray dominates.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware; Image 2: authoritative model-front view for same product geometry, color and hardware and same clothing/person or usage objects. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "forest-folding-bookend/front",
+      "productId": "forest-folding-bookend",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nBase color: forest green\nBase material: powder-coated steel\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/forest-folding-bookend/front.png",
+      "sha256": "60b2917a7335be94302d45f3fa01ef5c47695a9501e76a05bb2367ed9db0c6ff",
+      "history": [
+        {
+          "note": "Accepted bookend anchor: single forest green steel L, rounded arch top with exactly one circular hole and rectangular forward base; no hinge.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nColor: forest green; Material: powder-coated steel\nRequested view: Front three-quarter of single empty bookend with base visible.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products."
+        }
+      ]
+    },
+    {
+      "id": "forest-folding-bookend/back",
+      "productId": "forest-folding-bookend",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["forest-folding-bookend/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nBase color: forest green\nBase material: powder-coated steel\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/forest-folding-bookend/back.png",
+      "sha256": "63fae157a35d6c8da80d838d9965aba64c1ad88263e785e166d96af0cdbb8e77",
+      "history": [
+        {
+          "note": "Accepted rear bookend: arch plate rear with one hole, base extends behind from this viewpoint, forest powder coating and thin steel edge match.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nColor: forest green; Material: powder-coated steel\nRequested view: Rear three-quarter of arch plate.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "forest-folding-bookend/side",
+      "productId": "forest-folding-bookend",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["forest-folding-bookend/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nBase color: forest green\nBase material: powder-coated steel\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/forest-folding-bookend/side.png",
+      "sha256": "09dee834ba247c620085a3b7811278ab08ea466d3e82f96cf4f8dad5bdef0f5e",
+      "history": [
+        {
+          "note": "Accepted side profile: clear right-angle L with thin upright arch and one hole viewed obliquely, flat rectangular base, no hinge.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nColor: forest green; Material: powder-coated steel\nRequested view: True side showing simple right-angle L profile.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "forest-folding-bookend/texture",
+      "productId": "forest-folding-bookend",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["forest-folding-bookend/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nBase color: forest green\nBase material: powder-coated steel\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/forest-folding-bookend/texture.png",
+      "sha256": "3c175b84daba3dc12e956bb2d59d5dc581d8af281ae1bf57d1173bdedc8df588",
+      "history": [
+        {
+          "note": "Accepted macro: textured forest powder coating, rounded arch plate edge and single circular hole, no extra hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nColor: forest green; Material: powder-coated steel\nRequested view: Macro powder coating and rounded plate edge.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "forest-folding-bookend/model-front",
+      "productId": "forest-folding-bookend",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["forest-folding-bookend/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nBase color: forest green\nBase material: powder-coated steel\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/forest-folding-bookend/model-front.png",
+      "sha256": "9efc4ccf9b855884b8d328bf2afc2e6d2e780ec632de47c0725a9ce26114b753",
+      "history": [
+        {
+          "note": "Accepted usage: one bookend supports exactly three upright blank linen books, rectangular base visibly under books, arch and circular hole retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nColor: forest green; Material: powder-coated steel\nRequested view: Single bookend supporting three upright blank linen books, base under books, circular hole visible.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front view for same product geometry, color and hardware. Use all references to preserve design; change only requested view/scene."
+        }
+      ]
+    },
+    {
+      "id": "forest-folding-bookend/model-side",
+      "productId": "forest-folding-bookend",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["forest-folding-bookend/front", "forest-folding-bookend/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nBase color: forest green\nBase material: powder-coated steel\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/forest-folding-bookend/model-side.png",
+      "sha256": "abe25e6ca98e918982166438602515f4c9c192a5d53265bb0c50e0e629d8599f",
+      "history": [
+        {
+          "note": "Accepted side usage: same three blank linen books on base and single arch upright viewed edge-on, one circular hole.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nColor: forest green; Material: powder-coated steel\nRequested view: Same bookend and books viewed from side, base under books.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front for same bookend geometry, color and hardware; Image 2: authoritative model-front for same bookend geometry, color and hardware. Retain same three blank books only for usage and editorial, omit books for empty structural shot."
+        }
+      ]
+    },
+    {
+      "id": "forest-folding-bookend/model-back",
+      "productId": "forest-folding-bookend",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "forest-folding-bookend/front",
+        "forest-folding-bookend/back",
+        "forest-folding-bookend/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nBase color: forest green\nBase material: powder-coated steel\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/forest-folding-bookend/model-back.png",
+      "sha256": "0ceb9e09d3b75dcca5dc971fb95b4cd6c8993dcee7e331f03eb94634df2e006b",
+      "history": [
+        {
+          "note": "Accepted top oblique structure: empty rectangular forward base and upright arch with one hole, forest coating and single L bend preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nColor: forest green; Material: powder-coated steel\nRequested view: Top oblique empty bookend showing rectangular base and upright arch.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front for same bookend geometry, color and hardware; Image 2: authoritative back for same bookend geometry, color and hardware; Image 3: authoritative model-front for same bookend geometry, color and hardware. Retain same three blank books only for usage and editorial, omit books for empty structural shot."
+        }
+      ]
+    },
+    {
+      "id": "forest-folding-bookend/editorial",
+      "productId": "forest-folding-bookend",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["forest-folding-bookend/front", "forest-folding-bookend/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nBase color: forest green\nBase material: powder-coated steel\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/forest-folding-bookend/editorial.png",
+      "sha256": "cc8c284d08e69277b05e325491fe2e85ae6d2d6885b30cb43f3997c3db5ebe68",
+      "history": [
+        {
+          "note": "Accepted editorial: same three cream/sage linen books supported on oak shelf, forest arch and base geometry retained, one hole and no text.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One separate photorealistic ecommerce product photo, square canvas.\nProduct: 포레스트 아치 북엔드\nDesign invariants: Fictional concept sample. One single L-shaped steel bookend, upright plate with rounded arch top and one centered circular hole near top, plain rectangular horizontal base extending forward, matte forest green, no hinges despite any naming. No logos or lettering. Preserve shape and all hardware counts.\nColor: forest green; Material: powder-coated steel\nRequested view: Bookend with same three blank books on oak shelf.\nSoft diffused daylight, warm pale gray studio unless scene specified. Entire product safely centered within central 70% width and 85% height, except texture macro. No collage, text, logos or watermark. Preserve shape, construction, color and hardware across photos. Never add extra bags or products.\nOrdered reference roles: Image 1: authoritative front for same bookend geometry, color and hardware; Image 2: authoritative model-front for same bookend geometry, color and hardware. Retain same three blank books only for usage and editorial, omit books for empty structural shot."
+        }
+      ]
+    }
+  ]
+}

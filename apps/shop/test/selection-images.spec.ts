@@ -67,6 +67,21 @@ describe('imagesForSelection', () => {
     )
   })
 
+  it('keeps all twelve shared and model views, but ignores an oversized gallery', () => {
+    const changed = structuredClone(product)
+    const value = changed.options[0]?.values[0]
+    if (value === undefined) throw new Error('Missing fixture')
+    const gallery = Array.from({ length: 12 }, (_, index) => ({
+      url: `/shot-${String(index)}.png`,
+    }))
+    value.meta = { gallery: JSON.stringify(gallery) }
+    expect(imagesForSelection(changed, { color: 'navy' }).map((image) => image.url)).toEqual(
+      gallery.map((image) => image.url),
+    )
+    value.meta = { gallery: JSON.stringify([...gallery, { url: '/extra.png' }]) }
+    expect(imagesForSelection(changed, { color: 'navy' })).toBe(changed.images)
+  })
+
   it.each(['not json', '{}', '[]', '[{"url":42}]'])(
     'ignores malformed presentation metadata: %s',
     (gallery) => {

@@ -10,4 +10,7 @@ import { baseConfig } from '@shopping/config/eslint/base'
  * file's directory, so lint-staged can pass any path from the repository root
  * and still get the right preset.
  */
-export default [{ ignores: ['apps/**', 'packages/**'] }, ...baseConfig(import.meta.dirname)]
+export default [
+  { ignores: ['apps/**', 'packages/**', 'product-images/**'] },
+  ...baseConfig(import.meta.dirname),
+]

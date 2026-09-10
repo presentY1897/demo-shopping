@@ -1,0 +1,807 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "cobalt-round-coin-case",
+        "name": "코발트 라운드 코인 케이스",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 액세서리",
+        "color": "cobalt blue",
+        "colorLabel": "코발트",
+        "hex": "#2453bd",
+        "material": "fine-grain leather",
+        "price": 19000,
+        "design": "Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.",
+        "sizes": [],
+        "skuPrefix": "DOZEN-01",
+        "highlights": ["코발트 컬러", "가상 기획 상품"],
+        "description": "코발트 라운드 코인 케이스 가상 기획 샘플입니다. AI 생성 이미지로 형태와 사용 장면을 표현했습니다.",
+        "shotDirections": {
+          "front": "Closed front three-quarter showing round face and upper zipper.",
+          "back": "Closed rear three-quarter showing plain circular back.",
+          "side": "Edge-on side profile showing shallow cylindrical gusset and zipper.",
+          "texture": "Macro cobalt leather grain tonal stitching and zipper seam.",
+          "model-front": "Open zippered circular case on tabletop with one plain silver coin inside sole blue compartment.",
+          "model-side": "Adult hand holding same closed coin case for scale, ivory sleeve.",
+          "model-back": "Top oblique open empty case showing single blue compartment and two round halves.",
+          "editorial": "Closed round coin case on pale oak desk beside one plain silver coin."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "oat-canvas-bottle-bag",
+        "name": "오트 캔버스 보틀 백",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 가방",
+        "color": "oat beige",
+        "colorLabel": "오트",
+        "hex": "#cbbd9d",
+        "material": "cotton canvas",
+        "price": 23000,
+        "design": "Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.",
+        "sizes": [],
+        "skuPrefix": "DOZEN-02",
+        "highlights": ["오트 컬러", "가상 기획 상품"],
+        "description": "오트 캔버스 보틀 백 가상 기획 샘플입니다. AI 생성 이미지로 형태와 사용 장면을 표현했습니다.",
+        "shotDirections": {
+          "front": "Empty upright front three-quarter showing one short arch handle and cylindrical body.",
+          "back": "Empty rear three-quarter showing plain cylindrical back and same single arch handle.",
+          "side": "Empty side profile showing cylinder and single short handle.",
+          "texture": "Macro oat canvas weave and vertical seam.",
+          "model-front": "Upright bag containing one plain slim stainless steel capped bottle, same single handle visible.",
+          "model-side": "Adult hand carrying same bag by its single short handle with same stainless bottle inside.",
+          "model-back": "Top oblique empty open cylindrical bag showing round bottom and single handle.",
+          "editorial": "Same bag containing same stainless bottle on pale stone bench in daylight."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "rose-leather-cord-wrap",
+        "name": "로즈 레더 코드 랩",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 액세서리",
+        "color": "dusty rose",
+        "colorLabel": "로즈",
+        "hex": "#b87883",
+        "material": "smooth matte leather",
+        "price": 9000,
+        "design": "Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.",
+        "sizes": [],
+        "skuPrefix": "DOZEN-03",
+        "highlights": ["로즈 컬러", "가상 기획 상품"],
+        "description": "로즈 레더 코드 랩 가상 기획 샘플입니다. AI 생성 이미지로 형태와 사용 장면을 표현했습니다.",
+        "shotDirections": {
+          "front": "Unfastened elongated oval strip lying flat front-up, both ends and two mating halves of single snap visible.",
+          "back": "Unfastened strip lying flat reverse-up showing plain reverse and matching snap backs.",
+          "side": "Low edge-on view of unfastened flat strip showing thin leather thickness.",
+          "texture": "Extreme macro rose leather edge and silver snap detail.",
+          "model-front": "Same strip folded at middle and single snap fastened around one neatly coiled plain white charging cable.",
+          "model-side": "Adult fingers holding same closed wrap around same white cable coil for scale.",
+          "model-back": "Top-down unfastened strip beside same white cable coil showing its two mating snap components.",
+          "editorial": "Same fastened rose wrap around white cable coil on pale oak desk."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "olive-fold-glasses-case",
+        "name": "올리브 폴드 안경 케이스",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 액세서리",
+        "color": "muted olive green",
+        "colorLabel": "올리브",
+        "hex": "#78805b",
+        "material": "fine-grain matte leather",
+        "price": 27000,
+        "design": "Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.",
+        "sizes": [],
+        "skuPrefix": "DOZEN-04",
+        "highlights": ["올리브 컬러", "가상 기획 상품"],
+        "description": "올리브 폴드 안경 케이스 가상 기획 샘플입니다. AI 생성 이미지로 형태와 사용 장면을 표현했습니다.",
+        "shotDirections": {
+          "front": "Closed three-quarter front showing elongated triangular prism and one centered silver snap on straight flap.",
+          "back": "Closed rear three-quarter showing plain rear sloped panel and triangular end.",
+          "side": "End-on side view showing triangular cross section.",
+          "texture": "Macro olive leather grain tonal edge stitching and silver snap.",
+          "model-front": "Open long flap with one plain thin metal-frame pair of glasses resting inside beige sole compartment.",
+          "model-side": "Adult hand holding same closed triangular glasses case for scale.",
+          "model-back": "Open empty case with long flap lifted showing plain beige sole compartment and triangular end walls.",
+          "editorial": "Same closed triangular case beside thin metal-frame glasses on pale stone desk."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "cobalt-round-coin-case/front",
+      "productId": "cobalt-round-coin-case",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nBase color: cobalt blue\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cobalt-round-coin-case/front.png",
+      "sha256": "95f7d6f4d327b76fa9d97ffda9fe02d31448cc209933845918a50ace507e18a4",
+      "history": [
+        {
+          "note": "Round cobalt case, tonal face stitching and single silver zipper pull; fully framed.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nColor: cobalt blue. Material: fine-grain leather.\nRequired view: Closed front three-quarter showing round face and upper zipper.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "cobalt-round-coin-case/back",
+      "productId": "cobalt-round-coin-case",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["cobalt-round-coin-case/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nBase color: cobalt blue\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Repeats front-facing zipper pull on right rather than opposite rear viewpoint. Rotate case 180 degrees.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nColor: cobalt blue. Material: fine-grain leather.\nRequired view: Closed rear three-quarter showing plain circular back.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Rear rotation corrected, zipper pull on opposite left edge, same circular cobalt construction.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nColor: cobalt blue. Material: fine-grain leather.\nRequired view: Closed rear three-quarter showing plain circular back.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nRETRY CORRECTION: Rotate physical case 180 degrees around vertical axis. Show opposite circular face with zipper pull at LEFT edge now, not the right. Must visibly differ from anchor orientation."
+        }
+      ],
+      "output": "images/cobalt-round-coin-case/back.png",
+      "sha256": "eadb35f452e4667721663a1bac1fd2f30b14c611075f8505f7bc448359fc5c6a"
+    },
+    {
+      "id": "cobalt-round-coin-case/side",
+      "productId": "cobalt-round-coin-case",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["cobalt-round-coin-case/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nBase color: cobalt blue\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cobalt-round-coin-case/side.png",
+      "sha256": "a55cc16e49ed50b252788db7ed9477f77b95a8ca30b68aa31273133157e5af61",
+      "history": [
+        {
+          "note": "Narrow edge-on cylindrical depth and single centered zipper pull, matched blue and full margins.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nColor: cobalt blue. Material: fine-grain leather.\nRequired view: Edge-on side profile showing shallow cylindrical gusset and zipper.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cobalt-round-coin-case/texture",
+      "productId": "cobalt-round-coin-case",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["cobalt-round-coin-case/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nBase color: cobalt blue\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cobalt-round-coin-case/texture.png",
+      "sha256": "76598cb01e86262da2b532e2ccf234fdaae041f58a6a7f4f366c7a5870316d55",
+      "history": [
+        {
+          "note": "Macro cobalt grain tonal stitching and same silver zipper hardware, requested detail fills frame.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nColor: cobalt blue. Material: fine-grain leather.\nRequired view: Macro cobalt leather grain tonal stitching and zipper seam.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cobalt-round-coin-case/model-front",
+      "productId": "cobalt-round-coin-case",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["cobalt-round-coin-case/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nBase color: cobalt blue\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cobalt-round-coin-case/model-front.png",
+      "sha256": "66e1f9ecf5eb049d15287ec6a2eb4b292948d96cd7b5621c444beca9584efea3",
+      "history": [
+        {
+          "note": "Open circular case shows one blue compartment and one blank coin; matched round faces, stitching and single pull.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nColor: cobalt blue. Material: fine-grain leather.\nRequired view: Open zippered circular case on tabletop with one plain silver coin inside sole blue compartment.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cobalt-round-coin-case/model-side",
+      "productId": "cobalt-round-coin-case",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["cobalt-round-coin-case/front", "cobalt-round-coin-case/model-front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nBase color: cobalt blue\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Exec cell 23 not found after session resume; no matching generated output in lane image directory. Original end unknown.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nColor: cobalt blue. Material: fine-grain leather.\nRequired view: Adult hand holding same closed coin case for scale, ivory sleeve.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Plausible five-finger hand holds closed cobalt case, single zipper pull and full product crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nColor: cobalt blue. Material: fine-grain leather.\nRequired view: Adult hand holding same closed coin case for scale, ivory sleeve.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ],
+      "output": "images/cobalt-round-coin-case/model-side.png",
+      "sha256": "acbdb34a1e8a2c7bf1aedb633f3f1587887de82d213d092594074b3e1e2fdd08"
+    },
+    {
+      "id": "cobalt-round-coin-case/model-back",
+      "productId": "cobalt-round-coin-case",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "cobalt-round-coin-case/front",
+        "cobalt-round-coin-case/back",
+        "cobalt-round-coin-case/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nBase color: cobalt blue\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cobalt-round-coin-case/model-back.png",
+      "sha256": "809d61e61f474badbc359cdea55c95a64d926540015ca14ecfa4049de66167bf",
+      "history": [
+        {
+          "note": "Recovered after session loss; exact empty interior shot matched. Single empty blue compartment, round faces and zipper consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nColor: cobalt blue. Material: fine-grain leather.\nRequired view: Top oblique open empty case showing single blue compartment and two round halves.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cobalt-round-coin-case/editorial",
+      "productId": "cobalt-round-coin-case",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["cobalt-round-coin-case/front", "cobalt-round-coin-case/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nBase color: cobalt blue\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cobalt-round-coin-case/editorial.png",
+      "sha256": "1a358b2750e28b304f4684338525b8e28f58204271d747ba71e9e323ab910281",
+      "history": [
+        {
+          "note": "Recovered after session loss; exact coin and oak scene matched. Closed cobalt case with single pull and plain coin; full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코발트 라운드 코인 케이스\nDesign invariants: Fictional concept sample. Small circular cobalt blue leather coin case, two plain round faces with tonal perimeter stitching, shallow cylindrical gusset, one silver zipper running around upper half circumference with exactly one small silver pull, no loops pockets straps or logos, plain blue interior single compartment. Preserve geometry and hardware counts exactly.\nColor: cobalt blue. Material: fine-grain leather.\nRequired view: Closed round coin case on pale oak desk beside one plain silver coin.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-canvas-bottle-bag/front",
+      "productId": "oat-canvas-bottle-bag",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nBase color: oat beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-canvas-bottle-bag/front.png",
+      "sha256": "87433087322cacf9161bf69f7e7ed4f8710730bb2eab3d71699e029b1368ad5c",
+      "history": [
+        {
+          "note": "Single short handle and plain oat cylinder, open rim, no extra hardware; fully framed.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nColor: oat beige. Material: cotton canvas.\nRequired view: Empty upright front three-quarter showing one short arch handle and cylindrical body.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "oat-canvas-bottle-bag/back",
+      "productId": "oat-canvas-bottle-bag",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["oat-canvas-bottle-bag/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nBase color: oat beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-canvas-bottle-bag/back.png",
+      "sha256": "cef22aedea4affed450f83743d41c7d67b55a849037ea1d183b8f4528ce7991a",
+      "history": [
+        {
+          "note": "Plain cylindrical rear consistent with symmetric body and one handle, full safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nColor: oat beige. Material: cotton canvas.\nRequired view: Empty rear three-quarter showing plain cylindrical back and same single arch handle.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-canvas-bottle-bag/side",
+      "productId": "oat-canvas-bottle-bag",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["oat-canvas-bottle-bag/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nBase color: oat beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-canvas-bottle-bag/side.png",
+      "sha256": "85aed9af1a590998cb21df2e80f9d019ce7afe55eb991f3142d3dca2138ac525",
+      "history": [
+        {
+          "note": "Side orientation shows handle attachment front center and far end, single arch preserved, full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nColor: oat beige. Material: cotton canvas.\nRequired view: Empty side profile showing cylinder and single short handle.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-canvas-bottle-bag/texture",
+      "productId": "oat-canvas-bottle-bag",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["oat-canvas-bottle-bag/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nBase color: oat beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-canvas-bottle-bag/texture.png",
+      "sha256": "911273f23bfcb10ebd20c01d35d869c8c0e32ddd750c46cee0781ddda2a5ec83",
+      "history": [
+        {
+          "note": "Macro canvas weave and vertical stitched seam fills frame, oat tone retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nColor: oat beige. Material: cotton canvas.\nRequired view: Macro oat canvas weave and vertical seam.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-canvas-bottle-bag/model-front",
+      "productId": "oat-canvas-bottle-bag",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["oat-canvas-bottle-bag/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nBase color: oat beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-canvas-bottle-bag/model-front.png",
+      "sha256": "8eeb971b10bee0eb7df808785eaeb838ea873816fd14328864e6af3f5a739241",
+      "history": [
+        {
+          "note": "Single steel capped bottle inside same cylindrical bag; one handle, consistent canvas and full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nColor: oat beige. Material: cotton canvas.\nRequired view: Upright bag containing one plain slim stainless steel capped bottle, same single handle visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-canvas-bottle-bag/model-side",
+      "productId": "oat-canvas-bottle-bag",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["oat-canvas-bottle-bag/front", "oat-canvas-bottle-bag/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nBase color: oat beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-canvas-bottle-bag/model-side.png",
+      "sha256": "3e1ca34da367e727259fbd0b1414828df9c8c4e444700a2dabd98fd2061ba48c",
+      "history": [
+        {
+          "note": "Plausible adult hand carries single handle, same steel bottle and oat cylinder, product fully framed.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nColor: oat beige. Material: cotton canvas.\nRequired view: Adult hand carrying same bag by its single short handle with same stainless bottle inside.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-canvas-bottle-bag/model-back",
+      "productId": "oat-canvas-bottle-bag",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "oat-canvas-bottle-bag/front",
+        "oat-canvas-bottle-bag/back",
+        "oat-canvas-bottle-bag/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nBase color: oat beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-canvas-bottle-bag/model-back.png",
+      "sha256": "8320726c26acfa23281e843909535012771b689a319f45eee4d76fadb52d3aab",
+      "history": [
+        {
+          "note": "Top oblique empty cylinder shows round bottom and one handle, consistent oat fabric.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nColor: oat beige. Material: cotton canvas.\nRequired view: Top oblique empty open cylindrical bag showing round bottom and single handle.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-canvas-bottle-bag/editorial",
+      "productId": "oat-canvas-bottle-bag",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["oat-canvas-bottle-bag/front", "oat-canvas-bottle-bag/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nBase color: oat beige\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-canvas-bottle-bag/editorial.png",
+      "sha256": "963aa2c26c8ea490d7a5e709df55a16f17ba22e0878dc2927b28a6dee4284db1",
+      "history": [
+        {
+          "note": "Same single-handled oat bag and steel bottle on pale stone bench, complete crop and consistent geometry.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 캔버스 보틀 백\nDesign invariants: Fictional concept sample. One simple tall cylindrical oat beige canvas bottle bag with round flat base, open circular top, exactly one short wide canvas handle arch attached at two opposing upper rim points, no drawstring zipper pockets snaps or logos. Plain matching interior. Preserve geometry and hardware counts exactly.\nColor: oat beige. Material: cotton canvas.\nRequired view: Same bag containing same stainless bottle on pale stone bench in daylight.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "rose-leather-cord-wrap/front",
+      "productId": "rose-leather-cord-wrap",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nBase color: dusty rose\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rose-leather-cord-wrap/front.png",
+      "sha256": "88c71dbdd20479f437458dfa693cd4d96318248dee835ce912bee0b094946c16",
+      "history": [
+        {
+          "note": "Flat rose oval strip, no seams, one mating snap pair, clean full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nColor: dusty rose. Material: smooth matte leather.\nRequired view: Unfastened elongated oval strip lying flat front-up, both ends and two mating halves of single snap visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "rose-leather-cord-wrap/back",
+      "productId": "rose-leather-cord-wrap",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["rose-leather-cord-wrap/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nBase color: dusty rose\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Shows stud and socket mating faces again, not reverse snap backs. Flip whole strip over.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nColor: dusty rose. Material: smooth matte leather.\nRequired view: Unfastened strip lying flat reverse-up showing plain reverse and matching snap backs.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Reverse corrected with two smooth snap back caps; stud and socket now hidden underneath; same oval strip.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nColor: dusty rose. Material: smooth matte leather.\nRequired view: Unfastened strip lying flat reverse-up showing plain reverse and matching snap backs.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nRETRY CORRECTION: Flip entire strip face down so opposite leather surface faces camera. Show only smooth flat metal backing caps at the two ends, NO projecting stud and NO open socket visible on this reverse. Reverse geometry must differ from anchor."
+        }
+      ],
+      "output": "images/rose-leather-cord-wrap/back.png",
+      "sha256": "d792694c66eeae457e72661402b75c05cded09ad7a6008a00372f81c5587a02c"
+    },
+    {
+      "id": "rose-leather-cord-wrap/side",
+      "productId": "rose-leather-cord-wrap",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["rose-leather-cord-wrap/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nBase color: dusty rose\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rose-leather-cord-wrap/side.png",
+      "sha256": "1213290550393fb3dc09b10f0bb26b6f31caaa2a2deb6d174a235ffb88d07824",
+      "history": [
+        {
+          "note": "Low flat side view exposes thin rose leather edge and one snap pair; no extra seams.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nColor: dusty rose. Material: smooth matte leather.\nRequired view: Low edge-on view of unfastened flat strip showing thin leather thickness.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "rose-leather-cord-wrap/texture",
+      "productId": "rose-leather-cord-wrap",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["rose-leather-cord-wrap/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nBase color: dusty rose\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rose-leather-cord-wrap/texture.png",
+      "sha256": "ec20189fbaacb6614a20c277bbd6c330f2dc93c258c8d1af39e9d7bfd07d80af",
+      "history": [
+        {
+          "note": "Macro rounded rose edge and stud, same no-stitch strip and texture.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nColor: dusty rose. Material: smooth matte leather.\nRequired view: Extreme macro rose leather edge and silver snap detail.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "rose-leather-cord-wrap/model-front",
+      "productId": "rose-leather-cord-wrap",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["rose-leather-cord-wrap/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nBase color: dusty rose\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Closed wrap incorrectly shows exposed projecting snap stud. Fastened closure must show smooth backing cap on outer overlap and hidden mating stud/socket.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nColor: dusty rose. Material: smooth matte leather.\nRequired view: Same strip folded at middle and single snap fastened around one neatly coiled plain white charging cable.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Recovered after session loss; exact corrected shot visually matched. Fastened wrap has smooth outer cap, same rose strip and white cable.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nColor: dusty rose. Material: smooth matte leather.\nRequired view: Same strip folded at middle and single snap fastened around one neatly coiled plain white charging cable.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nRETRY CORRECTION: Fasten the snap properly with mating stud and socket hidden between overlapped ends. Exterior visible hardware is a smooth flat silver circular backing cap, NOT exposed projecting stud. Wrap folds around a single coiled white cable. Keep strip shape and dusty rose color."
+        }
+      ],
+      "output": "images/rose-leather-cord-wrap/model-front.png",
+      "sha256": "763c824b27d4fb210f45a74475130fdc9f5b6c3993aa651f303df40ec395c2e6"
+    },
+    {
+      "id": "rose-leather-cord-wrap/model-side",
+      "productId": "rose-leather-cord-wrap",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["rose-leather-cord-wrap/front", "rose-leather-cord-wrap/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nBase color: dusty rose\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rose-leather-cord-wrap/model-side.png",
+      "sha256": "1b11c585f9acadab76df6f62d84474f5753937127aa569bcb57290ee07393d76",
+      "history": [
+        {
+          "note": "Plausible fingers hold same fastened rose wrap, smooth outer snap cap, matching white cable and full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nColor: dusty rose. Material: smooth matte leather.\nRequired view: Adult fingers holding same closed wrap around same white cable coil for scale.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nClosed fastened wrap must show only a smooth flat silver outer backing cap as in usage reference, stud and socket hidden between overlapped ends."
+        }
+      ]
+    },
+    {
+      "id": "rose-leather-cord-wrap/model-back",
+      "productId": "rose-leather-cord-wrap",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "rose-leather-cord-wrap/front",
+        "rose-leather-cord-wrap/back",
+        "rose-leather-cord-wrap/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nBase color: dusty rose\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Duplicate product: unfastened strip plus second fastened wrap on cable. Must show exactly one unfastened strip beside bare cable coil.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nColor: dusty rose. Material: smooth matte leather.\nRequired view: Top-down unfastened strip beside same white cable coil showing its two mating snap components.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Corrected exactly one unfastened rose oval strip showing one mating snap pair beside bare white cable coil; no duplicate wrap; full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nColor: dusty rose. Material: smooth matte leather.\nRequired view: Top-down unfastened strip beside same white cable coil showing its two mating snap components.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nRETRY CORRECTION: Exactly ONE leather strip total, lying completely unfastened flat with its stud and socket showing. Beside it one BARE coiled white cable with NO leather around the cable. Remove the duplicate fastened wrap completely. Usage reference is for cable shape only; do not copy its closed leather wrap."
+        }
+      ],
+      "output": "images/rose-leather-cord-wrap/model-back.png",
+      "sha256": "f1549598d127275b001eef4ce8d0452a8821265909dae60a59f86b052992f9ec"
+    },
+    {
+      "id": "rose-leather-cord-wrap/editorial",
+      "productId": "rose-leather-cord-wrap",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["rose-leather-cord-wrap/front", "rose-leather-cord-wrap/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nBase color: dusty rose\nBase material: smooth matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rose-leather-cord-wrap/editorial.png",
+      "sha256": "265ea1da0ae9e23d5fef084ee0332a18f418e5e28ad0c4b4e30ea3faf5a87e18",
+      "history": [
+        {
+          "note": "Fastened rose wrap with smooth outer cap, same cable on oak, consistent color and full product crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 로즈 레더 코드 랩\nDesign invariants: Fictional concept sample. One flat elongated oval dusty rose leather strip with rounded ends and no stitching, one silver snap closure comprising one cap/stud near one end and one mating socket near opposite end. Strip folds at middle to clasp a cable coil. No extra straps holes loops or logos. Preserve geometry and hardware counts exactly.\nColor: dusty rose. Material: smooth matte leather.\nRequired view: Same fastened rose wrap around white cable coil on pale oak desk.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nClosed fastened wrap must show only a smooth flat silver outer backing cap as in usage reference, stud and socket hidden between overlapped ends."
+        }
+      ]
+    },
+    {
+      "id": "olive-fold-glasses-case/front",
+      "productId": "olive-fold-glasses-case",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nBase color: muted olive green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/olive-fold-glasses-case/front.png",
+      "sha256": "6ee22729b3d68c4255cd487769ac60ac8ecf57fd883de938bc2282c2486b1887",
+      "history": [
+        {
+          "note": "Olive triangular case with single centered snap and straight flap; tonal stitched edges, full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nColor: muted olive green. Material: fine-grain matte leather.\nRequired view: Closed three-quarter front showing elongated triangular prism and one centered silver snap on straight flap.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "olive-fold-glasses-case/back",
+      "productId": "olive-fold-glasses-case",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["olive-fold-glasses-case/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nBase color: muted olive green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/olive-fold-glasses-case/back.png",
+      "sha256": "ea540a1e9b226aca18eef9fe3d5b8f3e94cb90b7cac5b99c45aaa74fe44feff6",
+      "history": [
+        {
+          "note": "Rear plain sloped panel and triangular end, flap and snap appropriately hidden on far side; correct color and crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nColor: muted olive green. Material: fine-grain matte leather.\nRequired view: Closed rear three-quarter showing plain rear sloped panel and triangular end.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "olive-fold-glasses-case/side",
+      "productId": "olive-fold-glasses-case",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["olive-fold-glasses-case/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nBase color: muted olive green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/olive-fold-glasses-case/side.png",
+      "sha256": "b4b7c563d040191448310486149beb434ae0befe14eebe54272d86464635befa",
+      "history": [
+        {
+          "note": "End-on triangular profile and consistent single flap/snap on adjacent panel, correct olive and stitching.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nColor: muted olive green. Material: fine-grain matte leather.\nRequired view: End-on side view showing triangular cross section.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "olive-fold-glasses-case/texture",
+      "productId": "olive-fold-glasses-case",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["olive-fold-glasses-case/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nBase color: muted olive green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/olive-fold-glasses-case/texture.png",
+      "sha256": "5e21dccdcb552954f876606049f5f8e56929605bf6fac130f33b8fb823b3dac9",
+      "history": [
+        {
+          "note": "Macro olive grain, tonal flap stitching and single silver snap, consistent surface.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nColor: muted olive green. Material: fine-grain matte leather.\nRequired view: Macro olive leather grain tonal edge stitching and silver snap.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "olive-fold-glasses-case/model-front",
+      "productId": "olive-fold-glasses-case",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["olive-fold-glasses-case/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nBase color: muted olive green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/olive-fold-glasses-case/model-front.png",
+      "sha256": "b1161451b411b048e54be47385656cfeb199ec34ad2401db4ba171a5bee1f7a4",
+      "history": [
+        {
+          "note": "Open triangular case with one thin metal glasses pair, single beige compartment and one mating snap; consistent construction.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nColor: muted olive green. Material: fine-grain matte leather.\nRequired view: Open long flap with one plain thin metal-frame pair of glasses resting inside beige sole compartment.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "olive-fold-glasses-case/model-side",
+      "productId": "olive-fold-glasses-case",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["olive-fold-glasses-case/front", "olive-fold-glasses-case/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nBase color: muted olive green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/olive-fold-glasses-case/model-side.png",
+      "sha256": "bfbc5b2f78bdea7f4f4ec9f0c3c8ceab0ed12da48815f48a750ae37eb70289da",
+      "history": [
+        {
+          "note": "Plausible hand holds same closed triangular case with single center snap and safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nColor: muted olive green. Material: fine-grain matte leather.\nRequired view: Adult hand holding same closed triangular glasses case for scale.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "olive-fold-glasses-case/model-back",
+      "productId": "olive-fold-glasses-case",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "olive-fold-glasses-case/front",
+        "olive-fold-glasses-case/back",
+        "olive-fold-glasses-case/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nBase color: muted olive green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/olive-fold-glasses-case/model-back.png",
+      "sha256": "e1702be0f9a923f73c507eb3c97d79fc8a91df64542e07b4b1b8394e71297a52",
+      "history": [
+        {
+          "note": "Open empty beige-lined triangular case with sole compartment and matching snap, correct olive and full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nColor: muted olive green. Material: fine-grain matte leather.\nRequired view: Open empty case with long flap lifted showing plain beige sole compartment and triangular end walls.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "olive-fold-glasses-case/editorial",
+      "productId": "olive-fold-glasses-case",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["olive-fold-glasses-case/front", "olive-fold-glasses-case/model-front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nBase color: muted olive green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Exec cell 23 not found after session resume; no matching generated output in lane image directory. Original end unknown.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nColor: muted olive green. Material: fine-grain matte leather.\nRequired view: Same closed triangular case beside thin metal-frame glasses on pale stone desk.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Closed olive triangular case and matching thin metal glasses on pale stone, single snap and correct geometry.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 올리브 폴드 안경 케이스\nDesign invariants: Fictional concept sample. One elongated triangular-prism folding eyeglasses case in muted olive leather, flat rectangular bottom and two sloped long panels, triangular closed end panels, front overlapping straight long flap secured by exactly one small centered silver snap, tonal edge stitching, plain beige lining single compartment. No zipper straps pockets or logos. Preserve geometry and hardware counts exactly.\nColor: muted olive green. Material: fine-grain matte leather.\nRequired view: Same closed triangular case beside thin metal-frame glasses on pale stone desk.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ],
+      "output": "images/olive-fold-glasses-case/editorial.png",
+      "sha256": "7984a4dc5353ee108cfcd523ef747a28680ab5f0a5f9225ffdf8132378da3bef"
+    }
+  ]
+}

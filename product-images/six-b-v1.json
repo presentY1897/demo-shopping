@@ -1,0 +1,148 @@
+{
+  "products": [
+    {
+      "id": "ivory-shell-ring-dish",
+      "name": "아이보리 셸 링 디시",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "warm ivory",
+      "colorLabel": "아이보리",
+      "hex": "#e9e0cf",
+      "material": "glossy glazed ceramic",
+      "price": 17000,
+      "design": "Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+      "sizes": [],
+      "skuPrefix": "SIX-05",
+      "highlights": ["아이보리 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Front three-quarter empty shell dish, ribs visible.",
+        "back": "Rear oblique showing outside shell and shallow bowl.",
+        "side": "Low side profile of shallow dish.",
+        "texture": "Macro ivory glaze on one existing raised rib.",
+        "model-front": "Shell dish holding two simple silver rings, entire dish visible.",
+        "model-side": "Same dish and rings from low side, rings resting in bowl.",
+        "model-back": "Top-down empty shell dish showing fan silhouette.",
+        "editorial": "Dish with same two rings on cream linen by soft window light."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "아이보리 셸 링 디시 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "moss-snap-valet-tray",
+      "name": "모스 스냅 발렛 트레이",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "moss green",
+      "colorLabel": "모스",
+      "hex": "#647154",
+      "material": "matte fine-grain leather",
+      "price": 25000,
+      "design": "Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+      "sizes": [],
+      "skuPrefix": "SIX-06",
+      "highlights": ["모스 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Three-quarter empty assembled tray with four snapped corners.",
+        "back": "Rear three-quarter preserving four corner snaps.",
+        "side": "Low side showing shallow depth and corner folds.",
+        "texture": "Macro moss leather grain and one brass corner snap.",
+        "model-front": "Tray containing one plain key and one simple metal ring, both within base.",
+        "model-side": "Same assembled tray and objects from opposite side.",
+        "model-back": "Top-down empty assembled tray showing square basin and four pinched corners.",
+        "editorial": "Tray on pale oak bedside table beside blank linen book."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "모스 스냅 발렛 트레이 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "brass-leaf-page-clip",
+      "name": "브라스 리프 페이지 클립",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 독서 소품",
+      "color": "brushed brass gold",
+      "colorLabel": "브라스",
+      "hex": "#b29a54",
+      "material": "brushed brass sheet",
+      "price": 11000,
+      "design": "Fictional concept sample. One flat brass bookmark clip shaped like narrow oval leaf with pointed top and rounded lower tip; single long U-shaped slit cut inside makes inner flexible tongue, no engraved veins text tassels or extra pieces. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+      "sizes": [],
+      "skuPrefix": "SIX-07",
+      "highlights": ["브라스 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Top three-quarter flat leaf clip with inner U-shaped cut clearly visible.",
+        "back": "Back surface of same clip.",
+        "side": "Low side view revealing thin sheet metal.",
+        "texture": "Macro brushed brass finish at U-shaped slit edge.",
+        "model-front": "Single clip slid over top edge of one blank book page, inner tongue behind page and leaf front visible.",
+        "model-side": "Adult fingers holding single leaf clip near book page, natural anatomy.",
+        "model-back": "Top-down clip lying on blank open notebook, full outline visible.",
+        "editorial": "Leaf clip resting on closed linen book in warm daylight."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "브라스 리프 페이지 클립 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "lilac-faceted-pencil-cup",
+      "name": "라일락 패싯 펜슬 컵",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "muted lilac",
+      "colorLabel": "라일락",
+      "hex": "#aaa0bc",
+      "material": "matte glazed ceramic",
+      "price": 22000,
+      "design": "Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+      "sizes": [],
+      "skuPrefix": "SIX-08",
+      "highlights": ["라일락 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Front three-quarter empty cup with hexagonal opening visible.",
+        "back": "Rear three-quarter showing other flat faces.",
+        "side": "Eye-level side view of upright cup.",
+        "texture": "Macro matte glaze at rounded rim and facet edge.",
+        "model-front": "Cup containing exactly three plain wooden pencils standing upright, full cup visible.",
+        "model-side": "Same cup and three pencils from side.",
+        "model-back": "Top-down empty cup showing hexagonal opening and matching interior.",
+        "editorial": "Cup with same three pencils on oak desk beside blank paper."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "라일락 패싯 펜슬 컵 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    }
+  ]
+}

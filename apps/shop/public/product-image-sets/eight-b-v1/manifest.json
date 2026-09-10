@@ -1,0 +1,809 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "cream-corduroy-desk-basket",
+        "name": "크림 코듀로이 데스크 바스켓",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "warm cream",
+        "colorLabel": "크림",
+        "hex": "#e4dac7",
+        "material": "cotton corduroy",
+        "price": 23000,
+        "design": "Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "EIGHT-05",
+        "highlights": ["크림 컬러", "가상 기획 상품"],
+        "description": "크림 코듀로이 데스크 바스켓 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Front three-quarter empty basket with opening visible.",
+          "back": "Rear three-quarter showing plain wall and seam.",
+          "side": "Low horizontal side view showing outside wall, opening nearly hidden.",
+          "texture": "Macro vertical corduroy ridges at existing seam.",
+          "model-front": "Basket containing one small blank notebook and one coiled plain cable, both inside.",
+          "model-side": "Same basket and objects from opposite side, wall and base visible.",
+          "model-back": "Top-down empty basket showing single compartment.",
+          "editorial": "Basket with same notebook and cable on oak desk."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "terracotta-cone-pencil-holder",
+        "name": "테라코타 콘 펜슬 홀더",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "terracotta orange",
+        "colorLabel": "테라코타",
+        "hex": "#b96c4f",
+        "material": "matte glazed ceramic",
+        "price": 16000,
+        "design": "Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "EIGHT-06",
+        "highlights": ["테라코타 컬러", "가상 기획 상품"],
+        "description": "테라코타 콘 펜슬 홀더 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Three-quarter whole cone with single top hole visible.",
+          "back": "Opposite rear three-quarter of same cone.",
+          "side": "Eye-level horizontal side profile, cone silhouette clear.",
+          "texture": "Macro matte glaze and top hole edge.",
+          "model-front": "One plain wooden pencil standing vertically in sole hole, physical insertion visible.",
+          "model-side": "Same holder and pencil from low side, whole holder visible.",
+          "model-back": "Top-down empty holder showing exactly one hole.",
+          "editorial": "Holder with same pencil on blank cream paper on desk."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "sky-glass-cylinder-vase",
+        "name": "스카이 글라스 실린더 화병",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "transparent pale blue",
+        "colorLabel": "스카이",
+        "hex": "#9fc4d6",
+        "material": "smooth tinted glass",
+        "price": 27000,
+        "design": "Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "EIGHT-07",
+        "highlights": ["스카이 컬러", "가상 기획 상품"],
+        "description": "스카이 글라스 실린더 화병 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Front three-quarter empty cylinder vase, circular opening visible.",
+          "back": "Opposite rear three-quarter empty vase.",
+          "side": "Eye-level horizontal side, straight cylindrical silhouette.",
+          "texture": "Macro smooth blue glass lip and wall.",
+          "model-front": "Vase holding one green stem with single small white flower, stem inserted through open mouth.",
+          "model-side": "Same vase flower and stem from side.",
+          "model-back": "Top-down empty vase showing circular mouth and glass base.",
+          "editorial": "Same vase and white flower on pale stone windowsill."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "walnut-arch-letter-rack",
+        "name": "월넛 아치 레터 랙",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "natural walnut brown",
+        "colorLabel": "월넛",
+        "hex": "#795338",
+        "material": "oiled walnut wood",
+        "price": 29000,
+        "design": "Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "EIGHT-08",
+        "highlights": ["월넛 컬러", "가상 기획 상품"],
+        "description": "월넛 아치 레터 랙 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Three-quarter empty rack clearly showing two parallel arch panels and one slot.",
+          "back": "Opposite rear three-quarter of same rack.",
+          "side": "End-on side showing one slot between two panels and base.",
+          "texture": "Macro walnut grain at rounded arch edge.",
+          "model-front": "One plain cream envelope standing in single slot between panels.",
+          "model-side": "Same rack and envelope from opposite side, envelope supported in slot.",
+          "model-back": "Top-down empty rack showing one long slot and two panels.",
+          "editorial": "Rack with same cream envelope on oak desk beside blank notebook."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "cream-corduroy-desk-basket/front",
+      "productId": "cream-corduroy-desk-basket",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: warm cream\nBase material: cotton corduroy\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-corduroy-desk-basket/front.png",
+      "sha256": "5417c212b6d754293d319842206912c895c50f8e70e08a5f10ed1de3415ae303",
+      "history": [
+        {
+          "note": "Accepted: empty rounded rectangular cream corduroy basket with plain lining, low soft walls, no handles or hardware; full front three-quarter view.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: warm cream. Material: cotton corduroy.\nRequired view: Front three-quarter empty basket with opening visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "cream-corduroy-desk-basket/back",
+      "productId": "cream-corduroy-desk-basket",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["cream-corduroy-desk-basket/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: warm cream\nBase material: cotton corduroy\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-corduroy-desk-basket/back.png",
+      "sha256": "e2b08715c58aa37856c5cef00e4cdd325019b968d32f8b49ecc1bd021b7f6c62",
+      "history": [
+        {
+          "note": "Rear three-quarter shows unadorned corduroy wall and interior corner seam; cream lining, rectangular proportion and zero hardware consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: warm cream. Material: cotton corduroy.\nRequired view: Rear three-quarter showing plain wall and seam.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cream-corduroy-desk-basket/side",
+      "productId": "cream-corduroy-desk-basket",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["cream-corduroy-desk-basket/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: warm cream\nBase material: cotton corduroy\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-corduroy-desk-basket/side.png",
+      "sha256": "d4cc984034f1c712fa8b83a49c2bfd234fa8c4e97ff00dcb7f906544241bf226",
+      "history": [
+        {
+          "note": "Low level long side wall, opening mostly hidden; cream vertical wale and rounded corners match anchor, full object shown.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: warm cream. Material: cotton corduroy.\nRequired view: Low horizontal side view showing outside wall, opening nearly hidden.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cream-corduroy-desk-basket/texture",
+      "productId": "cream-corduroy-desk-basket",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["cream-corduroy-desk-basket/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: warm cream\nBase material: cotton corduroy\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-corduroy-desk-basket/texture.png",
+      "sha256": "926ab662e05fc885a25d9bf18386c6744f604a5d7314a9a15cc8eb7e129e415d",
+      "history": [
+        {
+          "note": "Macro cream vertical corduroy ribs and existing rim seam fill frame; consistent fibers and rounded corner construction.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: warm cream. Material: cotton corduroy.\nRequired view: Macro vertical corduroy ridges at existing seam.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cream-corduroy-desk-basket/model-front",
+      "productId": "cream-corduroy-desk-basket",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["cream-corduroy-desk-basket/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: warm cream\nBase material: cotton corduroy\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-corduroy-desk-basket/model-front.png",
+      "sha256": "82a96e57f7d5e86803fd5cc7db594f2ee69a52a146cbc79b9f73402dacf11b95",
+      "history": [
+        {
+          "note": "Basket use view contains exactly one blank notebook and one white coiled cable inside; walls, lining, cream corduroy match anchor.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: warm cream. Material: cotton corduroy.\nRequired view: Basket containing one small blank notebook and one coiled plain cable, both inside.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cream-corduroy-desk-basket/model-side",
+      "productId": "cream-corduroy-desk-basket",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": [
+        "cream-corduroy-desk-basket/front",
+        "cream-corduroy-desk-basket/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: warm cream\nBase material: cotton corduroy\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected: copied same front usage orientation; notebook left and cable right unchanged instead of opposite side.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: warm cream. Material: cotton corduroy.\nRequired view: Same basket and objects from opposite side, wall and base visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Opposite usage view now cable left notebook right; cream walls, lining, bottom silhouette and both objects consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: warm cream. Material: cotton corduroy.\nRequired view: Same basket and objects from opposite side, wall and base visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nMANDATORY VIEW CHANGE: camera moves 180 degrees to opposite side of reference 2; now the white coiled cable must appear on image LEFT and blank notebook on image RIGHT, seen over the opposite long wall. Show a lower three-quarter angle, entire basket. Do not copy reference 2 composition."
+        }
+      ],
+      "output": "images/cream-corduroy-desk-basket/model-side.png",
+      "sha256": "8fa5211afd66e05b97567187cb395b2601234b7835e487ba8328e48f17a3566e"
+    },
+    {
+      "id": "cream-corduroy-desk-basket/model-back",
+      "productId": "cream-corduroy-desk-basket",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "cream-corduroy-desk-basket/front",
+        "cream-corduroy-desk-basket/back",
+        "cream-corduroy-desk-basket/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: warm cream\nBase material: cotton corduroy\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-corduroy-desk-basket/model-back.png",
+      "sha256": "da44b052d79295673da16f24d7ea04a3a000f9f22ca6c574cb482cb1be038803",
+      "history": [
+        {
+          "note": "High overhead empty basket shows single undivided cream lined compartment and full rounded rectangular rim; no usage props.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: warm cream. Material: cotton corduroy.\nRequired view: Top-down empty basket showing single compartment.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cream-corduroy-desk-basket/editorial",
+      "productId": "cream-corduroy-desk-basket",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": [
+        "cream-corduroy-desk-basket/front",
+        "cream-corduroy-desk-basket/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: warm cream\nBase material: cotton corduroy\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cream-corduroy-desk-basket/editorial.png",
+      "sha256": "855cc679e896070ec32c5c9b3a40828aeca7240cc2c34b057fb6b18d694d529d",
+      "history": [
+        {
+          "note": "Editorial basket on oak desk with same single blank notebook and coiled cable, cream fabric construction and full margins preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 크림 코듀로이 데스크 바스켓\nDesign invariants: Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: warm cream. Material: cotton corduroy.\nRequired view: Basket with same notebook and cable on oak desk.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-cone-pencil-holder/front",
+      "productId": "terracotta-cone-pencil-holder",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: terracotta orange\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-cone-pencil-holder/front.png",
+      "sha256": "3b4e7495b6e3f9e0d531bc4b92f4173e2ea14c7a23a252d5adf288a071a59c9f",
+      "history": [
+        {
+          "note": "Accepted: matte terracotta truncated cone with one centered circular pencil hole and broad flat base; full unobstructed three-quarter view.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: terracotta orange. Material: matte glazed ceramic.\nRequired view: Three-quarter whole cone with single top hole visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-cone-pencil-holder/back",
+      "productId": "terracotta-cone-pencil-holder",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["terracotta-cone-pencil-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: terracotta orange\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-cone-pencil-holder/back.png",
+      "sha256": "baa406c7c5da2faa9da698224b08a146e90afa18ede311055a99e0192300704b",
+      "history": [
+        {
+          "note": "Rear view of rotationally symmetric cone retains single hole, terracotta matte surface and base silhouette; no added parts.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: terracotta orange. Material: matte glazed ceramic.\nRequired view: Opposite rear three-quarter of same cone.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-cone-pencil-holder/side",
+      "productId": "terracotta-cone-pencil-holder",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["terracotta-cone-pencil-holder/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: terracotta orange\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected: added three writing instruments to empty catalog side view and retained elevated viewpoint.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: terracotta orange. Material: matte glazed ceramic.\nRequired view: Eye-level horizontal side profile, cone silhouette clear.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Corrected side shows empty cone at horizontal viewpoint with interior hidden, unchanged matte orange silhouette and no props.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: terracotta orange. Material: matte glazed ceramic.\nRequired view: Eye-level horizontal side profile, cone silhouette clear.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nMANDATORY CAMERA CORRECTION: lens at the object midpoint height, optical axis perfectly horizontal, NO looking down, top rim is a horizontal line with no visible interior. EMPTY product alone, NO pencils pens flowers books plants or other props. Preserve original shape; change camera elevation to exact horizontal side profile."
+        }
+      ],
+      "output": "images/terracotta-cone-pencil-holder/side.png",
+      "sha256": "f8ab495414283d0d602d0a48158594c3c211ffaaaceec10a8a8031a1e0e98580"
+    },
+    {
+      "id": "terracotta-cone-pencil-holder/texture",
+      "productId": "terracotta-cone-pencil-holder",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["terracotta-cone-pencil-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: terracotta orange\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-cone-pencil-holder/texture.png",
+      "sha256": "a29ac48bc02556ee061af905f126220c061ce55cd89b7b392bf03ab8559b877d",
+      "history": [
+        {
+          "note": "Macro shows terracotta matte glaze and edge of single centered hole, no added features.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: terracotta orange. Material: matte glazed ceramic.\nRequired view: Macro matte glaze and top hole edge.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-cone-pencil-holder/model-front",
+      "productId": "terracotta-cone-pencil-holder",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["terracotta-cone-pencil-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: terracotta orange\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-cone-pencil-holder/model-front.png",
+      "sha256": "9e25565d4bddb70409230c48040b685aa5a9c2fc6c71e1c534ead68975060f40",
+      "history": [
+        {
+          "note": "One plain wooden pencil is vertically inserted in sole hole; terracotta cone unchanged and fully in frame.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: terracotta orange. Material: matte glazed ceramic.\nRequired view: One plain wooden pencil standing vertically in sole hole, physical insertion visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-cone-pencil-holder/model-side",
+      "productId": "terracotta-cone-pencil-holder",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": [
+        "terracotta-cone-pencil-holder/front",
+        "terracotta-cone-pencil-holder/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: terracotta orange\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-cone-pencil-holder/model-side.png",
+      "sha256": "bebc176667158bfc09e52f41daa86ed2a0a597a183c061a43b6d94f40b181642",
+      "history": [
+        {
+          "note": "Lower side use view retains single upright wooden pencil inserted in cone; complete silhouette and single hole visible.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: terracotta orange. Material: matte glazed ceramic.\nRequired view: Same holder and pencil from low side, whole holder visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-cone-pencil-holder/model-back",
+      "productId": "terracotta-cone-pencil-holder",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "terracotta-cone-pencil-holder/front",
+        "terracotta-cone-pencil-holder/back",
+        "terracotta-cone-pencil-holder/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: terracotta orange\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-cone-pencil-holder/model-back.png",
+      "sha256": "bfce67f88f397ae3d1f7da496ae57007d061ba2aae30901235fe007e1f2a6186",
+      "history": [
+        {
+          "note": "Overhead empty cone shows exactly one centered hole, matching terracotta color and circular outline.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: terracotta orange. Material: matte glazed ceramic.\nRequired view: Top-down empty holder showing exactly one hole.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "terracotta-cone-pencil-holder/editorial",
+      "productId": "terracotta-cone-pencil-holder",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": [
+        "terracotta-cone-pencil-holder/front",
+        "terracotta-cone-pencil-holder/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: terracotta orange\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/terracotta-cone-pencil-holder/editorial.png",
+      "sha256": "3bfa2182831b6f9af603483a539ddd7214a7ed5ec4733b78dd53dace42d2d2f3",
+      "history": [
+        {
+          "note": "Editorial terracotta cone and one wooden pencil on blank cream paper atop desk; product geometry and insertion remain consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 테라코타 콘 펜슬 홀더\nDesign invariants: Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: terracotta orange. Material: matte glazed ceramic.\nRequired view: Holder with same pencil on blank cream paper on desk.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sky-glass-cylinder-vase/front",
+      "productId": "sky-glass-cylinder-vase",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: transparent pale blue\nBase material: smooth tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sky-glass-cylinder-vase/front.png",
+      "sha256": "23acb7cea2a1602ec96f4435ece8cac44a9ccfcc7af0da5f32a8dac7d31d4fb8",
+      "history": [
+        {
+          "note": "Accepted: transparent pale-blue cylindrical glass vase, straight walls, thick base and rounded open rim; no handles or decoration.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: transparent pale blue. Material: smooth tinted glass.\nRequired view: Front three-quarter empty cylinder vase, circular opening visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "sky-glass-cylinder-vase/back",
+      "productId": "sky-glass-cylinder-vase",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["sky-glass-cylinder-vase/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: transparent pale blue\nBase material: smooth tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sky-glass-cylinder-vase/back.png",
+      "sha256": "98accf62180c3ac577d8d7033bf9f4e685804040bd1afb07fc9a07fd51dda428",
+      "history": [
+        {
+          "note": "Rear view of rotationally symmetric transparent blue cylinder retains mouth, thick circular base and plain walls.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: transparent pale blue. Material: smooth tinted glass.\nRequired view: Opposite rear three-quarter empty vase.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sky-glass-cylinder-vase/side",
+      "productId": "sky-glass-cylinder-vase",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["sky-glass-cylinder-vase/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: transparent pale blue\nBase material: smooth tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected: retained elevated front viewpoint and added background props instead of plain studio horizontal side.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: transparent pale blue. Material: smooth tinted glass.\nRequired view: Eye-level horizontal side, straight cylindrical silhouette.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Corrected horizontal side shows flat rim line, straight blue glass walls and thick base; empty studio view without props.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: transparent pale blue. Material: smooth tinted glass.\nRequired view: Eye-level horizontal side, straight cylindrical silhouette.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nMANDATORY CAMERA CORRECTION: lens at the object midpoint height, optical axis perfectly horizontal, NO looking down, top rim is a horizontal line with no visible interior. EMPTY product alone, NO pencils pens flowers books plants or other props. Preserve original shape; change camera elevation to exact horizontal side profile."
+        }
+      ],
+      "output": "images/sky-glass-cylinder-vase/side.png",
+      "sha256": "e957f0e172432bd89b9eb2535219fac5516b9799681ae45a1099c9c90870ed52"
+    },
+    {
+      "id": "sky-glass-cylinder-vase/texture",
+      "productId": "sky-glass-cylinder-vase",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["sky-glass-cylinder-vase/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: transparent pale blue\nBase material: smooth tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sky-glass-cylinder-vase/texture.png",
+      "sha256": "a2ba720b4c92e480488c4acf4b3daa482a3d4e831e2db7edaf823316f3aef180",
+      "history": [
+        {
+          "note": "Macro shows smooth transparent blue glass lip and wall with consistent rounded rim and no engraving.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: transparent pale blue. Material: smooth tinted glass.\nRequired view: Macro smooth blue glass lip and wall.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sky-glass-cylinder-vase/model-front",
+      "productId": "sky-glass-cylinder-vase",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["sky-glass-cylinder-vase/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: transparent pale blue\nBase material: smooth tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sky-glass-cylinder-vase/model-front.png",
+      "sha256": "183d626997a961ff97ecf43cccefd8547b4e711f15f62481d1e8eefa7be59b60",
+      "history": [
+        {
+          "note": "One green stem carrying one white flower inserted through opening into matching transparent blue cylinder, full object and flower in frame.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: transparent pale blue. Material: smooth tinted glass.\nRequired view: Vase holding one green stem with single small white flower, stem inserted through open mouth.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sky-glass-cylinder-vase/model-side",
+      "productId": "sky-glass-cylinder-vase",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["sky-glass-cylinder-vase/front", "sky-glass-cylinder-vase/model-front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: transparent pale blue\nBase material: smooth tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected: flower and leaf orientation and elevated camera copy front usage view, no distinct side angle.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: transparent pale blue. Material: smooth tinted glass.\nRequired view: Same vase flower and stem from side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Distinct horizontal side usage view with flower in profile, green calyx and foreshortened leaves; same single stem and blue cylindrical vase.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: transparent pale blue. Material: smooth tinted glass.\nRequired view: Same vase flower and stem from side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nMANDATORY DISTINCT SIDE VIEW: move camera 90 degrees around vase and lower lens to vase midpoint, horizontal optical axis. Vase lip appears nearly flat. Flower is seen in SIDE PROFILE with green calyx visible instead of facing bloom; leaves are foreshortened. Keep exactly same single flower stem and pale blue glass. Do not copy frontal flower composition."
+        }
+      ],
+      "output": "images/sky-glass-cylinder-vase/model-side.png",
+      "sha256": "dd6495ce6b090f61dcd6da9cdc6ae05d1c5e4612cae1cb954fc6e4aa1ad512ac"
+    },
+    {
+      "id": "sky-glass-cylinder-vase/model-back",
+      "productId": "sky-glass-cylinder-vase",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "sky-glass-cylinder-vase/front",
+        "sky-glass-cylinder-vase/back",
+        "sky-glass-cylinder-vase/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: transparent pale blue\nBase material: smooth tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sky-glass-cylinder-vase/model-back.png",
+      "sha256": "69d2870e0705fa04d9ef996b862b13670da07743f8ba0e5d52880aef04e91fbf",
+      "history": [
+        {
+          "note": "High overhead empty blue vase shows full circular mouth and glass base, consistent transparent cylinder without flower.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: transparent pale blue. Material: smooth tinted glass.\nRequired view: Top-down empty vase showing circular mouth and glass base.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sky-glass-cylinder-vase/editorial",
+      "productId": "sky-glass-cylinder-vase",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["sky-glass-cylinder-vase/front", "sky-glass-cylinder-vase/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: transparent pale blue\nBase material: smooth tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sky-glass-cylinder-vase/editorial.png",
+      "sha256": "0e40271fa617d66c48c013fd43785a988d6d7328790946ddd4eab8445791e2ab",
+      "history": [
+        {
+          "note": "Matching blue vase and single white flower on pale stone windowsill; stem visibly inserted, full product in frame.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스카이 글라스 실린더 화병\nDesign invariants: Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: transparent pale blue. Material: smooth tinted glass.\nRequired view: Same vase and white flower on pale stone windowsill.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "walnut-arch-letter-rack/front",
+      "productId": "walnut-arch-letter-rack",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural walnut brown\nBase material: oiled walnut wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/walnut-arch-letter-rack/front.png",
+      "sha256": "66e7c3a08015ed9ccd18597e2169da834a3d1abecc9da88d23ba2cc7fe1a1f85",
+      "history": [
+        {
+          "note": "Empty walnut rack has two matching parallel rounded arch panels joined to rectangular base and exactly one slot; no hardware or text.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural walnut brown. Material: oiled walnut wood.\nRequired view: Three-quarter empty rack clearly showing two parallel arch panels and one slot.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "walnut-arch-letter-rack/back",
+      "productId": "walnut-arch-letter-rack",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["walnut-arch-letter-rack/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural walnut brown\nBase material: oiled walnut wood\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/walnut-arch-letter-rack/back.png",
+      "sha256": "7434079b4c526b85a783c1aeaa0aaed147362e7e4fbacac364e85d3694fe42ec",
+      "history": [
+        {
+          "note": "Opposite rear three-quarter walnut rack, two parallel arch panels and one slot on rectangular base, no hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural walnut brown. Material: oiled walnut wood.\nRequired view: Opposite rear three-quarter of same rack.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "walnut-arch-letter-rack/side",
+      "productId": "walnut-arch-letter-rack",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["walnut-arch-letter-rack/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural walnut brown\nBase material: oiled walnut wood\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/walnut-arch-letter-rack/side.png",
+      "sha256": "06779e596f2c63be7b0ed273cabf20d59a9b12a07d2e45a229154f03a0982fd7",
+      "history": [
+        {
+          "note": "End-on side clearly shows one open slot between two equal-height panels on flat base; brown oiled wood preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural walnut brown. Material: oiled walnut wood.\nRequired view: End-on side showing one slot between two panels and base.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "walnut-arch-letter-rack/texture",
+      "productId": "walnut-arch-letter-rack",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["walnut-arch-letter-rack/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural walnut brown\nBase material: oiled walnut wood\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/walnut-arch-letter-rack/texture.png",
+      "sha256": "a8ac452fc514109d07cae9850f43bee6a0f2b75d7270fac64e3ab45f04fa453a",
+      "history": [
+        {
+          "note": "Macro walnut grain at smooth rounded arch edge, second panel softly behind; finish and edge thickness consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural walnut brown. Material: oiled walnut wood.\nRequired view: Macro walnut grain at rounded arch edge.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "walnut-arch-letter-rack/model-front",
+      "productId": "walnut-arch-letter-rack",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["walnut-arch-letter-rack/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural walnut brown\nBase material: oiled walnut wood\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/walnut-arch-letter-rack/model-front.png",
+      "sha256": "221cd5e22514692522eb9ae4e22026868ec77979c988a63cbd28bd3f5d102258",
+      "history": [
+        {
+          "note": "One cream envelope stands inside sole slot, visibly supported on base between two walnut arch panels; no letters or extra objects.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural walnut brown. Material: oiled walnut wood.\nRequired view: One plain cream envelope standing in single slot between panels.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "walnut-arch-letter-rack/model-side",
+      "productId": "walnut-arch-letter-rack",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["walnut-arch-letter-rack/front", "walnut-arch-letter-rack/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural walnut brown\nBase material: oiled walnut wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/walnut-arch-letter-rack/model-side.png",
+      "sha256": "c4acbcaf27735ef4904c35ab7214e08f6f76acb20ff091dffad0cd36a683a17d",
+      "history": [
+        {
+          "note": "Opposite three-quarter side shows envelope supported between same two panels, visible slot end at left and unchanged rectangular base.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural walnut brown. Material: oiled walnut wood.\nRequired view: Same rack and envelope from opposite side, envelope supported in slot.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "walnut-arch-letter-rack/model-back",
+      "productId": "walnut-arch-letter-rack",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "walnut-arch-letter-rack/front",
+        "walnut-arch-letter-rack/back",
+        "walnut-arch-letter-rack/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural walnut brown\nBase material: oiled walnut wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/walnut-arch-letter-rack/model-back.png",
+      "sha256": "ddd3e41702e422cb51bd2708c8a032ee63b4e400112b0cf6da57642bf3bc5696",
+      "history": [
+        {
+          "note": "Overhead empty rack clearly shows one long slot bounded by exactly two parallel walnut panels, same base and no extra hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural walnut brown. Material: oiled walnut wood.\nRequired view: Top-down empty rack showing one long slot and two panels.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "walnut-arch-letter-rack/editorial",
+      "productId": "walnut-arch-letter-rack",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["walnut-arch-letter-rack/front", "walnut-arch-letter-rack/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural walnut brown\nBase material: oiled walnut wood\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/walnut-arch-letter-rack/editorial.png",
+      "sha256": "27120ae1889fdaed083ac683b63919e2c9548ea88d297a6753c48e600a92231c",
+      "history": [
+        {
+          "note": "Editorial same rack and single cream envelope on oak desk beside blank notebook; two-panel construction and wood finish preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 월넛 아치 레터 랙\nDesign invariants: Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural walnut brown. Material: oiled walnut wood.\nRequired view: Rack with same cream envelope on oak desk beside blank notebook.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    }
+  ]
+}
