@@ -55,7 +55,6 @@ import type { OrderLine, PlannedSellerOrder } from './order-plan.js'
 import { planOrder } from './order-plan.js'
 import type { OrderSource } from './order-source.js'
 import { priceOf } from './order-source.js'
-import type { SellerOrderStatusChanged } from './seller-order-events.js'
 import { SellerOrderService } from './seller-order.service.js'
 
 type Tx = Prisma.TransactionClient
@@ -423,82 +422,42 @@ export class OrderService {
    * 멱등이다. 이미 `PAID` 인 몫은 건드리지 않고 예약도 다시 확정하지 않는다 —
    * 결제 승인 웹훅은 두 번 온다고 가정해야 한다(TASK-0056).
    *
-   * **상태는 상태 머신의 문을 지나서만 바뀐다** (TASK-0059). 여기서 `updateMany` 로
-   * 한 번에 옮기던 것을 몫마다 {@link SellerOrderService.applyWithin} 으로 바꾼 것이
-   * 그 뜻이고, 그 대가로 문장이 몫 하나당 세 개가 된다(잠금·갱신·이력). 대가를 치를
-   * 값어치가 있는 이유는, 지나지 않으면 「정의되지 않은 전이는 불가능하다」가 **새
-   * 코드에만 적용되는 규칙**이 되기 때문이다 — 그리고 한 주문의 판매자 수는 데모에서
-   * 한 자리다.
-   *
-   * **바꾸지 않은 것 셋.** ① 옮기는 대상은 여전히 `PAYMENT_PENDING` 인 몫뿐이다 —
-   * 이미 `PREPARING` 까지 간 몫을 `PAID` 로 되돌리려 들면 문이 거절하고, 그것은
-   * 「매입은 끝났는데 주문이 완결되지 않은 건을 마저 끝낸다」(D-221)를 깨뜨린다.
-   * ② 트랜잭션 경계는 그대로다 — 문이 남의 트랜잭션 안에서 도는 이유가 이것이다.
-   * ③ 빈 목록이면 예약도 건드리지 않고 돌아간다.
+   * State/history changes pass through SellerOrderService.payPendingWithin.
+   * Only pending shares move; advanced shares and already settled holds stay put.
+   * The transaction keeps stock, history and exact cart cleanup atomic.
    *
    * 알림만 **커밋 뒤로** 나간다. 트랜잭션 안에서 발행하면 롤백된 결제의 「결제
    * 완료」 알림이 나가고, 그 메일은 되돌릴 수 없다.
    */
   async markPaid(orderId: string): Promise<void> {
     const changes = await this.prisma.$transaction(async (tx) => {
-      await tx.$queryRaw`SELECT "id" FROM "Order" WHERE "id" = ${orderId}::uuid FOR UPDATE`
-      const order = await tx.order.findUnique({
-        where: { id: orderId },
-        select: {
-          checkoutId: true,
-          userId: true,
-          cartCleanedAt: true,
-          sellerOrders: { where: { status: 'PAYMENT_PENDING' }, select: { id: true } },
-        },
-      })
-
-      if (order === null) throw new NotFoundException('주문을 찾을 수 없어요.')
+      const [order] = await tx.$queryRaw<
+        {
+          checkoutId: string
+          userId: string
+          cartCleanedAt: Date | null
+        }[]
+      >`
+        SELECT "checkoutId", "userId", "cartCleanedAt" FROM "Order"
+         WHERE "id" = ${orderId}::uuid FOR UPDATE
+      `
+      if (order === undefined) throw new NotFoundException('주문을 찾을 수 없어요.')
       if (order.cartCleanedAt === null) {
-        const purchased = await tx.stockReservation.findMany({
-          where: { checkoutId: order.checkoutId, sourceCartItemId: { not: null } },
-          select: { sourceCartItemId: true, sourceCartUpdatedAt: true, quantity: true },
-        })
-        for (const item of purchased) {
-          if (item.sourceCartItemId === null || item.sourceCartUpdatedAt === null) continue
-          await tx.cartItem.deleteMany({
-            where: {
-              id: item.sourceCartItemId,
-              cart: { userId: order.userId },
-              quantity: item.quantity,
-              updatedAt: item.sourceCartUpdatedAt,
-            },
-          })
-        }
+        // Compare stored timestamps in PostgreSQL without losing sub-ms precision.
+        await tx.$executeRaw`
+          DELETE FROM "CartItem" item USING "Cart" cart, "StockReservation" reservation
+           WHERE item."cartId" = cart."id" AND cart."userId" = ${order.userId}::uuid
+             AND reservation."checkoutId" = ${order.checkoutId}::uuid
+             AND item."id" = reservation."sourceCartItemId"
+             AND item."quantity" = reservation."quantity"
+             AND item."updatedAt" = reservation."sourceCartUpdatedAt"
+        `
         await tx.order.update({ where: { id: orderId }, data: { cartCleanedAt: this.clock.now() } })
       }
-      if (order.sellerOrders.length === 0) return []
-
-      // 예약을 실제 차감으로 바꾼다. 여기서 처음으로 재고가 줄어든다 — 그전까지
-      // 주문은 재고를 **잡고만** 있었다 (TASK-0049 4.4).
-      const holds = await tx.stockReservation.findMany({
-        where: { checkoutId: order.checkoutId, status: 'HELD' },
-        orderBy: { id: 'asc' },
-        select: { id: true },
-      })
-
-      for (const hold of holds) {
-        await this.reservations.confirm(tx, hold.id)
-      }
-
-      const events: SellerOrderStatusChanged[] = []
-
-      // 주체는 `SYSTEM` 이다. 사람이 「결제됨」을 누르는 화면은 없다 — 그것은 결제가
-      // 끝났다는 사실의 결과이고, 그 사실을 아는 것은 결제 쪽이다.
-      for (const row of order.sellerOrders) {
-        const event = await this.transitions.applyWithin(tx, row.id, 'PAID', {
-          actor: 'SYSTEM',
-          actorId: null,
-        })
-
-        if (event !== null) events.push(event)
-      }
-
-      return events
+      const pending = await tx.sellerOrder.count({ where: { orderId, status: 'PAYMENT_PENDING' } })
+      if (pending === 0) return []
+      await this.reservations.confirmCheckout(tx, order.checkoutId)
+      return this.transitions.payPendingWithin(tx, orderId)
     })
 
     await this.transitions.publish(changes)
