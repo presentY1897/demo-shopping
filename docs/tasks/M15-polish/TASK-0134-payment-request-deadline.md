@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M15 마무리 |
-| 상태 | 진행 중 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-11 |
 | 브랜치 / worktree | `feature/payment-request-deadline` / `feature-payment-request-deadline` |
 | 선행 | TASK-0133 운영 모바일 구매 검증 |
@@ -27,9 +27,17 @@ PR141 배포 후 실제 모바일 두 상품 구매는 성공했지만 승인·�
 | F1 | 5초를 넘는 정상 결제 응답 수신, 자동 중복 요청 없음 | [x] |
 | F2 | 15초 무응답은 TIMEOUT 반환, 기존 복구·중복 제출·토스 회귀 통과 | [x] |
 | F3 | 일반 조회는 기존5초 제한 유지 | [x] |
-| F4 | typecheck/lint/format/build/test 및 정확한 PR head CI4개·E2E 통과 | [ ] |
-| F5 | 배포 후 실제 모바일 두 상품 구매, 양쪽 PAID·장바구니0·이미지 정상 및 결제 요청 중단/완료 시간 기록 | [ ] |
+| F4 | typecheck/lint/format/build/test 및 정확한 PR head CI4개·E2E 통과 | [x] |
+| F5 | 배포 후 실제 모바일 두 상품 구매, 양쪽 PAID·장바구니0·이미지 정상 및 결제 요청 중단/완료 시간 기록 | [x] |
 
 새 환경변수·스키마·라이브러리 없음. 공통 [품질 게이트](../QUALITY-GATES.md) 적용. 운영 지연 변동으로 15초를 넘으면 기존 결과 조회 복구가 필요하다. 콜드 스타트 통계는 TASK0131에 남긴다.
 
 2026-09-11: 변경 전 지연 회귀10개 실패·조회 제한1개 통과, 변경 후11개 모두 통과. 기존 결제·토스 화면 회귀 포함66개 통과. 실 ApiClient와 취소 가능한 지연 transport를 사용하고, 네이티브 timeout 시계만 가짜 타이머와 동기화했다.
+
+## 배포 및 완료 근거
+
+PR142 head `962ede4` 로컬 전체 typecheck/lint/format/build/test 성공. API4358/shared103/UI956/mocks472/admin1164/seller867/shop1270 통과(기존 skip 유지). 정확한 head CI4개·E2E·Lighthouse 완료·성공 후 rebase merge `9613455`. 첫 CI의 찜 목록 미처리 mock 요청은 같은 head 재실행에서 통과했으며 로컬 전체에서도 재현되지 않았다.
+
+2026-09-11 01:33 KST 구매자 운영 배포 후 실제390px 브라우저의 두 상품 구매 완료. 주문서 생성·주문 생성·결제는 화면에서 실행했고 주문서 새로고침, 썸네일 정상, 두 판매자 PAID, 장바구니0, 주문서401 없음. 결제 생성/승인/확정 모두201, 결제 요청 실패0, 추가 복구 조회 없음. 버튼부터 완료18,976ms(이전26,475ms). [운영 원자료](../../reviews/artifacts/checkout-review/payment-deadline-production-browser.json).
+
+단회 warm 비교이며 개선분 전체를 제한 변경의 인과 효과로 단정하지 않는다. 서버 승인4,584ms·확정5,622ms의 지연은 남아 있고 실제 cold 통계와 후속 분석은 TASK0131에 유지한다.
