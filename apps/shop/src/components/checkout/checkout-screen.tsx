@@ -1,11 +1,14 @@
 'use client'
 
+import { ProductThumbnail } from '@/components/products/product-thumbnail'
+
 import type { Address, AppliedCoupon, Checkout } from '@shopping/shared'
 import { Button, Checkbox, EmptyState, ErrorState } from '@shopping/ui/components'
+import { useMinWidth } from '@shopping/ui/layout'
 import { formatMoney } from '@shopping/ui/format'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { closeCheckoutOnLeave } from '@/lib/checkout/checkout-api'
+import { cancelCheckout } from '@/lib/checkout/checkout-api'
 import { useCheckoutDraft } from '@/lib/checkout/use-checkout-draft'
 import { useEffect, useState } from 'react'
 
@@ -102,6 +105,8 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
   const chosen = draft.draft.addressId
   const setChosen = (addressId: string) => draft.update({ addressId })
   const [chosenMethod, setChosenMethod] = useState<string | null>(null)
+  const [canceling, setCanceling] = useState(false)
+  const [cancelFailed, setCancelFailed] = useState(false)
   const [agreed, setAgreed] = useState(false)
 
   // 결제까지 끝났다. 이 주문서가 할 일은 여기서 끝나므로 화면 전체가 바뀐다 —
@@ -168,7 +173,8 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
   // 선택은 **화면이 보여 준 금액을 만든 그 선택**이어야 하는데, 다시 읽는 중에는
   // 그 둘이 같다고 말할 수 없다 — 여기서 열어 두면 앞의 금액을 보면서 뒤의 선택으로
   // 주문하는 순간이 생긴다.
-  const ready = address !== undefined && method !== null && agreed && !paying && !repricing
+  const ready =
+    address !== undefined && method !== null && agreed && !paying && !repricing && !canceling
 
   /**
    * 결제를 건다. 주문이 없으면 만들고, 있으면 그 주문에 다시 건다.
@@ -200,19 +206,31 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+    <div className="flex flex-col gap-4 pb-28 lg:flex-row lg:items-start lg:pb-0">
       <div className="flex min-w-0 flex-1 flex-col gap-4">
         <Timer messages={messages} remaining={remaining} />
         {payment.ordered === null ? (
           <Button
+            disabled={canceling || paying}
             variant="ghost"
             onClick={() => {
-              closeCheckoutOnLeave(id)
-              router.push('/cart')
+              setCanceling(true)
+              setCancelFailed(false)
+              void cancelCheckout(id)
+                .then(() => router.push('/cart'))
+                .catch(() => {
+                  setCancelFailed(true)
+                  setCanceling(false)
+                })
             }}
           >
             {messages.cancelCheckout}
           </Button>
+        ) : null}
+        {cancelFailed ? (
+          <p role="alert" className="text-danger text-sm">
+            {messages.cancelFailed}
+          </p>
         ) : null}
         {draft.failed ? (
           <div role="alert">
@@ -271,6 +289,8 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
         <PaymentSection
           chosen={method === null ? null : methodId(method)}
           loading={payment.loadingCards}
+          failed={payment.cardsFailed}
+          onReload={payment.reloadCards}
           messages={messages.payment}
           methods={methods}
           onChoose={setChosenMethod}
@@ -402,11 +422,12 @@ function Items({
 
           <ul className="flex flex-col gap-1 pt-2">
             {group.items.map((item) => (
-              <li
-                className="flex items-baseline justify-between gap-2 text-sm"
-                key={item.variantId}
-              >
-                <span className="text-fg-muted min-w-0 truncate">
+              <li className="flex items-center justify-between gap-2 text-sm" key={item.variantId}>
+                <ProductThumbnail
+                  src={item.snapshot.thumbnailUrl}
+                  className="size-14 shrink-0 rounded"
+                />
+                <span className="text-fg-muted min-w-0 flex-1">
                   {item.snapshot.productName}
                   {item.snapshot.optionLabel === '' ? '' : ` · ${item.snapshot.optionLabel}`}
                   {` × ${String(item.quantity)}`}
@@ -545,6 +566,7 @@ function Summary({
   readonly missingRecipient: boolean
   readonly missingMethod: boolean
 }) {
+  const desktop = useMinWidth(1024)
   const discount = checkout.totalCouponDiscountAmount + checkout.totalPointDiscountAmount
 
   return (
@@ -598,28 +620,35 @@ function Summary({
         }}
       />
 
-      <Button
-        // 아직 누를 수 없을 때는 `aria-disabled` 다 (`disabled` 가 아니다). 진짜
-        // `disabled` 는 **탭 순서에서 사라져** 마우스를 쓰지 않는 사람이 버튼에도
-        // 그 아래 이유에도 닿지 못한다 — TASK-0099 의 키보드 완주가 여기서 막혔다.
-        // 담기 버튼이 먼저 같은 판단을 했다(`purchase-controls.tsx`).
-        //
-        // 요청이 도는 동안은 진짜 `disabled` 다: 그때는 읽을 이유가 없고, 두 번
-        // 눌리면 주문이 두 번 나간다.
-        aria-describedby={ready ? undefined : REASON_ID}
-        aria-disabled={!ready}
-        disabled={placing}
-        loading={placing}
-        onClick={() => {
-          // `aria-disabled` 는 클릭을 막지 않는다 — 막는 것은 여기다.
-          if (!ready) return
+      <div className="bg-surface border-border fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-3 border-t p-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:static lg:flex-col lg:items-stretch lg:border-0 lg:p-0">
+        {!desktop ? (
+          <span className="text-fg font-bold tabular-nums">
+            {formatMoney({ amount: checkout.paidAmount, currency: CURRENCY })}
+          </span>
+        ) : null}
+        <Button
+          // 아직 누를 수 없을 때는 `aria-disabled` 다 (`disabled` 가 아니다). 진짜
+          // `disabled` 는 **탭 순서에서 사라져** 마우스를 쓰지 않는 사람이 버튼에도
+          // 그 아래 이유에도 닿지 못한다 — TASK-0099 의 키보드 완주가 여기서 막혔다.
+          // 담기 버튼이 먼저 같은 판단을 했다(`purchase-controls.tsx`).
+          //
+          // 요청이 도는 동안은 진짜 `disabled` 다: 그때는 읽을 이유가 없고, 두 번
+          // 눌리면 주문이 두 번 나간다.
+          aria-describedby={ready ? undefined : REASON_ID}
+          aria-disabled={!ready}
+          disabled={placing}
+          loading={placing}
+          onClick={() => {
+            // `aria-disabled` 는 클릭을 막지 않는다 — 막는 것은 여기다.
+            if (!ready) return
 
-          onPlace()
-        }}
-        type="button"
-      >
-        {placing ? messages.placing : messages.placeOrder}
-      </Button>
+            onPlace()
+          }}
+          type="button"
+        >
+          {placing ? messages.placing : messages.placeOrder}
+        </Button>
+      </div>
 
       {/*
         누를 수 없는 이유를 그 아래 적는다. 이유 없는 비활성 컨트롤을 보면 사람은

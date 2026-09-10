@@ -363,3 +363,60 @@ describe('TASK-0128 checkout draft', () => {
     expect(saved.draft.revision).toBe(2)
   })
 })
+
+describe('TASK-0129 direct purchase', () => {
+  it('reserves exactly the requested quantity without changing an existing cart', async () => {
+    const item = await listing()
+    await add(item.variantId, 4)
+    const other = await listing()
+    await add(other.variantId, 1)
+    const { checkout } = await client().request({
+      path: '/checkouts',
+      method: 'POST',
+      body: { items: [{ variantId: item.variantId, quantity: 2 }] },
+      schema: checkoutResponseSchema,
+    })
+    expect(
+      checkout.sellerOrders
+        .flatMap((group) => group.items)
+        .map((row) => ({ variantId: row.variantId, quantity: row.quantity })),
+    ).toEqual([{ variantId: item.variantId, quantity: 2 }])
+    expect(await levelsOf(item.variantId)).toEqual({ stock: 10, reserved: 2 })
+    const cart = await client().request({ path: '/cart', schema: cartResponseSchema })
+    expect(
+      cart.groups.flatMap((group) => group.items).find((row) => row.variantId === item.variantId)
+        ?.quantity,
+    ).toBe(4)
+    expect(
+      await db.one('SELECT "sourceCartItemId" FROM "StockReservation" WHERE "checkoutId" = $1', [
+        checkout.id,
+      ]),
+    ).toEqual({ sourceCartItemId: null })
+  })
+
+  it('rejects mixed sources and duplicate variants', async () => {
+    const item = await listing()
+    const itemId = await add(item.variantId)
+    for (const body of [
+      { itemIds: [itemId], items: [{ variantId: item.variantId, quantity: 1 }] },
+      {
+        items: [
+          { variantId: item.variantId, quantity: 1 },
+          { variantId: item.variantId, quantity: 1 },
+        ],
+      },
+    ]) {
+      expect(
+        await failure(
+          client().request({
+            path: '/checkouts',
+            method: 'POST',
+            body,
+            schema: checkoutResponseSchema,
+          }),
+        ),
+      ).toEqual({ status: 400 })
+    }
+    expect(await levelsOf(item.variantId)).toEqual({ stock: 10, reserved: 0 })
+  })
+})

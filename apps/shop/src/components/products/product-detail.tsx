@@ -21,6 +21,7 @@ import type { ProductDetailResponse } from '@shopping/shared'
 import { Tag } from '@shopping/ui/components'
 import { useDensity } from '@shopping/ui/density'
 import { formatMoney } from '@shopping/ui/format'
+import { useBuyNow } from '@/lib/checkout/use-buy-now'
 import { PageContainer, useViewportBand } from '@shopping/ui/layout'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -82,6 +83,7 @@ export function ProductDetail({
   const [selection, setSelection] = useState<Selection>({})
   const [quantity, setQuantity] = useState(1)
   const cart = useAddToCart()
+  const direct = useBuyNow()
 
   /**
    * 로그인하지 않은 사람의 열람 이력 (TASK-0087 F6).
@@ -113,6 +115,9 @@ export function ProductDetail({
       cartMessages={cartMessages}
       messages={messages.purchase}
       onAddToCart={cart.add}
+      onBuyNow={direct.buy}
+      buying={direct.opening}
+      buyFailed={direct.failed}
       onQuantityChange={(next) => {
         setQuantity(Math.max(1, next))
       }}
@@ -224,6 +229,8 @@ export function ProductDetail({
 
   const info = (
     <ProductInfo
+      shippingFee={seller.shippingFee}
+      freeShippingThreshold={seller.freeShippingThreshold}
       attributes={attributes}
       density={density}
       description={product.description}
@@ -327,6 +334,9 @@ export function ProductDetail({
             compact
             messages={messages.purchase}
             onAddToCart={cart.add}
+            onBuyNow={direct.buy}
+            buying={direct.opening}
+            buyFailed={direct.failed}
             onQuantityChange={setQuantity}
             optionMessages={messages.options}
             product={product}

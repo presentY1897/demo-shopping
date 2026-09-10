@@ -1,7 +1,7 @@
 'use client'
 
 import type { CartResponse } from '@shopping/shared'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useAuth } from '@/lib/auth/auth-context'
 
@@ -36,6 +36,8 @@ export type CartState =
 export interface CartStore {
   readonly state: CartState
   readonly selection: Selection
+  readonly mutationFailed: boolean
+  readonly retryMutation: () => void
   readonly busy: boolean
   readonly setSelection: (next: Selection) => void
   readonly changeQuantity: (itemId: string, quantity: number) => void
@@ -51,6 +53,9 @@ export function useCart(): CartStore {
 
   const [state, setState] = useState<CartState>({ status: 'loading' })
   const [selection, setSelection] = useState<Selection>(new Set())
+  const [mutationFailed, setMutationFailed] = useState(false)
+  const lastWork = useRef<(() => Promise<CartResponse>) | null>(null)
+  const writing = useRef(false)
   const [busy, setBusy] = useState(false)
   const [attempt, setAttempt] = useState(0)
 
@@ -88,6 +93,10 @@ export function useCart(): CartStore {
    * **되돌릴 것이 화면 전체**가 된다. 대신 그동안 컨트롤을 잠근다.
    */
   const send = useCallback(async (work: () => Promise<CartResponse>): Promise<void> => {
+    if (writing.current) return
+    writing.current = true
+    lastWork.current = work
+    setMutationFailed(false)
     setBusy(true)
 
     try {
@@ -99,8 +108,9 @@ export function useCart(): CartStore {
     } catch {
       // 실패해도 화면을 버리지 않는다 — 지금 보이는 장바구니는 여전히 사실이고,
       // 사람이 할 일은 다시 눌러 보는 것이다.
-      setState((held) => held)
+      setMutationFailed(true)
     } finally {
+      writing.current = false
       setBusy(false)
     }
   }, [])
@@ -124,5 +134,17 @@ export function useCart(): CartStore {
     setAttempt((held) => held + 1)
   }, [])
 
-  return { state, selection, busy, setSelection, changeQuantity, remove, retry }
+  return {
+    mutationFailed,
+    retryMutation: () => {
+      if (lastWork.current !== null) void send(lastWork.current)
+    },
+    state,
+    selection,
+    busy,
+    setSelection,
+    changeQuantity,
+    remove,
+    retry,
+  }
 }

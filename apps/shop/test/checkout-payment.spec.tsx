@@ -502,3 +502,13 @@ describe('TASK-0126 recovery', () => {
     )
   })
 })
+
+it('shows a card lookup failure with retry instead of claiming there are no cards', async () => {
+  testServer.server.use(httpFailureOn('get', mockPaths.cards, 500, 'INTERNAL_ERROR', '조회 실패'))
+  await renderCheckout()
+  expect(await screen.findByText(pay.loadFailed)).toBeVisible()
+  expect(screen.queryByText(pay.noneTitle)).toBeNull()
+  testServer.server.resetHandlers()
+  await userEvent.setup().click(screen.getByRole('button', { name: pay.reloadCards }))
+  expect(await screen.findByRole('radio', { name: new RegExp(seedCard(0).brand) })).toBeVisible()
+})

@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductThumbnail } from '@/components/products/product-thumbnail'
+
 import type { OrderStatus, SellerOrder } from '@shopping/shared'
 import { Button, ShipmentTracking } from '@shopping/ui/components'
 import type { DensityLevel } from '@shopping/ui/density'
@@ -89,16 +91,10 @@ export function SellerOrderBundle({
               스냅샷의 이미지다 (F4). 상품이 지워졌으면 `null` 이고, 그때는 자리만
               남긴다 — 「사진이 없었다」도 주문 당시의 사실이다.
             */}
-            {item.snapshot.thumbnailUrl === null ? (
-              <span aria-hidden="true" className="bg-surface-muted size-14 shrink-0 rounded" />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element -- 주문 스냅샷의 URL 이다. 지금 카탈로그에 없을 수도 있는 값이라 `next/image` 의 도메인 허용목록으로 관리할 수 없고, 줄마다 작은 썸네일이라 최적화로 얻는 것도 없다 (`cart-line-row.tsx` 가 같은 이유로 같은 선택을 했다).
-              <img
-                alt=""
-                className="size-14 shrink-0 rounded object-cover"
-                src={item.snapshot.thumbnailUrl}
-              />
-            )}
+            <ProductThumbnail
+              src={item.snapshot.thumbnailUrl}
+              className="size-14 shrink-0 rounded"
+            />
 
             <div className="flex min-w-0 flex-col gap-0.5">
               <span className="text-fg text-sm font-medium">{item.snapshot.productName}</span>

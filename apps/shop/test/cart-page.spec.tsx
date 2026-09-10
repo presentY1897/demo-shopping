@@ -5,7 +5,13 @@
  * 빈 상태가 나온다. 얼어붙은 픽스처로는 그중 어느 것도 물어볼 수 없다.
  */
 
-import { emptyCart, resetCartStore, sessionBuyer } from '@shopping/api-mocks'
+import {
+  httpFailureOn,
+  mockPaths,
+  emptyCart,
+  resetCartStore,
+  sessionBuyer,
+} from '@shopping/api-mocks'
 import { DENSITY_LEVELS } from '@shopping/ui'
 import { DensityProvider } from '@shopping/ui/density'
 import { screen, waitFor, within } from '@testing-library/react'
@@ -29,6 +35,7 @@ const { default: CartPage } = await import('@/app/cart/page')
 import { forgetCartCount } from '@/lib/cart/cart-count'
 import { messagesFor } from '@/messages'
 
+import { testServer } from './setup'
 import { renderWithAuth } from './support/auth'
 import { navigation } from './support/navigation'
 import { resetDensity } from './support/mypage'
@@ -208,4 +215,21 @@ describe('F8 아홉 조합', () => {
     expect(screen.getByRole('region', { name: '노드스텝' })).toBeVisible()
     expect(screen.getAllByRole('button', { name: /주문하기/u })).toHaveLength(1)
   })
+})
+
+it('keeps cart items after a failed quantity update and provides retry', async () => {
+  await renderCart()
+  testServer.server.use(
+    httpFailureOn('patch', mockPaths.cartItem, 500, 'INTERNAL_ERROR', '변경 실패'),
+  )
+  const user = userEvent.setup()
+  const increase = screen
+    .getAllByRole('button', { name: copy.increase })
+    .find((button) => !button.hasAttribute('disabled'))!
+  await user.click(increase)
+  expect(await screen.findByText(copy.changeFailed)).toBeVisible()
+  expect(screen.queryByText(copy.emptyTitle)).toBeNull()
+  testServer.server.resetHandlers()
+  await user.click(screen.getByRole('button', { name: copy.retry }))
+  await waitFor(() => expect(screen.queryByText(copy.changeFailed)).toBeNull())
 })

@@ -34,7 +34,17 @@ export interface CartScreenProps {
  * `notices` 로 보내 준다 — 화면이 다시 비교하면 두 벌이 되고 어느 날 갈린다.
  */
 export function CartScreen({ messages }: CartScreenProps) {
-  const { state, selection, busy, setSelection, changeQuantity, remove, retry } = useCart()
+  const {
+    mutationFailed,
+    retryMutation,
+    state,
+    selection,
+    busy,
+    setSelection,
+    changeQuantity,
+    remove,
+    retry,
+  } = useCart()
   const checkout = useOpenCheckout()
 
   if (state.status === 'loading') {
@@ -82,6 +92,14 @@ export function CartScreen({ messages }: CartScreenProps) {
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
       <div className="flex min-w-0 flex-1 flex-col gap-3">
+        {mutationFailed ? (
+          <div role="alert" className="text-danger flex items-center gap-2 text-sm">
+            {messages.changeFailed}
+            <Button disabled={busy} onClick={retryMutation} size="sm" variant="outline">
+              {messages.retry}
+            </Button>
+          </div>
+        ) : null}
         <div className="flex items-center justify-between gap-2">
           <label className="flex items-center gap-2 text-sm">
             <input

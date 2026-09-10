@@ -321,7 +321,7 @@ export const storefrontProductDetail = defineFixture(productDetailResponseSchema
     options: storefrontOptions,
     variants: storefrontVariants,
   },
-  seller: { id: SELLER_ID, brandName: '루미에르' },
+  seller: { id: SELLER_ID, brandName: '루미에르', shippingFee: 3000, freeShippingThreshold: 50000 },
   // Already labelled and ordered — the API resolves it up the category lineage
   // (TASK-0043 4.3), because the labels live on `AttributeDefinition` and the
   // route serving those is permissioned. The labels here are
@@ -375,7 +375,7 @@ export const storefrontProductWithoutOptions = defineFixture(productDetailRespon
       },
     ],
   },
-  seller: { id: SELLER_ID, brandName: '루미에르' },
+  seller: { id: SELLER_ID, brandName: '루미에르', shippingFee: 3000, freeShippingThreshold: 50000 },
   attributes: [
     { key: 'brand', label: '브랜드', value: '루미에르' },
     { key: 'fit', label: '핏', value: '레귤러핏' },

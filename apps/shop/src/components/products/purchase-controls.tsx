@@ -39,6 +39,9 @@ export interface PurchaseControlsProps {
   /** 담기의 결과. 화면이 그것을 말로 옮긴다. */
   readonly addState: AddToCartState
   /** The bottom bar keeps it to one line; the panel has room for the rest. */
+  readonly onBuyNow?: (variantId: string, quantity: number) => void
+  readonly buying?: boolean
+  readonly buyFailed?: boolean
   readonly compact?: boolean
 }
 
@@ -52,6 +55,9 @@ export function PurchaseControls({
   cartMessages,
   onAddToCart,
   addState,
+  onBuyNow,
+  buying = false,
+  buyFailed = false,
   compact = false,
 }: PurchaseControlsProps) {
   const limit = purchaseLimit(product, variant)
@@ -122,7 +128,7 @@ export function PurchaseControls({
           // `disabled` 다: 그때는 읽을 이유가 없고 두 번 눌리면 두 번 담긴다.
           aria-disabled={!ready}
           className="flex-1"
-          disabled={addState.status === 'adding'}
+          disabled={buying || addState.status === 'adding'}
           loading={addState.status === 'adding'}
           onClick={() => {
             // `aria-disabled` 는 클릭을 막지 않는다 — 막는 것은 여기다. 조합이
@@ -136,10 +142,12 @@ export function PurchaseControls({
           {addState.status === 'adding' ? cartMessages.addPending : messages.addToCart}
         </Button>
         <Button
-          aria-disabled
+          aria-disabled={!ready || onBuyNow === undefined}
           className="flex-1"
-          onClick={(event) => {
-            event.preventDefault()
+          disabled={buying || addState.status === 'adding'}
+          loading={buying}
+          onClick={() => {
+            if (ready && variant !== null) onBuyNow?.(variant.id, quantity)
           }}
           type="button"
         >
@@ -161,9 +169,9 @@ export function PurchaseControls({
           </>
         ) : addState.status === 'failed' ? (
           cartMessages.addFailed
-        ) : (
-          messages.comingSoon
-        )}
+        ) : buyFailed ? (
+          messages.buyFailed
+        ) : null}
       </p>
     </div>
   )

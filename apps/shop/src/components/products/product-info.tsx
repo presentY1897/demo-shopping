@@ -26,41 +26,16 @@
 
 import type { AttributeValue } from '@shopping/shared'
 import type { DensityLevel } from '@shopping/ui'
-import { formatDate } from '@shopping/ui/format'
-import { useSyncExternalStore } from 'react'
+import { formatMoney } from '@shopping/ui/format'
 
 import type { ProductInfoMessages } from '@/messages'
-
-const DAY_MS = 24 * 60 * 60 * 1000
-
-/**
- * Three days out, which is what the shipping paragraph promises. A real estimate
- * needs an address and a carrier, and M07 owns both.
- *
- * Cached: `getSnapshot` must return the same value while nothing has changed, and
- * a fresh `Date` on every call would make React re-render forever.
- */
-let cachedArrival: string | null = null
-
-function arrivalSnapshot(): string {
-  cachedArrival ??= formatDate(new Date(Date.now() + 3 * DAY_MS), { style: 'date' })
-
-  return cachedArrival
-}
-
-function serverSnapshot(): null {
-  return null
-}
-
-/** The clock does not notify. */
-function subscribeToNothing(): () => void {
-  return () => undefined
-}
 
 /** How many attribute rows each step shows. `null` is all of them. */
 const ATTRIBUTE_ROWS: Readonly<Record<DensityLevel, number | null>> = { 1: null, 2: 4, 3: null }
 
 export interface ProductInfoProps {
+  readonly shippingFee?: number | undefined
+  readonly freeShippingThreshold?: number | null | undefined
   readonly density: DensityLevel
   readonly description: string | null
   readonly attributes: readonly {
@@ -100,25 +75,21 @@ function AttributeTable({
   )
 }
 
-export function ProductInfo({ density, description, attributes, messages }: ProductInfoProps) {
-  /**
-   * The estimated arrival — a value only the **browser** has.
-   *
-   * It depends on today, and the server's today is not reliably the visitor's, so
-   * a render that read the clock would produce markup the browser then disagrees
-   * with. `useSyncExternalStore` is the shape for exactly that: the server
-   * snapshot is `null`, the client's is the date, and React reconciles them
-   * without a warning and without an effect that sets state on mount.
-   */
-  const arrival = useSyncExternalStore(subscribeToNothing, arrivalSnapshot, serverSnapshot)
-
+export function ProductInfo({
+  density,
+  description,
+  attributes,
+  messages,
+  shippingFee,
+  freeShippingThreshold,
+}: ProductInfoProps) {
+  const money = (amount: number) => formatMoney({ amount, currency: 'KRW' })
   const shipping =
-    density === 1
-      ? messages.shippingMinimal
-      : density === 2
-        ? messages.shippingSummary
-        : messages.shippingDetailed
-
+    shippingFee === undefined
+      ? messages.shippingUnknown
+      : shippingFee === 0
+        ? messages.shippingMinimal
+        : messages.shippingFee.replace('{amount}', money(shippingFee))
   return (
     <div className="flex flex-col gap-6">
       <section className="flex flex-col gap-2">
@@ -149,9 +120,9 @@ export function ProductInfo({ density, description, attributes, messages }: Prod
       <section className="flex flex-col gap-2">
         <h2 className="text-fg text-base font-semibold">{messages.shippingLabel}</h2>
         <p className="text-fg-muted text-sm">{shipping}</p>
-        {density === 3 && arrival !== null ? (
+        {shippingFee !== undefined && shippingFee > 0 && freeShippingThreshold != null ? (
           <p className="text-fg-subtle text-sm">
-            {messages.estimatedArrival.replace('{date}', arrival)}
+            {messages.shippingThreshold.replace('{amount}', money(freeShippingThreshold))}
           </p>
         ) : null}
       </section>

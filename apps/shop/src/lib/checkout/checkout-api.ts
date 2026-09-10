@@ -4,6 +4,7 @@ import {
   APP_ID_HEADER,
   checkoutCouponsResponseSchema,
   checkoutResponseSchema,
+  releaseCheckoutResponseSchema,
   orderResponseSchema,
 } from '@shopping/shared'
 
@@ -128,5 +129,13 @@ export function closeCheckoutOnLeave(id: string): void {
     keepalive: true,
   }).catch(() => {
     // 떠나는 중이다. 실패해도 할 수 있는 일이 없고, 스케줄러가 받는다.
+  })
+}
+
+export function cancelCheckout(id: string): Promise<{ released: number }> {
+  return getApiClient().request({
+    path: `/checkouts/${id}`,
+    method: 'DELETE',
+    schema: releaseCheckoutResponseSchema,
   })
 }
