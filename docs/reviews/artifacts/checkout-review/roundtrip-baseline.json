@@ -1,0 +1,27 @@
+{
+  "environment": "isolated local PostgreSQL; simulated response delay during capture and optionally preparation",
+  "itemCount": 2,
+  "preparationDelayed": true,
+  "preparation": [
+    {
+      "phase": "checkout",
+      "ms": 3854.0801299999994,
+      "queries": 28
+    },
+    {
+      "phase": "order",
+      "ms": 4510.380013,
+      "queries": 29
+    }
+  ],
+  "delayMs": 210,
+  "timeout": 5000,
+  "status": 201,
+  "ms": 5777.225753999999,
+  "queries": 90,
+  "transactionErrors": [],
+  "transactionMs": [1709.1179250000005, 2144.4927050000006, 1068.377488, 3203.025782999999],
+  "paymentStatus": "PAID",
+  "sellerStatuses": ["PAID", "PAID"],
+  "cartItemCount": 0
+}
