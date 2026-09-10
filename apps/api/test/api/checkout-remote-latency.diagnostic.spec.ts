@@ -37,24 +37,32 @@ describe.skipIf(process.env.CHECKOUT_REMOTE_DIAGNOSTIC !== '1')(
     let enabled = false
     let queries = 0
     const transactionErrors: string[] = []
+    const transactionMs: number[] = []
     const delayMs = 210
+    const itemCount = Number(process.env.CHECKOUT_REMOTE_ITEMS ?? '2')
     beforeAll(() => {
       const transaction = Reflect.get(prisma, '$transaction') as (
         ...args: unknown[]
       ) => Promise<unknown>
       Reflect.set(prisma, '$transaction', function (this: unknown, ...args: unknown[]) {
-        return Reflect.apply(transaction, this, args).catch((error: unknown) => {
-          if (
-            enabled &&
-            typeof error === 'object' &&
-            error !== null &&
-            'code' in error &&
-            typeof error.code === 'string' &&
-            /^P[0-9]{4}$/.test(error.code)
-          )
-            transactionErrors.push(error.code)
-          throw error
-        })
+        const measured = enabled
+        const start = performance.now()
+        return Reflect.apply(transaction, this, args)
+          .catch((error: unknown) => {
+            if (
+              enabled &&
+              typeof error === 'object' &&
+              error !== null &&
+              'code' in error &&
+              typeof error.code === 'string' &&
+              /^P[0-9]{4}$/.test(error.code)
+            )
+              transactionErrors.push(error.code)
+            throw error
+          })
+          .finally(() => {
+            if (measured) transactionMs.push(performance.now() - start)
+          })
       })
       const tracked = new WeakSet<object>()
       const track = (client: object) => {
@@ -95,7 +103,7 @@ describe.skipIf(process.env.CHECKOUT_REMOTE_DIAGNOSTIC !== '1')(
         .issueFor(buyer.id, 1_000_000)
       const client = api.clientAs({ userId: buyer.id, roles: ['BUYER'] })
       const itemIds: string[] = []
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < itemCount; i++) {
         const owner = await createUser(db)
         const seller = await createSeller(db, { userId: owner.id })
         const category = await createCategory(db)
@@ -171,14 +179,15 @@ describe.skipIf(process.env.CHECKOUT_REMOTE_DIAGNOSTIC !== '1')(
       })
       const cart = await client.request({ path: '/cart', schema: cartResponseSchema })
       const result = {
-        environment:
-          'isolated local PostgreSQL; two sellers/items; simulated response delay only during capture',
+        environment: 'isolated local PostgreSQL; simulated response delay only during capture',
+        itemCount,
         delayMs,
         timeout,
         status,
         ms,
         queries,
         transactionErrors,
+        transactionMs,
         paymentStatus: saved.status,
         sellerStatuses: orders.map((o) => o.status),
         cartItemCount: cart.itemCount,
@@ -187,16 +196,11 @@ describe.skipIf(process.env.CHECKOUT_REMOTE_DIAGNOSTIC !== '1')(
         process.env.CHECKOUT_REMOTE_OUTPUT ?? '/tmp/checkout-remote-diagnostic.json',
         JSON.stringify(result, null, 2) + '\n',
       )
-      if (timeout === 5000) {
-        expect(status).toBe(500)
-        expect(transactionErrors).toContain('P2028')
-        expect(result.sellerStatuses).toEqual(['PAYMENT_PENDING', 'PAYMENT_PENDING'])
-        expect(cart.itemCount).toBe(2)
-      } else {
-        expect(status).toBe(201)
-        expect(result.sellerStatuses).toEqual(['PAID', 'PAID'])
-        expect(cart.itemCount).toBe(0)
-      }
+      expect(status).toBe(201)
+      expect(transactionErrors).toEqual([])
+      expect(Math.max(...transactionMs)).toBeLessThan(5000)
+      expect(result.sellerStatuses).toEqual(Array.from({ length: itemCount }, () => 'PAID'))
+      expect(cart.itemCount).toBe(0)
       expect(saved.status).toBe('PAID')
     }, 90_000)
   },
