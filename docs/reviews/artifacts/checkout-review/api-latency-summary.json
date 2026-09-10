@@ -1,0 +1,777 @@
+{
+  "baselineCommit": "3712759",
+  "environment": "local PostgreSQL, pool 5, real HTTP, header principal resolver (JWT excluded), virtual card simulation off",
+  "warm": [
+    {
+      "concurrency": 1,
+      "request": "cart.add",
+      "n": 30,
+      "medianMs": 13.6,
+      "p95Ms": 18.82,
+      "maxMs": 20.47,
+      "errors": 0,
+      "spans": {
+        "db.acquire": {
+          "meanMs": 0.277,
+          "meanCount": 13
+        },
+        "cart.get": {
+          "meanMs": 4.227,
+          "meanCount": 1
+        },
+        "cart.linesOf": {
+          "meanMs": 3.517,
+          "meanCount": 1
+        },
+        "cart.add": {
+          "meanMs": 13.073,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 13.312,
+          "meanCount": 20
+        },
+        "cart.account": {
+          "meanMs": 1.4,
+          "meanCount": 2
+        },
+        "transaction": {
+          "meanMs": 7.476,
+          "meanCount": 1
+        }
+      }
+    },
+    {
+      "concurrency": 1,
+      "request": "cart.get",
+      "n": 30,
+      "medianMs": 4.73,
+      "p95Ms": 5.78,
+      "maxMs": 7.63,
+      "errors": 0,
+      "spans": {
+        "db.acquire": {
+          "meanMs": 0.228,
+          "meanCount": 10
+        },
+        "cart.get": {
+          "meanMs": 3.989,
+          "meanCount": 1
+        },
+        "cart.linesOf": {
+          "meanMs": 3.273,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 5.386,
+          "meanCount": 10
+        },
+        "cart.account": {
+          "meanMs": 0.705,
+          "meanCount": 1
+        }
+      }
+    },
+    {
+      "concurrency": 1,
+      "request": "checkout.open",
+      "n": 30,
+      "medianMs": 14.03,
+      "p95Ms": 15.41,
+      "maxMs": 17.06,
+      "errors": 0,
+      "spans": {
+        "checkout.open": {
+          "meanMs": 13.08,
+          "meanCount": 1
+        },
+        "db.acquire": {
+          "meanMs": 0.676,
+          "meanCount": 21
+        },
+        "checkout.linesOf": {
+          "meanMs": 2.845,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 16.71,
+          "meanCount": 25
+        },
+        "checkout.read": {
+          "meanMs": 3.573,
+          "meanCount": 1
+        },
+        "checkout.account": {
+          "meanMs": 1.399,
+          "meanCount": 2
+        },
+        "transaction": {
+          "meanMs": 5.701,
+          "meanCount": 1
+        }
+      }
+    },
+    {
+      "concurrency": 1,
+      "request": "order.create",
+      "n": 30,
+      "medianMs": 16.81,
+      "p95Ms": 24.54,
+      "maxMs": 28.13,
+      "errors": 0,
+      "spans": {
+        "db.acquire": {
+          "meanMs": 0.595,
+          "meanCount": 20
+        },
+        "checkout.linesOf": {
+          "meanMs": 2.926,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 18.327,
+          "meanCount": 26
+        },
+        "order.create": {
+          "meanMs": 16.606,
+          "meanCount": 1
+        },
+        "order.account": {
+          "meanMs": 0.69,
+          "meanCount": 1
+        },
+        "transaction": {
+          "meanMs": 8.342,
+          "meanCount": 1
+        }
+      }
+    },
+    {
+      "concurrency": 1,
+      "request": "payment.authorize",
+      "n": 30,
+      "medianMs": 20.35,
+      "p95Ms": 27.63,
+      "maxMs": 36.42,
+      "errors": 0,
+      "spans": {
+        "payment.account": {
+          "meanMs": 0.694,
+          "meanCount": 1
+        },
+        "payment.authorize": {
+          "meanMs": 20.509,
+          "meanCount": 1
+        },
+        "db.acquire": {
+          "meanMs": 0.174,
+          "meanCount": 11
+        },
+        "provider.authorize": {
+          "meanMs": 6.611,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 18.465,
+          "meanCount": 20
+        },
+        "payment.get": {
+          "meanMs": 2.194,
+          "meanCount": 1
+        },
+        "transaction": {
+          "meanMs": 12.168,
+          "meanCount": 2
+        }
+      }
+    },
+    {
+      "concurrency": 1,
+      "request": "payment.capture",
+      "n": 30,
+      "medianMs": 27.08,
+      "p95Ms": 37.68,
+      "maxMs": 42.69,
+      "errors": 0,
+      "spans": {
+        "payment.account": {
+          "meanMs": 0.741,
+          "meanCount": 1
+        },
+        "payment.capture": {
+          "meanMs": 27.139,
+          "meanCount": 1
+        },
+        "db.acquire": {
+          "meanMs": 0.327,
+          "meanCount": 15
+        },
+        "provider.capture": {
+          "meanMs": 0.003,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 29.058,
+          "meanCount": 37
+        },
+        "payment.get": {
+          "meanMs": 2.568,
+          "meanCount": 1
+        },
+        "order.markPaid": {
+          "meanMs": 15.828,
+          "meanCount": 1
+        },
+        "transaction": {
+          "meanMs": 21.401,
+          "meanCount": 2
+        }
+      }
+    },
+    {
+      "concurrency": 1,
+      "request": "payment.start",
+      "n": 30,
+      "medianMs": 11.11,
+      "p95Ms": 13.17,
+      "maxMs": 13.23,
+      "errors": 0,
+      "spans": {
+        "payment.account": {
+          "meanMs": 0.686,
+          "meanCount": 1
+        },
+        "db.acquire": {
+          "meanMs": 0.114,
+          "meanCount": 7
+        },
+        "payment.start": {
+          "meanMs": 10.256,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 9.137,
+          "meanCount": 13
+        },
+        "payment.get": {
+          "meanMs": 1.973,
+          "meanCount": 1
+        },
+        "transaction": {
+          "meanMs": 6.934,
+          "meanCount": 1
+        }
+      }
+    },
+    {
+      "concurrency": 4,
+      "request": "cart.add",
+      "n": 32,
+      "medianMs": 20.23,
+      "p95Ms": 26.25,
+      "maxMs": 27.82,
+      "errors": 0,
+      "spans": {
+        "db.acquire": {
+          "meanMs": 2.764,
+          "meanCount": 13.09
+        },
+        "cart.get": {
+          "meanMs": 6.34,
+          "meanCount": 1
+        },
+        "cart.linesOf": {
+          "meanMs": 5.458,
+          "meanCount": 1
+        },
+        "cart.add": {
+          "meanMs": 18.693,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 15.381,
+          "meanCount": 15.59
+        },
+        "cart.account": {
+          "meanMs": 1.781,
+          "meanCount": 2
+        },
+        "transaction": {
+          "meanMs": 10.321,
+          "meanCount": 1
+        }
+      }
+    },
+    {
+      "concurrency": 4,
+      "request": "cart.get",
+      "n": 32,
+      "medianMs": 4.83,
+      "p95Ms": 5.61,
+      "maxMs": 5.68,
+      "errors": 0,
+      "spans": {
+        "db.acquire": {
+          "meanMs": 0.486,
+          "meanCount": 10
+        },
+        "cart.get": {
+          "meanMs": 4.001,
+          "meanCount": 1
+        },
+        "cart.linesOf": {
+          "meanMs": 3.304,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 4.651,
+          "meanCount": 9
+        },
+        "cart.account": {
+          "meanMs": 0.689,
+          "meanCount": 1
+        }
+      }
+    },
+    {
+      "concurrency": 4,
+      "request": "checkout.open",
+      "n": 32,
+      "medianMs": 22.65,
+      "p95Ms": 31.3,
+      "maxMs": 32.65,
+      "errors": 0,
+      "spans": {
+        "checkout.open": {
+          "meanMs": 21.953,
+          "meanCount": 1
+        },
+        "db.acquire": {
+          "meanMs": 4.701,
+          "meanCount": 21
+        },
+        "checkout.linesOf": {
+          "meanMs": 3.891,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 17.514,
+          "meanCount": 15.22
+        },
+        "checkout.read": {
+          "meanMs": 4.827,
+          "meanCount": 1
+        },
+        "checkout.account": {
+          "meanMs": 1.877,
+          "meanCount": 2
+        },
+        "transaction": {
+          "meanMs": 10.949,
+          "meanCount": 1
+        }
+      }
+    },
+    {
+      "concurrency": 4,
+      "request": "order.create",
+      "n": 32,
+      "medianMs": 21.65,
+      "p95Ms": 23.74,
+      "maxMs": 25.06,
+      "errors": 0,
+      "spans": {
+        "db.acquire": {
+          "meanMs": 3.669,
+          "meanCount": 20
+        },
+        "checkout.linesOf": {
+          "meanMs": 4.685,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 15.957,
+          "meanCount": 17.97
+        },
+        "order.create": {
+          "meanMs": 20.18,
+          "meanCount": 1
+        },
+        "order.account": {
+          "meanMs": 0.904,
+          "meanCount": 1
+        },
+        "transaction": {
+          "meanMs": 8.996,
+          "meanCount": 1
+        }
+      }
+    },
+    {
+      "concurrency": 4,
+      "request": "payment.authorize",
+      "n": 32,
+      "medianMs": 24.93,
+      "p95Ms": 29.27,
+      "maxMs": 30.47,
+      "errors": 0,
+      "spans": {
+        "payment.account": {
+          "meanMs": 0.688,
+          "meanCount": 1
+        },
+        "payment.authorize": {
+          "meanMs": 24.045,
+          "meanCount": 1
+        },
+        "db.acquire": {
+          "meanMs": 0.147,
+          "meanCount": 11
+        },
+        "provider.authorize": {
+          "meanMs": 7.406,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 22.16,
+          "meanCount": 19.84
+        },
+        "payment.get": {
+          "meanMs": 2.108,
+          "meanCount": 1
+        },
+        "transaction": {
+          "meanMs": 14.492,
+          "meanCount": 2
+        }
+      }
+    },
+    {
+      "concurrency": 4,
+      "request": "payment.capture",
+      "n": 32,
+      "medianMs": 38.94,
+      "p95Ms": 47.02,
+      "maxMs": 49.97,
+      "errors": 0,
+      "spans": {
+        "payment.account": {
+          "meanMs": 0.738,
+          "meanCount": 1
+        },
+        "payment.capture": {
+          "meanMs": 37.942,
+          "meanCount": 1
+        },
+        "db.acquire": {
+          "meanMs": 0.722,
+          "meanCount": 15
+        },
+        "provider.capture": {
+          "meanMs": 0.002,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 39.045,
+          "meanCount": 35.69
+        },
+        "payment.get": {
+          "meanMs": 2.52,
+          "meanCount": 1
+        },
+        "order.markPaid": {
+          "meanMs": 25.586,
+          "meanCount": 1
+        },
+        "transaction": {
+          "meanMs": 32.049,
+          "meanCount": 2
+        }
+      }
+    },
+    {
+      "concurrency": 4,
+      "request": "payment.start",
+      "n": 32,
+      "medianMs": 13.67,
+      "p95Ms": 16.37,
+      "maxMs": 16.93,
+      "errors": 0,
+      "spans": {
+        "payment.account": {
+          "meanMs": 0.802,
+          "meanCount": 1
+        },
+        "db.acquire": {
+          "meanMs": 0.183,
+          "meanCount": 7
+        },
+        "payment.start": {
+          "meanMs": 12.451,
+          "meanCount": 1
+        },
+        "db.query": {
+          "meanMs": 11.487,
+          "meanCount": 12.91
+        },
+        "payment.get": {
+          "meanMs": 2.182,
+          "meanCount": 1
+        },
+        "transaction": {
+          "meanMs": 8.603,
+          "meanCount": 1
+        }
+      }
+    }
+  ],
+  "firstRequest": [
+    {
+      "phase": "first-request-after-boot-and-fixtures",
+      "concurrency": 1,
+      "request": "cart.add",
+      "ms": 72.86659000000009,
+      "ok": true,
+      "spans": {
+        "db.acquire": {
+          "count": 14,
+          "ms": 0.789725999998609
+        },
+        "db.query": {
+          "count": 21,
+          "ms": 30.350475999999162
+        },
+        "cart.account": {
+          "count": 2,
+          "ms": 4.756963000000269
+        },
+        "transaction": {
+          "count": 1,
+          "ms": 18.59310400000004
+        },
+        "cart.linesOf": {
+          "count": 1,
+          "ms": 12.26225599999998
+        },
+        "cart.get": {
+          "count": 1,
+          "ms": 13.68971300000021
+        },
+        "cart.add": {
+          "count": 1,
+          "ms": 43.683542999999645
+        }
+      }
+    },
+    {
+      "phase": "first-request-after-boot-and-fixtures",
+      "concurrency": 1,
+      "request": "checkout.open",
+      "ms": 57.08883400000013,
+      "ok": true,
+      "spans": {
+        "db.acquire": {
+          "count": 21,
+          "ms": 9.140340999999353
+        },
+        "db.query": {
+          "count": 165,
+          "ms": 145.00464599999214
+        },
+        "checkout.account": {
+          "count": 2,
+          "ms": 1.782846999999947
+        },
+        "transaction": {
+          "count": 1,
+          "ms": 14.635209999999915
+        },
+        "checkout.linesOf": {
+          "count": 1,
+          "ms": 11.540345000000343
+        },
+        "checkout.read": {
+          "count": 1,
+          "ms": 13.04844200000025
+        },
+        "checkout.open": {
+          "count": 1,
+          "ms": 49.379329999999754
+        }
+      }
+    },
+    {
+      "phase": "first-request-after-boot-and-fixtures",
+      "concurrency": 1,
+      "request": "order.create",
+      "ms": 54.807486000000154,
+      "ok": true,
+      "spans": {
+        "db.acquire": {
+          "count": 20,
+          "ms": 1.4138470000007146
+        },
+        "db.query": {
+          "count": 26,
+          "ms": 45.089150999999674
+        },
+        "order.account": {
+          "count": 1,
+          "ms": 1.1361689999998816
+        },
+        "checkout.linesOf": {
+          "count": 1,
+          "ms": 7.998395999999957
+        },
+        "transaction": {
+          "count": 1,
+          "ms": 19.58310799999981
+        },
+        "order.create": {
+          "count": 1,
+          "ms": 48.979613999999856
+        }
+      }
+    },
+    {
+      "phase": "first-request-after-boot-and-fixtures",
+      "concurrency": 1,
+      "request": "payment.start",
+      "ms": 25.599361000000044,
+      "ok": true,
+      "spans": {
+        "db.acquire": {
+          "count": 7,
+          "ms": 0.2574260000005779
+        },
+        "db.query": {
+          "count": 13,
+          "ms": 18.546314999998685
+        },
+        "payment.account": {
+          "count": 1,
+          "ms": 0.9077120000001742
+        },
+        "transaction": {
+          "count": 1,
+          "ms": 15.366164000000026
+        },
+        "payment.get": {
+          "count": 1,
+          "ms": 4.170300000000225
+        },
+        "payment.start": {
+          "count": 1,
+          "ms": 22.41648299999997
+        }
+      }
+    },
+    {
+      "phase": "first-request-after-boot-and-fixtures",
+      "concurrency": 1,
+      "request": "payment.authorize",
+      "ms": 32.29958500000021,
+      "ok": true,
+      "spans": {
+        "db.acquire": {
+          "count": 11,
+          "ms": 0.273702000000867
+        },
+        "db.query": {
+          "count": 20,
+          "ms": 24.161561000000802
+        },
+        "payment.account": {
+          "count": 1,
+          "ms": 0.8576889999999366
+        },
+        "transaction": {
+          "count": 2,
+          "ms": 17.582010000000082
+        },
+        "provider.authorize": {
+          "count": 1,
+          "ms": 9.986732000000302
+        },
+        "payment.get": {
+          "count": 1,
+          "ms": 2.2309559999998783
+        },
+        "payment.authorize": {
+          "count": 1,
+          "ms": 30.279437000000144
+        }
+      }
+    },
+    {
+      "phase": "first-request-after-boot-and-fixtures",
+      "concurrency": 1,
+      "request": "payment.capture",
+      "ms": 46.41150599999992,
+      "ok": true,
+      "spans": {
+        "db.acquire": {
+          "count": 15,
+          "ms": 0.5683659999995143
+        },
+        "db.query": {
+          "count": 37,
+          "ms": 44.11096499999849
+        },
+        "payment.account": {
+          "count": 1,
+          "ms": 0.8044019999997545
+        },
+        "provider.capture": {
+          "count": 1,
+          "ms": 0.017027000000325643
+        },
+        "transaction": {
+          "count": 2,
+          "ms": 34.494534999999814
+        },
+        "order.markPaid": {
+          "count": 1,
+          "ms": 27.798625999999786
+        },
+        "payment.get": {
+          "count": 1,
+          "ms": 5.446196999999756
+        },
+        "payment.capture": {
+          "count": 1,
+          "ms": 44.723317999999836
+        }
+      }
+    },
+    {
+      "phase": "first-request-after-boot-and-fixtures",
+      "concurrency": 1,
+      "request": "cart.get",
+      "ms": 8.560123000000203,
+      "ok": true,
+      "spans": {
+        "db.acquire": {
+          "count": 10,
+          "ms": 0.39875800000027084
+        },
+        "db.query": {
+          "count": 10,
+          "ms": 7.950105000000804
+        },
+        "cart.account": {
+          "count": 1,
+          "ms": 0.7736650000001646
+        },
+        "cart.linesOf": {
+          "count": 1,
+          "ms": 5.753987000000052
+        },
+        "cart.get": {
+          "count": 1,
+          "ms": 6.545728000000054
+        }
+      }
+    }
+  ]
+}
