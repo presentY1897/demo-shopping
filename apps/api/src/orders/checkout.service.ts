@@ -1,3 +1,4 @@
+import { cartLines, heldLines, variantsForLines } from './line-query.js'
 import { checkoutDraftSchema } from '@shopping/shared'
 import type { CheckoutDraft } from '@shopping/shared'
 import { randomUUID } from 'node:crypto'
@@ -19,7 +20,7 @@ import type { RequestPrincipal } from '../auth/request-principal.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { ReservationService } from '../reservation/reservation.service.js'
 import type { CartLineRow } from './order-lines.js'
-import { assertOrderable, policiesOf, toLine, VARIANT_LINE_SELECT } from './order-lines.js'
+import { assertOrderable, policiesOf, toLine } from './order-lines.js'
 import type { OrderSource } from './order-source.js'
 import { priceOf } from './order-source.js'
 
@@ -56,39 +57,52 @@ export class CheckoutService {
     const rows: readonly CartLineRow[] =
       input.itemIds !== undefined
         ? await this.orderableLines(account.id, input.itemIds)
-        : await Promise.all(
-            (input.items ?? []).map(async (item) => {
-              const variant = await this.prisma.productVariant.findUnique({
-                where: { id: item.variantId },
-                select: VARIANT_LINE_SELECT,
-              })
-              if (variant === null) throw new NotFoundException('상품을 찾을 수 없어요.')
-              const row = { id: variant.id, quantity: item.quantity, variant }
-              assertOrderable(row)
-              return row
-            }),
-          )
+        : await this.directLines(input.items ?? [])
     const checkoutId = randomUUID()
 
-    await this.prisma.$transaction(async (tx) => {
-      for (const row of rows) {
-        const reservation = await this.reservations.reserve(tx, {
+    const held = await this.prisma.$transaction((tx) =>
+      this.reservations.reserveMany(
+        tx,
+        rows.map((row) => ({
           variantId: row.variant.id,
           quantity: row.quantity,
           userId: account.id,
           checkoutId,
-        })
-        if (input.itemIds !== undefined)
-          await tx.stockReservation.update({
-            where: { id: reservation.id },
-            data: { sourceCartItemId: row.id, sourceCartUpdatedAt: row.updatedAt ?? null },
-          })
-      }
-    })
+          ...(input.itemIds === undefined
+            ? {}
+            : { sourceCartItemId: row.id, sourceCartUpdatedAt: row.updatedAt ?? null }),
+        })),
+      ),
+    )
+    const byVariant = new Map(held.map((row) => [row.variantId, row]))
+    const source: OrderSource = {
+      checkoutId,
+      lines: rows.map((row) => toLine({ ...row, id: byVariant.get(row.variant.id)!.id })),
+      policies: policiesOf(rows),
+      expiresAt: held.reduce(
+        (earliest, row) => (row.expiresAt < earliest ? row.expiresAt : earliest),
+        held[0]!.expiresAt,
+      ),
+    }
+    const application = await this.coupons.resolve(account.id, source, [])
+    return { checkout: present(checkoutId, source, application) }
+  }
 
-    // 열자마자 쿠폰이 붙어 있는 주문서는 없다. 고르는 것은 다음 화면의 일이고,
-    // 그 선택은 읽을 때마다 함께 온다 (`checkoutQueryParamsSchema`).
-    return this.read(principal, checkoutId)
+  private async directLines(
+    items: readonly { variantId: string; quantity: number }[],
+  ): Promise<CartLineRow[]> {
+    const variants = await variantsForLines(
+      this.prisma,
+      items.map((item) => item.variantId),
+    )
+    const byId = new Map(variants.map((variant) => [variant.id, variant]))
+    return items.map((item) => {
+      const variant = byId.get(item.variantId)
+      if (variant === undefined) throw new NotFoundException('상품을 찾을 수 없어요.')
+      const row = { id: variant.id, quantity: item.quantity, variant }
+      assertOrderable(row)
+      return row
+    })
   }
 
   async draft(principal: RequestPrincipal, id: string, value?: CheckoutDraft) {
@@ -171,17 +185,7 @@ export class CheckoutService {
    * **같은 함수에서 나와야** 「보여 준 것과 산 것이 다르다」가 표현 불가능해진다.
    */
   async linesOf(userId: string, checkoutId: string): Promise<OrderSource> {
-    const holds = await this.prisma.stockReservation.findMany({
-      where: { checkoutId, status: 'HELD' },
-      orderBy: { id: 'asc' },
-      select: {
-        id: true,
-        userId: true,
-        quantity: true,
-        expiresAt: true,
-        variant: { select: VARIANT_LINE_SELECT },
-      },
-    })
+    const holds = await heldLines(this.prisma, checkoutId)
 
     if (holds.length === 0) throw new NotFoundException('주문서를 찾을 수 없어요.')
 
@@ -246,16 +250,7 @@ export class CheckoutService {
     userId: string,
     itemIds: readonly string[],
   ): Promise<readonly CartLineRow[]> {
-    const rows = await this.prisma.cartItem.findMany({
-      where: { id: { in: [...itemIds] }, cart: { userId } },
-      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
-      select: {
-        id: true,
-        updatedAt: true,
-        quantity: true,
-        variant: { select: VARIANT_LINE_SELECT },
-      },
-    })
+    const rows = await cartLines(this.prisma, userId, itemIds)
 
     if (rows.length !== itemIds.length) {
       throw new NotFoundException('장바구니에서 사라진 상품이 있어요.')
