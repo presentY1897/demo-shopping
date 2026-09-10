@@ -999,6 +999,7 @@ export {
   orderRecipientInputSchema,
   orderRecipientSchema,
   orderResponseSchema,
+  checkoutOrderResponseSchema,
   orderSchema,
   orderStatuses,
   orderStatusFilterSchema,

@@ -227,6 +227,8 @@ export const orderSchema = z.object({
 
 export type Order = z.infer<typeof orderSchema>
 
+export const checkoutOrderResponseSchema = z.object({ order: orderSchema.nullable() })
+
 export const orderResponseSchema = z.object({ order: orderSchema })
 
 export type OrderResponse = z.infer<typeof orderResponseSchema>

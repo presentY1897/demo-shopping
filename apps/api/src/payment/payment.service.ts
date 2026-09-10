@@ -589,19 +589,27 @@ export class PaymentService {
   }
 
   /** Find a payment even when the creation response was lost. */
-  async latest(principal: RequestPrincipal, orderId: string): Promise<{ payment: Payment | null }> {
+  async latest(
+    principal: RequestPrincipal,
+    orderId: string,
+  ): Promise<{ payment: Payment | null; authorizationPending: boolean }> {
     const account = await this.account(principal, 'order.read')
     const order = await this.prisma.order.findFirst({
       where: { id: orderId, userId: account.id },
-      select: { id: true },
+      select: { id: true, authorizationStartedAt: true },
     })
     if (order === null) throw new NotFoundException('주문을 찾을 수 없어요.')
     const row = await this.prisma.payment.findFirst({
       where: { orderId },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-      select: { id: true },
+      select: { id: true, authorizationStartedAt: true },
     })
-    return row === null ? { payment: null } : this.get(principal, row.id)
+    return row === null
+      ? { payment: null, authorizationPending: false }
+      : {
+          ...(await this.get(principal, row.id)),
+          authorizationPending: row.authorizationStartedAt !== null,
+        }
   }
 
   // ---------------------------------------------------------------- internals

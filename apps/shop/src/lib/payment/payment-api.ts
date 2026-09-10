@@ -1,5 +1,11 @@
 import type { Payment } from '@shopping/shared'
-import { paymentResponseSchema, priceSchema } from '@shopping/shared'
+import {
+  checkoutOrderResponseSchema,
+  latestPaymentResponseSchema,
+  orderResponseSchema,
+  paymentResponseSchema,
+  priceSchema,
+} from '@shopping/shared'
 import { z } from 'zod'
 
 import { getApiClient } from '@/lib/api'
@@ -151,4 +157,33 @@ export async function capturePayment(paymentId: string): Promise<Payment> {
   })
 
   return payment
+}
+
+export async function readCheckoutOrder(id: string, signal?: AbortSignal) {
+  return getApiClient().request({
+    path: `/checkouts/${id}/order`,
+    schema: checkoutOrderResponseSchema,
+    ...(signal === undefined ? {} : { signal }),
+  })
+}
+export async function readLatestPayment(id: string, signal?: AbortSignal) {
+  return getApiClient().request({
+    path: `/orders/${id}/payment`,
+    schema: latestPaymentResponseSchema,
+    ...(signal === undefined ? {} : { signal }),
+  })
+}
+export async function readPayment(id: string, signal?: AbortSignal) {
+  return getApiClient().request({
+    path: `/payments/${id}`,
+    schema: paymentResponseSchema,
+    ...(signal === undefined ? {} : { signal }),
+  })
+}
+export async function readPaidOrder(id: string, signal?: AbortSignal) {
+  return getApiClient().request({
+    path: `/orders/${id}`,
+    schema: orderResponseSchema,
+    ...(signal === undefined ? {} : { signal }),
+  })
 }

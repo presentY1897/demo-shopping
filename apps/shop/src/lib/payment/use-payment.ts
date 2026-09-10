@@ -1,5 +1,7 @@
 'use client'
 
+import type { OrderResponse } from '@shopping/shared'
+import { useAuth } from '@/lib/auth/auth-context'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { placeOrder } from '@/lib/checkout/checkout-api'
@@ -10,6 +12,9 @@ import { availableCredit } from './cards'
 import type { PaymentMethod } from './methods'
 import type { IssuedCard } from './payment-api'
 import {
+  readCheckoutOrder,
+  readLatestPayment,
+  readPaidOrder,
   authorizePayment,
   capturePayment,
   fetchCards,
@@ -206,6 +211,9 @@ export interface PaymentStore {
   readonly state: PaymentState
   /** 주문을 만들지 못했다. `null` 이면 아직 실패한 적이 없다. */
   readonly orderRefusal: OrderRefusal | null
+  readonly restoring: boolean
+  readonly ordered: OrderResponse['order'] | null
+  readonly recover: () => void
   readonly pay: (input: PaymentInput) => void
 }
 
@@ -218,7 +226,13 @@ export function usePayment(
    * 우리가 그 재고를 풀어 버린다 — TASK-0054 4.3 이 지키려는 것이 정확히 그것이다.
    */
   onOrdered: () => void = () => undefined,
+  checkoutId?: string,
 ): PaymentStore {
+  const { state: auth } = useAuth()
+  const [restoring, setRestoring] = useState(checkoutId !== undefined)
+  const [ordered, setOrdered] = useState<OrderResponse['order'] | null>(null)
+  const [recoveryRun, setRecoveryRun] = useState(0)
+  const busy = useRef(false)
   const [cards, setCards] = useState<readonly IssuedCard[]>([])
   const [loadingCards, setLoadingCards] = useState(true)
   const [state, setState] = useState<PaymentState>({ status: 'idle' })
@@ -231,6 +245,69 @@ export function usePayment(
    * 정한다. 상태로 두면 재시도가 그 갱신을 기다려야 한다.
    */
   const order = useRef<{ readonly id: string; readonly orderNumber: string } | null>(null)
+
+  useEffect(() => {
+    if (checkoutId === undefined || auth.status === 'checking') return
+    const controller = new AbortController()
+    let timer: ReturnType<typeof setTimeout> | undefined
+    let attempt = 0
+    async function recover() {
+      try {
+        const found = await readCheckoutOrder(checkoutId!, controller.signal)
+        if (controller.signal.aborted) return
+        if (found.order === null) {
+          setRestoring(false)
+          return
+        }
+        onOrdered()
+        order.current = found.order
+        setOrdered(found.order)
+        const latest = await readLatestPayment(found.order.id, controller.signal)
+        if (controller.signal.aborted) return
+        if (latest.payment?.status === 'AUTHORIZED') await capturePayment(latest.payment.id)
+        if (latest.payment?.status === 'PAID' || latest.payment?.status === 'AUTHORIZED') {
+          const current = await readPaidOrder(found.order.id, controller.signal)
+          if (controller.signal.aborted) return
+          if (
+            current.order.sellerOrders.every(
+              (group) => !['PAYMENT_PENDING', 'PAYMENT_FAILED'].includes(group.status),
+            )
+          ) {
+            setOrdered(current.order)
+            setState({ status: 'paid', orderNumber: current.order.orderNumber })
+            setRestoring(false)
+            return
+          }
+        }
+        if (
+          latest.payment === null ||
+          latest.payment.status === 'FAILED' ||
+          (latest.payment.status === 'READY' && latest.authorizationPending === false)
+        ) {
+          setState({ status: 'idle' })
+          setRestoring(false)
+          return
+        }
+        setState({ status: 'failed', refusal: 'awaiting_result', shortfall: null })
+      } catch {
+        if (controller.signal.aborted) return
+        setState({ status: 'failed', refusal: 'awaiting_result', shortfall: null })
+      }
+      setRestoring(false)
+      if (++attempt < 12)
+        timer = setTimeout(
+          () => {
+            void recover()
+          },
+          Math.min(1000 * attempt, 5000),
+        )
+    }
+    void recover()
+    return () => {
+      controller.abort()
+      if (timer !== undefined) clearTimeout(timer)
+    }
+  }, [checkoutId, auth.status, recoveryRun, onOrdered])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -258,6 +335,13 @@ export function usePayment(
 
   const pay = useCallback(
     (input: PaymentInput) => {
+      if (
+        busy.current ||
+        restoring ||
+        (state.status === 'failed' && state.refusal === 'awaiting_result')
+      )
+        return
+      busy.current = true
       setOrderRefusal(null)
 
       async function run(): Promise<void> {
@@ -293,7 +377,7 @@ export function usePayment(
 
           setState({ status: 'running', step: 'authorizing' })
 
-          const authorized = await authorizePayment(opened.id)
+          const authorized = opened.status === 'READY' ? await authorizePayment(opened.id) : opened
 
           // 승인이 거절된 것은 값으로 온다. 여기서 끝내되 주문과 예약은 그대로 둔다.
           if (authorized.status === 'FAILED') {
@@ -315,8 +399,9 @@ export function usePayment(
           setState({ status: 'running', step: 'capturing' })
           await capturePayment(authorized.id)
           setState({ status: 'paid', orderNumber: placed.orderNumber })
-        } catch (error: unknown) {
-          setState({ refusal: refusalOfFailure(error), shortfall: null, status: 'failed' })
+        } catch {
+          setState({ refusal: 'awaiting_result', shortfall: null, status: 'failed' })
+          setRecoveryRun((value) => value + 1)
         }
       }
 
@@ -395,22 +480,38 @@ export function usePayment(
             next.userCouponIds,
           )
 
+          setOrdered(made)
           onOrdered()
 
           return { id: made.id, orderNumber: made.orderNumber }
         } catch (error: unknown) {
           setOrderRefusal(refusedAsUsedCoupon(error) ? 'coupon_already_used' : 'unknown')
+          if (!refusedAsUsedCoupon(error)) {
+            setRestoring(true)
+            setRecoveryRun((value) => value + 1)
+          }
 
           return null
         }
       }
 
-      void run()
+      void run().finally(() => {
+        busy.current = false
+      })
     },
-    [onOrdered],
+    [onOrdered, restoring, state],
   )
 
-  return { cards, loadingCards, orderRefusal, pay, state }
+  return {
+    cards,
+    loadingCards,
+    orderRefusal,
+    pay,
+    state,
+    ordered,
+    restoring,
+    recover: () => setRecoveryRun((value) => value + 1),
+  }
 }
 
 /**

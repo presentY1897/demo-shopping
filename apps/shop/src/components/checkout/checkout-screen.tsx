@@ -87,7 +87,7 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
   const addresses = useAddressBook()
   // 주문이 생기는 순간 주문서 훅에게 알린다 — 그때부터 이 화면은 그 예약의 주인이
   // 아니고, 떠날 때 풀어서도 안 된다 (TASK-0054 4.3).
-  const payment = usePayment(placed)
+  const payment = usePayment(placed, id)
   const [chosen, setChosen] = useState<string | null>(null)
   const [chosenMethod, setChosenMethod] = useState<string | null>(null)
   const [agreed, setAgreed] = useState(false)
@@ -101,11 +101,13 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
         messages={messages}
         orderNumber={payment.state.orderNumber}
         title={messages.payment.paidTitle}
+        orderId={payment.ordered?.id}
+        amount={payment.ordered?.paidAmount}
       />
     )
   }
 
-  if (state.status === 'loading') {
+  if (state.status === 'loading' || payment.restoring) {
     return (
       <p aria-live="polite" className="text-fg-muted py-16 text-center text-sm">
         {messages.loading}
@@ -131,13 +133,16 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
     return <ErrorState description={messages.failedBody} title={messages.failedTitle} />
   }
 
-  const { checkout } = state
+  const checkout =
+    payment.ordered === null ? state.checkout : { ...state.checkout, ...payment.ordered }
   const address = addresses.rows.find((row) => row.id === (chosen ?? defaultOf(addresses.rows)))
   // 4.1 — 키가 없으면 토스는 목록에 **없다.** 지금 이 저장소가 그 상태다.
   const methods = paymentMethods(payment.cards, tossClientKey() !== null)
   const method = methodById(methods, chosenMethod) ?? defaultMethod(methods)
   // 결제창으로 넘어가는 중에도 누를 수 없다 — 그 사이에 또 누르면 결제가 두 벌 열린다.
-  const paying = payment.state.status === 'running' || payment.state.status === 'leaving'
+  const awaiting = payment.state.status === 'failed' && payment.state.refusal === 'awaiting_result'
+  const paying =
+    payment.state.status === 'running' || payment.state.status === 'leaving' || awaiting
   // 쿠폰을 반영한 금액을 기다리는 동안에도 누를 수 없다 (TASK-0075). 주문에 실리는
   // 선택은 **화면이 보여 준 금액을 만든 그 선택**이어야 하는데, 다시 읽는 중에는
   // 그 둘이 같다고 말할 수 없다 — 여기서 열어 두면 앞의 금액을 보면서 뒤의 선택으로
@@ -152,7 +157,7 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
    * 그 판단은 화면이 아니라 그쪽에 있다 — 여기서 나누면 같은 규칙이 두 곳에 산다.
    */
   const start = (): void => {
-    if (address === undefined || method === null) return
+    if (!ready || address === undefined || method === null) return
 
     payment.pay({
       addressId: address.id,
@@ -178,24 +183,33 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
         <Timer messages={messages} remaining={remaining} />
         <Items checkout={checkout} messages={messages} />
 
-        <Recipients
-          chosen={address?.id ?? null}
-          messages={messages}
-          onChoose={setChosen}
-          rows={addresses.rows}
-        />
+        <fieldset disabled={payment.ordered !== null || paying}>
+          {payment.ordered !== null ? (
+            <p className="text-sm">
+              {payment.ordered.recipient.name} · {payment.ordered.recipient.addressLine1}{' '}
+              {payment.ordered.recipient.addressLine2}
+            </p>
+          ) : (
+            <Recipients
+              chosen={address?.id ?? null}
+              messages={messages}
+              onChoose={setChosen}
+              rows={addresses.rows}
+            />
+          )}
 
-        <CouponSection
-          appliedCount={checkout.appliedCoupons.length}
-          coupons={coupons}
-          discount={checkout.totalCouponDiscountAmount}
-          messages={messages.coupon}
-          onChoose={chooseCoupon}
-          onRecommend={chooseRecommended}
-          rejected={rejected}
-          repricing={repricing}
-          selection={selection}
-        />
+          <CouponSection
+            appliedCount={checkout.appliedCoupons.length}
+            coupons={coupons}
+            discount={checkout.totalCouponDiscountAmount}
+            messages={messages.coupon}
+            onChoose={chooseCoupon}
+            onRecommend={chooseRecommended}
+            rejected={rejected}
+            repricing={repricing}
+            selection={selection}
+          />
+        </fieldset>
 
         <PaymentSection
           chosen={method === null ? null : methodId(method)}
@@ -204,8 +218,15 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
           methods={methods}
           onChoose={setChosenMethod}
           onRetry={start}
+          retryAllowed={ready}
           state={payment.state}
         />
+        {awaiting ? (
+          <div className="flex gap-3">
+            <Button onClick={payment.recover}>{messages.payment.checkResult}</Button>
+            <Link href="/mypage/orders">{messages.payment.viewOrders}</Link>
+          </div>
+        ) : null}
       </div>
 
       <div className="lg:w-80 lg:shrink-0">
@@ -239,7 +260,11 @@ function Completed({
   body,
   orderNumber,
   messages,
+  orderId,
+  amount,
 }: {
+  readonly orderId?: string | undefined
+  readonly amount?: number | undefined
   readonly title: string
   readonly body: string
   readonly orderNumber: string
@@ -248,11 +273,14 @@ function Completed({
   return (
     <EmptyState
       action={
-        <Link className="text-accent text-sm font-medium underline" href="/">
-          {messages.backToCart}
+        <Link
+          className="text-accent text-sm font-medium underline"
+          href={orderId === undefined ? '/mypage/orders' : `/mypage/orders/${orderId}`}
+        >
+          {messages.payment.viewOrders}
         </Link>
       }
-      description={`${body} ${messages.placedOrderNumber.replace('{number}', orderNumber)}`}
+      description={`${body} ${messages.placedOrderNumber.replace('{number}', orderNumber)} ${amount === undefined ? '' : formatMoney({ amount, currency: CURRENCY })}`}
       title={title}
     />
   )

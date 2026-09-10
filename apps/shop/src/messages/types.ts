@@ -2063,6 +2063,8 @@ export interface CheckoutCouponMessages {
  * 빠지는 것은 그때 아무 말도 못 듣는다는 뜻이고, 그것이 가장 나쁜 실패다.
  */
 export interface PaymentMessages {
+  readonly checkResult: string
+  readonly viewOrders: string
   readonly title: string
   readonly loading: string
   /**
