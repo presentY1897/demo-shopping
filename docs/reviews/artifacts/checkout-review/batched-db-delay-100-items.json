@@ -4,10 +4,10 @@
   "delayMs": 210,
   "timeout": 5000,
   "status": 201,
-  "ms": 5794.584702,
+  "ms": 5795.900336,
   "queries": 32,
   "transactionErrors": [],
-  "transactionMs": [1064.147790000001, 3235.2269589999996],
+  "transactionMs": [1074.1614310000004, 3234.5170020000005],
   "paymentStatus": "PAID",
   "sellerStatuses": [
     "PAID",
