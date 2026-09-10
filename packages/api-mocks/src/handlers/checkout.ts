@@ -7,6 +7,7 @@ import type {
 } from '@shopping/shared'
 import {
   checkoutCouponsResponseSchema,
+  checkoutOrderResponseSchema,
   checkoutResponseSchema,
   createCheckoutRequestSchema,
   createOrderRequestSchema,
@@ -262,6 +263,9 @@ export const checkoutHandlers: readonly RequestHandler[] = [
    * 이 대역도 저장하지 않는다 — 저장하면 「고르기」가 상태를 바꾸는 요청이 되고,
    * 그때부터 두 번째 탭이 첫 번째 탭의 선택으로 주문하게 된다.
    */
+  http.get(mockPaths.checkoutOrder, () =>
+    HttpResponse.json(defineFixture(checkoutOrderResponseSchema, { order: null })),
+  ),
   http.get(mockPaths.checkout, ({ params, request }) =>
     answering(() => {
       const checkout = heldCheckout(String(params.id))

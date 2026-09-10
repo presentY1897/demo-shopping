@@ -25,6 +25,7 @@ export interface PaymentSectionProps {
   readonly state: PaymentState
   readonly messages: PaymentMessages
   readonly onChoose: (id: string) => void
+  readonly retryAllowed?: boolean | undefined
   readonly onRetry: () => void
 }
 
@@ -70,6 +71,7 @@ export function PaymentSection({
   messages,
   onChoose,
   onRetry,
+  retryAllowed = true,
 }: PaymentSectionProps) {
   const hasCards = methods.some((method) => method.kind === 'card')
 
@@ -100,7 +102,7 @@ export function PaymentSection({
         </fieldset>
       )}
 
-      <Result messages={messages} onRetry={onRetry} state={state} />
+      <Result retryAllowed={retryAllowed} messages={messages} onRetry={onRetry} state={state} />
     </section>
   )
 }
@@ -270,9 +272,11 @@ function Result({
   state,
   messages,
   onRetry,
+  retryAllowed = true,
 }: {
   readonly state: PaymentState
   readonly messages: PaymentMessages
+  readonly retryAllowed?: boolean | undefined
   readonly onRetry: () => void
 }) {
   return (
@@ -287,7 +291,7 @@ function Result({
       </p>
 
       {state.status === 'failed' ? (
-        <Recovery messages={messages} onRetry={onRetry} state={state} />
+        <Recovery retryAllowed={retryAllowed} messages={messages} onRetry={onRetry} state={state} />
       ) : null}
     </>
   )
@@ -308,9 +312,11 @@ function Recovery({
   state,
   messages,
   onRetry,
+  retryAllowed = true,
 }: {
   readonly state: Extract<PaymentState, { readonly status: 'failed' }>
   readonly messages: PaymentMessages
+  readonly retryAllowed?: boolean | undefined
   readonly onRetry: () => void
 }) {
   const retryable = offersRetry(state.refusal)
@@ -323,7 +329,13 @@ function Recovery({
       </p>
 
       {retryable ? (
-        <Button onClick={onRetry} size="sm" type="button" variant="outline">
+        <Button
+          disabled={!retryAllowed}
+          onClick={onRetry}
+          size="sm"
+          type="button"
+          variant="outline"
+        >
           {messages.retry}
         </Button>
       ) : null}

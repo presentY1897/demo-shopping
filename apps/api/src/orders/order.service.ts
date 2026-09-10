@@ -156,6 +156,15 @@ export class OrderService {
    * `linesOf` 에서 403 이었으므로, 멱등이 새로 알려 주는 것이 없다. 남의 주문은
    * 물론 돌려주지 않는다.
    */
+  async byCheckout(
+    principal: RequestPrincipal,
+    checkoutId: string,
+  ): Promise<{ order: OrderResponse['order'] | null }> {
+    const account = await this.account(principal, 'order.read')
+    const id = await this.placedOrder(account.id, checkoutId)
+    return id === null ? { order: null } : this.get(principal, id)
+  }
+
   private async placedOrder(userId: string, checkoutId: string): Promise<string | null> {
     const placed = await this.prisma.order.findUnique({
       where: { checkoutId },

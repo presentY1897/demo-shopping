@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 import { awaitsResult } from '@/lib/payment/awaiting-result'
-import { capturePayment, confirmTossPayment } from '@/lib/payment/payment-api'
+import { capturePayment, confirmTossPayment, readPayment } from '@/lib/payment/payment-api'
 import type { TossConfirmFailure, TossSuccessReturn } from '@/lib/payment/toss-return'
 import {
   checkoutIdOf,
@@ -90,7 +90,11 @@ export function TossSuccessScreen({ messages }: TossSuccessScreenProps) {
       try {
         confirmed = await confirmTossPayment(paid.paymentId, paid.paymentKey, paid.amount)
       } catch (error: unknown) {
-        setState({ failure: confirmFailureOf(error), status: 'failed' })
+        setState({
+          failure:
+            confirmFailureOf(error) === 'amount_mismatch' ? 'amount_mismatch' : 'awaiting_result',
+          status: 'failed',
+        })
 
         return
       }
@@ -119,7 +123,7 @@ export function TossSuccessScreen({ messages }: TossSuccessScreenProps) {
       } catch {
         // 승인은 이미 됐다 — 저쪽에 승인이 남아 있고 우리 쪽만 확정되지 않았다.
         // 그래서 사유가 무엇이든 여기서는 하나다: 다시 결제하라고 말하면 두 번 낸다.
-        setState({ failure: 'unsettled', status: 'failed' })
+        setState({ failure: 'awaiting_result', status: 'failed' })
 
         return
       }
@@ -129,6 +133,38 @@ export function TossSuccessScreen({ messages }: TossSuccessScreenProps) {
 
     void settle(returned)
   }, [returned])
+
+  const recovering = state.status === 'failed' && state.failure === 'awaiting_result'
+  const recoverId = returned?.paymentId
+  const recoverAmount = returned?.amount
+  useEffect(() => {
+    if (!recovering || recoverId === undefined) return
+    const controller = new AbortController()
+    let timer: ReturnType<typeof setTimeout> | undefined
+    let tries = 0
+    async function check() {
+      try {
+        const { payment } = await readPayment(recoverId!, controller.signal)
+        if (payment.authorizedAmount !== recoverAmount || controller.signal.aborted) return
+        if (payment.status === 'AUTHORIZED') await capturePayment(payment.id)
+        if (payment.status === 'PAID' || payment.status === 'AUTHORIZED') {
+          if (!controller.signal.aborted) setState({ status: 'done' })
+          return
+        }
+      } catch {
+        if (controller.signal.aborted) return
+      }
+      if (++tries < 12)
+        timer = setTimeout(() => {
+          void check()
+        }, 3000)
+    }
+    void check()
+    return () => {
+      controller.abort()
+      if (timer !== undefined) clearTimeout(timer)
+    }
+  }, [recovering, recoverId, recoverAmount])
 
   if (returned === null) {
     return (
@@ -208,7 +244,7 @@ function Escape({
   readonly failure: TossConfirmFailure
   readonly messages: TossSuccessMessages
 }) {
-  if (checkoutId === null || !offersRetry(failure)) {
+  if (checkoutId === null || (!offersRetry(failure) && failure !== 'awaiting_result')) {
     return (
       <Link className="text-accent text-sm font-medium underline" href="/">
         {messages.backHome}

@@ -25,7 +25,6 @@
     "zod": "^4.5.4"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.1.11",
     "@shopping/api-mocks": "workspace:*",
     "@shopping/config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.3",
@@ -36,9 +35,11 @@
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
+    "@vitest/coverage-v8": "^4.1.11",
     "axe-core": "^4.13.0",
     "eslint": "^10.9.1",
     "jsdom": "^30.0.1",
+    "msw": "2.15.0",
     "prettier": "^3.9.6",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",

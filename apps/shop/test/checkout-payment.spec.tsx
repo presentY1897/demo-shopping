@@ -17,11 +17,13 @@ import {
   resetPaymentStore,
   sessionBuyer,
   shopperCards,
+  shopperOrder,
   shopperCheckout,
   httpFailureOn,
   neverAnswersOn,
   unresolveNextApproval,
 } from '@shopping/api-mocks'
+import { http, HttpResponse } from 'msw'
 import { DensityProvider } from '@shopping/ui/density'
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -78,7 +80,7 @@ let sent: string[] = []
  * `checkout-page.spec.tsx` 와 같은 이유다 — 언마운트마다 목의 주문서가 닫히고, 그
  * 요청이 다음 검사의 렌더 뒤에 도착하면 이유 없이 만료 화면을 본다.
  */
-async function renderCheckout(cards: typeof shopperCards = shopperCards) {
+async function renderCheckout(cards: typeof shopperCards = shopperCards, expectItems = true) {
   await new Promise((resolve) => {
     setTimeout(resolve, 0)
   })
@@ -95,7 +97,7 @@ async function renderCheckout(cards: typeof shopperCards = shopperCards) {
     { session: sessionBuyer },
   )
 
-  await screen.findByRole('region', { name: copy.itemsTitle })
+  if (expectItems) await screen.findByRole('region', { name: copy.itemsTitle })
 
   return result
 }
@@ -331,7 +333,7 @@ describe('거절 (F2)', () => {
 
     // 카드가 거절한 것과 우리가 결과를 못 받은 것은 다음에 할 일이 다르다 — 뒤의
     // 것은 결제가 됐는지 안 됐는지를 **우리도 모른다.**
-    expect(await screen.findByText(pay.refusals.unreachable)).toBeVisible()
+    expect(await screen.findByText(pay.refusals.awaiting_result)).toBeVisible()
     expect(screen.queryByText(pay.refusals.declined)).toBeNull()
   })
 })
@@ -423,7 +425,7 @@ describe('확인 중 (F5 · D-220)', () => {
     expect(screen.queryByRole('button', { name: pay.retry })).toBeNull()
   })
 
-  it('reads the code, not the status — another 409 still offers a retry', async () => {
+  it('checks an unknown conflict before allowing another attempt', async () => {
     const user = userEvent.setup()
 
     testServer.server.use(
@@ -442,7 +444,61 @@ describe('확인 중 (F5 · D-220)', () => {
 
     // 409 라는 사실만으로 「기다리세요」라고 말하면, 기다릴 이유가 없는 사람이
     // 아무것도 못 하게 된다. 갈라 주는 것은 코드다.
-    expect(await screen.findByText(pay.refusals.unreachable)).toBeVisible()
-    expect(screen.getByRole('button', { name: pay.retry })).toBeVisible()
+    expect(await screen.findByText(pay.refusals.awaiting_result)).toBeVisible()
+    expect(screen.queryByRole('button', { name: pay.retry })).toBeNull()
+  })
+})
+
+describe('TASK-0126 recovery', () => {
+  it('restores a paid order after reloading without creating another payment', async () => {
+    const paid = {
+      ...shopperOrder.order,
+      sellerOrders: shopperOrder.order.sellerOrders.map((group) => ({
+        ...group,
+        status: 'PAID' as const,
+      })),
+    }
+    testServer.server.use(
+      http.get(mockPaths.checkoutOrder, () => HttpResponse.json({ order: paid })),
+      http.get(mockPaths.latestPayment, () =>
+        HttpResponse.json({
+          payment: {
+            id: '00000000-0000-4000-8000-000000000125',
+            orderId: paid.id,
+            provider: 'VIRTUAL_CARD',
+            status: 'PAID',
+            authorizedAmount: paid.paidAmount,
+            canceledAmount: 0,
+            paymentKey: 'recovery-test',
+            approvedAt: new Date().toISOString(),
+            refunds: [],
+          },
+        }),
+      ),
+      http.get('*/api/v1/orders/:id', () => HttpResponse.json({ order: paid })),
+    )
+    await renderCheckout(shopperCards, false)
+    expect(await screen.findByText(pay.paidTitle)).toBeVisible()
+    expect(screen.getByRole('link', { name: pay.viewOrders })).toHaveAttribute(
+      'href',
+      `/mypage/orders/${paid.id}`,
+    )
+    expect(ordersCreated()).toBe(0)
+    expect(sent.filter((path) => path === 'POST /payments')).toEqual([])
+  })
+
+  it('blocks both buttons after consent is withdrawn following a decline', async () => {
+    const user = userEvent.setup()
+    await renderCheckout()
+    const section = await paymentSection()
+    await user.click(within(section).getByRole('radio', { name: new RegExp(TIGHT.brand, 'u') }))
+    await order(user)
+    await screen.findByText(/카드 한도가.*모자라요/u)
+    await user.click(screen.getByRole('checkbox', { name: copy.termsLabel }))
+    expect(screen.getByRole('button', { name: pay.retry })).toBeDisabled()
+    expect(screen.getByRole('button', { name: copy.placeOrder })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    )
   })
 })
