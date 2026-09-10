@@ -2,6 +2,8 @@ import { Inject, Injectable, Logger } from '@nestjs/common'
 import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
+import { Pool } from 'pg'
+import { observePool } from '../common/checkout-diagnostics.js'
 
 import type { AppConfig } from '../config/app-config.js'
 import { APP_CONFIG } from '../config/app-config.js'
@@ -19,7 +21,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnAppli
   private readonly logger = new Logger(PrismaService.name)
 
   constructor(@Inject(APP_CONFIG) config: AppConfig) {
-    super({ adapter: new PrismaPg(databasePoolOptions(config)) })
+    const pool = new Pool(databasePoolOptions(config))
+    observePool(pool)
+    super({ adapter: new PrismaPg(pool, { disposeExternalPool: true }) })
   }
 
   /**
