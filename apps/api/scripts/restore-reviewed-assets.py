@@ -19,11 +19,17 @@ def main():
     exported = json.loads((ROOT / 'product-images/reviewed-products-export.json').read_text())
     mapped = json.loads((ROOT / 'product-images/uploaded-assets.json').read_text())
     by_source = {a['sourceUrl']: a for a in mapped['assets']}
-    allowed = (ROOT / 'apps/shop/public/product-image-sets').resolve()
+    allowed = [(ROOT / 'apps/shop/public/product-image-sets').resolve(),
+               (ROOT / 'apps/shop/public/images/products').resolve()]
+    aliases = json.loads((ROOT / 'product-images/legacy-image-aliases.json').read_text())
+    assets = exported['assets'] + aliases['assets']
+    if len({a['file'] for a in assets}) != len(assets):
+        raise ValueError('Duplicate local image destination')
+    local_by_hash = {}
     present = restored = missing = 0
-    for asset in exported['assets']:
+    for asset in assets:
         path = (ROOT / asset['file']).resolve()
-        if not path.is_relative_to(allowed):
+        if not any(path.is_relative_to(folder) for folder in allowed):
             raise ValueError('Asset path escapes product image directory')
         row = by_source[asset['sourceUrl']]
         url = urlparse(row['publicUrl'])
@@ -36,13 +42,18 @@ def main():
             data = path.read_bytes()
             if len(data) != asset['sizeBytes'] or digest(data) != asset['sha256']:
                 raise ValueError('Existing local file differs; refusing overwrite: ' + asset['file'])
+            local_by_hash[asset['sha256']] = path
             present += 1
             continue
         missing += 1
         if not args.apply:
             continue
-        with urlopen(row['publicUrl'], timeout=30) as response:
-            data = response.read(asset['sizeBytes'] + 1)
+        cached = local_by_hash.get(asset['sha256'])
+        if cached is not None:
+            data = cached.read_bytes()
+        else:
+            with urlopen(row['publicUrl'], timeout=30) as response:
+                data = response.read(asset['sizeBytes'] + 1)
         if len(data) != asset['sizeBytes'] or digest(data) != asset['sha256']:
             raise ValueError('Downloaded checksum mismatch')
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -54,6 +65,7 @@ def main():
             os.link(temporary, path)
         finally:
             temporary.unlink(missing_ok=True)
+        local_by_hash[asset['sha256']] = path
         restored += 1
     print(json.dumps({'mode': 'restore' if args.apply else 'dry-run', 'present': present,
                       'missing': missing, 'restored': restored}))

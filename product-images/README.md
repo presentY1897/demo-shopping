@@ -2,7 +2,7 @@
 
 검수된 콘셉트 상품은 66개, 이미지 파일은 660개(1,228,911,310바이트)다. 남성복·여성복·유니섹스 명세와 컬러/재질별 전체 갤러리를 포함한다. 실제 판매 상품으로 오인하지 않도록 샘플 설명을 유지한다.
 
-새 이미지 원본은 Git 대신 R2에 보관한다. 이전 코트 작업에서 이미 커밋한 이미지의 이력은 유지한다. 새로 clone한 환경의 코드 테스트·빌드는 이미지 다운로드 없이 실행할 수 있다.
+이미지 원본은 모두 Git 대신 R2에 보관한다. 이전 코트 이미지51개도 PR 커밋 이력에서 제거했다. 새로 clone한 환경의 코드 테스트·빌드는 이미지 다운로드 없이 실행할 수 있다.
 
 ## 로컬 이미지 복원
 
@@ -11,9 +11,9 @@ python3 apps/api/scripts/restore-reviewed-assets.py
 python3 apps/api/scripts/restore-reviewed-assets.py --apply
 ```
 
-첫 명령은 파일·체크섬 상태만 확인한다. `--apply`는 공개 R2 주소에서 없는 파일을 내려받고 SHA-256을 검증한다. 다른 내용의 기존 파일을 덮어쓰지 않는다. 최대 약1.23GB를 받을 수 있다. 공개 개발 URL이 비활성화되면 다운로드할 수 없으며 운영 자산 저장소가 아니다.
+첫 명령은 파일·체크섬 상태만 확인한다. `--apply`는 공개 R2 주소에서 없는 파일을 내려받고 SHA-256을 검증한다. 다른 내용의 기존 파일을 덮어쓰지 않는다. 고유 파일 기준 최대 약1.23GB를 받을 수 있다. `legacy-image-aliases.json`의 이전 코트 경로19개도 동일 체크섬의 파일로 복원하며, 로컬에 이미 확인한 파일은 네트워크 다운로드 없이 재사용한다. 공개 개발 URL이 비활성화되면 다운로드할 수 없으며 운영 자산 저장소가 아니다.
 
-`apps/shop/public/product-image-sets/*/manifest.json`에는 승인 상태, 의존 이미지, 실제 생성 프롬프트 및 검수 이력이 있다. `skills/product-image-set/scripts/pipeline.py check <manifest>`로 필수 컷 완성을 확인하고 `preview <manifest>`로 소개 HTML을 재생성한다. 전체 이미지가 승인된 manifest만 상품에 반영한다. `audience-samples-v1`, `shirt-ivory-v1`, `six-b-v1`은 이전 제작 이력이다. 복원 도구는 현재 승인 내보내기에 포함된660개 파일만 복원하며, 이전 이력의 모든 파일을 복원하지는 않는다.
+`apps/shop/public/product-image-sets/*/manifest.json`에는 승인 상태, 의존 이미지, 실제 생성 프롬프트 및 검수 이력이 있다. `skills/product-image-set/scripts/pipeline.py check <manifest>`로 필수 컷 완성을 확인하고 `preview <manifest>`로 소개 HTML을 재생성한다. 전체 이미지가 승인된 manifest만 상품에 반영한다. `audience-samples-v1`, `shirt-ivory-v1`, `six-b-v1`은 이전 제작 이력이다. 복원 도구는 현재 승인 내보내기의660개 파일과 이전 코트의19개 별칭 경로를 복원하며, 이전 이력의 모든 파일을 복원하지는 않는다.
 
 ## 반영 도구
 
