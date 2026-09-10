@@ -1,5 +1,6 @@
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common'
-import type { Prisma, ReservationStatus } from '@prisma/client'
+import { Prisma } from '@prisma/client'
+import type { ReservationStatus } from '@prisma/client'
 import type { StockLedgerEntry } from '@shopping/shared'
 
 import type { Clock } from '../common/clock.js'
@@ -138,6 +139,50 @@ export class ReservationService {
     })
 
     return row
+  }
+
+  /** Acquire all variants in stable order and create their holds atomically. */
+  async reserveMany(
+    tx: Tx,
+    inputs: readonly (ReserveInput & {
+      sourceCartItemId?: string
+      sourceCartUpdatedAt?: Date | null
+    })[],
+  ): Promise<Reservation[]> {
+    if (inputs.length === 0) return []
+    const quantities = new Map<string, number>()
+    for (const input of inputs)
+      quantities.set(input.variantId, (quantities.get(input.variantId) ?? 0) + input.quantity)
+    const ids = [...quantities.keys()].sort()
+    await tx.$queryRaw`SELECT "id" FROM "ProductVariant"
+      WHERE "id" IN (${Prisma.join(ids.map((id) => Prisma.sql`${id}::uuid`))}) ORDER BY "id" FOR UPDATE`
+    const now = this.clock.now()
+    const changed = await tx.$queryRaw<{ id: string }[]>`
+      UPDATE "ProductVariant" v SET "reserved" = v."reserved" + wanted.quantity,
+        "updatedAt" = ${now.toISOString()}::timestamptz AT TIME ZONE 'UTC'
+      FROM (VALUES ${Prisma.join(ids.map((id) => Prisma.sql`(${id}::uuid, ${quantities.get(id)}::int)`))}) AS wanted(id, quantity)
+      WHERE v."id" = wanted.id AND v."stock" - v."reserved" >= wanted.quantity RETURNING v."id"
+    `
+    if (changed.length !== ids.length) {
+      const done = new Set(changed.map((row) => row.id))
+      const missing = ids.find((id) => !done.has(id))!
+      const input = inputs.find((row) => row.variantId === missing)!
+      await this.explainRefusal(tx, { ...input, quantity: quantities.get(missing)! })
+    }
+    return tx.stockReservation.createManyAndReturn({
+      data: inputs.map((input) => ({
+        variantId: input.variantId,
+        quantity: input.quantity,
+        userId: input.userId,
+        checkoutId: input.checkoutId,
+        sourceCartItemId: input.sourceCartItemId ?? null,
+        sourceCartUpdatedAt: input.sourceCartUpdatedAt ?? null,
+        expiresAt: expiryFrom(now, input.ttlMs),
+        createdAt: now,
+        updatedAt: now,
+      })),
+      select: RESERVATION_SELECT,
+    })
   }
 
   /**
