@@ -3,12 +3,11 @@
 import Image from 'next/image'
 import { useState } from 'react'
 
+import previewData from './coat-data.json'
+import { previewImageSizes } from './image-sizes'
+
 const base = '/product-image-sets/coat-variants-v1/images/camel-wool-coat'
-const colors = [
-  { name: '카멜', prefix: '', swatch: '#aa8057' },
-  { name: '네이비', prefix: 'variant-navy-', swatch: '#1b2c4b' },
-  { name: '차콜', prefix: 'variant-charcoal-', swatch: '#505152' },
-] as const
+const colors = previewData.colors
 const views = [
   { key: 'front', label: '상품 정면' },
   { key: 'model-front', label: '모델 착용' },
@@ -56,7 +55,7 @@ export function CoatVariants() {
               </button>
             ))}
         </div>
-        <div className="grid gap-5 sm:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-3">
           {colors.map((color) => (
             <figure className="min-w-0 space-y-3" key={color.name}>
               <Image
@@ -64,7 +63,7 @@ export function CoatVariants() {
                 className="h-auto w-full rounded-md"
                 height={1254}
                 width={1254}
-                sizes="(max-width: 640px) 100vw, 33vw"
+                sizes={previewImageSizes(3)}
                 src={`${base}/${color.prefix}${colorView}.png`}
               />
               <figcaption className="flex items-center gap-2 text-sm">
@@ -102,7 +101,7 @@ export function CoatVariants() {
             </button>
           ))}
         </div>
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-2">
           {[
             { name: '기존 울 혼방', prefix: '' },
             { name: '헤링본 울', prefix: 'variant-herringbone-' },
@@ -113,7 +112,7 @@ export function CoatVariants() {
                 className="h-auto w-full rounded-md"
                 height={1254}
                 width={1254}
-                sizes="(max-width: 640px) 100vw, 50vw"
+                sizes={previewImageSizes(2)}
                 src={`${base}/${material.prefix}${materialView}.png`}
               />
               <figcaption className="text-sm">{material.name}</figcaption>

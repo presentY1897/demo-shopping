@@ -1,0 +1,7 @@
+{
+  "colors": [
+    { "name": "카멜", "prefix": "", "swatch": "#aa8057" },
+    { "name": "네이비", "prefix": "variant-navy-", "swatch": "#1b2c4b" },
+    { "name": "차콜", "prefix": "variant-charcoal-", "swatch": "#505152" }
+  ]
+}

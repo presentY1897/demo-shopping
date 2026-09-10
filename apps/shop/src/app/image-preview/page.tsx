@@ -8,7 +8,9 @@ import { notFound } from 'next/navigation'
 import { ProductGallery } from '@/components/products/product-gallery'
 import { messagesFor } from '@/messages'
 
+import previewData from './coat-data.json'
 import { CoatVariants } from './coat-variants'
+import { previewImageSizes } from './image-sizes'
 
 export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
@@ -23,7 +25,7 @@ const product = {
   price: 189_000,
   listPrice: 249_000,
   imageUrl: '/images/products/camel-wool-coat-front.png',
-  colors: ['#aa8057'],
+  colors: previewData.colors.slice(0, 1).map((color) => color.swatch),
   inStock: true,
 }
 
@@ -77,7 +79,7 @@ export default function ImagePreviewPage() {
         <h2 className="text-lg font-semibold" id="card-heading">
           상품 목록에서 보기
         </h2>
-        <div className="grid max-w-4xl grid-cols-1 gap-8 sm:grid-cols-3">
+        <div className="grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-3">
           {([1, 2, 3] as const).map((density) => (
             <div className="mx-auto w-full max-w-64 space-y-3" key={density}>
               <h3 className="text-fg-muted text-sm">
@@ -146,7 +148,7 @@ export default function ImagePreviewPage() {
           className="mx-auto h-auto w-full max-w-4xl rounded-md"
           height={1254}
           width={1254}
-          sizes="(max-width: 768px) 100vw, 896px"
+          sizes="100vw"
           src={`${imageBase}/editorial.png`}
         />
         <div className="space-y-5">
@@ -156,7 +158,7 @@ export default function ImagePreviewPage() {
               정면부터 옆선과 뒷모습까지, 코트의 전체적인 비율을 살펴보세요.
             </p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3">
             {(['model-front', 'model-side', 'model-back'] as const).map((key, index) => (
               <figure className="space-y-2" key={key}>
                 <Image
@@ -164,7 +166,7 @@ export default function ImagePreviewPage() {
                   className="h-auto w-full rounded-md"
                   height={1254}
                   width={1254}
-                  sizes="(max-width: 640px) 100vw, 33vw"
+                  sizes={previewImageSizes(3)}
                   src={`${imageBase}/${key}.png`}
                 />
                 <figcaption className="text-fg-muted text-sm">
@@ -180,7 +182,7 @@ export default function ImagePreviewPage() {
             className="h-auto w-full rounded-md"
             height={1254}
             width={1254}
-            sizes="(max-width: 768px) 100vw, 50vw"
+            sizes={previewImageSizes(2)}
             src={`${imageBase}/texture.png`}
           />
           <div className="space-y-4">
