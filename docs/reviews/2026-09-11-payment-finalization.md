@@ -39,3 +39,11 @@ pnpm --filter @shopping/api exec vitest run test/api/payment-finalization.spec.t
 로컬 전체 typecheck/lint/build/format 검사 통과. API4,355개(진단2개 skip), shared103개, UI956개, api-mocks472개, admin1,164개, seller867개, shop1,259개(1개 skip) 통과. CI·배포 후 소량 운영 두 상품 구매 결과를 확인 후 추가한다. 실제 cold start와 운영500 원본 예외는 TASK-0131에서 미확보로 유지한다.
 
 최종 예약 상태 재확인 코드의 별도8개 검사와100개 지연 재검사, 최종 서버 전체 검사 통과.
+
+## 5. 운영 확인
+
+PR #140: 필수4개 CI·E2E5개·Lighthouse 통과, main `fec79271f713ae2e5359365830a791755e20cf3d`. Render 배포6375312018이 2026-09-11 00:36 KST에 성공했다.
+
+실제 운영 데모 구매자·서로 다른 판매자의 두 상품으로 HTTP 구매를 실행했다. capture HTTP201, 양쪽 판매자 주문PAID, 장바구니0. markPaid 서비스3,306ms, 전체 capture7,740ms(서버7,026ms, 연결 획득 누적2,556ms)였다. 원자료는 [운영 trace](artifacts/checkout-review/batched-payment-production.json). 중첩/병렬 span은 합산하지 않는다.
+
+**브라우저 전체 흐름은 아직 완료되지 않았다.** 모바일 검증1회는 cart→checkout 이동을 마치지 못했고, 주문서를 실제 API로 생성해 분리한 두 번째 검증도 브라우저의 POST /orders 응답을 받지 못했다. 응답 대역/이미지 prefetch는 쓰지 않았다. 같은 운영 서버 HTTP 경로에서 주문서 생성4,962ms·주문 생성5,618ms를 확인했으며, 이 앞 단계는 TASK-0133에서 줄인다. 이번 API 구매 검증은 30초 HTTP 제한으로 완료 결과를 확인한 것이며, 5초 제한의 브라우저 전체 구매 성공으로 보고하지 않는다.

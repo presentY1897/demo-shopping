@@ -1,0 +1,466 @@
+{
+  "at": "2026-09-10T15:42:46.780Z",
+  "paid": true,
+  "cartEmpty": true,
+  "sellerStatuses": ["PAID", "PAID"],
+  "samples": [
+    {
+      "method": "POST",
+      "path": "/auth/demo",
+      "status": 200,
+      "requestId": "4ebce663-f996-4b94-92f8-820c23b03b8f",
+      "ms": 4014.95,
+      "spans": {}
+    },
+    {
+      "method": "POST",
+      "path": "/auth/refresh",
+      "status": 200,
+      "requestId": "6adeef5f-9374-477c-9ca2-9d816bc5bacc",
+      "ms": 2156.59,
+      "spans": {}
+    },
+    {
+      "method": "GET",
+      "path": "/me/addresses",
+      "status": 200,
+      "requestId": "af4c12b4-af66-42ad-a46b-d4dec3a221d3",
+      "ms": 601.93,
+      "spans": {}
+    },
+    {
+      "method": "GET",
+      "path": "/cards",
+      "status": 200,
+      "requestId": "a40629fb-c0c6-48f5-8c76-102c4fdaed14",
+      "ms": 578.52,
+      "spans": {}
+    },
+    {
+      "method": "GET",
+      "path": "/products/:id/detail",
+      "status": 200,
+      "requestId": "794de2d8-3131-408d-877b-99baf92270c4",
+      "ms": 1313.84,
+      "spans": {}
+    },
+    {
+      "method": "POST",
+      "path": "/cart/items",
+      "status": 201,
+      "requestId": "2332f55b-4f81-4aba-a8c0-375358d53b2d",
+      "ms": 4283.28,
+      "spans": {
+        "total": {
+          "ms": 3863.24,
+          "count": 1
+        },
+        "auth": {
+          "ms": 0.23,
+          "count": 1
+        },
+        "db_acquire": {
+          "ms": 1.09,
+          "count": 14
+        },
+        "db_query": {
+          "ms": 4871.62,
+          "count": 21
+        },
+        "cart_account": {
+          "ms": 440.68,
+          "count": 2
+        },
+        "transaction": {
+          "ms": 1783.35,
+          "count": 1
+        },
+        "cart_linesOf": {
+          "ms": 1195.88,
+          "count": 1
+        },
+        "cart_get": {
+          "ms": 1416.41,
+          "count": 1
+        },
+        "cart_add": {
+          "ms": 3861.57,
+          "count": 1
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/products/:id/detail",
+      "status": 200,
+      "requestId": "c18ac4b7-fe43-426a-a74c-5899c5b1ad47",
+      "ms": 1675.33,
+      "spans": {}
+    },
+    {
+      "method": "POST",
+      "path": "/cart/items",
+      "status": 201,
+      "requestId": "7131422b-f10f-42b1-8bec-56b72b7d457b",
+      "ms": 3777.05,
+      "spans": {
+        "total": {
+          "ms": 3384.79,
+          "count": 1
+        },
+        "auth": {
+          "ms": 0.15,
+          "count": 1
+        },
+        "db_acquire": {
+          "ms": 0.94,
+          "count": 13
+        },
+        "db_query": {
+          "ms": 4229.06,
+          "count": 20
+        },
+        "cart_account": {
+          "ms": 420.34,
+          "count": 2
+        },
+        "transaction": {
+          "ms": 1676.93,
+          "count": 1
+        },
+        "cart_linesOf": {
+          "ms": 1076.93,
+          "count": 1
+        },
+        "cart_get": {
+          "ms": 1287.66,
+          "count": 1
+        },
+        "cart_add": {
+          "ms": 3383.86,
+          "count": 1
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/cart",
+      "status": 200,
+      "requestId": "72681c51-0b75-49a5-8a36-5e585abe6759",
+      "ms": 2146.48,
+      "spans": {
+        "total": {
+          "ms": 1894.46,
+          "count": 1
+        },
+        "auth": {
+          "ms": 0.18,
+          "count": 1
+        },
+        "db_acquire": {
+          "ms": 574.36,
+          "count": 10
+        },
+        "db_query": {
+          "ms": 1947.73,
+          "count": 9
+        },
+        "cart_account": {
+          "ms": 220.5,
+          "count": 1
+        },
+        "cart_linesOf": {
+          "ms": 1673.27,
+          "count": 1
+        },
+        "cart_get": {
+          "ms": 1893.84,
+          "count": 1
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/checkouts",
+      "status": 201,
+      "requestId": "c97ed999-25f1-483b-9909-f67582eb13ba",
+      "ms": 4961.71,
+      "spans": {
+        "total": {
+          "ms": 4480.67,
+          "count": 1
+        },
+        "auth": {
+          "ms": 0.12,
+          "count": 1
+        },
+        "db_acquire": {
+          "ms": 515.75,
+          "count": 21
+        },
+        "db_query": {
+          "ms": 5853.91,
+          "count": 27
+        },
+        "checkout_account": {
+          "ms": 439.95,
+          "count": 2
+        },
+        "transaction": {
+          "ms": 1766.21,
+          "count": 1
+        },
+        "checkout_linesOf": {
+          "ms": 880.5,
+          "count": 1
+        },
+        "checkout_read": {
+          "ms": 1100.96,
+          "count": 1
+        },
+        "checkout_open": {
+          "ms": 4479.79,
+          "count": 1
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/orders",
+      "status": 201,
+      "requestId": "cbba2639-c0a8-443a-8861-67d50c653fb8",
+      "ms": 5617.9,
+      "spans": {
+        "total": {
+          "ms": 5096.01,
+          "count": 1
+        },
+        "auth": {
+          "ms": 0.16,
+          "count": 1
+        },
+        "db_acquire": {
+          "ms": 493.44,
+          "count": 20
+        },
+        "db_query": {
+          "ms": 6076.34,
+          "count": 28
+        },
+        "order_account": {
+          "ms": 220.43,
+          "count": 1
+        },
+        "checkout_linesOf": {
+          "ms": 1370.13,
+          "count": 1
+        },
+        "transaction": {
+          "ms": 2204.18,
+          "count": 1
+        },
+        "order_create": {
+          "ms": 5095.12,
+          "count": 1
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/payments",
+      "status": 201,
+      "requestId": "2ba2bbeb-45f9-4a3e-a069-a04db3048e68",
+      "ms": 5354.59,
+      "spans": {
+        "total": {
+          "ms": 4854.95,
+          "count": 1
+        },
+        "auth": {
+          "ms": 0.18,
+          "count": 1
+        },
+        "db_acquire": {
+          "ms": 2330.01,
+          "count": 7
+        },
+        "payment_account": {
+          "ms": 957.48,
+          "count": 1
+        },
+        "db_query": {
+          "ms": 2303.97,
+          "count": 11
+        },
+        "transaction": {
+          "ms": 1680.7,
+          "count": 1
+        },
+        "payment_get": {
+          "ms": 630.54,
+          "count": 1
+        },
+        "payment_start": {
+          "ms": 4853.21,
+          "count": 1
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/payments/:id/authorize",
+      "status": 201,
+      "requestId": "12578ca3-03cc-44c8-a27e-5a804dceb806",
+      "ms": 5269.67,
+      "spans": {
+        "total": {
+          "ms": 4774.9,
+          "count": 1
+        },
+        "auth": {
+          "ms": 0.12,
+          "count": 1
+        },
+        "db_acquire": {
+          "ms": 608,
+          "count": 11
+        },
+        "db_query": {
+          "ms": 4150.4,
+          "count": 19
+        },
+        "payment_account": {
+          "ms": 210.19,
+          "count": 1
+        },
+        "transaction": {
+          "ms": 2428.01,
+          "count": 2
+        },
+        "provider_authorize": {
+          "ms": 1325.31,
+          "count": 1
+        },
+        "payment_get": {
+          "ms": 660.46,
+          "count": 1
+        },
+        "payment_authorize": {
+          "ms": 4774.04,
+          "count": 1
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/payments/:id/capture",
+      "status": 201,
+      "requestId": "46d65851-1a57-4910-a688-eb02d7e82ac6",
+      "ms": 7740.45,
+      "spans": {
+        "total": {
+          "ms": 7025.54,
+          "count": 1
+        },
+        "auth": {
+          "ms": 0.18,
+          "count": 1
+        },
+        "db_acquire": {
+          "ms": 2556.47,
+          "count": 15
+        },
+        "db_query": {
+          "ms": 6551.3,
+          "count": 28
+        },
+        "payment_account": {
+          "ms": 220.41,
+          "count": 1
+        },
+        "provider_capture": {
+          "ms": 0.03,
+          "count": 1
+        },
+        "transaction": {
+          "ms": 4777.15,
+          "count": 2
+        },
+        "order_markPaid": {
+          "ms": 3306.33,
+          "count": 1
+        },
+        "payment_get": {
+          "ms": 1323.52,
+          "count": 1
+        },
+        "payment_capture": {
+          "ms": 7024.43,
+          "count": 1
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/orders/:id",
+      "status": 200,
+      "requestId": "c38ff55e-e597-4c9c-9c4a-f6832bf696c5",
+      "ms": 1059.38,
+      "spans": {
+        "total": {
+          "ms": 882.09,
+          "count": 1
+        },
+        "auth": {
+          "ms": 0.21,
+          "count": 1
+        },
+        "db_acquire": {
+          "ms": 0.98,
+          "count": 7
+        },
+        "db_query": {
+          "ms": 1528.76,
+          "count": 7
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/cart",
+      "status": 200,
+      "requestId": "327d8211-a14b-458d-a052-1508bdec8a75",
+      "ms": 2245.47,
+      "spans": {
+        "total": {
+          "ms": 1978.77,
+          "count": 1
+        },
+        "auth": {
+          "ms": 0.2,
+          "count": 1
+        },
+        "db_acquire": {
+          "ms": 2554.81,
+          "count": 10
+        },
+        "db_query": {
+          "ms": 1317.96,
+          "count": 6
+        },
+        "cart_account": {
+          "ms": 220.18,
+          "count": 1
+        },
+        "cart_linesOf": {
+          "ms": 1758.01,
+          "count": 1
+        },
+        "cart_get": {
+          "ms": 1978.22,
+          "count": 1
+        }
+      }
+    }
+  ]
+}
