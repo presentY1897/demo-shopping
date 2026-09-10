@@ -5,7 +5,7 @@ import json
 import os
 from pathlib import Path
 from urllib.parse import urlparse
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -52,7 +52,9 @@ def main():
         if cached is not None:
             data = cached.read_bytes()
         else:
-            with urlopen(row['publicUrl'], timeout=30) as response:
+            request = Request(row['publicUrl'], headers={
+                'User-Agent': 'shopping-product-image-restore/1.0', 'Accept': 'image/*'})
+            with urlopen(request, timeout=30) as response:
                 data = response.read(asset['sizeBytes'] + 1)
         if len(data) != asset['sizeBytes'] or digest(data) != asset['sha256']:
             raise ValueError('Downloaded checksum mismatch')
