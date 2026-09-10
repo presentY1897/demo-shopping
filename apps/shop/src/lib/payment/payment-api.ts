@@ -10,6 +10,10 @@ import { z } from 'zod'
 
 import { getApiClient } from '@/lib/api'
 
+// 운영 승인·확정은 5초를 넘을 수 있다(TASK-0134). 정상 응답을 기다린 뒤,
+// 이 제한까지 응답이 없으면 기존 결과 조회 복구로 넘긴다. 조회는 기본5초다.
+const PAYMENT_WRITE_TIMEOUT_MS = 15_000
+
 /**
  * 결제와 카드를 부르는 자리 (TASK-0054 의 라우트).
  *
@@ -77,6 +81,7 @@ export async function startCardPayment(orderId: string, cardId: string): Promise
   const { payment } = await getApiClient().request({
     path: '/payments',
     method: 'POST',
+    timeoutMs: PAYMENT_WRITE_TIMEOUT_MS,
     body: { orderId, provider: 'VIRTUAL_CARD', cardId },
     schema: paymentResponseSchema,
   })
@@ -99,6 +104,7 @@ export async function startTossPayment(orderId: string): Promise<Payment> {
   const { payment } = await getApiClient().request({
     path: '/payments',
     method: 'POST',
+    timeoutMs: PAYMENT_WRITE_TIMEOUT_MS,
     body: { orderId, provider: 'TOSS' },
     schema: paymentResponseSchema,
   })
@@ -124,6 +130,7 @@ export async function confirmTossPayment(
   const { payment } = await getApiClient().request({
     path: `/payments/${paymentId}/toss/confirm`,
     method: 'POST',
+    timeoutMs: PAYMENT_WRITE_TIMEOUT_MS,
     body: { paymentKey, amount },
     schema: paymentResponseSchema,
   })
@@ -142,6 +149,7 @@ export async function authorizePayment(paymentId: string): Promise<Payment> {
   const { payment } = await getApiClient().request({
     path: `/payments/${paymentId}/authorize`,
     method: 'POST',
+    timeoutMs: PAYMENT_WRITE_TIMEOUT_MS,
     schema: paymentResponseSchema,
   })
 
@@ -153,6 +161,7 @@ export async function capturePayment(paymentId: string): Promise<Payment> {
   const { payment } = await getApiClient().request({
     path: `/payments/${paymentId}/capture`,
     method: 'POST',
+    timeoutMs: PAYMENT_WRITE_TIMEOUT_MS,
     schema: paymentResponseSchema,
   })
 
