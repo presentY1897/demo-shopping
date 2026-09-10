@@ -2,7 +2,7 @@
 
 > 이어받을 것과 이월된 항목은 [`docs/HANDOFF.md`](../HANDOFF.md) 에 있다.
 
-아래 인덱스에 등록된 **128개** TASK: **121개 완료**, **4개 진행중**, **3개 승인됨**. TASK-0124 검토 완료 후 TASK-0125~0131을 후속 작업으로 작성하고 사용자 승인을 받았다. 폐기 TASK는 이 집계에 포함하지 않는다.
+아래 인덱스에 등록된 **129개** TASK: **122개 완료**, **4개 진행중**, **3개 승인됨**. TASK-0124 검토 완료 후 TASK-0125~0131을 후속 작업으로 작성하고 사용자 승인을 받았다. 폐기 TASK는 이 집계에 포함하지 않는다.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
@@ -20,7 +20,7 @@
 | [M12](./M12-settlement/) 정산 | 수수료 정책, 정산서 배치, 승인·지급, 매출 대시보드 | **5/5 완료** |
 | [M13](./M13-community/) 회원 부가 | 리뷰, 위시리스트, Q&A, 팔로우, 알림, 신고 | **9/9 완료** |
 | [M14](./M14-admin/) 관리자 | 대시보드, 회원·판매자 관리, 전체 조회, 데모 관리 | **5/5 완료** |
-| [M15](./M15-polish/) 마무리 | 성능·정합성, 접근성, E2E·데모 시나리오, 포트폴리오 문서 | 14/17 |
+| [M15](./M15-polish/) 마무리 | 성능·정합성, 접근성, E2E·데모 시나리오, 포트폴리오 문서 | 15/18 |
 
 ---
 
@@ -237,7 +237,7 @@
 
 </details>
 
-<details><summary><b>M15. 마무리</b> (14/17)</summary>
+<details><summary><b>M15. 마무리</b> (15/18)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -257,7 +257,8 @@
 | [TASK-0130](./M15-polish/TASK-0130-storefront-loading-performance.md) | 홈 선행 대기 제거·상품 이미지 경량화 | 완료 |
 | [TASK-0131](./M15-polish/TASK-0131-checkout-api-latency-analysis.md) | 장바구니·결제 API 지연 원인 측정 | 진행중 |
 | [TASK-0132](./M15-polish/TASK-0132-payment-finalization-batching.md) | 복수 상품 결제 후처리의 DB 왕복 축소 | 완료 |
-| [TASK-0133](./M15-polish/TASK-0133-checkout-roundtrip-reduction.md) | 주문서 진입·주문 생성 DB 왕복 축소 | 진행중 |
+| [TASK-0133](./M15-polish/TASK-0133-checkout-roundtrip-reduction.md) | 주문서 진입·주문 생성 DB 왕복 축소 | 완료 |
+| [TASK-0134](./M15-polish/TASK-0134-payment-request-deadline.md) | 결제 응답 대기 제한 조정 | 진행중 |
 
 </details>
 

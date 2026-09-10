@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M15 마무리 |
-| 상태 | 진행 중 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-11 |
 | 브랜치 / worktree | `feature/checkout-roundtrip-reduction` / `feature-checkout-roundtrip-reduction` |
 | 선행 | TASK-0132 배포·서버 두 상품 구매 검증 |
@@ -38,8 +38,8 @@ API의 장바구니/주문서 상품 projection, 주문서 예약, 판매자별 
 | F1 | 기존 cart/checkout/order·쿠폰·대표 이미지·권한·한도 회귀 전부 통과 | [x] |
 | F2 | 2개 상품210ms 지연 조건의 주문서/주문 생성 HTTP201, 각각5초 이내; 100개 항목의 쓰기 SQL이 항목 수에 비례하지 않음 | [x] |
 | F3 | 품절/쿠폰 실패 전체 롤백, 동시 예약 초과판매0, 주문서 재시도 추가 주문0 | [x] |
-| F4 | 전체 typecheck/lint/build/test/format, 필수 CI4개·E2E 통과 | [ ] |
-| F5 | 운영 모바일에서 두 상품 장바구니→주문서→새로고침→결제→장바구니 비움 검증. 실패 원인은 미해결로 기록 | [ ] |
+| F4 | 전체 typecheck/lint/build/test/format, 필수 CI4개·E2E 통과 | [x] |
+| F5 | 운영 모바일에서 두 상품 장바구니→주문서→새로고침→결제→장바구니 비움 검증. 실패 원인은 미해결로 기록 | [x] |
 
 공통 [품질 게이트](../QUALITY-GATES.md) 적용. 신규 환경변수/스키마/라이브러리 없음. TASK 상태/두 인덱스와 측정 결과 갱신 후 완료한다.
 
@@ -52,3 +52,5 @@ API의 장바구니/주문서 상품 projection, 주문서 예약, 판매자별 
 2026-09-11: 계속 진행 지시에 따른 운영 검증에서 앞 단계 응답 중단이 재현되어, 배포된 TASK-0132와 구분하여 수정 목적·검증 기준을 먼저 기록했다.
 
 검증 근거: [동일 조건 비교와 회귀 기록](../../reviews/2026-09-11-checkout-roundtrips.md). 기존 구매105개·쿠폰/요율/예약81개, projection 동등성2개와 지연 재현을 확인했다.
+
+PR141의 정확한 head `9ba2b24` CI4개·E2E·Lighthouse 성공 후 rebase merge. 2026-09-11 01:11 KST 운영 배포 완료. 실제390px 모바일에서 두 상품 장바구니→주문서→새로고침→주문·결제 완료, 판매자 둘 PAID·장바구니0·썸네일 정상·주문서401 없음. 주문서/주문은 화면 버튼으로 생성했다. 완료까지26,475ms이며 승인·확정5초 중단으로 결과 복구를 거쳤다. 이 잔여 문제는 TASK0134로 분리했다. [운영 기록](../../reviews/artifacts/checkout-review/roundtrip-production-browser.json).

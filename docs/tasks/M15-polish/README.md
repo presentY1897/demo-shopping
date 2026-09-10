@@ -20,4 +20,5 @@
 | [TASK-0130](./TASK-0130-storefront-loading-performance.md) | 홈 선행 대기 제거·상품 이미지 경량화 | 완료 | 0124 |
 | [TASK-0131](./TASK-0131-checkout-api-latency-analysis.md) | 장바구니·결제 API 지연 원인 측정 | 진행중 | 0124 |
 | [TASK-0132](./TASK-0132-payment-finalization-batching.md) | 복수 상품 결제 후처리의 DB 왕복 축소 | 완료 | 0125 · 0127 · 0131 측정 근거 |
-| [TASK-0133](./TASK-0133-checkout-roundtrip-reduction.md) | 주문서 진입·주문 생성 DB 왕복 축소 | 진행중 | 0132 |
+| [TASK-0133](./TASK-0133-checkout-roundtrip-reduction.md) | 주문서 진입·주문 생성 DB 왕복 축소 | 완료 | 0132 |
+| [TASK-0134](./TASK-0134-payment-request-deadline.md) | 결제 응답 대기 제한 조정 | 진행중 | 0133 |
