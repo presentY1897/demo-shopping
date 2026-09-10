@@ -1,3 +1,4 @@
+import { cartLines } from '../orders/line-query.js'
 import {
   BadRequestException,
   ConflictException,
@@ -406,63 +407,7 @@ export class CartService {
 
   /** 한 질의로 장바구니 전체 (A5). */
   private async linesOf(userId: string): Promise<readonly CartLineRow[]> {
-    const cart = await this.prisma.cart.findUnique({
-      where: { userId },
-      select: {
-        /**
-         * 한 질의로 장바구니 전체 (A5).
-         *
-         * 인라인이다 — 밖으로 뽑으면 `orderBy: { sortOrder: 'asc' }` 의 `'asc'` 가
-         * `string` 으로 넓어져 Prisma 가 거절한다. `as const` 를 붙이면 이번에는
-         * 읽기 전용 튜플이 되어 또 거절한다.
-         */
-        items: {
-          orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
-          select: {
-            id: true,
-            quantity: true,
-            priceAtAdded: true,
-            variant: {
-              select: {
-                id: true,
-                sku: true,
-                price: true,
-                stock: true,
-                isActive: true,
-                deletedAt: true,
-                sellerId: true,
-                optionValues: {
-                  select: { optionValue: { select: { value: true, optionId: true } } },
-                },
-                product: {
-                  select: {
-                    id: true,
-                    name: true,
-                    status: true,
-                    deletedAt: true,
-                    maxPurchaseQuantity: true,
-                    images: { orderBy: { sortOrder: 'asc' }, take: 1, select: { url: true } },
-                    options: { select: { id: true, sortOrder: true } },
-                    seller: {
-                      select: {
-                        id: true,
-                        brandName: true,
-                        // 이미 조인되어 있던 행이다 — 두 컬럼이 늘어도 질의는
-                        // 하나 그대로다 (TASK-0046 4.3).
-                        shippingFee: true,
-                        freeShippingThreshold: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    })
-
-    return cart?.items ?? []
+    return cartLines(this.prisma, userId)
   }
 }
 

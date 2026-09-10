@@ -157,12 +157,7 @@ const REPRESENTATIVE_IMAGE = {
   select: { url: true },
 } satisfies Prisma.Product$imagesArgs
 
-/**
- * 한 줄을 읽는 `select` 조각.
- *
- * 장바구니 줄과 예약 줄이 **같은 조각을 쓴다.** 한쪽에만 필드를 더하면 그 화면만
- * 그것을 알게 되고, 주문서와 주문이 다른 것을 보여 준다.
- */
+/** Reference projection, compared against line-query.ts on real PostgreSQL. */
 export const VARIANT_LINE_SELECT = {
   id: true,
   sku: true,
@@ -183,10 +178,6 @@ export const VARIANT_LINE_SELECT = {
       // 아니라 `path` 인 이유는 **조상까지 닿아야** 하기 때문이다 — 「셔츠」 쿠폰이
       // 「반팔 셔츠」에 안 붙으면 발행자는 잎 카테고리를 전부 나열해야 하고,
       // 나중에 추가된 잎은 아무도 다시 나열해 주지 않는다.
-      //
-      // 줄마다 질의가 하나씩 붙지 않는다. 관계 하나를 더 고르는 것은 줄 수와
-      // 무관하게 문장 하나이고, 그 성질을 재는 것이 `orders-performance.spec.ts`
-      // 의 「한 줄이든 열 줄이든 같은 수의 문장」이다.
       category: { select: { path: true } },
       images: REPRESENTATIVE_IMAGE,
       options: { select: { id: true, sortOrder: true } },
