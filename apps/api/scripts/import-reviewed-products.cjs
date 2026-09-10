@@ -59,14 +59,28 @@ async function main() {
   if (!target)
     throw Error('Explicit IMPORT_TARGET_DATABASE_URL is required; no implicit .env target')
   const db = new URL(target)
+  const productionPlanFile = argument('--production-plan', null)
   if (
-    !['localhost', '127.0.0.1'].includes(db.hostname) ||
-    db.port !== '5582' ||
-    db.pathname !== '/shopping'
+    !productionPlanFile &&
+    (!['localhost', '127.0.0.1'].includes(db.hostname) ||
+      db.port !== '5582' ||
+      db.pathname !== '/shopping')
   )
     throw Error('Only the confirmed localhost:5582/shopping target is allowed')
   const exported = read(argument('--export', 'product-images/reviewed-products-export.json'))
   const mapped = read(argument('--asset-map', 'product-images/reviewed-assets-uploaded.json'))
+  if (productionPlanFile) {
+    if (planOnly) throw Error('Production requires public asset verification')
+    require('./reviewed-production-guard.cjs').validateProductionPlan({
+      target,
+      plan: read(productionPlanFile),
+      exportBytes: readFileSync(
+        resolve(root, argument('--export', 'product-images/reviewed-products-export.json')),
+      ),
+      mapped,
+      apply,
+    })
+  }
   if (
     exported.source !== 'shopping_image_preview' ||
     exported.productCount !== exported.products.length ||
@@ -81,7 +95,7 @@ async function main() {
   }
   const verifiedSources = new Set()
   // Validate local provenance, map checksum and actual publicly served bytes before DB access.
-  for (const source of exported.assets) {
+  async function verifySource(source) {
     if (verifiedSources.has(source.sourceUrl)) throw Error('Duplicate exported asset')
     const row = assets.get(source.sourceUrl)
     if (
@@ -111,7 +125,7 @@ async function main() {
     row.publicUrl = publicUrl(row.publicUrl)
     if (planOnly) {
       verifiedSources.add(source.sourceUrl)
-      continue
+      return
     }
     const response = await fetch(row.publicUrl, {
       redirect: 'error',
@@ -123,6 +137,20 @@ async function main() {
     if (bytes.length !== source.sizeBytes || digest(bytes) !== source.sha256)
       throw Error('Public asset checksum mismatch')
     verifiedSources.add(source.sourceUrl)
+  }
+  if (new Set(exported.assets.map((source) => source.sourceUrl)).size !== exported.assets.length)
+    throw Error('Duplicate exported asset')
+  for (let i = 0; i < exported.assets.length; i += 4) {
+    const results = await Promise.allSettled(exported.assets.slice(i, i + 4).map(verifySource))
+    const failed = results.find((result) => result.status === 'rejected')
+    if (failed) throw failed.reason
+    if (
+      productionPlanFile &&
+      (verifiedSources.size % 20 === 0 || verifiedSources.size === exported.assets.length)
+    )
+      console.log(
+        JSON.stringify({ verifiedAssets: verifiedSources.size, total: exported.assets.length }),
+      )
   }
   const rewrite = (images) =>
     images.map((im) => {
@@ -169,10 +197,20 @@ async function main() {
       skuSet.add(key)
     }
   const { config } = await loadAppConfig()
-  const prisma = new PrismaService({
+  const importConfig = {
     ...config,
     database: { ...config.database, url: target, poolSize: Math.max(config.database.poolSize, 3) },
-  })
+  }
+  // The remote import performs many dependent writes per product. Give only this
+  // standalone client a longer transaction deadline; application defaults stay intact.
+  const prisma = productionPlanFile
+    ? new (require('@prisma/client').PrismaClient)({
+        adapter: new (require('@prisma/adapter-pg').PrismaPg)(
+          require('../dist/prisma/pool-options.js').databasePoolOptions(importConfig),
+        ),
+        transactionOptions: { timeout: 60000, maxWait: 15000 },
+      })
+    : new PrismaService(importConfig)
   await prisma.$connect()
   const clock = { now: () => new Date() }
   const outbox = new SearchOutboxService(prisma, clock)
@@ -187,7 +225,7 @@ async function main() {
   const categories = new CategoryService(prisma, clock)
   const report = {
     mode: apply ? 'apply' : planOnly ? 'plan-only' : 'dry-run',
-    target: 'localhost:5582/shopping',
+    target: productionPlanFile ? 'confirmed-production' : 'localhost:5582/shopping',
     startedAt: new Date().toISOString(),
     verifiedAssets: planOnly ? 0 : exported.assets.length,
     locallyVerifiedAssets: exported.assets.length,
@@ -371,6 +409,10 @@ async function main() {
           const bySlug = await preflight()
           const admin = { userId: randomUUID(), roles: ['ADMIN_SUPER'], app: 'admin' }
           for (const row of rows) {
+            // Domain writes use other connections. Touch the mutex transaction
+            // between products so a remote idle-transaction timeout cannot silently
+            // release it during a long batch, and stop if that connection was lost.
+            if (productionPlanFile) await lock.$queryRawUnsafe('SELECT 1')
             if (row.marker?.state === 'complete') {
               report.products.push({
                 sourceProductId: row.source.sourceProductId,
@@ -423,6 +465,10 @@ async function main() {
               productId: id,
               action: row.recoverId ? 'recovered' : 'created',
             })
+            if (productionPlanFile)
+              console.log(
+                JSON.stringify({ completedProducts: report.products.length, total: rows.length }),
+              )
           }
         },
         { timeout: 3600000, maxWait: 10000 },

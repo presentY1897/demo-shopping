@@ -1,6 +1,6 @@
 # 운영 반영 절차
 
-현재 완료된 범위는 R2 shopping-dev와 로컬 localhost:5582/shopping이다. 원격 운영 DB나 shopping-prod로 이관하지 않았다. localhost:3015는 여전히 별도 shopping_image_preview DB의 미리보기 화면이다.
+개발 반영 대상은 R2 shopping-dev와 로컬 localhost:5582/shopping이다. localhost:3015는 별도 shopping_image_preview DB의 미리보기 화면이다. 운영 실행 결과는 아래 실행 기록을 확인한다.
 
 ## 1. 운영 대상과 계정 매핑 확정
 
@@ -8,7 +8,7 @@
 
 ## 2. 코드 및 운영용 실행 도구 준비
 
-이번 공용 이미지 처리와 옵션 갤러리 관련 변경을 리뷰하고 필요한 테스트·빌드를 완료하여 PR/배포 절차를 거친다. 현재 import-reviewed-products.cjs는 의도적으로 localhost:5582/shopping만 허용한다. 이 제한을 단순 제거하지 않고, 운영 호스트·DB·버킷을 명시적으로 대조하는 운영 실행 진입점을 추가한다. 상품 추가의 공통 검증은 재사용한다. 변경된 운영 판매자 ID에 맞춰 products/{sellerId}/ 이미지 키도 다시 계산한다.
+공용 이미지 처리와 옵션 갤러리 변경은 PR #134로 병합했다. import-reviewed-products.cjs는 기본적으로 localhost:5582/shopping만 허용한다. 운영 실행은 명시적인 `--production-plan`을 추가해야 하며, reviewed-production-guard.cjs가 운영 호스트·DB 경로·TLS·버킷·공개 도메인·내보내기 SHA를 대조한다. 상품 추가의 공통 검증은 재사용한다. 변경된 운영 판매자 ID에 맞춰 products/{sellerId}/ 이미지 키도 다시 계산한다.
 
 ## 3. 운영 이미지 업로드와 dry-run
 
@@ -22,4 +22,26 @@
 
 검색 outbox 처리를 확인한 뒤 실제 운영 도메인의 목록·상세·컬러별 갤러리·모바일 화면을 검수한다. 회원·판매자·기존 상품·주문이 보존됐는지 비교한다. 실패 시 이관ID로 추가 상품만 비공개 전환하는 등 범위를 제한한다. 주문 등 참조가 생긴 상품을 무조건 삭제하거나 운영 DB 전체를 되돌리지 않는다. 미참조 업로드 파일 정리는 별도 확인 후 수행한다.
 
-현재 운영 연결 정보와 계정 매핑은 확정되지 않았으며, 이 문서는 계획이다.
+## 운영 실행 도구
+
+운영 전용 내보내기는 원본의 sourceProductId와 이미지 출처를 유지하고, sourceSellerId만 검증된 운영 판매자 ID로 매핑한다. 원본 내보내기와 개발 업로드 맵은 수정하지 않는다.
+
+업로더에는 운영 환경 파일과 `--expect-bucket shopping-prod`, 운영 내보내기 `--input`, 별도 운영 업로드 맵 `--map`을 지정한다. 실행 전 dry-run을 확인하고 `--apply`로 업로드한다. 업로드는 기존 객체를 덮어쓰지 않으며, 공개 주소에서 SHA-256이 일치해야 검증 완료로 기록된다.
+
+DB 도구에는 `IMPORT_TARGET_DATABASE_URL`을 비밀 환경변수로 전달하고, `--production-plan`, `--export`, `--asset-map`, `--report`를 명시한다. `--apply`가 없는 실행이 DB dry-run이다. 운영에서는 공개 URL 검사를 생략하는 `--plan-only`를 허용하지 않는다. 이미지 검증 동시성은 4이며, 실패 시 진행 중인 검사를 정리한 뒤 DB 접근 전에 중단한다.
+
+운영 계획 파일의 필드는 `version: 1`, `databaseHost`, `databasePath`, `bucket`, `publicBaseUrl`, `exportSha256`, `assetCount`이다. 쓰기 전에는 `backupVerified`, `backupFile`, `backupSha256`, `dryRunVerified`, `dryRunFile`, `dryRunSha256`도 필요하다. 백업은 운영 PostgreSQL과 호환되는 pg_dump로 만들고 pg_restore로 전체 아카이브를 읽어 검증한다. 실행 가드는 백업 서명과 SHA, dry-run 결과의 SHA 및 검증 완료 수를 재확인한다. 비밀 설정·백업·실행 계획·행 해시·생성된 운영 맵은 커밋하지 않는다.
+
+운영 전용 Prisma 클라이언트는 상품 하나의 원격 트랜잭션에 60초를 허용한다. 일반 API의 트랜잭션 기본값에는 영향을 주지 않는다. 전역 이관 잠금과 상품별 prepared/complete 마커를 함께 사용하므로, 재개 시 같은 입력과 맵을 유지해야 한다. 도메인 쓰기가 다른 연결에서 실행되는 동안 잠금 트랜잭션이 유휴 상태가 되므로, 상품마다 잠금 연결을 조회해 유지하고 연결 상실 시 다음 상품 쓰기를 중단한다.
+
+## 2026-09-10 실행 기록
+
+- 운영 판매자 8곳의 브랜드명·slug·활성 상태·소유자 상태 검증 완료.
+- 반영 전 상품 800개, 카테고리 40개. 신규 상품 66개·변형 151개·카테고리 8개 계획. 기존 SKU 충돌과 누락 마이그레이션 없음.
+- 운영 버킷 `shopping-prod`, 공개 주소 `https://cdn.demo-shopping.com`. 기존 객체의 S3 GET과 공개 GET 해시 일치로 연결 확인.
+- 검수 이미지 660장 업로드 및 공개 SHA 검증 완료. 운영 DB 백업 생성과 아카이브 전체 읽기 검증 완료.
+- 운영 DB dry-run 통과 후 상품 66개·변형 151개·카테고리 8개 추가 완료. 상품 총 866개, 변형 3,746개, 카테고리 48개.
+- 기존 User·Seller·Product·ProductVariant·ProductImage·ProductOption·ProductOptionValue·Category·Order 행의 해시가 모두 반영 전과 일치.
+- 공개 상세 API 66개에서 이름·이미지 순서·변형 수·옵션별 갤러리 검증 완료. 검색 인덱스에 66개 모두 존재하며 search outbox 대기 0, DB 상태 정상.
+- 운영 코트 상세 페이지에서 기본·네이비·헤링본 갤러리와 모바일 화면 확인 완료.
+- 첫 실행은 66개 개별 트랜잭션과 complete 마커 기록 후 마지막 잠금 트랜잭션 종료에서 연결 오류가 발생했다. 운영의 idle_in_transaction_session_timeout은 5분이었다. 읽기 전용으로 완료 마커 66개의 입력 해시를 검증해 결과 보고서를 복구했고, 위 전체 공개 API·기존 행 보존 검사로 반영을 확인했다. 재등록은 하지 않았다. 이후 실행 도구에 상품별 잠금 연결 확인을 추가했다.
