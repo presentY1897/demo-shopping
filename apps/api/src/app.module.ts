@@ -10,6 +10,7 @@ import { CollectionsModule } from './collections/collections.module.js'
 import { CouponModule } from './coupons/coupon.module.js'
 import { AllExceptionsFilter } from './common/all-exceptions.filter.js'
 import { ClockModule } from './common/clock.module.js'
+import { CheckoutDiagnosticsService } from './common/checkout-diagnostics.service.js'
 import { ConfigModule } from './config/config.module.js'
 import { DemoModule } from './demo/demo.module.js'
 import type { AppConfig } from './config/app-config.js'
@@ -74,7 +75,10 @@ export class AppModule {
         StorageModule,
         UsersModule,
       ],
-      providers: [{ provide: APP_FILTER, useClass: AllExceptionsFilter }],
+      providers: [
+        CheckoutDiagnosticsService,
+        { provide: APP_FILTER, useClass: AllExceptionsFilter },
+      ],
     }
   }
 }

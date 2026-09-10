@@ -5,6 +5,7 @@ import { APP_ID_HEADER } from '@shopping/shared'
 
 import { createNotFoundFallback } from '../common/not-found.middleware.js'
 import { createRequestContextMiddleware } from '../common/request-context.middleware.js'
+import { CHECKOUT_DIAGNOSTICS_HEADER, checkoutDiagnostics } from '../common/checkout-diagnostics.js'
 import type { AppConfig } from '../config/app-config.js'
 import { createRawBodyCapture } from '../payment/payment-webhook.middleware.js'
 import { TOSS_WEBHOOK_ROUTE } from '../payment/payment-webhook.js'
@@ -48,8 +49,14 @@ export function corsOptionsFor(config: AppConfig): CorsOptions {
     // APP_ID_HEADER identifies which of the three front ends is calling. The apps
     // do not share cookies, so credentials alone cannot tell them apart. It comes
     // from @shopping/shared so the client and this allow-list cannot drift apart.
-    allowedHeaders: ['Content-Type', 'Authorization', APP_ID_HEADER, 'X-Request-Id'],
-    exposedHeaders: ['X-Request-Id'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      APP_ID_HEADER,
+      'X-Request-Id',
+      CHECKOUT_DIAGNOSTICS_HEADER,
+    ],
+    exposedHeaders: ['X-Request-Id', 'Server-Timing'],
     maxAge: 600,
   }
 }
@@ -61,6 +68,7 @@ export async function configureApp(app: NestExpressApplication, config: AppConfi
 
   // Registered first so that unmatched routes still get an id and a log line.
   app.use(createRequestContextMiddleware(new Logger('HTTP')))
+  app.use(checkoutDiagnostics)
 
   /*
    * 결제 웹훅 **한 경로에만** 원문을 남긴다 (TASK-0056 F4).
