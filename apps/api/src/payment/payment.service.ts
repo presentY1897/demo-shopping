@@ -141,7 +141,14 @@ export class PaymentService {
           previous.methodRef === (options.methodRef ?? null)
         )
           return previous
-        throw awaitingPayment()
+        const abandoned = await tx.payment.updateMany({
+          where: { id: previous.id, status: 'READY', authorizationStartedAt: null },
+          data: { status: 'FAILED', updatedAt: now },
+        })
+        if (abandoned.count === 0) throw awaitingPayment()
+        await this.log(tx, previous.id, 'FAILED', 'READY', 'FAILED', now, {
+          reason: '승인 전 결제수단 변경',
+        })
       }
       const closed = await tx.sellerOrder.count({
         where: { orderId: order.id, status: { notIn: ['PAYMENT_PENDING', 'PAYMENT_FAILED'] } },
