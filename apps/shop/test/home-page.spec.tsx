@@ -1,27 +1,9 @@
-/**
- * The page, end to end against the mock API.
- *
- * `HomePage` is no longer an async Server Component. It awaits nothing: the
- * liveness read moved into `ApiWakeGate`'s effect so the markup — heading, copy,
- * skeleton — is produced and sent while the API is still booting (TASK-0101 4.3).
- * The request then goes out from the client, where msw's interceptor sits, so a
- * single process still holds both the fetch and the DOM.
- *
- * The wake-up states themselves are covered in `api-wake-gate.spec.tsx`, with a
- * policy turned down to milliseconds. What is left here is the page: what it
- * renders before anything has answered, and that the call carries this app's id.
- */
+/** Home remains synchronous and renders navigation while the API wakes. */
 
-import {
-  driftedHealthPayload,
-  healthOk,
-  malformedResponse,
-  mockPaths,
-  neverAnswers,
-} from '@shopping/api-mocks'
-import { APP_ID_HEADER, healthEntries } from '@shopping/shared'
+import { mockPaths, neverAnswers } from '@shopping/api-mocks'
+import { APP_ID_HEADER } from '@shopping/shared'
 import { DensityProvider } from '@shopping/ui/density'
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import HomePage from '@/app/page'
@@ -36,7 +18,7 @@ vi.mock('next/navigation', async () => {
   return nextNavigationMock()
 })
 
-const { health, home, wake } = messagesFor()
+const { health, home } = messagesFor()
 
 /**
  * The page inside the two providers the real layout gives it.
@@ -52,22 +34,6 @@ function renderHome() {
       <HomePage />
     </DensityProvider>,
   )
-}
-
-/**
- * The liveness rows, and only those.
- *
- * The home screen has several lists on it — category chips and two product
- * sections — so a bare `getAllByRole('listitem')` counts all of them. Scoping to
- * the panel is what keeps this assertion about the payload rather than about
- * whatever else the page happens to render.
- */
-function healthRows(): readonly HTMLElement[] {
-  const panel = screen.getByRole('heading', { name: health.title }).closest('section')
-
-  if (panel === null) throw new Error('the health panel has no section around its heading')
-
-  return within(panel).getAllByRole('listitem')
 }
 
 const requests: string[] = []
@@ -113,63 +79,8 @@ describe('the server render', () => {
     // arrive after mount. What is in the markup is what a visitor can read while
     // the API is still waking.
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(home.heroTitle)
-    expect(screen.getByText(home.heroBody)).toBeVisible()
-    expect(screen.getByText(health.notice)).toBeVisible()
-    expect(screen.getByRole('region', { name: health.title })).toHaveAttribute('aria-busy', 'true')
-  })
-})
-
-describe('the mocked payload reaches the screen', () => {
-  it('shows the version and uptime the mock API answered', async () => {
-    renderHome()
-
-    expect(await screen.findByText(healthOk.version)).toBeVisible()
-    expect(screen.getByText(`${healthOk.uptime}${health.uptimeUnit}`)).toBeVisible()
-  })
-
-  it('shows one labelled row per liveness field', async () => {
-    renderHome()
-    await screen.findByText(healthOk.version)
-
-    const rows = healthRows()
-
-    expect(rows).toHaveLength(healthEntries(healthOk).length)
-    expect(within(rows[0]!).getByText(health.itemLabels.status!)).toBeVisible()
-    expect(within(rows[0]!).getByText(health.statusLabels.ok)).toBeVisible()
-  })
-
-  it('does not render the failure panel while the API answers', async () => {
-    renderHome()
-    await screen.findByText(healthOk.version)
-
-    expect(screen.queryByRole('alert')).toBeNull()
-  })
-})
-
-/**
- * U6, at the page level — a broken contract is shown, not swallowed.
- *
- * This is also the one failure the page reaches without waiting out a backoff: a
- * body that does not match the schema is not retried, because the same request
- * would produce the same wrong body (see `isWorthRetrying`).
- */
-describe('a payload that no longer matches the schema', () => {
-  it('is reported instead of rendered', async () => {
-    testServer.server.use(malformedResponse(mockPaths.health, driftedHealthPayload))
-    renderHome()
-
-    const alert = await screen.findByRole('alert')
-
-    expect(within(alert).getByText(health.failures.malformed_response)).toBeVisible()
-  })
-
-  it('keeps the rest of the page up', async () => {
-    testServer.server.use(malformedResponse(mockPaths.health, driftedHealthPayload))
-    renderHome()
-
-    expect(await screen.findByText(wake.failureTitle)).toBeVisible()
-    expect(screen.getByRole('heading', { level: 1 })).toBeVisible()
-    expect(screen.queryByText(health.uptimeLabel)).toBeNull()
+    expect(screen.queryByText(health.title)).toBeNull()
+    expect(screen.getByRole('heading', { name: home.newTitle })).toBeVisible()
   })
 })
 
@@ -181,7 +92,9 @@ describe('the call itself', () => {
     })
 
     renderHome()
-    await screen.findByText(healthOk.version)
+    await waitFor(() =>
+      expect(screen.getAllByRole('link', { name: home.moreLabel })).toHaveLength(2),
+    )
 
     // Asserted as a set: how many calls a screen makes is its own business and
     // changes with it — the session renewal joined this one on boot in

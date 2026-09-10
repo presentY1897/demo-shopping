@@ -19,6 +19,7 @@
  */
 
 import type { SearchSort } from '@shopping/shared'
+import { Button } from '@shopping/ui/components'
 import { ProductGrid, ProductListSkeleton } from '@shopping/ui/catalog'
 import type { DensityLevel } from '@shopping/ui'
 import { useDensity } from '@shopping/ui/density'
@@ -76,6 +77,13 @@ export function ProductSection({
           density={density}
           label={messages.loadingLabel}
         />
+      ) : state.status === 'error' ? (
+        <div className="flex flex-wrap items-center gap-3" role="alert">
+          <p className="text-fg-muted text-sm">{messages.sectionFailed}</p>
+          <Button onClick={state.retry} size="sm" variant="outline">
+            {messages.retryLabel}
+          </Button>
+        </div>
       ) : shown.length === 0 ? (
         <p className="text-fg-subtle text-sm">{messages.sectionEmpty}</p>
       ) : (

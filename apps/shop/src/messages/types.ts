@@ -1548,8 +1548,6 @@ export interface FooterMessages {
   readonly label: string
   readonly demoTitle: string
   readonly demoBody: string
-  readonly densityTitle: string
-  readonly densityBody: string
   /** 5분 둘러보기로 가는 링크 (TASK-0099). 바닥글은 모든 화면에 있다. */
   readonly guideLabel: string
   readonly copyright: string
@@ -1589,7 +1587,6 @@ export interface HomeMessages {
   readonly title: string
   readonly description: string
   readonly heroTitle: string
-  readonly heroBody: string
   readonly heroSearchCta: string
   readonly newTitle: string
   readonly popularTitle: string
@@ -1602,6 +1599,8 @@ export interface HomeMessages {
   readonly followedTitle: string
   readonly categoriesTitle: string
   readonly loadingLabel: string
+  readonly sectionFailed: string
+  readonly retryLabel: string
   readonly sectionEmpty: string
   readonly moreLabel: string
   /** The first-visit nudge towards a demo account (F5). */
@@ -1655,10 +1654,11 @@ export interface HealthMessages {
   readonly versionLabel: string
   readonly failureTitle: string
   readonly failures: Readonly<Record<HealthFailureReason, string>>
-  readonly notice: string
 }
 
 export interface WakeMessages {
+  readonly storefrontPreparing: string
+  readonly storefrontFailed: string
   /** Announced from the first frame; the skeleton itself is hidden from AT. */
   readonly loadingLabel: string
   readonly preparing: string

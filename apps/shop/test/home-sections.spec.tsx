@@ -13,6 +13,10 @@
 
 import {
   mockPaths,
+  searchHandlers,
+  healthHandlers,
+  healthSearchIndexing,
+  malformedResponse,
   networkFailureOn,
   sessionBuyer,
   storefrontCategoryTree,
@@ -142,9 +146,38 @@ describe('F1 홈 렌더', () => {
 
     renderHome()
 
-    expect(await screen.findAllByText(home.sectionEmpty)).toHaveLength(2)
+    expect(await screen.findAllByText(home.sectionFailed)).toHaveLength(2)
     expect(await screen.findByRole('navigation', { name: home.categoriesTitle })).toBeVisible()
-    expect(screen.queryByRole('alert')).toBeNull()
+    expect(screen.getAllByRole('alert').length).toBeGreaterThanOrEqual(2)
+  })
+})
+
+describe('상품 조회 복구', () => {
+  it('retries a failed product section and renders its products', async () => {
+    testServer.server.use(networkFailureOn('get', mockPaths.search))
+    renderHome()
+    const buttons = await screen.findAllByRole('button', { name: home.retryLabel })
+    testServer.server.use(...searchHandlers)
+    await userEvent.click(buttons[0]!)
+    expect(await screen.findByRole('link', { name: home.moreLabel })).toHaveAttribute(
+      'href',
+      '/search?sort=newest',
+    )
+    expect(screen.getAllByRole('alert')).toHaveLength(1)
+  })
+
+  it('waits for search readiness and fetches products after manual recovery', async () => {
+    testServer.server.use(malformedResponse(mockPaths.health, healthSearchIndexing))
+    renderHome()
+    const button = await screen.findByRole('button', { name: messages.wake.retryLabel })
+    expect(screen.queryByText(home.sectionEmpty)).toBeNull()
+    expect(screen.queryByRole('link', { name: home.moreLabel })).toBeNull()
+    testServer.server.use(...healthHandlers)
+    await userEvent.click(button)
+    await waitFor(() =>
+      expect(screen.getAllByRole('link', { name: home.moreLabel })).toHaveLength(2),
+    )
+    expect(screen.queryByText(messages.wake.storefrontPreparing)).toBeNull()
   })
 })
 
@@ -254,13 +287,13 @@ describe('F6 팔로우한 브랜드의 신상품 (TASK-0089)', () => {
 
     renderHome({ signedIn: true })
 
-    // 실패는 **빈 줄**이다 (4.5). 오류 화면이면 홈에서 검색과 카테고리로 갈 수 없다.
+    // Section failures keep navigation available and offer local retries.
     // 셋인 것은 이 줄이 팔로우 목록을 먼저 읽고 **나서** 실패하기 때문이다 — 앞의
     // 둘보다 한 왕복 늦게 비고, 그래서 세는 자리가 `waitFor` 안에 있다.
     await waitFor(async () => {
-      expect(await screen.findAllByText(home.sectionEmpty)).toHaveLength(3)
+      expect(await screen.findAllByText(home.sectionFailed)).toHaveLength(3)
     })
-    expect(screen.queryByRole('alert')).toBeNull()
+    expect(screen.getAllByRole('alert').length).toBeGreaterThanOrEqual(2)
   })
 })
 
