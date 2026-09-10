@@ -110,3 +110,7 @@ SQL 누적 시간에는 병렬 질의가 포함되므로 서버 벽시계와 합
 후속 수정 후보는 cart/checkout의 다중 relation 조회 왕복 축소, 이미 확인한 account/order의 요청 내부 중복 조회 축소다. 구매 상태 전이·원장·잠금·스냅샷을 유지한 실 PostgreSQL 회귀가 선행되어야 한다. Prisma relationJoins preview는 켜는 순간 기본 관계 로딩 전략 전체가 바뀌므로 특정 경로만 바뀐다고 가정하면 안 된다. 후속 구현은 별도 TASK에서 범위와 위험을 명시하고, 같은7개 요청 warm30회/동시32회 비교 및 운영 소량 전후 trace로 검증한다. 1차 목표는 대상 관계 조회의 SQL 왕복 수 절반 이하 및 동일 환경 p95 회귀0건이다. 전체 구매300ms 같은 검증되지 않은 운영 목표는 약속하지 않는다. 실제 cold start 표본은 여전히 미확보라 TASK-0131 F3는 열어 둔다.
 
 [요청 ID와 구간 원자료](artifacts/checkout-review/production-server-timing.json). 토큰·주소·카드·SQL/매개변수는 저장하지 않았다.
+
+### 복수 상품 운영 확인에서 발견한 추가 실패
+
+썸네일 검증용 기존 시드 상품과 사진 상품2개를 함께 주문할 때, Chromium 주문서 조회가 오류 화면을 표시했고 최종 POST /payments/:id/capture가 HTTP500을 반환했다. 단일 상품 구매1회의 PAID/장바구니 비움 성공을 복수 상품 전체 성공으로 일반화하지 않는다. 이미지 표시 검증은 같은 운영 응답을 미리 받아 렌더링에 제공하는 방식으로 분리했다. 응답500에 성공 전용 Server-Timing은 없고 서버 오류 로그에 접근하지 못했으므로 transaction 만료를 확정 원인으로 기록하지 않는다. markPaid가 기본 Prisma transaction 안에서 상품별 예약/원장/상태 전이를 순차 실행하는 점과 운영 DB 왕복 약210ms를 근거로, 지연을 주입한 실 PostgreSQL 복수 상품 재현이 다음 조사 대상이다.
