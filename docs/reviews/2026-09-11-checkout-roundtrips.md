@@ -26,3 +26,9 @@ CHECKOUT_REMOTE_DIAGNOSTIC=1 CHECKOUT_REMOTE_PREPARATION=1 CHECKOUT_REMOTE_ITEMS
 - 쿠폰·요율·예약·만료81개 회귀 통과. 전체 typecheck/lint/build/format 통과. API4,358개(진단2개 skip), shared103개, UI956개, api-mocks472개, admin1,164개, seller867개, shop1,259개(1개 skip) 통과. 배포·모바일 전체 구매는 결과 확인 뒤 기록한다.
 
 TASK-0132 배포 뒤 확인한 [운영 앞 단계 응답 중단](2026-09-11-payment-finalization.md)을 해결하는 후속이다. 연결 획득 지연과 실제 cold start는 별도 원인이라 과대 해석하지 않는다.
+
+## 운영 모바일 검증
+
+PR141 배포 후 390px 실제 브라우저에서 두 상품 주문서 진입·새로고침·결제 완료·장바구니 비움 통과. 주문서 생성 Server-Timing total 2,182ms, 주문 생성3,439ms, 장바구니405ms/2SQL. 두 판매자 주문 모두 PAID, 썸네일 정상, 주문서401 없음. [원본 측정](artifacts/checkout-review/roundtrip-production-browser.json).
+
+결제 버튼부터 완료까지26,475ms: 승인·확정 응답은 클라이언트5초에 중단되어 기존 결과 조회 복구를 거쳤다. 정상 서버 처리 도중의 조기 중단은 TASK0134에서 요청별 제한을 조정한다. 단회 warm 측정이며 p95나 cold 통계가 아니다.
