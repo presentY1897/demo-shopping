@@ -20,6 +20,8 @@ export interface PaymentSectionProps {
   /** 고를 수 있는 것 전부. 토스는 키가 있을 때에만 여기 있다 (TASK-0055 4.1). */
   readonly methods: readonly PaymentMethod[]
   readonly loading: boolean
+  readonly failed?: boolean
+  readonly onReload?: () => void
   /** 지금 골라 둔 것의 id. 고를 것이 없으면 `null` 이다. */
   readonly chosen: string | null
   readonly state: PaymentState
@@ -66,6 +68,8 @@ export interface PaymentSectionProps {
 export function PaymentSection({
   methods,
   loading,
+  failed = false,
+  onReload,
   chosen,
   state,
   messages,
@@ -81,7 +85,15 @@ export function PaymentSection({
 
       {loading ? <p className="text-fg-muted text-sm">{messages.loading}</p> : null}
 
-      {!loading && !hasCards ? <NoCards messages={messages} /> : null}
+      {failed ? (
+        <div role="alert" className="text-danger text-sm">
+          {messages.loadFailed}
+          <Button onClick={onReload} size="sm" variant="outline">
+            {messages.reloadCards}
+          </Button>
+        </div>
+      ) : null}
+      {!loading && !failed && !hasCards ? <NoCards messages={messages} /> : null}
 
       {methods.length === 0 ? null : (
         <fieldset className="flex flex-col gap-2">

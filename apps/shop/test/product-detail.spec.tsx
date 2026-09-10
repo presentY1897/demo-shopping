@@ -7,13 +7,19 @@
  * checked through the controls a shopper actually operates.
  */
 
-import { storefrontProductDetail, storefrontProductWithoutOptions } from '@shopping/api-mocks'
+import {
+  shopperCheckout,
+  storefrontProductDetail,
+  storefrontProductWithoutOptions,
+} from '@shopping/api-mocks'
 import { DENSITY_LEVELS, DENSITY_STORAGE_KEY } from '@shopping/ui'
 import { DensityProvider } from '@shopping/ui/density'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { testServer } from './setup'
+import { navigation } from './support/navigation'
 import { messagesFor } from '@/messages'
 
 import { renderWithAuth } from './support/auth'
@@ -192,15 +198,15 @@ describe('F4 밀도 3단계', () => {
     expect(screen.queryByText('착용 계절')).toBeNull()
   })
 
-  it('says more about shipping as the density grows', async () => {
+  it('shows the same actual shipping policy at every density', async () => {
     const { unmount } = await renderDetail(product.id, { density: 1 })
 
-    expect(screen.getByText(copy.info.shippingMinimal)).toBeVisible()
+    expect(screen.getByText(copy.info.shippingFee.replace('{amount}', '₩3,000'))).toBeVisible()
 
     unmount()
     await renderDetail(product.id, { density: 3 })
 
-    expect(screen.getByText(copy.info.shippingDetailed)).toBeVisible()
+    expect(screen.getByText(copy.info.shippingFee.replace('{amount}', '₩3,000'))).toBeVisible()
   })
 
   it('adds the recommendation slot only at the maximal step', async () => {
@@ -274,7 +280,7 @@ describe('F5b · F5c — 모바일 구매 바', () => {
     expect(screen.getByRole('button', { name: copy.purchase.increase })).toBeVisible()
   })
 
-  it('keeps 바로 구매 reachable and says why it is inert', async () => {
+  it('requires an option before direct purchase', async () => {
     // 담기는 이제 실제로 담는다 (TASK-0046 4.5). 남은 것은 「바로 구매」이고,
     // TASK-0023 4장대로 **보이되 비활성이고 그 이유가 붙어 있다** — `aria-disabled`
     // 라 탭 순서에 남아서 그 이유를 읽을 수 있다.
@@ -284,7 +290,7 @@ describe('F5b · F5c — 모바일 구매 바', () => {
 
     expect(buyNow).toHaveAttribute('aria-disabled', 'true')
     expect(buyNow).not.toBeDisabled()
-    expect(screen.getByText(copy.purchase.comingSoon)).toBeVisible()
+    expect(screen.queryByText(copy.purchase.comingSoon)).toBeNull()
   })
 
   it('refuses 담기 until a combination is chosen, without taking its tab stop', async () => {
@@ -394,4 +400,30 @@ describe('가격', () => {
       expect(screen.getByText('₩158,000')).toBeVisible()
     })
   })
+})
+
+it('opens checkout with only the selected option and quantity', async () => {
+  let submitted: unknown
+  testServer.server.events.on('request:start', ({ request }) => {
+    if (request.method === 'POST' && new URL(request.url).pathname.endsWith('/checkouts'))
+      void request
+        .clone()
+        .json()
+        .then((body: unknown) => {
+          submitted = body
+        })
+  })
+  try {
+    const user = userEvent.setup()
+    await renderDetail()
+    await user.click(optionButton('색상', '아이보리'))
+    await user.click(optionButton('사이즈', 'M'))
+    await user.click(screen.getByRole('button', { name: copy.purchase.increase }))
+    await user.click(screen.getByRole('button', { name: copy.purchase.buyNow }))
+    await waitFor(() => expect(navigation.href).toBe(`/checkout/${shopperCheckout.checkout.id}`))
+    expect(submitted).toMatchObject({ items: [{ quantity: 2 }] })
+    expect(Object.keys(submitted as object)).toEqual(['items'])
+  } finally {
+    testServer.server.events.removeAllListeners('request:start')
+  }
 })

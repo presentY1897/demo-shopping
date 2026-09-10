@@ -551,9 +551,26 @@ export type CheckoutResponse = z.infer<typeof checkoutResponseSchema>
  * **부르는 것은 장바구니의 「주문하기」다** (4.1). 주문서 화면이 진입과 동시에
  * 부르면 새로고침 한 번에 예약이 한 벌 더 잡힌다.
  */
-export const createCheckoutRequestSchema = z.object({
-  itemIds: z.array(z.uuid()).min(1).max(100),
-})
+export const createCheckoutRequestSchema = z
+  .object({
+    itemIds: z.array(z.uuid()).min(1).max(100).optional(),
+    items: z
+      .array(z.object({ variantId: z.uuid(), quantity: z.number().int().min(1).max(999) }))
+      .min(1)
+      .max(100)
+      .optional(),
+  })
+  .refine((value) => (value.itemIds === undefined) !== (value.items === undefined), {
+    message: '장바구니 항목 또는 직접 구매 항목 중 하나를 지정해 주세요.',
+  })
+  .refine(
+    (value) =>
+      value.items === undefined ||
+      new Set(value.items.map((item) => item.variantId)).size === value.items.length,
+    {
+      message: '같은 옵션은 한 번만 지정해 주세요.',
+    },
+  )
 
 export type CreateCheckoutRequest = z.infer<typeof createCheckoutRequestSchema>
 
@@ -734,3 +751,5 @@ export const checkoutDraftSchema = z.object({
 })
 export const checkoutDraftResponseSchema = z.object({ draft: checkoutDraftSchema })
 export type CheckoutDraft = z.infer<typeof checkoutDraftSchema>
+
+export const releaseCheckoutResponseSchema = z.object({ released: z.number().int().nonnegative() })

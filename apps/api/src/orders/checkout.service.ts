@@ -53,7 +53,21 @@ export class CheckoutService {
    */
   async open(principal: RequestPrincipal, input: CreateCheckoutRequest): Promise<CheckoutResponse> {
     const account = await this.account(principal, 'order.write')
-    const rows = await this.orderableLines(account.id, input.itemIds)
+    const rows: CartLineRow[] =
+      input.itemIds !== undefined
+        ? await this.orderableLines(account.id, input.itemIds)
+        : await Promise.all(
+            (input.items ?? []).map(async (item) => {
+              const variant = await this.prisma.productVariant.findUnique({
+                where: { id: item.variantId },
+                select: VARIANT_LINE_SELECT,
+              })
+              if (variant === null) throw new NotFoundException('상품을 찾을 수 없어요.')
+              const row = { id: variant.id, quantity: item.quantity, variant }
+              assertOrderable(row)
+              return row
+            }),
+          )
     const checkoutId = randomUUID()
 
     await this.prisma.$transaction(async (tx) => {
@@ -64,10 +78,11 @@ export class CheckoutService {
           userId: account.id,
           checkoutId,
         })
-        await tx.stockReservation.update({
-          where: { id: reservation.id },
-          data: { sourceCartItemId: row.id, sourceCartUpdatedAt: row.updatedAt ?? null },
-        })
+        if (input.itemIds !== undefined)
+          await tx.stockReservation.update({
+            where: { id: reservation.id },
+            data: { sourceCartItemId: row.id, sourceCartUpdatedAt: row.updatedAt ?? null },
+          })
       }
     })
 

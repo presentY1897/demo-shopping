@@ -305,7 +305,12 @@ export type ProductResponse = z.infer<typeof productResponseSchema>
  */
 export const productDetailResponseSchema = z.object({
   product: productSchema,
-  seller: z.object({ id: z.uuid(), brandName: z.string() }),
+  seller: z.object({
+    id: z.uuid(),
+    brandName: z.string(),
+    shippingFee: z.number().int().nonnegative().optional(),
+    freeShippingThreshold: z.number().int().nonnegative().nullable().optional(),
+  }),
   /**
    * 속성 표, 이미 풀려서 (TASK-0043 4.3).
    *

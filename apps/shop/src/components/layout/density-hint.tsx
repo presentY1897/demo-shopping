@@ -17,6 +17,7 @@
  * never has to be dismissed by someone who has already understood it.
  */
 
+import { usePathname } from 'next/navigation'
 import { CloseIcon, IconButton } from '@shopping/ui/components'
 import { subscribeToDensity } from '@shopping/ui/density'
 import { useEffect, useSyncExternalStore } from 'react'
@@ -34,12 +35,15 @@ export function DensityHint({ messages }: { readonly messages: DensityControlMes
   // lives in localStorage, which React does not own and the server cannot read.
   // 값은 **표를 다시 맞추기 위해서만** 쓴다 — 단계를 고르는 순간 이 구독이 깨어나고,
   // 그때 표를 뗀다. 그리는지 마는지는 여기서 정하지 않는다.
+  const pathname = usePathname()
   const owed = useSyncExternalStore(subscribeToDensity, shouldShowDensityHint, notOnTheServer)
 
   useEffect(() => {
     if (owed) markDensityHintOwed()
     else hideDensityHint()
   }, [owed])
+
+  if (pathname?.startsWith('/checkout') || pathname === '/cart') return null
 
   return (
     <div

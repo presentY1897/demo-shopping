@@ -211,6 +211,8 @@ export type OrderRefusal = (typeof orderRefusals)[number]
 export interface PaymentStore {
   readonly cards: readonly IssuedCard[]
   readonly loadingCards: boolean
+  readonly cardsFailed: boolean
+  readonly reloadCards: () => void
   readonly state: PaymentState
   /** 주문을 만들지 못했다. `null` 이면 아직 실패한 적이 없다. */
   readonly orderRefusal: OrderRefusal | null
@@ -236,6 +238,8 @@ export function usePayment(
   const [ordered, setOrdered] = useState<OrderResponse['order'] | null>(null)
   const [recoveryRun, setRecoveryRun] = useState(0)
   const busy = useRef(false)
+  const [cardsFailed, setCardsFailed] = useState(false)
+  const [cardsAttempt, setCardsAttempt] = useState(0)
   const [cards, setCards] = useState<readonly IssuedCard[]>([])
   const [loadingCards, setLoadingCards] = useState(true)
   const [state, setState] = useState<PaymentState>({ status: 'idle' })
@@ -313,6 +317,7 @@ export function usePayment(
   }, [checkoutId, auth.status, recoveryRun, onOrdered])
 
   useEffect(() => {
+    if (auth.status === 'checking') return undefined
     const controller = new AbortController()
 
     async function load(): Promise<void> {
@@ -321,9 +326,7 @@ export function usePayment(
 
         if (!controller.signal.aborted) setCards(answer.cards)
       } catch {
-        // 빈 목록으로 남는다 — 배송지와 같은 판단이다(`use-address-book.ts`).
-        // 카드를 못 읽었다고 주문서 전체를 오류 화면으로 바꾸면 사람이 할 수 있는
-        // 일이 아무것도 없어지고, 빈 목록은 「카드를 발급받으러 간다」는 길을 남긴다.
+        if (!controller.signal.aborted) setCardsFailed(true)
       } finally {
         if (!controller.signal.aborted) setLoadingCards(false)
       }
@@ -334,7 +337,7 @@ export function usePayment(
     return () => {
       controller.abort()
     }
-  }, [])
+  }, [auth.status, cardsAttempt])
 
   useEffect(() => {
     if (state.status !== 'paid') return
@@ -522,6 +525,12 @@ export function usePayment(
   return {
     cards,
     loadingCards,
+    cardsFailed,
+    reloadCards: () => {
+      setCardsFailed(false)
+      setLoadingCards(true)
+      setCardsAttempt((value) => value + 1)
+    },
     orderRefusal,
     pay,
     state,

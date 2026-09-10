@@ -359,7 +359,7 @@ export class ProductService {
 
     const seller = await this.prisma.seller.findUnique({
       where: { id: product.sellerId },
-      select: { id: true, brandName: true },
+      select: { id: true, brandName: true, shippingFee: true, freeShippingThreshold: true },
     })
 
     // A listing whose store is gone is not on sale either — and the page has a

@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductThumbnail } from '@/components/products/product-thumbnail'
+
 import type { CartItem } from '@shopping/shared'
 import { Checkbox, IconButton } from '@shopping/ui/components'
 import { formatMoney } from '@shopping/ui/format'
@@ -67,10 +69,7 @@ export function CartLineRow({
         href={`/products/${item.productId}`}
         tabIndex={-1}
       >
-        {item.thumbnailUrl === null ? null : (
-          // eslint-disable-next-line @next/next/no-img-element -- 장바구니 줄의 작은 썸네일이다. `next/image` 로는 줄 수만큼 요청이 늘고, 얻는 것이 없다 (`product-gallery.tsx` 가 같은 이유로 같은 선택을 했다).
-          <img alt="" className="size-full object-cover" src={item.thumbnailUrl} />
-        )}
+        <ProductThumbnail src={item.thumbnailUrl} className="size-full" />
       </Link>
 
       <div className="flex min-w-0 flex-1 flex-col gap-1">

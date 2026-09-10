@@ -984,6 +984,7 @@ export {
   CHECKOUT_NOTE_MAX_LENGTH,
   checkoutQueryParamsSchema,
   checkoutResponseSchema,
+  releaseCheckoutResponseSchema,
   checkoutSchema,
   createCheckoutRequestSchema,
   createOrderRequestSchema,

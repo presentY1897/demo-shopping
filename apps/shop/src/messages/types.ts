@@ -1827,6 +1827,7 @@ export interface ProductOptionMessages {
 }
 
 export interface ProductPurchaseMessages {
+  readonly buyFailed: string
   readonly legend: string
   readonly addToCart: string
   readonly buyNow: string
@@ -1842,6 +1843,9 @@ export interface ProductPurchaseMessages {
 }
 
 export interface ProductInfoMessages {
+  readonly shippingFee: string
+  readonly shippingThreshold: string
+  readonly shippingUnknown: string
   readonly descriptionLabel: string
   readonly noDescription: string
   readonly attributesLabel: string
@@ -1926,6 +1930,7 @@ export interface CartMessages {
 
 /** 주문서 화면 (TASK-0050). */
 export interface CheckoutMessages {
+  readonly cancelFailed: string
   readonly retryDraft: string
   readonly draftFailed: string
   readonly cancelCheckout: string
@@ -2066,6 +2071,8 @@ export interface CheckoutCouponMessages {
  * 빠지는 것은 그때 아무 말도 못 듣는다는 뜻이고, 그것이 가장 나쁜 실패다.
  */
 export interface PaymentMessages {
+  readonly loadFailed: string
+  readonly reloadCards: string
   readonly checkResult: string
   readonly viewOrders: string
   readonly title: string
