@@ -110,15 +110,15 @@ export interface PlacedOrder {
 async function addToCart(page: Page, productId: string): Promise<void> {
   await page.goto(`${APPS.shop}/products/${productId}`)
 
+  // Counting does not wait for a streamed product panel to render.
+  await expect(page.getByRole('button', { name: '장바구니 담기' })).toBeVisible()
   const groups = page.locator('fieldset').filter({ has: page.getByRole('button') })
+  const count = await groups.count()
 
-  for (let index = 0; index < (await groups.count()); index += 1) {
-    await groups
-      .nth(index)
-      .getByRole('button')
-      .filter({ hasNot: page.locator('[aria-disabled="true"]') })
-      .first()
-      .click()
+  for (let index = 0; index < count; index += 1) {
+    const option = groups.nth(index).getByRole('button', { disabled: false }).first()
+    await option.click()
+    await expect(option).toHaveAttribute('aria-pressed', 'true')
   }
 
   await page.getByRole('button', { name: '장바구니 담기' }).click()

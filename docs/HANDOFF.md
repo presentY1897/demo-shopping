@@ -1444,4 +1444,6 @@ Domain** → `cdn.demo-shopping.com`.
 
 TASK-0125~0131은 사용자 일괄 승인 후 개별 worktree에서 구현하여 PR #136으로 통합했다. 결제 동시성/응답 복구·장바구니 정리·배송 초안·썸네일 대체·직접 구매·홈 이미지 개선의 근거는 [측정 및 검증 기록](reviews/2026-09-10-checkout-latency-measurements.md)에 있다.
 
-TASK-0129는 사용자가 임의 상품 검증을 요청해 운영 검색 12개 상품의 시드 CDN 객체 404를 확인했다. 같은 해시의 원본 SVG를 구매자 정적 자산으로 제공하는 복구와 운영 구매 경로 검증을 진행한다. TASK-0131은 로컬 7개 요청 30/32표본을 계측했으나 운영 4~5초 지연을 재현하지 못했다. 운영 요청 ID별 인증/DB pool/query/provider/직렬화 trace와 실제 cold start 표본이 필요하며 로컬 결과로 운영 원인을 단정하지 않는다. 유료 인프라 변경이나 운영 부하 검사는 수행하지 않았다.
+TASK-0129는 임의 상품 검증으로 기존 시드 CDN 객체 누락을 확인하고 원본 바이트와 동일한 정적 자산을 제공한다. 검증 조건과 범위는 [썸네일 복구 기록](reviews/2026-09-10-seed-thumbnail-recovery.md)에 있다.
+
+TASK-0131은 PR #137 운영 trace에서 DB 왕복 약210ms를 관찰했다. 단일 상품은 PAID/장바구니 비움 성공, 두 상품 capture는500이었다. 격리된 실 PostgreSQL에210ms를 주입하면 기본 transaction5초에서 P2028·payment PAID/주문 PAYMENT_PENDING/장바구니 잔류가 재현되고, 테스트 제한30초에서는 완료된다. 운영 처리 제한은 변경하지 않았다. 후속은 markPaid의 반복 DB 왕복·transaction 경계를 개선하는 것이며, 단순 제한 증가만으로 속도나 최대100개 항목을 해결했다고 보면 안 된다. 실제 cold start와 운영 오류 로그는 아직 미확보다. [측정·재현 근거](reviews/2026-09-10-checkout-latency-measurements.md).

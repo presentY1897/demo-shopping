@@ -37,16 +37,14 @@ async function tabTo(page: Page, target: Locator, limit = 200): Promise<void> {
  * 이름으로 찍으면 시드가 바뀌는 날 조용히 못 찾는다.
  */
 async function chooseEveryOption(page: Page): Promise<void> {
+  await expect(page.getByRole('button', { name: '장바구니 담기' })).toBeVisible()
   const groups = page.locator('fieldset').filter({ has: page.getByRole('button') })
 
   for (let index = 0; index < (await groups.count()); index += 1) {
-    const choice = groups
-      .nth(index)
-      .getByRole('button')
-      .filter({ hasNot: page.locator('[aria-disabled="true"]') })
-      .first()
+    const choice = groups.nth(index).getByRole('button', { disabled: false }).first()
 
     await tabAndPress(page, choice)
+    await expect(choice).toHaveAttribute('aria-pressed', 'true')
   }
 }
 

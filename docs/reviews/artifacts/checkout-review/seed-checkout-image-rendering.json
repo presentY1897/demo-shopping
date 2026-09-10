@@ -1,0 +1,50 @@
+{
+  "at": "2026-09-10T13:37:10.011Z",
+  "viewport": 390,
+  "imageOnly": true,
+  "prefetched": true,
+  "results": [
+    {
+      "page": "cart",
+      "images": [
+        {
+          "src": "/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg",
+          "naturalWidth": 800
+        },
+        {
+          "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2cec8285-5719-59c1-9368-be270f16eb4b.png",
+          "naturalWidth": 1254
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "page": "checkout",
+      "images": [
+        {
+          "src": "/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg",
+          "naturalWidth": 800
+        },
+        {
+          "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2cec8285-5719-59c1-9368-be270f16eb4b.png",
+          "naturalWidth": 1254
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "page": "order-detail",
+      "images": [
+        {
+          "src": "/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg",
+          "naturalWidth": 800
+        },
+        {
+          "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2cec8285-5719-59c1-9368-be270f16eb4b.png",
+          "naturalWidth": 1254
+        }
+      ],
+      "overflow": false
+    }
+  ]
+}
