@@ -10,3 +10,4 @@
 | [TASK-0100](./TASK-0100-portfolio-docs.md) | README · 포트폴리오 문서 | 승인됨 | 0097, 0098, 0099 |
 | [TASK-0122](./TASK-0122-factory-clock.md) | 테스트 팩토리의 데이터베이스 시계 | 완료 | 0120 |
 | [TASK-0121](./TASK-0121-racy-optimistic-spec.md) | 낙관적 갱신 검사의 타이밍 가정 | 완료 | 0029 · 0120 |
+| [TASK-0123](./TASK-0123-storefront-copy-cleanup.md) | 구매자 메인 설명 정리 | 진행중 (구현·로컬 검증 완료) | 0044 · 0101 |
