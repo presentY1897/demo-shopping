@@ -1,3 +1,4 @@
+import { cartLines } from './line-query.js'
 import { randomBytes, randomUUID } from 'node:crypto'
 
 import {
@@ -50,7 +51,7 @@ import { NotificationService } from '../notifications/notification.service.js'
 import { ORDER_NUMBER_SUFFIX_LENGTH, orderNumberOf } from './order-number.js'
 import { CheckoutService } from './checkout.service.js'
 import type { CartLineRow } from './order-lines.js'
-import { assertOrderable, policiesOf, toLine, VARIANT_LINE_SELECT } from './order-lines.js'
+import { assertOrderable, policiesOf, toLine } from './order-lines.js'
 import type { OrderLine, PlannedSellerOrder } from './order-plan.js'
 import { planOrder } from './order-plan.js'
 import type { OrderSource } from './order-source.js'
@@ -276,24 +277,24 @@ export class OrderService {
       // 잡으면 한 사람이 같은 물건을 두 몫 잠근다. 그렇지 않은 길에서는 예약이
       // 먼저다 — 저장한 뒤에 잡으면 품절일 때 지울 것이 생기고, 그 지우는 일이
       // 실패하는 경우를 또 다뤄야 한다.
-      for (const sellerOrder of held === null ? plan.sellerOrders : []) {
-        for (const item of sellerOrder.items) {
-          const reservation = await this.reservations.reserve(tx, {
-            variantId: item.line.variantId,
-            quantity: item.line.quantity,
+      if (held === null) {
+        const lines = plan.sellerOrders.flatMap((group) => group.items.map((item) => item.line))
+        const sources = await tx.cartItem.findMany({
+          where: { id: { in: lines.map((line) => line.itemId) }, cart: { userId } },
+          select: { id: true, updatedAt: true },
+        })
+        const byId = new Map(sources.map((row) => [row.id, row]))
+        await this.reservations.reserveMany(
+          tx,
+          lines.map((line) => ({
+            variantId: line.variantId,
+            quantity: line.quantity,
             userId,
             checkoutId,
-          })
-          const source = await tx.cartItem.findFirst({
-            where: { id: item.line.itemId, cart: { userId } },
-            select: { id: true, updatedAt: true },
-          })
-          if (source !== null)
-            await tx.stockReservation.update({
-              where: { id: reservation.id },
-              data: { sourceCartItemId: source.id, sourceCartUpdatedAt: source.updatedAt },
-            })
-        }
+            sourceCartItemId: byId.get(line.itemId)?.id,
+            sourceCartUpdatedAt: byId.get(line.itemId)?.updatedAt,
+          })),
+        )
       }
 
       const order = await tx.order.create({
@@ -326,9 +327,7 @@ export class OrderService {
         plan.sellerOrders.flatMap((group) => group.items.map((item) => item.line)),
       )
 
-      for (const group of plan.sellerOrders) {
-        await this.writeSellerOrder(tx, order.id, group, now, rateOf)
-      }
+      await this.writeSellerOrders(tx, order.id, plan.sellerOrders, now, rateOf)
 
       // **쿠폰은 마지막이다.** 여기서 지면(다른 주문이 먼저 썼으면) 트랜잭션 전체가
       // 롤백되어 예약도 주문도 없던 일이 되는데, 그 순서가 반대면 롤백될 것이
@@ -341,15 +340,15 @@ export class OrderService {
   }
 
   /** 한 판매자 몫과 그 항목들, 그리고 상태 이력의 첫 줄. */
-  private async writeSellerOrder(
+  private async writeSellerOrders(
     tx: Tx,
     orderId: string,
-    group: PlannedSellerOrder,
+    groups: readonly PlannedSellerOrder[],
     now: Date,
     rateOf: (line: OrderLine) => number,
   ): Promise<void> {
-    const sellerOrder = await tx.sellerOrder.create({
-      data: {
+    const saved = await tx.sellerOrder.createManyAndReturn({
+      data: groups.map((group) => ({
         orderId,
         sellerId: group.sellerId,
         brandName: group.brandName,
@@ -361,32 +360,35 @@ export class OrderService {
         paidAmount: group.paidAmount,
         createdAt: now,
         updatedAt: now,
-      },
-      select: { id: true },
+      })),
+      select: { id: true, sellerId: true },
     })
+    const bySeller = new Map(saved.map((row) => [row.sellerId, row.id]))
 
     await tx.orderItem.createMany({
-      data: group.items.map((item) => ({
-        sellerOrderId: sellerOrder.id,
-        variantId: item.line.variantId,
-        // 어느 상품을 샀나 (TASK-0083). 조합에서 조인으로 알 수 있는 값이지만,
-        // 리뷰가 「이 상품을 샀다」를 조회 없이 증명하려면 그 사실이 한 표 안에
-        // 있어야 한다 — 복합 외래키가 그 값이 조합의 상품임을 강제한다.
-        productId: item.line.productId,
-        // `OrderItemSnapshot` 은 평범한 객체이고 Prisma 의 JSON 입력 타입과 구조가
-        // 같다. 단언 없이 그대로 넘어간다.
-        productSnapshot: { ...item.line.snapshot },
-        unitPrice: item.line.unitPrice,
-        quantity: item.line.quantity,
-        productAmount: item.productAmount,
-        couponDiscountAmount: item.couponDiscountAmount,
-        sellerCouponDiscountAmount: item.sellerCouponDiscountAmount,
-        pointDiscountAmount: item.pointDiscountAmount,
-        discountAmount: item.discountAmount,
-        commissionRateBp: rateOf(item.line),
-        createdAt: now,
-        updatedAt: now,
-      })),
+      data: groups.flatMap((group) =>
+        group.items.map((item) => ({
+          sellerOrderId: bySeller.get(group.sellerId)!,
+          variantId: item.line.variantId,
+          // 어느 상품을 샀나 (TASK-0083). 조합에서 조인으로 알 수 있는 값이지만,
+          // 리뷰가 「이 상품을 샀다」를 조회 없이 증명하려면 그 사실이 한 표 안에
+          // 있어야 한다 — 복합 외래키가 그 값이 조합의 상품임을 강제한다.
+          productId: item.line.productId,
+          // `OrderItemSnapshot` 은 평범한 객체이고 Prisma 의 JSON 입력 타입과 구조가
+          // 같다. 단언 없이 그대로 넘어간다.
+          productSnapshot: { ...item.line.snapshot },
+          unitPrice: item.line.unitPrice,
+          quantity: item.line.quantity,
+          productAmount: item.productAmount,
+          couponDiscountAmount: item.couponDiscountAmount,
+          sellerCouponDiscountAmount: item.sellerCouponDiscountAmount,
+          pointDiscountAmount: item.pointDiscountAmount,
+          discountAmount: item.discountAmount,
+          commissionRateBp: rateOf(item.line),
+          createdAt: now,
+          updatedAt: now,
+        })),
+      ),
     })
 
     // 첫 줄의 `fromStatus` 는 `null` 이다 — 이전 상태가 없다. 생성도 이력에
@@ -396,15 +398,15 @@ export class OrderService {
     // 주체는 `BUYER` 다 — 주문서를 만든 것은 산 사람이다 (TASK-0059). `actorId` 를
     // 비워 두는 것은 그 사람이 누구인지가 `Order.userId` 에 이미 있기 때문이고,
     // 같은 사실을 두 벌로 적으면 언젠가 서로 다른 말을 한다.
-    await tx.orderStatusHistory.create({
-      data: {
-        sellerOrderId: sellerOrder.id,
+    await tx.orderStatusHistory.createMany({
+      data: saved.map((row) => ({
+        sellerOrderId: row.id,
         fromStatus: null,
-        toStatus: 'PAYMENT_PENDING',
-        actor: 'BUYER',
+        toStatus: 'PAYMENT_PENDING' as const,
+        actor: 'BUYER' as const,
         actorId: null,
         createdAt: now,
-      },
+      })),
     })
   }
 
@@ -678,14 +680,7 @@ export class OrderService {
     userId: string,
     itemIds: readonly string[],
   ): Promise<readonly CartLineRow[]> {
-    const rows = await this.prisma.cartItem.findMany({
-      where: { id: { in: [...itemIds] }, cart: { userId } },
-      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
-      // **주문서와 같은 조각을 쓴다** (`VARIANT_LINE_SELECT`). 한때 여기에 같은
-      // 내용을 손으로 적어 두었는데, 그러면 한쪽에만 필드를 더한 날 주문서와 주문이
-      // 다른 것을 보여 준다 — 쿠폰의 카테고리 범위가 실제로 그 자리였다.
-      select: { id: true, quantity: true, variant: { select: VARIANT_LINE_SELECT } },
-    })
+    const rows = await cartLines(this.prisma, userId, itemIds)
 
     if (rows.length !== itemIds.length) {
       throw new BadRequestException(
