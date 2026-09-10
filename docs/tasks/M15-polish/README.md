@@ -12,10 +12,10 @@
 | [TASK-0121](./TASK-0121-racy-optimistic-spec.md) | 낙관적 갱신 검사의 타이밍 가정 | 완료 | 0029 · 0120 |
 | [TASK-0123](./TASK-0123-storefront-copy-cleanup.md) | 구매자 메인 설명 정리 | 완료 | 0044 · 0101 |
 | [TASK-0124](./TASK-0124-storefront-checkout-review.md) | 구매자 반응 속도·결제 UX 검토 | 완료 | 0123 |
-| [TASK-0125](./TASK-0125-payment-idempotency.md) | 결제 생성·승인 중복 방지 | 진행중 | 0124 |
-| [TASK-0126](./TASK-0126-payment-result-recovery.md) | 끊긴 결제 결과 복구·재시도 통일 | 진행중 | 0125 |
-| [TASK-0127](./TASK-0127-paid-cart-cleanup.md) | 결제 확정 후 구매한 장바구니 정리 | 진행중 | 0126 |
-| [TASK-0128](./TASK-0128-checkout-input-preservation.md) | 배송지 이동·배송 요청사항 보존 | 진행중 | 0127 |
+| [TASK-0125](./TASK-0125-payment-idempotency.md) | 결제 생성·승인 중복 방지 | 완료 | 0124 |
+| [TASK-0126](./TASK-0126-payment-result-recovery.md) | 끊긴 결제 결과 복구·재시도 통일 | 완료 | 0125 |
+| [TASK-0127](./TASK-0127-paid-cart-cleanup.md) | 결제 확정 후 구매한 장바구니 정리 | 완료 | 0126 |
+| [TASK-0128](./TASK-0128-checkout-input-preservation.md) | 배송지 이동·배송 요청사항 보존 | 완료 | 0127 |
 | [TASK-0129](./TASK-0129-purchase-ux-consistency.md) | 구매 안내·오류 피드백·모바일 동선 정리 | 진행중 | 0128 |
-| [TASK-0130](./TASK-0130-storefront-loading-performance.md) | 홈 선행 대기 제거·상품 이미지 경량화 | 진행중 | 0124 |
+| [TASK-0130](./TASK-0130-storefront-loading-performance.md) | 홈 선행 대기 제거·상품 이미지 경량화 | 완료 | 0124 |
 | [TASK-0131](./TASK-0131-checkout-api-latency-analysis.md) | 장바구니·결제 API 지연 원인 측정 | 진행중 | 0124 |

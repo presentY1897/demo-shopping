@@ -3,10 +3,10 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M15 마무리 |
-| 상태 | 진행중 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-10 |
-| 구현 브랜치(예정) | `feature/checkout-input-preservation` |
-| 구현 worktree(예정) | `feature-checkout-input-preservation` |
+| 구현 브랜치 | `feature/checkout-input-preservation` |
+| 구현 worktree | `feature-checkout-input-preservation` |
 | 선행 작업 | TASK-0127 |
 | 우선순위 / 근거 | P1 / TASK-0124 R2 · R3 |
 
@@ -58,10 +58,10 @@
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| F1 | 배송지 왕복 | 주소 없음/있음→추가/수정→복귀 E2E | 동일 checkoutId·예약·쿠폰·메모 유지 | [ ] |
-| F2 | 새로고침/만료 | TTL 전후 재진입과 명시 취소 | TTL 내 복구, 취소/만료 후 예약 유지 0건 | [ ] |
-| F3 | 메모 전달 | 입력→주문 생성→구매자/판매자 조회 | 문구 일치, 100자 초과 거부, 과거 null 호환 | [ ] |
-| F4 | 조회 오류 | 주소록 지연/실패 주입 | 실패를 빈 목록으로 표시하지 않음 | [ ] |
+| F1 | 배송지 왕복 | 주소 없음/있음→추가/수정→복귀 E2E | 동일 checkoutId·예약·쿠폰·메모 유지 | [x] |
+| F2 | 새로고침/만료 | TTL 전후 재진입과 명시 취소 | TTL 내 복구, 취소/만료 후 예약 유지 0건 | [x] |
+| F3 | 메모 전달 | 입력→주문 생성→구매자/판매자 조회 | 문구 일치, 100자 초과 거부, 과거 null 호환 | [x] |
+| F4 | 조회 오류 | 주소록 지연/실패 주입 | 실패를 빈 목록으로 표시하지 않음 | [x] |
 
 ### 6.2 품질 게이트
 
@@ -73,10 +73,10 @@
 
 ### 6.4 문서
 
-- [ ] 이 TASK의 검증 근거와 결과를 기록하고 모든 기준 충족 후 완료 처리한다.
-- [ ] TASK 인덱스 두 곳을 갱신한다.
-- [ ] 변경된 상태·화면·DB·가격 정책을 `docs/design/` 및 결정 문서에 반영한다.
-- [ ] 새 환경변수가 있으면 `.env.example`을 갱신한다.
+- [x] 이 TASK의 검증 근거와 결과를 기록하고 모든 기준 충족 후 완료 처리한다.
+- [x] TASK 인덱스 두 곳을 갱신한다.
+- [x] 변경된 상태·화면·DB·가격 정책을 `docs/design/` 및 결정 문서에 반영한다.
+- [x] 새 환경변수가 있으면 `.env.example`을 갱신한다.
 
 ## 7. 리스크 / 열린 질문
 
@@ -94,6 +94,8 @@
 
 예약 행의 checkoutDraft JSON으로 주소 ID·배송 요청·쿠폰 선택을 인증된 서버에 저장한다. GET/PATCH /checkouts/:id/draft는 유효 예약의 소유자를 확인한다. 클라이언트 저장은 순차 요청으로 처리하고 주소록 이동 전에 flush한다. pagehide에서는 마지막 초안을 keepalive로 저장하되 예약을 해제하지 않는다. 예약은 명시 취소와 TTL로 종료한다. 배송 메모는 주문 스냅샷의 deliveryNote로 저장한다.
 
-### 통합 검증 진행
+### 통합 검증 결과
 
-2026-09-10 통합 브랜치 `feature/checkout-review-integration`에서 전체 타입·린트·빌드를 통과했다. 전체 테스트 재확인과 CI가 남아 있어 완료 상태로 변경하지 않았다. 공통 결과는 [구매 흐름 검증 기록](../../reviews/2026-09-10-checkout-latency-measurements.md)을 참조한다.
+2026-09-10 통합 코드 `d945f04`에서 GitHub CI typecheck·lint·build·test 네 게이트, E2E, Lighthouse가 모두 COMPLETED/SUCCESS다. 기능 기준은 실 PostgreSQL 회귀와 Chromium 대역 검사 및 실제 스택 E2E를 조합해 검증했다. 공통 결과는 [구매 흐름 검증 기록](../../reviews/2026-09-10-checkout-latency-measurements.md)을 참조한다.
+
+런타임 환경변수 추가는 없다. 상태/계약 변경은 설계 및 D-270~272에 반영했으며 인덱스 두 곳을 갱신했다.
