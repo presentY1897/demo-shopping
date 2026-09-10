@@ -17,6 +17,7 @@ import type { OrderLine } from './order-plan.js'
 
 /** 장바구니에서 읽어 온 주문될 줄 하나. */
 export interface CartLineRow {
+  readonly updatedAt?: Date
   readonly id: string
   readonly quantity: number
   readonly variant: {

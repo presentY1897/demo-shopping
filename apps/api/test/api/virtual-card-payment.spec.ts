@@ -935,3 +935,59 @@ describe('TASK-0125 abandoned authorization', () => {
     expect(await payments().resolveUnresolved(id)).toBe('noop')
   })
 })
+
+describe('TASK-0127 paid cart cleanup', () => {
+  it('removes purchased items once and leaves unselected items', async () => {
+    const order = await place()
+    const otherId = await add(await listing(10_000, 10), 1)
+    const card = await issueCard(1_000_000)
+    const paymentId = await startPayment(order, card.id)
+    await payments().authorize(principal, paymentId)
+    await payments().capture(principal, paymentId)
+    await payments().capture(principal, paymentId)
+    const cart = await client().request({ path: '/cart', schema: cartResponseSchema })
+    expect(cart.groups.flatMap((group) => group.items).map((item) => item.id)).toEqual([otherId])
+  })
+  it('preserves an item changed after checkout and on declined payment', async () => {
+    const order = await place()
+    await add(order.variantId, 1)
+    const card = await issueCard(1_000)
+    const failed = await startPayment(order, card.id)
+    await payments().authorize(principal, failed)
+    let cart = await client().request({ path: '/cart', schema: cartResponseSchema })
+    expect(cart.groups.flatMap((group) => group.items)[0]?.quantity).toBe(3)
+    const funded = await issueCard(1_000_000)
+    const succeeded = await startPayment(order, funded.id)
+    await payments().authorize(principal, succeeded)
+    await payments().capture(principal, succeeded)
+    cart = await client().request({ path: '/cart', schema: cartResponseSchema })
+    expect(cart.groups.flatMap((group) => group.items)[0]?.quantity).toBe(3)
+  })
+})
+
+describe('TASK-0127 historical and replaced cart items', () => {
+  it('preserves a deleted and re-added item', async () => {
+    const order = await place()
+    await db.query(`DELETE FROM "CartItem" WHERE "variantId" = $1`, [order.variantId])
+    const added = await add(order.variantId, 1)
+    const card = await issueCard(1_000_000)
+    const id = await startPayment(order, card.id)
+    await payments().authorize(principal, id)
+    await payments().capture(principal, id)
+    const cart = await client().request({ path: '/cart', schema: cartResponseSchema })
+    expect(cart.groups.flatMap((group) => group.items).map((item) => item.id)).toEqual([added])
+  })
+  it('does not infer old cart ownership from variant IDs', async () => {
+    const order = await place()
+    await db.query(
+      `UPDATE "StockReservation" SET "sourceCartItemId" = NULL, "sourceCartUpdatedAt" = NULL WHERE "checkoutId" = $1`,
+      [order.checkoutId],
+    )
+    const card = await issueCard(1_000_000)
+    const id = await startPayment(order, card.id)
+    await payments().authorize(principal, id)
+    await payments().capture(principal, id)
+    const cart = await client().request({ path: '/cart', schema: cartResponseSchema })
+    expect(cart.groups.flatMap((group) => group.items)[0]?.variantId).toBe(order.variantId)
+  })
+})

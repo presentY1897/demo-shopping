@@ -56,11 +56,15 @@ export class CheckoutService {
 
     await this.prisma.$transaction(async (tx) => {
       for (const row of rows) {
-        await this.reservations.reserve(tx, {
+        const reservation = await this.reservations.reserve(tx, {
           variantId: row.variant.id,
           quantity: row.quantity,
           userId: account.id,
           checkoutId,
+        })
+        await tx.stockReservation.update({
+          where: { id: reservation.id },
+          data: { sourceCartItemId: row.id, sourceCartUpdatedAt: row.updatedAt ?? null },
         })
       }
     })
@@ -200,7 +204,12 @@ export class CheckoutService {
     const rows = await this.prisma.cartItem.findMany({
       where: { id: { in: [...itemIds] }, cart: { userId } },
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
-      select: { id: true, quantity: true, variant: { select: VARIANT_LINE_SELECT } },
+      select: {
+        id: true,
+        updatedAt: true,
+        quantity: true,
+        variant: { select: VARIANT_LINE_SELECT },
+      },
     })
 
     if (rows.length !== itemIds.length) {
