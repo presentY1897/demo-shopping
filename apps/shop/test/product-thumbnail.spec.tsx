@@ -3,6 +3,13 @@ import { describe, expect, it } from 'vitest'
 import { ProductThumbnail } from '@/components/products/product-thumbnail'
 
 describe('snapshot thumbnails', () => {
+  it('renders byte-identical legacy seed assets without changing the snapshot', () => {
+    const src = 'https://cdn.demo-shopping.com/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg'
+    const { container } = render(<ProductThumbnail src={src} />)
+    expect(container.querySelector('img')?.getAttribute('src')).toBe(
+      '/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg',
+    )
+  })
   it.each([null, '', '   '])('shows a placeholder for absent URL %s', (src) => {
     const { container } = render(<ProductThumbnail src={src} />)
     expect(container.querySelector('img')).toBeNull()

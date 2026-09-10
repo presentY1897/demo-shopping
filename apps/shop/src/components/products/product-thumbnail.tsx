@@ -1,5 +1,6 @@
 'use client'
 
+import { productImageUrl } from '@/lib/products/seed-image-url'
 import { useState } from 'react'
 
 /** Keep order snapshots intact; a failed URL gets a placeholder, never a different product image. */
@@ -35,7 +36,7 @@ export function ProductThumbnail({
     <img
       alt=""
       className={`object-cover ${className}`}
-      src={src}
+      src={productImageUrl(src)}
       onError={() => setFailed(src)}
       loading="lazy"
       decoding="async"
