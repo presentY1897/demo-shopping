@@ -1,0 +1,609 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "mens-navy-band-collar-shirt",
+        "name": "남성 오버핏 밴드카라 린넨 셔츠",
+        "audience": "menswear",
+        "sourceProductId": "01a07b26-190e-7088-b1f7-0af27e1357c8",
+        "color": "deep navy blue",
+        "material": "matte linen",
+        "design": "Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.",
+        "model": "One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories",
+        "highlights": ["밴드카라", "반소매 오버핏", "린넨 소재"]
+      },
+      {
+        "id": "womens-beige-cardigan",
+        "name": "여성 클래식 코튼 가디건",
+        "audience": "womenswear",
+        "sourceProductId": "01a07b26-0cc8-7522-8db1-9a3245187ae5",
+        "color": "warm light beige",
+        "material": "plain fine-gauge cotton knit",
+        "design": "Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.",
+        "model": "One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories",
+        "highlights": ["루즈핏", "긴소매", "코튼 니트"]
+      },
+      {
+        "id": "unisex-ivory-tee",
+        "name": "유니섹스 베이식 크루넥 티셔츠",
+        "audience": "unisex",
+        "color": "warm ivory",
+        "material": "matte cotton jersey",
+        "design": "Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.",
+        "models": [
+          {
+            "id": "male",
+            "description": "One adult male, short dark hair, navy straight trousers, clean white low-top shoes, no accessories"
+          },
+          {
+            "id": "female",
+            "description": "One adult female, shoulder-length dark bob, navy straight trousers, clean white low-top shoes, no accessories"
+          }
+        ],
+        "highlights": ["남녀 공용 가상 상품", "여유 있는 스트레이트 핏", "코튼 저지"]
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "mens-navy-band-collar-shirt/front",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/front.png",
+      "sha256": "0c70e01767347479d9feb6a7cda821e84f89b8c8190814e40c6e2c4191114137",
+      "history": [
+        {
+          "note": "Reviewed navy band collar, seven dark buttons, no pockets, short sleeves and small hem slits; clean linen surface.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately.  For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/back",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["mens-navy-band-collar-shirt/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected: model appeared in garment-only rear catalog shot.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together."
+        },
+        {
+          "note": "Reviewed corrected garment-only rear, straight yoke without pleats, no pockets, navy linen and matched hem.",
+          "status": "accepted",
+          "prompt": "Edit the provided garment-only image into a straight REAR catalog photograph of this SAME navy short-sleeve band-collar linen shirt. ONLY the shirt floating on invisible mannequin. NO human, head, hands, legs, pants, shoes, hanger or mannequin parts. Straight back yoke without pleats, plain back without buttons or pockets, straight hem and short side slits. Preserve linen texture, navy color, oversized shape and background. Square canvas, entire shirt centered. Reference 1 is the approved garment front."
+        }
+      ],
+      "output": "images/mens-navy-band-collar-shirt/back.png",
+      "sha256": "a2d7dab66a8de0eec7d4d2eeb3ee5dced028c4ea690829d1cdd9fe8360991375"
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/side",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["mens-navy-band-collar-shirt/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/side.png",
+      "sha256": "4e6b6304414175db35d2f7f8725d4cba946db411e7c2b9ec9066de3847f216b8",
+      "history": [
+        {
+          "note": "Reviewed garment-only side, band collar, short sleeve volume, straight hem and side slit.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/texture",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["mens-navy-band-collar-shirt/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/texture.png",
+      "sha256": "76bb4df38c4d40b826da2c7e74a290638544908e520b882e1cacc4d2b04a9703",
+      "history": [
+        {
+          "note": "Reviewed navy linen weave macro, band collar seam and dark buttons, no unrelated additions.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/model-front",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["mens-navy-band-collar-shirt/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/model-front.png",
+      "sha256": "b2cf427fccfe7dba6eb1eac5255a33f99460563d7aed424d2d19a84bb8e884ca",
+      "history": [
+        {
+          "note": "Reviewed adult male front, seven buttons and navy short-sleeve shirt, ivory trousers and black loafers, full body visible.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/model-side",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": [
+        "mens-navy-band-collar-shirt/front",
+        "mens-navy-band-collar-shirt/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/model-side.png",
+      "sha256": "2ea0149cf8680fce49db8534feb73e5eb50f156249823bd6721c0f150b9a84bc",
+      "history": [
+        {
+          "note": "Reviewed full-body side pose, consistent adult male face and hair, navy short sleeves and ivory trouser styling.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: model-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/model-back",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "mens-navy-band-collar-shirt/front",
+        "mens-navy-band-collar-shirt/back",
+        "mens-navy-band-collar-shirt/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/model-back.png",
+      "sha256": "89af58bafd61d5af1f11aa0f0c339bb862d5f7b804ab293dc1611048f799ee00",
+      "history": [
+        {
+          "note": "Reviewed male rear model consistency, straight back yoke without pleats, navy linen shirt and full-body framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: back authority. Reference 3: model-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/editorial",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": [
+        "mens-navy-band-collar-shirt/front",
+        "mens-navy-band-collar-shirt/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/editorial.png",
+      "sha256": "6db192b5c7f6f80a6ba48bf09dd64395107c667b7a98cc66fc841f6d7e33b57c",
+      "history": [
+        {
+          "note": "Reviewed editorial same adult male face and navy shirt, natural step and intact seven-button construction.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: model-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "womens-beige-cardigan/front",
+      "productId": "womens-beige-cardigan",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-beige-cardigan/front.png",
+      "sha256": "27be2a6cb2fe004fa5c5e5ed11fbc0e4b315c73f6c81cc5bcfea334169cbc559",
+      "history": [
+        {
+          "note": "Reviewed beige cardigan V-neck, five brown buttons, ribbed edges, long sleeves, dropped shoulders and plain knit without pockets.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately.  For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "womens-beige-cardigan/back",
+      "productId": "womens-beige-cardigan",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["womens-beige-cardigan/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-beige-cardigan/back.png",
+      "sha256": "e9950987c3d19ff83b26ec26df4fe25e44aa5d33d44bf8170f475590c6c6ee37",
+      "history": [
+        {
+          "note": "Reviewed cardigan plain knit back, ribbed neckline/hem/cuffs, matching beige and dropped shoulders.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "womens-beige-cardigan/side",
+      "productId": "womens-beige-cardigan",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["womens-beige-cardigan/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-beige-cardigan/side.png",
+      "sha256": "869701fffc4ca838f33e902140032d0dca0fc7c1ad796cd5dda25ec06ccf8ce6",
+      "history": [
+        {
+          "note": "Reviewed cardigan side profile, five-button placket, long sleeve and ribbed cuff/hem, matching beige plain knit.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "womens-beige-cardigan/texture",
+      "productId": "womens-beige-cardigan",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["womens-beige-cardigan/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-beige-cardigan/texture.png",
+      "sha256": "1c1fa511bcafa4b5ad699ab5ac4050729824196aa4b50990853393d17dc40806",
+      "history": [
+        {
+          "note": "Reviewed beige stockinette macro, ribbed cuff/placket and brown buttons, consistent fine cotton knit.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "womens-beige-cardigan/model-front",
+      "productId": "womens-beige-cardigan",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["womens-beige-cardigan/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-beige-cardigan/model-front.png",
+      "sha256": "90918a96bad435d2d853bc6a2d5d210d9bbcd4cac0c1babd129d0d50f26da62d",
+      "history": [
+        {
+          "note": "Reviewed adult female front, five-button beige cardigan, white inner top, indigo jeans and brown loafers, natural hands.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "womens-beige-cardigan/model-side",
+      "productId": "womens-beige-cardigan",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["womens-beige-cardigan/front", "womens-beige-cardigan/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-beige-cardigan/model-side.png",
+      "sha256": "5555341e581974f5f6df223dbcbfc13cefb2ba504ef0a2a0186ce08f3f5c907d",
+      "history": [
+        {
+          "note": "Reviewed female side identity, beige cardigan sleeve/hem, five-button front and natural hands, unchanged outfit.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: model-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "womens-beige-cardigan/model-back",
+      "productId": "womens-beige-cardigan",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "womens-beige-cardigan/front",
+        "womens-beige-cardigan/back",
+        "womens-beige-cardigan/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-beige-cardigan/model-back.png",
+      "sha256": "2f9141b0dd8d0640c78e446b8694971a723d1c0be99bc51f7fcd71aace47b133",
+      "history": [
+        {
+          "note": "Reviewed female rear identity and styling, plain beige knit back with ribbed hem, natural hands and full body.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: back authority. Reference 3: model-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "womens-beige-cardigan/editorial",
+      "productId": "womens-beige-cardigan",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["womens-beige-cardigan/front", "womens-beige-cardigan/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-beige-cardigan/editorial.png",
+      "sha256": "39518942f4df69a66cb0b88ce719c5dbb3a12fd437e141959706e594a5d02511",
+      "history": [
+        {
+          "note": "Reviewed female editorial same face and outfit, five buttons, natural hand in jeans pocket and readable cardigan.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 여성 클래식 코튼 가디건\nDesign invariants: Fictional sample design: loose long-sleeve hip-length V-neck cardigan, five small brown buttons down center front, ribbed cuffs and hem and narrow ribbed neckline placket, dropped shoulders, no pockets, plain stockinette knit without cables or decoration. Buttoned throughout. No logos.\nBase color: warm light beige\nBase material: plain fine-gauge cotton knit\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, shoulder-length dark straight hair tucked behind ears, white crew-neck inner top, dark indigo straight jeans and brown loafers, no accessories\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: model-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "unisex-ivory-tee/front",
+      "productId": "unisex-ivory-tee",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/unisex-ivory-tee/front.png",
+      "sha256": "6510fc28b66fce6099a9bfb08ae73887ea7a33f9704c8bc6f201ef7bc0254420",
+      "history": [
+        {
+          "note": "Reviewed ivory tee front, ribbed crew neck, dropped shoulders, plain cotton jersey, double-needle hems and no graphics.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately.  For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "unisex-ivory-tee/back",
+      "productId": "unisex-ivory-tee",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["unisex-ivory-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/unisex-ivory-tee/back.png",
+      "sha256": "6b8d161d971888cd6cb39f481617660c9a2357c325db61cb0256c84ecb0b424a",
+      "history": [
+        {
+          "note": "Reviewed plain ivory tee back, matching ribbed neck, sleeve and straight hem, no invented branding.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "unisex-ivory-tee/side",
+      "productId": "unisex-ivory-tee",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["unisex-ivory-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/unisex-ivory-tee/side.png",
+      "sha256": "44df80c2972dcb69bca69c7dba938020e938c6bed85bdaa6706b16e4c4f48b95",
+      "history": [
+        {
+          "note": "Reviewed ivory tee side, shoulder and side seams, sleeve double stitching and straight no-slit hem.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "unisex-ivory-tee/texture",
+      "productId": "unisex-ivory-tee",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["unisex-ivory-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/unisex-ivory-tee/texture.png",
+      "sha256": "f3cd0c30881114ea15f83ad7cfece06d7b91006dc021e14b44cd1fcd2b6ca808",
+      "history": [
+        {
+          "note": "Reviewed ivory cotton jersey macro with double-needle seam, natural knit structure and no unwanted pattern.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "unisex-ivory-tee/model-male-front",
+      "productId": "unisex-ivory-tee",
+      "label": "male · 모델 정면",
+      "variant": null,
+      "dependencies": ["unisex-ivory-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nThis model profile only: One adult male, short dark hair, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/unisex-ivory-tee/model-male-front.png",
+      "sha256": "dce9864a93095c52f59abdbb077b8073c0c1df98c7bea2ebfdcc7d94cc26b677",
+      "history": [
+        {
+          "note": "Male front view matches plain ivory crewneck tee, navy trousers and white shoes; garment construction and hands look consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nThis model profile only: One adult male, short dark hair, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "unisex-ivory-tee/model-male-side",
+      "productId": "unisex-ivory-tee",
+      "label": "male · 모델 측면",
+      "variant": null,
+      "dependencies": ["unisex-ivory-tee/front", "unisex-ivory-tee/model-male-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nThis model profile only: One adult male, short dark hair, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/unisex-ivory-tee/model-male-side.png",
+      "sha256": "7f138eb187570a84f0d3b918702c8500f98a2d287ae35efe2b11ebff20aeb22b",
+      "history": [
+        {
+          "note": "Male side view preserves same person, ivory tee relaxed sleeve and straight hem, navy trousers, natural side profile.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nThis model profile only: One adult male, short dark hair, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: model-male-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "unisex-ivory-tee/model-male-back",
+      "productId": "unisex-ivory-tee",
+      "label": "male · 모델 후면",
+      "variant": null,
+      "dependencies": [
+        "unisex-ivory-tee/front",
+        "unisex-ivory-tee/back",
+        "unisex-ivory-tee/model-male-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nThis model profile only: One adult male, short dark hair, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/unisex-ivory-tee/model-male-back.png",
+      "sha256": "3ef7e5806680769c2415721888e35804ad5e5ad81ecb03fe2c328b2927005a9b",
+      "history": [
+        {
+          "note": "Male back shows matching plain ivory jersey, dropped shoulders and straight hem, consistent hair and navy trousers; no unwanted seam or print.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nThis model profile only: One adult male, short dark hair, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: back authority. Reference 3: model-male-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "unisex-ivory-tee/model-male-editorial",
+      "productId": "unisex-ivory-tee",
+      "label": "male · 소개용 연출",
+      "variant": null,
+      "dependencies": ["unisex-ivory-tee/front", "unisex-ivory-tee/model-male-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nThis model profile only: One adult male, short dark hair, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/unisex-ivory-tee/model-male-editorial.png",
+      "sha256": "f94d5e5549049c1a991063494176d018d494ba168bfbc59de4dd2acd506c2aa3",
+      "history": [
+        {
+          "note": "Male editorial relaxed three-quarter pose keeps same adult identity, ivory collar and plain tee construction; clean natural styling.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nThis model profile only: One adult male, short dark hair, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: model-male-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "unisex-ivory-tee/model-female-front",
+      "productId": "unisex-ivory-tee",
+      "label": "female · 모델 정면",
+      "variant": null,
+      "dependencies": ["unisex-ivory-tee/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nThis model profile only: One adult female, shoulder-length dark bob, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/unisex-ivory-tee/model-female-front.png",
+      "sha256": "8d2362512f491050b75562ccfc36013c4f194e7d81e9b627571b6a2b5d116452",
+      "history": [
+        {
+          "note": "Female front shows adult bob-haired model with same ivory tee neck rib, dropped shoulders and straight hem; correct navy trousers and white shoes.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nThis model profile only: One adult female, shoulder-length dark bob, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "unisex-ivory-tee/model-female-side",
+      "productId": "unisex-ivory-tee",
+      "label": "female · 모델 측면",
+      "variant": null,
+      "dependencies": ["unisex-ivory-tee/front", "unisex-ivory-tee/model-female-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nThis model profile only: One adult female, shoulder-length dark bob, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/unisex-ivory-tee/model-female-side.png",
+      "sha256": "1c3099b125715dc312310c9db1209f81cc64c06a868ef88afdd1f928d102833a",
+      "history": [
+        {
+          "note": "Female side preserves bob-haired model and relaxed ivory tee silhouette with no slit or print; full garment and shoes visible.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nThis model profile only: One adult female, shoulder-length dark bob, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: model-female-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "unisex-ivory-tee/model-female-back",
+      "productId": "unisex-ivory-tee",
+      "label": "female · 모델 후면",
+      "variant": null,
+      "dependencies": [
+        "unisex-ivory-tee/front",
+        "unisex-ivory-tee/back",
+        "unisex-ivory-tee/model-female-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nThis model profile only: One adult female, shoulder-length dark bob, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/unisex-ivory-tee/model-female-back.png",
+      "sha256": "605c3d525cc00d9ceb3c6c7233e05ac1bee18253f04902ae20a8a929cc6c58b4",
+      "history": [
+        {
+          "note": "Female back keeps same bob, matching ivory tee plain back and hem stitching, navy trousers; clean anatomy and separate full-body image.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nThis model profile only: One adult female, shoulder-length dark bob, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: back authority. Reference 3: model-female-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "unisex-ivory-tee/model-female-editorial",
+      "productId": "unisex-ivory-tee",
+      "label": "female · 소개용 연출",
+      "variant": null,
+      "dependencies": ["unisex-ivory-tee/front", "unisex-ivory-tee/model-female-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nThis model profile only: One adult female, shoulder-length dark bob, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/unisex-ivory-tee/model-female-editorial.png",
+      "sha256": "6290fd47d6806c348953156a699a58cd09bcaa9e3062504ad5cb439ce9295f7a",
+      "history": [
+        {
+          "note": "Female editorial keeps same adult bob-haired model and ivory tee construction; relaxed pose and natural drape, no new details or artifacts.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 유니섹스 베이식 크루넥 티셔츠\nDesign invariants: Fictional unisex sample: relaxed straight boxy short-sleeve crew-neck T-shirt, medium ribbed crew neck, dropped shoulder seams, straight hip-length hem, double-needle sleeve and hem stitching, no pockets, no prints, no logos, no side slit. Same garment design and ivory color on both adult models.\nBase color: warm ivory\nBase material: matte cotton jersey\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: adult model, natural appearance, neutral styling without accessories obscuring the garment\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nThis model profile only: One adult female, shoulder-length dark bob, navy straight trousers, clean white low-top shoes, no accessories. Never use another profile's identity.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: model-female-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    }
+  ]
+}

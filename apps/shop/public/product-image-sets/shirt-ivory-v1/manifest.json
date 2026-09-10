@@ -1,0 +1,399 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "mens-navy-band-collar-shirt",
+        "name": "남성 오버핏 밴드카라 린넨 셔츠",
+        "audience": "menswear",
+        "sourceProductId": "01a07b26-190e-7088-b1f7-0af27e1357c8",
+        "color": "deep navy blue",
+        "material": "matte linen",
+        "design": "Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.",
+        "model": "One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories",
+        "highlights": ["밴드카라", "반소매 오버핏", "린넨 소재"],
+        "variants": [
+          {
+            "id": "ivory",
+            "kind": "color",
+            "value": "warm ivory; keep the original dark buttons unchanged"
+          }
+        ]
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "mens-navy-band-collar-shirt/front",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/front.png",
+      "sha256": "0c70e01767347479d9feb6a7cda821e84f89b8c8190814e40c6e2c4191114137",
+      "history": [
+        {
+          "note": "Reused previously user-accepted navy image; inspected original collar, sleeve, seams, buttons and matching adult model. Original generation prompt retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately.  For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/back",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["mens-navy-band-collar-shirt/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/back.png",
+      "sha256": "a2d7dab66a8de0eec7d4d2eeb3ee5dced028c4ea690829d1cdd9fe8360991375",
+      "history": [
+        {
+          "note": "Reused previously user-accepted navy image; inspected original collar, sleeve, seams, buttons and matching adult model. Original generation prompt retained.",
+          "status": "accepted",
+          "prompt": "Edit the provided garment-only image into a straight REAR catalog photograph of this SAME navy short-sleeve band-collar linen shirt. ONLY the shirt floating on invisible mannequin. NO human, head, hands, legs, pants, shoes, hanger or mannequin parts. Straight back yoke without pleats, plain back without buttons or pockets, straight hem and short side slits. Preserve linen texture, navy color, oversized shape and background. Square canvas, entire shirt centered. Reference 1 is the approved garment front."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/side",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["mens-navy-band-collar-shirt/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/side.png",
+      "sha256": "4e6b6304414175db35d2f7f8725d4cba946db411e7c2b9ec9066de3847f216b8",
+      "history": [
+        {
+          "note": "Reused previously user-accepted navy image; inspected original collar, sleeve, seams, buttons and matching adult model. Original generation prompt retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/texture",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["mens-navy-band-collar-shirt/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/texture.png",
+      "sha256": "76bb4df38c4d40b826da2c7e74a290638544908e520b882e1cacc4d2b04a9703",
+      "history": [
+        {
+          "note": "Reused previously user-accepted navy image; inspected original collar, sleeve, seams, buttons and matching adult model. Original generation prompt retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/model-front",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["mens-navy-band-collar-shirt/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/model-front.png",
+      "sha256": "b2cf427fccfe7dba6eb1eac5255a33f99460563d7aed424d2d19a84bb8e884ca",
+      "history": [
+        {
+          "note": "Reused previously user-accepted navy image; inspected original collar, sleeve, seams, buttons and matching adult model. Original generation prompt retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/model-side",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": [
+        "mens-navy-band-collar-shirt/front",
+        "mens-navy-band-collar-shirt/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/model-side.png",
+      "sha256": "2ea0149cf8680fce49db8534feb73e5eb50f156249823bd6721c0f150b9a84bc",
+      "history": [
+        {
+          "note": "Reused previously user-accepted navy image; inspected original collar, sleeve, seams, buttons and matching adult model. Original generation prompt retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: model-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/model-back",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "mens-navy-band-collar-shirt/front",
+        "mens-navy-band-collar-shirt/back",
+        "mens-navy-band-collar-shirt/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/model-back.png",
+      "sha256": "89af58bafd61d5af1f11aa0f0c339bb862d5f7b804ab293dc1611048f799ee00",
+      "history": [
+        {
+          "note": "Reused previously user-accepted navy image; inspected original collar, sleeve, seams, buttons and matching adult model. Original generation prompt retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: back authority. Reference 3: model-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/editorial",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": [
+        "mens-navy-band-collar-shirt/front",
+        "mens-navy-band-collar-shirt/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/editorial.png",
+      "sha256": "6db192b5c7f6f80a6ba48bf09dd64395107c667b7a98cc66fc841f6d7e33b57c",
+      "history": [
+        {
+          "note": "Reused previously user-accepted navy image; inspected original collar, sleeve, seams, buttons and matching adult model. Original generation prompt retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. Reference 2: model-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/variant-ivory-front",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "warm ivory; keep the original dark buttons unchanged · 정면",
+      "variant": {
+        "id": "ivory",
+        "kind": "color",
+        "value": "warm ivory; keep the original dark buttons unchanged"
+      },
+      "dependencies": ["mens-navy-band-collar-shirt/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/variant-ivory-front.png",
+      "sha256": "71cbf8ac023ca854c0569616cb00bde43ada1cae2dccf6a2b1275f7bcaf1d3f4",
+      "history": [
+        {
+          "note": "Ivory front preserves seven dark buttons, band collar, pocketless short sleeves, side slits and original framing. Accepted color-only change.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1 is the edit target: change only shirt fabric from navy to warm ivory, keeping the original dark buttons, exact composition, framing, background and person unchanged. Reference 2 if provided defines ivory color only. Do not change trousers or footwear or skin. \nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/variant-ivory-back",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "warm ivory; keep the original dark buttons unchanged · 후면",
+      "variant": {
+        "id": "ivory",
+        "kind": "color",
+        "value": "warm ivory; keep the original dark buttons unchanged"
+      },
+      "dependencies": [
+        "mens-navy-band-collar-shirt/back",
+        "mens-navy-band-collar-shirt/variant-ivory-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/variant-ivory-back.png",
+      "sha256": "9c8275ebc7df37a28adda7ad4e316255d0d5568044f0ea4c14a1f45b84c2e220",
+      "history": [
+        {
+          "note": "Back view matches original straight yoke without pleats, band collar, short sleeves and side slits; ivory matches front anchor.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1 is the edit target: change only shirt fabric from navy to warm ivory, keeping the original dark buttons, exact composition, framing, background and person unchanged. Reference 2 if provided defines ivory color only. Do not change trousers or footwear or skin. \nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: back authority. Reference 2: variant-ivory-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/variant-ivory-side",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "warm ivory; keep the original dark buttons unchanged · 측면",
+      "variant": {
+        "id": "ivory",
+        "kind": "color",
+        "value": "warm ivory; keep the original dark buttons unchanged"
+      },
+      "dependencies": [
+        "mens-navy-band-collar-shirt/side",
+        "mens-navy-band-collar-shirt/variant-ivory-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/variant-ivory-side.png",
+      "sha256": "88b8d172315de1d4ee2f3f8d2897ef8f742c00a7cde878e707075be6bc0c26b3",
+      "history": [
+        {
+          "note": "Side profile preserves shoulder seam, short sleeve, straight hem with slit and original dark buttons; ivory color matches anchor.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1 is the edit target: change only shirt fabric from navy to warm ivory, keeping the original dark buttons, exact composition, framing, background and person unchanged. Reference 2 if provided defines ivory color only. Do not change trousers or footwear or skin. \nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: side authority. Reference 2: variant-ivory-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/variant-ivory-texture",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "warm ivory; keep the original dark buttons unchanged · 소재 확대",
+      "variant": {
+        "id": "ivory",
+        "kind": "color",
+        "value": "warm ivory; keep the original dark buttons unchanged"
+      },
+      "dependencies": [
+        "mens-navy-band-collar-shirt/texture",
+        "mens-navy-band-collar-shirt/variant-ivory-front"
+      ],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected: full front shirt instead of macro collar/linen texture; reference 2 composition incorrectly dominated.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1 is the edit target: change only shirt fabric from navy to warm ivory, keeping the original dark buttons, exact composition, framing, background and person unchanged. Reference 2 if provided defines ivory color only. Do not change trousers or footwear or skin. \nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: texture authority. Reference 2: variant-ivory-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        },
+        {
+          "note": "Retry accepted: macro crop now matches original collar and two buttons, ivory linen weave and seam details clearly visible.",
+          "status": "accepted",
+          "prompt": "Use case: precise-object-edit. IMAGE 1 IS THE ONLY COMPOSITION TARGET: extreme close-up macro of the navy linen band collar and two dark buttons. Recolor ONLY its navy fabric to warm ivory. Keep its exact close crop, camera perspective, two buttons, stitching, weave scale and lighting. IMAGE 2 IS A COLOR SWATCH REFERENCE ONLY, ignore its full garment silhouette. Output must be an EXTREME CLOSE-UP like image 1, with collar and buttons filling entire square frame and edges of garment outside frame. NO full shirt, NO sleeves, NO bottom hem, NO person, NO text, NO collage. Preserve plain linen texture, no decorative pattern. One square photograph."
+        }
+      ],
+      "output": "images/mens-navy-band-collar-shirt/variant-ivory-texture.png",
+      "sha256": "839ff7d3afd898f781fbc1039fd355c005bba45dcc63e7924548bc9037c1eacf"
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/variant-ivory-model-front",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "warm ivory; keep the original dark buttons unchanged · 모델 정면",
+      "variant": {
+        "id": "ivory",
+        "kind": "color",
+        "value": "warm ivory; keep the original dark buttons unchanged"
+      },
+      "dependencies": [
+        "mens-navy-band-collar-shirt/model-front",
+        "mens-navy-band-collar-shirt/variant-ivory-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/variant-ivory-model-front.png",
+      "sha256": "78d9e3af2eefb47a728b3bfe9ec9de62fb397c9ac3a7bf1ee169b2fbef8e9f40",
+      "history": [
+        {
+          "note": "Model front retains same adult face, hair, pocketed-hand pose, ivory trousers and black loafers. Only shirt fabric changes to ivory with seven dark buttons.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1 is the edit target: change only shirt fabric from navy to warm ivory, keeping the original dark buttons, exact composition, framing, background and person unchanged. Reference 2 if provided defines ivory color only. Do not change trousers or footwear or skin. \nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: model-front authority. Reference 2: variant-ivory-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/variant-ivory-model-side",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "warm ivory; keep the original dark buttons unchanged · 모델 측면",
+      "variant": {
+        "id": "ivory",
+        "kind": "color",
+        "value": "warm ivory; keep the original dark buttons unchanged"
+      },
+      "dependencies": [
+        "mens-navy-band-collar-shirt/model-side",
+        "mens-navy-band-collar-shirt/variant-ivory-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/variant-ivory-model-side.png",
+      "sha256": "d9dc0c203140b85259afd9de4029bcf63b4e9ffaa14c0222e53d9767ed4a1231",
+      "history": [
+        {
+          "note": "Side wearing view preserves model identity and exact pose, trouser/shoe styling, dropped sleeve and side slit. Shirt alone recolored ivory.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1 is the edit target: change only shirt fabric from navy to warm ivory, keeping the original dark buttons, exact composition, framing, background and person unchanged. Reference 2 if provided defines ivory color only. Do not change trousers or footwear or skin. \nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: model-side authority. Reference 2: variant-ivory-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/variant-ivory-model-back",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "warm ivory; keep the original dark buttons unchanged · 모델 후면",
+      "variant": {
+        "id": "ivory",
+        "kind": "color",
+        "value": "warm ivory; keep the original dark buttons unchanged"
+      },
+      "dependencies": [
+        "mens-navy-band-collar-shirt/model-back",
+        "mens-navy-band-collar-shirt/variant-ivory-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/variant-ivory-model-back.png",
+      "sha256": "7c05a23caa22e33c5590fc6e8723b7e7a4df30b5cb93c4b53c232da6c37129d1",
+      "history": [
+        {
+          "note": "Back wearing view preserves adult model hair, pose, yoke and hem silhouette; ivory shirt matches accepted front, trousers and loafers unchanged.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1 is the edit target: change only shirt fabric from navy to warm ivory, keeping the original dark buttons, exact composition, framing, background and person unchanged. Reference 2 if provided defines ivory color only. Do not change trousers or footwear or skin. \nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: model-back authority. Reference 2: variant-ivory-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    },
+    {
+      "id": "mens-navy-band-collar-shirt/variant-ivory-editorial",
+      "productId": "mens-navy-band-collar-shirt",
+      "label": "warm ivory; keep the original dark buttons unchanged · 소개용 연출",
+      "variant": {
+        "id": "ivory",
+        "kind": "color",
+        "value": "warm ivory; keep the original dark buttons unchanged"
+      },
+      "dependencies": [
+        "mens-navy-band-collar-shirt/editorial",
+        "mens-navy-band-collar-shirt/variant-ivory-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-navy-band-collar-shirt/variant-ivory-editorial.png",
+      "sha256": "47cbcd2d556a2d806001abde3397c615360cec6b32c6ec5a53ea8b4c4f644360",
+      "history": [
+        {
+          "note": "Editorial keeps original crossed-leg pose, same adult model, shirt silhouette and seven dark buttons; ivory matches variant anchor.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 오버핏 밴드카라 린넨 셔츠\nDesign invariants: Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.\nBase color: deep navy blue\nBase material: matte linen\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to warm ivory; keep the original dark buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference 1 is the edit target: change only shirt fabric from navy to warm ivory, keeping the original dark buttons, exact composition, framing, background and person unchanged. Reference 2 if provided defines ivory color only. Do not change trousers or footwear or skin. \nSquare premium ecommerce photograph. Preserve specified construction accurately. Reference 1: editorial authority. Reference 2: variant-ivory-front authority. For model shots use the same person as that profile's model-front reference. For catalog shots no human or hanger. Fabric should be natural and plain unless a knit/jersey structure is specified; no decorative patterns."
+        }
+      ]
+    }
+  ]
+}

@@ -13,7 +13,7 @@ python3 apps/api/scripts/restore-reviewed-assets.py --apply
 
 첫 명령은 파일·체크섬 상태만 확인한다. `--apply`는 공개 R2 주소에서 없는 파일을 내려받고 SHA-256을 검증한다. 다른 내용의 기존 파일을 덮어쓰지 않는다. 최대 약1.23GB를 받을 수 있다. 공개 개발 URL이 비활성화되면 다운로드할 수 없으며 운영 자산 저장소가 아니다.
 
-`apps/shop/public/product-image-sets/*/manifest.json`에는 승인 상태, 의존 이미지, 실제 생성 프롬프트 및 검수 이력이 있다. `skills/product-image-set/scripts/pipeline.py check <manifest>`로 필수 컷 완성을 확인하고 `preview <manifest>`로 소개 HTML을 재생성한다. 전체 이미지가 승인된 manifest만 상품에 반영한다.
+`apps/shop/public/product-image-sets/*/manifest.json`에는 승인 상태, 의존 이미지, 실제 생성 프롬프트 및 검수 이력이 있다. `skills/product-image-set/scripts/pipeline.py check <manifest>`로 필수 컷 완성을 확인하고 `preview <manifest>`로 소개 HTML을 재생성한다. 전체 이미지가 승인된 manifest만 상품에 반영한다. `audience-samples-v1`, `shirt-ivory-v1`, `six-b-v1`은 이전 제작 이력이다. 복원 도구는 현재 승인 내보내기에 포함된660개 파일만 복원하며, 이전 이력의 모든 파일을 복원하지는 않는다.
 
 ## 반영 도구
 
