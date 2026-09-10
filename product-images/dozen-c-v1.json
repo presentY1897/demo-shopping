@@ -1,0 +1,148 @@
+{
+  "products": [
+    {
+      "id": "navy-linen-reading-pillow",
+      "name": "네이비 리넨 리딩 필로우",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 독서 소품",
+      "color": "navy blue",
+      "colorLabel": "네이비",
+      "hex": "#263951",
+      "material": "linen fabric",
+      "price": 24000,
+      "design": "Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "DOZEN-09",
+      "highlights": ["네이비 컬러", "가상 기획 상품"],
+      "description": "네이비 리넨 리딩 필로우 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+      "shotDirections": {
+        "front": "Three-quarter entire empty wedge showing broad slope and triangular side.",
+        "back": "Rear oblique empty wedge showing plain upright rear face.",
+        "side": "True side profile showing triangular wedge silhouette.",
+        "texture": "Macro navy linen weave and simple perimeter seam.",
+        "model-front": "Same wedge supporting one open blank cream book on its sloping face, no person.",
+        "model-side": "Same wedge supporting same open blank book viewed from side.",
+        "model-back": "Top-down empty wedge with its broad rectangular sloping fabric face visible.",
+        "editorial": "Same wedge and open blank book on a cream reading table."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "mint-ceramic-book-weight",
+      "name": "민트 세라믹 북 웨이트",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 독서 소품",
+      "color": "pale mint green",
+      "colorLabel": "민트",
+      "hex": "#acd1bc",
+      "material": "smooth glazed ceramic",
+      "price": 16000,
+      "design": "Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "DOZEN-10",
+      "highlights": ["민트 컬러", "가상 기획 상품"],
+      "description": "민트 세라믹 북 웨이트 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+      "shotDirections": {
+        "front": "Three-quarter entire empty elongated capsule.",
+        "back": "Opposite rear oblique capsule view.",
+        "side": "Low side profile showing gently domed top and flat underside.",
+        "texture": "Macro smooth mint ceramic glaze and rounded edge.",
+        "model-front": "Same capsule lying horizontally across blank pages of an open cream book, no person.",
+        "model-side": "Same capsule across same open blank book viewed from low side.",
+        "model-back": "Top-down capsule alone showing elongated rounded outline.",
+        "editorial": "Same capsule resting across open blank cream book on pale oak reading desk."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "cork-hexagon-coaster",
+      "name": "코르크 헥사곤 코스터",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "natural cork brown",
+      "colorLabel": "코르크",
+      "hex": "#b99565",
+      "material": "natural cork",
+      "price": 8000,
+      "design": "Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "DOZEN-11",
+      "highlights": ["코르크 컬러", "가상 기획 상품"],
+      "description": "코르크 헥사곤 코스터 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+      "shotDirections": {
+        "front": "Three-quarter entire empty hexagonal coaster.",
+        "back": "Underside of same hexagonal coaster lying flat.",
+        "side": "Low side profile revealing cork thickness.",
+        "texture": "Macro granular cork texture and straight thick edge.",
+        "model-front": "One plain white handleless cup centered on same coaster, coaster outline visible, no person.",
+        "model-side": "Same cup and coaster viewed from low side.",
+        "model-back": "Top-down empty coaster clearly showing six-sided outline.",
+        "editorial": "Same coaster and plain white cup on pale oak desk beside blank notebook."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "rust-canvas-tool-roll",
+      "name": "러스트 캔버스 툴 롤",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 액세서리",
+      "color": "rust orange brown",
+      "colorLabel": "러스트",
+      "hex": "#a45c40",
+      "material": "cotton canvas",
+      "price": 22000,
+      "design": "Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "DOZEN-12",
+      "highlights": ["러스트 컬러", "가상 기획 상품"],
+      "description": "러스트 캔버스 툴 롤 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+      "shotDirections": {
+        "front": "Fully unrolled laid-flat front showing exactly three empty equal pockets and single cotton tie.",
+        "back": "Fully unrolled plain outer reverse face showing same rectangular outline and one cotton tie.",
+        "side": "Low oblique unrolled view revealing thin canvas and three pocket openings.",
+        "texture": "Macro rust canvas weave and one pocket seam.",
+        "model-front": "Fully open roll with exactly one plain wood pencil in each of three pockets, single cotton tie visible.",
+        "model-side": "Same open roll with three plain pencils from opposite oblique side.",
+        "model-back": "Top-down open empty roll showing exactly three pockets and one cotton tie.",
+        "editorial": "Same roll closed into a compact cylinder, tied with its single cotton tie, resting on pale oak desk."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    }
+  ]
+}

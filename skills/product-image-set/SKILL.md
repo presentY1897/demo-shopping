@@ -13,6 +13,8 @@ Read [references/spec.md](references/spec.md) for input and commands. Extract fa
 
 Create a spec and run `plan`. Default coverage is eight images: front, back, side, texture, model-front, model-side, model-back, editorial. Every color/material variant inherits the same complete shot set as the base product. Do not reduce variant views to comparison samples. Honor a narrower set only when the user requests it, applying that set to the base and every variant. The planner rejects unequal variant coverage. Additional color/material options must be supplied by the user or product data; do not invent sellable variants or generate the color × material Cartesian product. Announce product and image counts before starting a batch. User authorization to generate a batch covers routine dependent cuts without per-cut confirmation.
 
+For audience-specific production, read the catalog category path instead of inferring audience from a name or silhouette. Use the agreed adult model profile for menswear/womenswear. For unisex, use `models` with separate male and female profiles: share the four garment shots and generate four wearing/editorial shots per profile (12 total by default). Each profile keeps its own front model anchor across dependent views; variants inherit the complete expanded set.
+
 Treat all generated unseen views as synthesized, not evidence of real construction. For real merchandise, preserve supplied construction references and avoid presenting invented seams or composition claims as factual. Material names come from the spec; inferred percentage, performance, certification or fit claims do not belong in copy.
 
 ## Generate and resume

@@ -1,0 +1,112 @@
+{
+  "products": [
+    {
+      "id": "rust-triangle-coin-purse",
+      "name": "러스트 트라이앵글 코인 파우치",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 지갑",
+      "color": "rust orange",
+      "colorLabel": "러스트",
+      "hex": "#b76a45",
+      "material": "fine-grain leather",
+      "price": 19000,
+      "design": "Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.",
+      "sizes": [],
+      "skuPrefix": "PAR-08",
+      "highlights": ["러스트 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Closed triangular purse front three-quarter, brass snap visible.",
+        "back": "Closed plain folded rear.",
+        "side": "Low side showing folded triangular thickness.",
+        "texture": "Macro leather grain and brass snap.",
+        "model-front": "Open triangular flap showing single empty beige pocket.",
+        "model-side": "Adult hand holding closed triangular purse for scale.",
+        "model-back": "Open purse with two plain unmarked metallic coin discs inside, no lettering.",
+        "editorial": "Closed purse on cream stone dish, purse dominates."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "러스트 트라이앵글 코인 파우치 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "sky-loop-cable-holder",
+      "name": "스카이 루프 케이블 홀더",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "powder blue",
+      "colorLabel": "스카이",
+      "hex": "#9bbdce",
+      "material": "matte silicone",
+      "price": 9000,
+      "design": "Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.",
+      "sizes": [],
+      "skuPrefix": "PAR-09",
+      "highlights": ["스카이 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Strap laid flat diagonally, entire stud and three holes visible.",
+        "back": "Underside of flat strap.",
+        "side": "Low side view showing raised stud and thin strap.",
+        "texture": "Macro matte silicone and one hole edge.",
+        "model-front": "Strap closed around one neatly coiled plain white USB cable, stud through hole clearly visible.",
+        "model-side": "Same secured cable held in adult hand, natural fingers.",
+        "model-back": "Top-down open strap next to same coiled white cable.",
+        "editorial": "Secured cable on pale wood desk beside closed blank notebook."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "스카이 루프 케이블 홀더 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "smoke-pebble-photo-holder",
+      "name": "스모크 페블 포토 홀더",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "smoke gray",
+      "colorLabel": "스모크",
+      "hex": "#898b88",
+      "material": "matte glazed ceramic",
+      "price": 16000,
+      "design": "Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.",
+      "sizes": [],
+      "skuPrefix": "PAR-10",
+      "highlights": ["스모크 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Front three-quarter pebble with top slot visible.",
+        "back": "Rear three-quarter preserving oval pebble.",
+        "side": "True low side profile showing rounded height.",
+        "texture": "Macro matte glaze and straight slot.",
+        "model-front": "One plain cream portrait-format card standing in slot, base fully visible.",
+        "model-side": "Same card and holder from side showing contact at slot.",
+        "model-back": "Top-down empty holder showing straight slot.",
+        "editorial": "Holder with same blank cream card on oak shelf in daylight."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "스모크 페블 포토 홀더 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    }
+  ]
+}

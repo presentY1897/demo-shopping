@@ -1,0 +1,792 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "amber-drop-bud-vase",
+        "name": "앰버 드롭 버드 베이스",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "transparent amber",
+        "colorLabel": "앰버",
+        "hex": "#b77d3c",
+        "material": "transparent tinted glass",
+        "price": 24000,
+        "design": "Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+        "sizes": [],
+        "skuPrefix": "SIX-09",
+        "highlights": ["앰버 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Front three-quarter empty vase, entire silhouette and mouth visible.",
+          "back": "Rear three-quarter of same empty vase.",
+          "side": "Eye-level side silhouette of empty vase.",
+          "texture": "Macro amber glass lip and smooth curved surface.",
+          "model-front": "Vase holding one slender green stem with single small white flower, visible physical insertion into mouth.",
+          "model-side": "Same vase, stem and flower from side.",
+          "model-back": "Top-down empty vase showing single circular mouth and glass wall.",
+          "editorial": "Same vase with same white flower on pale stone windowsill."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "앰버 드롭 버드 베이스 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "oat-felt-laptop-sleeve",
+        "name": "오트 펠트 노트북 슬리브",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 가방",
+        "color": "oatmeal beige",
+        "colorLabel": "오트",
+        "hex": "#c3b69e",
+        "material": "dense wool felt",
+        "price": 35000,
+        "design": "Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+        "sizes": [],
+        "skuPrefix": "SIX-10",
+        "highlights": ["오트 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Front three-quarter empty sleeve lying flat, opening visible.",
+          "back": "Plain rear of sleeve.",
+          "side": "Low side showing flat felt thickness.",
+          "texture": "Macro felt fibers and edge stitching.",
+          "model-front": "Plain unbranded silver laptop partly slid into open top, entire sleeve visible.",
+          "model-side": "Adult hands holding same sleeve containing laptop, no visible logo.",
+          "model-back": "Top oblique empty sleeve showing single open compartment.",
+          "editorial": "Sleeve and closed plain silver laptop on oak desk."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "오트 펠트 노트북 슬리브 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "cherry-dice-paperweight",
+        "name": "체리 다이스 페이퍼웨이트",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "natural cherry wood",
+        "colorLabel": "체리",
+        "hex": "#a46d45",
+        "material": "oiled cherry wood",
+        "price": 19000,
+        "design": "Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+        "sizes": [],
+        "skuPrefix": "SIX-11",
+        "highlights": ["체리 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Three-quarter cube showing top with single dimple and two plain sides.",
+          "back": "Opposite rear three-quarter preserving only one top dimple.",
+          "side": "Eye-level side showing plain square face.",
+          "texture": "Macro cherry grain and edge of sole shallow top dimple.",
+          "model-front": "Cube resting on corner of a small stack of blank cream papers, dimple upward.",
+          "model-side": "Same cube and paper stack from low side, contact visible.",
+          "model-back": "Top-down cube showing exactly one centered shallow circular dimple.",
+          "editorial": "Cube on blank paper beside unbranded wooden pencil, daylight."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "체리 다이스 페이퍼웨이트 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "teal-elastic-book-band",
+        "name": "틸 엘라스틱 북 밴드",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 독서 소품",
+        "color": "deep teal",
+        "colorLabel": "틸",
+        "hex": "#35716d",
+        "material": "woven elastic textile",
+        "price": 13000,
+        "design": "Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+        "sizes": [],
+        "skuPrefix": "SIX-12",
+        "highlights": ["틸 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Closed elastic loop laid in neat oval, single leather tab visible.",
+          "back": "Opposite side of oval loop with seam area visible.",
+          "side": "Low side view showing flat strap thickness and oval loop.",
+          "texture": "Macro elastic weave and single stitched leather tab.",
+          "model-front": "One band wrapped vertically around a closed blank ivory notebook, tab centered on front cover.",
+          "model-side": "Same band and notebook held by adult hand, natural grip.",
+          "model-back": "Top-down same closed notebook and single teal band, tab visible.",
+          "editorial": "Banded ivory notebook on oak desk beside plain pencil."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "틸 엘라스틱 북 밴드 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "amber-drop-bud-vase/front",
+      "productId": "amber-drop-bud-vase",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: transparent amber\nBase material: transparent tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-drop-bud-vase/front.png",
+      "sha256": "a73861486859a00a4877868dacd1fcb07e2adbb31611355084ec125c01fd0212",
+      "history": [
+        {
+          "note": "QA accepted: amber transparent teardrop body, flat base, short single open mouth and full silhouette.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: transparent amber. Material: transparent tinted glass.\nRequired view: Front three-quarter empty vase, entire silhouette and mouth visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "amber-drop-bud-vase/back",
+      "productId": "amber-drop-bud-vase",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["amber-drop-bud-vase/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: transparent amber\nBase material: transparent tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-drop-bud-vase/back.png",
+      "sha256": "456ba696dada8b6cb8211aa78880f33b4e81b467e805fbf5743480841d411f6a",
+      "history": [
+        {
+          "note": "QA accepted: opposite view of rotationally symmetric amber vase preserves single mouth, rounded body and flat base.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: transparent amber. Material: transparent tinted glass.\nRequired view: Rear three-quarter of same empty vase.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "amber-drop-bud-vase/side",
+      "productId": "amber-drop-bud-vase",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["amber-drop-bud-vase/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: transparent amber\nBase material: transparent tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "QA rejected: requested eye-level side, but mouth still seen from above as front anchor.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: transparent amber. Material: transparent tinted glass.\nRequired view: Eye-level side silhouette of empty vase.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "QA accepted: lowered eye-level silhouette with mouth edge horizontal; amber glass geometry preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: transparent amber. Material: transparent tinted glass.\nRequired view: Eye-level side silhouette of empty vase.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCritical angle correction: physically lower camera to horizontal mid-body level. Mouth rim must read as a thin horizontal edge, with NO view down inside the mouth. Change perspective clearly from reference."
+        }
+      ],
+      "output": "images/amber-drop-bud-vase/side.png",
+      "sha256": "6a0c565e17753d9ea89f25d173523ffb5a1d23d4b1ccde91b47e4f094d24782a"
+    },
+    {
+      "id": "amber-drop-bud-vase/texture",
+      "productId": "amber-drop-bud-vase",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["amber-drop-bud-vase/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: transparent amber\nBase material: transparent tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-drop-bud-vase/texture.png",
+      "sha256": "3bc3dcff7eaf2ac44503d510f5784e82e880536a973f0d6c7e88e2d1c3f60c88",
+      "history": [
+        {
+          "note": "QA accepted: macro single smooth amber lip and shoulder, no engraving; consistent glass color.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: transparent amber. Material: transparent tinted glass.\nRequired view: Macro amber glass lip and smooth curved surface.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "amber-drop-bud-vase/model-front",
+      "productId": "amber-drop-bud-vase",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["amber-drop-bud-vase/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: transparent amber\nBase material: transparent tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-drop-bud-vase/model-front.png",
+      "sha256": "946dbbd335d104c73c6706a373c7f411f4e6f5f30da7953c446f77766526368f",
+      "history": [
+        {
+          "note": "QA accepted: one green stem physically passes into single mouth, one white flower and consistent amber vase.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: transparent amber. Material: transparent tinted glass.\nRequired view: Vase holding one slender green stem with single small white flower, visible physical insertion into mouth.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "amber-drop-bud-vase/model-side",
+      "productId": "amber-drop-bud-vase",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["amber-drop-bud-vase/front", "amber-drop-bud-vase/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: transparent amber\nBase material: transparent tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-drop-bud-vase/model-side.png",
+      "sha256": "092d96fa03e988e8cb14c49383abbaab0f8c44ff55d96ace006c0559286cf222",
+      "history": [
+        {
+          "note": "QA accepted: side-biased flower profile on same single stem, single amber vase maintains silhouette and mouth.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: transparent amber. Material: transparent tinted glass.\nRequired view: Same vase, stem and flower from side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "amber-drop-bud-vase/model-back",
+      "productId": "amber-drop-bud-vase",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "amber-drop-bud-vase/front",
+        "amber-drop-bud-vase/back",
+        "amber-drop-bud-vase/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: transparent amber\nBase material: transparent tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-drop-bud-vase/model-back.png",
+      "sha256": "0e7eac6714b24511aac844249e1150945d1284ef44c04d27796ef78f50aa47a7",
+      "history": [
+        {
+          "note": "QA accepted: downward empty vase view exposes circular mouth and glass wall with consistent teardrop body.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: transparent amber. Material: transparent tinted glass.\nRequired view: Top-down empty vase showing single circular mouth and glass wall.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nThe Required view explicitly requests EMPTY: remove the flower/stem or laptop/person from usage reference. Usage reference supplies product consistency only. Make the requested top perspective clearly distinct."
+        }
+      ]
+    },
+    {
+      "id": "amber-drop-bud-vase/editorial",
+      "productId": "amber-drop-bud-vase",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["amber-drop-bud-vase/front", "amber-drop-bud-vase/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: transparent amber\nBase material: transparent tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-drop-bud-vase/editorial.png",
+      "sha256": "d880709b231ccf25b9d03c6eb07567aa9aa09255f77846905548a8e08bc20d41",
+      "history": [
+        {
+          "note": "QA accepted: pale stone windowsill scene with same amber vase and one white flower stem, complete silhouette.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 드롭 버드 베이스\nDesign invariants: Fictional concept sample. Small transparent amber glass bud vase, rounded teardrop body with broad stable flat bottom and short narrow cylindrical neck, one circular open mouth, no handle texture engraving or stopper. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: transparent amber. Material: transparent tinted glass.\nRequired view: Same vase with same white flower on pale stone windowsill.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-felt-laptop-sleeve/front",
+      "productId": "oat-felt-laptop-sleeve",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: oatmeal beige\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "QA rejected: sleeve construction correct but standing upright instead of requested lying flat.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: oatmeal beige. Material: dense wool felt.\nRequired view: Front three-quarter empty sleeve lying flat, opening visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        },
+        {
+          "note": "QA accepted: corrected sleeve lies flat, oatmeal felt with straight open edge and stitched perimeter, no hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: oatmeal beige. Material: dense wool felt.\nRequired view: Front three-quarter empty sleeve lying flat, opening visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nCritical framing correction: lay the sleeve horizontally flat on the tabletop, its broad front face facing UP toward a camera above. It must not stand on its bottom edge. View from above at three-quarter angle."
+        }
+      ],
+      "output": "images/oat-felt-laptop-sleeve/front.png",
+      "sha256": "1dd85e233bfa3cfb054c04e7c2171686374f5de337e5897fbd3680bbe6916cf6"
+    },
+    {
+      "id": "oat-felt-laptop-sleeve/back",
+      "productId": "oat-felt-laptop-sleeve",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["oat-felt-laptop-sleeve/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: oatmeal beige\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-felt-laptop-sleeve/back.png",
+      "sha256": "a237c78b70a7458deae9ed4f1e05e498c74523588136e5235590b6cfbcf54be4",
+      "history": [
+        {
+          "note": "QA accepted: plain opposite broad face consistent with symmetric pocket-free sleeve and oatmeal felt.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: oatmeal beige. Material: dense wool felt.\nRequired view: Plain rear of sleeve.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-felt-laptop-sleeve/side",
+      "productId": "oat-felt-laptop-sleeve",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["oat-felt-laptop-sleeve/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: oatmeal beige\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-felt-laptop-sleeve/side.png",
+      "sha256": "5a0e4a899e23c749001f99405cfd597374c4176c24d5f133c5dd5b7063bca91d",
+      "history": [
+        {
+          "note": "QA accepted: low angle shows thin layered felt edge, stitched seams, open top and consistent plain construction.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: oatmeal beige. Material: dense wool felt.\nRequired view: Low side showing flat felt thickness.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-felt-laptop-sleeve/texture",
+      "productId": "oat-felt-laptop-sleeve",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["oat-felt-laptop-sleeve/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: oatmeal beige\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-felt-laptop-sleeve/texture.png",
+      "sha256": "d455aac17e0f665b32414f83bd74549824079f1f87ba4027e2c22fbf18d8ea74",
+      "history": [
+        {
+          "note": "QA accepted: macro dense oatmeal felt fibers and curved stitched edge with realistic construction.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: oatmeal beige. Material: dense wool felt.\nRequired view: Macro felt fibers and edge stitching.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-felt-laptop-sleeve/model-front",
+      "productId": "oat-felt-laptop-sleeve",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["oat-felt-laptop-sleeve/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: oatmeal beige\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-felt-laptop-sleeve/model-front.png",
+      "sha256": "a2e08f932599ddae2467266b721c8d6052c1789935f02ac5f35197e3012e9f0d",
+      "history": [
+        {
+          "note": "QA accepted: single plain silver laptop partly inserted through top, entire sleeve and seam construction preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: oatmeal beige. Material: dense wool felt.\nRequired view: Plain unbranded silver laptop partly slid into open top, entire sleeve visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-felt-laptop-sleeve/model-side",
+      "productId": "oat-felt-laptop-sleeve",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["oat-felt-laptop-sleeve/front", "oat-felt-laptop-sleeve/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: oatmeal beige\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-felt-laptop-sleeve/model-side.png",
+      "sha256": "7549c382b4d8a82ca56059aee499dc18790be880356fdb1f37f297b393d0c0c0",
+      "history": [
+        {
+          "note": "QA accepted: adult hands plausibly support sleeve and plain laptop, no extra digits or hardware, all product edges framed.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: oatmeal beige. Material: dense wool felt.\nRequired view: Adult hands holding same sleeve containing laptop, no visible logo.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oat-felt-laptop-sleeve/model-back",
+      "productId": "oat-felt-laptop-sleeve",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "oat-felt-laptop-sleeve/front",
+        "oat-felt-laptop-sleeve/back",
+        "oat-felt-laptop-sleeve/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: oatmeal beige\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-felt-laptop-sleeve/model-back.png",
+      "sha256": "c5c7be4d0c03fa0d1e81743777ac95afa2c26163ab23eb7141daf5958b54fdcf",
+      "history": [
+        {
+          "note": "QA accepted: top oblique view into single empty felt compartment, plain matching interior and perimeter stitching.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: oatmeal beige. Material: dense wool felt.\nRequired view: Top oblique empty sleeve showing single open compartment.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nThe Required view explicitly requests EMPTY: remove the flower/stem or laptop/person from usage reference. Usage reference supplies product consistency only. Make the requested top perspective clearly distinct."
+        }
+      ]
+    },
+    {
+      "id": "oat-felt-laptop-sleeve/editorial",
+      "productId": "oat-felt-laptop-sleeve",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["oat-felt-laptop-sleeve/front", "oat-felt-laptop-sleeve/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: oatmeal beige\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oat-felt-laptop-sleeve/editorial.png",
+      "sha256": "438bfbf8b413e4f120a7869343eb950496a6a2d5313dd319d9ea3d3d2d3559e1",
+      "history": [
+        {
+          "note": "QA accepted: oak desktop scene preserves oatmeal sleeve and same closed plain silver laptop, no product cropping.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오트 펠트 노트북 슬리브\nDesign invariants: Fictional concept sample. Flat oatmeal felt laptop sleeve, landscape rounded rectangle with one straight open top edge, stitched side and bottom seams, no flap zipper buttons handles or pockets, plain matching felt interior. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: oatmeal beige. Material: dense wool felt.\nRequired view: Sleeve and closed plain silver laptop on oak desk.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cherry-dice-paperweight/front",
+      "productId": "cherry-dice-paperweight",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: natural cherry wood\nBase material: oiled cherry wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cherry-dice-paperweight/front.png",
+      "sha256": "9311a3a9908884304a869a614a7dbe9e64ab9d09e533d2c5465a6fddf50946e9",
+      "history": [
+        {
+          "note": "QA accepted: single rounded cherry cube with one shallow centered top dimple and two plain faces.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: natural cherry wood. Material: oiled cherry wood.\nRequired view: Three-quarter cube showing top with single dimple and two plain sides.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "cherry-dice-paperweight/back",
+      "productId": "cherry-dice-paperweight",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["cherry-dice-paperweight/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: natural cherry wood\nBase material: oiled cherry wood\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cherry-dice-paperweight/back.png",
+      "sha256": "2bc683538bc3b7dc495734e34c1b06d05b50db02ec0bdcca242b3184ba395527",
+      "history": [
+        {
+          "note": "QA accepted: plain opposing faces of symmetric cherry cube, only one top dimple and rounded corners.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: natural cherry wood. Material: oiled cherry wood.\nRequired view: Opposite rear three-quarter preserving only one top dimple.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cherry-dice-paperweight/side",
+      "productId": "cherry-dice-paperweight",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["cherry-dice-paperweight/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: natural cherry wood\nBase material: oiled cherry wood\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "QA rejected: plain square face shown but too elevated, top dimple fully visible instead of eye-level.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: natural cherry wood. Material: oiled cherry wood.\nRequired view: Eye-level side showing plain square face.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "QA accepted: corrected eye-level single plain square face with rounded edges, no top visible.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: natural cherry wood. Material: oiled cherry wood.\nRequired view: Eye-level side showing plain square face.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCritical correction: camera exactly level with cube center, optical axis horizontal. ONLY ONE PLAIN SQUARE FACE is visible with slim rounded edge borders, NO TOP SURFACE or dimple visible. Orthographic elevation of cube."
+        }
+      ],
+      "output": "images/cherry-dice-paperweight/side.png",
+      "sha256": "fda43206dcb35661e1c2695fd3256f180a0fae548f64d901201ec9aae024b26e"
+    },
+    {
+      "id": "cherry-dice-paperweight/texture",
+      "productId": "cherry-dice-paperweight",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["cherry-dice-paperweight/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: natural cherry wood\nBase material: oiled cherry wood\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cherry-dice-paperweight/texture.png",
+      "sha256": "51f55817d9a8da594f4d449e16729a16532ae766dc076ae5b23124dcd5d270ce",
+      "history": [
+        {
+          "note": "QA accepted: macro cherry wood grain and sole shallow dimple edge, oiled smooth surface.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: natural cherry wood. Material: oiled cherry wood.\nRequired view: Macro cherry grain and edge of sole shallow top dimple.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cherry-dice-paperweight/model-front",
+      "productId": "cherry-dice-paperweight",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["cherry-dice-paperweight/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: natural cherry wood\nBase material: oiled cherry wood\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cherry-dice-paperweight/model-front.png",
+      "sha256": "faf00bda48797b2e72f7f11d2f3890263ace511d1d84202feedf2d68242db69c",
+      "history": [
+        {
+          "note": "QA accepted: single cherry cube physically rests on blank cream paper stack, dimple upward and plain side faces.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: natural cherry wood. Material: oiled cherry wood.\nRequired view: Cube resting on corner of a small stack of blank cream papers, dimple upward.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cherry-dice-paperweight/model-side",
+      "productId": "cherry-dice-paperweight",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["cherry-dice-paperweight/front", "cherry-dice-paperweight/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: natural cherry wood\nBase material: oiled cherry wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cherry-dice-paperweight/model-side.png",
+      "sha256": "84e3a13598f7d5210f89b0b8c31ec9ad1d655860d9c8fb20a99d9f8a2cf14aec",
+      "history": [
+        {
+          "note": "QA accepted: lower side perspective retains cube-paper contact and same cream paper stack, sole top dimple.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: natural cherry wood. Material: oiled cherry wood.\nRequired view: Same cube and paper stack from low side, contact visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cherry-dice-paperweight/model-back",
+      "productId": "cherry-dice-paperweight",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "cherry-dice-paperweight/front",
+        "cherry-dice-paperweight/back",
+        "cherry-dice-paperweight/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: natural cherry wood\nBase material: oiled cherry wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cherry-dice-paperweight/model-back.png",
+      "sha256": "1e9e4ea2a9e3534d74f37e148a5d61daba9700f0691cc53c59a769adf83468c2",
+      "history": [
+        {
+          "note": "QA accepted: top-down square cherry cube with exactly one centered circular shallow dimple.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: natural cherry wood. Material: oiled cherry wood.\nRequired view: Top-down cube showing exactly one centered shallow circular dimple.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cherry-dice-paperweight/editorial",
+      "productId": "cherry-dice-paperweight",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["cherry-dice-paperweight/front", "cherry-dice-paperweight/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: natural cherry wood\nBase material: oiled cherry wood\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cherry-dice-paperweight/editorial.png",
+      "sha256": "94ee66c447ec6a0eea31e781f84d7bfa533f93070971e652878c35f597f4d540",
+      "history": [
+        {
+          "note": "QA accepted: cherry cube on blank cream paper beside wooden pencil in daylight, single top dimple and plain faces preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 체리 다이스 페이퍼웨이트\nDesign invariants: Fictional concept sample. One solid cherry wood cube paperweight with softly rounded edges, completely plain faces except one shallow circular dimple centered on TOP face, no other dots markings holes or separate pieces. This is a decorative cube, not numbered gaming dice. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: natural cherry wood. Material: oiled cherry wood.\nRequired view: Cube on blank paper beside unbranded wooden pencil, daylight.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "teal-elastic-book-band/front",
+      "productId": "teal-elastic-book-band",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: deep teal\nBase material: woven elastic textile\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/teal-elastic-book-band/front.png",
+      "sha256": "74200024631937c0855cb991a3cd7af0764c72f5053bd5c55c9664963b55fbca",
+      "history": [
+        {
+          "note": "QA accepted: single closed teal woven loop with one stitched leather seam tab, no buckle or text.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: deep teal. Material: woven elastic textile.\nRequired view: Closed elastic loop laid in neat oval, single leather tab visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "teal-elastic-book-band/back",
+      "productId": "teal-elastic-book-band",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["teal-elastic-book-band/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: deep teal\nBase material: woven elastic textile\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/teal-elastic-book-band/back.png",
+      "sha256": "fd74f56d1f42752f3b6364ac7b66405abe54ec75ce556e07cbea77ff5b8f01eb",
+      "history": [
+        {
+          "note": "QA accepted: opposite oval view moves single seam tab to far side, consistent woven teal loop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: deep teal. Material: woven elastic textile.\nRequired view: Opposite side of oval loop with seam area visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "teal-elastic-book-band/side",
+      "productId": "teal-elastic-book-band",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["teal-elastic-book-band/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: deep teal\nBase material: woven elastic textile\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/teal-elastic-book-band/side.png",
+      "sha256": "8c3a77f420745a2a0df740d707dd6ba230abfa56373acdea75fca4213c6073f3",
+      "history": [
+        {
+          "note": "QA accepted: low side angle of oval loop reveals narrow top edge and flat strap thickness, one tab.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: deep teal. Material: woven elastic textile.\nRequired view: Low side view showing flat strap thickness and oval loop.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "teal-elastic-book-band/texture",
+      "productId": "teal-elastic-book-band",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["teal-elastic-book-band/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: deep teal\nBase material: woven elastic textile\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/teal-elastic-book-band/texture.png",
+      "sha256": "abb784d92694055779717b321eff93f076f490a4c1712374cc5858d44796af54",
+      "history": [
+        {
+          "note": "QA accepted: macro teal weave and single leather tab with two stitched seams; no text or metal.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: deep teal. Material: woven elastic textile.\nRequired view: Macro elastic weave and single stitched leather tab.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "teal-elastic-book-band/model-front",
+      "productId": "teal-elastic-book-band",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["teal-elastic-book-band/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: deep teal\nBase material: woven elastic textile\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/teal-elastic-book-band/model-front.png",
+      "sha256": "af52731281bbaf599eecc380ed04949d7bf2481d5bd711a368d1262f58efe6f7",
+      "history": [
+        {
+          "note": "QA accepted: one teal band wraps vertically over blank ivory notebook with single tab centered on front.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: deep teal. Material: woven elastic textile.\nRequired view: One band wrapped vertically around a closed blank ivory notebook, tab centered on front cover.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "teal-elastic-book-band/model-side",
+      "productId": "teal-elastic-book-band",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["teal-elastic-book-band/front", "teal-elastic-book-band/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: deep teal\nBase material: woven elastic textile\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/teal-elastic-book-band/model-side.png",
+      "sha256": "7313c2a87764fe701c05c73bcca01f8390ae09c7d2e8342550c6b6e76152efde",
+      "history": [
+        {
+          "note": "QA accepted: natural adult hand grip with thumb and four fingers, same ivory notebook and one teal band/tab.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: deep teal. Material: woven elastic textile.\nRequired view: Same band and notebook held by adult hand, natural grip.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "teal-elastic-book-band/model-back",
+      "productId": "teal-elastic-book-band",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "teal-elastic-book-band/front",
+        "teal-elastic-book-band/back",
+        "teal-elastic-book-band/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: deep teal\nBase material: woven elastic textile\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/teal-elastic-book-band/model-back.png",
+      "sha256": "58bf7d32812ae36b910a2437e42a4c540920bab40b83fa72f2667eeaf001c122",
+      "history": [
+        {
+          "note": "QA accepted: overhead flat view of same closed ivory notebook and single teal band with one visible tab.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: deep teal. Material: woven elastic textile.\nRequired view: Top-down same closed notebook and single teal band, tab visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "teal-elastic-book-band/editorial",
+      "productId": "teal-elastic-book-band",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["teal-elastic-book-band/front", "teal-elastic-book-band/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: deep teal\nBase material: woven elastic textile\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/teal-elastic-book-band/editorial.png",
+      "sha256": "1e564ed4bc473094fd851c62d7a726940e3f0139f3e98625adecc1e3606506a9",
+      "history": [
+        {
+          "note": "QA accepted: same ivory notebook and teal band on oak desk beside unbranded pencil; one stitched tab preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 틸 엘라스틱 북 밴드\nDesign invariants: Fictional concept sample. Single closed loop of wide teal woven elastic book band with one small rectangular teal leather tab stitched across the band at seam, no buckle clip metal or text, stretches around a closed book vertically. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: deep teal. Material: woven elastic textile.\nRequired view: Banded ivory notebook on oak desk beside plain pencil.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    }
+  ]
+}

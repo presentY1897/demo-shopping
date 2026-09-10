@@ -1,0 +1,802 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "slate-stone-catchall",
+        "name": "슬레이트 스톤 캐치올",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "slate gray",
+        "colorLabel": "슬레이트",
+        "hex": "#747c80",
+        "material": "matte natural stone",
+        "price": 28000,
+        "design": "Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "EIGHT-09",
+        "highlights": ["슬레이트 컬러", "가상 기획 상품"],
+        "description": "슬레이트 스톤 캐치올 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Three-quarter entire empty tray showing basin.",
+          "back": "Rear oblique showing outer wall and basin.",
+          "side": "Very low horizontal side profile showing shallow rim.",
+          "texture": "Macro fine matte stone texture and rounded basin edge.",
+          "model-front": "Tray containing one plain key and one simple silver ring.",
+          "model-side": "Same tray and objects from opposite low side.",
+          "model-back": "Top-down empty tray showing rectangular rounded outline.",
+          "editorial": "Tray with same key and ring on cream linen."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "mustard-felt-glasses-mat",
+        "name": "머스터드 펠트 안경 매트",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "muted mustard yellow",
+        "colorLabel": "머스터드",
+        "hex": "#c5a44e",
+        "material": "dense wool felt",
+        "price": 12000,
+        "design": "Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "EIGHT-10",
+        "highlights": ["머스터드 컬러", "가상 기획 상품"],
+        "description": "머스터드 펠트 안경 매트 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Top three-quarter whole empty felt mat lying flat.",
+          "back": "Underside of same mat lying flat.",
+          "side": "Low edge-on profile showing thick felt edge.",
+          "texture": "Macro dense felt fibers and edge.",
+          "model-front": "One pair of folded plain dark eyeglasses resting centered on felt mat.",
+          "model-side": "Same mat and folded glasses from low side.",
+          "model-back": "Top-down empty mat showing oval shape and pinched waist.",
+          "editorial": "Same mat and glasses on pale oak bedside table beside blank book."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "burgundy-wrist-key-loop",
+        "name": "버건디 리스트 키 루프",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 액세서리",
+        "color": "burgundy red",
+        "colorLabel": "버건디",
+        "hex": "#793b45",
+        "material": "smooth leather and brushed steel",
+        "price": 18000,
+        "design": "Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "EIGHT-11",
+        "highlights": ["버건디 컬러", "가상 기획 상품"],
+        "description": "버건디 리스트 키 루프 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Three-quarter whole loop and single silver ring lying flat.",
+          "back": "Reverse view showing smooth leather underside and rivet back.",
+          "side": "Low side profile showing leather strip thickness and ring.",
+          "texture": "Macro burgundy leather grain and single rivet near ring.",
+          "model-front": "One plain unmarked house key attached to single ring, whole loop visible.",
+          "model-side": "Adult hand holding loop with same single key and ring, natural fingers.",
+          "model-back": "Top-down empty loop with single ring and no key.",
+          "editorial": "Loop with same key on cream canvas beside plain notebook."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "oak-stepped-bookend",
+        "name": "오크 스텝 북엔드",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 독서 소품",
+        "color": "natural pale oak",
+        "colorLabel": "오크",
+        "hex": "#bba07a",
+        "material": "oiled oak wood",
+        "price": 32000,
+        "design": "Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "EIGHT-12",
+        "highlights": ["오크 컬러", "가상 기획 상품"],
+        "description": "오크 스텝 북엔드 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Three-quarter empty bookend showing three stairs and tall rear face.",
+          "back": "Rear view showing tall plain vertical back face.",
+          "side": "True side profile showing exactly three staircase steps.",
+          "texture": "Macro oak grain and one rounded stair edge.",
+          "model-front": "Tall vertical rear face of bookend supporting three upright blank linen books; stair steps face away from books.",
+          "model-side": "Same bookend and three books from opposite side, contact at tall rear face clear.",
+          "model-back": "Top-down empty bookend showing three broad steps.",
+          "editorial": "Bookend supporting same three blank books on oak shelf."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "slate-stone-catchall/front",
+      "productId": "slate-stone-catchall",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: slate gray\nBase material: matte natural stone\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/slate-stone-catchall/front.png",
+      "sha256": "d24745eb501731fe58f056d8cc2d741918d3f76a52b7a71a5177df415bcd94ca",
+      "history": [
+        {
+          "note": "QA: single slate gray rounded rectangular basin and continuous rim, matte stone, no feet or hardware, full three-quarter framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: slate gray. Material: matte natural stone.\nRequired view: Three-quarter entire empty tray showing basin.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "slate-stone-catchall/back",
+      "productId": "slate-stone-catchall",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["slate-stone-catchall/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: slate gray\nBase material: matte natural stone\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/slate-stone-catchall/back.png",
+      "sha256": "0c87655de20ea686666cd25c481a2e6f369502b8ac53d4927ffcfa2817e7695f",
+      "history": [
+        {
+          "note": "QA: rear oblique symmetric tray has continuous low wall, rounded corners and single basin; slate stone color and full framing preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: slate gray. Material: matte natural stone.\nRequired view: Rear oblique showing outer wall and basin.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "slate-stone-catchall/side",
+      "productId": "slate-stone-catchall",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["slate-stone-catchall/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: slate gray\nBase material: matte natural stone\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/slate-stone-catchall/side.png",
+      "sha256": "e4a0edff32be2ff77eeaf324402e93df1ab9b477f93d54ff132caa14e07b3a9c",
+      "history": [
+        {
+          "note": "QA: low horizontal profile shows shallow continuous tray wall and basin; rounded slate stone geometry and single product retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: slate gray. Material: matte natural stone.\nRequired view: Very low horizontal side profile showing shallow rim.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "slate-stone-catchall/texture",
+      "productId": "slate-stone-catchall",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["slate-stone-catchall/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: slate gray\nBase material: matte natural stone\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/slate-stone-catchall/texture.png",
+      "sha256": "cd90f016fe515c6c3f90c07b7f311cb5c390c6567b403fbe5f1ed9733f18ec94",
+      "history": [
+        {
+          "note": "QA: close macro of matte slate stone and rounded basin edge, consistent gray coloration, no invented hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: slate gray. Material: matte natural stone.\nRequired view: Macro fine matte stone texture and rounded basin edge.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "slate-stone-catchall/model-front",
+      "productId": "slate-stone-catchall",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["slate-stone-catchall/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: slate gray\nBase material: matte natural stone\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/slate-stone-catchall/model-front.png",
+      "sha256": "75f250a31762077720358767ede7f84f79dca251fe94b39d2ca628952849541b",
+      "history": [
+        {
+          "note": "QA: tray contains exactly one plain key and one simple silver ring, same continuous rim basin stone and color.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: slate gray. Material: matte natural stone.\nRequired view: Tray containing one plain key and one simple silver ring.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "slate-stone-catchall/model-side",
+      "productId": "slate-stone-catchall",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["slate-stone-catchall/front", "slate-stone-catchall/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: slate gray\nBase material: matte natural stone\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/slate-stone-catchall/model-side.png",
+      "sha256": "9409b871a768ade183f1eed8aed3e54404750c377a9cdbf0b82b275e2cacf087",
+      "history": [
+        {
+          "note": "QA: opposite-side view retains one key and one ring in same slate basin, full rounded tray and continuous walls.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: slate gray. Material: matte natural stone.\nRequired view: Same tray and objects from opposite low side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "slate-stone-catchall/model-back",
+      "productId": "slate-stone-catchall",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "slate-stone-catchall/front",
+        "slate-stone-catchall/back",
+        "slate-stone-catchall/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: slate gray\nBase material: matte natural stone\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/slate-stone-catchall/model-back.png",
+      "sha256": "95b2f6421521b8286d50ab5c200a4195310eea48953d32cf2814ddfc3676feb8",
+      "history": [
+        {
+          "note": "QA: true top-down empty tray, rounded rectangular basin and consistent rim, gray stone preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: slate gray. Material: matte natural stone.\nRequired view: Top-down empty tray showing rectangular rounded outline.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "slate-stone-catchall/editorial",
+      "productId": "slate-stone-catchall",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["slate-stone-catchall/front", "slate-stone-catchall/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: slate gray\nBase material: matte natural stone\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/slate-stone-catchall/editorial.png",
+      "sha256": "0f455aa9ace11c760041c661674a2fe32d5beda00f4b5cb565344a5aa46a6ff4",
+      "history": [
+        {
+          "note": "QA: cream linen editorial has same slate tray, exactly one key and ring, rounded rim and basin consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 슬레이트 스톤 캐치올\nDesign invariants: Fictional concept sample. Small low rectangular slate-gray stone catchall tray, four equally rounded corners, single shallow recessed rectangular basin, continuous low rounded rim, flat underside, no feet handles drain holes or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: slate gray. Material: matte natural stone.\nRequired view: Tray with same key and ring on cream linen.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mustard-felt-glasses-mat/front",
+      "productId": "mustard-felt-glasses-mat",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: muted mustard yellow\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mustard-felt-glasses-mat/front.png",
+      "sha256": "b37a7440e6f831633c1f515b658056f503cc26a788f68307a6ba9a29e15f5194",
+      "history": [
+        {
+          "note": "QA: single mustard felt mat with pinched oval waist, thick plain felt edge and no stitching or hardware; full top three-quarter framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: muted mustard yellow. Material: dense wool felt.\nRequired view: Top three-quarter whole empty felt mat lying flat.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "mustard-felt-glasses-mat/back",
+      "productId": "mustard-felt-glasses-mat",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["mustard-felt-glasses-mat/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: muted mustard yellow\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mustard-felt-glasses-mat/back.png",
+      "sha256": "2c9908901f010ef6bca0f7b985587bc082a01d25ce1498d5df942a6bc7b04423",
+      "history": [
+        {
+          "note": "QA: plain underside of symmetric felt mat, same pinched waist and mustard color, no hardware or stitching, full framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: muted mustard yellow. Material: dense wool felt.\nRequired view: Underside of same mat lying flat.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mustard-felt-glasses-mat/side",
+      "productId": "mustard-felt-glasses-mat",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["mustard-felt-glasses-mat/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: muted mustard yellow\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mustard-felt-glasses-mat/side.png",
+      "sha256": "0a557c8fee76a608962ecc688e05b6fd2ed9ccf7d25b14b96797bc4f6c09ade6",
+      "history": [
+        {
+          "note": "QA: low edge-on mat shows thick mustard felt edge, pinched waist and flat profile, no stitching or extra parts.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: muted mustard yellow. Material: dense wool felt.\nRequired view: Low edge-on profile showing thick felt edge.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mustard-felt-glasses-mat/texture",
+      "productId": "mustard-felt-glasses-mat",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["mustard-felt-glasses-mat/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: muted mustard yellow\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mustard-felt-glasses-mat/texture.png",
+      "sha256": "e2566fa502f6665234b1e4ad08efc8a52def69a57a8be6a58f7bb05927ae67bd",
+      "history": [
+        {
+          "note": "QA: extreme macro dense mustard wool fibers and thick clean felt edge; material and color match anchor.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: muted mustard yellow. Material: dense wool felt.\nRequired view: Macro dense felt fibers and edge.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mustard-felt-glasses-mat/model-front",
+      "productId": "mustard-felt-glasses-mat",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["mustard-felt-glasses-mat/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: muted mustard yellow\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mustard-felt-glasses-mat/model-front.png",
+      "sha256": "059cda29a53d1dd3ce46ef3d9eb895d7fe7c7f90a5e665419586e24c1e24fa71",
+      "history": [
+        {
+          "note": "QA: one folded dark eyeglasses pair centered on same mustard felt mat; full mat visible with correct waist and edge.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: muted mustard yellow. Material: dense wool felt.\nRequired view: One pair of folded plain dark eyeglasses resting centered on felt mat.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mustard-felt-glasses-mat/model-side",
+      "productId": "mustard-felt-glasses-mat",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["mustard-felt-glasses-mat/front", "mustard-felt-glasses-mat/model-front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: muted mustard yellow\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "QA: product and glasses match, but camera remains elevated front three-quarter instead of requested low side.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: muted mustard yellow. Material: dense wool felt.\nRequired view: Same mat and folded glasses from low side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "QA: corrected lower camera shows edge thickness and foreshortened folded dark glasses; mustard felt waist and color preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: muted mustard yellow. Material: dense wool felt.\nRequired view: Same mat and folded glasses from low side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCamera correction: move camera down to tabletop height and around to the narrow end of the glasses mat. True low side profile of folded glasses; lens faces must appear foreshortened, not facing viewer. Mat top barely visible. Keep entire product.\n"
+        }
+      ],
+      "output": "images/mustard-felt-glasses-mat/model-side.png",
+      "sha256": "88acc56660a3e6b37798e951818049f633704403dc868c71ad7ce2a87e87346f"
+    },
+    {
+      "id": "mustard-felt-glasses-mat/model-back",
+      "productId": "mustard-felt-glasses-mat",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "mustard-felt-glasses-mat/front",
+        "mustard-felt-glasses-mat/back",
+        "mustard-felt-glasses-mat/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: muted mustard yellow\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mustard-felt-glasses-mat/model-back.png",
+      "sha256": "9d738152954d4de171b5c78639c9881ac64fde22e1e239906a7378f4f806fa85",
+      "history": [
+        {
+          "note": "QA: top-down empty mustard felt mat displays symmetric pinched oval waist, full contour and plain fibers with no added parts.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: muted mustard yellow. Material: dense wool felt.\nRequired view: Top-down empty mat showing oval shape and pinched waist.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mustard-felt-glasses-mat/editorial",
+      "productId": "mustard-felt-glasses-mat",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["mustard-felt-glasses-mat/front", "mustard-felt-glasses-mat/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: muted mustard yellow\nBase material: dense wool felt\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mustard-felt-glasses-mat/editorial.png",
+      "sha256": "0812196b4529fe6b093df4f9417a5c9457c52a639354e7874730e861fa0d1f43",
+      "history": [
+        {
+          "note": "QA: full mustard mat and same folded dark glasses on pale oak bedside with blank book, correct single product and intact silhouette.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 머스터드 펠트 안경 매트\nDesign invariants: Fictional concept sample. One flat mustard felt eyeglasses mat shaped like a horizontal elongated oval with softly pinched waist, plain top and bottom, thick felt edge, no stitching holes hardware or printing. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: muted mustard yellow. Material: dense wool felt.\nRequired view: Same mat and glasses on pale oak bedside table beside blank book.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "burgundy-wrist-key-loop/front",
+      "productId": "burgundy-wrist-key-loop",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: burgundy red\nBase material: smooth leather and brushed steel\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/burgundy-wrist-key-loop/front.png",
+      "sha256": "dc5312161e88f735a369425008c0c37aeb16636db6cd12534a85cb240925149a",
+      "history": [
+        {
+          "note": "QA: burgundy leather elongated closed loop with exactly one silver rivet and one split key ring, no extra hardware; complete three-quarter framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: burgundy red. Material: smooth leather and brushed steel.\nRequired view: Three-quarter whole loop and single silver ring lying flat.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "burgundy-wrist-key-loop/back",
+      "productId": "burgundy-wrist-key-loop",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["burgundy-wrist-key-loop/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: burgundy red\nBase material: smooth leather and brushed steel\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/burgundy-wrist-key-loop/back.png",
+      "sha256": "84876925b5912baf115a985f129e1dd896d465bc71e55196e4a88f211f759160",
+      "history": [
+        {
+          "note": "QA: reverse smooth burgundy loop face and one silver rivet end, single split ring and closed loop retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: burgundy red. Material: smooth leather and brushed steel.\nRequired view: Reverse view showing smooth leather underside and rivet back.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "burgundy-wrist-key-loop/side",
+      "productId": "burgundy-wrist-key-loop",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["burgundy-wrist-key-loop/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: burgundy red\nBase material: smooth leather and brushed steel\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/burgundy-wrist-key-loop/side.png",
+      "sha256": "051650e1bf5491d9ccbdd1a808b13e7ba8110b726fcce7cc0a2a64a660036409",
+      "history": [
+        {
+          "note": "QA: low side burgundy loop profile shows leather strip thickness, single rivet and single split ring, correct continuous loop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: burgundy red. Material: smooth leather and brushed steel.\nRequired view: Low side profile showing leather strip thickness and ring.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "burgundy-wrist-key-loop/texture",
+      "productId": "burgundy-wrist-key-loop",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["burgundy-wrist-key-loop/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: burgundy red\nBase material: smooth leather and brushed steel\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/burgundy-wrist-key-loop/texture.png",
+      "sha256": "98182e297411ae1c6444b42ff0eebdcd1d77a789c9cf79d05c45b564ab95712a",
+      "history": [
+        {
+          "note": "QA: macro burgundy leather grain and one brushed silver rivet beside split ring; color and leather edge consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: burgundy red. Material: smooth leather and brushed steel.\nRequired view: Macro burgundy leather grain and single rivet near ring.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "burgundy-wrist-key-loop/model-front",
+      "productId": "burgundy-wrist-key-loop",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["burgundy-wrist-key-loop/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: burgundy red\nBase material: smooth leather and brushed steel\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/burgundy-wrist-key-loop/model-front.png",
+      "sha256": "28be48b5290cf9308ab02e15dc3f6294e3a7587f46e3d8345c30979778d7fc97",
+      "history": [
+        {
+          "note": "QA: one plain house key attached to single split ring on unchanged burgundy loop; one rivet, full product visible.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: burgundy red. Material: smooth leather and brushed steel.\nRequired view: One plain unmarked house key attached to single ring, whole loop visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "burgundy-wrist-key-loop/model-side",
+      "productId": "burgundy-wrist-key-loop",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["burgundy-wrist-key-loop/front", "burgundy-wrist-key-loop/model-front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: burgundy red\nBase material: smooth leather and brushed steel\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "QA: hand appears to have extra finger segments around loop; natural five-digit anatomy not reliable.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: burgundy red. Material: smooth leather and brushed steel.\nRequired view: Adult hand holding loop with same single key and ring, natural fingers.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "QA: corrected natural thumb-index pinch with remaining fingers curled, complete burgundy loop one rivet one ring and one key preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: burgundy red. Material: smooth leather and brushed steel.\nRequired view: Adult hand holding loop with same single key and ring, natural fingers.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nHand correction: use one adult right hand in a simple thumb-and-index pinch at the top of the loop. Other three fingers curl together behind hand naturally and stay away from loop. Exactly five digits total, no duplicate fingertips, no extra nail below loop. Full loop single ring and single key visible.\n"
+        }
+      ],
+      "output": "images/burgundy-wrist-key-loop/model-side.png",
+      "sha256": "f708a4533d0be31725231b2ac7f64120a2a85ebdc9e63cc36d9f118fbdfc2461"
+    },
+    {
+      "id": "burgundy-wrist-key-loop/model-back",
+      "productId": "burgundy-wrist-key-loop",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "burgundy-wrist-key-loop/front",
+        "burgundy-wrist-key-loop/back",
+        "burgundy-wrist-key-loop/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: burgundy red\nBase material: smooth leather and brushed steel\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "QA: empty loop and ring correct but camera oblique, not required top-down overhead.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: burgundy red. Material: smooth leather and brushed steel.\nRequired view: Top-down empty loop with single ring and no key.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "QA: corrected overhead flat lay has circular single ring, empty elongated burgundy loop and one rivet, no key.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: burgundy red. Material: smooth leather and brushed steel.\nRequired view: Top-down empty loop with single ring and no key.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCamera correction: STRICT 90-degree overhead flat lay, camera optical axis perpendicular to tabletop. Single silver ring appears circular, not ellipse. Flatten leather loop gently onto tabletop, show top outline with no perspective convergence. No key.\n"
+        }
+      ],
+      "output": "images/burgundy-wrist-key-loop/model-back.png",
+      "sha256": "02859c51360dfb84849f2401eda4b0acdb9e3cc8887b239989cd7d03c2867023"
+    },
+    {
+      "id": "burgundy-wrist-key-loop/editorial",
+      "productId": "burgundy-wrist-key-loop",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["burgundy-wrist-key-loop/front", "burgundy-wrist-key-loop/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: burgundy red\nBase material: smooth leather and brushed steel\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/burgundy-wrist-key-loop/editorial.png",
+      "sha256": "0141ad397f05add94353ae5886c7e570af7eecc51bc04ab9d2da5ae92ded498b",
+      "history": [
+        {
+          "note": "QA: cream canvas editorial with plain notebook, same burgundy loop one key single ring and rivet, full product.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 버건디 리스트 키 루프\nDesign invariants: Fictional concept sample. One burgundy leather wrist key loop, narrow flat leather strip folded into elongated closed loop, both ends held together at base by one small silver rivet around one silver split key ring, no buckle clip zipper branding or extra rings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: burgundy red. Material: smooth leather and brushed steel.\nRequired view: Loop with same key on cream canvas beside plain notebook.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oak-stepped-bookend/front",
+      "productId": "oak-stepped-bookend",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "QA: third top stair tread is too narrow compared with two broad lower treads; required three broad flat treads.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Three-quarter empty bookend showing three stairs and tall rear face.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        },
+        {
+          "note": "QA: corrected oak anchor has exactly three broad flat treads and three risers, continuous solid block and flat base, no separate hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Three-quarter empty bookend showing three stairs and tall rear face.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nGeometry correction: precisely THREE stair treads of EQUAL broad depth and equal width, with THREE equal-height risers. The uppermost tread is a broad horizontal platform just like the first and second; no thin vertical backboard. Solid stair block with far rear vertical face.\n"
+        }
+      ],
+      "output": "images/oak-stepped-bookend/front.png",
+      "sha256": "d852509719796c7d49f55bb673f9cf60820bee04d3ce8cf84e319a4ffa5338d3"
+    },
+    {
+      "id": "oak-stepped-bookend/back",
+      "productId": "oak-stepped-bookend",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["oak-stepped-bookend/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-stepped-bookend/back.png",
+      "sha256": "d15152f66f0785d4ea8d9860862dea81d2e8894d2a657bedec723e7304b72a8c",
+      "history": [
+        {
+          "note": "QA: rear oblique oak block shows tall plain vertical rear face, three-step silhouette and solid flat base without hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Rear view showing tall plain vertical back face.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oak-stepped-bookend/side",
+      "productId": "oak-stepped-bookend",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["oak-stepped-bookend/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-stepped-bookend/side.png",
+      "sha256": "3492407141361c5cf0211683d2c31a27cf531e7c630de38189753a6e98abf987",
+      "history": [
+        {
+          "note": "QA: side profile displays precisely three staircase steps with broad treads, solid oak and flat underside, no hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: True side profile showing exactly three staircase steps.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oak-stepped-bookend/texture",
+      "productId": "oak-stepped-bookend",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["oak-stepped-bookend/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-stepped-bookend/texture.png",
+      "sha256": "84a268e44d360570be2f6d824447657fc897401a07b97128fdc628b2814a1d86",
+      "history": [
+        {
+          "note": "QA: extreme macro oak grain and softly rounded stair edge, pale oiled wood matches anchor without seams or hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Macro oak grain and one rounded stair edge.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oak-stepped-bookend/model-front",
+      "productId": "oak-stepped-bookend",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["oak-stepped-bookend/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-stepped-bookend/model-front.png",
+      "sha256": "92c45261ca33049814999bd574398e8cc85bba45491a65f6dd3028124f70f271",
+      "history": [
+        {
+          "note": "QA: three upright blank linen books supported against tall rear face, exactly three oak treads face away; full single bookend consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Tall vertical rear face of bookend supporting three upright blank linen books; stair steps face away from books.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oak-stepped-bookend/model-side",
+      "productId": "oak-stepped-bookend",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["oak-stepped-bookend/front", "oak-stepped-bookend/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-stepped-bookend/model-side.png",
+      "sha256": "7c95ac78d706e3ab53c2f9c7ec92fde6d1faa824a4321f173cad4d9dfc766194",
+      "history": [
+        {
+          "note": "QA: opposite side shows same three blank linen books contacting tall rear oak face, exactly three broad stairs face away, full framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Same bookend and three books from opposite side, contact at tall rear face clear.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oak-stepped-bookend/model-back",
+      "productId": "oak-stepped-bookend",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "oak-stepped-bookend/front",
+        "oak-stepped-bookend/back",
+        "oak-stepped-bookend/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "QA: oak steps and empty object correct, but elevated oblique view instead of required top-down.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Top-down empty bookend showing three broad steps.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "QA: corrected overhead view shows rectangular outline and three broad oak treads, empty block and consistent pale grain.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Top-down empty bookend showing three broad steps.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCamera correction: STRICT 90-degree overhead, optical axis perpendicular to tabletop. Overall silhouette must be a rectangle divided into three equally broad rectangular horizontal treads. No outer vertical side faces visible. Depth indicated only by soft step-edge shadows. No books.\n"
+        }
+      ],
+      "output": "images/oak-stepped-bookend/model-back.png",
+      "sha256": "737e15b61013623aa406ff8ac165adc53e0e35c504ad157656d64efc1f4f697d"
+    },
+    {
+      "id": "oak-stepped-bookend/editorial",
+      "productId": "oak-stepped-bookend",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["oak-stepped-bookend/front", "oak-stepped-bookend/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-stepped-bookend/editorial.png",
+      "sha256": "faa0e5f19d4a64f76bcd17abb49987b99547755e10163b4fa1cb0116dd05db5b",
+      "history": [
+        {
+          "note": "QA: oak shelf editorial shows same three-step oak bookend supporting exactly three blank linen books at tall rear face; consistent color and complete framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 스텝 북엔드\nDesign invariants: Fictional concept sample. One solid oak bookend shaped like a three-step staircase wedge, three broad flat stair treads rising toward one tall flat vertical rear face, stable flat rectangular underside, no holes text fasteners or separate base pieces. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Bookend supporting same three blank books on oak shelf.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    }
+  ]
+}

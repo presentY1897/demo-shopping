@@ -1,0 +1,148 @@
+{
+  "products": [
+    {
+      "id": "ivory-crescent-pen-rest",
+      "name": "아이보리 크레센트 펜 레스트",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "warm ivory",
+      "colorLabel": "아이보리",
+      "hex": "#eee5d4",
+      "material": "satin glazed ceramic",
+      "price": 17000,
+      "design": "Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "DOZEN-05",
+      "highlights": ["아이보리 컬러", "가상 기획 상품"],
+      "description": "아이보리 크레센트 펜 레스트 가상 기획 샘플입니다. AI 생성 이미지로 형태와 소재 표현, 사용 장면을 소개합니다.",
+      "shotDirections": {
+        "front": "empty crescent with concave upper surface visible",
+        "back": "smooth underside and rear rounded crescent edge",
+        "side": "low side profile showing shallow dish thickness",
+        "texture": "satin ivory glaze at rounded crescent tip",
+        "model-front": "one plain dark wooden pencil resting horizontally across the shallow upper surface",
+        "model-side": "same pencil and crescent from low side, pencil supported by ceramic",
+        "model-back": "top-down empty crescent showing concave upper surface",
+        "editorial": "same crescent with same pencil on pale oak desk"
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "sage-square-memo-block-holder",
+      "name": "세이지 스퀘어 메모 홀더",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "muted sage green",
+      "colorLabel": "세이지",
+      "hex": "#94a48c",
+      "material": "powder-coated metal",
+      "price": 19000,
+      "design": "Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "DOZEN-06",
+      "highlights": ["세이지 컬러", "가상 기획 상품"],
+      "description": "세이지 스퀘어 메모 홀더 가상 기획 샘플입니다. AI 생성 이미지로 형태와 소재 표현, 사용 장면을 소개합니다.",
+      "shotDirections": {
+        "front": "empty tray with all four low walls visible",
+        "back": "opposite rear three-quarter empty tray",
+        "side": "eye-level low side showing plain low wall",
+        "texture": "matte sage surface at existing rounded corner",
+        "model-front": "a neat stack of plain blank white square memo paper fitting inside the tray, stack extends slightly above walls",
+        "model-side": "same tray and blank paper stack viewed from side",
+        "model-back": "top-down empty square tray with single compartment",
+        "editorial": "same holder and blank paper stack on pale oak desk"
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "amber-glass-ring-cone",
+      "name": "앰버 글라스 링 콘",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "transparent amber",
+      "colorLabel": "앰버",
+      "hex": "#b77729",
+      "material": "smooth solid tinted glass",
+      "price": 21000,
+      "design": "Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "DOZEN-07",
+      "highlights": ["앰버 컬러", "가상 기획 상품"],
+      "description": "앰버 글라스 링 콘 가상 기획 샘플입니다. AI 생성 이미지로 형태와 소재 표현, 사용 장면을 소개합니다.",
+      "shotDirections": {
+        "front": "whole empty cone from front three-quarter",
+        "back": "same empty cone from opposite rear three-quarter",
+        "side": "eye-level whole cone silhouette",
+        "texture": "smooth amber glass surface and internal light refraction near base",
+        "model-front": "one plain thin silver ring encircling cone and resting midway down its taper, ring supported naturally by widening cone",
+        "model-side": "same cone and silver ring from side",
+        "model-back": "top-down empty cone showing circular base silhouette and central tip",
+        "editorial": "same cone with same silver ring on pale stone desk"
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "beech-round-photo-stand",
+      "name": "비치 라운드 포토 스탠드",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "natural pale beech",
+      "colorLabel": "비치",
+      "hex": "#c9a577",
+      "material": "smooth natural beech wood",
+      "price": 15000,
+      "design": "Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "DOZEN-08",
+      "highlights": ["비치 컬러", "가상 기획 상품"],
+      "description": "비치 라운드 포토 스탠드 가상 기획 샘플입니다. AI 생성 이미지로 형태와 소재 표현, 사용 장면을 소개합니다.",
+      "shotDirections": {
+        "front": "empty puck from above-front three-quarter with one straight top slot visible",
+        "back": "opposite rear three-quarter puck with same single straight slot",
+        "side": "low side view showing short cylinder and top slot edge",
+        "texture": "natural beech grain and smooth slot edge",
+        "model-front": "one plain blank cream rectangular card inserted upright into sole top slot",
+        "model-side": "same puck and cream card from side, insertion and support visible",
+        "model-back": "top-down empty puck showing exactly one straight slot across circular top",
+        "editorial": "same puck with same blank cream card on pale oak desk"
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    }
+  ]
+}

@@ -18,3 +18,21 @@ pnpm-lock.yaml
 # Vendored from https://render.com/schema/render.yaml.json — kept byte for byte
 # so refreshing it produces a readable diff.
 apps/api/test/ci/schemas/
+
+# Generated/local image execution artifacts; reviewed JSON is formatted at commit time.
+product-images/*-calls/
+product-images/*-prompts/
+product-images/*-qa/
+product-images/*-timing.json
+product-images/*-summary.json
+product-images/*-products.json
+product-images/*-audit.json
+product-images/*-plan.json
+product-images/*-applied.json
+product-images/*-baseline.json
+product-images/*-preservation.json
+product-images/*-check.json
+product-images/*-backup.json
+product-images/*-completion.json
+product-images/*-intervals.json
+product-images/*-pressure*.json

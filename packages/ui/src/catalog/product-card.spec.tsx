@@ -5,7 +5,7 @@
  * 이 TASK 의 전부이므로, 「보인다」를 눈으로 확인하는 대신 단계마다 걸어 본다.
  */
 
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -325,5 +325,32 @@ describe('F2 — 열 수는 매트릭스를 따른다', () => {
     )
 
     expect(screen.getByRole('list', { name: '검색 결과' })).toBeVisible()
+  })
+})
+
+describe('unavailable product photography', () => {
+  it('shows a shared placeholder for a missing or broken image and recovers for a new URL', () => {
+    const copy = { ...labels, imageUnavailable: '상품 이미지 준비 중' }
+    const props = { density: 1 as const, labels: copy, href: '/products/p1' }
+    const { rerender } = render(<ProductCard {...props} product={{ ...product, imageUrl: null }} />)
+    expect(screen.getByRole('img', { name: copy.imageUnavailable })).toBeVisible()
+    rerender(
+      <ProductCard
+        {...props}
+        product={{ ...product, imageUrl: 'https://example.com/broken.png' }}
+      />,
+    )
+    fireEvent.error(screen.getByRole('img', { name: product.name }))
+    expect(screen.getByRole('img', { name: copy.imageUnavailable })).toBeVisible()
+    rerender(
+      <ProductCard
+        {...props}
+        product={{ ...product, imageUrl: 'https://example.com/ready.png' }}
+      />,
+    )
+    expect(screen.getByRole('img', { name: product.name })).toHaveAttribute(
+      'src',
+      'https://example.com/ready.png',
+    )
   })
 })

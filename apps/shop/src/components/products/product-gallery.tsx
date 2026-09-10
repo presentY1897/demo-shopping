@@ -20,6 +20,7 @@
  * gives them that with the keyboard already working.
  */
 
+import { ProductImagePlaceholder } from '@shopping/ui/catalog'
 import { IconButton } from '@shopping/ui/components'
 import type { ProductImage } from '@shopping/shared'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -43,6 +44,8 @@ export function ProductGallery({
   const stripRef = useRef<HTMLDivElement>(null)
   const [index, setIndex] = useState(0)
   const [zoomed, setZoomed] = useState(false)
+  const [failedUrls, setFailedUrls] = useState<ReadonlySet<string>>(new Set())
+  const markFailed = (url: string) => setFailedUrls((held) => new Set([...held, url]))
 
   /**
    * Moves the strip by writing `scrollLeft`, not by calling `scrollTo`.
@@ -84,7 +87,7 @@ export function ProductGallery({
   if (images.length === 0) {
     return (
       <div className="bg-surface-muted text-fg-subtle flex aspect-square w-full items-center justify-center rounded-md text-sm">
-        {messages.empty}
+        <ProductImagePlaceholder label={messages.empty} />
       </div>
     )
   }
@@ -102,8 +105,13 @@ export function ProductGallery({
         >
           {images.map((image, position) => (
             <div className="w-full shrink-0 snap-center" key={image.id}>
-              <div className="bg-surface-muted aspect-square w-full overflow-hidden">
-                {renderImage === undefined ? (
+              <div
+                className="bg-surface-muted aspect-square w-full overflow-hidden"
+                onErrorCapture={() => markFailed(image.url)}
+              >
+                {!image.url.trim() || failedUrls.has(image.url) ? (
+                  <ProductImagePlaceholder label={messages.empty} />
+                ) : renderImage === undefined ? (
                   // eslint-disable-next-line @next/next/no-img-element -- the page passes `next/image`; this is the fallback for a spec and for Storybook.
                   <img
                     alt={altOf(image, position)}
@@ -188,8 +196,18 @@ export function ProductGallery({
                 <span className="sr-only">
                   {messages.thumbnailLabel.replace('{index}', String(position + 1))}
                 </span>
-                {/* eslint-disable-next-line @next/next/no-img-element -- a 64px thumbnail; `next/image` for these would be sixteen requests for nothing. */}
-                <img alt="" aria-hidden="true" className="size-full object-cover" src={image.url} />
+                {!image.url.trim() || failedUrls.has(image.url) ? (
+                  <ProductImagePlaceholder compact />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element -- small seller thumbnails use arbitrary public image hosts.
+                  <img
+                    alt=""
+                    aria-hidden="true"
+                    className="size-full object-cover"
+                    src={image.url}
+                    onError={() => markFailed(image.url)}
+                  />
+                )}
               </button>
             </li>
           ))}

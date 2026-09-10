@@ -1,0 +1,782 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "navy-linen-reading-pillow",
+        "name": "네이비 리넨 리딩 필로우",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 독서 소품",
+        "color": "navy blue",
+        "colorLabel": "네이비",
+        "hex": "#263951",
+        "material": "linen fabric",
+        "price": 24000,
+        "design": "Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "DOZEN-09",
+        "highlights": ["네이비 컬러", "가상 기획 상품"],
+        "description": "네이비 리넨 리딩 필로우 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Three-quarter entire empty wedge showing broad slope and triangular side.",
+          "back": "Rear oblique empty wedge showing plain upright rear face.",
+          "side": "True side profile showing triangular wedge silhouette.",
+          "texture": "Macro navy linen weave and simple perimeter seam.",
+          "model-front": "Same wedge supporting one open blank cream book on its sloping face, no person.",
+          "model-side": "Same wedge supporting same open blank book viewed from side.",
+          "model-back": "Top-down empty wedge with its broad rectangular sloping fabric face visible.",
+          "editorial": "Same wedge and open blank book on a cream reading table."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "mint-ceramic-book-weight",
+        "name": "민트 세라믹 북 웨이트",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 독서 소품",
+        "color": "pale mint green",
+        "colorLabel": "민트",
+        "hex": "#acd1bc",
+        "material": "smooth glazed ceramic",
+        "price": 16000,
+        "design": "Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "DOZEN-10",
+        "highlights": ["민트 컬러", "가상 기획 상품"],
+        "description": "민트 세라믹 북 웨이트 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Three-quarter entire empty elongated capsule.",
+          "back": "Opposite rear oblique capsule view.",
+          "side": "Low side profile showing gently domed top and flat underside.",
+          "texture": "Macro smooth mint ceramic glaze and rounded edge.",
+          "model-front": "Same capsule lying horizontally across blank pages of an open cream book, no person.",
+          "model-side": "Same capsule across same open blank book viewed from low side.",
+          "model-back": "Top-down capsule alone showing elongated rounded outline.",
+          "editorial": "Same capsule resting across open blank cream book on pale oak reading desk."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "cork-hexagon-coaster",
+        "name": "코르크 헥사곤 코스터",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "natural cork brown",
+        "colorLabel": "코르크",
+        "hex": "#b99565",
+        "material": "natural cork",
+        "price": 8000,
+        "design": "Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "DOZEN-11",
+        "highlights": ["코르크 컬러", "가상 기획 상품"],
+        "description": "코르크 헥사곤 코스터 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Three-quarter entire empty hexagonal coaster.",
+          "back": "Underside of same hexagonal coaster lying flat.",
+          "side": "Low side profile revealing cork thickness.",
+          "texture": "Macro granular cork texture and straight thick edge.",
+          "model-front": "One plain white handleless cup centered on same coaster, coaster outline visible, no person.",
+          "model-side": "Same cup and coaster viewed from low side.",
+          "model-back": "Top-down empty coaster clearly showing six-sided outline.",
+          "editorial": "Same coaster and plain white cup on pale oak desk beside blank notebook."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "rust-canvas-tool-roll",
+        "name": "러스트 캔버스 툴 롤",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 액세서리",
+        "color": "rust orange brown",
+        "colorLabel": "러스트",
+        "hex": "#a45c40",
+        "material": "cotton canvas",
+        "price": 22000,
+        "design": "Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "DOZEN-12",
+        "highlights": ["러스트 컬러", "가상 기획 상품"],
+        "description": "러스트 캔버스 툴 롤 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Fully unrolled laid-flat front showing exactly three empty equal pockets and single cotton tie.",
+          "back": "Fully unrolled plain outer reverse face showing same rectangular outline and one cotton tie.",
+          "side": "Low oblique unrolled view revealing thin canvas and three pocket openings.",
+          "texture": "Macro rust canvas weave and one pocket seam.",
+          "model-front": "Fully open roll with exactly one plain wood pencil in each of three pockets, single cotton tie visible.",
+          "model-side": "Same open roll with three plain pencils from opposite oblique side.",
+          "model-back": "Top-down open empty roll showing exactly three pockets and one cotton tie.",
+          "editorial": "Same roll closed into a compact cylinder, tied with its single cotton tie, resting on pale oak desk."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "navy-linen-reading-pillow/front",
+      "productId": "navy-linen-reading-pillow",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: navy blue\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-linen-reading-pillow/front.png",
+      "sha256": "ccf829e38cc74954864273cb2433dc1138257f261d0b3fe3360f0c8ec0795af4",
+      "history": [
+        {
+          "note": "Navy linen wedge, triangular side and broad slope, simple seams, no hardware, full frame verified.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: navy blue. Material: linen fabric.\nRequired view: Three-quarter entire empty wedge showing broad slope and triangular side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "navy-linen-reading-pillow/back",
+      "productId": "navy-linen-reading-pillow",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["navy-linen-reading-pillow/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: navy blue\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-linen-reading-pillow/back.png",
+      "sha256": "5aed634350d87268285b1667887960b8c36e0db19bab63659cd74f76af9bb2dc",
+      "history": [
+        {
+          "note": "Rear plain face and triangular wedge side, matching navy linen and simple seams, uncropped.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: navy blue. Material: linen fabric.\nRequired view: Rear oblique empty wedge showing plain upright rear face.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "navy-linen-reading-pillow/side",
+      "productId": "navy-linen-reading-pillow",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["navy-linen-reading-pillow/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: navy blue\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-linen-reading-pillow/side.png",
+      "sha256": "5aabcd62995b189ab20f20de3f998816f46db13f47499c49ff4658f5009f934c",
+      "history": [
+        {
+          "note": "Triangular wedge side profile with flat bottom, matching navy linen and simple seam verified.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: navy blue. Material: linen fabric.\nRequired view: True side profile showing triangular wedge silhouette.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "navy-linen-reading-pillow/texture",
+      "productId": "navy-linen-reading-pillow",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["navy-linen-reading-pillow/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: navy blue\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-linen-reading-pillow/texture.png",
+      "sha256": "3999c2768b8230f9c197dbc4ae234d52f044f16a075c4609cb85333f6b167dc9",
+      "history": [
+        {
+          "note": "Macro navy linen weave and simple perimeter seam, material and color consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: navy blue. Material: linen fabric.\nRequired view: Macro navy linen weave and simple perimeter seam.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "navy-linen-reading-pillow/model-front",
+      "productId": "navy-linen-reading-pillow",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["navy-linen-reading-pillow/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: navy blue\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-linen-reading-pillow/model-front.png",
+      "sha256": "58f27ab88a4b84ba2fdbc81f9e84c0d6dd48bc4727608b7bc38d7680d5d6bda2",
+      "history": [
+        {
+          "note": "Navy wedge supports one open blank cream book on slope, seams and silhouette preserved, full product visible.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: navy blue. Material: linen fabric.\nRequired view: Same wedge supporting one open blank cream book on its sloping face, no person.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "navy-linen-reading-pillow/model-side",
+      "productId": "navy-linen-reading-pillow",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["navy-linen-reading-pillow/front", "navy-linen-reading-pillow/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: navy blue\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-linen-reading-pillow/model-side.png",
+      "sha256": "9d20a00afba762f2eb5b74e4333227732af2a6f614c4763e2485c6644bc6e944",
+      "history": [
+        {
+          "note": "Side usage angle exposes triangular pillow panel and blank open book resting on slope, color consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: navy blue. Material: linen fabric.\nRequired view: Same wedge supporting same open blank book viewed from side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "navy-linen-reading-pillow/model-back",
+      "productId": "navy-linen-reading-pillow",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "navy-linen-reading-pillow/front",
+        "navy-linen-reading-pillow/back",
+        "navy-linen-reading-pillow/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: navy blue\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-linen-reading-pillow/model-back.png",
+      "sha256": "6e8304b91369235d6c010d2a70a9f4647259d3f99cde701e9076b3aedc8bb88b",
+      "history": [
+        {
+          "note": "Elevated centered empty wedge view shows broad sloping face, navy linen and simple seams intact.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: navy blue. Material: linen fabric.\nRequired view: Top-down empty wedge with its broad rectangular sloping fabric face visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "navy-linen-reading-pillow/editorial",
+      "productId": "navy-linen-reading-pillow",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["navy-linen-reading-pillow/front", "navy-linen-reading-pillow/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: navy blue\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/navy-linen-reading-pillow/editorial.png",
+      "sha256": "cf4d047630a36c7c0452a438fbaffe88c035b649d7ec779172292d00c0268210",
+      "history": [
+        {
+          "note": "Cream reading table editorial preserves navy wedge and blank cream book, full main product and natural light.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 네이비 리넨 리딩 필로우\nDesign invariants: Fictional concept sample. Small triangular wedge fabric bookrest with a broad sloping face, flat bottom and two triangular side panels, subtly sewn perimeter, no straps pockets piping buttons zippers or ledges. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: navy blue. Material: linen fabric.\nRequired view: Same wedge and open blank book on a cream reading table.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-ceramic-book-weight/front",
+      "productId": "mint-ceramic-book-weight",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: pale mint green\nBase material: smooth glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-ceramic-book-weight/front.png",
+      "sha256": "a0e1f04d72265a914da550a11d92c25c92c8788a586d3040a94514678550d77e",
+      "history": [
+        {
+          "note": "Mint glazed capsule, elongated rounded ends, flat resting base, clean full frame verified.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: pale mint green. Material: smooth glazed ceramic.\nRequired view: Three-quarter entire empty elongated capsule.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "mint-ceramic-book-weight/back",
+      "productId": "mint-ceramic-book-weight",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["mint-ceramic-book-weight/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: pale mint green\nBase material: smooth glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-ceramic-book-weight/back.png",
+      "sha256": "b27e512e832a283461b2c78f071898f9a0d36056a39fc6767f09023543db3771",
+      "history": [
+        {
+          "note": "Reverse oblique mint capsule maintains smooth rounded geometry and glaze, uncropped.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: pale mint green. Material: smooth glazed ceramic.\nRequired view: Opposite rear oblique capsule view.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-ceramic-book-weight/side",
+      "productId": "mint-ceramic-book-weight",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["mint-ceramic-book-weight/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: pale mint green\nBase material: smooth glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-ceramic-book-weight/side.png",
+      "sha256": "d6fda6cd908a14869bc5c9b67d89b59f05795d66e6e2ae428e0d6bb80bd4ac95",
+      "history": [
+        {
+          "note": "Low horizontal capsule profile with domed top flat base, matching mint glaze verified.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: pale mint green. Material: smooth glazed ceramic.\nRequired view: Low side profile showing gently domed top and flat underside.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-ceramic-book-weight/texture",
+      "productId": "mint-ceramic-book-weight",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["mint-ceramic-book-weight/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: pale mint green\nBase material: smooth glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-ceramic-book-weight/texture.png",
+      "sha256": "80a89b29e73a98ab823e73266bab56a4e02f7ded4d83df44227aff02503d61a3",
+      "history": [
+        {
+          "note": "Macro mint glazed curved capsule edge, smooth unmarked surface consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: pale mint green. Material: smooth glazed ceramic.\nRequired view: Macro smooth mint ceramic glaze and rounded edge.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-ceramic-book-weight/model-front",
+      "productId": "mint-ceramic-book-weight",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["mint-ceramic-book-weight/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: pale mint green\nBase material: smooth glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-ceramic-book-weight/model-front.png",
+      "sha256": "8d574c765bd95b0e379f8e17d0c08023cc243483d341e99efba138b3550fa9da",
+      "history": [
+        {
+          "note": "Mint capsule rests horizontally across blank book pages, same rounded glaze and complete product crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: pale mint green. Material: smooth glazed ceramic.\nRequired view: Same capsule lying horizontally across blank pages of an open cream book, no person.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-ceramic-book-weight/model-side",
+      "productId": "mint-ceramic-book-weight",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["mint-ceramic-book-weight/front", "mint-ceramic-book-weight/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: pale mint green\nBase material: smooth glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-ceramic-book-weight/model-side.png",
+      "sha256": "32f549991683bbb6002144443a206fa6eb74256c6d281a22965184cb5588a5fc",
+      "history": [
+        {
+          "note": "Lower usage view preserves mint capsule across same blank book, curved glaze and flat contact visible.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: pale mint green. Material: smooth glazed ceramic.\nRequired view: Same capsule across same open blank book viewed from low side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-ceramic-book-weight/model-back",
+      "productId": "mint-ceramic-book-weight",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "mint-ceramic-book-weight/front",
+        "mint-ceramic-book-weight/back",
+        "mint-ceramic-book-weight/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: pale mint green\nBase material: smooth glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-ceramic-book-weight/model-back.png",
+      "sha256": "f057e5b46e88e5e93dbe6cdc1c271a4c64dcad25728c1bee2e7c730db06924e1",
+      "history": [
+        {
+          "note": "Top view of empty mint capsule preserves elongated rounded outline and unmarked glaze.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: pale mint green. Material: smooth glazed ceramic.\nRequired view: Top-down capsule alone showing elongated rounded outline.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "mint-ceramic-book-weight/editorial",
+      "productId": "mint-ceramic-book-weight",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["mint-ceramic-book-weight/front", "mint-ceramic-book-weight/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: pale mint green\nBase material: smooth glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mint-ceramic-book-weight/editorial.png",
+      "sha256": "52581e34cd85802d3c7490064d1477f47efd79b21a7d8ce81f824ca89bd7394e",
+      "history": [
+        {
+          "note": "Oak desk editorial preserves mint capsule across blank cream pages, glaze and complete product crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 민트 세라믹 북 웨이트\nDesign invariants: Fictional concept sample. Single elongated solid ceramic capsule paperweight with gently domed top, flat bottom, two rounded ends, seamless mint glaze, no holes knobs feet or markings. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: pale mint green. Material: smooth glazed ceramic.\nRequired view: Same capsule resting across open blank cream book on pale oak reading desk.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cork-hexagon-coaster/front",
+      "productId": "cork-hexagon-coaster",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural cork brown\nBase material: natural cork\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cork-hexagon-coaster/front.png",
+      "sha256": "901f54c8e86849925d31369879a7089565e48c56aa9d31b411079baacfcab58f",
+      "history": [
+        {
+          "note": "Single flat six-sided cork coaster, thick granular edge, no rim or printing, full frame verified.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural cork brown. Material: natural cork.\nRequired view: Three-quarter entire empty hexagonal coaster.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "cork-hexagon-coaster/back",
+      "productId": "cork-hexagon-coaster",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["cork-hexagon-coaster/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural cork brown\nBase material: natural cork\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cork-hexagon-coaster/back.png",
+      "sha256": "e4bc930ba908e7c6973c171faca1766a3f7e0de58b376782bf8c2e3859806ba4",
+      "history": [
+        {
+          "note": "Plain flat cork underside with six-sided perimeter and matching thickness, uncropped.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural cork brown. Material: natural cork.\nRequired view: Underside of same hexagonal coaster lying flat.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cork-hexagon-coaster/side",
+      "productId": "cork-hexagon-coaster",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["cork-hexagon-coaster/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural cork brown\nBase material: natural cork\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cork-hexagon-coaster/side.png",
+      "sha256": "bba15ea17ef981eb77405500afef63f1d18eb82ab27a881a5a0ef26384cc8ee3",
+      "history": [
+        {
+          "note": "Lower side angle exposes thick cork edge and six-sided outline, no rim, full frame verified.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural cork brown. Material: natural cork.\nRequired view: Low side profile revealing cork thickness.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cork-hexagon-coaster/texture",
+      "productId": "cork-hexagon-coaster",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["cork-hexagon-coaster/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural cork brown\nBase material: natural cork\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cork-hexagon-coaster/texture.png",
+      "sha256": "52996e3b6cc0f23090eadc894f343e83afec925c6d74ce56f5910072ff377040",
+      "history": [
+        {
+          "note": "Macro granular cork and thick straight edge, material and warm brown consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural cork brown. Material: natural cork.\nRequired view: Macro granular cork texture and straight thick edge.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cork-hexagon-coaster/model-front",
+      "productId": "cork-hexagon-coaster",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["cork-hexagon-coaster/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural cork brown\nBase material: natural cork\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected: cup has a handle although requested handleless white cup; coaster geometry itself matches.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural cork brown. Material: natural cork.\nRequired view: One plain white handleless cup centered on same coaster, coaster outline visible, no person.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Retry passed: handleless white cylindrical cup centered on six-sided cork coaster, full crop and material preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural cork brown. Material: natural cork.\nRequired view: One plain white handleless cup centered on same coaster, coaster outline visible, no person.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nRetry correction: The cup must be a plain white cylindrical handleless tumbler, with NO HANDLE on either side. Do not make a mug. Preserve coaster exactly."
+        }
+      ],
+      "output": "images/cork-hexagon-coaster/model-front.png",
+      "sha256": "bffa59c71f36914bcb743f4b5b40b7154cbbe84dd72b9016e70e80430693d088"
+    },
+    {
+      "id": "cork-hexagon-coaster/model-side",
+      "productId": "cork-hexagon-coaster",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["cork-hexagon-coaster/front", "cork-hexagon-coaster/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural cork brown\nBase material: natural cork\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cork-hexagon-coaster/model-side.png",
+      "sha256": "95f020d90598292bc0397f1d844bdee48999d947556517e7635f31657a718e79",
+      "history": [
+        {
+          "note": "Lower usage angle preserves handleless white cup on thick six-sided cork coaster, complete crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural cork brown. Material: natural cork.\nRequired view: Same cup and coaster viewed from low side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cork-hexagon-coaster/model-back",
+      "productId": "cork-hexagon-coaster",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "cork-hexagon-coaster/front",
+        "cork-hexagon-coaster/back",
+        "cork-hexagon-coaster/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural cork brown\nBase material: natural cork\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cork-hexagon-coaster/model-back.png",
+      "sha256": "0bf6b1eabcc589147e21896ee228baa21d0c24e4e7056aa293da67aa7e99944e",
+      "history": [
+        {
+          "note": "Top-down single empty regular six-sided cork coaster with flat surface, matching texture and full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural cork brown. Material: natural cork.\nRequired view: Top-down empty coaster clearly showing six-sided outline.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "cork-hexagon-coaster/editorial",
+      "productId": "cork-hexagon-coaster",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["cork-hexagon-coaster/front", "cork-hexagon-coaster/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: natural cork brown\nBase material: natural cork\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/cork-hexagon-coaster/editorial.png",
+      "sha256": "a55ed5d2ecbbf5bb25e5c0d73fa59d4f6b36e5439292a4d563b9e8fceaef75ee",
+      "history": [
+        {
+          "note": "Oak desk editorial preserves handleless white cup and single six-sided cork coaster beside blank notebook, full main product crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 코르크 헥사곤 코스터\nDesign invariants: Fictional concept sample. One single thick flat regular hexagonal cork coaster, six straight equal edges and six clean corners, flat top and bottom, no rim recess holes feet printing or decoration. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: natural cork brown. Material: natural cork.\nRequired view: Same coaster and plain white cup on pale oak desk beside blank notebook.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "rust-canvas-tool-roll/front",
+      "productId": "rust-canvas-tool-roll",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: rust orange brown\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-canvas-tool-roll/front.png",
+      "sha256": "2cec8285571949c1d368be270f16eb4b7192730629d1ac6e1485eb818df1b52e",
+      "history": [
+        {
+          "note": "Three equal empty canvas pockets and one side tie, rust color and complete framing verified.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: rust orange brown. Material: cotton canvas.\nRequired view: Fully unrolled laid-flat front showing exactly three empty equal pockets and single cotton tie.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "rust-canvas-tool-roll/back",
+      "productId": "rust-canvas-tool-roll",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["rust-canvas-tool-roll/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: rust orange brown\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-canvas-tool-roll/back.png",
+      "sha256": "3769ada5ca9acca4f3b91fa49a0469c2a870e153ef1dad65d10bf1da5dbd1d7a",
+      "history": [
+        {
+          "note": "Plain reverse canvas rectangle without pockets, one tie and matching rust fabric, uncropped.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: rust orange brown. Material: cotton canvas.\nRequired view: Fully unrolled plain outer reverse face showing same rectangular outline and one cotton tie.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "rust-canvas-tool-roll/side",
+      "productId": "rust-canvas-tool-roll",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["rust-canvas-tool-roll/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: rust orange brown\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-canvas-tool-roll/side.png",
+      "sha256": "bbc361cf9f0e95ee66a8cd7ebb0147b968947c03f7ae058d445cb328e8bc5978",
+      "history": [
+        {
+          "note": "Oblique view clearly exposes three open pockets, one tie, thin rust canvas and complete crop verified.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: rust orange brown. Material: cotton canvas.\nRequired view: Low oblique unrolled view revealing thin canvas and three pocket openings.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "rust-canvas-tool-roll/texture",
+      "productId": "rust-canvas-tool-roll",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["rust-canvas-tool-roll/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: rust orange brown\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-canvas-tool-roll/texture.png",
+      "sha256": "0b378956dc86a44c8d81c8d13fcbc315f33ad8fef882a4c6f876268fd76a05a7",
+      "history": [
+        {
+          "note": "Macro rust canvas weave and pocket seam stitching consistent with anchor.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: rust orange brown. Material: cotton canvas.\nRequired view: Macro rust canvas weave and one pocket seam.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "rust-canvas-tool-roll/model-front",
+      "productId": "rust-canvas-tool-roll",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["rust-canvas-tool-roll/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: rust orange brown\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-canvas-tool-roll/model-front.png",
+      "sha256": "8438af727a60921e0702cb10ef2115a75ef122c17fd27fabc87907c552f3ff82",
+      "history": [
+        {
+          "note": "Exactly three plain wooden pencils, one in each of three pockets; one tie and rust canvas preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: rust orange brown. Material: cotton canvas.\nRequired view: Fully open roll with exactly one plain wood pencil in each of three pockets, single cotton tie visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "rust-canvas-tool-roll/model-side",
+      "productId": "rust-canvas-tool-roll",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["rust-canvas-tool-roll/front", "rust-canvas-tool-roll/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: rust orange brown\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-canvas-tool-roll/model-side.png",
+      "sha256": "a286b044eb29819cd087349f7607b076e2d97cef30d15dbcff4cdbd7dca7b33a",
+      "history": [
+        {
+          "note": "Oblique usage view preserves three plain pencils in three pockets and one side tie, rust canvas and full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: rust orange brown. Material: cotton canvas.\nRequired view: Same open roll with three plain pencils from opposite oblique side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "rust-canvas-tool-roll/model-back",
+      "productId": "rust-canvas-tool-roll",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "rust-canvas-tool-roll/front",
+        "rust-canvas-tool-roll/back",
+        "rust-canvas-tool-roll/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: rust orange brown\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-canvas-tool-roll/model-back.png",
+      "sha256": "936a55e85ef078da885ce3f2ddd68f6e1dea9ff3a9c0cea0bddf801a3d291d37",
+      "history": [
+        {
+          "note": "Top-down empty roll shows exactly three pockets and one tie, matching rust canvas and seams.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: rust orange brown. Material: cotton canvas.\nRequired view: Top-down open empty roll showing exactly three pockets and one cotton tie.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "rust-canvas-tool-roll/editorial",
+      "productId": "rust-canvas-tool-roll",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["rust-canvas-tool-roll/front", "rust-canvas-tool-roll/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: rust orange brown\nBase material: cotton canvas\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-canvas-tool-roll/editorial.png",
+      "sha256": "2059ebb87fd0e4f78fa6f11fe4550fb141e480fce6daaff5de3ea942d980effe",
+      "history": [
+        {
+          "note": "Rolled rust canvas cylinder secured with one matching cotton tie, no hardware, full product on pale oak desk.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 러스트 캔버스 툴 롤\nDesign invariants: Fictional concept sample. Small rectangular rust canvas tool roll with exactly three adjacent equal open-top inner pockets across its lower half, one single cotton tie attached at side edge, plain rectangular outer back, no flap zipper snaps handles extra pockets or labels. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: rust orange brown. Material: cotton canvas.\nRequired view: Same roll closed into a compact cylinder, tied with its single cotton tie, resting on pale oak desk.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    }
+  ]
+}

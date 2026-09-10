@@ -13,6 +13,7 @@
  */
 
 import { httpFailureOn, MOCK_REQUEST_ID, mockPaths, networkFailureOn } from '@shopping/api-mocks'
+import { PRODUCT_MAX_IMAGES } from '@shopping/shared'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
@@ -351,11 +352,13 @@ describe('the file itself', () => {
 
     await uploadFiles(
       user,
-      Array.from({ length: 11 }, (_unused, index) => imageFile(`p${String(index)}.png`)),
+      Array.from({ length: PRODUCT_MAX_IMAGES + 1 }, (_unused, index) =>
+        imageFile(`p${String(index)}.png`),
+      ),
     )
 
     expect(await screen.findByText(imageUpload.rejections.tooManyImages)).toBeVisible()
-    expect(galleryRows()).toHaveLength(10)
+    expect(galleryRows()).toHaveLength(PRODUCT_MAX_IMAGES)
   })
 })
 

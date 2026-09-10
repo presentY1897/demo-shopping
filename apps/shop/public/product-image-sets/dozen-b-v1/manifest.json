@@ -1,0 +1,793 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "ivory-crescent-pen-rest",
+        "name": "아이보리 크레센트 펜 레스트",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "warm ivory",
+        "colorLabel": "아이보리",
+        "hex": "#eee5d4",
+        "material": "satin glazed ceramic",
+        "price": 17000,
+        "design": "Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "DOZEN-05",
+        "highlights": ["아이보리 컬러", "가상 기획 상품"],
+        "description": "아이보리 크레센트 펜 레스트 가상 기획 샘플입니다. AI 생성 이미지로 형태와 소재 표현, 사용 장면을 소개합니다.",
+        "shotDirections": {
+          "front": "empty crescent with concave upper surface visible",
+          "back": "smooth underside and rear rounded crescent edge",
+          "side": "low side profile showing shallow dish thickness",
+          "texture": "satin ivory glaze at rounded crescent tip",
+          "model-front": "one plain dark wooden pencil resting horizontally across the shallow upper surface",
+          "model-side": "same pencil and crescent from low side, pencil supported by ceramic",
+          "model-back": "top-down empty crescent showing concave upper surface",
+          "editorial": "same crescent with same pencil on pale oak desk"
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "sage-square-memo-block-holder",
+        "name": "세이지 스퀘어 메모 홀더",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "muted sage green",
+        "colorLabel": "세이지",
+        "hex": "#94a48c",
+        "material": "powder-coated metal",
+        "price": 19000,
+        "design": "Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "DOZEN-06",
+        "highlights": ["세이지 컬러", "가상 기획 상품"],
+        "description": "세이지 스퀘어 메모 홀더 가상 기획 샘플입니다. AI 생성 이미지로 형태와 소재 표현, 사용 장면을 소개합니다.",
+        "shotDirections": {
+          "front": "empty tray with all four low walls visible",
+          "back": "opposite rear three-quarter empty tray",
+          "side": "eye-level low side showing plain low wall",
+          "texture": "matte sage surface at existing rounded corner",
+          "model-front": "a neat stack of plain blank white square memo paper fitting inside the tray, stack extends slightly above walls",
+          "model-side": "same tray and blank paper stack viewed from side",
+          "model-back": "top-down empty square tray with single compartment",
+          "editorial": "same holder and blank paper stack on pale oak desk"
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "amber-glass-ring-cone",
+        "name": "앰버 글라스 링 콘",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "transparent amber",
+        "colorLabel": "앰버",
+        "hex": "#b77729",
+        "material": "smooth solid tinted glass",
+        "price": 21000,
+        "design": "Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "DOZEN-07",
+        "highlights": ["앰버 컬러", "가상 기획 상품"],
+        "description": "앰버 글라스 링 콘 가상 기획 샘플입니다. AI 생성 이미지로 형태와 소재 표현, 사용 장면을 소개합니다.",
+        "shotDirections": {
+          "front": "whole empty cone from front three-quarter",
+          "back": "same empty cone from opposite rear three-quarter",
+          "side": "eye-level whole cone silhouette",
+          "texture": "smooth amber glass surface and internal light refraction near base",
+          "model-front": "one plain thin silver ring encircling cone and resting midway down its taper, ring supported naturally by widening cone",
+          "model-side": "same cone and silver ring from side",
+          "model-back": "top-down empty cone showing circular base silhouette and central tip",
+          "editorial": "same cone with same silver ring on pale stone desk"
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "beech-round-photo-stand",
+        "name": "비치 라운드 포토 스탠드",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "natural pale beech",
+        "colorLabel": "비치",
+        "hex": "#c9a577",
+        "material": "smooth natural beech wood",
+        "price": 15000,
+        "design": "Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "DOZEN-08",
+        "highlights": ["비치 컬러", "가상 기획 상품"],
+        "description": "비치 라운드 포토 스탠드 가상 기획 샘플입니다. AI 생성 이미지로 형태와 소재 표현, 사용 장면을 소개합니다.",
+        "shotDirections": {
+          "front": "empty puck from above-front three-quarter with one straight top slot visible",
+          "back": "opposite rear three-quarter puck with same single straight slot",
+          "side": "low side view showing short cylinder and top slot edge",
+          "texture": "natural beech grain and smooth slot edge",
+          "model-front": "one plain blank cream rectangular card inserted upright into sole top slot",
+          "model-side": "same puck and cream card from side, insertion and support visible",
+          "model-back": "top-down empty puck showing exactly one straight slot across circular top",
+          "editorial": "same puck with same blank cream card on pale oak desk"
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "ivory-crescent-pen-rest/front",
+      "productId": "ivory-crescent-pen-rest",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: warm ivory\nBase material: satin glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-crescent-pen-rest/front.png",
+      "sha256": "2fa74cd6fc79bf51f395ff48f1d7c79aafafaf7d75798ecb31b019aae52930f5",
+      "history": [
+        {
+          "note": "Ivory crescent has one shallow concave surface and rounded tips; satin glaze and safe whole-object framing confirmed.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: warm ivory. Material: satin glazed ceramic.\nRequired view: empty crescent with concave upper surface visible\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "ivory-crescent-pen-rest/back",
+      "productId": "ivory-crescent-pen-rest",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["ivory-crescent-pen-rest/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: warm ivory\nBase material: satin glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-crescent-pen-rest/back.png",
+      "sha256": "ce583b67fa5a713fb0efe68ce4791bc8bcf2a596a159d17c063546a0a823245c",
+      "history": [
+        {
+          "note": "Rear outer crescent face is visible, ivory glaze rounded tips and shallow silhouette match anchor; whole product safe.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: warm ivory. Material: satin glazed ceramic.\nRequired view: smooth underside and rear rounded crescent edge\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "ivory-crescent-pen-rest/side",
+      "productId": "ivory-crescent-pen-rest",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["ivory-crescent-pen-rest/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: warm ivory\nBase material: satin glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-crescent-pen-rest/side.png",
+      "sha256": "129d6717f289f2eacadc75fdb44408dad6ada68500fef52b6d70ada294f513b1",
+      "history": [
+        {
+          "note": "Root visual QA: crescent lower camera shows shallow wall and rounded tips with matching ivory glaze, safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: warm ivory. Material: satin glazed ceramic.\nRequired view: low side profile showing shallow dish thickness\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "ivory-crescent-pen-rest/texture",
+      "productId": "ivory-crescent-pen-rest",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["ivory-crescent-pen-rest/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: warm ivory\nBase material: satin glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-crescent-pen-rest/texture.png",
+      "sha256": "5bcc145de953bf84c351b47e5c5f77379b3c7372f77cb1da53351d5c744c61e9",
+      "history": [
+        {
+          "note": "Root visual QA: ivory smooth glaze rounded crescent tip preserves anchor material and color; proper macro crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: warm ivory. Material: satin glazed ceramic.\nRequired view: satin ivory glaze at rounded crescent tip\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "ivory-crescent-pen-rest/model-front",
+      "productId": "ivory-crescent-pen-rest",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["ivory-crescent-pen-rest/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: warm ivory\nBase material: satin glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-crescent-pen-rest/model-front.png",
+      "sha256": "7948d0f76491b81a89b75dd8446a6c7b8ef4e565789718b2f1816e8ac23dae3a",
+      "history": [
+        {
+          "note": "Root and lane visual QA: one dark pencil supported across matching ivory crescent, clean geometry and full framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: warm ivory. Material: satin glazed ceramic.\nRequired view: one plain dark wooden pencil resting horizontally across the shallow upper surface\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "ivory-crescent-pen-rest/model-side",
+      "productId": "ivory-crescent-pen-rest",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["ivory-crescent-pen-rest/front", "ivory-crescent-pen-rest/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: warm ivory\nBase material: satin glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-crescent-pen-rest/model-side.png",
+      "sha256": "afa99d0e1829938788d44dabba6e9f92b960b46e52da51a40aee4e05e8cd6bfb",
+      "history": [
+        {
+          "note": "Root visual QA: lower profile with same dark pencil supported on matching ivory crescent, full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: warm ivory. Material: satin glazed ceramic.\nRequired view: same pencil and crescent from low side, pencil supported by ceramic\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "ivory-crescent-pen-rest/model-back",
+      "productId": "ivory-crescent-pen-rest",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "ivory-crescent-pen-rest/front",
+        "ivory-crescent-pen-rest/back",
+        "ivory-crescent-pen-rest/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: warm ivory\nBase material: satin glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Root visual QA rejection: still oblique frontal elevation with large front wall, not requested top-down view; repeats front angle.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: warm ivory. Material: satin glazed ceramic.\nRequired view: top-down empty crescent showing concave upper surface\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Root visual QA: near-overhead view shows empty crescent plan and concavity with substantially reduced outer wall; rounded tips and ivory glaze match. Camera near-overhead rather than exact orthographic.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: warm ivory. Material: satin glazed ceramic.\nRequired view: top-down empty crescent showing concave upper surface\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCorrection for final attempt: camera directly overhead at 90 degrees, optical axis perpendicular to the tabletop. Show empty crescent flat plan outline and concavity, with minimal outside wall visible. Remove pencil. Do not repeat oblique frontal elevation. Keep exact ivory glaze and crescent shape."
+        }
+      ],
+      "output": "images/ivory-crescent-pen-rest/model-back.png",
+      "sha256": "ac0bbbca24d1edee4219dc4dc9df1f910234d3207a5403a872e037d32e532dff"
+    },
+    {
+      "id": "ivory-crescent-pen-rest/editorial",
+      "productId": "ivory-crescent-pen-rest",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["ivory-crescent-pen-rest/front", "ivory-crescent-pen-rest/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: warm ivory\nBase material: satin glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-crescent-pen-rest/editorial.png",
+      "sha256": "74a15fbe1ecb64b927adc068778c1e436cf3bce839a08357ecb3f36bfe208b88",
+      "history": [
+        {
+          "note": "Root visual QA: same crescent glaze and geometry and single dark pencil supported on oak desk, full crop, no branding.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 크레센트 펜 레스트\nDesign invariants: Fictional concept sample. One solid shallow horizontal crescent-shaped ceramic pen rest, rounded crescent tips, smooth shallow concave upper surface, flat underside, no feet holes ornament or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: warm ivory. Material: satin glazed ceramic.\nRequired view: same crescent with same pencil on pale oak desk\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sage-square-memo-block-holder/front",
+      "productId": "sage-square-memo-block-holder",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nBase color: muted sage green\nBase material: powder-coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-square-memo-block-holder/front.png",
+      "sha256": "d43e181556ee3c064148483788fb886fe2e5697f4bc018c3fbf452cafc69a11c",
+      "history": [
+        {
+          "note": "Sage square tray has four equally low walls and single compartment, rounded corners and matte coating; safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nColor: muted sage green. Material: powder-coated metal.\nRequired view: empty tray with all four low walls visible\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "sage-square-memo-block-holder/back",
+      "productId": "sage-square-memo-block-holder",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["sage-square-memo-block-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nBase color: muted sage green\nBase material: powder-coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-square-memo-block-holder/back.png",
+      "sha256": "d8a5f799b87d6bd9d5655da6730d9b990c33a2a73085bf4b1de5629f8c096be1",
+      "history": [
+        {
+          "note": "Symmetric square tray rear three-quarter has four low walls and single empty compartment; sage coating and corner geometry match.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nColor: muted sage green. Material: powder-coated metal.\nRequired view: opposite rear three-quarter empty tray\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sage-square-memo-block-holder/side",
+      "productId": "sage-square-memo-block-holder",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["sage-square-memo-block-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nBase color: muted sage green\nBase material: powder-coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-square-memo-block-holder/side.png",
+      "sha256": "db01f98f85c304f48900d6a19c59a66d26a5b5bf8b4c7a7c7acd990b408dace0",
+      "history": [
+        {
+          "note": "Root visual QA: sage low head-on wall and single empty basin intact; color and geometry match front.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nColor: muted sage green. Material: powder-coated metal.\nRequired view: eye-level low side showing plain low wall\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sage-square-memo-block-holder/texture",
+      "productId": "sage-square-memo-block-holder",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["sage-square-memo-block-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nBase color: muted sage green\nBase material: powder-coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-square-memo-block-holder/texture.png",
+      "sha256": "186ef876ed6d19f8214faa1c19ad6cd6868a88d7b5bd12795cf656c21a29f6ef",
+      "history": [
+        {
+          "note": "Root visual QA: sage fine matte coating curved corner and low wall match anchor; proper macro crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nColor: muted sage green. Material: powder-coated metal.\nRequired view: matte sage surface at existing rounded corner\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sage-square-memo-block-holder/model-front",
+      "productId": "sage-square-memo-block-holder",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["sage-square-memo-block-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nBase color: muted sage green\nBase material: powder-coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-square-memo-block-holder/model-front.png",
+      "sha256": "f0fe86f5c8f7d50b5971a00f85434c8ea9e97769817f18cffe5ef586b40917e9",
+      "history": [
+        {
+          "note": "Root and lane visual QA: blank white paper stack neatly inside consistent sage tray, full framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nColor: muted sage green. Material: powder-coated metal.\nRequired view: a neat stack of plain blank white square memo paper fitting inside the tray, stack extends slightly above walls\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sage-square-memo-block-holder/model-side",
+      "productId": "sage-square-memo-block-holder",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": [
+        "sage-square-memo-block-holder/front",
+        "sage-square-memo-block-holder/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nBase color: muted sage green\nBase material: powder-coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-square-memo-block-holder/model-side.png",
+      "sha256": "27132320b325e926a11ce95284a47e8d3077e2d1baca2f1f13ac183aff33d53e",
+      "history": [
+        {
+          "note": "Root visual QA: lower head-on sage tray with consistent blank paper stack and low walls, full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nColor: muted sage green. Material: powder-coated metal.\nRequired view: same tray and blank paper stack viewed from side\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sage-square-memo-block-holder/model-back",
+      "productId": "sage-square-memo-block-holder",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "sage-square-memo-block-holder/front",
+        "sage-square-memo-block-holder/back",
+        "sage-square-memo-block-holder/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nBase color: muted sage green\nBase material: powder-coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-square-memo-block-holder/model-back.png",
+      "sha256": "91b37275abd01b02dc7c21764efb5367d0f16981f1a39f442c44a1e308e1fd5f",
+      "history": [
+        {
+          "note": "Root visual QA: direct top-down single square basin with consistent sage color.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nColor: muted sage green. Material: powder-coated metal.\nRequired view: top-down empty square tray with single compartment\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCamera instruction: true overhead plan view, camera optical axis exactly perpendicular to tabletop (90 degrees overhead). Show the empty object without any paper, card or ring. Match all product geometry and color, but do not repeat reference camera elevation."
+        }
+      ]
+    },
+    {
+      "id": "sage-square-memo-block-holder/editorial",
+      "productId": "sage-square-memo-block-holder",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": [
+        "sage-square-memo-block-holder/front",
+        "sage-square-memo-block-holder/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nBase color: muted sage green\nBase material: powder-coated metal\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-square-memo-block-holder/editorial.png",
+      "sha256": "fb9911b815d2b48e2f01b9fdf2e227565904159c6571637366868cb1c82bfbc8",
+      "history": [
+        {
+          "note": "Root visual QA: same sage tray and blank white paper stack in wood desk setting. Recovered orphan output after resumed session; exact return time unknown.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 스퀘어 메모 홀더\nDesign invariants: Fictional concept sample. One low open square metal tray for memo paper, flat square base, four equally low solid straight walls with softly rounded corners, no handles cutouts feet clips or dividers. Preserve geometry and material. No logos or readable lettering.\nColor: muted sage green. Material: powder-coated metal.\nRequired view: same holder and blank paper stack on pale oak desk\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "amber-glass-ring-cone/front",
+      "productId": "amber-glass-ring-cone",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: transparent amber\nBase material: smooth solid tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-glass-ring-cone/front.png",
+      "sha256": "aa1d166dd0c7b92ab520dfded774ed43f3638c2023f39fb4d7fdaa22806b54c4",
+      "history": [
+        {
+          "note": "Amber glass cone has smooth unbroken taper rounded tip and circular base, no facets or holes; safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: transparent amber. Material: smooth solid tinted glass.\nRequired view: whole empty cone from front three-quarter\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "amber-glass-ring-cone/back",
+      "productId": "amber-glass-ring-cone",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["amber-glass-ring-cone/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: transparent amber\nBase material: smooth solid tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-glass-ring-cone/back.png",
+      "sha256": "b93cb8e6e206e1f8935158848c9511fe84ed7c362b26cbdbb22ab143c01982cb",
+      "history": [
+        {
+          "note": "Rotationally symmetric amber cone from opposite lighting side; same smooth taper rounded tip circular base and safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: transparent amber. Material: smooth solid tinted glass.\nRequired view: same empty cone from opposite rear three-quarter\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "amber-glass-ring-cone/side",
+      "productId": "amber-glass-ring-cone",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["amber-glass-ring-cone/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: transparent amber\nBase material: smooth solid tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-glass-ring-cone/side.png",
+      "sha256": "ac3267044d7b47cb541d822533076ef2988f734413116ca13563af97f8742976",
+      "history": [
+        {
+          "note": "Root visual QA: amber axisymmetric cone silhouette base tip and color retained, similar view due to natural symmetry.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: transparent amber. Material: smooth solid tinted glass.\nRequired view: eye-level whole cone silhouette\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "amber-glass-ring-cone/texture",
+      "productId": "amber-glass-ring-cone",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["amber-glass-ring-cone/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: transparent amber\nBase material: smooth solid tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-glass-ring-cone/texture.png",
+      "sha256": "0bff65f6e4ec6b4a2ed5e321ed6700005867477e38dd426af3f559a65cc1dde5",
+      "history": [
+        {
+          "note": "Root visual QA: amber smooth translucent gold glass base matches anchor; appropriate macro detail.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: transparent amber. Material: smooth solid tinted glass.\nRequired view: smooth amber glass surface and internal light refraction near base\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "amber-glass-ring-cone/model-front",
+      "productId": "amber-glass-ring-cone",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["amber-glass-ring-cone/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: transparent amber\nBase material: smooth solid tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-glass-ring-cone/model-front.png",
+      "sha256": "3f875237b9a75314f4237fd30caae52f25614136758fa538891a75f5c8bddef6",
+      "history": [
+        {
+          "note": "Root and lane visual QA: one silver ring naturally encircles matching amber cone taper, full framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: transparent amber. Material: smooth solid tinted glass.\nRequired view: one plain thin silver ring encircling cone and resting midway down its taper, ring supported naturally by widening cone\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "amber-glass-ring-cone/model-side",
+      "productId": "amber-glass-ring-cone",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["amber-glass-ring-cone/front", "amber-glass-ring-cone/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: transparent amber\nBase material: smooth solid tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-glass-ring-cone/model-side.png",
+      "sha256": "25a9700928cb89478faf3adb60b5e17dfcd11e904c6db18b0cfb7545b04a6d81",
+      "history": [
+        {
+          "note": "Root visual QA: axisymmetric amber ring cone unchanged, naturally supported silver ring and safe framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: transparent amber. Material: smooth solid tinted glass.\nRequired view: same cone and silver ring from side\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "amber-glass-ring-cone/model-back",
+      "productId": "amber-glass-ring-cone",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "amber-glass-ring-cone/front",
+        "amber-glass-ring-cone/back",
+        "amber-glass-ring-cone/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: transparent amber\nBase material: smooth solid tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Root visual QA: camera remains oblique, apex displaced toward far rim rather than centered in circular base; requested top-down not met.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: transparent amber. Material: smooth solid tinted glass.\nRequired view: top-down empty cone showing circular base silhouette and central tip\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCamera instruction: true overhead plan view, camera optical axis exactly perpendicular to tabletop (90 degrees overhead). Show the empty object without any paper, card or ring. Match all product geometry and color, but do not repeat reference camera elevation."
+        },
+        {
+          "note": "Root visual QA: amber overhead retry apex centered concentrically within round base; empty smooth amber glass true overhead.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: transparent amber. Material: smooth solid tinted glass.\nRequired view: top-down empty cone showing circular base silhouette and central tip\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nFINAL ATTEMPT CAMERA CORRECTION: lens directly above cone apex, looking straight down vertically. Cone apex must be concentric with exact center of circular base silhouette. No tall triangular side silhouette. Show a circular amber glass disk footprint with central raised tip seen end-on. Empty cone, no ring. Preserve same material and smooth geometry. This is a true overhead plan view, not a three-quarter view."
+        }
+      ],
+      "output": "images/amber-glass-ring-cone/model-back.png",
+      "sha256": "85a28384d7a2e81b72d3e1ca763729641a350daf7631adc7e82ba931deed83d5"
+    },
+    {
+      "id": "amber-glass-ring-cone/editorial",
+      "productId": "amber-glass-ring-cone",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["amber-glass-ring-cone/front", "amber-glass-ring-cone/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nBase color: transparent amber\nBase material: smooth solid tinted glass\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/amber-glass-ring-cone/editorial.png",
+      "sha256": "3e40516442c0ea03e9dd9baca4b017cdbda89c3c14a7e213afae0249a24dfa2e",
+      "history": [
+        {
+          "note": "Root visual QA: same amber glass cone and one silver ring on pale stone. Recovered orphan output after resumed session; exact return time unknown.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 앰버 글라스 링 콘\nDesign invariants: Fictional concept sample. One solid smooth amber glass cone, circular flat base, simple straight tapered sides ending at softly rounded pointed tip, no holes grooves facets patterns or separate parts. Preserve geometry and material. No logos or readable lettering.\nColor: transparent amber. Material: smooth solid tinted glass.\nRequired view: same cone with same silver ring on pale stone desk\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "beech-round-photo-stand/front",
+      "productId": "beech-round-photo-stand",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nBase color: natural pale beech\nBase material: smooth natural beech wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/beech-round-photo-stand/front.png",
+      "sha256": "dc08820307670fb42b6224f2ad62d9e1a56fd6df3199f48e1d36051072c61a99",
+      "history": [
+        {
+          "note": "Beech puck shows one straight top slot and natural grain, no extra parts; whole product safely framed.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nColor: natural pale beech. Material: smooth natural beech wood.\nRequired view: empty puck from above-front three-quarter with one straight top slot visible\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "beech-round-photo-stand/back",
+      "productId": "beech-round-photo-stand",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["beech-round-photo-stand/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nBase color: natural pale beech\nBase material: smooth natural beech wood\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/beech-round-photo-stand/back.png",
+      "sha256": "4c151c4bac9b36199fd3a55e91d5bd9d5ed89be4059e9d5ab6b16768da9d1fb9",
+      "history": [
+        {
+          "note": "Symmetric beech puck rear three-quarter preserves one straight slot and rounded cylinder; natural grain and safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nColor: natural pale beech. Material: smooth natural beech wood.\nRequired view: opposite rear three-quarter puck with same single straight slot\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "beech-round-photo-stand/side",
+      "productId": "beech-round-photo-stand",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["beech-round-photo-stand/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nBase color: natural pale beech\nBase material: smooth natural beech wood\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/beech-round-photo-stand/side.png",
+      "sha256": "80eec01f58400bc061c90ab91b3ed983119b7204e4068170931d20240a0b4b14",
+      "history": [
+        {
+          "note": "Root visual QA: beech lower angled short puck has one straight slot and matching grain/color, safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nColor: natural pale beech. Material: smooth natural beech wood.\nRequired view: low side view showing short cylinder and top slot edge\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "beech-round-photo-stand/texture",
+      "productId": "beech-round-photo-stand",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["beech-round-photo-stand/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nBase color: natural pale beech\nBase material: smooth natural beech wood\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/beech-round-photo-stand/texture.png",
+      "sha256": "052d2fb6cb51cec8dfafaa3866796f45085b9cdc1d3e74063f51d63781025eba",
+      "history": [
+        {
+          "note": "Root visual QA: close crop single straight slot and rounded puck edge with matching pale beech grain; no extra hardware or lettering.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nColor: natural pale beech. Material: smooth natural beech wood.\nRequired view: natural beech grain and smooth slot edge\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "beech-round-photo-stand/model-front",
+      "productId": "beech-round-photo-stand",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["beech-round-photo-stand/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nBase color: natural pale beech\nBase material: smooth natural beech wood\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/beech-round-photo-stand/model-front.png",
+      "sha256": "22dc13e1d0033821eb3fdbf4c1f319c1e398f416b5b9d78e01587e18d9732ab2",
+      "history": [
+        {
+          "note": "Root and lane visual QA: blank cream card seated in single slot in matching beech puck, no added hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nColor: natural pale beech. Material: smooth natural beech wood.\nRequired view: one plain blank cream rectangular card inserted upright into sole top slot\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "beech-round-photo-stand/model-side",
+      "productId": "beech-round-photo-stand",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["beech-round-photo-stand/front", "beech-round-photo-stand/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nBase color: natural pale beech\nBase material: smooth natural beech wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/beech-round-photo-stand/model-side.png",
+      "sha256": "ed65dee62cf78f271d09a6836783192609c7bd0fb036c4b72b0f7c78c0c3bcfd",
+      "history": [
+        {
+          "note": "Root visual QA: clean edge-on cream card in one slot, matching beech puck, safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nColor: natural pale beech. Material: smooth natural beech wood.\nRequired view: same puck and cream card from side, insertion and support visible\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "beech-round-photo-stand/model-back",
+      "productId": "beech-round-photo-stand",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "beech-round-photo-stand/front",
+        "beech-round-photo-stand/back",
+        "beech-round-photo-stand/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nBase color: natural pale beech\nBase material: smooth natural beech wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/beech-round-photo-stand/model-back.png",
+      "sha256": "38a215d2c59065a99cb8e37346062e968ee6861161f96996e648ea26afac6bc2",
+      "history": [
+        {
+          "note": "Root visual QA: overhead circular puck with one straight slot and matching beech grain.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nColor: natural pale beech. Material: smooth natural beech wood.\nRequired view: top-down empty puck showing exactly one straight slot across circular top\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCamera instruction: true overhead plan view, camera optical axis exactly perpendicular to tabletop (90 degrees overhead). Show the empty object without any paper, card or ring. Match all product geometry and color, but do not repeat reference camera elevation."
+        }
+      ]
+    },
+    {
+      "id": "beech-round-photo-stand/editorial",
+      "productId": "beech-round-photo-stand",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["beech-round-photo-stand/front", "beech-round-photo-stand/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nBase color: natural pale beech\nBase material: smooth natural beech wood\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/beech-round-photo-stand/editorial.png",
+      "sha256": "e412f03175030252517adfd6088eb1ac150e14620ccf710d6e8ca6053e3c2feb",
+      "history": [
+        {
+          "note": "Root visual QA: matching beech puck with one slot and blank cream card on oak desk; full product crop and no branding.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 비치 라운드 포토 스탠드\nDesign invariants: Fictional concept sample. One short cylindrical wooden puck, circular flat top and base, gently rounded outer edge, exactly one straight narrow card slot running across top diameter, no other slots holes feet or hardware. Preserve geometry and material. No logos or readable lettering.\nColor: natural pale beech. Material: smooth natural beech wood.\nRequired view: same puck with same blank cream card on pale oak desk\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    }
+  ]
+}

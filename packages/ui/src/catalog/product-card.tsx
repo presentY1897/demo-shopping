@@ -1,6 +1,7 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
+import { ProductImagePlaceholder } from './product-image-placeholder'
 
 import { cx } from '../lib/cx'
 import { FOCUS_RING } from '../lib/styles'
@@ -69,6 +70,7 @@ export interface ProductCardLabels {
   readonly quickAdd: string
   /** `{name}` — swatch list's accessible name. */
   readonly colorsLabel: string
+  readonly imageUnavailable?: string
   readonly ratingLabel: string
 }
 
@@ -185,7 +187,8 @@ export function ProductCard({
   const discount = discountPercent(product.price, product.listPrice)
   const rating = ratingOf(product.ratingAvg)
   const soldOut = product.inStock === false
-  const image = product.imageUrl ?? null
+  const image = product.imageUrl?.trim() ? product.imageUrl.trim() : null
+  const [failedImage, setFailedImage] = useState<string | null>(null)
 
   return (
     <article
@@ -198,8 +201,13 @@ export function ProductCard({
       data-density={density}
       data-sold-out={soldOut || undefined}
     >
-      <div className={cx('bg-surface-muted relative w-full', IMAGE_RATIO[density])}>
-        {image === null ? null : renderImage !== undefined ? (
+      <div
+        className={cx('bg-surface-muted relative w-full', IMAGE_RATIO[density])}
+        onErrorCapture={() => setFailedImage(image)}
+      >
+        {image === null || failedImage === image ? (
+          <ProductImagePlaceholder label={labels.imageUnavailable} />
+        ) : renderImage !== undefined ? (
           renderImage({ src: image, alt: product.name })
         ) : (
           /* eslint-disable-next-line @next/next/no-img-element -- this package

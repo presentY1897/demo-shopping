@@ -1,0 +1,33 @@
+{
+  "products": [
+    {
+      "id": "mens-daily-wool-blazer",
+      "name": "남성 데일리 울 블레이저",
+      "sourceProductId": "01a07b26-150b-755a-ac1e-73fa862a048b",
+      "audience": "menswear",
+      "color": "solid black",
+      "material": "matte fine wool suiting",
+      "design": "Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.",
+      "model": "One adult male fashion model, short dark side-parted hair, white crew-neck T-shirt under blazer, medium gray tailored trousers and black loafers, no accessories",
+      "highlights": ["레귤러 핏", "노치드 라펠", "울 소재"]
+    },
+    {
+      "id": "womens-light-cotton-blazer",
+      "name": "여성 경량 코튼 블레이저",
+      "sourceProductId": "01a07b26-187a-74dc-addc-702a6a315414",
+      "audience": "womenswear",
+      "color": "solid black",
+      "material": "matte smooth cotton twill",
+      "design": "Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.",
+      "model": "One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories",
+      "highlights": ["레귤러 핏", "싱글 버튼", "코튼 소재"],
+      "variants": [
+        {
+          "id": "khaki",
+          "kind": "color",
+          "value": "muted olive khaki green; keep dark brown buttons unchanged"
+        }
+      ]
+    }
+  ]
+}

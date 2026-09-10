@@ -105,6 +105,37 @@ class PipelineTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             pipeline.next_jobs(manifest, 1)
 
+    def test_multiple_models_cover_every_variant_without_crossing_identities(self):
+        product = self.spec['products'][0]
+        product['models'] = [{'id': 'male', 'description': 'Adult man'}, {'id': 'female', 'description': 'Adult woman'}]
+        product['variants'] = [{'id': 'navy', 'kind': 'color', 'value': 'navy'}]
+        manifest = self.plan()
+        jobs = {job['id']: job for job in pipeline.read(manifest)['jobs']}
+        self.assertEqual(len(jobs), 24)
+        self.assertEqual(jobs['coat/model-female-side']['dependencies'], ['coat/front', 'coat/model-female-front'])
+        self.assertNotIn('coat/model-male-front', jobs['coat/model-female-back']['dependencies'])
+        self.assertEqual(jobs['coat/variant-navy-model-female-back']['dependencies'], ['coat/model-female-back', 'coat/variant-navy-front'])
+        while pipeline.next_jobs(manifest, 1)['ready']:
+            self.record(manifest, pipeline.next_jobs(manifest, 1)['ready'][0]['id'])
+        self.assertTrue(pipeline.next_jobs(manifest, 1)['complete'])
+        data = pipeline.read(manifest)
+        data['jobs'] = [j for j in data['jobs'] if j['id'] != 'coat/variant-navy-model-female-back']
+        pipeline.save(manifest, data)
+        self.assertEqual(pipeline.next_jobs(manifest, 1)['missing'], ['coat/variant-navy-model-female-back'])
+        self.assertFalse(pipeline.next_jobs(manifest, 1)['complete'])
+
+    def test_invalid_model_profiles(self):
+        for models in [[], [{'id': 'male', 'description': ''}], [{'id': 'male', 'description': 'Man'}] * 2]:
+            self.spec['products'][0]['models'] = models
+            with self.assertRaises(ValueError):
+                self.plan()
+
+    def test_model_styling_is_absent_from_catalog_prompts(self):
+        self.spec['products'][0]['model'] = 'Adult man with ivory trousers'
+        jobs = {job['id']: job for job in pipeline.read(self.plan())['jobs']}
+        self.assertNotIn('ivory trousers', jobs['coat/back']['prompt'])
+        self.assertIn('ivory trousers', jobs['coat/model-front']['prompt'])
+
     def test_invalid_dependency_and_path(self):
         self.spec['products'][0]['shots'] = ['model-side']
         with self.assertRaises(ValueError):

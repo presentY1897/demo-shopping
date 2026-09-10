@@ -1,0 +1,22 @@
+{
+  "products": [
+    {
+      "id": "mens-navy-band-collar-shirt",
+      "name": "남성 오버핏 밴드카라 린넨 셔츠",
+      "audience": "menswear",
+      "sourceProductId": "01a07b26-190e-7088-b1f7-0af27e1357c8",
+      "color": "deep navy blue",
+      "material": "matte linen",
+      "design": "Fictional sample design: oversized short-sleeve band-collar shirt, seven small dark buttons evenly spaced down a visible center placket, no pockets, straight hem with short side slits, straight back yoke without pleats, relaxed dropped shoulders. No logos or patterns. Preserve these details in all views.",
+      "model": "One adult male fashion model, short dark softly parted hair, ivory straight trousers and black loafers, no accessories",
+      "highlights": ["밴드카라", "반소매 오버핏", "린넨 소재"],
+      "variants": [
+        {
+          "id": "ivory",
+          "kind": "color",
+          "value": "warm ivory; keep the original dark buttons unchanged"
+        }
+      ]
+    }
+  ]
+}

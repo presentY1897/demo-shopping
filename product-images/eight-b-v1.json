@@ -1,0 +1,148 @@
+{
+  "products": [
+    {
+      "id": "cream-corduroy-desk-basket",
+      "name": "크림 코듀로이 데스크 바스켓",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "warm cream",
+      "colorLabel": "크림",
+      "hex": "#e4dac7",
+      "material": "cotton corduroy",
+      "price": 23000,
+      "design": "Fictional concept sample. Small open rectangular fabric desk basket with rounded corners, cream vertical-wale corduroy outside, matching plain cream cotton lining, flat bottom, low upright soft walls, no handles lid pockets or hardware. Preserve all geometry and hardware counts. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "EIGHT-05",
+      "highlights": ["크림 컬러", "가상 기획 상품"],
+      "description": "크림 코듀로이 데스크 바스켓 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+      "shotDirections": {
+        "front": "Front three-quarter empty basket with opening visible.",
+        "back": "Rear three-quarter showing plain wall and seam.",
+        "side": "Low horizontal side view showing outside wall, opening nearly hidden.",
+        "texture": "Macro vertical corduroy ridges at existing seam.",
+        "model-front": "Basket containing one small blank notebook and one coiled plain cable, both inside.",
+        "model-side": "Same basket and objects from opposite side, wall and base visible.",
+        "model-back": "Top-down empty basket showing single compartment.",
+        "editorial": "Basket with same notebook and cable on oak desk."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "terracotta-cone-pencil-holder",
+      "name": "테라코타 콘 펜슬 홀더",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "terracotta orange",
+      "colorLabel": "테라코타",
+      "hex": "#b96c4f",
+      "material": "matte glazed ceramic",
+      "price": 16000,
+      "design": "Fictional concept sample. Small solid terracotta ceramic truncated cone, wide stable circular flat base, narrow flat top with exactly one centered vertical cylindrical pencil hole, no other holes markings or parts. Preserve all geometry and hardware counts. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "EIGHT-06",
+      "highlights": ["테라코타 컬러", "가상 기획 상품"],
+      "description": "테라코타 콘 펜슬 홀더 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+      "shotDirections": {
+        "front": "Three-quarter whole cone with single top hole visible.",
+        "back": "Opposite rear three-quarter of same cone.",
+        "side": "Eye-level horizontal side profile, cone silhouette clear.",
+        "texture": "Macro matte glaze and top hole edge.",
+        "model-front": "One plain wooden pencil standing vertically in sole hole, physical insertion visible.",
+        "model-side": "Same holder and pencil from low side, whole holder visible.",
+        "model-back": "Top-down empty holder showing exactly one hole.",
+        "editorial": "Holder with same pencil on blank cream paper on desk."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "sky-glass-cylinder-vase",
+      "name": "스카이 글라스 실린더 화병",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "transparent pale blue",
+      "colorLabel": "스카이",
+      "hex": "#9fc4d6",
+      "material": "smooth tinted glass",
+      "price": 27000,
+      "design": "Fictional concept sample. Small transparent pale-blue glass cylinder vase, straight cylindrical sides, thick flat circular base, one wide circular open mouth with rounded lip, no handle neck pattern or engraving. Preserve all geometry and hardware counts. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "EIGHT-07",
+      "highlights": ["스카이 컬러", "가상 기획 상품"],
+      "description": "스카이 글라스 실린더 화병 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+      "shotDirections": {
+        "front": "Front three-quarter empty cylinder vase, circular opening visible.",
+        "back": "Opposite rear three-quarter empty vase.",
+        "side": "Eye-level horizontal side, straight cylindrical silhouette.",
+        "texture": "Macro smooth blue glass lip and wall.",
+        "model-front": "Vase holding one green stem with single small white flower, stem inserted through open mouth.",
+        "model-side": "Same vase flower and stem from side.",
+        "model-back": "Top-down empty vase showing circular mouth and glass base.",
+        "editorial": "Same vase and white flower on pale stone windowsill."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    },
+    {
+      "id": "walnut-arch-letter-rack",
+      "name": "월넛 아치 레터 랙",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "natural walnut brown",
+      "colorLabel": "월넛",
+      "hex": "#795338",
+      "material": "oiled walnut wood",
+      "price": 29000,
+      "design": "Fictional concept sample. Solid walnut letter rack made of rectangular flat base and two parallel upright arch-top panels of equal height, one open slot between panels, panels permanently joined to base, no holes drawers hardware or lettering. Preserve all geometry and hardware counts. No logos or readable lettering.",
+      "sizes": [],
+      "skuPrefix": "EIGHT-08",
+      "highlights": ["월넛 컬러", "가상 기획 상품"],
+      "description": "월넛 아치 레터 랙 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+      "shotDirections": {
+        "front": "Three-quarter empty rack clearly showing two parallel arch panels and one slot.",
+        "back": "Opposite rear three-quarter of same rack.",
+        "side": "End-on side showing one slot between two panels and base.",
+        "texture": "Macro walnut grain at rounded arch edge.",
+        "model-front": "One plain cream envelope standing in single slot between panels.",
+        "model-side": "Same rack and envelope from opposite side, envelope supported in slot.",
+        "model-back": "Top-down empty rack showing one long slot and two panels.",
+        "editorial": "Rack with same cream envelope on oak desk beside blank notebook."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      }
+    }
+  ]
+}

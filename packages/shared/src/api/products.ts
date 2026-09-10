@@ -149,7 +149,7 @@ export const optionValueMetaSchema = z.record(z.string(), z.union([z.string(), z
 
 export type OptionValueMeta = z.infer<typeof optionValueMetaSchema>
 
-export const PRODUCT_MAX_IMAGES = 10
+export const PRODUCT_MAX_IMAGES = 12
 
 export const productImageSchema = z.object({
   id: z.uuid(),

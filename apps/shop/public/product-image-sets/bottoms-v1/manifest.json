@@ -1,0 +1,572 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "womens-cropped-cotton-slacks",
+        "name": "여성 베이식 크롭 코튼 슬랙스",
+        "sourceProductId": "01a07b26-0d0e-7528-825d-03279a3e5f14",
+        "audience": "womenswear",
+        "color": "medium neutral gray",
+        "material": "matte smooth cotton twill",
+        "design": "Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.",
+        "model": "One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.",
+        "highlights": ["하이웨이스트", "테이퍼드 핏", "면 소재"],
+        "variants": [
+          {
+            "id": "navy",
+            "kind": "color",
+            "value": "deep navy blue; preserve dark gray button"
+          }
+        ]
+      },
+      {
+        "id": "womens-khaki-cropped-denim",
+        "name": "여성 미니멀 카키 크롭 데님",
+        "sourceProductId": "01a07b26-20f9-74cd-bc51-130fd9a44d8d",
+        "audience": "womenswear",
+        "color": "muted olive khaki green",
+        "material": "subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading",
+        "design": "Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.",
+        "model": "One adult female fashion model with dark hair in a low ponytail, plain black short-sleeve crew-neck top tucked into jeans, simple white low-top sneakers, no belt or accessories. Same identity and styling throughout.",
+        "highlights": ["하이웨이스트", "테이퍼드 핏", "카키 데님"]
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "womens-cropped-cotton-slacks/front",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/front.png",
+      "sha256": "ec6a056296d025640b6cdce4369b922a8009a3151677195c397bfbb3b3f7864e",
+      "history": [
+        {
+          "note": "Square front product shot: gray cotton, flat front, slant pockets, dark waistband button, belt loops and tapered clean hems; no model or crop loss.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: . Garment product photo ONLY: no human, skin, top, shoes, visible mannequin or hanger. Trousers only."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/back",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["womens-cropped-cotton-slacks/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/back.png",
+      "sha256": "0f9a80910bd300ddcc8e4930342f5b4aca0a04d88b9502f199d64ca2d3dc1170",
+      "history": [
+        {
+          "note": "Rear gray slacks show two buttonless welt pockets, rear loops, consistent taper and clean hems; full garment within square.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, top, shoes, visible mannequin or hanger. Trousers only. CRITICAL rear view: show rear pockets and back waistband. No front fly or front pockets facing camera."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/side",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["womens-cropped-cotton-slacks/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/side.png",
+      "sha256": "95435aa0dea4a440f72e90c3e5fc065398fd151006f7b600e9587b43bd7d2519",
+      "history": [
+        {
+          "note": "Side product view shows side seam, slant front pocket and welt rear pocket in correct relationship; gray cotton and clean tapered hem consistent.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, top, shoes, visible mannequin or hanger. Trousers only."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/texture",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["womens-cropped-cotton-slacks/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/texture.png",
+      "sha256": "561bd01bfce1411eccf84932188c106cd4507df8fe8d7638ea48831d118df820",
+      "history": [
+        {
+          "note": "Single full-frame macro of gray cotton twill, matching waistband button, belt loop and slanted pocket stitching; no inset or collage.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, top, shoes, visible mannequin or hanger. Trousers only. CRITICAL extreme macro crop, trouser fabric texture and pocket/waistband stitching, NOT a full garment shot."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/model-front",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["womens-cropped-cotton-slacks/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/model-front.png",
+      "sha256": "9d8f0322c21951f888b2ee8c509af31f9d5898c5b4ae83f705c79635e90ee4a1",
+      "history": [
+        {
+          "note": "Adult female front wearing anchor: ivory tucked tee and black loafers, visible high waistband, flat front, gray tapered ankle crop, full body square with intact hands.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/model-side",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": [
+        "womens-cropped-cotton-slacks/front",
+        "womens-cropped-cotton-slacks/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/model-side.png",
+      "sha256": "588e330be76848e96a9193322ee33ca29e6032f8eb2deb50b6501f190cf798ae",
+      "history": [
+        {
+          "note": "True side wearing view keeps same female face/hair, ivory tee, loafers, high-rise waistband and ankle-cropped hem.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/model-back",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "womens-cropped-cotton-slacks/front",
+        "womens-cropped-cotton-slacks/back",
+        "womens-cropped-cotton-slacks/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/model-back.png",
+      "sha256": "d49d5a976a0fb8230c2fefb8f4d181e9ec25b53da37285f9bc91522e50374760",
+      "history": [
+        {
+          "note": "Rear wearing view has two welt pockets and same waistband loops, crop and model hair/styling; feet and hands intact.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = back reference; Image 3 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment. CRITICAL rear view: show rear pockets and back waistband. No front fly or front pockets facing camera."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/editorial",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": [
+        "womens-cropped-cotton-slacks/front",
+        "womens-cropped-cotton-slacks/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/editorial.png",
+      "sha256": "9194310747788538c7a29531ea7a0bdedda3adc8c2680280b5c6c5087d7db7c3",
+      "history": [
+        {
+          "note": "Editorial pose keeps same adult model, ivory tucked tee and black loafers; hand naturally in slant pocket, waistband and cropped tapered legs visible.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/variant-navy-front",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "deep navy blue; preserve dark gray button · 정면",
+      "variant": {
+        "id": "navy",
+        "kind": "color",
+        "value": "deep navy blue; preserve dark gray button"
+      },
+      "dependencies": ["womens-cropped-cotton-slacks/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to deep navy blue; preserve dark gray button. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/variant-navy-front.png",
+      "sha256": "384efd41d0918e3deef952c49fd93ee97ef4f1224c1c9367616953379c87a15c",
+      "history": [
+        {
+          "note": "Navy front matches gray anchor silhouette, fly, button, belt loops, creases and crop; changed trouser fabric color only.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY trouser fabric color to deep navy blue; preserve dark gray button. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: front. Garment product photo ONLY: no human, skin, top, shoes, visible mannequin or hanger. Trousers only."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/variant-navy-back",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "deep navy blue; preserve dark gray button · 후면",
+      "variant": {
+        "id": "navy",
+        "kind": "color",
+        "value": "deep navy blue; preserve dark gray button"
+      },
+      "dependencies": [
+        "womens-cropped-cotton-slacks/back",
+        "womens-cropped-cotton-slacks/variant-navy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to deep navy blue; preserve dark gray button. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/variant-navy-back.png",
+      "sha256": "b54a55a1fc346896284500e94bd8411d5826e48240f8d8744beeaf9b88dc7e50",
+      "history": [
+        {
+          "note": "Navy rear preserves two welt pockets and rear belt loops, matching square composition and taper of gray source.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY trouser fabric color to deep navy blue; preserve dark gray button. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: back. Garment product photo ONLY: no human, skin, top, shoes, visible mannequin or hanger. Trousers only. CRITICAL rear view: show rear pockets and back waistband. No front fly or front pockets facing camera."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/variant-navy-side",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "deep navy blue; preserve dark gray button · 측면",
+      "variant": {
+        "id": "navy",
+        "kind": "color",
+        "value": "deep navy blue; preserve dark gray button"
+      },
+      "dependencies": [
+        "womens-cropped-cotton-slacks/side",
+        "womens-cropped-cotton-slacks/variant-navy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to deep navy blue; preserve dark gray button. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/variant-navy-side.png",
+      "sha256": "966a5ee6fe762c4aefff67d2649d759897b8972e3d8df295e3301a0e1c5ec157",
+      "history": [
+        {
+          "note": "Navy side preserves same angled waistband, slant pocket, rear welt pocket and tapered side silhouette.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY trouser fabric color to deep navy blue; preserve dark gray button. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: side. Garment product photo ONLY: no human, skin, top, shoes, visible mannequin or hanger. Trousers only."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/variant-navy-texture",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "deep navy blue; preserve dark gray button · 소재 확대",
+      "variant": {
+        "id": "navy",
+        "kind": "color",
+        "value": "deep navy blue; preserve dark gray button"
+      },
+      "dependencies": [
+        "womens-cropped-cotton-slacks/texture",
+        "womens-cropped-cotton-slacks/variant-navy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to deep navy blue; preserve dark gray button. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/variant-navy-texture.png",
+      "sha256": "c040d20a8c91254d6d5c133870f6d1a53789b0d5d4cb151c49b1e1d5851b7f89",
+      "history": [
+        {
+          "note": "Navy macro retains exact twill, button, fly and pocket crop of gray source; no added detail panel.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY trouser fabric color to deep navy blue; preserve dark gray button. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: texture. Garment product photo ONLY: no human, skin, top, shoes, visible mannequin or hanger. Trousers only. CRITICAL extreme macro crop, trouser fabric texture and pocket/waistband stitching, NOT a full garment shot."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/variant-navy-model-front",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "deep navy blue; preserve dark gray button · 모델 정면",
+      "variant": {
+        "id": "navy",
+        "kind": "color",
+        "value": "deep navy blue; preserve dark gray button"
+      },
+      "dependencies": [
+        "womens-cropped-cotton-slacks/model-front",
+        "womens-cropped-cotton-slacks/variant-navy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.\nMatch framing and pose of the first reference. Change only color to deep navy blue; preserve dark gray button. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/variant-navy-model-front.png",
+      "sha256": "4244e6c871a7e49b171f07a3fb995d2b7b0f70d1de20c7cd895e43106e15da65",
+      "history": [
+        {
+          "note": "Navy front wearing shot preserves source model face, hands, pose, ivory tee and black shoes; trouser length and details match.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY trouser fabric color to deep navy blue; preserve dark gray button. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-front. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/variant-navy-model-side",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "deep navy blue; preserve dark gray button · 모델 측면",
+      "variant": {
+        "id": "navy",
+        "kind": "color",
+        "value": "deep navy blue; preserve dark gray button"
+      },
+      "dependencies": [
+        "womens-cropped-cotton-slacks/model-side",
+        "womens-cropped-cotton-slacks/variant-navy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.\nMatch framing and pose of the first reference. Change only color to deep navy blue; preserve dark gray button. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/variant-navy-model-side.png",
+      "sha256": "0f35fbfcabfbeb217b134a6c9532aed7092f3c3d82f7dea8da2fbad54520cbee",
+      "history": [
+        {
+          "note": "Navy model side matches gray pose, profile, hair, shoes and ankle length; changes confined to trousers.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY trouser fabric color to deep navy blue; preserve dark gray button. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-side. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/variant-navy-model-back",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "deep navy blue; preserve dark gray button · 모델 후면",
+      "variant": {
+        "id": "navy",
+        "kind": "color",
+        "value": "deep navy blue; preserve dark gray button"
+      },
+      "dependencies": [
+        "womens-cropped-cotton-slacks/model-back",
+        "womens-cropped-cotton-slacks/variant-navy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.\nMatch framing and pose of the first reference. Change only color to deep navy blue; preserve dark gray button. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/variant-navy-model-back.png",
+      "sha256": "b17a38f7024d1e859ed936b8a7785c1ee0afe4be2bb6cba59bae9ac1f7886d30",
+      "history": [
+        {
+          "note": "Navy rear wearing shot keeps two welt pockets, back waistband and model hair, ivory top, loafers and source framing.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY trouser fabric color to deep navy blue; preserve dark gray button. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-back. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment. CRITICAL rear view: show rear pockets and back waistband. No front fly or front pockets facing camera."
+        }
+      ]
+    },
+    {
+      "id": "womens-cropped-cotton-slacks/variant-navy-editorial",
+      "productId": "womens-cropped-cotton-slacks",
+      "label": "deep navy blue; preserve dark gray button · 소개용 연출",
+      "variant": {
+        "id": "navy",
+        "kind": "color",
+        "value": "deep navy blue; preserve dark gray button"
+      },
+      "dependencies": [
+        "womens-cropped-cotton-slacks/editorial",
+        "womens-cropped-cotton-slacks/variant-navy-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 베이식 크롭 코튼 슬랙스\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped trousers, flat front with no pleats, narrow waistband with belt loops, concealed zip fly and one dark gray waistband button, two slanted front pockets, two horizontal welt back pockets without buttons, pressed center creases, clean narrow hems without turn-ups. No logos. Preserve waistband, pocket count, cropped length and taper across every view.\nBase color: medium neutral gray\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with straight shoulder-length dark brown hair tucked behind ears, fitted ivory short-sleeve crew-neck top tucked into trousers, plain black low leather loafers with no metal trim, no belt or accessories. Same identity and styling throughout.\nMatch framing and pose of the first reference. Change only color to deep navy blue; preserve dark gray button. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-cropped-cotton-slacks/variant-navy-editorial.png",
+      "sha256": "d33b595fa87e980b49eb96de88fff59e3272dae1d75b8d494187e125a0c30473",
+      "history": [
+        {
+          "note": "Navy editorial preserves relaxed hand-in-pocket pose, face, ivory top, black shoes and cropped taper; color consistent with navy anchor.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY trouser fabric color to deep navy blue; preserve dark gray button. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Preserve original fabric texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: editorial. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-khaki-cropped-denim/front",
+      "productId": "womens-khaki-cropped-denim",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-khaki-cropped-denim/front.png",
+      "sha256": "cc772ebc507dcd076f60ca45a72a9878cd418c18b8a06f5dddcd4730d807281d",
+      "history": [
+        {
+          "note": "Khaki denim front: curved pockets with wearer-right coin pocket, metal button, tonal stitches, tapered legs and clean hems; no labels or distressing.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: . Garment product photo ONLY: no human, skin, top, shoes, visible mannequin or hanger. Trousers only."
+        }
+      ]
+    },
+    {
+      "id": "womens-khaki-cropped-denim/back",
+      "productId": "womens-khaki-cropped-denim",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["womens-khaki-cropped-denim/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-khaki-cropped-denim/back.png",
+      "sha256": "4f16a3e2fcd262befc3431a49300c0f48c23a28142c035f78c384e4a0f685e93",
+      "history": [
+        {
+          "note": "Khaki denim rear shows two plain patch pockets, rear yoke, tonal stitching and consistent tapered hems; no front closure on back.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, top, shoes, visible mannequin or hanger. Trousers only. CRITICAL rear view: show rear pockets and back waistband. No front fly or front pockets facing camera."
+        }
+      ]
+    },
+    {
+      "id": "womens-khaki-cropped-denim/side",
+      "productId": "womens-khaki-cropped-denim",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["womens-khaki-cropped-denim/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-khaki-cropped-denim/side.png",
+      "sha256": "00751e0eaf92e3817cb331124882bea91cf17269991dffc84b3e13c54c38c1d0",
+      "history": [
+        {
+          "note": "Denim side keeps curved front pocket, visible rear patch pocket edge, tonal side seam and clean hem, matching khaki anchor.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, top, shoes, visible mannequin or hanger. Trousers only."
+        }
+      ]
+    },
+    {
+      "id": "womens-khaki-cropped-denim/texture",
+      "productId": "womens-khaki-cropped-denim",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["womens-khaki-cropped-denim/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-khaki-cropped-denim/texture.png",
+      "sha256": "dee235bc78f52af7a2fc38864127c4b425734e48ab62f64f6501f8c2b101b086",
+      "history": [
+        {
+          "note": "Khaki denim macro shows diagonal weave, tonal seam, coin pocket, rivet and dark metal button; one full-frame detail photo.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, top, shoes, visible mannequin or hanger. Trousers only. CRITICAL extreme macro crop, trouser fabric texture and pocket/waistband stitching, NOT a full garment shot."
+        }
+      ]
+    },
+    {
+      "id": "womens-khaki-cropped-denim/model-front",
+      "productId": "womens-khaki-cropped-denim",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["womens-khaki-cropped-denim/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with dark hair in a low ponytail, plain black short-sleeve crew-neck top tucked into jeans, simple white low-top sneakers, no belt or accessories. Same identity and styling throughout.\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-khaki-cropped-denim/model-front.png",
+      "sha256": "ec0438ac368cef1e2cdadd3bf2df0f4470a3977e775e7d7ccbe508867b58b0ab",
+      "history": [
+        {
+          "note": "Denim model front: adult woman with tied-back dark hair, black tucked tee and white sneakers, visible high-rise five-pocket construction and cropped tapered legs.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with dark hair in a low ponytail, plain black short-sleeve crew-neck top tucked into jeans, simple white low-top sneakers, no belt or accessories. Same identity and styling throughout.\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-khaki-cropped-denim/model-side",
+      "productId": "womens-khaki-cropped-denim",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": [
+        "womens-khaki-cropped-denim/front",
+        "womens-khaki-cropped-denim/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with dark hair in a low ponytail, plain black short-sleeve crew-neck top tucked into jeans, simple white low-top sneakers, no belt or accessories. Same identity and styling throughout.\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-khaki-cropped-denim/model-side.png",
+      "sha256": "0895505bf66265ed53c3d197645475abd3fb6574dfcf5a7142016a88b8bf9839",
+      "history": [
+        {
+          "note": "Denim true side wearing view retains female identity and ponytail, black tee, white sneakers, rear patch pocket and cropped leg seam.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with dark hair in a low ponytail, plain black short-sleeve crew-neck top tucked into jeans, simple white low-top sneakers, no belt or accessories. Same identity and styling throughout.\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-khaki-cropped-denim/model-back",
+      "productId": "womens-khaki-cropped-denim",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "womens-khaki-cropped-denim/front",
+        "womens-khaki-cropped-denim/back",
+        "womens-khaki-cropped-denim/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with dark hair in a low ponytail, plain black short-sleeve crew-neck top tucked into jeans, simple white low-top sneakers, no belt or accessories. Same identity and styling throughout.\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-khaki-cropped-denim/model-back.png",
+      "sha256": "352637d08adafb2da79790b2d7e29deec133d7cec76ba26eb0126fcc00ab2d75",
+      "history": [
+        {
+          "note": "Rear denim wearing view: two plain patch pockets, yoke and rear belt loop, khaki tonal stitching, black tucked top, tied-back hair and white sneakers; full frame.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with dark hair in a low ponytail, plain black short-sleeve crew-neck top tucked into jeans, simple white low-top sneakers, no belt or accessories. Same identity and styling throughout.\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = back reference; Image 3 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment. CRITICAL rear view: show rear pockets and back waistband. No front fly or front pockets facing camera."
+        }
+      ]
+    },
+    {
+      "id": "womens-khaki-cropped-denim/editorial",
+      "productId": "womens-khaki-cropped-denim",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": [
+        "womens-khaki-cropped-denim/front",
+        "womens-khaki-cropped-denim/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with dark hair in a low ponytail, plain black short-sleeve crew-neck top tucked into jeans, simple white low-top sneakers, no belt or accessories. Same identity and styling throughout.\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Editorial repeated front wearing anchor pose almost exactly; needs distinct styling pose.",
+          "status": "failed",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with dark hair in a low ponytail, plain black short-sleeve crew-neck top tucked into jeans, simple white low-top sneakers, no belt or accessories. Same identity and styling throughout.\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment."
+        },
+        {
+          "note": "Revised editorial now distinct three-quarter stepping pose with both hands outside pockets; model identity, black top, white sneakers, khaki tapered jeans and full square crop retained.",
+          "status": "accepted",
+          "prompt": "POSE OVERRIDE: create a DISTINCT EDITORIAL photograph, not a duplicate of reference pose. Same adult woman, same khaki jeans, black top, white shoes. Turn body 30 degrees toward camera right, look back toward camera with gentle smile, BOTH HANDS OUTSIDE pockets, one arm relaxed and other hand lightly resting on outer hip, one foot a small step forward. Keep full body inside SQUARE frame, studio background. Preserve garment construction, face and ponytail. No props.\nOUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 미니멀 카키 크롭 데님\nDesign invariants: Fictional sample: high-rise tapered ankle-cropped jeans, classic five-pocket construction (two curved front pockets, one small coin pocket on wearer right, two plain rear patch pockets), belt loops, concealed zip fly, one dark antique-metal waistband button, rear yoke, clean straight hems without cuffs. No logos, labels, rips or decorative embroidery. Preserve pocket layout and taper in every view.\nBase color: muted olive khaki green\nBase material: subtly textured garment-dyed denim with tonal khaki stitching, no distressed areas or heavy fading\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model with dark hair in a low ponytail, plain black short-sleeve crew-neck top tucked into jeans, simple white low-top sneakers, no belt or accessories. Same identity and styling throughout.\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Trousers are the featured garment."
+        }
+      ],
+      "output": "images/womens-khaki-cropped-denim/editorial.png",
+      "sha256": "38e5eb11e4edca2a0e768862ffb65b34a01aa045a78f2934c87a53d11b89fd68"
+    }
+  ]
+}

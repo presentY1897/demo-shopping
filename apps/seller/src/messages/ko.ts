@@ -371,16 +371,16 @@ export const ko: Messages = {
     title: '상품 이미지',
     description:
       '첫 번째 이미지가 목록과 상세의 대표 이미지가 됩니다. 순서를 바꾸면 구매자에게 보이는 순서도 바뀝니다.',
-    hint: 'JPG · PNG · WebP · 한 장당 5MB 까지 · 최대 10장. 긴 변이 2,000픽셀을 넘으면 올리기 전에 줄입니다.',
+    hint: 'JPG · PNG · WebP · 한 장당 5MB 까지 · 최대 12장. 긴 변이 2,000픽셀을 넘으면 올리기 전에 줄입니다.',
     pickLabel: '이미지를 끌어다 놓거나 파일을 선택하세요',
     dropLabel: '여기에 놓으세요',
-    fullNotice: '이미지를 10장까지 등록했습니다. 더 올리려면 먼저 하나를 빼주세요.',
+    fullNotice: '이미지를 12장까지 등록했습니다. 더 올리려면 먼저 하나를 빼주세요.',
     emptyDescription: '아직 등록한 이미지가 없습니다.',
     retryAllLabel: '실패한 것만 다시 시도',
     rejectedTitle: '올리지 않은 파일이 있습니다',
     rejections: {
       unsupportedType: 'JPG · PNG · WebP 만 올릴 수 있어요.',
-      tooManyImages: '이미지는 10장까지 등록할 수 있어요.',
+      tooManyImages: '이미지는 12장까지 등록할 수 있어요.',
     },
     noticeTitle: '이미지를 올리지 못했습니다',
     requestIdLabel: '문의 번호',
@@ -408,7 +408,7 @@ export const ko: Messages = {
     },
     failures: {
       unsupportedType: 'JPG · PNG · WebP 만 올릴 수 있어요.',
-      tooManyImages: '이미지는 10장까지 등록할 수 있어요.',
+      tooManyImages: '이미지는 12장까지 등록할 수 있어요.',
       tooLarge: '줄인 뒤에도 5MB 를 넘어요. 다른 사진을 선택해 주세요.',
       decodeFailed: '이미지를 읽지 못했어요. 파일이 손상되지 않았는지 확인해 주세요.',
       // 브라우저는 이 둘을 구분해 주지 않는다. R2 의 403 응답에는 CORS 헤더가

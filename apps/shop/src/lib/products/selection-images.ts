@@ -1,9 +1,9 @@
-import { productImageInputSchema } from '@shopping/shared'
+import { PRODUCT_MAX_IMAGES, productImageInputSchema } from '@shopping/shared'
 import type { Product, ProductImage } from '@shopping/shared'
 
 import type { Selection } from './variant-selection'
 
-const gallerySchema = productImageInputSchema.array().min(1).max(10)
+const gallerySchema = productImageInputSchema.array().min(1).max(PRODUCT_MAX_IMAGES)
 
 /** Option presentation metadata can provide a gallery; material overrides color by priority. */
 export function imagesForSelection(

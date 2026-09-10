@@ -1,0 +1,605 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "rust-triangle-coin-purse",
+        "name": "러스트 트라이앵글 코인 파우치",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 지갑",
+        "color": "rust orange",
+        "colorLabel": "러스트",
+        "hex": "#b76a45",
+        "material": "fine-grain leather",
+        "price": 19000,
+        "design": "Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.",
+        "sizes": [],
+        "skuPrefix": "PAR-08",
+        "highlights": ["러스트 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Closed triangular purse front three-quarter, brass snap visible.",
+          "back": "Closed plain folded rear.",
+          "side": "Low side showing folded triangular thickness.",
+          "texture": "Macro leather grain and brass snap.",
+          "model-front": "Open triangular flap showing single empty beige pocket.",
+          "model-side": "Adult hand holding closed triangular purse for scale.",
+          "model-back": "Open purse with two plain unmarked metallic coin discs inside, no lettering.",
+          "editorial": "Closed purse on cream stone dish, purse dominates."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "러스트 트라이앵글 코인 파우치 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "sky-loop-cable-holder",
+        "name": "스카이 루프 케이블 홀더",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "powder blue",
+        "colorLabel": "스카이",
+        "hex": "#9bbdce",
+        "material": "matte silicone",
+        "price": 9000,
+        "design": "Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.",
+        "sizes": [],
+        "skuPrefix": "PAR-09",
+        "highlights": ["스카이 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Strap laid flat diagonally, entire stud and three holes visible.",
+          "back": "Underside of flat strap.",
+          "side": "Low side view showing raised stud and thin strap.",
+          "texture": "Macro matte silicone and one hole edge.",
+          "model-front": "Strap closed around one neatly coiled plain white USB cable, stud through hole clearly visible.",
+          "model-side": "Same secured cable held in adult hand, natural fingers.",
+          "model-back": "Top-down open strap next to same coiled white cable.",
+          "editorial": "Secured cable on pale wood desk beside closed blank notebook."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "스카이 루프 케이블 홀더 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "smoke-pebble-photo-holder",
+        "name": "스모크 페블 포토 홀더",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "smoke gray",
+        "colorLabel": "스모크",
+        "hex": "#898b88",
+        "material": "matte glazed ceramic",
+        "price": 16000,
+        "design": "Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.",
+        "sizes": [],
+        "skuPrefix": "PAR-10",
+        "highlights": ["스모크 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Front three-quarter pebble with top slot visible.",
+          "back": "Rear three-quarter preserving oval pebble.",
+          "side": "True low side profile showing rounded height.",
+          "texture": "Macro matte glaze and straight slot.",
+          "model-front": "One plain cream portrait-format card standing in slot, base fully visible.",
+          "model-side": "Same card and holder from side showing contact at slot.",
+          "model-back": "Top-down empty holder showing straight slot.",
+          "editorial": "Holder with same blank cream card on oak shelf in daylight."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "스모크 페블 포토 홀더 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "rust-triangle-coin-purse/front",
+      "productId": "rust-triangle-coin-purse",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 트라이앵글 코인 파우치\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nBase color: rust orange\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-triangle-coin-purse/front.png",
+      "sha256": "ba2966bb21fc1482d6f1e9c2954830912fc7f7f42172963d1adca0c125575653",
+      "history": [
+        {
+          "note": "Accepted triangular rust leather anchor, one brass snap, three rounded corners and safe margin.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nColor: rust orange. Material: fine-grain leather.\nRequired view: Closed triangular purse front three-quarter, brass snap visible.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. "
+        }
+      ]
+    },
+    {
+      "id": "rust-triangle-coin-purse/back",
+      "productId": "rust-triangle-coin-purse",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["rust-triangle-coin-purse/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 트라이앵글 코인 파우치\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nBase color: rust orange\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-triangle-coin-purse/back.png",
+      "sha256": "2a18755d50b558eac3437d9f77a646559743597b6bf7d5ecbb10c6a2a1dc795d",
+      "history": [
+        {
+          "note": "Rear preserves rust grain and triangular folded shell with no front snap visible.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nColor: rust orange. Material: fine-grain leather.\nRequired view: Closed plain folded rear.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to rust-triangle-coin-purse/front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "rust-triangle-coin-purse/side",
+      "productId": "rust-triangle-coin-purse",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["rust-triangle-coin-purse/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 트라이앵글 코인 파우치\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nBase color: rust orange\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-triangle-coin-purse/side.png",
+      "sha256": "e6dbb4a44774bdf01db31a6e6cc322edef904d64852288130042e0c8f00308aa",
+      "history": [
+        {
+          "note": "Low oblique side exposes rolled fold thickness and preserves one snap and triangular shell.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nColor: rust orange. Material: fine-grain leather.\nRequired view: Low side showing folded triangular thickness.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to rust-triangle-coin-purse/front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "rust-triangle-coin-purse/texture",
+      "productId": "rust-triangle-coin-purse",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["rust-triangle-coin-purse/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 트라이앵글 코인 파우치\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nBase color: rust orange\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected: whole purse shown instead of macro leather and snap.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nColor: rust orange. Material: fine-grain leather.\nRequired view: Macro leather grain and brass snap.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to rust-triangle-coin-purse/front; preserve its product construction and, where relevant, use configuration."
+        },
+        {
+          "note": "Accepted close macro crop with detailed rust leather grain, brass snap and flap edge.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nColor: rust orange. Material: fine-grain leather.\nRequired view: Macro leather grain and brass snap.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, extreme macro crop, ONLY small area around material detail fills frame, entire product must NOT be visible, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to rust-triangle-coin-purse/front; preserve its product construction and, where relevant, use configuration."
+        }
+      ],
+      "output": "images/rust-triangle-coin-purse/texture.png",
+      "sha256": "3aa7a24b626aeadade152c2732a81daaf7ad64f86cfc3ba2e5ce77e4309b9eef"
+    },
+    {
+      "id": "rust-triangle-coin-purse/model-front",
+      "productId": "rust-triangle-coin-purse",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["rust-triangle-coin-purse/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 트라이앵글 코인 파우치\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nBase color: rust orange\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-triangle-coin-purse/model-front.png",
+      "sha256": "48d068d59c4938b444a681db83a81d573a1543fe13e881e486758c014eceda3a",
+      "history": [
+        {
+          "note": "Open single beige pocket and both halves of one brass snap; consistent folded triangular body.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nColor: rust orange. Material: fine-grain leather.\nRequired view: Open triangular flap showing single empty beige pocket.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to rust-triangle-coin-purse/front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "rust-triangle-coin-purse/model-side",
+      "productId": "rust-triangle-coin-purse",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["rust-triangle-coin-purse/front", "rust-triangle-coin-purse/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 트라이앵글 코인 파우치\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nBase color: rust orange\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-triangle-coin-purse/model-side.png",
+      "sha256": "2491b3e92f513472545380fb0f515c87fad689b760b922360683f866b26d23d9",
+      "history": [
+        {
+          "note": "Closed purse held for scale, five natural digits, matching rust leather and single brass snap.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nColor: rust orange. Material: fine-grain leather.\nRequired view: Adult hand holding closed triangular purse for scale.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to rust-triangle-coin-purse/front; preserve its product construction and, where relevant, use configuration; Image 2 corresponds to rust-triangle-coin-purse/model-front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "rust-triangle-coin-purse/model-back",
+      "productId": "rust-triangle-coin-purse",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "rust-triangle-coin-purse/front",
+        "rust-triangle-coin-purse/back",
+        "rust-triangle-coin-purse/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 트라이앵글 코인 파우치\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nBase color: rust orange\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-triangle-coin-purse/model-back.png",
+      "sha256": "b0eb48f856519a891f713aca1de0b24869955f5ee72114d3470917a8f36a0f1f",
+      "history": [
+        {
+          "note": "Single open pocket holds two blank metallic discs; matching beige interior and rust folded body.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nColor: rust orange. Material: fine-grain leather.\nRequired view: Open purse with two plain unmarked metallic coin discs inside, no lettering.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to rust-triangle-coin-purse/front; preserve its product construction and, where relevant, use configuration; Image 2 corresponds to rust-triangle-coin-purse/back; preserve its product construction and, where relevant, use configuration; Image 3 corresponds to rust-triangle-coin-purse/model-front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "rust-triangle-coin-purse/editorial",
+      "productId": "rust-triangle-coin-purse",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["rust-triangle-coin-purse/front", "rust-triangle-coin-purse/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 러스트 트라이앵글 코인 파우치\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nBase color: rust orange\nBase material: fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/rust-triangle-coin-purse/editorial.png",
+      "sha256": "db00871e7050826e53e81d3f2b69e07abaf0533085b7980e96185db97c6e99e5",
+      "history": [
+        {
+          "note": "Closed purse dominates cream stone dish; anchor shape, leather and single snap preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small triangular folded leather coin purse with three rounded corners, one triangular flap secured by one small brass snap at center, warm beige interior single pocket, no zipper ring or strap. No logos or lettering. Preserve shape and all hardware counts.\nColor: rust orange. Material: fine-grain leather.\nRequired view: Closed purse on cream stone dish, purse dominates.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to rust-triangle-coin-purse/front; preserve its product construction and, where relevant, use configuration; Image 2 corresponds to rust-triangle-coin-purse/model-front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "sky-loop-cable-holder/front",
+      "productId": "sky-loop-cable-holder",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 루프 케이블 홀더\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nBase color: powder blue\nBase material: matte silicone\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sky-loop-cable-holder/front.png",
+      "sha256": "91e44d1c0cd8c1ed3ce65769a4972e269dc0b594e0e714cc49b19c8503bd0260",
+      "history": [
+        {
+          "note": "Powder blue matte strap has exactly three circular holes and one raised mushroom stud; full safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nColor: powder blue. Material: matte silicone.\nRequired view: Strap laid flat diagonally, entire stud and three holes visible.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. "
+        }
+      ]
+    },
+    {
+      "id": "sky-loop-cable-holder/back",
+      "productId": "sky-loop-cable-holder",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["sky-loop-cable-holder/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 루프 케이블 홀더\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nBase color: powder blue\nBase material: matte silicone\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected: still showing stud on top instead of flat underside.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nColor: powder blue. Material: matte silicone.\nRequired view: Underside of flat strap.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to sky-loop-cable-holder/front; preserve its product construction and, where relevant, use configuration."
+        },
+        {
+          "note": "Flipped smooth underside, hidden stud under raised left end, exactly three holes and matching blue strap.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nColor: powder blue. Material: matte silicone.\nRequired view: Underside of flat strap.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to sky-loop-cable-holder/front; preserve its product construction and, where relevant, use configuration. CRITICAL: physically FLIP the strap upside down, stud now points DOWN away from camera into the table and is hidden underneath. Show smooth uninterrupted underside facing camera. Exactly three through holes at other end, NO raised stud visible on camera-facing surface. Slightly elevated strap end may suggest hidden stud below."
+        }
+      ],
+      "output": "images/sky-loop-cable-holder/back.png",
+      "sha256": "8c592c0c47a0463dc122caea5ff856b1f86986eb4a3ae99aee7fcd113294ac0a"
+    },
+    {
+      "id": "sky-loop-cable-holder/side",
+      "productId": "sky-loop-cable-holder",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["sky-loop-cable-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 루프 케이블 홀더\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nBase color: powder blue\nBase material: matte silicone\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sky-loop-cable-holder/side.png",
+      "sha256": "9573090f3dc7351bcc1e3f974390b6837e01fd7f021f4c5a2699e3bab2ef2e2d",
+      "history": [
+        {
+          "note": "Low side view shows thin strap edge and one mushroom stud; three holes preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nColor: powder blue. Material: matte silicone.\nRequired view: Low side view showing raised stud and thin strap.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to sky-loop-cable-holder/front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "sky-loop-cable-holder/texture",
+      "productId": "sky-loop-cable-holder",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["sky-loop-cable-holder/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 루프 케이블 홀더\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nBase color: powder blue\nBase material: matte silicone\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected: macro distorts stud-to-hole spacing relative to anchor.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nColor: powder blue. Material: matte silicone.\nRequired view: Macro matte silicone and one hole edge.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, extreme macro crop, ONLY small area around material detail fills frame, entire product must NOT be visible, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to sky-loop-cable-holder/front; preserve its product construction and, where relevant, use configuration."
+        },
+        {
+          "note": "Macro blue matte silicone and terminal circular hole, stud outside crop, rounded edge and texture clear.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nColor: powder blue. Material: matte silicone.\nRequired view: Macro matte silicone and one hole edge.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, extreme macro crop, ONLY small area around material detail fills frame, entire product must NOT be visible, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to sky-loop-cable-holder/front; preserve its product construction and, where relevant, use configuration. CRITICAL crop tightly around the LAST circular hole at rounded strap end. The stud is far away outside frame and MUST NOT be visible. Preserve hole spacing, no new hardware. Only one hole and nearby blue matte silicone visible."
+        }
+      ],
+      "output": "images/sky-loop-cable-holder/texture.png",
+      "sha256": "32d44e4292214166d3fca66faa153d0103a13f4a3072ed09aea8452a5897dd5c"
+    },
+    {
+      "id": "sky-loop-cable-holder/model-front",
+      "productId": "sky-loop-cable-holder",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["sky-loop-cable-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 루프 케이블 홀더\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nBase color: powder blue\nBase material: matte silicone\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sky-loop-cable-holder/model-front.png",
+      "sha256": "b0b80bb3147dbf037b082f93a9b8b115cfb4830fd50f43bef415e03380649f38",
+      "history": [
+        {
+          "note": "Blue loop secures one coiled white USB cable, mushroom stud through adjustment hole; remaining strap wraps behind cable.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nColor: powder blue. Material: matte silicone.\nRequired view: Strap closed around one neatly coiled plain white USB cable, stud through hole clearly visible.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to sky-loop-cable-holder/front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "sky-loop-cable-holder/model-side",
+      "productId": "sky-loop-cable-holder",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["sky-loop-cable-holder/front", "sky-loop-cable-holder/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 루프 케이블 홀더\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nBase color: powder blue\nBase material: matte silicone\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sky-loop-cable-holder/model-side.png",
+      "sha256": "d04e76b3a1a68447b35ca342f4fb03dc434506a344f27f64d6d18600808e32d1",
+      "history": [
+        {
+          "note": "Hand holds same USB-A to USB-C coil with matching blue closed strap and natural visible fingers.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nColor: powder blue. Material: matte silicone.\nRequired view: Same secured cable held in adult hand, natural fingers.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to sky-loop-cable-holder/front; preserve its product construction and, where relevant, use configuration; Image 2 corresponds to sky-loop-cable-holder/model-front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "sky-loop-cable-holder/model-back",
+      "productId": "sky-loop-cable-holder",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "sky-loop-cable-holder/front",
+        "sky-loop-cable-holder/back",
+        "sky-loop-cable-holder/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 루프 케이블 홀더\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nBase color: powder blue\nBase material: matte silicone\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Rejected duplicate holder; cable must be bare beside single open strap.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nColor: powder blue. Material: matte silicone.\nRequired view: Top-down open strap next to same coiled white cable.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to sky-loop-cable-holder/front; preserve its product construction and, where relevant, use configuration; Image 2 corresponds to sky-loop-cable-holder/back; preserve its product construction and, where relevant, use configuration; Image 3 corresponds to sky-loop-cable-holder/model-front; preserve its product construction and, where relevant, use configuration."
+        },
+        {
+          "note": "One open blue strap with three holes beside bare white cable, no duplicate holder; top-down clear structure.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nColor: powder blue. Material: matte silicone.\nRequired view: Top-down open strap next to same coiled white cable.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to sky-loop-cable-holder/front; preserve its product construction and, where relevant, use configuration; Image 2 corresponds to sky-loop-cable-holder/back; preserve its product construction and, where relevant, use configuration; Image 3 corresponds to sky-loop-cable-holder/model-front; preserve its product construction and, where relevant, use configuration. CRITICAL: exactly ONE blue strap in entire image, lying OPEN FLAT above cable. White coiled cable is completely BARE with NO blue holder around it. Remove any duplicate closed holder. Camera directly overhead 90 degrees. Use references for product design only, do not copy closed configuration."
+        }
+      ],
+      "output": "images/sky-loop-cable-holder/model-back.png",
+      "sha256": "3e59477e5bb30a0d2153927f9261ca7598647101edc4c8df4b5fa845a0f8a077"
+    },
+    {
+      "id": "sky-loop-cable-holder/editorial",
+      "productId": "sky-loop-cable-holder",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["sky-loop-cable-holder/front", "sky-loop-cable-holder/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스카이 루프 케이블 홀더\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nBase color: powder blue\nBase material: matte silicone\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sky-loop-cable-holder/editorial.png",
+      "sha256": "865a0af95769914ea37129cc474803dd81ebfab705543cd4fcec511a21be17c4",
+      "history": [
+        {
+          "note": "Secured white cable with matching blue loop on pale desk beside blank notebook; product centered and fully visible.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. One short powder-blue flexible silicone strap with rounded ends, one mushroom-shaped stud at one end and three circular adjustment holes along other end, no other fittings, forms loop by stud through one hole. No logos or lettering. Preserve shape and all hardware counts.\nColor: powder blue. Material: matte silicone.\nRequired view: Secured cable on pale wood desk beside closed blank notebook.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to sky-loop-cable-holder/front; preserve its product construction and, where relevant, use configuration; Image 2 corresponds to sky-loop-cable-holder/model-front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "smoke-pebble-photo-holder/front",
+      "productId": "smoke-pebble-photo-holder",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스모크 페블 포토 홀더\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: smoke gray\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/smoke-pebble-photo-holder/front.png",
+      "sha256": "c33864e1afb8aeca5b6d7c26c2e29dc9272100d2db70db86225ac711f8b03752",
+      "history": [
+        {
+          "note": "Smoke gray oval ceramic pebble has one straight top slot and stable flat base; no hardware, full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: smoke gray. Material: matte glazed ceramic.\nRequired view: Front three-quarter pebble with top slot visible.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. "
+        }
+      ]
+    },
+    {
+      "id": "smoke-pebble-photo-holder/back",
+      "productId": "smoke-pebble-photo-holder",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["smoke-pebble-photo-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스모크 페블 포토 홀더\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: smoke gray\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/smoke-pebble-photo-holder/back.png",
+      "sha256": "8b01e9d6854b4d7cb6a704d59e60c508c5d9379701defded31867b08c69b3835",
+      "history": [
+        {
+          "note": "Alternate three-quarter view of symmetric pebble preserves oval shell, single centered slot and smoke ceramic.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: smoke gray. Material: matte glazed ceramic.\nRequired view: Rear three-quarter preserving oval pebble.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to smoke-pebble-photo-holder/front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "smoke-pebble-photo-holder/side",
+      "productId": "smoke-pebble-photo-holder",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["smoke-pebble-photo-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스모크 페블 포토 홀더\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: smoke gray\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/smoke-pebble-photo-holder/side.png",
+      "sha256": "4e88038403ee90fa837d9b71c03001def62bc8e36a6e9543ab6e7fe62bebf593",
+      "history": [
+        {
+          "note": "Low side profile shows rounded low height, flat underside contact and straight top slot.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: smoke gray. Material: matte glazed ceramic.\nRequired view: True low side profile showing rounded height.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to smoke-pebble-photo-holder/front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "smoke-pebble-photo-holder/texture",
+      "productId": "smoke-pebble-photo-holder",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["smoke-pebble-photo-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스모크 페블 포토 홀더\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: smoke gray\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/smoke-pebble-photo-holder/texture.png",
+      "sha256": "825b1ef41d08eb4a59260d142ed56ce3e4c4a1735137bcc3ddbce9a91c4b70dd",
+      "history": [
+        {
+          "note": "Macro reveals fine smoke glaze texture and straight slot wall; no extra holes or hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: smoke gray. Material: matte glazed ceramic.\nRequired view: Macro matte glaze and straight slot.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, extreme macro crop, ONLY small area around material detail fills frame, entire product must NOT be visible, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to smoke-pebble-photo-holder/front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "smoke-pebble-photo-holder/model-front",
+      "productId": "smoke-pebble-photo-holder",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["smoke-pebble-photo-holder/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스모크 페블 포토 홀더\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: smoke gray\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/smoke-pebble-photo-holder/model-front.png",
+      "sha256": "329d5258f74805b6aa67d7577cf9aa3a67da70e29fa64dc9f48fa1f3a9f30f57",
+      "history": [
+        {
+          "note": "One blank cream portrait card stands in slot, full matching smoke gray base visible and stable.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: smoke gray. Material: matte glazed ceramic.\nRequired view: One plain cream portrait-format card standing in slot, base fully visible.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to smoke-pebble-photo-holder/front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "smoke-pebble-photo-holder/model-side",
+      "productId": "smoke-pebble-photo-holder",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["smoke-pebble-photo-holder/front", "smoke-pebble-photo-holder/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스모크 페블 포토 홀더\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: smoke gray\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/smoke-pebble-photo-holder/model-side.png",
+      "sha256": "134997034e27558d131c2c3eadfdb6b03271265cfa1c86c7a312f5e49a06a2e7",
+      "history": [
+        {
+          "note": "Side-on cream card edge enters slot cleanly, smoke ceramic oval end profile consistent and full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: smoke gray. Material: matte glazed ceramic.\nRequired view: Same card and holder from side showing contact at slot.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to smoke-pebble-photo-holder/front; preserve its product construction and, where relevant, use configuration; Image 2 corresponds to smoke-pebble-photo-holder/model-front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "smoke-pebble-photo-holder/model-back",
+      "productId": "smoke-pebble-photo-holder",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "smoke-pebble-photo-holder/front",
+        "smoke-pebble-photo-holder/back",
+        "smoke-pebble-photo-holder/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스모크 페블 포토 홀더\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: smoke gray\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/smoke-pebble-photo-holder/model-back.png",
+      "sha256": "bbbd355976965c72bc9727d255918f1b50559d0e535dfd91f548a939a061295c",
+      "history": [
+        {
+          "note": "Top-down empty oval holder with one straight slot, consistent glaze and no card or extra fittings.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: smoke gray. Material: matte glazed ceramic.\nRequired view: Top-down empty holder showing straight slot.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to smoke-pebble-photo-holder/front; preserve its product construction and, where relevant, use configuration; Image 2 corresponds to smoke-pebble-photo-holder/back; preserve its product construction and, where relevant, use configuration; Image 3 corresponds to smoke-pebble-photo-holder/model-front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    },
+    {
+      "id": "smoke-pebble-photo-holder/editorial",
+      "productId": "smoke-pebble-photo-holder",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["smoke-pebble-photo-holder/front", "smoke-pebble-photo-holder/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스모크 페블 포토 홀더\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nBase color: smoke gray\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/smoke-pebble-photo-holder/editorial.png",
+      "sha256": "5822c44326ce1558f262682ed6d0d92e3894003891f1dab859a44090458bd577",
+      "history": [
+        {
+          "note": "Matching smoke oval holder and blank cream card on oak shelf in daylight; safe full product crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. Single photorealistic ecommerce product photograph.\nDesign invariants: Fictional concept sample. Small smooth flattened oval pebble ceramic photo holder, smoke gray, stable flat underside, one narrow straight slot across upper surface to hold card vertically, no metal parts or holes. No logos or lettering. Preserve shape and all hardware counts.\nColor: smoke gray. Material: matte glazed ceramic.\nRequired view: Holder with same blank cream card on oak shelf in daylight.\nSoft diffused daylight, warm light gray studio background unless the required scene specifies otherwise. Square composition, product fully visible with generous margins, no collage, lettering, logos or watermark. Preserve exact anchor construction, proportions, material and color. Ordered references: Image 1 corresponds to smoke-pebble-photo-holder/front; preserve its product construction and, where relevant, use configuration; Image 2 corresponds to smoke-pebble-photo-holder/model-front; preserve its product construction and, where relevant, use configuration."
+        }
+      ]
+    }
+  ]
+}

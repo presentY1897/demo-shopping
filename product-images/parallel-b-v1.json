@@ -1,0 +1,112 @@
+{
+  "products": [
+    {
+      "id": "plum-glasses-sleeve",
+      "name": "플럼 안경 슬리브",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 액세서리",
+      "color": "muted plum",
+      "colorLabel": "플럼",
+      "hex": "#78556c",
+      "material": "soft fine-grain leather",
+      "price": 21000,
+      "design": "Fictional concept sample. Slim open-top plum eyeglasses sleeve, elongated rounded rectangular body, one curved scoop at front opening, stitched sides and rounded bottom, plain beige suede-like lining, no flap zipper or hardware. No logos or lettering. Preserve shape and all hardware counts.",
+      "sizes": [],
+      "skuPrefix": "PAR-05",
+      "highlights": ["플럼 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Front three-quarter empty sleeve, curved opening visible.",
+        "back": "Plain rear view.",
+        "side": "Narrow side profile showing soft thickness.",
+        "texture": "Macro fine grain and edge stitches.",
+        "model-front": "Pair of plain dark eyeglasses partly inserted into sleeve, temples folded inside.",
+        "model-side": "Adult hand holding same sleeve with partially inserted glasses.",
+        "model-back": "Top oblique looking into empty beige lining.",
+        "editorial": "Sleeve and glasses beside closed blank book on stone table."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "플럼 안경 슬리브 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "sand-roll-pencil-case",
+      "name": "샌드 롤 펜슬 케이스",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 데스크 소품",
+      "color": "sand beige",
+      "colorLabel": "샌드",
+      "hex": "#c7b18b",
+      "material": "cotton canvas",
+      "price": 18000,
+      "design": "Fictional concept sample. Cylindrical sand canvas zip pencil case, two circular stitched end panels, one straight brown zipper along top with one tan pull, small canvas loop on one end, plain ivory lining, no inner pockets. No logos or lettering. Preserve shape and all hardware counts.",
+      "sizes": [],
+      "skuPrefix": "PAR-06",
+      "highlights": ["샌드 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Closed front three-quarter entire cylinder and zipper.",
+        "back": "Rear view showing plain canvas back and circular end.",
+        "side": "End-on profile showing circular end and small loop.",
+        "texture": "Macro canvas weave and brown zipper.",
+        "model-front": "Open zipper revealing ivory interior with three plain wooden pencils.",
+        "model-side": "Adult hand holding closed cylindrical case for scale.",
+        "model-back": "Top-down unzipped empty case with single lined compartment.",
+        "editorial": "Closed case and one pencil on pale oak desk beside blank paper."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "샌드 롤 펜슬 케이스 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    },
+    {
+      "id": "cream-cloud-bookmark",
+      "name": "크림 클라우드 북마크",
+      "categoryId": null,
+      "categoryPath": "라이프스타일 > 독서 소품",
+      "color": "warm cream",
+      "colorLabel": "크림",
+      "hex": "#eee4cf",
+      "material": "matte coated metal",
+      "price": 12000,
+      "design": "Fictional concept sample. Thin flat metal bookmark silhouette: long narrow vertical stem ending in rounded bottom, small rounded three-lobed cloud at top, entirely warm cream, no holes tassels text or engraving. No logos or lettering. Preserve shape and all hardware counts.",
+      "sizes": [],
+      "skuPrefix": "PAR-07",
+      "highlights": ["크림 컬러", "가상 기획 상품"],
+      "shotDirections": {
+        "front": "Top three-quarter full bookmark lying flat, cloud top clear.",
+        "back": "Back surface full bookmark.",
+        "side": "Low side angle showing thin flat metal.",
+        "texture": "Macro cream coating and cloud outline.",
+        "model-front": "Bookmark stem inserted between closed book pages with cloud protruding above top edge.",
+        "model-side": "Adult hand holding bookmark by cloud above open blank book.",
+        "model-back": "Top-down bookmark lying on open blank book, full silhouette visible.",
+        "editorial": "Bookmark on closed linen book beside plain reading glasses."
+      },
+      "shotLabels": {
+        "front": "대표 이미지",
+        "back": "뒷면",
+        "side": "측면",
+        "texture": "소재 확대",
+        "model-front": "착용·사용",
+        "model-side": "사용 디테일",
+        "model-back": "내부·구조",
+        "editorial": "스타일링"
+      },
+      "description": "크림 클라우드 북마크 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+    }
+  ]
+}

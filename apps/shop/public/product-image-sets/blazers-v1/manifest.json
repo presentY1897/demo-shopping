@@ -1,0 +1,576 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "mens-daily-wool-blazer",
+        "name": "남성 데일리 울 블레이저",
+        "sourceProductId": "01a07b26-150b-755a-ac1e-73fa862a048b",
+        "audience": "menswear",
+        "color": "solid black",
+        "material": "matte fine wool suiting",
+        "design": "Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.",
+        "model": "One adult male fashion model, short dark side-parted hair, white crew-neck T-shirt under blazer, medium gray tailored trousers and black loafers, no accessories",
+        "highlights": ["레귤러 핏", "노치드 라펠", "울 소재"]
+      },
+      {
+        "id": "womens-light-cotton-blazer",
+        "name": "여성 경량 코튼 블레이저",
+        "sourceProductId": "01a07b26-187a-74dc-addc-702a6a315414",
+        "audience": "womenswear",
+        "color": "solid black",
+        "material": "matte smooth cotton twill",
+        "design": "Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.",
+        "model": "One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories",
+        "highlights": ["레귤러 핏", "싱글 버튼", "코튼 소재"],
+        "variants": [
+          {
+            "id": "khaki",
+            "kind": "color",
+            "value": "muted olive khaki green; keep dark brown buttons unchanged"
+          }
+        ]
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "mens-daily-wool-blazer/front",
+      "productId": "mens-daily-wool-blazer",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-daily-wool-blazer/front.png",
+      "sha256": "a648c47af9fc55014a20ce9d1f6e52598f2005f14f066cd607fc8a859e114585",
+      "history": [
+        {
+          "note": "Front matches two black buttons, chest welt, two flap pockets, notched lapels and three cuff buttons.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: . Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger."
+        }
+      ]
+    },
+    {
+      "id": "mens-daily-wool-blazer/back",
+      "productId": "mens-daily-wool-blazer",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["mens-daily-wool-blazer/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-daily-wool-blazer/back.png",
+      "sha256": "dea2f29ae78c6b651bdbc2884957643ffaf05cf1fb77fec792540ba20cf32a9b",
+      "history": [
+        {
+          "note": "Rear garment view preserves shape, three cuff buttons, center seam and single center vent; no front closures.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. CRITICAL rear view: show back panel, center seam and single short center vent. No front button placket or lapels facing camera."
+        }
+      ]
+    },
+    {
+      "id": "mens-daily-wool-blazer/side",
+      "productId": "mens-daily-wool-blazer",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["mens-daily-wool-blazer/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-daily-wool-blazer/side.png",
+      "sha256": "f6db3096d0270c75be094af2b013648de34708f9a1f16f12db6bf7ac2f1ad3bc",
+      "history": [
+        {
+          "note": "Side view keeps notched lapel, chest welt, flap pocket, three cuff buttons and visible rear vent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger."
+        }
+      ]
+    },
+    {
+      "id": "mens-daily-wool-blazer/texture",
+      "productId": "mens-daily-wool-blazer",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["mens-daily-wool-blazer/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-daily-wool-blazer/texture.png",
+      "sha256": "85ea5f757b56867385535cb23f19eaeae69b9b408d59e73442b92610387a7fa2",
+      "history": [
+        {
+          "note": "Macro shows fine black suiting weave, lapel stitching, chest welt and black button at appropriate close crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. CRITICAL extreme macro crop, fabric texture and lapel/button stitching, NOT a full garment shot."
+        }
+      ]
+    },
+    {
+      "id": "mens-daily-wool-blazer/model-front",
+      "productId": "mens-daily-wool-blazer",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["mens-daily-wool-blazer/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark side-parted hair, white crew-neck T-shirt under blazer, medium gray tailored trousers and black loafers, no accessories\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Portrait canvas would crop head/shoes in square storefront gallery.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark side-parted hair, white crew-neck T-shirt under blazer, medium gray tailored trousers and black loafers, no accessories\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment."
+        },
+        {
+          "note": "Square full-body male anchor has safe crop, white inner tee, gray trousers, black loafers, correct two-button blazer and pockets.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT REQUIRED: SQUARE 1:1 canvas. Entire adult male from head to shoes contained in central 90% HEIGHT of SQUARE photo, with generous space left and right. Ignore any vertical portrait canvas request. Do not crop body. Same blazer design and styling.\nUse case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark side-parted hair, white crew-neck T-shirt under blazer, medium gray tailored trousers and black loafers, no accessories\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment."
+        }
+      ],
+      "output": "images/mens-daily-wool-blazer/model-front.png",
+      "sha256": "f2d1216df0293f253f73eefd51142e710fb0432df5816c5265d0488372e3af58"
+    },
+    {
+      "id": "mens-daily-wool-blazer/model-side",
+      "productId": "mens-daily-wool-blazer",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["mens-daily-wool-blazer/front", "mens-daily-wool-blazer/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark side-parted hair, white crew-neck T-shirt under blazer, medium gray tailored trousers and black loafers, no accessories\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-daily-wool-blazer/model-side.png",
+      "sha256": "579e9d3e459a0645639309510bdaea84c326c33ceb08e3e2b80dac00e8e8fb5d",
+      "history": [
+        {
+          "note": "Male side profile retains same model, gray trousers, white tee, black loafers; square crop and blazer details consistent.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. For a model show full head to shoes within the square with margins, not portrait canvas. Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark side-parted hair, white crew-neck T-shirt under blazer, medium gray tailored trousers and black loafers, no accessories\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "mens-daily-wool-blazer/model-back",
+      "productId": "mens-daily-wool-blazer",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "mens-daily-wool-blazer/front",
+        "mens-daily-wool-blazer/back",
+        "mens-daily-wool-blazer/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark side-parted hair, white crew-neck T-shirt under blazer, medium gray tailored trousers and black loafers, no accessories\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-daily-wool-blazer/model-back.png",
+      "sha256": "9bcd6f53cc4cd1cef16f2e4f95cdfae8d0aab162d37e237b2af376229fe15d3c",
+      "history": [
+        {
+          "note": "Male rear wearing view keeps source identity/hair, gray trousers and center vent matching back garment reference.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. For a model show full head to shoes within the square with margins, not portrait canvas. Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark side-parted hair, white crew-neck T-shirt under blazer, medium gray tailored trousers and black loafers, no accessories\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = back reference; Image 3 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment. CRITICAL rear view: show back panel, center seam and single short center vent. No front button placket or lapels facing camera."
+        }
+      ]
+    },
+    {
+      "id": "mens-daily-wool-blazer/editorial",
+      "productId": "mens-daily-wool-blazer",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["mens-daily-wool-blazer/front", "mens-daily-wool-blazer/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark side-parted hair, white crew-neck T-shirt under blazer, medium gray tailored trousers and black loafers, no accessories\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/mens-daily-wool-blazer/editorial.png",
+      "sha256": "4cf8093065e380cb6e77e444667373c04f1b6f5256e339be81d617b34f5fe4a1",
+      "history": [
+        {
+          "note": "Male editorial has matching identity and blazer, casual hands-in-trouser-pockets pose and complete square crop.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. For a model show full head to shoes within the square with margins, not portrait canvas. Use case: product-mockup\nProduct: 남성 데일리 울 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, notched lapels, two black front buttons, upper button fastened and lower button open, one left chest welt pocket and two lower flap pockets, three small black buttons on each cuff, center back seam with one short center vent, structured but natural shoulders. No logos or pattern. Same construction in every view.\nBase color: solid black\nBase material: matte fine wool suiting\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult male fashion model, short dark side-parted hair, white crew-neck T-shirt under blazer, medium gray tailored trousers and black loafers, no accessories\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/front",
+      "productId": "womens-light-cotton-blazer",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/front.png",
+      "sha256": "c02d3d52601cb4ba4104b184e6651339bddd12c3fd078ef59f740c299041e74f",
+      "history": [
+        {
+          "note": "Female blazer front has one brown button, two lower flap pockets, no chest pocket, three cuff buttons and cotton finish.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. For a model show full head to shoes within the square with margins, not portrait canvas. Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: . Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/back",
+      "productId": "womens-light-cotton-blazer",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["womens-light-cotton-blazer/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/back.png",
+      "sha256": "a696954c1f3193afed3eebc519ab95491760df463c0ca9325ff030e8de2dfe58",
+      "history": [
+        {
+          "note": "Female rear garment shows center seam and single vent, matching black cotton and three brown cuff buttons.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. For a model show full head to shoes within the square with margins, not portrait canvas. Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. CRITICAL rear view: show back panel, center seam and single short center vent. No front button placket or lapels facing camera."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/side",
+      "productId": "womens-light-cotton-blazer",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["womens-light-cotton-blazer/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Side product shot wrongly includes a person and trousers instead of garment alone.",
+          "status": "failed",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. For a model show full head to shoes within the square with margins, not portrait canvas. Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger."
+        },
+        {
+          "note": "Retry side is empty garment only, with one button, lower flap pocket, three brown cuff buttons and rear vent.",
+          "status": "accepted",
+          "prompt": "CRITICAL PRIMARY REQUEST: ONLY AN EMPTY BLAZER photographed from side, like invisible mannequin ecommerce product photograph. Absolutely no human, no head, no hands, no body, no trousers, no shoes, no hanger. Rotate the reference black blazer 90 degrees to SIDE PROFILE. Entire empty blazer centered on square light gray studio background.\nOUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. For a model show full head to shoes within the square with margins, not portrait canvas. Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger."
+        }
+      ],
+      "output": "images/womens-light-cotton-blazer/side.png",
+      "sha256": "e6082c05ff36cfbceee07fe2c875db4521fa127ad97cde69afd7d19b909e77ad"
+    },
+    {
+      "id": "womens-light-cotton-blazer/texture",
+      "productId": "womens-light-cotton-blazer",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["womens-light-cotton-blazer/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Texture output wrongly includes person and circular inset collage.",
+          "status": "failed",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. For a model show full head to shoes within the square with margins, not portrait canvas. Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. CRITICAL extreme macro crop, fabric texture and lapel/button stitching, NOT a full garment shot."
+        },
+        {
+          "note": "Accepted macro is edge-to-edge black cotton twill with lapel stitching and dark brown button, no collage or person.",
+          "status": "accepted",
+          "prompt": "OVERRIDING REQUEST: ONE EXTREME MACRO PHOTOGRAPH OF BLACK COTTON TWILL. The entire square canvas must be filled edge-to-edge with blazer fabric, the edge of one lapel and its brown button. NO PERSON, NO FULL GARMENT, NO CIRCLE, NO INSET, NO COLLAGE. Camera only 10 cm away from fabric. Black cotton twill weave clearly visible. Use supplied blazer solely as material reference.\nOUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. For a model show full head to shoes within the square with margins, not portrait canvas. Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. CRITICAL extreme macro crop, fabric texture and lapel/button stitching, NOT a full garment shot."
+        }
+      ],
+      "output": "images/womens-light-cotton-blazer/texture.png",
+      "sha256": "41d0d7dc96bedb87463add8790d3c25de0528b3fe2e6474d3d9acc69f72aebfc"
+    },
+    {
+      "id": "womens-light-cotton-blazer/model-front",
+      "productId": "womens-light-cotton-blazer",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["womens-light-cotton-blazer/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/model-front.png",
+      "sha256": "1e4785823d144c17ffd85a5631d48a15164e5f6f278d082a1b74ff1de5cc77e9",
+      "history": [
+        {
+          "note": "Female front anchor has one-button black blazer, no chest pocket, ivory inner top/trousers and brown loafers in full square framing.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/model-side",
+      "productId": "womens-light-cotton-blazer",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": [
+        "womens-light-cotton-blazer/front",
+        "womens-light-cotton-blazer/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/model-side.png",
+      "sha256": "35efe53a3d3e7b3a182194be015e578c99734832e1a5f6e7b6463c4f16ebf2fe",
+      "history": [
+        {
+          "note": "Female side wearing view retains model identity, ivory outfit, brown shoes, single button and three cuff buttons.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/model-back",
+      "productId": "womens-light-cotton-blazer",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "womens-light-cotton-blazer/front",
+        "womens-light-cotton-blazer/back",
+        "womens-light-cotton-blazer/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/model-back.png",
+      "sha256": "6912e2cce3b6bc66a4d5d08b5b96c4932c320fb9a88052cafa23ca832bf3b3f4",
+      "history": [
+        {
+          "note": "Female rear wearing photo keeps ivory styling, brown loafers and center-seam single-vent blazer construction.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = back reference; Image 3 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment. CRITICAL rear view: show back panel, center seam and single short center vent. No front button placket or lapels facing camera."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/editorial",
+      "productId": "womens-light-cotton-blazer",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": [
+        "womens-light-cotton-blazer/front",
+        "womens-light-cotton-blazer/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/editorial.png",
+      "sha256": "ed64d39eb050c905114d07694dc30a02aeb3b5342646cafc9ce611af92cd3be3",
+      "history": [
+        {
+          "note": "Female editorial keeps model, single button, two flap pockets and ivory styling with casual one-hand pocket pose.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.\nReference roles in listed order: Image 1 = front reference; Image 2 = model-front reference. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/variant-khaki-front",
+      "productId": "womens-light-cotton-blazer",
+      "label": "muted olive khaki green; keep dark brown buttons unchanged · 정면",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green; keep dark brown buttons unchanged"
+      },
+      "dependencies": ["womens-light-cotton-blazer/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to muted olive khaki green; keep dark brown buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/variant-khaki-front.png",
+      "sha256": "dd6f9c33f797ec659f1de940628fccf04e45e7b678547cdbc64e74f2f1ca0166",
+      "history": [
+        {
+          "note": "Khaki front retains single brown button, no chest pocket, two flap pockets and exact original silhouette.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY blazer fabric color to muted olive khaki green; keep dark brown buttons unchanged. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Natural cotton texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: front. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/variant-khaki-back",
+      "productId": "womens-light-cotton-blazer",
+      "label": "muted olive khaki green; keep dark brown buttons unchanged · 후면",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green; keep dark brown buttons unchanged"
+      },
+      "dependencies": [
+        "womens-light-cotton-blazer/back",
+        "womens-light-cotton-blazer/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to muted olive khaki green; keep dark brown buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/variant-khaki-back.png",
+      "sha256": "4ae0bf06774837a9e36690f828b351ef1a1ac09426c4abebfd3ac918d4e8f6b6",
+      "history": [
+        {
+          "note": "Khaki rear preserves center seam, single vent, shoulder shape and brown cuff buttons from black rear target.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY blazer fabric color to muted olive khaki green; keep dark brown buttons unchanged. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Natural cotton texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: back. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. CRITICAL rear view: show back panel, center seam and single short center vent. No front button placket or lapels facing camera."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/variant-khaki-side",
+      "productId": "womens-light-cotton-blazer",
+      "label": "muted olive khaki green; keep dark brown buttons unchanged · 측면",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green; keep dark brown buttons unchanged"
+      },
+      "dependencies": [
+        "womens-light-cotton-blazer/side",
+        "womens-light-cotton-blazer/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to muted olive khaki green; keep dark brown buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/variant-khaki-side.png",
+      "sha256": "e50a036835a6b42876768593bd278b397eadf90fa48d298596c31fe0adbc104a",
+      "history": [
+        {
+          "note": "Khaki side retains empty garment profile, pocket, three brown cuff buttons and single front button from target.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY blazer fabric color to muted olive khaki green; keep dark brown buttons unchanged. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Natural cotton texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: side. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/variant-khaki-texture",
+      "productId": "womens-light-cotton-blazer",
+      "label": "muted olive khaki green; keep dark brown buttons unchanged · 소재 확대",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green; keep dark brown buttons unchanged"
+      },
+      "dependencies": [
+        "womens-light-cotton-blazer/texture",
+        "womens-light-cotton-blazer/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nMatch framing and pose of the first reference. Change only color to muted olive khaki green; keep dark brown buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/variant-khaki-texture.png",
+      "sha256": "84c3d1ff5d92401030966750915adac8ca2be6ed44c674c0cc19350a5ffb1359",
+      "history": [
+        {
+          "note": "Khaki macro preserves exact close crop, twill weave, lapel seam and original brown button.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY blazer fabric color to muted olive khaki green; keep dark brown buttons unchanged. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Natural cotton texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: texture. Garment product photo ONLY: no human, skin, trousers, shoes, visible mannequin or hanger. CRITICAL extreme macro crop, fabric texture and lapel/button stitching, NOT a full garment shot."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/variant-khaki-model-front",
+      "productId": "womens-light-cotton-blazer",
+      "label": "muted olive khaki green; keep dark brown buttons unchanged · 모델 정면",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green; keep dark brown buttons unchanged"
+      },
+      "dependencies": [
+        "womens-light-cotton-blazer/model-front",
+        "womens-light-cotton-blazer/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories\nMatch framing and pose of the first reference. Change only color to muted olive khaki green; keep dark brown buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/variant-khaki-model-front.png",
+      "sha256": "5e786e26c8c68cf07e1669eca9786b2f193f3261ff8eea948f12f042d0c4048d",
+      "history": [
+        {
+          "note": "Khaki female front retains exact model, ivory outfit and brown loafers, only blazer fabric color changed.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY blazer fabric color to muted olive khaki green; keep dark brown buttons unchanged. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Natural cotton texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-front. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/variant-khaki-model-side",
+      "productId": "womens-light-cotton-blazer",
+      "label": "muted olive khaki green; keep dark brown buttons unchanged · 모델 측면",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green; keep dark brown buttons unchanged"
+      },
+      "dependencies": [
+        "womens-light-cotton-blazer/model-side",
+        "womens-light-cotton-blazer/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories\nMatch framing and pose of the first reference. Change only color to muted olive khaki green; keep dark brown buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/variant-khaki-model-side.png",
+      "sha256": "203165125b1e82bd11841a5dcd1b6cad0c46619fc70f891ab443ef3ecf531e91",
+      "history": [
+        {
+          "note": "Khaki side wearing shot preserves model profile, ivory trousers, brown loafers and blazer silhouette.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY blazer fabric color to muted olive khaki green; keep dark brown buttons unchanged. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Natural cotton texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-side. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/variant-khaki-model-back",
+      "productId": "womens-light-cotton-blazer",
+      "label": "muted olive khaki green; keep dark brown buttons unchanged · 모델 후면",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green; keep dark brown buttons unchanged"
+      },
+      "dependencies": [
+        "womens-light-cotton-blazer/model-back",
+        "womens-light-cotton-blazer/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories\nMatch framing and pose of the first reference. Change only color to muted olive khaki green; keep dark brown buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/variant-khaki-model-back.png",
+      "sha256": "a9f74ad6469f3bd33fc23ffcf7d4061101f506bb5d65fccde441fd5cf32f9480",
+      "history": [
+        {
+          "note": "Khaki rear wearing shot retains source model, ivory styling, brown loafers, center seam and single vent.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY blazer fabric color to muted olive khaki green; keep dark brown buttons unchanged. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Natural cotton texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: model-back. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment. CRITICAL rear view: show back panel, center seam and single short center vent. No front button placket or lapels facing camera."
+        }
+      ]
+    },
+    {
+      "id": "womens-light-cotton-blazer/variant-khaki-editorial",
+      "productId": "womens-light-cotton-blazer",
+      "label": "muted olive khaki green; keep dark brown buttons unchanged · 소개용 연출",
+      "variant": {
+        "id": "khaki",
+        "kind": "color",
+        "value": "muted olive khaki green; keep dark brown buttons unchanged"
+      },
+      "dependencies": [
+        "womens-light-cotton-blazer/editorial",
+        "womens-light-cotton-blazer/variant-khaki-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 여성 경량 코튼 블레이저\nDesign invariants: Fictional sample design: regular fit single-breasted hip-length long-sleeve blazer, narrow notched lapels, one dark brown front button fastened, two lower flap pockets, no chest pocket, three small dark brown cuff buttons per sleeve, center back seam and a single short center vent, softly shaped natural shoulders. No logos or patterns. Preserve construction in all views.\nBase color: solid black\nBase material: matte smooth cotton twill\nStudio: warm light gray seamless studio, soft diffused daylight\nAdult model styling: One adult female fashion model, straight dark shoulder-length hair tucked behind ears, ivory crew-neck inner top, ivory straight tailored trousers and dark brown loafers, no accessories\nMatch framing and pose of the first reference. Change only color to muted olive khaki green; keep dark brown buttons unchanged. For material changes alter texture and plausible drape only; preserve tailoring. If a second reference is present it defines the target variant appearance.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/womens-light-cotton-blazer/variant-khaki-editorial.png",
+      "sha256": "b2d157f42fa0e9efed4839609699d1eea6c5d0dbecbb41c5c9983bca2b278551",
+      "history": [
+        {
+          "note": "Square khaki editorial retains female model identity, pose and ivory styling; one button, flap pockets and garment silhouette match reference.",
+          "status": "accepted",
+          "prompt": "OUTPUT FORMAT OVERRIDE: one SQUARE 1:1 photograph. Use case: precise-object-edit. Image 1 is the EDIT TARGET, sole authority for view, crop, garment construction and model identity. Change ONLY blazer fabric color to muted olive khaki green; keep dark brown buttons unchanged. Image 2 is target COLOR reference only; do not copy its front composition. Keep exact pose, face, hair, other clothes, shoes, background, seams and buttons unchanged. Natural cotton texture, no added pattern, text or collage. One square photograph. REQUIRED VIEW: editorial. Adult model full body head to shoes inside frame. Keep model identity and styling from model-front reference. Blazer is the featured garment."
+        }
+      ]
+    }
+  ]
+}

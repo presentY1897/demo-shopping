@@ -1,0 +1,797 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "charcoal-zip-tech-pouch",
+        "name": "차콜 집 테크 파우치",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 액세서리",
+        "color": "charcoal gray",
+        "colorLabel": "차콜",
+        "hex": "#4c5054",
+        "material": "matte nylon",
+        "price": 26000,
+        "design": "Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "EIGHT-01",
+        "highlights": ["차콜 컬러", "가상 기획 상품"],
+        "description": "차콜 집 테크 파우치 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Closed front three-quarter with zipper visible.",
+          "back": "Closed rear three-quarter showing plain back.",
+          "side": "End-on profile showing gusset depth and side loop.",
+          "texture": "Macro nylon weave and zipper seam.",
+          "model-front": "Open top zipper showing single compartment containing one neatly coiled plain white cable.",
+          "model-side": "Adult hand holding closed pouch for scale, ivory sleeve.",
+          "model-back": "Top-down open empty pouch, single gray compartment.",
+          "editorial": "Closed pouch on pale oak desk beside same coiled white cable."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "sand-linen-book-cover",
+        "name": "샌드 리넨 북 커버",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 독서 소품",
+        "color": "sand beige",
+        "colorLabel": "샌드",
+        "hex": "#c0ad8c",
+        "material": "linen fabric",
+        "price": 24000,
+        "design": "Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "EIGHT-02",
+        "highlights": ["샌드 컬러", "가상 기획 상품"],
+        "description": "샌드 리넨 북 커버 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Closed book-shaped cover around a blank plain book, front three-quarter.",
+          "back": "Closed plain rear with same book inside.",
+          "side": "Side profile showing fabric spine and cream pages.",
+          "texture": "Macro linen weave and perimeter stitching.",
+          "model-front": "Open cover with blank book inside, ribbon resting on blank pages.",
+          "model-side": "Adult hands holding same covered closed book, no logos.",
+          "model-back": "Open empty cover showing exactly two broad inward-facing sleeves and one ribbon at top spine.",
+          "editorial": "Same covered closed book on cream cloth beside plain pencil."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "steel-ribbon-bookmark",
+        "name": "스틸 리본 북마크",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 독서 소품",
+        "color": "brushed silver",
+        "colorLabel": "실버",
+        "hex": "#a9adaf",
+        "material": "brushed stainless steel and cotton ribbon",
+        "price": 14000,
+        "design": "Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "EIGHT-03",
+        "highlights": ["실버 컬러", "가상 기획 상품"],
+        "description": "스틸 리본 북마크 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Top three-quarter whole bookmark lying flat, hole and ribbon visible.",
+          "back": "Back surface lying flat, same ribbon.",
+          "side": "Very low edge-on profile showing thin metal and ribbon.",
+          "texture": "Macro brushed metal at circular hole and navy ribbon fibers.",
+          "model-front": "Bookmark inserted between closed book pages with navy ribbon extending beyond top edge.",
+          "model-side": "Adult fingers holding same bookmark by metal body above blank open book.",
+          "model-back": "Top-down bookmark fully visible on blank open notebook.",
+          "editorial": "Bookmark beside closed linen book in daylight."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "sage-tablet-envelope",
+        "name": "세이지 태블릿 엔벨로프",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 가방",
+        "color": "sage gray green",
+        "colorLabel": "세이지",
+        "hex": "#8e9b8c",
+        "material": "fine-grain matte leather",
+        "price": 49000,
+        "design": "Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.",
+        "sizes": [],
+        "skuPrefix": "EIGHT-04",
+        "highlights": ["세이지 컬러", "가상 기획 상품"],
+        "description": "세이지 태블릿 엔벨로프 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Closed front three-quarter, triangular flap and single snap visible.",
+          "back": "Closed plain rear.",
+          "side": "Low side showing thin folded envelope construction.",
+          "texture": "Macro leather grain stitching and one snap.",
+          "model-front": "Open flap with one plain black-screen unbranded tablet partly inserted into sole compartment.",
+          "model-side": "Adult hands holding same closed sleeve for scale.",
+          "model-back": "Top oblique open empty cream-lined sleeve with triangular flap lifted.",
+          "editorial": "Closed sleeve on pale stone desk beside plain pen."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "charcoal-zip-tech-pouch/front",
+      "productId": "charcoal-zip-tech-pouch",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: charcoal gray\nBase material: matte nylon\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/charcoal-zip-tech-pouch/front.png",
+      "sha256": "0440570238a51d0509bd5051cb9d234008e9e4498c2fd7241724a2f5907a24fd",
+      "history": [
+        {
+          "note": "Accepted front: charcoal nylon rounded rectangular gusset pouch, one zipper pull and one side loop, plain exterior and full framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: charcoal gray. Material: matte nylon.\nRequired view: Closed front three-quarter with zipper visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "charcoal-zip-tech-pouch/back",
+      "productId": "charcoal-zip-tech-pouch",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["charcoal-zip-tech-pouch/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: charcoal gray\nBase material: matte nylon\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Output repeats front anchor camera and orientation instead of showing reverse face.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: charcoal gray. Material: matte nylon.\nRequired view: Closed rear three-quarter showing plain back.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Rear accepted: opposite broad charcoal panel with loop and single zipper pull now at right; gusset geometry and color retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: charcoal gray. Material: matte nylon.\nRequired view: Closed rear three-quarter showing plain back.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCRITICAL RETRY: The previous output copied the reference view and was rejected. Physically TURN THE OBJECT OVER / rotate 180 degrees around vertical axis to reveal its OPPOSITE REVERSE FACE. Compose a visibly different rear image: top of product oriented to upper right instead of upper left. For book cover, spine MUST be at image RIGHT, fore-edge at LEFT, plain back facing camera and bookmark hanging on hidden front side. For pouch, side loop and zipper pull MUST be on image RIGHT, opposite broad panel facing camera. For bookmark, flip metal over so rear of ribbon knot is visible, ribbon pointing upper RIGHT and metal lower LEFT. Maintain same physical construction.\n"
+        }
+      ],
+      "output": "images/charcoal-zip-tech-pouch/back.png",
+      "sha256": "ce45f03a3f37743d9ef820a61727365691e9ea2492e46e16b5b91100be140daf"
+    },
+    {
+      "id": "charcoal-zip-tech-pouch/side",
+      "productId": "charcoal-zip-tech-pouch",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["charcoal-zip-tech-pouch/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: charcoal gray\nBase material: matte nylon\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/charcoal-zip-tech-pouch/side.png",
+      "sha256": "6a76eef7b5fba3b186e53ec9e8a59a61757861b184a5f29a6b0f98275f99a920",
+      "history": [
+        {
+          "note": "Side accepted: end-on gusset depth and flat base, one side loop and zipper pull, charcoal fabric preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: charcoal gray. Material: matte nylon.\nRequired view: End-on profile showing gusset depth and side loop.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "charcoal-zip-tech-pouch/texture",
+      "productId": "charcoal-zip-tech-pouch",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["charcoal-zip-tech-pouch/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: charcoal gray\nBase material: matte nylon\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/charcoal-zip-tech-pouch/texture.png",
+      "sha256": "6091bae743ee13ac61d8bb4670799b82363dea2d58771dcda1ca490512144736",
+      "history": [
+        {
+          "note": "Macro accepted: charcoal nylon weave and coherent black zipper seam enlarged, same pull and fabric color.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: charcoal gray. Material: matte nylon.\nRequired view: Macro nylon weave and zipper seam.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "charcoal-zip-tech-pouch/model-front",
+      "productId": "charcoal-zip-tech-pouch",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["charcoal-zip-tech-pouch/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: charcoal gray\nBase material: matte nylon\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/charcoal-zip-tech-pouch/model-front.png",
+      "sha256": "b4c874b848846c4ad5c8dfb1df320bb650f1a99362633a14f52c21acbb48e325",
+      "history": [
+        {
+          "note": "Usage anchor accepted: opened black zipper, single plain light gray compartment with one coiled white cable; no added pockets.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: charcoal gray. Material: matte nylon.\nRequired view: Open top zipper showing single compartment containing one neatly coiled plain white cable.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "charcoal-zip-tech-pouch/model-side",
+      "productId": "charcoal-zip-tech-pouch",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["charcoal-zip-tech-pouch/front", "charcoal-zip-tech-pouch/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: charcoal gray\nBase material: matte nylon\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/charcoal-zip-tech-pouch/model-side.png",
+      "sha256": "2b9494ec5edcc5e70f4a7a49fa61d7c253364a7c362f7cf30e31702c80ced9af",
+      "history": [
+        {
+          "note": "Hand-scale accepted: closed charcoal pouch balanced on plausible adult hand with ivory sleeve, same loop and single zipper pull, full product.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: charcoal gray. Material: matte nylon.\nRequired view: Adult hand holding closed pouch for scale, ivory sleeve.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "charcoal-zip-tech-pouch/model-back",
+      "productId": "charcoal-zip-tech-pouch",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "charcoal-zip-tech-pouch/front",
+        "charcoal-zip-tech-pouch/back",
+        "charcoal-zip-tech-pouch/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: charcoal gray\nBase material: matte nylon\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/charcoal-zip-tech-pouch/model-back.png",
+      "sha256": "0cc7a5036eb5937fb5c44791374a75bc90ea1a0e7f99179b685d3a715d2c9860",
+      "history": [
+        {
+          "note": "Empty usage accepted: top-down open pouch displays single gray empty compartment, same loop and single pull; no extra pockets.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: charcoal gray. Material: matte nylon.\nRequired view: Top-down open empty pouch, single gray compartment.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "charcoal-zip-tech-pouch/editorial",
+      "productId": "charcoal-zip-tech-pouch",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["charcoal-zip-tech-pouch/front", "charcoal-zip-tech-pouch/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: charcoal gray\nBase material: matte nylon\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/charcoal-zip-tech-pouch/editorial.png",
+      "sha256": "8547ef76df0e278ffa235fc147219a1be68b2527234773c50af7a8135d938c79",
+      "history": [
+        {
+          "note": "Editorial accepted: closed charcoal pouch beside same single coiled white cable on pale oak; loop and zipper construction preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 차콜 집 테크 파우치\nDesign invariants: Fictional concept sample. Small rounded rectangular charcoal nylon pouch with flat gusset base, one black top zipper with single pull, one short charcoal side loop, plain light gray interior single compartment, no inner or outer pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: charcoal gray. Material: matte nylon.\nRequired view: Closed pouch on pale oak desk beside same coiled white cable.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sand-linen-book-cover/front",
+      "productId": "sand-linen-book-cover",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sand beige\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-linen-book-cover/front.png",
+      "sha256": "994bd11a0941326d36df5b9144bead73d9d0a02cb8989a28429c93d0f1a1d5d1",
+      "history": [
+        {
+          "note": "Accepted front: sand linen rectangular book jacket, tonal edge stitching and single cream top spine ribbon, no closure.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sand beige. Material: linen fabric.\nRequired view: Closed book-shaped cover around a blank plain book, front three-quarter.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "sand-linen-book-cover/back",
+      "productId": "sand-linen-book-cover",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["sand-linen-book-cover/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sand beige\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Output repeats front anchor camera and orientation instead of showing reverse face.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sand beige. Material: linen fabric.\nRequired view: Closed plain rear with same book inside.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Rear accepted: plain sand back cover with spine at right, book pages and one cream ribbon retained; no closure.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sand beige. Material: linen fabric.\nRequired view: Closed plain rear with same book inside.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCRITICAL RETRY: The previous output copied the reference view and was rejected. Physically TURN THE OBJECT OVER / rotate 180 degrees around vertical axis to reveal its OPPOSITE REVERSE FACE. Compose a visibly different rear image: top of product oriented to upper right instead of upper left. For book cover, spine MUST be at image RIGHT, fore-edge at LEFT, plain back facing camera and bookmark hanging on hidden front side. For pouch, side loop and zipper pull MUST be on image RIGHT, opposite broad panel facing camera. For bookmark, flip metal over so rear of ribbon knot is visible, ribbon pointing upper RIGHT and metal lower LEFT. Maintain same physical construction.\n"
+        }
+      ],
+      "output": "images/sand-linen-book-cover/back.png",
+      "sha256": "3e83c35236a91eef4aa0d188d6436f7921adf503c70ca691a67bb3ace1ab47c8"
+    },
+    {
+      "id": "sand-linen-book-cover/side",
+      "productId": "sand-linen-book-cover",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["sand-linen-book-cover/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sand beige\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-linen-book-cover/side.png",
+      "sha256": "9e655eff26fc8add88c390cd20093438de91d173195807b4249567e34d54bd2e",
+      "history": [
+        {
+          "note": "Side accepted: narrow sand linen spine and cream top pages, single ribbon and edge stitching preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sand beige. Material: linen fabric.\nRequired view: Side profile showing fabric spine and cream pages.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sand-linen-book-cover/texture",
+      "productId": "sand-linen-book-cover",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["sand-linen-book-cover/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sand beige\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-linen-book-cover/texture.png",
+      "sha256": "e84214646260b20d94bf72da7ba151e0ae893215dfaa46c9a7fa486bd659fb74",
+      "history": [
+        {
+          "note": "Macro accepted: sand linen weave, tonal perimeter stitching and cream ribbon in close crop, consistent construction.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sand beige. Material: linen fabric.\nRequired view: Macro linen weave and perimeter stitching.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sand-linen-book-cover/model-front",
+      "productId": "sand-linen-book-cover",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["sand-linen-book-cover/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sand beige\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-linen-book-cover/model-front.png",
+      "sha256": "daca86bfb83eff45e349bb8c6b8958a0102cc36633aab38c1829d7df065deb0c",
+      "history": [
+        {
+          "note": "Usage anchor accepted: open blank book within sand linen cover with single cream ribbon on pages and tonal edge stitching.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sand beige. Material: linen fabric.\nRequired view: Open cover with blank book inside, ribbon resting on blank pages.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sand-linen-book-cover/model-side",
+      "productId": "sand-linen-book-cover",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["sand-linen-book-cover/front", "sand-linen-book-cover/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sand beige\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-linen-book-cover/model-side.png",
+      "sha256": "2afa8165a40b16f2736814dac9cbd5f6f9c51ec48ad4f706a202caec1e1ced31",
+      "history": [
+        {
+          "note": "Hand-scale accepted: two plausible adult hands hold same closed sand book cover, single cream ribbon and stitching retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sand beige. Material: linen fabric.\nRequired view: Adult hands holding same covered closed book, no logos.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sand-linen-book-cover/model-back",
+      "productId": "sand-linen-book-cover",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "sand-linen-book-cover/front",
+        "sand-linen-book-cover/back",
+        "sand-linen-book-cover/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sand beige\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-linen-book-cover/model-back.png",
+      "sha256": "776f89ed2b586024488d02b9b87cbad6f5aa0a377fdc2adaea0332aba31b61c0",
+      "history": [
+        {
+          "note": "Empty cover accepted: exactly two broad inward-facing sleeves and one cream top-spine ribbon, same sand linen and perimeter stitching.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sand beige. Material: linen fabric.\nRequired view: Open empty cover showing exactly two broad inward-facing sleeves and one ribbon at top spine.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sand-linen-book-cover/editorial",
+      "productId": "sand-linen-book-cover",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["sand-linen-book-cover/front", "sand-linen-book-cover/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sand beige\nBase material: linen fabric\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sand-linen-book-cover/editorial.png",
+      "sha256": "b77dca46e7e16114ef3fa256cbb1c9d87d6edfe4d0f2ef68ca8cd13e236f60a4",
+      "history": [
+        {
+          "note": "Editorial accepted: same sand covered closed book on cream cloth beside plain pencil; ribbon, shape and tonal seams consistent.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 샌드 리넨 북 커버\nDesign invariants: Fictional concept sample. Soft sand linen book jacket with plain rectangular outer covers joined by flexible spine, tonal perimeter stitching, one broad inward-facing sleeve on each inner side, one narrow cream ribbon bookmark attached at top spine, no closure or pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sand beige. Material: linen fabric.\nRequired view: Same covered closed book on cream cloth beside plain pencil.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "steel-ribbon-bookmark/front",
+      "productId": "steel-ribbon-bookmark",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: brushed silver\nBase material: brushed stainless steel and cotton ribbon\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/steel-ribbon-bookmark/front.png",
+      "sha256": "2a8af8278ce6c4aa1f52a43f349e6befb4eea47b6df96eba0c4731919eafb8fc",
+      "history": [
+        {
+          "note": "Accepted front: single solid brushed silver rounded rectangle, one hole with folded navy ribbon and no clip.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: brushed silver. Material: brushed stainless steel and cotton ribbon.\nRequired view: Top three-quarter whole bookmark lying flat, hole and ribbon visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "steel-ribbon-bookmark/back",
+      "productId": "steel-ribbon-bookmark",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["steel-ribbon-bookmark/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: brushed silver\nBase material: brushed stainless steel and cotton ribbon\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Output repeats front anchor camera and orientation instead of showing reverse face.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: brushed silver. Material: brushed stainless steel and cotton ribbon.\nRequired view: Back surface lying flat, same ribbon.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Reverse accepted: symmetric solid brushed steel back face, one hole and navy folded ribbon, flipped orientation and full framing.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: brushed silver. Material: brushed stainless steel and cotton ribbon.\nRequired view: Back surface lying flat, same ribbon.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCRITICAL RETRY: The previous output copied the reference view and was rejected. Physically TURN THE OBJECT OVER / rotate 180 degrees around vertical axis to reveal its OPPOSITE REVERSE FACE. Compose a visibly different rear image: top of product oriented to upper right instead of upper left. For book cover, spine MUST be at image RIGHT, fore-edge at LEFT, plain back facing camera and bookmark hanging on hidden front side. For pouch, side loop and zipper pull MUST be on image RIGHT, opposite broad panel facing camera. For bookmark, flip metal over so rear of ribbon knot is visible, ribbon pointing upper RIGHT and metal lower LEFT. Maintain same physical construction.\n"
+        }
+      ],
+      "output": "images/steel-ribbon-bookmark/back.png",
+      "sha256": "2c9d635a38013de3103d478b3d027c520a539d29a62271832d28cca4ab88b1fc"
+    },
+    {
+      "id": "steel-ribbon-bookmark/side",
+      "productId": "steel-ribbon-bookmark",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["steel-ribbon-bookmark/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: brushed silver\nBase material: brushed stainless steel and cotton ribbon\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/steel-ribbon-bookmark/side.png",
+      "sha256": "6ea09277520c287bd101888954a804f8e2ce4af492fc67eb7c381944880f2131",
+      "history": [
+        {
+          "note": "Side accepted: low edge-on thin flat metal profile with navy folded ribbon and single hole, no clip or extra hardware.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: brushed silver. Material: brushed stainless steel and cotton ribbon.\nRequired view: Very low edge-on profile showing thin metal and ribbon.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "steel-ribbon-bookmark/texture",
+      "productId": "steel-ribbon-bookmark",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["steel-ribbon-bookmark/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: brushed silver\nBase material: brushed stainless steel and cotton ribbon\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/steel-ribbon-bookmark/texture.png",
+      "sha256": "123e96cd2d676b789a7e269fd4773f80e0c3f57ab496383e7b82bc3791a8dc55",
+      "history": [
+        {
+          "note": "Macro accepted: brushed silver surface and one circular hole with navy ribbon fibers; thin solid edge preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: brushed silver. Material: brushed stainless steel and cotton ribbon.\nRequired view: Macro brushed metal at circular hole and navy ribbon fibers.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "steel-ribbon-bookmark/model-front",
+      "productId": "steel-ribbon-bookmark",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["steel-ribbon-bookmark/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: brushed silver\nBase material: brushed stainless steel and cotton ribbon\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/steel-ribbon-bookmark/model-front.png",
+      "sha256": "d0f70e1b68ab4872c4ae713b70c599d8ecd79308e18746b2831f968e4d10bab3",
+      "history": [
+        {
+          "note": "Usage anchor accepted: single bookmark inserted between closed cream pages, silver top and navy ribbon extend above book, no altered hardware. Book prop intentionally partly cropped.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: brushed silver. Material: brushed stainless steel and cotton ribbon.\nRequired view: Bookmark inserted between closed book pages with navy ribbon extending beyond top edge.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "steel-ribbon-bookmark/model-side",
+      "productId": "steel-ribbon-bookmark",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["steel-ribbon-bookmark/front", "steel-ribbon-bookmark/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: brushed silver\nBase material: brushed stainless steel and cotton ribbon\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/steel-ribbon-bookmark/model-side.png",
+      "sha256": "24870f1b2fe5ccc14a6b068c506e8846018f710333c4891761f183fd88d2ea16",
+      "history": [
+        {
+          "note": "Hand-scale accepted: plausible adult fingers hold metal body above blank open book; same brushed rectangle, hole and navy ribbon retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: brushed silver. Material: brushed stainless steel and cotton ribbon.\nRequired view: Adult fingers holding same bookmark by metal body above blank open book.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "steel-ribbon-bookmark/model-back",
+      "productId": "steel-ribbon-bookmark",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "steel-ribbon-bookmark/front",
+        "steel-ribbon-bookmark/back",
+        "steel-ribbon-bookmark/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: brushed silver\nBase material: brushed stainless steel and cotton ribbon\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/steel-ribbon-bookmark/model-back.png",
+      "sha256": "49fd2b3de48b57a897c8b2d003c9e398ed7cdc9c652bef7e64ddd36d18c338b6",
+      "history": [
+        {
+          "note": "Flat-lay usage accepted: full silver bookmark and navy ribbon on blank open notebook, one hole and unchanged solid geometry.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: brushed silver. Material: brushed stainless steel and cotton ribbon.\nRequired view: Top-down bookmark fully visible on blank open notebook.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "steel-ribbon-bookmark/editorial",
+      "productId": "steel-ribbon-bookmark",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["steel-ribbon-bookmark/front", "steel-ribbon-bookmark/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: brushed silver\nBase material: brushed stainless steel and cotton ribbon\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/steel-ribbon-bookmark/editorial.png",
+      "sha256": "296abca958ddb74f04b645a0064301b38ef468f25995d247017416f0b252e9b1",
+      "history": [
+        {
+          "note": "Editorial accepted: full brushed silver bookmark with navy ribbon beside closed linen book in daylight, unchanged hole and geometry.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 스틸 리본 북마크\nDesign invariants: Fictional concept sample. One thin elongated rectangular silver metal bookmark with rounded corners, one circular hole near top threaded with a single short navy ribbon folded through hole, no cutout clip or text. Solid flat bookmark. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: brushed silver. Material: brushed stainless steel and cotton ribbon.\nRequired view: Bookmark beside closed linen book in daylight.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sage-tablet-envelope/front",
+      "productId": "sage-tablet-envelope",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sage gray green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-tablet-envelope/front.png",
+      "sha256": "7f2257aa52413cecaa98fe05b6900bd55384f301924b208064d48514d6d056e1",
+      "history": [
+        {
+          "note": "Front accepted: sage landscape leather sleeve, triangular pointed flap, one matte silver snap, tonal edge stitching and rounded lower corners; no straps or zipper.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sage gray green. Material: fine-grain matte leather.\nRequired view: Closed front three-quarter, triangular flap and single snap visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "sage-tablet-envelope/back",
+      "productId": "sage-tablet-envelope",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["sage-tablet-envelope/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sage gray green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-tablet-envelope/back.png",
+      "sha256": "c5c3b8056fcb580a86d6749047b969e08d6c7cdffdb7b7558d26373e89f603c8",
+      "history": [
+        {
+          "note": "Rear accepted: plain sage rectangular reverse panel with tonal perimeter stitching, flap and snap correctly hidden.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sage gray green. Material: fine-grain matte leather.\nRequired view: Closed plain rear.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCamera must see OPPOSITE REAR panel: physically rotate sleeve 180 degrees. Rear is one uninterrupted plain sage rectangle with edge stitching. Front triangular flap and snap are on the hidden far face and MUST NOT be visible from rear.\n"
+        }
+      ]
+    },
+    {
+      "id": "sage-tablet-envelope/side",
+      "productId": "sage-tablet-envelope",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["sage-tablet-envelope/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sage gray green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Side rejected: repeats upright front three-quarter rather than requested low thin-edge profile.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sage gray green. Material: fine-grain matte leather.\nRequired view: Low side showing thin folded envelope construction.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Side accepted: sleeve laid flat with low camera revealing thin stitched layered edge and foreshortened triangular flap, sage color and one snap preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sage gray green. Material: fine-grain matte leather.\nRequired view: Low side showing thin folded envelope construction.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCRITICAL: lay the closed sleeve FLAT HORIZONTALLY on tabletop, front face upward. Camera at table height only 5 degrees above surface, long thin layered edge stretches horizontally across image. The whole sleeve silhouette should appear very shallow, under one tenth as tall as wide. Do not show an upright broad front view. Show thin leather sandwich edge and very foreshortened flap above.\n"
+        }
+      ],
+      "output": "images/sage-tablet-envelope/side.png",
+      "sha256": "c23ae80b1c8decced6a4207d6880e9dcb85068b06c2b276b6bd7ef6351476b08"
+    },
+    {
+      "id": "sage-tablet-envelope/texture",
+      "productId": "sage-tablet-envelope",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["sage-tablet-envelope/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sage gray green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-tablet-envelope/texture.png",
+      "sha256": "251ecc2f28a8474ebdda268e047f2032e5df6ccb10f9b42c3fc6b6780ba5ad70",
+      "history": [
+        {
+          "note": "Macro accepted: sage fine leather grain, tonal flap stitching and one matte silver snap in detailed crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sage gray green. Material: fine-grain matte leather.\nRequired view: Macro leather grain stitching and one snap.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sage-tablet-envelope/model-front",
+      "productId": "sage-tablet-envelope",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["sage-tablet-envelope/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sage gray green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-tablet-envelope/model-front.png",
+      "sha256": "ab81560e005427f33da03659cb8af817856fe808d69ff2bde15d1ac1442d9aa9",
+      "history": [
+        {
+          "note": "Usage anchor accepted: open triangular cream-lined flap with one unbranded black-screen tablet partially inserted into sole compartment; single snap closure with mating components.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sage gray green. Material: fine-grain matte leather.\nRequired view: Open flap with one plain black-screen unbranded tablet partly inserted into sole compartment.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sage-tablet-envelope/model-side",
+      "productId": "sage-tablet-envelope",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["sage-tablet-envelope/front", "sage-tablet-envelope/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sage gray green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-tablet-envelope/model-side.png",
+      "sha256": "f4eafd81942dfc07b47f2eed065151806f6a5db1f516d32207e7392ef740d385",
+      "history": [
+        {
+          "note": "Hand-scale accepted: two plausible adult hands hold closed sage sleeve, full framing, same flap angle, one silver snap and tonal edges.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sage gray green. Material: fine-grain matte leather.\nRequired view: Adult hands holding same closed sleeve for scale.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sage-tablet-envelope/model-back",
+      "productId": "sage-tablet-envelope",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "sage-tablet-envelope/front",
+        "sage-tablet-envelope/back",
+        "sage-tablet-envelope/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sage gray green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-tablet-envelope/model-back.png",
+      "sha256": "ac1b04b9821881448116e3484e296f44084b315bd5f126a43c7a3865f056fc37",
+      "history": [
+        {
+          "note": "Empty usage accepted: top-oblique open sleeve with lifted triangular cream-lined flap, sole empty compartment and single snap closure, no tablet or extra pockets.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sage gray green. Material: fine-grain matte leather.\nRequired view: Top oblique open empty cream-lined sleeve with triangular flap lifted.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "sage-tablet-envelope/editorial",
+      "productId": "sage-tablet-envelope",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["sage-tablet-envelope/front", "sage-tablet-envelope/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nBase color: sage gray green\nBase material: fine-grain matte leather\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/sage-tablet-envelope/editorial.png",
+      "sha256": "706ff557fa4f52a093a0e4486fc543bb4f8663c0ddcb9b581af5e4a24e8967b5",
+      "history": [
+        {
+          "note": "Editorial accepted: closed sage envelope on pale stone beside plain pen; triangular flap, one silver snap, fine grain and edge stitching preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 세이지 태블릿 엔벨로프\nDesign invariants: Fictional concept sample. Flat landscape rectangular sage leather tablet envelope sleeve, wide triangular flap secured by one small matte silver snap at center, rounded lower corners, tonal edge stitching, one empty cream-lined compartment, no straps zipper or additional pockets. Preserve all geometry and hardware counts. No logos or readable lettering.\nColor: sage gray green. Material: fine-grain matte leather.\nRequired view: Closed sleeve on pale stone desk beside plain pen.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    }
+  ]
+}

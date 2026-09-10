@@ -1,0 +1,793 @@
+{
+  "version": 1,
+  "spec": {
+    "products": [
+      {
+        "id": "ivory-shell-ring-dish",
+        "name": "아이보리 셸 링 디시",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "warm ivory",
+        "colorLabel": "아이보리",
+        "hex": "#e9e0cf",
+        "material": "glossy glazed ceramic",
+        "price": 17000,
+        "design": "Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+        "sizes": [],
+        "skuPrefix": "SIX-05",
+        "highlights": ["아이보리 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Front three-quarter empty shell dish, ribs visible.",
+          "back": "Rear oblique showing outside shell and shallow bowl.",
+          "side": "Low side profile of shallow dish.",
+          "texture": "Macro ivory glaze on one existing raised rib.",
+          "model-front": "Shell dish holding two simple silver rings, entire dish visible.",
+          "model-side": "Same dish and rings from low side, rings resting in bowl.",
+          "model-back": "Top-down empty shell dish showing fan silhouette.",
+          "editorial": "Dish with same two rings on cream linen by soft window light."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "아이보리 셸 링 디시 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "moss-snap-valet-tray",
+        "name": "모스 스냅 발렛 트레이",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "moss green",
+        "colorLabel": "모스",
+        "hex": "#647154",
+        "material": "matte fine-grain leather",
+        "price": 25000,
+        "design": "Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+        "sizes": [],
+        "skuPrefix": "SIX-06",
+        "highlights": ["모스 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Three-quarter empty assembled tray with four snapped corners.",
+          "back": "Rear three-quarter preserving four corner snaps.",
+          "side": "Low side showing shallow depth and corner folds.",
+          "texture": "Macro moss leather grain and one brass corner snap.",
+          "model-front": "Tray containing one plain key and one simple metal ring, both within base.",
+          "model-side": "Same assembled tray and objects from opposite side.",
+          "model-back": "Top-down empty assembled tray showing square basin and four pinched corners.",
+          "editorial": "Tray on pale oak bedside table beside blank linen book."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "모스 스냅 발렛 트레이 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      },
+      {
+        "id": "oak-ripple-coaster",
+        "name": "오크 리플 코스터",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "natural pale oak",
+        "colorLabel": "오크",
+        "hex": "#bda078",
+        "material": "oiled oak wood",
+        "price": 12000,
+        "design": "Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.",
+        "sizes": [],
+        "skuPrefix": "SIX-07",
+        "highlights": ["오크 컬러", "가상 기획 상품"],
+        "description": "오크 리플 코스터 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다.",
+        "shotDirections": {
+          "front": "Three-quarter full coaster lying flat, single circular groove visible.",
+          "back": "Underside oblique showing plain flat bottom.",
+          "side": "Low eye-level edge profile showing slim thickness.",
+          "texture": "Extreme macro oak grain and part of single concentric groove.",
+          "model-front": "One plain white ceramic mug resting on center of coaster, coaster edge visible all around, three-quarter view.",
+          "model-side": "Same white mug and coaster from low side, physical contact clear, full coaster visible.",
+          "model-back": "Top-down empty coaster showing one circular groove and flat central pad.",
+          "editorial": "Same coaster and white mug on pale stone desk beside blank notebook."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        }
+      },
+      {
+        "id": "lilac-faceted-pencil-cup",
+        "name": "라일락 패싯 펜슬 컵",
+        "categoryId": null,
+        "categoryPath": "라이프스타일 > 데스크 소품",
+        "color": "muted lilac",
+        "colorLabel": "라일락",
+        "hex": "#aaa0bc",
+        "material": "matte glazed ceramic",
+        "price": 22000,
+        "design": "Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.",
+        "sizes": [],
+        "skuPrefix": "SIX-08",
+        "highlights": ["라일락 컬러", "가상 기획 상품"],
+        "shotDirections": {
+          "front": "Front three-quarter empty cup with hexagonal opening visible.",
+          "back": "Rear three-quarter showing other flat faces.",
+          "side": "Eye-level side view of upright cup.",
+          "texture": "Macro matte glaze at rounded rim and facet edge.",
+          "model-front": "Cup containing exactly three plain wooden pencils standing upright, full cup visible.",
+          "model-side": "Same cup and three pencils from side.",
+          "model-back": "Top-down empty cup showing hexagonal opening and matching interior.",
+          "editorial": "Cup with same three pencils on oak desk beside blank paper."
+        },
+        "shotLabels": {
+          "front": "대표 이미지",
+          "back": "뒷면",
+          "side": "측면",
+          "texture": "소재 확대",
+          "model-front": "착용·사용",
+          "model-side": "사용 디테일",
+          "model-back": "내부·구조",
+          "editorial": "스타일링"
+        },
+        "description": "라일락 패싯 펜슬 컵 가상 기획 샘플입니다. 형태와 소재 표현, 사용 장면을 이미지로 확인할 수 있습니다."
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "ivory-shell-ring-dish/front",
+      "productId": "ivory-shell-ring-dish",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: warm ivory\nBase material: glossy glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-shell-ring-dish/front.png",
+      "sha256": "3dfeea5a770fe2eebaf4e49f05c4807267a2e1f4bd2c827184f0bf3c0ce283e1",
+      "history": [
+        {
+          "note": "Reviewed empty ivory shell dish: radiating ribs, scalloped fan edge, flat hinge, full safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: warm ivory. Material: glossy glazed ceramic.\nRequired view: Front three-quarter empty shell dish, ribs visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "ivory-shell-ring-dish/back",
+      "productId": "ivory-shell-ring-dish",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["ivory-shell-ring-dish/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: warm ivory\nBase material: glossy glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-shell-ring-dish/back.png",
+      "sha256": "0081b92dc10212d3c588b3066a7438c954ea7695a60d8d0fd4f242e17d0a0a48",
+      "history": [
+        {
+          "note": "Reviewed rear oblique shell: broad scalloped exterior nearest camera, hinge away, ivory ribs and shallow bowl preserved.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: warm ivory. Material: glossy glazed ceramic.\nRequired view: Rear oblique showing outside shell and shallow bowl.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "ivory-shell-ring-dish/side",
+      "productId": "ivory-shell-ring-dish",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["ivory-shell-ring-dish/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: warm ivory\nBase material: glossy glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Camera too high for requested low side profile; retry at rim level.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: warm ivory. Material: glossy glazed ceramic.\nRequired view: Low side profile of shallow dish.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Reviewed corrected low side profile: shallow ivory ceramic silhouette, subtle scallops, full safe margins.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: warm ivory. Material: glossy glazed ceramic.\nRequired view: Low side profile of shallow dish.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCRITICAL CAMERA CORRECTION: lens exactly at tabletop/rim level, true side elevation across the thin bowl. Interior nearly hidden by near wall; product reads as a very wide thin horizontal shallow silhouette. Do not repeat elevated three-quarter view.\n"
+        }
+      ],
+      "output": "images/ivory-shell-ring-dish/side.png",
+      "sha256": "6286190d0a76c66ad04b320c3e0a58a15d980873f5c4196ad0f511ab664328f1"
+    },
+    {
+      "id": "ivory-shell-ring-dish/texture",
+      "productId": "ivory-shell-ring-dish",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["ivory-shell-ring-dish/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: warm ivory\nBase material: glossy glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-shell-ring-dish/texture.png",
+      "sha256": "2245650629d1bffdc4a94fcdef9ee89c3d049c39eb6407bb85615ce9cb6aefb7",
+      "history": [
+        {
+          "note": "Reviewed extreme close crop of ivory glossy rib and glaze; no foreign markings or extra objects.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: warm ivory. Material: glossy glazed ceramic.\nRequired view: Macro ivory glaze on one existing raised rib.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "ivory-shell-ring-dish/model-front",
+      "productId": "ivory-shell-ring-dish",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["ivory-shell-ring-dish/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: warm ivory\nBase material: glossy glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-shell-ring-dish/model-front.png",
+      "sha256": "d4f2e2119e9cf2d8a747b9cf11842e84f0a8d2fd5f4507385b635472a7df213b",
+      "history": [
+        {
+          "note": "Reviewed shell usage anchor: two simple silver rings, ivory fan ribs and flat hinge unchanged, full dish visible.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: warm ivory. Material: glossy glazed ceramic.\nRequired view: Shell dish holding two simple silver rings, entire dish visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "ivory-shell-ring-dish/model-side",
+      "productId": "ivory-shell-ring-dish",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["ivory-shell-ring-dish/front", "ivory-shell-ring-dish/model-front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: warm ivory\nBase material: glossy glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Requested low side is still elevated three-quarter; retry with near horizontal camera.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: warm ivory. Material: glossy glazed ceramic.\nRequired view: Same dish and rings from low side, rings resting in bowl.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nUse a low side camera near rim level, allowing both rings to remain visibly resting in bowl.\n"
+        },
+        {
+          "note": "Reviewed corrected low usage side: rings partly occluded naturally by shallow ivory rim, same two silver rings and shell.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: warm ivory. Material: glossy glazed ceramic.\nRequired view: Same dish and rings from low side, rings resting in bowl.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCRITICAL: camera exactly at dish rim height with horizontal optical axis. Thin wide horizontal side silhouette, most interior hidden by near wall. Silver ring upper arcs can peek above rim. No elevated overhead view.\n"
+        }
+      ],
+      "output": "images/ivory-shell-ring-dish/model-side.png",
+      "sha256": "7857a9b5dfca147e9f2139d25ffdf040e98319eab489a748aec200bc992ed532"
+    },
+    {
+      "id": "ivory-shell-ring-dish/model-back",
+      "productId": "ivory-shell-ring-dish",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "ivory-shell-ring-dish/front",
+        "ivory-shell-ring-dish/back",
+        "ivory-shell-ring-dish/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: warm ivory\nBase material: glossy glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-shell-ring-dish/model-back.png",
+      "sha256": "5145b8774e299e87ff4b342cc4a2b08cee683bb44b348af592b21426711f5dad",
+      "history": [
+        {
+          "note": "Reviewed empty overhead shell: fan outline, scallops, short flat hinge, ivory ribbed glaze retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: warm ivory. Material: glossy glazed ceramic.\nRequired view: Top-down empty shell dish showing fan silhouette.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nThis requested top-down view must be EMPTY: remove rings. Use references for shell geometry only.\n"
+        }
+      ]
+    },
+    {
+      "id": "ivory-shell-ring-dish/editorial",
+      "productId": "ivory-shell-ring-dish",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["ivory-shell-ring-dish/front", "ivory-shell-ring-dish/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: warm ivory\nBase material: glossy glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/ivory-shell-ring-dish/editorial.png",
+      "sha256": "e698ed460e94c8bdc297df07883c4066dde76f6f033248d8d103b0c195665327",
+      "history": [
+        {
+          "note": "Reviewed linen editorial: same two silver rings and ribbed ivory shell, soft window light, full safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 아이보리 셸 링 디시\nDesign invariants: Fictional concept sample. Small ivory ceramic scallop-shell dish, fan-shaped outline with gently scalloped broad edge, radiating raised ribs inside shallow bowl, short flat hinge end, no holes feet or painted markings. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: warm ivory. Material: glossy glazed ceramic.\nRequired view: Dish with same two rings on cream linen by soft window light.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "moss-snap-valet-tray/front",
+      "productId": "moss-snap-valet-tray",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: moss green\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/moss-snap-valet-tray/front.png",
+      "sha256": "b53419d6fbaeaa122029d44c42d5ad46c10b14078aea9f1c7761270beebf89a0",
+      "history": [
+        {
+          "note": "Reviewed square tray: moss exterior and tan reverse, four pinched corners with one brass snap each, no extra fittings.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: moss green. Material: matte fine-grain leather.\nRequired view: Three-quarter empty assembled tray with four snapped corners.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "moss-snap-valet-tray/back",
+      "productId": "moss-snap-valet-tray",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["moss-snap-valet-tray/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: moss green\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/moss-snap-valet-tray/back.png",
+      "sha256": "ec2a716aad2060d548ac79c9c3ed3c6842846c62a6e436c9312bfe3d4f448e52",
+      "history": [
+        {
+          "note": "Reviewed rear three-quarter symmetric tray: four snaps and tan interior preserved; fully contained crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: moss green. Material: matte fine-grain leather.\nRequired view: Rear three-quarter preserving four corner snaps.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "moss-snap-valet-tray/side",
+      "productId": "moss-snap-valet-tray",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["moss-snap-valet-tray/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: moss green\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/moss-snap-valet-tray/side.png",
+      "sha256": "b7d61884e173e5c2fb3ca86e4219af1778128ade9cb60ae8e2d6b45068e5e358",
+      "history": [
+        {
+          "note": "Reviewed low side view: shallow depth, four corner folds and brass snaps, green exterior and tan inside retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: moss green. Material: matte fine-grain leather.\nRequired view: Low side showing shallow depth and corner folds.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "moss-snap-valet-tray/texture",
+      "productId": "moss-snap-valet-tray",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["moss-snap-valet-tray/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: moss green\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/moss-snap-valet-tray/texture.png",
+      "sha256": "54ffbfc708e95d0042706554dfaef83d4a6b5c90a0e0260d369c2a1ef6056c50",
+      "history": [
+        {
+          "note": "Reviewed macro: moss leather grain, one brass corner snap, tan reverse and folded corner match anchor.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: moss green. Material: matte fine-grain leather.\nRequired view: Macro moss leather grain and one brass corner snap.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "moss-snap-valet-tray/model-front",
+      "productId": "moss-snap-valet-tray",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["moss-snap-valet-tray/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: moss green\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/moss-snap-valet-tray/model-front.png",
+      "sha256": "cdeb7370373afa73404f5bf94352d611a37e9d7c88bd38e76c13bf4340a8dade",
+      "history": [
+        {
+          "note": "Reviewed usage anchor: exactly one plain key and one metal ring inside base; four snaps and tray construction retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: moss green. Material: matte fine-grain leather.\nRequired view: Tray containing one plain key and one simple metal ring, both within base.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "moss-snap-valet-tray/model-side",
+      "productId": "moss-snap-valet-tray",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["moss-snap-valet-tray/front", "moss-snap-valet-tray/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: moss green\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/moss-snap-valet-tray/model-side.png",
+      "sha256": "65e7fabe1f6e45de08aa986796678335f1b088cc414fbbd11e80268826939246",
+      "history": [
+        {
+          "note": "Reviewed opposite-side usage: one key and ring preserved, four folded snapped corners, consistent moss and tan surfaces.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: moss green. Material: matte fine-grain leather.\nRequired view: Same assembled tray and objects from opposite side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "moss-snap-valet-tray/model-back",
+      "productId": "moss-snap-valet-tray",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "moss-snap-valet-tray/front",
+        "moss-snap-valet-tray/back",
+        "moss-snap-valet-tray/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: moss green\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/moss-snap-valet-tray/model-back.png",
+      "sha256": "efdbfd31261953d1c22e82f28e81e585d5ec870c356537b0f340ee4d3eb33b0c",
+      "history": [
+        {
+          "note": "Reviewed empty top-down tray: square basin, tan interior, four pinched corners and snapped hardware, safe margins.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: moss green. Material: matte fine-grain leather.\nRequired view: Top-down empty assembled tray showing square basin and four pinched corners.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nFor this requested empty top view remove the key and ring; references 2 and 3 are for tray construction only.\n"
+        }
+      ]
+    },
+    {
+      "id": "moss-snap-valet-tray/editorial",
+      "productId": "moss-snap-valet-tray",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["moss-snap-valet-tray/front", "moss-snap-valet-tray/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: moss green\nBase material: matte fine-grain leather\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/moss-snap-valet-tray/editorial.png",
+      "sha256": "3dd87a87c6551819b71f73bb176f60cf7343b84e9446621f4872f0d074ae6a4b",
+      "history": [
+        {
+          "note": "Reviewed bedside editorial: pale oak, blank linen book, tray fully visible with four snaps and original key and ring.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 모스 스냅 발렛 트레이\nDesign invariants: Fictional concept sample. Square moss leather valet tray with four corners pinched upright using exactly one brass snap at each corner, flat square base, tan reverse surface, low straight sides, no holes handles pockets or logos. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: moss green. Material: matte fine-grain leather.\nRequired view: Tray on pale oak bedside table beside blank linen book.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oak-ripple-coaster/front",
+      "productId": "oak-ripple-coaster",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-ripple-coaster/front.png",
+      "sha256": "b24a51cfc3838bc254c9e07a46f323ea3f561e83ae71a5543fe19c6a0f0746b9",
+      "history": [
+        {
+          "note": "Reviewed round oak coaster: one circular groove, flat center, rounded edge, single solid wood piece, full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Three-quarter full coaster lying flat, single circular groove visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "oak-ripple-coaster/back",
+      "productId": "oak-ripple-coaster",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["oak-ripple-coaster/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-ripple-coaster/back.png",
+      "sha256": "d0274e884139087da2310efdc12efba2c7deefa60b791fb957ae8cce47ace1e0",
+      "history": [
+        {
+          "note": "Reviewed plain flat underside, oak grain and rounded edge, no feet or holes.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Underside oblique showing plain flat bottom.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nFlip coaster over to display the PLAIN UNDERSIDE. Groove is on hidden top surface only, and must NOT appear on visible bottom.\n"
+        }
+      ]
+    },
+    {
+      "id": "oak-ripple-coaster/side",
+      "productId": "oak-ripple-coaster",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["oak-ripple-coaster/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-ripple-coaster/side.png",
+      "sha256": "c5b5464c0227da008908a62cdc31cfdb59e474821b101bb20474baef242a9117",
+      "history": [
+        {
+          "note": "Reviewed true low edge profile: slim single wood disk, rounded rim and single upper groove.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Low eye-level edge profile showing slim thickness.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCamera horizontal at coaster edge height; only very thin horizontal edge silhouette visible, top surface almost hidden.\n"
+        }
+      ]
+    },
+    {
+      "id": "oak-ripple-coaster/texture",
+      "productId": "oak-ripple-coaster",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["oak-ripple-coaster/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-ripple-coaster/texture.png",
+      "sha256": "71384a68414fce02322bd2b76be6f59db15fc115c6823668da47e1cf67341fe8",
+      "history": [
+        {
+          "note": "Reviewed extreme macro oak grain and one curved groove segment, no extra concentric cuts.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Extreme macro oak grain and part of single concentric groove.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oak-ripple-coaster/model-front",
+      "productId": "oak-ripple-coaster",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["oak-ripple-coaster/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-ripple-coaster/model-front.png",
+      "sha256": "4e8e5407e6473686635a1286eab061df336a106b4ec1dbaea056c1f63020cf30",
+      "history": [
+        {
+          "note": "Reviewed usage anchor: one plain white mug centered on oak coaster, rim and groove remain visible, full product safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: One plain white ceramic mug resting on center of coaster, coaster edge visible all around, three-quarter view.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "oak-ripple-coaster/model-side",
+      "productId": "oak-ripple-coaster",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["oak-ripple-coaster/front", "oak-ripple-coaster/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-ripple-coaster/model-side.png",
+      "sha256": "85f0b8277663fc34fa24b87c1af4f90ddad9a2f2fb4bfa84ca1c4288984ed7aa",
+      "history": [
+        {
+          "note": "Reviewed lower side usage: same white mug with clear contact on wood coaster, rounded rim and single groove, safe crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Same white mug and coaster from low side, physical contact clear, full coaster visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nUse horizontal camera at coaster edge level; mug remains physically resting on coaster and all edges fully framed.\n"
+        }
+      ]
+    },
+    {
+      "id": "oak-ripple-coaster/model-back",
+      "productId": "oak-ripple-coaster",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "oak-ripple-coaster/front",
+        "oak-ripple-coaster/back",
+        "oak-ripple-coaster/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-ripple-coaster/model-back.png",
+      "sha256": "cc68313e88ad4c82edfadd9d675ec90c66725412cce0eb5e5b2f7efb3cc847b2",
+      "history": [
+        {
+          "note": "Reviewed empty overhead coaster: round outline, one continuous concentric groove, flat oak central pad.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Top-down empty coaster showing one circular groove and flat central pad.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nThis requested overhead shot is EMPTY: remove mug completely, top groove visible. Reference 2 informs underside only; reference 3 informs scale only.\n"
+        }
+      ]
+    },
+    {
+      "id": "oak-ripple-coaster/editorial",
+      "productId": "oak-ripple-coaster",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["oak-ripple-coaster/front", "oak-ripple-coaster/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nBase color: natural pale oak\nBase material: oiled oak wood\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/oak-ripple-coaster/editorial.png",
+      "sha256": "4e277a7929f58b007f3e3a080a87f199f73f7ebed4c00101ee14e3a2c43bf9e8",
+      "history": [
+        {
+          "note": "Reviewed pale stone desk editorial: same white mug and oak coaster, blank notebook, consistent single groove and safe margins.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 오크 리플 코스터\nDesign invariants: Fictional concept sample. One round flat oak wood coaster, one shallow concentric circular groove near outer rim, flat central resting area, gently rounded outer edge, plain flat underside, single solid piece, no feet holes lettering or extra pieces.\nColor: natural pale oak. Material: oiled oak wood.\nRequired view: Same coaster and white mug on pale stone desk beside blank notebook.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "lilac-faceted-pencil-cup/front",
+      "productId": "lilac-faceted-pencil-cup",
+      "label": "정면",
+      "variant": null,
+      "dependencies": [],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted lilac\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFront catalog view, entire garment centered, invisible mannequin, square canvas with garment within central 65% width and 85% height for portrait cropping.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/lilac-faceted-pencil-cup/front.png",
+      "sha256": "2282c6f8fa76eb8ff734c49d52002cb9bfe53bf1f560fd4b49b2ebf558aaa227",
+      "history": [
+        {
+          "note": "Reviewed lilac cup anchor: six-sided prism and hexagonal open rim, matching plain interior, no handles, safe full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted lilac. Material: matte glazed ceramic.\nRequired view: Front three-quarter empty cup with hexagonal opening visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly."
+        }
+      ]
+    },
+    {
+      "id": "lilac-faceted-pencil-cup/back",
+      "productId": "lilac-faceted-pencil-cup",
+      "label": "후면",
+      "variant": null,
+      "dependencies": ["lilac-faceted-pencil-cup/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted lilac\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nStraight rear catalog view of the same garment. Preserve construction; do not invent decoration or branding.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/lilac-faceted-pencil-cup/back.png",
+      "sha256": "861fa4ebed611358ba9764b1c00207cced9575775e7d72395addddf00c811386",
+      "history": [
+        {
+          "note": "Reviewed rotated cup back: flat faces and six-sided rim retained, lilac glaze and proportions match.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted lilac. Material: matte glazed ceramic.\nRequired view: Rear three-quarter showing other flat faces.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "lilac-faceted-pencil-cup/side",
+      "productId": "lilac-faceted-pencil-cup",
+      "label": "측면",
+      "variant": null,
+      "dependencies": ["lilac-faceted-pencil-cup/front"],
+      "status": "accepted",
+      "attempts": 2,
+      "prompt": "Use case: product-mockup\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted lilac\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nTrue side catalog view of the same garment, showing silhouette, length and sleeve volume.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "history": [
+        {
+          "note": "Camera elevated rather than eye-level side; opening must be nearly hidden by rim.",
+          "status": "failed",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted lilac. Material: matte glazed ceramic.\nRequired view: Eye-level side view of upright cup.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        },
+        {
+          "note": "Reviewed corrected eye-level side: nearly horizontal rim, upright flat faces, lilac glaze and proportions retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted lilac. Material: matte glazed ceramic.\nRequired view: Eye-level side view of upright cup.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nCRITICAL CORRECTION: horizontal camera axis exactly at cup mid-height. True straight-on side elevation. Top rim reads as horizontal line; no looking down into opening. Preserve tall hexagonal cup geometry.\n"
+        }
+      ],
+      "output": "images/lilac-faceted-pencil-cup/side.png",
+      "sha256": "c6a351c799a401ed4672b3d213e997e38baed33eada33ef463345c833f585e6b"
+    },
+    {
+      "id": "lilac-faceted-pencil-cup/texture",
+      "productId": "lilac-faceted-pencil-cup",
+      "label": "소재 확대",
+      "variant": null,
+      "dependencies": ["lilac-faceted-pencil-cup/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted lilac\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nMacro photograph of the actual referenced fabric and one existing seam. Match weave, finish and color; do not add features.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/lilac-faceted-pencil-cup/texture.png",
+      "sha256": "9917d6f28aae194c3602f09f3298b35f5ee1a0128e08fce756e7b581f3b58d30",
+      "history": [
+        {
+          "note": "Reviewed extreme macro rim and facet junction: matte lilac ceramic glaze and rounded edge retained.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted lilac. Material: matte glazed ceramic.\nRequired view: Macro matte glaze at rounded rim and facet edge.\nExtreme macro crop: only the requested surface detail fills the frame; not the whole object.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "lilac-faceted-pencil-cup/model-front",
+      "productId": "lilac-faceted-pencil-cup",
+      "label": "모델 정면",
+      "variant": null,
+      "dependencies": ["lilac-faceted-pencil-cup/front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted lilac\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nOne adult model wearing the exact referenced garment, full body front view, relaxed neutral stance, garment unobstructed.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/lilac-faceted-pencil-cup/model-front.png",
+      "sha256": "ac29fd7ac18e6e2271b5ac8211d95e3b31880361e601484a2941f13586c0d890",
+      "history": [
+        {
+          "note": "Reviewed usage anchor: exactly three plain wooden pencils, hexagonal lilac cup unchanged and full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted lilac. Material: matte glazed ceramic.\nRequired view: Cup containing exactly three plain wooden pencils standing upright, full cup visible.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "lilac-faceted-pencil-cup/model-side",
+      "productId": "lilac-faceted-pencil-cup",
+      "label": "모델 측면",
+      "variant": null,
+      "dependencies": ["lilac-faceted-pencil-cup/front", "lilac-faceted-pencil-cup/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted lilac\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body true side view. Preserve the exact model identity, hair, styling, garment and studio from the model reference.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/lilac-faceted-pencil-cup/model-side.png",
+      "sha256": "6103fbf3a831cfae788b476e9e84da1b2a416be5250bb525d66cf7ae6ad3f02e",
+      "history": [
+        {
+          "note": "Reviewed side usage with three plain wooden pencils and unchanged hexagonal lilac cup.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted lilac. Material: matte glazed ceramic.\nRequired view: Same cup and three pencils from side.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    },
+    {
+      "id": "lilac-faceted-pencil-cup/model-back",
+      "productId": "lilac-faceted-pencil-cup",
+      "label": "모델 후면",
+      "variant": null,
+      "dependencies": [
+        "lilac-faceted-pencil-cup/front",
+        "lilac-faceted-pencil-cup/back",
+        "lilac-faceted-pencil-cup/model-front"
+      ],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted lilac\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nFull body rear view. Preserve the exact model identity, hair, styling and garment construction from the references.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/lilac-faceted-pencil-cup/model-back.png",
+      "sha256": "9e3fa7d5b785d898a68781ae47e1ad375ae6039fb4766c984d2df615284d1225",
+      "history": [
+        {
+          "note": "Reviewed high overhead empty cup: six-sided opening and matching closed interior visible, no pencils or added holes.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted lilac. Material: matte glazed ceramic.\nRequired view: Top-down empty cup showing hexagonal opening and matching interior.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative back view, preserve same product construction and any usage objects/person where relevant; Image 3: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references.\nFor this EMPTY overhead image remove all pencils. Show uninterrupted empty hexagonal interior and base.\n"
+        }
+      ]
+    },
+    {
+      "id": "lilac-faceted-pencil-cup/editorial",
+      "productId": "lilac-faceted-pencil-cup",
+      "label": "소개용 연출",
+      "variant": null,
+      "dependencies": ["lilac-faceted-pencil-cup/front", "lilac-faceted-pencil-cup/model-front"],
+      "status": "accepted",
+      "attempts": 1,
+      "prompt": "Use case: product-mockup\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nBase color: muted lilac\nBase material: matte glazed ceramic\nStudio: warm light gray seamless studio, soft diffused daylight\nEditorial introduction photograph of the same adult model in the same garment. Natural restrained pose, full garment readable, quiet negative space, no embedded text.\nOne separate photorealistic image only; no collage, text, logos or watermark. Reference images are authoritative. Preserve garment shape, seams, collar, pockets and closures unless explicitly changing that property. For edits change only the requested angle, pose, color or material. Do not depict multiple variants together.",
+      "output": "images/lilac-faceted-pencil-cup/editorial.png",
+      "sha256": "71c7355d99d7ceb3bd639d1370572b4fe1e4c32f575f1d8ea275af881c2fb6e5",
+      "history": [
+        {
+          "note": "Reviewed oak desk editorial: same lilac hexagonal cup, exactly three wooden pencils, blank paper, full crop.",
+          "status": "accepted",
+          "prompt": "Use case: product-mockup. One photorealistic ecommerce product image.\nProduct: 라일락 패싯 펜슬 컵\nDesign invariants: Fictional concept sample. Single lilac ceramic pencil cup, upright hexagonal prism with six flat exterior faces, open hexagonal top, thick rounded rim, plain matching interior, flat closed base, no handle holes or decorations. No logos, readable text or watermarks. Preserve geometry and hardware counts.\nColor: muted lilac. Material: matte glazed ceramic.\nRequired view: Cup with same three pencils on oak desk beside blank paper.\nSquare canvas, entire main product comfortably inside frame with generous margins; no cropped edges.\nSoft diffused daylight, warm pale gray studio unless required view specifies setting. No collage, text, logos, watermark or duplicated products. Preserve construction, color, material and hardware counts exactly.\nOrdered references: Image 1: authoritative front view, preserve same product construction and any usage objects/person where relevant; Image 2: authoritative model-front view, preserve same product construction and any usage objects/person where relevant. Change only requested view/scene; use all references."
+        }
+      ]
+    }
+  ],
+  "revisionNote": "Failed brass clip use configuration exhausted two attempts; replaced entire concept with oak coaster. 24 reviewed images of other products reused without regeneration. Original failed manifest kept intact."
+}
