@@ -36,9 +36,10 @@ export const ko: Messages = {
       configuration: 'API 주소 설정이 없습니다. pnpm dev 로 실행했는지 확인해주세요.',
       unknown: '알 수 없는 오류가 발생했습니다.',
     },
-    notice: '상품 데이터가 붙기 전까지 API 연결 상태를 이 자리에 표시합니다.',
   },
   wake: {
+    storefrontPreparing: '상품을 준비하고 있어요. 잠시만 기다려 주세요.',
+    storefrontFailed: '상품을 불러오지 못했어요.',
     loadingLabel: 'API 연결 상태를 불러오는 중입니다.',
     preparing: '서버를 준비하는 중입니다',
     preparingHint: '잠시만 기다려주세요. 준비가 끝나면 자동으로 표시됩니다.',
@@ -117,10 +118,7 @@ export const ko: Messages = {
     footer: {
       label: '사이트 정보',
       demoTitle: '포트폴리오 데모',
-      demoBody:
-        '실제 판매가 이루어지지 않는 데모 사이트입니다. 브랜드와 상품은 모두 가상으로 만든 것입니다.',
-      densityTitle: '표시 밀도 3단계',
-      densityBody: '헤더의 밀도 버튼으로 간격과 정보량을 바꿀 수 있습니다.',
+      demoBody: '가상 브랜드와 상품으로 구성된 데모 사이트로, 실제 판매는 이루어지지 않습니다.',
       guideLabel: '5분 둘러보기',
       copyright: '© 2026 데모 마켓',
     },
@@ -179,9 +177,7 @@ export const ko: Messages = {
   home: {
     title: '데모 마켓',
     description: '가상 브랜드로 꾸민 멀티 셀러 마켓플레이스입니다.',
-    heroTitle: '고르는 방식을 고를 수 있는 가게',
-    heroBody:
-      '한 화면에 담기는 정보량을 세 단계로 바꿉니다. 헤더의 밀도 버튼을 눌러 보세요 — 목록도 상세도 함께 바뀝니다.',
+    heroTitle: '취향에 맞는 상품을 만나보세요',
     heroSearchCta: '무엇을 찾으세요?',
     newTitle: '신상품',
     popularTitle: '인기 상품',
@@ -191,10 +187,12 @@ export const ko: Messages = {
     categoriesTitle: '카테고리',
     loadingLabel: '상품을 불러오는 중입니다',
     sectionEmpty: '아직 보여드릴 상품이 없습니다.',
+    sectionFailed: '상품을 불러오지 못했어요.',
+    retryLabel: '다시 시도',
     moreLabel: '더 보기',
     demo: {
-      title: '둘러보기만 해도 됩니다',
-      body: '로그인 없이 볼 수 있고, 주문까지 해보고 싶으면 데모 계정을 즉시 발급받을 수 있습니다.',
+      title: '데모로 쇼핑해 보세요',
+      body: '데모 계정으로 주문까지 체험할 수 있어요.',
       cta: '데모 계정으로 시작하기',
       dismiss: '안내 닫기',
     },
