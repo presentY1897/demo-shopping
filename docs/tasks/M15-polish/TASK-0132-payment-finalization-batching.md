@@ -27,7 +27,7 @@
 ## 4. 설계
 
 1. Order 잠금 시 필요한 스칼라 값도 읽는다. 장바구니 정리는 예약 스냅샷과 조인한 단일 DELETE로 수행한다.
-2. ReservationService가 HELD 예약을 id 순으로 잠그고 일괄 확정한다. StockService는 variant id 순으로 잠근 후 **다음 SQL의 새 스냅샷**에서 원장 seq를 읽는다. 같은 variant의 여러 예약은 각 원장 행에 연속 seq/balanceAfter를 남긴다.
+2. ReservationService가 주문서 예약을 id 순으로 잠그고 상태를 다시 확인한다. CONFIRMED는 건너뛰고 RELEASED는 기존 단건 confirm과 같은 RESERVATION_RELEASED로 거절하며 HELD만 일괄 확정한다. 상태 필터로 잠금 대기 중 해제된 예약을 조용히 누락하지 않는다. StockService는 variant id 순으로 잠근 후 **다음 SQL의 새 스냅샷**에서 원장 seq를 읽는다. 같은 variant의 여러 예약은 각 원장 행에 연속 seq/balanceAfter를 남긴다.
 3. StockService에서 reserved와 stock을 한 UPDATE로 갱신하고 원장은 createMany로 기록한다. 품절 전환 검색 outbox도 같은 transaction에서 일괄 기록한다. 예약은 updateMany로 CONFIRMED 처리한다.
 4. SellerOrderService가 PAYMENT_PENDING 행들을 id 순으로 잠그고 기존 transitionDecision으로 각 전이를 검증한다. 상태/이력은 일괄 기록하고 이벤트는 커밋 뒤 발행한다.
 5. 기본 transaction timeout을 늘리지 않는다. 지연 주입 조건에서 부족하면 원인을 다시 측정하고 문서를 먼저 갱신한다.
