@@ -69,18 +69,22 @@ async function fixture(count: number) {
     include: { items: true },
   })
   const client = api.clientAs({ userId: buyer.id, roles: ['BUYER'] })
+  statements.length = 0
   const { checkout } = await client.request({
     path: '/checkouts',
     method: 'POST',
     body: { itemIds: cart.items.map((row) => row.id) },
     schema: checkoutResponseSchema,
   })
+  const checkoutSql = [...statements]
+  statements.length = 0
   const { order } = await client.request({
     path: '/orders',
     method: 'POST',
     body: { checkoutId: checkout.id, addressId: address.id },
     schema: orderResponseSchema,
   })
+  const orderSql = [...statements]
   await prisma.searchOutbox.deleteMany()
   return {
     orderId: order.id,
@@ -88,6 +92,8 @@ async function fixture(count: number) {
     buyerId: buyer.id,
     variants,
     cartId: cart.id,
+    checkoutSql,
+    orderSql,
   }
 }
 
@@ -115,6 +121,18 @@ describe('payment finalization batches', () => {
     'bounds transaction SQL for %i sellers/items including sold-out outbox',
     async (count) => {
       const placed = await fixture(count)
+      expect(
+        placed.checkoutSql.filter(
+          (sql) => sql.includes('INSERT INTO') && sql.includes('"StockReservation"'),
+        ),
+      ).toHaveLength(1)
+      for (const table of ['SellerOrder', 'OrderItem', 'OrderStatusHistory']) {
+        expect(
+          placed.orderSql.filter(
+            (sql) => sql.includes('INSERT INTO') && sql.includes(`"${table}"`),
+          ),
+        ).toHaveLength(1)
+      }
       statements.length = 0
       await orders().markPaid(placed.orderId)
       const seen = [...statements]

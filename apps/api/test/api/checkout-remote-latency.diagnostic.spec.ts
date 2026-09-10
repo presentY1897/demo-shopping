@@ -38,6 +38,19 @@ describe.skipIf(process.env.CHECKOUT_REMOTE_DIAGNOSTIC !== '1')(
     let queries = 0
     const transactionErrors: string[] = []
     const transactionMs: number[] = []
+    const preparationDelayed = process.env.CHECKOUT_REMOTE_PREPARATION === '1'
+    const preparation: { phase: string; ms: number; queries: number }[] = []
+    async function prepare<T>(phase: string, work: () => Promise<T>): Promise<T> {
+      const start = performance.now()
+      const before = queries
+      enabled = preparationDelayed
+      try {
+        return await work()
+      } finally {
+        enabled = false
+        preparation.push({ phase, ms: performance.now() - start, queries: queries - before })
+      }
+    }
     const delayMs = 210
     const itemCount = Number(process.env.CHECKOUT_REMOTE_ITEMS ?? '2')
     beforeAll(() => {
@@ -132,18 +145,24 @@ describe.skipIf(process.env.CHECKOUT_REMOTE_DIAGNOSTIC !== '1')(
           ...cart.groups.flatMap((g) => g.items.map((item) => item.id)),
         )
       }
-      const { checkout } = await client.request({
-        path: '/checkouts',
-        method: 'POST',
-        body: { itemIds },
-        schema: checkoutResponseSchema,
-      })
-      const { order } = await client.request({
-        path: '/orders',
-        method: 'POST',
-        body: { checkoutId: checkout.id, addressId: address.id },
-        schema: orderResponseSchema,
-      })
+      const { checkout } = await prepare('checkout', () =>
+        client.request({
+          path: '/checkouts',
+          timeoutMs: 30000,
+          method: 'POST',
+          body: { itemIds },
+          schema: checkoutResponseSchema,
+        }),
+      )
+      const { order } = await prepare('order', () =>
+        client.request({
+          path: '/orders',
+          timeoutMs: 30000,
+          method: 'POST',
+          body: { checkoutId: checkout.id, addressId: address.id },
+          schema: orderResponseSchema,
+        }),
+      )
       const { payment } = await client.request({
         path: '/payments',
         method: 'POST',
@@ -179,8 +198,11 @@ describe.skipIf(process.env.CHECKOUT_REMOTE_DIAGNOSTIC !== '1')(
       })
       const cart = await client.request({ path: '/cart', schema: cartResponseSchema })
       const result = {
-        environment: 'isolated local PostgreSQL; simulated response delay only during capture',
+        environment:
+          'isolated local PostgreSQL; simulated response delay during capture and optionally preparation',
         itemCount,
+        preparationDelayed,
+        preparation,
         delayMs,
         timeout,
         status,
@@ -196,6 +218,7 @@ describe.skipIf(process.env.CHECKOUT_REMOTE_DIAGNOSTIC !== '1')(
         process.env.CHECKOUT_REMOTE_OUTPUT ?? '/tmp/checkout-remote-diagnostic.json',
         JSON.stringify(result, null, 2) + '\n',
       )
+      if (preparationDelayed) for (const sample of preparation) expect(sample.ms).toBeLessThan(5000)
       expect(status).toBe(201)
       expect(transactionErrors).toEqual([])
       expect(Math.max(...transactionMs)).toBeLessThan(5000)
