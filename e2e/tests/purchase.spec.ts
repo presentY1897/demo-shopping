@@ -119,8 +119,11 @@ test('마우스 없이 데모 발급부터 주문 확인까지 간다 (F1 · TAS
 
   // 그리고 **주문 내역에 실제로 있다.** 화면이 완료를 말하는 것과 서버에 주문이
   // 남은 것은 다른 일이고, 이 흐름이 지키는 것은 뒤쪽이다.
-  const number = (await done.innerText()).replace(/^.*주문번호 /, '').trim()
+  const number = /주문번호 (\d{8}-[0-9A-Z]{8})/.exec(await done.innerText())?.[1]
+  if (number === undefined) throw new Error('완료 화면의 주문번호를 읽지 못했습니다.')
 
   await page.goto('/mypage/orders')
   await expect(page.getByText(number)).toBeVisible({ timeout: 30_000 })
+  await page.goto('/cart')
+  await expect(page.getByRole('heading', { name: '장바구니가 비어 있어요' })).toBeVisible()
 })

@@ -144,7 +144,9 @@ export async function buy(page: Page, productIds: readonly string[]): Promise<Pl
 
   await expect(done).toBeVisible({ timeout: 60_000 })
 
-  return { number: (await done.innerText()).replace(/^.*주문번호 /, '').trim(), paid }
+  const number = /주문번호 (\d{8}-[0-9A-Z]{8})/.exec(await done.innerText())?.[1]
+  if (number === undefined) throw new Error('완료 화면의 주문번호를 읽지 못했습니다.')
+  return { number, paid }
 }
 
 /**
