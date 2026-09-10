@@ -16,6 +16,6 @@
 | [TASK-0126](./TASK-0126-payment-result-recovery.md) | 끊긴 결제 결과 복구·재시도 통일 | 완료 | 0125 |
 | [TASK-0127](./TASK-0127-paid-cart-cleanup.md) | 결제 확정 후 구매한 장바구니 정리 | 완료 | 0126 |
 | [TASK-0128](./TASK-0128-checkout-input-preservation.md) | 배송지 이동·배송 요청사항 보존 | 완료 | 0127 |
-| [TASK-0129](./TASK-0129-purchase-ux-consistency.md) | 구매 안내·오류 피드백·모바일 동선 정리 | 진행중 | 0128 |
+| [TASK-0129](./TASK-0129-purchase-ux-consistency.md) | 구매 안내·오류 피드백·모바일 동선 정리 | 완료 | 0128 |
 | [TASK-0130](./TASK-0130-storefront-loading-performance.md) | 홈 선행 대기 제거·상품 이미지 경량화 | 완료 | 0124 |
 | [TASK-0131](./TASK-0131-checkout-api-latency-analysis.md) | 장바구니·결제 API 지연 원인 측정 | 진행중 | 0124 |
