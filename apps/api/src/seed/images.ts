@@ -325,3 +325,14 @@ export function galleryFor(
 
   return random.sample(pool, count)
 }
+
+/** Reproduce the exact immutable SVG assets referenced by legacy catalogue URLs. */
+export function seedPlaceholderAssets(
+  leafSlug: string,
+  leafName: string,
+): readonly { key: string; bytes: Buffer }[] {
+  return pendingFor(null, leafSlug, leafName).map((image) => ({
+    key: keyFor(image),
+    bytes: image.bytes,
+  }))
+}

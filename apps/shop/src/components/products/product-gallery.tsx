@@ -20,6 +20,7 @@
  * gives them that with the keyboard already working.
  */
 
+import { productImageUrl } from '@/lib/products/seed-image-url'
 import { ProductImagePlaceholder } from '@shopping/ui/catalog'
 import { IconButton } from '@shopping/ui/components'
 import type { ProductImage } from '@shopping/shared'
@@ -120,10 +121,10 @@ export function ProductGallery({
                         ? 'size-full origin-center scale-150 object-cover transition-transform'
                         : 'size-full object-cover transition-transform'
                     }
-                    src={image.url}
+                    src={productImageUrl(image.url)}
                   />
                 ) : (
-                  renderImage({ src: image.url, alt: altOf(image, position) })
+                  renderImage({ src: productImageUrl(image.url), alt: altOf(image, position) })
                 )}
               </div>
             </div>
@@ -204,7 +205,7 @@ export function ProductGallery({
                     alt=""
                     aria-hidden="true"
                     className="size-full object-cover"
-                    src={image.url}
+                    src={productImageUrl(image.url)}
                     onError={() => markFailed(image.url)}
                   />
                 )}

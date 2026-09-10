@@ -1,5 +1,6 @@
 'use client'
 
+import { productImageUrl } from '@/lib/products/seed-image-url'
 import Image from 'next/image'
 import type { SearchHit } from '@shopping/shared'
 import { DENSITY_GRID_COLUMNS, DENSITY_VIEWPORT_MIN_WIDTH, type DensityLevel } from '@shopping/ui'
@@ -48,7 +49,7 @@ export function SearchHitCard({
     <ProductCard
       renderImage={({ src, alt }) => (
         <Image
-          src={src}
+          src={productImageUrl(src)}
           alt={alt}
           fill
           className="object-cover"
