@@ -276,12 +276,21 @@ export class OrderService {
       // 실패하는 경우를 또 다뤄야 한다.
       for (const sellerOrder of held === null ? plan.sellerOrders : []) {
         for (const item of sellerOrder.items) {
-          await this.reservations.reserve(tx, {
+          const reservation = await this.reservations.reserve(tx, {
             variantId: item.line.variantId,
             quantity: item.line.quantity,
             userId,
             checkoutId,
           })
+          const source = await tx.cartItem.findFirst({
+            where: { id: item.line.itemId, cart: { userId } },
+            select: { id: true, updatedAt: true },
+          })
+          if (source !== null)
+            await tx.stockReservation.update({
+              where: { id: reservation.id },
+              data: { sourceCartItemId: source.id, sourceCartUpdatedAt: source.updatedAt },
+            })
         }
       }
 
@@ -428,15 +437,36 @@ export class OrderService {
    */
   async markPaid(orderId: string): Promise<void> {
     const changes = await this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "Order" WHERE "id" = ${orderId}::uuid FOR UPDATE`
       const order = await tx.order.findUnique({
         where: { id: orderId },
         select: {
           checkoutId: true,
+          userId: true,
+          cartCleanedAt: true,
           sellerOrders: { where: { status: 'PAYMENT_PENDING' }, select: { id: true } },
         },
       })
 
       if (order === null) throw new NotFoundException('주문을 찾을 수 없어요.')
+      if (order.cartCleanedAt === null) {
+        const purchased = await tx.stockReservation.findMany({
+          where: { checkoutId: order.checkoutId, sourceCartItemId: { not: null } },
+          select: { sourceCartItemId: true, sourceCartUpdatedAt: true, quantity: true },
+        })
+        for (const item of purchased) {
+          if (item.sourceCartItemId === null || item.sourceCartUpdatedAt === null) continue
+          await tx.cartItem.deleteMany({
+            where: {
+              id: item.sourceCartItemId,
+              cart: { userId: order.userId },
+              quantity: item.quantity,
+              updatedAt: item.sourceCartUpdatedAt,
+            },
+          })
+        }
+        await tx.order.update({ where: { id: orderId }, data: { cartCleanedAt: this.clock.now() } })
+      }
       if (order.sellerOrders.length === 0) return []
 
       // 예약을 실제 차감으로 바꾼다. 여기서 처음으로 재고가 줄어든다 — 그전까지

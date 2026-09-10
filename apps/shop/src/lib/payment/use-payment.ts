@@ -1,5 +1,7 @@
 'use client'
 
+import { fetchCart } from '@/lib/cart/cart-api'
+import { publishCartCount } from '@/lib/cart/cart-count'
 import type { OrderResponse } from '@shopping/shared'
 import { useAuth } from '@/lib/auth/auth-context'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -332,6 +334,19 @@ export function usePayment(
       controller.abort()
     }
   }, [])
+
+  useEffect(() => {
+    if (state.status !== 'paid') return
+    const controller = new AbortController()
+    void fetchCart({ signal: controller.signal })
+      .then((cart) => {
+        if (!controller.signal.aborted) publishCartCount(cart.itemCount)
+      })
+      .catch(() => {
+        /* The cart page retries its own read. */
+      })
+    return () => controller.abort()
+  }, [state.status])
 
   const pay = useCallback(
     (input: PaymentInput) => {

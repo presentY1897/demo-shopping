@@ -366,3 +366,7 @@ stateDiagram-v2
 ## 결제 요청 멱등성 (TASK-0125)
 
 주문 행 잠금 아래 진행/완료 결제를 재사용한다. 승인 전 authorizationStartedAt을 원자적으로 기록해 동일 결제의 provider 호출 실행권을 한 요청에만 준다. 60초 이상 남은 READY 실행권은 대사에서 UNRESOLVED로 옮겨 결과를 확인한다. 기존 AUTHORIZED/PAID의 반복 승인·확정 요청은 기존 상태를 돌려주고 추가 차감하지 않는다. 가상 카드 CHARGE refId는 유일하며 같은 키의 다른 카드/금액은 충돌이다. GET /orders/:id/payment는 구매자 소유 주문의 최근 시도 또는 null을 반환한다.
+
+## 결제 확정과 장바구니 (TASK-0127)
+
+예약에 원본 장바구니 항목 ID·수정시각을 저장한다. markPaid는 주문 잠금 아래 일치하는 항목만 제거하고 cartCleanedAt을 기록한다. 수정/삭제 후 재담기/원본 정보 없는 과거 주문은 보존한다. 재처리와 대사 완료도 동일한 루틴을 지난다.
