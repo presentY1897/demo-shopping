@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import type { SearchHit } from '@shopping/shared'
-import { DENSITY_GRID_COLUMNS, type DensityLevel } from '@shopping/ui'
+import { DENSITY_GRID_COLUMNS, DENSITY_VIEWPORT_MIN_WIDTH, type DensityLevel } from '@shopping/ui'
 import { ProductCard } from '@shopping/ui/catalog'
 import type { ProductCardLabels } from '@shopping/ui/catalog'
 
@@ -41,7 +41,7 @@ export function SearchHitCard({
   readonly onWishlist: (productId: string) => void
 }) {
   const columns = DENSITY_GRID_COLUMNS[density]
-  const sizes = `(max-width: 767px) ${100 / columns.base}vw, (max-width: 1199px) ${100 / columns.md}vw, ${Math.ceil(1280 / columns.xl)}px`
+  const sizes = `(max-width: ${DENSITY_VIEWPORT_MIN_WIDTH.md - 1}px) ${100 / columns.base}vw, (max-width: ${DENSITY_VIEWPORT_MIN_WIDTH.xl - 1}px) ${100 / columns.md}vw, ${Math.ceil(DENSITY_VIEWPORT_MIN_WIDTH.xl / columns.xl)}px`
   const wishlisted = useWishlisted(hit.id)
 
   return (

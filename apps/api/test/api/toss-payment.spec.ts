@@ -968,3 +968,20 @@ describe('취소 누계 (F5 · F6)', () => {
     expect(rest.payment.refunds.reduce((sum, refund) => sum + refund.amount, 0)).toBe(amount)
   })
 })
+
+it('does not replace the Toss key once authorization has been claimed', async () => {
+  const placed = await place()
+  const paymentId = await startToss(placed)
+  await db.execute(
+    'UPDATE "Payment" SET "methodRef" = $2, "authorizationStartedAt" = NOW() WHERE id = $1',
+    [paymentId, 'claimed-key'],
+  )
+  expect(
+    await failure(
+      confirmCall(paymentId, { paymentKey: 'different-key', amount: placed.paidAmount }),
+    ),
+  ).toEqual({ status: 409, code: 'PAYMENT_AWAITING_RESULT' })
+  expect(await db.one('SELECT "methodRef" FROM "Payment" WHERE id = $1', [paymentId])).toEqual({
+    methodRef: 'claimed-key',
+  })
+})

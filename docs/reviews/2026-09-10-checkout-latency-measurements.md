@@ -61,3 +61,9 @@
 LCP 원본 5916/3476/3932ms, 수정본 792/676/760ms. 캐시/네트워크 변동과 dev 환경의 영향을 포함한 참고값이다. 변경 전 health가 검색 앞에 있었고 변경 후 상품 요청은 health와 병행한다. 3개 상품 원본 합 6,013,377 bytes → 750px WebP 75,928 bytes, 98.74% 감소. 실제 360px 표준 밀도에서는 384px 응답을 선택한다. 원본을 보존하며 이미지 변환 실패는 카드의 대체 표시로 처리한다.
 
 [이미지 응답](artifacts/checkout-review/image-measurements.json), [360/768/1440px 디코딩 및 넘침 검사](artifacts/checkout-review/image-viewports.json), [홈 비교 원시 측정](artifacts/checkout-review/home-comparison.json).
+
+## 구매 화면 브라우저 회귀
+
+로컬 production build와 계약 기반 API 대역을 사용해 Chromium 360/390/768/1440px에서 검사했다. 실제 운영 결제를 수행한 검사가 아니다. 배송 메모 입력→주소록 이동→뒤로가기에서 메모 유지, DELETE 예약 해제 0건, 동의 후 결제 완료, 완료 화면 새로고침 후 주문 생성 추가 0건을 확인했다. 정상 이미지 naturalWidth 750, 실패 URL은 대체 표시, 가로 넘침 없음. 모바일 하단 CTA는 viewport 안에 있고 포커스된 메모 입력의 하단이 CTA 위에 놓였다. [결과](artifacts/checkout-review/checkout-viewports.json).
+
+최초 전체 검사에서 검색 엔진 인증 키가 빠져 검색 관련54개가 실패했다. 전용 로컬 `.env.local`에 compose와 동일한 개발용 키를 설정한 뒤 검색/상품/토스 관련123개가 통과했다. 배송 정책 계약에 맞춰 상품 응답 검사를 갱신했다. 구매자1247개를 포함한 웹 전체 검사는 통과했고, 통합 전체 검사를 재실행 중이다.

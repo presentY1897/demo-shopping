@@ -289,10 +289,16 @@ export class PaymentService {
 
     // 결제창이 돌려준 키를 결제에 붙인다. 승인 경로는 **하나뿐**이다 — 프로바이더가
     // 그 키를 `methodRef` 로 받으므로, 토스도 가상 카드와 같은 `authorize` 를 지난다.
-    await this.prisma.payment.update({
-      where: { id: paymentId },
+    const bound = await this.prisma.payment.updateMany({
+      where: {
+        id: paymentId,
+        status: 'READY',
+        authorizationStartedAt: null,
+        OR: [{ methodRef: null }, { methodRef: paymentKey }],
+      },
       data: { methodRef: paymentKey, updatedAt: this.clock.now() },
     })
+    if (bound.count === 0) throw awaitingPayment()
 
     return this.authorize(principal, paymentId)
   }

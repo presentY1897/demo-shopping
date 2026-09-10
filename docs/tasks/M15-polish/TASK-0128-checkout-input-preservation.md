@@ -93,3 +93,7 @@
 ### 구현 계약 확정
 
 예약 행의 checkoutDraft JSON으로 주소 ID·배송 요청·쿠폰 선택을 인증된 서버에 저장한다. GET/PATCH /checkouts/:id/draft는 유효 예약의 소유자를 확인한다. 클라이언트 저장은 순차 요청으로 처리하고 주소록 이동 전에 flush한다. pagehide에서는 마지막 초안을 keepalive로 저장하되 예약을 해제하지 않는다. 예약은 명시 취소와 TTL로 종료한다. 배송 메모는 주문 스냅샷의 deliveryNote로 저장한다.
+
+### 통합 검증 진행
+
+2026-09-10 통합 브랜치 `feature/checkout-review-integration`에서 전체 타입·린트·빌드를 통과했다. 전체 테스트 재확인과 CI가 남아 있어 완료 상태로 변경하지 않았다. 공통 결과는 [구매 흐름 검증 기록](../../reviews/2026-09-10-checkout-latency-measurements.md)을 참조한다.

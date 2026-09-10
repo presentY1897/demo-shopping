@@ -2169,6 +2169,7 @@ export interface TossOptionMessages {
  * 다시 걸려 409 로 끝난다. 그래서 이쪽의 다음 행동은 주문 내역이다.
  */
 export interface TossSuccessMessages {
+  readonly viewOrders: string
   readonly title: string
   /** 승인을 기다리는 중. 결제창의 성공은 아직 승인이 아니다. */
   readonly confirming: string

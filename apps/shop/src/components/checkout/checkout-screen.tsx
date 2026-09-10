@@ -206,7 +206,29 @@ export function CheckoutScreen({ id, messages }: CheckoutScreenProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4 pb-28 lg:flex-row lg:items-start lg:pb-0">
+    <div
+      className="flex flex-col gap-4 pb-28 lg:flex-row lg:items-start lg:pb-0"
+      onFocusCapture={(event) => {
+        const target = event.target
+        requestAnimationFrame(() => {
+          const bar = document.querySelector<HTMLElement>('[data-checkout-cta]')
+          if (
+            bar === null ||
+            bar.contains(target) ||
+            getComputedStyle(bar).position !== 'fixed' ||
+            !target.isConnected
+          )
+            return
+          const bottom = target.getBoundingClientRect().bottom
+          const top = bar.getBoundingClientRect().top
+          if (bottom > top)
+            window.scrollBy({
+              top: bottom - top + parseFloat(getComputedStyle(bar).paddingTop),
+              behavior: 'instant',
+            })
+        })
+      }}
+    >
       <div className="flex min-w-0 flex-1 flex-col gap-4">
         <Timer messages={messages} remaining={remaining} />
         {payment.ordered === null ? (
@@ -620,7 +642,10 @@ function Summary({
         }}
       />
 
-      <div className="bg-surface border-border fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-3 border-t p-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:static lg:flex-col lg:items-stretch lg:border-0 lg:p-0">
+      <div
+        data-checkout-cta
+        className="bg-surface border-border fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-3 border-t p-4 pb-[max(calc(var(--spacing)*4),env(safe-area-inset-bottom))] lg:static lg:flex-col lg:items-stretch lg:border-0 lg:p-0"
+      >
         {!desktop ? (
           <span className="text-fg font-bold tabular-nums">
             {formatMoney({ amount: checkout.paidAmount, currency: CURRENCY })}
