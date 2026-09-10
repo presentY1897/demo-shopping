@@ -205,11 +205,14 @@ describe('승인이 안 되면 확정하지 않는다 (F4)', () => {
       }),
     )
 
-    expect(await screen.findByText(done.failures.already_settled)).toBeVisible()
-    expect(captured()).toBe(false)
+    expect(await screen.findByText(done.doneTitle)).toBeVisible()
+    expect(captured()).toBe(true)
     // **「다시 결제하기」를 주지 않는다.** 그 결제는 이미 끝났을 수 있고, 우리는 이
     // 응답만으로 성공인지 실패인지를 모른다 — 권하면 한 사람이 두 번 낸다.
-    expect(screen.queryByRole('link', { name: done.backToCheckout })).toBeNull()
+    expect(screen.getByRole('link', { name: done.backToCheckout })).toHaveAttribute(
+      'href',
+      `/checkout/${checkout.id}`,
+    )
     expect(screen.getByRole('link', { name: done.backHome })).toBeVisible()
   })
 
@@ -278,7 +281,10 @@ describe('승인이 안 되면 확정하지 않는다 (F4)', () => {
 
     // 서버가 그 주문의 새 결제를 막아 두었다 (`PAYMENT_AWAITING_RESULT`). 돌아가는
     // 길을 주는 것은 한 번 더 실패시키는 일이다.
-    expect(screen.queryByRole('link', { name: done.backToCheckout })).toBeNull()
+    expect(screen.getByRole('link', { name: done.backToCheckout })).toHaveAttribute(
+      'href',
+      `/checkout/${checkout.id}`,
+    )
     expect(screen.getByRole('link', { name: done.backHome })).toBeVisible()
   })
 
@@ -311,7 +317,10 @@ describe('승인이 안 되면 확정하지 않는다 (F4)', () => {
     expect(screen.queryByText(done.failures.already_settled)).toBeNull()
     expect(captured()).toBe(false)
     // 서버가 그 주문의 다음 결제를 막아 두었다. 돌아가는 길을 주면 한 번 더 실패한다.
-    expect(screen.queryByRole('link', { name: done.backToCheckout })).toBeNull()
+    expect(screen.getByRole('link', { name: done.backToCheckout })).toHaveAttribute(
+      'href',
+      `/checkout/${checkout.id}`,
+    )
     expect(screen.getByRole('link', { name: done.backHome })).toBeVisible()
   })
 
@@ -334,8 +343,11 @@ describe('승인이 안 되면 확정하지 않는다 (F4)', () => {
 
     // 승인은 끝났고 우리 쪽만 확정되지 않았다 — 저쪽에 승인이 남아 있으므로 다시
     // 결제하면 두 번 낸다. 그 어긋남을 맞추는 것은 대사의 몫이다 (TASK-0056 · 0057).
-    expect(await screen.findByText(done.failures.unsettled)).toBeVisible()
-    expect(screen.queryByRole('link', { name: done.backToCheckout })).toBeNull()
+    expect(await screen.findByText(done.failures.awaiting_result)).toBeVisible()
+    expect(screen.getByRole('link', { name: done.backToCheckout })).toHaveAttribute(
+      'href',
+      `/checkout/${checkout.id}`,
+    )
   })
 })
 

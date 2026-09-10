@@ -409,9 +409,11 @@ export const paymentHandlers: readonly RequestHandler[] = [
             previous.cardId === (body.cardId ?? null))
         )
           return put(previous)
-        throw new MockApiError(409, '앞선 결제의 결과를 확인하는 중이에요.', {
-          code: 'PAYMENT_AWAITING_RESULT',
-        })
+        if (previous.payment.status !== 'READY')
+          throw new MockApiError(409, '앞선 결제의 결과를 확인하는 중이에요.', {
+            code: 'PAYMENT_AWAITING_RESULT',
+          })
+        put({ ...previous, payment: { ...previous.payment, status: 'FAILED' } })
       }
       const serial = store.serial + 1
 
