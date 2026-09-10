@@ -1,5 +1,7 @@
 'use client'
 
+import { useAuth } from '@/lib/auth/auth-context'
+
 import type { ApplicableCoupon, Checkout, CouponRecommendation } from '@shopping/shared'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -117,6 +119,8 @@ function useRemaining(expiresAt: string | null): Remaining | null {
 }
 
 export function useCheckout(id: string): CheckoutStore {
+  const { state: auth } = useAuth()
+  const settled = auth.status !== 'checking'
   const [state, setState] = useState<CheckoutState>({ status: 'loading' })
   const [coupons, setCoupons] = useState<CheckoutCouponsState>({ status: 'loading' })
   const [selection, setSelection] = useState<readonly string[]>([])
@@ -145,6 +149,7 @@ export function useCheckout(id: string): CheckoutStore {
   const selectionKey = selection.join(',')
 
   useEffect(() => {
+    if (!settled) return undefined
     const controller = new AbortController()
     const chosen = selectionKey === '' ? [] : selectionKey.split(',')
 
@@ -188,9 +193,10 @@ export function useCheckout(id: string): CheckoutStore {
     return () => {
       controller.abort()
     }
-  }, [id, selectionKey])
+  }, [id, selectionKey, settled])
 
   useEffect(() => {
+    if (!settled) return undefined
     const controller = new AbortController()
 
     async function load(): Promise<void> {
@@ -211,7 +217,7 @@ export function useCheckout(id: string): CheckoutStore {
     return () => {
       controller.abort()
     }
-  }, [id, couponEpoch])
+  }, [id, couponEpoch, settled])
 
   const remaining = useRemaining(state.status === 'ready' ? state.checkout.expiresAt : null)
 

@@ -96,6 +96,10 @@ test('마우스 없이 데모 발급부터 주문 확인까지 간다 (F1 · TAS
 
   await tabAndPress(page, checkout)
   await page.waitForURL(/\/checkout/, { timeout: 30_000 })
+  // A document reload has to recover auth before reading this existing reservation.
+  const checkoutUrl = page.url()
+  await page.reload()
+  await expect(page).toHaveURL(checkoutUrl)
 
   // **동의 먼저.** 이 체크박스를 켜기 전에는 주문 버튼이 `aria-disabled` 이고,
   // 탭 순서에는 남아 있어 그 이유를 읽을 수 있다 (TASK-0023 4장). 이 줄이 그
