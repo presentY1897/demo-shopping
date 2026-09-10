@@ -22,7 +22,7 @@ import {
   sessionBuyer,
   storefrontCategoryTree,
 } from '@shopping/api-mocks'
-import { SEARCH_SELLER_IDS_MAX } from '@shopping/shared'
+import { searchResponseSchema, SEARCH_SELLER_IDS_MAX } from '@shopping/shared'
 import { DENSITY_LEVELS, DENSITY_STORAGE_KEY } from '@shopping/ui'
 import { DensityProvider } from '@shopping/ui/density'
 import { screen, waitFor, within } from '@testing-library/react'
@@ -416,4 +416,20 @@ it('requests and displays products without waiting for a delayed health response
   await sectionGrid(home.newTitle)
   expect(requests.length).toBeGreaterThan(0)
   expect(screen.getAllByRole('link', { name: home.moreLabel })).toHaveLength(2)
+})
+
+it('does not cache an empty index while search is preparing', async () => {
+  testServer.server.use(
+    malformedResponse(mockPaths.health, healthSearchIndexing),
+    malformedResponse(
+      mockPaths.search,
+      searchResponseSchema.parse({ items: [], facets: {}, total: 0, nextCursor: null }),
+    ),
+  )
+  renderHome()
+  const button = await screen.findByRole('button', { name: messages.wake.retryLabel })
+  expect(screen.queryByText(home.sectionEmpty)).toBeNull()
+  testServer.server.use(...healthHandlers, ...searchHandlers)
+  await userEvent.click(button)
+  expect(await sectionGrid(home.newTitle)).toBeVisible()
 })
