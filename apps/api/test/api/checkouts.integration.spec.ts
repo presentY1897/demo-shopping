@@ -3,6 +3,7 @@ import {
   ApiClientError,
   cartResponseSchema,
   checkoutResponseSchema,
+  checkoutDraftResponseSchema,
   orderResponseSchema,
 } from '@shopping/shared'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -340,5 +341,25 @@ describe('주문은 잡혀 있는 것을 쓴다 (F5 · F7 · 4.3)', () => {
         )
       ).status,
     ).toBe(400)
+  })
+})
+
+describe('TASK-0128 checkout draft', () => {
+  it('preserves notes across reads and rejects an older save', async () => {
+    const store = await listing({ stock: 10 })
+    const { checkout } = await open([await add(store.variantId, 1)])
+    const path = `/checkouts/${checkout.id}/draft`
+    const write = (revision: number, deliveryNote: string) =>
+      client().request({
+        path,
+        method: 'PATCH',
+        body: { revision, deliveryNote },
+        schema: checkoutDraftResponseSchema,
+      })
+    await write(2, '최종 요청')
+    await write(1, '이전 요청')
+    const saved = await client().request({ path, schema: checkoutDraftResponseSchema })
+    expect(saved.draft.deliveryNote).toBe('최종 요청')
+    expect(saved.draft.revision).toBe(2)
   })
 })

@@ -143,11 +143,11 @@ function remove(itemId: string): Promise<unknown> {
   })
 }
 
-function place(itemIds: readonly string[]): Promise<OrderResponse> {
+function place(itemIds: readonly string[], deliveryNote?: string): Promise<OrderResponse> {
   return client().request({
     path: '/orders',
     method: 'POST',
-    body: { itemIds, addressId },
+    body: { itemIds, addressId, ...(deliveryNote === undefined ? {} : { deliveryNote }) },
     schema: orderResponseSchema,
   })
 }
@@ -858,5 +858,19 @@ describe('목록 필터 (TASK-0063 2장)', () => {
       status: 400,
       code: 'BAD_REQUEST',
     })
+  })
+})
+
+describe('TASK-0128 delivery note', () => {
+  it('persists the note in the order snapshot and rejects oversized notes', async () => {
+    const store = await listing()
+    const itemId = await add(store.variantId)
+    const { order } = await place([itemId], '문 앞에 놓아 주세요')
+    const saved = await client().request({
+      path: `/orders/${order.id}`,
+      schema: orderResponseSchema,
+    })
+    expect(saved.order.recipient.deliveryNote).toBe('문 앞에 놓아 주세요')
+    expect((await failure(place([itemId], '가'.repeat(101)))).status).toBe(400)
   })
 })

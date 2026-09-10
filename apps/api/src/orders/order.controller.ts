@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import type {
   CheckoutCouponsResponse,
   CheckoutResponse,
@@ -9,6 +9,7 @@ import type {
   SellerOrderSummaryResponse,
 } from '@shopping/shared'
 import {
+  checkoutDraftSchema,
   checkoutQueryParamsSchema,
   createCheckoutRequestSchema,
   createOrderRequestSchema,
@@ -67,6 +68,22 @@ export class OrderController {
    * 되기 때문이다. 못 쓰는 장이 섞여 있으면 400 이고, 조용히 빼고 계산하지 않는다 —
    * 그러면 화면이 「5,000원 할인」을 보여 준 채 그만큼 비싼 주문이 만들어진다.
    */
+  @Get('checkouts/:id/draft')
+  @RequirePermission('order.read')
+  draft(@Principal() principal: RequestPrincipal, @Param('id') id: string) {
+    return this.checkouts.draft(principal, id)
+  }
+
+  @Patch('checkouts/:id/draft')
+  @RequirePermission('order.write')
+  saveDraft(
+    @Principal() principal: RequestPrincipal,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ) {
+    return this.checkouts.draft(principal, id, parseInput(checkoutDraftSchema, body))
+  }
+
   @Get('checkouts/:id/order')
   @RequirePermission('order.read')
   byCheckout(@Principal() principal: RequestPrincipal, @Param('id') id: string) {

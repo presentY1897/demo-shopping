@@ -203,6 +203,7 @@ export type SellerOrder = z.infer<typeof sellerOrderSchema>
 
 /** 수령인. 주문한 때 배송지에서 **복사한** 값이다 (TASK-0049 4.6). */
 export const orderRecipientSchema = z.object({
+  deliveryNote: z.string().max(100).nullable().optional(),
   name: z.string(),
   phone: z.string(),
   postalCode: z.string(),
@@ -360,6 +361,7 @@ export const createOrderRequestSchema = z
     checkoutId: z.uuid().optional(),
     /** 어느 배송지로. 값은 복사되고 이 id 는 주문에 남지 않는다. */
     addressId: z.uuid(),
+    deliveryNote: z.string().trim().max(100).optional(),
     /**
      * 적용할 쿠폰 (TASK-0075).
      *
@@ -723,3 +725,12 @@ export const sellerOrderDeliveryResponseSchema = z.object({
 })
 
 export type SellerOrderDeliveryResponse = z.infer<typeof sellerOrderDeliveryResponseSchema>
+
+export const checkoutDraftSchema = z.object({
+  revision: z.int().nonnegative().default(0),
+  addressId: z.uuid().nullable().default(null),
+  deliveryNote: z.string().max(100).default(''),
+  userCouponIds: selectedUserCouponIdsSchema.default([]),
+})
+export const checkoutDraftResponseSchema = z.object({ draft: checkoutDraftSchema })
+export type CheckoutDraft = z.infer<typeof checkoutDraftSchema>

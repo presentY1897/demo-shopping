@@ -128,7 +128,10 @@ export class OrderService {
     // 주문 수정의 일이고 그 문은 아직 없다.
     if (placed !== null) return this.get(principal, placed)
 
-    const recipient = await this.recipientOf(account.id, input.addressId)
+    const recipient = {
+      ...(await this.recipientOf(account.id, input.addressId)),
+      deliveryNote: input.deliveryNote ?? null,
+    }
     const source =
       input.checkoutId === undefined
         ? await this.fromCart(account.id, input.itemIds ?? [])
@@ -299,6 +302,7 @@ export class OrderService {
           orderNumber: orderNumberOf(now, randomBytes(ORDER_NUMBER_SUFFIX_LENGTH)),
           userId,
           checkoutId,
+          deliveryNote: recipient.deliveryNote ?? null,
           recipientName: recipient.name,
           recipientPhone: recipient.phone,
           postalCode: recipient.postalCode,
@@ -623,6 +627,7 @@ export class OrderService {
           select: {
             orderNumber: true,
             createdAt: true,
+            deliveryNote: true,
             recipientName: true,
             recipientPhone: true,
             postalCode: true,
@@ -642,6 +647,7 @@ export class OrderService {
       orderNumber: row.order.orderNumber,
       orderedAt: row.order.createdAt.toISOString(),
       recipient: {
+        deliveryNote: row.order.deliveryNote,
         name: row.order.recipientName,
         phone: row.order.recipientPhone,
         postalCode: row.order.postalCode,
@@ -738,6 +744,7 @@ export class OrderService {
 
 /** 수령인 스냅샷, 저장 직전의 모양. */
 interface Recipient {
+  readonly deliveryNote?: string | null
   readonly name: string
   readonly phone: string
   readonly postalCode: string
@@ -833,6 +840,7 @@ const ORDER_SELECT = {
   id: true,
   orderNumber: true,
   createdAt: true,
+  deliveryNote: true,
   recipientName: true,
   recipientPhone: true,
   postalCode: true,
@@ -968,6 +976,7 @@ function present(
     readonly id: string
     readonly orderNumber: string
     readonly createdAt: Date
+    readonly deliveryNote?: string | null
     readonly recipientName: string
     readonly recipientPhone: string
     readonly postalCode: string
@@ -987,6 +996,7 @@ function present(
     orderNumber: row.orderNumber,
     createdAt: row.createdAt.toISOString(),
     recipient: {
+      deliveryNote: row.deliveryNote ?? null,
       name: row.recipientName,
       phone: row.recipientPhone,
       postalCode: row.postalCode,

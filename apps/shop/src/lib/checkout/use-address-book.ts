@@ -2,8 +2,9 @@
 
 import type { Address } from '@shopping/shared'
 import { addressListResponseSchema } from '@shopping/shared'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
+import { useAuth } from '@/lib/auth/auth-context'
 import { getApiClient } from '@/lib/api'
 
 /**
@@ -20,13 +21,24 @@ import { getApiClient } from '@/lib/api'
 export interface AddressBook {
   readonly rows: readonly Address[]
   readonly loading: boolean
+  readonly failed: boolean
+  readonly retry: () => void
 }
 
 export function useAddressBook(): AddressBook {
+  const { state: auth } = useAuth()
+  const [attempt, setAttempt] = useState(0)
+  const [failed, setFailed] = useState(false)
   const [rows, setRows] = useState<readonly Address[]>([])
   const [loading, setLoading] = useState(true)
+  const retry = useCallback(() => {
+    setLoading(true)
+    setFailed(false)
+    setAttempt((value) => value + 1)
+  }, [])
 
   useEffect(() => {
+    if (auth.status === 'checking') return
     const controller = new AbortController()
 
     async function load(): Promise<void> {
@@ -39,7 +51,7 @@ export function useAddressBook(): AddressBook {
 
         if (!controller.signal.aborted) setRows(answer.items)
       } catch {
-        // 빈 목록으로 남는다.
+        if (!controller.signal.aborted) setFailed(true)
       } finally {
         if (!controller.signal.aborted) setLoading(false)
       }
@@ -50,7 +62,7 @@ export function useAddressBook(): AddressBook {
     return () => {
       controller.abort()
     }
-  }, [])
+  }, [attempt, auth.status])
 
-  return { rows, loading }
+  return { rows, loading, failed, retry }
 }

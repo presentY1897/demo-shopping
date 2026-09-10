@@ -80,11 +80,12 @@ export function placeOrder(
   checkoutId: string,
   addressId: string,
   userCouponIds: readonly string[] = [],
+  deliveryNote = '',
 ): Promise<OrderResponse> {
   return getApiClient().request({
     path: '/orders',
     method: 'POST',
-    body: { checkoutId, addressId, userCouponIds: [...userCouponIds] },
+    body: { checkoutId, addressId, userCouponIds: [...userCouponIds], deliveryNote },
     schema: orderResponseSchema,
   })
 }

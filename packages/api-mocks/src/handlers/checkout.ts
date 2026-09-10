@@ -7,6 +7,8 @@ import type {
 } from '@shopping/shared'
 import {
   checkoutCouponsResponseSchema,
+  checkoutDraftResponseSchema,
+  checkoutDraftSchema,
   checkoutOrderResponseSchema,
   checkoutResponseSchema,
   createCheckoutRequestSchema,
@@ -81,6 +83,7 @@ const EMPTY_CHECKOUT_STORE: CheckoutStore = {
   spent: [],
 }
 
+let draft = checkoutDraftSchema.parse({})
 let store: CheckoutStore = EMPTY_CHECKOUT_STORE
 
 /**
@@ -263,6 +266,15 @@ export const checkoutHandlers: readonly RequestHandler[] = [
    * 이 대역도 저장하지 않는다 — 저장하면 「고르기」가 상태를 바꾸는 요청이 되고,
    * 그때부터 두 번째 탭이 첫 번째 탭의 선택으로 주문하게 된다.
    */
+  http.get(mockPaths.checkoutDraft, () =>
+    HttpResponse.json(defineFixture(checkoutDraftResponseSchema, { draft })),
+  ),
+  http.patch(mockPaths.checkoutDraft, ({ request }) =>
+    answering(async () => {
+      draft = await readBody(request, checkoutDraftSchema)
+      return HttpResponse.json(defineFixture(checkoutDraftResponseSchema, { draft }))
+    }),
+  ),
   http.get(mockPaths.checkoutOrder, () =>
     HttpResponse.json(defineFixture(checkoutOrderResponseSchema, { order: null })),
   ),
@@ -355,6 +367,7 @@ export const checkoutHandlers: readonly RequestHandler[] = [
  * 실제로 그 상태에 닿는 방법이기 때문이다.
  */
 export function resetCheckoutStore(seed: CheckoutResponse = shopperCheckout): void {
+  draft = checkoutDraftSchema.parse({})
   store = { ...EMPTY_CHECKOUT_STORE, seed }
 }
 

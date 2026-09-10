@@ -1,3 +1,5 @@
+import { checkoutDraftSchema } from '@shopping/shared'
+import type { CheckoutDraft } from '@shopping/shared'
 import { randomUUID } from 'node:crypto'
 
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
@@ -72,6 +74,34 @@ export class CheckoutService {
     // 열자마자 쿠폰이 붙어 있는 주문서는 없다. 고르는 것은 다음 화면의 일이고,
     // 그 선택은 읽을 때마다 함께 온다 (`checkoutQueryParamsSchema`).
     return this.read(principal, checkoutId)
+  }
+
+  async draft(principal: RequestPrincipal, id: string, value?: CheckoutDraft) {
+    const account = await this.account(
+      principal,
+      value === undefined ? 'order.read' : 'order.write',
+    )
+    await this.linesOf(account.id, id)
+    if (value !== undefined) {
+      return this.prisma.$transaction(async (tx) => {
+        const rows = await tx.$queryRaw<
+          { checkoutDraft: unknown }[]
+        >`SELECT "checkoutDraft" FROM "StockReservation" WHERE "checkoutId" = ${id}::uuid AND "userId" = ${account.id}::uuid AND "status" = 'HELD' ORDER BY "id" FOR UPDATE`
+        if (rows.length === 0) throw new NotFoundException('주문서를 찾을 수 없어요.')
+        const previous = checkoutDraftSchema.parse(rows[0]?.checkoutDraft ?? {})
+        if (value.revision < previous.revision) return { draft: previous }
+        await tx.stockReservation.updateMany({
+          where: { checkoutId: id, userId: account.id, status: 'HELD' },
+          data: { checkoutDraft: value },
+        })
+        return { draft: value }
+      })
+    }
+    const row = await this.prisma.stockReservation.findFirst({
+      where: { checkoutId: id, userId: account.id },
+      select: { checkoutDraft: true },
+    })
+    return { draft: checkoutDraftSchema.parse(row?.checkoutDraft ?? {}) }
   }
 
   /** 열려 있는 주문서 하나. 만료됐거나 풀렸으면 없는 것으로 답한다. */

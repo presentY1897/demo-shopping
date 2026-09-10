@@ -3,7 +3,7 @@
 import type { ApplicableCoupon, Checkout, CouponRecommendation } from '@shopping/shared'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { closeCheckoutOnLeave, readCheckout, readCheckoutCoupons } from './checkout-api'
+import { readCheckout, readCheckoutCoupons } from './checkout-api'
 import { refusedForCoupons } from './coupon-failure'
 import { toggledSelection } from './coupon-selection'
 import type { Remaining } from './remaining'
@@ -91,6 +91,7 @@ export interface CheckoutStore {
    * 하나에 주문서 전체가 사라졌다 나타나면 사람은 자기가 무엇을 망가뜨렸다고
    * 생각하고, 그 사이 배송지 선택과 스크롤 위치가 함께 사라진다.
    */
+  readonly restoreSelection: (ids: readonly string[]) => void
   readonly repricing: boolean
   /**
    * 서버가 그 선택을 거절했고, 우리가 되돌렸다 (400).
@@ -212,24 +213,6 @@ export function useCheckout(id: string): CheckoutStore {
     }
   }, [id, couponEpoch])
 
-  useEffect(() => {
-    const leave = (): void => {
-      if (!keep.current) closeCheckoutOnLeave(id)
-    }
-
-    // 탭을 닫거나 다른 사이트로 가는 경우. `unload` 가 아니라 `pagehide` 인 이유는
-    // 뒤로가기 캐시(bfcache)가 있는 브라우저에서 `unload` 가 아예 안 오기 때문이다.
-    window.addEventListener('pagehide', leave)
-
-    return () => {
-      window.removeEventListener('pagehide', leave)
-      // 화면을 벗어나는 경우 — 뒤로가기를 포함한다 (F4).
-      leave()
-    }
-    // **선택은 여기 없다.** 쿠폰을 고를 때마다 이 효과가 다시 걸리면 그때마다
-    // 해제 신호가 한 번씩 나가고, 그것은 고르는 도중에 자기 재고를 푸는 일이다.
-  }, [id])
-
   const remaining = useRemaining(state.status === 'ready' ? state.checkout.expiresAt : null)
 
   /**
@@ -277,11 +260,14 @@ export function useCheckout(id: string): CheckoutStore {
    * **상태를 바꾸지 않는다.** 주문이 생겼다는 것은 아직 끝이 아니고 — 끝은 결제다 —
    * 여기서 화면을 완료로 옮기면 결제하는 중에 결제 영역이 사라진다.
    */
+  const restoreSelection = useCallback((ids: readonly string[]) => setSelection([...ids]), [])
+
   const placed = useCallback(() => {
     keep.current = true
   }, [])
 
   return {
+    restoreSelection,
     chooseCoupon,
     chooseRecommended,
     coupons,

@@ -147,8 +147,8 @@ describe('만료 (F3)', () => {
   })
 })
 
-describe('이탈 해제 (F4)', () => {
-  it('lets the hold go when the screen is left', async () => {
+describe('주문서 이동 보존 (TASK-0128)', () => {
+  it('keeps the hold when the screen is left', async () => {
     const { unmount } = await renderCheckout()
 
     unmount()
@@ -169,7 +169,7 @@ describe('이탈 해제 (F4)', () => {
       { session: sessionBuyer },
     )
 
-    expect(await screen.findByText(copy.expiredTitle)).toBeVisible()
+    expect(await screen.findByRole('region', { name: copy.itemsTitle })).toBeVisible()
   })
 })
 
