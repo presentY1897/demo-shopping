@@ -171,6 +171,42 @@ describe('payment finalization batches', () => {
     await assertComplete(placed, 2)
   })
 
+  it('refuses a reservation released while completion waits for its lock', async () => {
+    const placed = await fixture(2)
+    const held = await prisma.stockReservation.findFirstOrThrow({
+      where: { checkoutId: placed.checkoutId },
+    })
+    let complete: Promise<unknown> | undefined
+    await prisma.$transaction(async (tx) => {
+      await reservations().release(tx, held.id)
+      complete = orders()
+        .markPaid(placed.orderId)
+        .then(
+          () => null,
+          (error: unknown) => error,
+        )
+      await vi.waitFor(async () => {
+        const waiting = await db.one<{ count: number }>(
+          `SELECT count(*)::int AS count FROM pg_stat_activity
+            WHERE datname = current_database() AND wait_event_type = 'Lock'
+              AND query LIKE '%StockReservation%'`,
+        )
+        expect(waiting.count).toBeGreaterThan(0)
+      })
+    })
+    const error = (await complete) as { getResponse: () => unknown }
+    expect(error.getResponse()).toMatchObject({ code: 'RESERVATION_RELEASED' })
+    expect(
+      await prisma.sellerOrder.count({
+        where: { orderId: placed.orderId, status: 'PAYMENT_PENDING' },
+      }),
+    ).toBe(2)
+    expect(await prisma.cartItem.count({ where: { cartId: placed.cartId } })).toBe(2)
+    expect(await prisma.stockLedger.count({ where: { type: 'RESERVE_CONFIRM' } })).toBe(0)
+    expect(await stock().reconcile()).toEqual([])
+    expect(await reservations().reconcile()).toEqual([])
+  })
+
   it('reads the committed ledger position after waiting for a variant lock', async () => {
     const placed = await fixture(1)
     const variantId = placed.variants[0]!

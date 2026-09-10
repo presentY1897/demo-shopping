@@ -183,12 +183,17 @@ export class ReservationService {
 
   /** Settle the checkout's remaining holds under ordered reservation locks. */
   async confirmCheckout(tx: Tx, checkoutId: string): Promise<void> {
-    const held = await tx.$queryRaw<HeldRow[]>`
+    const rows = await tx.$queryRaw<HeldRow[]>`
       SELECT "id", "variantId", "quantity", "status", "expiresAt"
         FROM "StockReservation"
-       WHERE "checkoutId" = ${checkoutId}::uuid AND "status" = 'HELD'
+       WHERE "checkoutId" = ${checkoutId}::uuid
        ORDER BY "id" FOR UPDATE
     `
+    // Recheck after locking: a concurrent release must not silently drop a sold line.
+    if (rows.some((row) => settlement(row.status, 'CONFIRMED') === 'refuse')) {
+      throw new ConflictException(domainFailure('RESERVATION_RELEASED', '예약이 이미 해제됐어요.'))
+    }
+    const held = rows.filter((row) => settlement(row.status, 'CONFIRMED') === 'apply')
     if (held.length === 0) return
     await this.stock.confirmReservations(tx, held)
     await tx.stockReservation.updateMany({
