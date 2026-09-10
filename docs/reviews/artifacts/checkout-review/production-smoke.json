@@ -1,0 +1,297 @@
+{
+  "at": "2026-09-10T10:20:43.561Z",
+  "commit": "b954d634ae2819467c5deb39369803d3bd00c1f2",
+  "paid": true,
+  "reloadRecovered": true,
+  "cartEmpty": true,
+  "manualPaymentRetries": 0,
+  "checkoutImages": [
+    {
+      "loaded": true,
+      "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2cec8285-5719-59c1-9368-be270f16eb4b.png"
+    }
+  ],
+  "completedRequestTimings": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "durationMs": 486
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/categories/tree",
+      "durationMs": 726
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/demo",
+      "durationMs": 4130
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "durationMs": 1956
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/notifications",
+      "durationMs": 475
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/categories/tree",
+      "durationMs": 971
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/products/:id/reviews",
+      "durationMs": 1117
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/products/:id/detail",
+      "durationMs": 1816
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "durationMs": 2240
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/recently-viewed",
+      "durationMs": 468
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/follows/ids",
+      "durationMs": 469
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/wishlist/ids",
+      "durationMs": 470
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/notifications",
+      "durationMs": 682
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/demo",
+      "durationMs": 694
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/preferences",
+      "durationMs": 694
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/categories/tree",
+      "durationMs": 1423
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "durationMs": 2583
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/notifications",
+      "durationMs": 549
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/demo",
+      "durationMs": 676
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/preferences",
+      "durationMs": 710
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cart",
+      "durationMs": 1633
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/checkouts",
+      "durationMs": 4642
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/addresses",
+      "durationMs": 1347
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cards",
+      "durationMs": 1366
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/checkouts/:id/order",
+      "durationMs": 1530
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/checkouts/:id",
+      "durationMs": 2222
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/checkouts/:id/draft",
+      "durationMs": 2932
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/checkouts/:id/coupons",
+      "durationMs": 2958
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/orders",
+      "durationMs": 4408
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/payments",
+      "durationMs": 3011
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/checkouts/:id/order",
+      "durationMs": 2274
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/orders/:id/payment",
+      "durationMs": 1589
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/notifications",
+      "durationMs": 459
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/checkouts/:id/order",
+      "durationMs": 1630
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/orders/:id/payment",
+      "durationMs": 2284
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/orders/:id",
+      "durationMs": 1183
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/checkouts/:id",
+      "durationMs": 222
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/checkouts/:id/coupons",
+      "durationMs": 230
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/categories/tree",
+      "durationMs": 1150
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "durationMs": 2779
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/notifications",
+      "durationMs": 695
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cards",
+      "durationMs": 696
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/demo",
+      "durationMs": 697
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/addresses",
+      "durationMs": 887
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/preferences",
+      "durationMs": 940
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/checkouts/:id/draft",
+      "durationMs": 1621
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/checkouts/:id/order",
+      "durationMs": 2047
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/orders/:id/payment",
+      "durationMs": 1609
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/orders/:id",
+      "durationMs": 1883
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/categories/tree",
+      "durationMs": 518
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "durationMs": 1494
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/notifications",
+      "durationMs": 468
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/demo",
+      "durationMs": 687
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/preferences",
+      "durationMs": 705
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cart",
+      "durationMs": 1598
+    }
+  ],
+  "limitations": [
+    "1 successful demo purchase; not a performance benchmark",
+    "cart image sampled before cart load: excluded",
+    "aborted requests have no valid browser duration; excluded",
+    "server trace and actual cold-start timing unavailable"
+  ]
+}
