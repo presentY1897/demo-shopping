@@ -2,7 +2,7 @@
 
 > 이어받을 것과 이월된 항목은 [`docs/HANDOFF.md`](../HANDOFF.md) 에 있다.
 
-아래 인덱스에 등록된 **126개** TASK: **114개 완료**, **9개 진행중**, **3개 승인됨**. TASK-0124 검토 완료 후 TASK-0125~0131을 후속 작업으로 작성하고 사용자 승인을 받았다. 폐기 TASK는 이 집계에 포함하지 않는다.
+아래 인덱스에 등록된 **126개** TASK: **119개 완료**, **4개 진행중**, **3개 승인됨**. TASK-0124 검토 완료 후 TASK-0125~0131을 후속 작업으로 작성하고 사용자 승인을 받았다. 폐기 TASK는 이 집계에 포함하지 않는다.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
@@ -20,7 +20,7 @@
 | [M12](./M12-settlement/) 정산 | 수수료 정책, 정산서 배치, 승인·지급, 매출 대시보드 | **5/5 완료** |
 | [M13](./M13-community/) 회원 부가 | 리뷰, 위시리스트, Q&A, 팔로우, 알림, 신고 | **9/9 완료** |
 | [M14](./M14-admin/) 관리자 | 대시보드, 회원·판매자 관리, 전체 조회, 데모 관리 | **5/5 완료** |
-| [M15](./M15-polish/) 마무리 | 성능·정합성, 접근성, E2E·데모 시나리오, 포트폴리오 문서 | 7/15 |
+| [M15](./M15-polish/) 마무리 | 성능·정합성, 접근성, E2E·데모 시나리오, 포트폴리오 문서 | 12/15 |
 
 ---
 
@@ -237,7 +237,7 @@
 
 </details>
 
-<details><summary><b>M15. 마무리</b> (7/15)</summary>
+<details><summary><b>M15. 마무리</b> (12/15)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -249,12 +249,12 @@
 | [TASK-0121](./M15-polish/TASK-0121-racy-optimistic-spec.md) | 낙관적 갱신 검사의 타이밍 가정 | 완료 |
 | [TASK-0123](./M15-polish/TASK-0123-storefront-copy-cleanup.md) | 구매자 메인 설명 정리 | 완료 |
 | [TASK-0124](./M15-polish/TASK-0124-storefront-checkout-review.md) | 구매자 반응 속도·결제 UX 검토 | 완료 |
-| [TASK-0125](./M15-polish/TASK-0125-payment-idempotency.md) | 결제 생성·승인 중복 방지 | 진행중 |
-| [TASK-0126](./M15-polish/TASK-0126-payment-result-recovery.md) | 끊긴 결제 결과 복구·재시도 통일 | 진행중 |
-| [TASK-0127](./M15-polish/TASK-0127-paid-cart-cleanup.md) | 결제 확정 후 구매한 장바구니 정리 | 진행중 |
-| [TASK-0128](./M15-polish/TASK-0128-checkout-input-preservation.md) | 배송지 이동·배송 요청사항 보존 | 진행중 |
+| [TASK-0125](./M15-polish/TASK-0125-payment-idempotency.md) | 결제 생성·승인 중복 방지 | 완료 |
+| [TASK-0126](./M15-polish/TASK-0126-payment-result-recovery.md) | 끊긴 결제 결과 복구·재시도 통일 | 완료 |
+| [TASK-0127](./M15-polish/TASK-0127-paid-cart-cleanup.md) | 결제 확정 후 구매한 장바구니 정리 | 완료 |
+| [TASK-0128](./M15-polish/TASK-0128-checkout-input-preservation.md) | 배송지 이동·배송 요청사항 보존 | 완료 |
 | [TASK-0129](./M15-polish/TASK-0129-purchase-ux-consistency.md) | 구매 안내·오류 피드백·모바일 동선 정리 | 진행중 |
-| [TASK-0130](./M15-polish/TASK-0130-storefront-loading-performance.md) | 홈 선행 대기 제거·상품 이미지 경량화 | 진행중 |
+| [TASK-0130](./M15-polish/TASK-0130-storefront-loading-performance.md) | 홈 선행 대기 제거·상품 이미지 경량화 | 완료 |
 | [TASK-0131](./M15-polish/TASK-0131-checkout-api-latency-analysis.md) | 장바구니·결제 API 지연 원인 측정 | 진행중 |
 
 </details>

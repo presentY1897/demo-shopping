@@ -1,0 +1,22 @@
+[
+  {
+    "width": 1440,
+    "requests": [
+      {
+        "items": [
+          {
+            "variantId": "019596d0-1f1c-7c2e-9a0e-330000000006",
+            "quantity": 2
+          }
+        ]
+      }
+    ],
+    "items": [
+      {
+        "variantId": "019596d0-1f1c-7c2e-9a0e-330000000006",
+        "quantity": 2
+      }
+    ],
+    "cartUnchanged": true
+  }
+]
