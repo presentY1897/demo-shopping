@@ -222,6 +222,48 @@ export class SellerOrderService {
     return { sellerOrderId, from: locked.status, to, actor: command.actor, occurredAt: now }
   }
 
+  /** Bulk payment completion uses the same transition rules and history gateway. */
+  async payPendingWithin(tx: Tx, orderId: string): Promise<SellerOrderStatusChanged[]> {
+    const rows = await tx.$queryRaw<LockedSellerOrder[]>`
+      SELECT "id", "status"::text AS "status", "trackingNumber"
+        FROM "SellerOrder"
+       WHERE "orderId" = ${orderId}::uuid AND "status" = 'PAYMENT_PENDING'
+       ORDER BY "id" FOR UPDATE
+    `
+    if (rows.length === 0) return []
+    for (const row of rows) {
+      const decision = transitionDecision({
+        from: row.status,
+        to: 'PAID',
+        actor: 'SYSTEM',
+        hasTracking: row.trackingNumber !== null,
+      })
+      if (decision.outcome === 'refused') throw refusal(decision.reason, row.status, 'PAID')
+    }
+    const now = this.clock.now()
+    await tx.sellerOrder.updateMany({
+      where: { id: { in: rows.map((row) => row.id) } },
+      data: { status: 'PAID', updatedAt: now },
+    })
+    await tx.orderStatusHistory.createMany({
+      data: rows.map((row) => ({
+        sellerOrderId: row.id,
+        fromStatus: row.status,
+        toStatus: 'PAID' as const,
+        actor: 'SYSTEM' as const,
+        actorId: null,
+        createdAt: now,
+      })),
+    })
+    return rows.map((row) => ({
+      sellerOrderId: row.id,
+      from: row.status,
+      to: 'PAID',
+      actor: 'SYSTEM',
+      occurredAt: now,
+    }))
+  }
+
   /**
    * 옮겨진 사실을 알린다 (⑥ · M13), 그리고 **확정이면 그 뒤를 잇는다** (M11 · M12).
    *
