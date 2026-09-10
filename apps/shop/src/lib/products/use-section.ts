@@ -41,8 +41,13 @@ export function useSection(
         )
 
         if (!controller.signal.aborted) {
-          completed.current = key
-          setState({ status: 'ready', items: answer.items })
+          if (answer.items.length > 0 || ready) {
+            completed.current = key
+            setState({ status: 'ready', items: answer.items })
+          } else {
+            // An empty index while search is waking is not an empty catalogue.
+            setState({ status: 'loading' })
+          }
         }
       } catch {
         if (!controller.signal.aborted) {

@@ -26,6 +26,7 @@ import {
   resetCouponBoxStore,
   sessionBuyer,
 } from '@shopping/api-mocks'
+import { http } from 'msw'
 import { COUPON_EXPIRING_SOON_DAYS, COUPON_CODE_INPUT_MAX_LENGTH } from '@shopping/shared'
 import { DENSITY_LEVELS, DENSITY_STORAGE_KEY } from '@shopping/ui'
 import { formatMoney } from '@shopping/ui/format'
@@ -395,9 +396,24 @@ describe('코드 등록 (F3)', () => {
 
     const submit = screen.getByRole('button', { name: claimCopy.submit })
 
-    await Promise.all([user.click(submit), user.click(submit)])
+    let release = () => undefined as void
+    const pending = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    testServer.server.use(
+      http.post(mockPaths.couponClaims, async () => {
+        await pending
+      }),
+    )
+    try {
+      await user.click(submit)
+      await waitFor(() => expect(posted()).toBe(1))
+      await user.click(submit)
+      expect(posted()).toBe(1)
+    } finally {
+      release()
+    }
     await screen.findByRole('heading', { level: 3, name: '신규 가입 감사 10%' })
-
     expect(posted()).toBe(1)
   })
 })
