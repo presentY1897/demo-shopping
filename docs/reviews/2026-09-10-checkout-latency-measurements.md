@@ -114,3 +114,13 @@ SQL 누적 시간에는 병렬 질의가 포함되므로 서버 벽시계와 합
 ### 복수 상품 운영 확인에서 발견한 추가 실패
 
 썸네일 검증용 기존 시드 상품과 사진 상품2개를 함께 주문할 때, Chromium 주문서 조회가 오류 화면을 표시했고 최종 POST /payments/:id/capture가 HTTP500을 반환했다. 단일 상품 구매1회의 PAID/장바구니 비움 성공을 복수 상품 전체 성공으로 일반화하지 않는다. 이미지 표시 검증은 같은 운영 응답을 미리 받아 렌더링에 제공하는 방식으로 분리했다. 응답500에 성공 전용 Server-Timing은 없고 서버 오류 로그에 접근하지 못했으므로 transaction 만료를 확정 원인으로 기록하지 않는다. markPaid가 기본 Prisma transaction 안에서 상품별 예약/원장/상태 전이를 순차 실행하는 점과 운영 DB 왕복 약210ms를 근거로, 지연을 주입한 실 PostgreSQL 복수 상품 재현이 다음 조사 대상이다.
+
+### 실 DB 지연 주입으로 transaction 만료 재현
+
+격리된 로컬 PostgreSQL에서 판매자2명·상품2개의 capture 구간에만 query 응답210ms 지연을 주입했다. 기본 transaction 제한5000ms에서는 HTTP500·Prisma P2028, payment PAID, sellerOrder 두 건 PAYMENT_PENDING, 장바구니2건이 남았다. 테스트에서만 제한을30000ms로 바꾸면 HTTP201, sellerOrder 두 건 PAID, 장바구니0건이며 P2028이 없었다. capture 벽시계는 각각 약7.36초/9.01초다.
+
+이는 원격 DB 왕복과 기본 transaction 제한이 복수 상품 구매를 중간 상태에 남길 수 있음을 재현한다. 운영 서버 로그 자체는 미확보이므로 운영500과 동일한 예외라고 단정하지 않는다. 운영 timeout이나 상태 처리 코드는 이 조사에서 변경하지 않았다. 제한 증가만으로 구매 속도가 빨라지는 것도 아니며 최대100개 장바구니 항목까지 해결된다고 주장할 수 없다. 후속 수정은 markPaid의 상품별 반복 DB 왕복 축소 및 처리 한도·transaction 경계를 함께 검토해야 한다.
+
+실행: `CHECKOUT_REMOTE_DIAGNOSTIC=1 pnpm --filter @shopping/api exec vitest run test/api/checkout-remote-latency.diagnostic.spec.ts`. 비교군은 `CHECKOUT_REMOTE_TX_TIMEOUT_MS=30000`을 추가한다. 기본 전체 검사에서는 skip한다. 새 환경변수는 테스트 전용이며 배포 설정이 아니다.
+
+[기본 제한 원자료](artifacts/checkout-review/simulated-db-delay-5000.json) · [비교군 원자료](artifacts/checkout-review/simulated-db-delay-30000.json).
