@@ -60,6 +60,20 @@ export class SearchOutboxService {
     })
   }
 
+  /** Queue each affected product once, within the caller's transaction. */
+  async publishMany(tx: Tx, productIds: readonly string[]): Promise<void> {
+    if (productIds.length === 0) return
+    const now = this.clock.now()
+    await tx.searchOutbox.createMany({
+      data: [...new Set(productIds)].map((productId) => ({
+        productId,
+        kind: 'UPSERT' as const,
+        createdAt: now,
+        nextAttemptAt: now,
+      })),
+    })
+  }
+
   /** The events that are due, oldest first. */
   async due(now: Date, limit: number): Promise<readonly OutboxEvent[]> {
     const rows = await this.prisma.searchOutbox.findMany({

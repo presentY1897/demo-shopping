@@ -181,6 +181,22 @@ export class ReservationService {
     return { reservation: await this.settle(tx, held, 'CONFIRMED'), entry }
   }
 
+  /** Settle the checkout's remaining holds under ordered reservation locks. */
+  async confirmCheckout(tx: Tx, checkoutId: string): Promise<void> {
+    const held = await tx.$queryRaw<HeldRow[]>`
+      SELECT "id", "variantId", "quantity", "status", "expiresAt"
+        FROM "StockReservation"
+       WHERE "checkoutId" = ${checkoutId}::uuid AND "status" = 'HELD'
+       ORDER BY "id" FOR UPDATE
+    `
+    if (held.length === 0) return
+    await this.stock.confirmReservations(tx, held)
+    await tx.stockReservation.updateMany({
+      where: { id: { in: held.map((row) => row.id) } },
+      data: { status: 'CONFIRMED', settledAt: this.clock.now() },
+    })
+  }
+
   /** 트랜잭션 하나로 한 건을 확정한다. 결제 승인 웹훅이 부를 모양이다. */
   confirmHold(
     reservationId: string,
