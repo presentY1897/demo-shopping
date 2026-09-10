@@ -88,3 +88,25 @@ PR #136의 `b954d63`을 2026-09-10 운영에 배포했다. Render API 및 Vercel
 완료된 브라우저 요청에서 checkout.open 4,642ms, order.create 4,408ms, payment.start 3,011ms였다. 최초 확인의 장바구니 담기 실패와 별도 시도의 주문 생성 응답 유실도 관찰했다. 마지막 구매에서는 장바구니 담기·승인·확정 요청의 `net::ERR_ABORTED`가 발생했으며 실제 서버 작업은 반영됐다. 중단된 요청의 Playwright timing 값은 유효하지 않아 소요 시간 수치로 사용하지 않는다.
 
 이로써 운영의 수초 지연은 브라우저에서 관찰했으나 **서버 내부 원인은 여전히 미확인**이다. 위 로컬 미재현 결과와 구분한다. 단일 성공 흐름의 값은 p95나 성능 개선 검증이 아니며 서버 trace 확보를 대신하지 않는다. [개인정보를 제외한 결과](artifacts/checkout-review/production-smoke.json).
+
+
+## PR #137 운영 Server-Timing 실측
+
+2026-09-10 API 배포 `a5661a9d267ac4f721b5d96c96cbf46414e671ee` 완료 후 실제 JWT 데모 구매자로 가상 카드 구매 1회를 수행했다. 모든 요청은 성공했고 결제 PAID와 장바구니 itemCount 0을 확인했다. 클라이언트는 Node fetch, 제한30초이며 기존 브라우저5초 중단과 구분한다. 운영 부하 검사는 수행하지 않았다. 단일 흐름이라 운영 median/p95나 cold start 수치를 산출하지 않는다.
+
+| 요청 | 클라이언트 ms | 서버 ms | SQL 횟수 | SQL 누적 ms | 연결 획득 누적 ms |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| POST /cart/items | 4122 | 3710 | 21 | 4408 | 115 |
+| GET /cart | 1483 | 1271 | 10 | 2102 | 1 |
+| POST /checkouts | 3707 | 3327 | 25 | 5226 | 154 |
+| POST /orders | 4736 | 4264 | 24 | 5044 | 1061 |
+| POST /payments | 2855 | 2534 | 13 | 2732 | 1 |
+| POST /payments/:id/authorize | 5340 | 4834 | 20 | 4285 | 740 |
+| POST /payments/:id/capture | 8103 | 7384 | 35 | 7358 | 1418 |
+| GET /cart | 1468 | 1265 | 10 | 2102 | 1 |
+
+SQL 누적 시간에는 병렬 질의가 포함되므로 서버 벽시계와 합산하거나 비율로 환산하지 않는다. 서비스·transaction·provider 구간도 서로 중첩된다. 대부분의 단순 계정 조회가 약210ms이며 인증 resolver는0.16~0.42ms다. 장바구니 linesOf는 약1054ms, 결제 확정 markPaid는4006ms이며 provider capture는0.03ms다. 따라서 이 표본의 구매 지연에는 반복 DB 왕복과 transaction 내부 작업이 크게 기여하고, 외부 결제 capture 호출이나 JWT 처리만으로 설명되지 않는다. 연결 획득 지연도 주문 생성1061ms·capture1418ms로 관측됐다. 이것만으로 DB 리전 불일치·pool 고갈·DB CPU 병목 중 하나를 확정하지 않는다.
+
+후속 수정 후보는 cart/checkout의 다중 relation 조회 왕복 축소, 이미 확인한 account/order의 요청 내부 중복 조회 축소다. 구매 상태 전이·원장·잠금·스냅샷을 유지한 실 PostgreSQL 회귀가 선행되어야 한다. Prisma relationJoins preview는 켜는 순간 기본 관계 로딩 전략 전체가 바뀌므로 특정 경로만 바뀐다고 가정하면 안 된다. 후속 구현은 별도 TASK에서 범위와 위험을 명시하고, 같은7개 요청 warm30회/동시32회 비교 및 운영 소량 전후 trace로 검증한다. 1차 목표는 대상 관계 조회의 SQL 왕복 수 절반 이하 및 동일 환경 p95 회귀0건이다. 전체 구매300ms 같은 검증되지 않은 운영 목표는 약속하지 않는다. 실제 cold start 표본은 여전히 미확보라 TASK-0131 F3는 열어 둔다.
+
+[요청 ID와 구간 원자료](artifacts/checkout-review/production-server-timing.json). 토큰·주소·카드·SQL/매개변수는 저장하지 않았다.
