@@ -90,9 +90,10 @@ export function ProductSection({
         <>
           <CardWishlistNotice failed={wishlist.failed} />
           <ProductGrid density={density} label={messages.gridLabel.replace('{title}', title)}>
-            {shown.map((hit) => (
+            {shown.map((hit, index) => (
               <li key={hit.id}>
                 <SearchHitCard
+                  priority={sort === 'newest' && index < 2}
                   density={density}
                   hit={hit}
                   labels={messages.card}

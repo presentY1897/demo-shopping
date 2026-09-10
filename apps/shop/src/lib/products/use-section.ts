@@ -1,12 +1,12 @@
 'use client'
 
 import type { SearchHit, SearchSort } from '@shopping/shared'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 
 import { fetchSection } from './section-api'
 import { SectionReadiness } from './section-readiness'
 
-// Home sections wait for search readiness; other pages fetch on mount.
+// Fetch immediately; health readiness can retry an unsuccessful first request.
 export type SectionState =
   | { readonly status: 'loading' }
   | { readonly status: 'error'; readonly retry: () => void }
@@ -26,8 +26,11 @@ export function useSection(
   // 접으면 「같은 가게들」이 같은 값이 된다.
   const stores = sellerIds === undefined ? '' : sellerIds.join(',')
 
+  const completed = useRef<string | null>(null)
+  const key = JSON.stringify([sort, limit, stores, run])
+
   useEffect(() => {
-    if (!ready) return
+    if (completed.current === key) return
     const controller = new AbortController()
 
     async function load(): Promise<void> {
@@ -37,7 +40,10 @@ export function useSection(
           { signal: controller.signal },
         )
 
-        if (!controller.signal.aborted) setState({ status: 'ready', items: answer.items })
+        if (!controller.signal.aborted) {
+          completed.current = key
+          setState({ status: 'ready', items: answer.items })
+        }
       } catch {
         if (!controller.signal.aborted) {
           setState({
@@ -56,7 +62,7 @@ export function useSection(
     return () => {
       controller.abort()
     }
-  }, [sort, limit, stores, ready, run])
+  }, [sort, limit, stores, ready, run, key])
 
-  return ready ? state : { status: 'loading' }
+  return state
 }

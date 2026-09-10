@@ -1,0 +1,65 @@
+[
+  {
+    "width": 360,
+    "overflow": false,
+    "images": [
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F2cec8285-5719-59c1-9368-be270f16eb4b.png&w=384&q=75",
+        "naturalWidth": 179,
+        "width": 156
+      },
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F901f54c8-e868-5992-9d31-369879a70895.png&w=384&q=75",
+        "naturalWidth": 179,
+        "width": 156
+      },
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fa0e1f04d-7226-5a91-8da5-50a11d92c25c.png&w=384&q=75",
+        "naturalWidth": 179,
+        "width": 156
+      }
+    ]
+  },
+  {
+    "width": 768,
+    "overflow": false,
+    "images": [
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F2cec8285-5719-59c1-9368-be270f16eb4b.png&w=640&q=75",
+        "naturalWidth": 256,
+        "width": 227
+      },
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F901f54c8-e868-5992-9d31-369879a70895.png&w=640&q=75",
+        "naturalWidth": 256,
+        "width": 227
+      },
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fa0e1f04d-7226-5a91-8da5-50a11d92c25c.png&w=640&q=75",
+        "naturalWidth": 256,
+        "width": 227
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "overflow": false,
+    "images": [
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F2cec8285-5719-59c1-9368-be270f16eb4b.png&w=640&q=75",
+        "naturalWidth": 320,
+        "width": 290
+      },
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F901f54c8-e868-5992-9d31-369879a70895.png&w=640&q=75",
+        "naturalWidth": 320,
+        "width": 290
+      },
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fa0e1f04d-7226-5a91-8da5-50a11d92c25c.png&w=640&q=75",
+        "naturalWidth": 320,
+        "width": 290
+      }
+    ]
+  }
+]

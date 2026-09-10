@@ -1,0 +1,848 @@
+[
+  {
+    "port": 3170,
+    "run": 0,
+    "lcp": 5916,
+    "resources": [
+      {
+        "name": "https://api.demo-shopping.com/api/v1/health",
+        "start": 2915.60000000149,
+        "duration": 1084.6000000014901,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=newest&limit=12",
+        "start": 4010.900000002235,
+        "duration": 224.39999999850988,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=sales&limit=12",
+        "start": 4011.900000002235,
+        "duration": 154.69999999925494,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg",
+        "start": 4203.5,
+        "duration": 513.2000000029802,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/e905c39a9603a83962870734a11c771d.svg",
+        "start": 4203.60000000149,
+        "duration": 527.6000000014901,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/8def501fafc8d54017959c5734189bce.svg",
+        "start": 4203.70000000298,
+        "duration": 502.8999999985099,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/f86f93f28898aa64d5a55101918d2039.svg",
+        "start": 4203.70000000298,
+        "duration": 509.0999999977648,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/4a4b7e965f58c6856442bb2dbf08e8f4.svg",
+        "start": 4203.70000000298,
+        "duration": 517,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/890dc26ffd3c0e1e17046488ed27bd33.svg",
+        "start": 4203.70000000298,
+        "duration": 523.1999999992549,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/bceef16003a45f9559c71a22b0e0fe74.svg",
+        "start": 4203.70000000298,
+        "duration": 670.2999999970198,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/7f26a8a1c6df9e048e079d563ad99d5c.svg",
+        "start": 4203.800000000745,
+        "duration": 676.1000000014901,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/901f54c8-e868-5992-9d31-369879a70895.png",
+        "start": 4251,
+        "duration": 1624,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2cec8285-5719-59c1-9368-be270f16eb4b.png",
+        "start": 4251,
+        "duration": 2137.400000002235,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/a0e1f04d-7226-5a91-8da5-50a11d92c25c.png",
+        "start": 4251,
+        "duration": 2145.400000002235,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/ccf829e3-8cc7-5954-8642-73cb2433dc11.png",
+        "start": 4251.10000000149,
+        "duration": 2909.89999999851,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/dc088203-0767-5fb4-ab62-24f2ad62d9e1.png",
+        "start": 4251.20000000298,
+        "duration": 2938.599999997765,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/aa1d166d-d0c7-592a-b520-dfded774ed43.png",
+        "start": 4251.20000000298,
+        "duration": 2949.2999999970198,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/d43e1815-56ee-5c06-8148-483788fb886f.png",
+        "start": 4251.20000000298,
+        "duration": 3149.199999999255,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2fa74cd6-fc79-5f51-b395-ff48f1d7c79a.png",
+        "start": 4251.20000000298,
+        "duration": 3221.099999997765,
+        "bytes": 0
+      }
+    ],
+    "images": [
+      {
+        "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2cec8285-5719-59c1-9368-be270f16eb4b.png",
+        "naturalWidth": 1254
+      },
+      {
+        "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/901f54c8-e868-5992-9d31-369879a70895.png",
+        "naturalWidth": 1254
+      },
+      {
+        "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/a0e1f04d-7226-5a91-8da5-50a11d92c25c.png",
+        "naturalWidth": 1254
+      }
+    ]
+  },
+  {
+    "port": 3160,
+    "run": 0,
+    "lcp": 792,
+    "resources": [
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=newest&limit=12",
+        "start": 408.19999999925494,
+        "duration": 4.399999998509884,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=sales&limit=12",
+        "start": 409,
+        "duration": 3.699999999254942,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=newest&limit=12",
+        "start": 410.69999999925494,
+        "duration": 319.3999999985099,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=sales&limit=12",
+        "start": 411.0999999977648,
+        "duration": 444.30000000074506,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/health",
+        "start": 411.8999999985099,
+        "duration": 1802.6000000014901,
+        "bytes": 0
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F2cec8285-5719-59c1-9368-be270f16eb4b.png&w=384&q=75",
+        "start": 760,
+        "duration": 4.899999998509884,
+        "bytes": 5460
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F901f54c8-e868-5992-9d31-369879a70895.png&w=384&q=75",
+        "start": 760.1999999992549,
+        "duration": 5.800000000745058,
+        "bytes": 10376
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fa0e1f04d-7226-5a91-8da5-50a11d92c25c.png&w=384&q=75",
+        "start": 785.0999999977648,
+        "duration": 8.100000001490116,
+        "bytes": 2264
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fccf829e3-8cc7-5954-8642-73cb2433dc11.png&w=384&q=75",
+        "start": 785.1999999992549,
+        "duration": 9,
+        "bytes": 4326
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fdc088203-0767-5fb4-ab62-24f2ad62d9e1.png&w=384&q=75",
+        "start": 785.1999999992549,
+        "duration": 10.399999998509884,
+        "bytes": 4580
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fd43e1815-56ee-5c06-8148-483788fb886f.png&w=384&q=75",
+        "start": 785.1999999992549,
+        "duration": 10.399999998509884,
+        "bytes": 2730
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Faa1d166d-d0c7-592a-b520-dfded774ed43.png&w=384&q=75",
+        "start": 785.1999999992549,
+        "duration": 10.800000000745058,
+        "bytes": 5102
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F2fa74cd6-fc79-5f51-b395-ff48f1d7c79a.png&w=384&q=75",
+        "start": 785.2999999970198,
+        "duration": 10.5,
+        "bytes": 2182
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg",
+        "start": 876.7999999970198,
+        "duration": 493.30000000074506,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/f86f93f28898aa64d5a55101918d2039.svg",
+        "start": 876.8999999985099,
+        "duration": 475.30000000074506,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/8def501fafc8d54017959c5734189bce.svg",
+        "start": 876.8999999985099,
+        "duration": 478.30000000074506,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/4a4b7e965f58c6856442bb2dbf08e8f4.svg",
+        "start": 876.8999999985099,
+        "duration": 483.6000000014901,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/890dc26ffd3c0e1e17046488ed27bd33.svg",
+        "start": 876.8999999985099,
+        "duration": 487.1000000014901,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/e905c39a9603a83962870734a11c771d.svg",
+        "start": 876.8999999985099,
+        "duration": 497.30000000074506,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/bceef16003a45f9559c71a22b0e0fe74.svg",
+        "start": 876.8999999985099,
+        "duration": 635.8000000007451,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/7f26a8a1c6df9e048e079d563ad99d5c.svg",
+        "start": 877,
+        "duration": 641.6999999992549,
+        "bytes": 0
+      }
+    ],
+    "images": [
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F2cec8285-5719-59c1-9368-be270f16eb4b.png&w=384&q=75",
+        "naturalWidth": 179
+      },
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F901f54c8-e868-5992-9d31-369879a70895.png&w=384&q=75",
+        "naturalWidth": 179
+      },
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fa0e1f04d-7226-5a91-8da5-50a11d92c25c.png&w=384&q=75",
+        "naturalWidth": 179
+      }
+    ]
+  },
+  {
+    "port": 3170,
+    "run": 1,
+    "lcp": 3476,
+    "resources": [
+      {
+        "name": "https://api.demo-shopping.com/api/v1/health",
+        "start": 435.70000000298023,
+        "duration": 1085.5,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=newest&limit=12",
+        "start": 1531.6000000014901,
+        "duration": 156.89999999850988,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=sales&limit=12",
+        "start": 1532.300000000745,
+        "duration": 245.90000000223517,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2cec8285-5719-59c1-9368-be270f16eb4b.png",
+        "start": 1724.9000000022352,
+        "duration": 2000.800000000745,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/901f54c8-e868-5992-9d31-369879a70895.png",
+        "start": 1725,
+        "duration": 1700.2000000029802,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/a0e1f04d-7226-5a91-8da5-50a11d92c25c.png",
+        "start": 1725,
+        "duration": 2559.800000000745,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/ccf829e3-8cc7-5954-8642-73cb2433dc11.png",
+        "start": 1725,
+        "duration": 2914.10000000149,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/aa1d166d-d0c7-592a-b520-dfded774ed43.png",
+        "start": 1725.1000000014901,
+        "duration": 2009.800000000745,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/dc088203-0767-5fb4-ab62-24f2ad62d9e1.png",
+        "start": 1725.1000000014901,
+        "duration": 2576.10000000149,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/d43e1815-56ee-5c06-8148-483788fb886f.png",
+        "start": 1725.1000000014901,
+        "duration": 3158.699999999255,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2fa74cd6-fc79-5f51-b395-ff48f1d7c79a.png",
+        "start": 1725.1000000014901,
+        "duration": 3316,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg",
+        "start": 1791.2000000029802,
+        "duration": 2841.699999999255,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/e905c39a9603a83962870734a11c771d.svg",
+        "start": 1791.2000000029802,
+        "duration": 2842.2999999970198,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/f86f93f28898aa64d5a55101918d2039.svg",
+        "start": 1791.2000000029802,
+        "duration": 2850.7999999970198,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/4a4b7e965f58c6856442bb2dbf08e8f4.svg",
+        "start": 1791.300000000745,
+        "duration": 2851.300000000745,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/890dc26ffd3c0e1e17046488ed27bd33.svg",
+        "start": 1791.300000000745,
+        "duration": 2851.800000000745,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/8def501fafc8d54017959c5734189bce.svg",
+        "start": 1791.300000000745,
+        "duration": 2852.400000002235,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/bceef16003a45f9559c71a22b0e0fe74.svg",
+        "start": 1791.4000000022352,
+        "duration": 2852.800000000745,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/7f26a8a1c6df9e048e079d563ad99d5c.svg",
+        "start": 1791.4000000022352,
+        "duration": 2853.5,
+        "bytes": 0
+      }
+    ],
+    "images": [
+      {
+        "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2cec8285-5719-59c1-9368-be270f16eb4b.png",
+        "naturalWidth": 1254
+      },
+      {
+        "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/901f54c8-e868-5992-9d31-369879a70895.png",
+        "naturalWidth": 1254
+      },
+      {
+        "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/a0e1f04d-7226-5a91-8da5-50a11d92c25c.png",
+        "naturalWidth": 1254
+      }
+    ]
+  },
+  {
+    "port": 3160,
+    "run": 1,
+    "lcp": 676,
+    "resources": [
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=newest&limit=12",
+        "start": 404.29999999701977,
+        "duration": 3.900000002235174,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=sales&limit=12",
+        "start": 405,
+        "duration": 3.199999999254942,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=newest&limit=12",
+        "start": 406.5,
+        "duration": 204.89999999850988,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=sales&limit=12",
+        "start": 407,
+        "duration": 288.29999999701977,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/health",
+        "start": 407.5999999977648,
+        "duration": 1706,
+        "bytes": 0
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F2cec8285-5719-59c1-9368-be270f16eb4b.png&w=384&q=75",
+        "start": 642,
+        "duration": 5,
+        "bytes": 5460
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F901f54c8-e868-5992-9d31-369879a70895.png&w=384&q=75",
+        "start": 642.0999999977648,
+        "duration": 5.5,
+        "bytes": 10376
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fa0e1f04d-7226-5a91-8da5-50a11d92c25c.png&w=384&q=75",
+        "start": 657.2999999970198,
+        "duration": 8.400000002235174,
+        "bytes": 2264
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fccf829e3-8cc7-5954-8642-73cb2433dc11.png&w=384&q=75",
+        "start": 657.3999999985099,
+        "duration": 10.100000001490116,
+        "bytes": 4326
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fdc088203-0767-5fb4-ab62-24f2ad62d9e1.png&w=384&q=75",
+        "start": 657.3999999985099,
+        "duration": 10.399999998509884,
+        "bytes": 4580
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Faa1d166d-d0c7-592a-b520-dfded774ed43.png&w=384&q=75",
+        "start": 657.3999999985099,
+        "duration": 11.100000001490116,
+        "bytes": 5102
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fd43e1815-56ee-5c06-8148-483788fb886f.png&w=384&q=75",
+        "start": 657.5,
+        "duration": 10.799999997019768,
+        "bytes": 2730
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F2fa74cd6-fc79-5f51-b395-ff48f1d7c79a.png&w=384&q=75",
+        "start": 657.5,
+        "duration": 10.899999998509884,
+        "bytes": 2182
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg",
+        "start": 725.6999999992549,
+        "duration": 456.3999999985099,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/890dc26ffd3c0e1e17046488ed27bd33.svg",
+        "start": 725.7999999970198,
+        "duration": 460.80000000074506,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/4a4b7e965f58c6856442bb2dbf08e8f4.svg",
+        "start": 725.7999999970198,
+        "duration": 469.4000000022352,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/f86f93f28898aa64d5a55101918d2039.svg",
+        "start": 725.7999999970198,
+        "duration": 475.4000000022352,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/e905c39a9603a83962870734a11c771d.svg",
+        "start": 725.7999999970198,
+        "duration": 479.30000000074506,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/8def501fafc8d54017959c5734189bce.svg",
+        "start": 725.8999999985099,
+        "duration": 465.69999999925494,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/bceef16003a45f9559c71a22b0e0fe74.svg",
+        "start": 725.8999999985099,
+        "duration": 613.3999999985099,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/7f26a8a1c6df9e048e079d563ad99d5c.svg",
+        "start": 725.8999999985099,
+        "duration": 619.1999999992549,
+        "bytes": 0
+      }
+    ],
+    "images": [
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F2cec8285-5719-59c1-9368-be270f16eb4b.png&w=384&q=75",
+        "naturalWidth": 179
+      },
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F901f54c8-e868-5992-9d31-369879a70895.png&w=384&q=75",
+        "naturalWidth": 179
+      },
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fa0e1f04d-7226-5a91-8da5-50a11d92c25c.png&w=384&q=75",
+        "naturalWidth": 179
+      }
+    ]
+  },
+  {
+    "port": 3170,
+    "run": 2,
+    "lcp": 3932,
+    "resources": [
+      {
+        "name": "https://api.demo-shopping.com/api/v1/health",
+        "start": 434.1000000014901,
+        "duration": 1061.1000000014901,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=newest&limit=12",
+        "start": 1506.4000000022352,
+        "duration": 209.5,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=sales&limit=12",
+        "start": 1506.9000000022352,
+        "duration": 164.59999999776483,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg",
+        "start": 1700.800000000745,
+        "duration": 501.80000000074506,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/e905c39a9603a83962870734a11c771d.svg",
+        "start": 1700.9000000022352,
+        "duration": 508.0999999977648,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/890dc26ffd3c0e1e17046488ed27bd33.svg",
+        "start": 1700.9000000022352,
+        "duration": 512,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/f86f93f28898aa64d5a55101918d2039.svg",
+        "start": 1700.9000000022352,
+        "duration": 516,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/4a4b7e965f58c6856442bb2dbf08e8f4.svg",
+        "start": 1700.9000000022352,
+        "duration": 522,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/8def501fafc8d54017959c5734189bce.svg",
+        "start": 1700.9000000022352,
+        "duration": 526.0999999977648,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/bceef16003a45f9559c71a22b0e0fe74.svg",
+        "start": 1701,
+        "duration": 680.5,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/7f26a8a1c6df9e048e079d563ad99d5c.svg",
+        "start": 1701.1000000014901,
+        "duration": 684.6999999992549,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2cec8285-5719-59c1-9368-be270f16eb4b.png",
+        "start": 1732.4000000022352,
+        "duration": 2147.39999999851,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/901f54c8-e868-5992-9d31-369879a70895.png",
+        "start": 1732.5,
+        "duration": 2157.60000000149,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/a0e1f04d-7226-5a91-8da5-50a11d92c25c.png",
+        "start": 1732.5,
+        "duration": 2171.300000000745,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/ccf829e3-8cc7-5954-8642-73cb2433dc11.png",
+        "start": 1732.5,
+        "duration": 2773.900000002235,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/dc088203-0767-5fb4-ab62-24f2ad62d9e1.png",
+        "start": 1732.5,
+        "duration": 2803.5,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/aa1d166d-d0c7-592a-b520-dfded774ed43.png",
+        "start": 1732.5,
+        "duration": 2814.300000000745,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/d43e1815-56ee-5c06-8148-483788fb886f.png",
+        "start": 1732.5,
+        "duration": 3210.5,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2fa74cd6-fc79-5f51-b395-ff48f1d7c79a.png",
+        "start": 1732.5,
+        "duration": 3551.10000000149,
+        "bytes": 0
+      }
+    ],
+    "images": [
+      {
+        "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2cec8285-5719-59c1-9368-be270f16eb4b.png",
+        "naturalWidth": 1254
+      },
+      {
+        "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/901f54c8-e868-5992-9d31-369879a70895.png",
+        "naturalWidth": 1254
+      },
+      {
+        "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/a0e1f04d-7226-5a91-8da5-50a11d92c25c.png",
+        "naturalWidth": 1254
+      }
+    ]
+  },
+  {
+    "port": 3160,
+    "run": 2,
+    "lcp": 760,
+    "resources": [
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=newest&limit=12",
+        "start": 407.4000000022352,
+        "duration": 4.199999999254942,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=sales&limit=12",
+        "start": 408.1000000014901,
+        "duration": 3.5,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=newest&limit=12",
+        "start": 409.5,
+        "duration": 284.69999999925494,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/search?sort=sales&limit=12",
+        "start": 410,
+        "duration": 239,
+        "bytes": 0
+      },
+      {
+        "name": "https://api.demo-shopping.com/api/v1/health",
+        "start": 410.80000000074506,
+        "duration": 1113.8999999985099,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg",
+        "start": 678,
+        "duration": 473.19999999925494,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/e905c39a9603a83962870734a11c771d.svg",
+        "start": 678.1000000014901,
+        "duration": 487.0999999977648,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/f86f93f28898aa64d5a55101918d2039.svg",
+        "start": 678.1999999992549,
+        "duration": 459.9000000022352,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/4a4b7e965f58c6856442bb2dbf08e8f4.svg",
+        "start": 678.1999999992549,
+        "duration": 469.30000000074506,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/890dc26ffd3c0e1e17046488ed27bd33.svg",
+        "start": 678.1999999992549,
+        "duration": 486.1000000014901,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/8def501fafc8d54017959c5734189bce.svg",
+        "start": 678.3000000007451,
+        "duration": 463.30000000074506,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/bceef16003a45f9559c71a22b0e0fe74.svg",
+        "start": 678.4000000022352,
+        "duration": 616.3999999985099,
+        "bytes": 0
+      },
+      {
+        "name": "https://cdn.demo-shopping.com/seed/catalog/7f26a8a1c6df9e048e079d563ad99d5c.svg",
+        "start": 678.5,
+        "duration": 625.1000000014901,
+        "bytes": 0
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F2cec8285-5719-59c1-9368-be270f16eb4b.png&w=384&q=75",
+        "start": 716.4000000022352,
+        "duration": 10.599999997764826,
+        "bytes": 5460
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F901f54c8-e868-5992-9d31-369879a70895.png&w=384&q=75",
+        "start": 716.5,
+        "duration": 11.300000000745058,
+        "bytes": 10376
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fa0e1f04d-7226-5a91-8da5-50a11d92c25c.png&w=384&q=75",
+        "start": 728.4000000022352,
+        "duration": 7,
+        "bytes": 2264
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fccf829e3-8cc7-5954-8642-73cb2433dc11.png&w=384&q=75",
+        "start": 728.5,
+        "duration": 9,
+        "bytes": 4326
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fdc088203-0767-5fb4-ab62-24f2ad62d9e1.png&w=384&q=75",
+        "start": 728.6000000014901,
+        "duration": 9,
+        "bytes": 4580
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Faa1d166d-d0c7-592a-b520-dfded774ed43.png&w=384&q=75",
+        "start": 728.6000000014901,
+        "duration": 9.300000000745058,
+        "bytes": 5102
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fd43e1815-56ee-5c06-8148-483788fb886f.png&w=384&q=75",
+        "start": 728.6999999992549,
+        "duration": 10.900000002235174,
+        "bytes": 2730
+      },
+      {
+        "name": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F2fa74cd6-fc79-5f51-b395-ff48f1d7c79a.png&w=384&q=75",
+        "start": 728.6999999992549,
+        "duration": 11.5,
+        "bytes": 2182
+      }
+    ],
+    "images": [
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F2cec8285-5719-59c1-9368-be270f16eb4b.png&w=384&q=75",
+        "naturalWidth": 179
+      },
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2F901f54c8-e868-5992-9d31-369879a70895.png&w=384&q=75",
+        "naturalWidth": 179
+      },
+      {
+        "src": "http://localhost:3160/_next/image?url=https%3A%2F%2Fcdn.demo-shopping.com%2Fproducts%2F01a08691-07f8-76de-a119-97eb4e2d2e7e%2Fa0e1f04d-7226-5a91-8da5-50a11d92c25c.png&w=384&q=75",
+        "naturalWidth": 179
+      }
+    ]
+  }
+]
