@@ -1068,6 +1068,7 @@ export {
   paymentProviders,
   paymentProviderSchema,
   paymentResponseSchema,
+  latestPaymentResponseSchema,
   paymentSchema,
   paymentStatuses,
   paymentStatusSchema,

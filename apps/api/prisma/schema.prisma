@@ -1866,6 +1866,8 @@ enum PaymentEventKind {
 ///
 /// **결제 단위는 `Order` 다** (D-023). 판매자가 셋이어도 사는 사람은 한 번 결제한다.
 model Payment {
+  /// Authorization ownership survives process restarts; aged claims enter reconciliation.
+  authorizationStartedAt DateTime?
   id      String @id @default(uuid(7)) @db.Uuid
   orderId String @db.Uuid
 

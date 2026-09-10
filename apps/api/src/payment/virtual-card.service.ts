@@ -208,6 +208,16 @@ export class VirtualCardService {
         )
       }
 
+      const previous = await tx.virtualCardTransaction.findFirst({
+        where: { refId, kind: 'CHARGE' },
+      })
+      if (previous !== null) {
+        if (previous.cardId !== cardId || previous.amount !== amount) {
+          throw new ConflictException('같은 결제의 카드 또는 금액이 달라요.')
+        }
+        return present(await tx.virtualCard.findUniqueOrThrow({ where: { id: card.id } }))
+      }
+
       const decision = chargeDecision(card, amount)
 
       if (decision.outcome === 'refused') {

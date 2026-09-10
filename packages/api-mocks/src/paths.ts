@@ -239,6 +239,8 @@ export const mockPaths = {
   /** `DELETE` 카드 삭제. 서버에서는 소프트 삭제다 — 원장이 이 카드를 가리킨다. */
   card: `*${API_PATH_PREFIX}/cards/:id`,
   /** `POST` 결제를 연다. 몸통은 `{ orderId, provider, cardId }` 다. */
+  latestPayment: `*${API_PATH_PREFIX}/orders/:id/payment`,
+  payment: `*${API_PATH_PREFIX}/payments/:id`,
   payments: `*${API_PATH_PREFIX}/payments`,
   /**
    * `POST` 승인, `POST` 매입 — **두 라우트인 것이 계약**이다 (D-031).

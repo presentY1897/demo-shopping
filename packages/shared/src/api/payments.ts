@@ -128,3 +128,6 @@ export type Payment = z.infer<typeof paymentSchema>
 export const paymentResponseSchema = z.object({ payment: paymentSchema })
 
 export type PaymentResponse = z.infer<typeof paymentResponseSchema>
+
+/** Latest attempt for the authenticated owner, including an unstarted order. */
+export const latestPaymentResponseSchema = z.object({ payment: paymentSchema.nullable() })

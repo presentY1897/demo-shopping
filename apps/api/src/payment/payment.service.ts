@@ -24,6 +24,7 @@ import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { OrderService } from '../orders/order.service.js'
 import { PaymentProviderRegistry } from './payment-registry.js'
+import { askableBefore } from './payment-reconcile.js'
 import { LOCAL_STEP_BUDGET_MS, PROVIDER_DEADLINE_MS } from './payment-straggler.js'
 import type { RefundRefusal } from './payment-rules.js'
 import { canTransition, refundDecision } from './payment-rules.js'
@@ -124,10 +125,28 @@ export class PaymentService {
     // 단계에서 터지면 아무도 쓰지 않는 `READY` 행이 남는다.
     this.registry.resolve(provider)
 
-    await this.assertNothingUnresolved(order.id)
-
     const now = this.clock.now()
     const payment = await this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "Order" WHERE "id" = ${order.id}::uuid FOR UPDATE`
+      const previous = await tx.payment.findFirst({
+        where: { orderId: order.id, status: { not: 'FAILED' } },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        select: { id: true, status: true, provider: true, methodRef: true },
+      })
+      if (previous !== null) {
+        if (previous.status === 'PAID' || previous.status === 'AUTHORIZED') return previous
+        if (
+          previous.status === 'READY' &&
+          previous.provider === provider &&
+          previous.methodRef === (options.methodRef ?? null)
+        )
+          return previous
+        throw awaitingPayment()
+      }
+      const closed = await tx.sellerOrder.count({
+        where: { orderId: order.id, status: { notIn: ['PAYMENT_PENDING', 'PAYMENT_FAILED'] } },
+      })
+      if (closed > 0) throw awaitingPayment()
       const created = await tx.payment.create({
         data: {
           orderId: order.id,
@@ -158,7 +177,14 @@ export class PaymentService {
     const account = await this.account(principal, 'order.write')
     const held = await this.own(account.id, paymentId)
 
+    if (held.status === 'AUTHORIZED' || held.status === 'PAID')
+      return this.get(principal, paymentId)
     this.assertTransition(held.status, 'AUTHORIZED')
+    const claimed = await this.prisma.payment.updateMany({
+      where: { id: paymentId, status: 'READY', authorizationStartedAt: null },
+      data: { authorizationStartedAt: this.clock.now(), updatedAt: this.clock.now() },
+    })
+    if (claimed.count === 0) throw awaitingPayment()
 
     const provider = await this.providerOf(paymentId)
     const context = await this.contextOf(paymentId)
@@ -180,7 +206,7 @@ export class PaymentService {
 
       // 그 사이에 남이 옮겼을 수 있다. 결제사 응답을 들고 있어도 상태가 이미
       // 움직였다면 그것을 덮어쓰면 안 된다.
-      this.assertTransition(fresh.status, result.outcome === 'approved' ? 'AUTHORIZED' : landing)
+      if (fresh.status !== 'READY') return
 
       if (result.outcome !== 'approved') {
         await tx.payment.update({
@@ -288,6 +314,10 @@ export class PaymentService {
   async settle(paymentId: string): Promise<void> {
     const held = await this.read(paymentId)
 
+    if (held.status === 'PAID') {
+      await this.orders.markPaid((await this.contextOf(paymentId)).orderId)
+      return
+    }
     this.assertTransition(held.status, 'PAID')
 
     const provider = this.registry.resolve(held.provider)
@@ -299,6 +329,7 @@ export class PaymentService {
     await this.prisma.$transaction(async (tx) => {
       const fresh = await this.lock(tx, paymentId)
 
+      if (fresh.status === 'PAID') return
       this.assertTransition(fresh.status, 'PAID')
 
       await tx.payment.update({
@@ -335,6 +366,19 @@ export class PaymentService {
    * 쌓으면, 정작 읽어야 할 상태 변화가 그 사이에 묻힌다.
    */
   async resolveUnresolved(paymentId: string): Promise<RecoveryOutcome> {
+    // Recover a process that stopped after claiming authorization.
+    await this.prisma.$transaction(async (tx) => {
+      const expired = await tx.payment.updateMany({
+        where: {
+          id: paymentId,
+          status: 'READY',
+          authorizationStartedAt: { lt: askableBefore(this.clock.now()) },
+        },
+        data: { status: 'UNRESOLVED', updatedAt: this.clock.now() },
+      })
+      if (expired.count > 0)
+        await this.log(tx, paymentId, 'FAILED', 'READY', 'UNRESOLVED', this.clock.now())
+    })
     const held = await this.read(paymentId)
 
     if (held.status !== 'UNRESOLVED') return 'noop'
@@ -544,34 +588,23 @@ export class PaymentService {
     return { payment: present(row) }
   }
 
-  // ---------------------------------------------------------------- internals
-
-  /**
-   * 결과를 모르는 결제가 있으면 새 결제를 시작하지 않는다 (D-220).
-   *
-   * **이것이 `UNRESOLVED` 를 만든 값의 절반이다.** 저쪽에서 승인이 나 있었다면
-   * 다시 결제한 사람의 카드에서 두 번 빠지고, 그 두 번째는 우리가 만든 것이다.
-   * 화면에 「다시 결제하지 마세요」라고 적는 것만으로는 부족하다 — API 를 직접
-   * 부르는 길이 있고, 새로고침한 화면은 그 문장을 잊는다.
-   *
-   * 막혀 있는 시간은 대사 주기만큼이다. 그 사이 사람이 기다리는 것이 두 번
-   * 결제되는 것보다 낫고, 대사가 풀면 다음 시도는 그냥 지나간다.
-   */
-  private async assertNothingUnresolved(orderId: string): Promise<void> {
-    const pending = await this.prisma.payment.count({
-      where: { orderId, status: 'UNRESOLVED' },
+  /** Find a payment even when the creation response was lost. */
+  async latest(principal: RequestPrincipal, orderId: string): Promise<{ payment: Payment | null }> {
+    const account = await this.account(principal, 'order.read')
+    const order = await this.prisma.order.findFirst({
+      where: { id: orderId, userId: account.id },
+      select: { id: true },
     })
-
-    if (pending === 0) return
-
-    throw new ConflictException(
-      domainFailure(
-        'PAYMENT_AWAITING_RESULT',
-        '앞선 결제의 결과를 확인하는 중이에요. 잠시 후 다시 시도해 주세요.',
-        { field: 'orderId' },
-      ),
-    )
+    if (order === null) throw new NotFoundException('주문을 찾을 수 없어요.')
+    const row = await this.prisma.payment.findFirst({
+      where: { orderId },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      select: { id: true },
+    })
+    return row === null ? { payment: null } : this.get(principal, row.id)
   }
+
+  // ---------------------------------------------------------------- internals
 
   private async account(
     principal: RequestPrincipal,
@@ -831,4 +864,14 @@ function present(row: {
       refundedAt: refund.refundedAt.toISOString(),
     })),
   }
+}
+
+function awaitingPayment(): ConflictException {
+  return new ConflictException(
+    domainFailure(
+      'PAYMENT_AWAITING_RESULT',
+      '앞선 결제의 결과를 확인하는 중이에요. 잠시 후 다시 확인해 주세요.',
+      { field: 'orderId' },
+    ),
+  )
 }
