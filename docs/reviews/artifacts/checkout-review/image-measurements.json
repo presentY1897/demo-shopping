@@ -1,0 +1,29 @@
+[
+  {
+    "id": "01a089c7-d062-742c-b745-83340132c917",
+    "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/2cec8285-5719-59c1-9368-be270f16eb4b.png",
+    "originalBytes": 2664108,
+    "status": 200,
+    "contentType": "image/webp",
+    "convertedBytes": 36698,
+    "coldTransformMs": 1954
+  },
+  {
+    "id": "01a089c7-ba71-728a-a571-73bce1e03526",
+    "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/901f54c8-e868-5992-9d31-369879a70895.png",
+    "originalBytes": 1873445,
+    "status": 200,
+    "contentType": "image/webp",
+    "convertedBytes": 34236,
+    "coldTransformMs": 1518
+  },
+  {
+    "id": "01a089c7-ae26-71ca-a30d-a664001949d8",
+    "src": "https://cdn.demo-shopping.com/products/01a08691-07f8-76de-a119-97eb4e2d2e7e/a0e1f04d-7226-5a91-8da5-50a11d92c25c.png",
+    "originalBytes": 1475824,
+    "status": 200,
+    "contentType": "image/webp",
+    "convertedBytes": 4994,
+    "coldTransformMs": 734
+  }
+]

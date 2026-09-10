@@ -4,6 +4,12 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'cdn.demo-shopping.com', pathname: '/products/**' },
+    ],
+    formats: ['image/webp'],
+  },
   // `@shopping/ui` ships TypeScript from `src`, not a built `dist`, so Next has
   // to compile it. pnpm's symlink resolves outside `node_modules` and Next
   // usually picks it up anyway; naming it here means that never depends on how a

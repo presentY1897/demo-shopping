@@ -15,6 +15,7 @@ import {
   mockPaths,
   searchHandlers,
   healthHandlers,
+  neverAnswers,
   healthSearchIndexing,
   malformedResponse,
   networkFailureOn,
@@ -166,13 +167,17 @@ describe('상품 조회 복구', () => {
     expect(screen.getAllByRole('alert')).toHaveLength(1)
   })
 
-  it('waits for search readiness and fetches products after manual recovery', async () => {
-    testServer.server.use(malformedResponse(mockPaths.health, healthSearchIndexing))
+  it('retries failed products after health recovery', async () => {
+    testServer.server.use(
+      malformedResponse(mockPaths.health, healthSearchIndexing),
+      networkFailureOn('get', mockPaths.search),
+    )
     renderHome()
-    const button = await screen.findByRole('button', { name: messages.wake.retryLabel })
+    const status = await screen.findByRole('status')
+    const button = within(status).getByRole('button', { name: messages.wake.retryLabel })
     expect(screen.queryByText(home.sectionEmpty)).toBeNull()
     expect(screen.queryByRole('link', { name: home.moreLabel })).toBeNull()
-    testServer.server.use(...healthHandlers)
+    testServer.server.use(...healthHandlers, ...searchHandlers)
     await userEvent.click(button)
     await waitFor(() =>
       expect(screen.getAllByRole('link', { name: home.moreLabel })).toHaveLength(2),
@@ -402,4 +407,13 @@ describe('데모 안내 부트 스크립트', () => {
       blocked.mockRestore()
     }
   })
+})
+
+it('requests and displays products without waiting for a delayed health response', async () => {
+  testServer.server.use(neverAnswers(mockPaths.health))
+  const requests = watchSearches()
+  renderHome()
+  await sectionGrid(home.newTitle)
+  expect(requests.length).toBeGreaterThan(0)
+  expect(screen.getAllByRole('link', { name: home.moreLabel })).toHaveLength(2)
 })

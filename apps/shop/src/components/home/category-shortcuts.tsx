@@ -36,8 +36,8 @@ export function CategoryShortcuts({ messages }: { readonly messages: HomeMessage
       <h2 className="text-fg text-lg font-semibold">{messages.categoriesTitle}</h2>
       <ul className="flex flex-wrap gap-2">
         {loading
-          ? PLACEHOLDER_WIDTHS.map((width) => (
-              <li aria-hidden="true" key={width}>
+          ? PLACEHOLDER_WIDTHS.map((width, index) => (
+              <li aria-hidden="true" key={`${width}-${index}`}>
                 <span
                   className={`bg-surface-muted min-h-touch block animate-pulse rounded-md ${width}`}
                 />

@@ -1,7 +1,8 @@
 'use client'
 
+import Image from 'next/image'
 import type { SearchHit } from '@shopping/shared'
-import type { DensityLevel } from '@shopping/ui'
+import { DENSITY_GRID_COLUMNS, type DensityLevel } from '@shopping/ui'
 import { ProductCard } from '@shopping/ui/catalog'
 import type { ProductCardLabels } from '@shopping/ui/catalog'
 
@@ -31,16 +32,32 @@ export function SearchHitCard({
   density,
   labels,
   onWishlist,
+  priority = false,
 }: {
+  readonly priority?: boolean
   readonly hit: SearchHit
   readonly density: DensityLevel
   readonly labels: ProductCardLabels
   readonly onWishlist: (productId: string) => void
 }) {
+  const columns = DENSITY_GRID_COLUMNS[density]
+  const sizes = `(max-width: 767px) ${100 / columns.base}vw, (max-width: 1199px) ${100 / columns.md}vw, ${Math.ceil(1280 / columns.xl)}px`
   const wishlisted = useWishlisted(hit.id)
 
   return (
     <ProductCard
+      renderImage={({ src, alt }) => (
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          className="object-cover"
+          sizes={sizes}
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : 'auto'}
+          unoptimized={!src.startsWith('https://cdn.demo-shopping.com/products/')}
+        />
+      )}
       density={density}
       href={`/products/${hit.id}`}
       labels={labels}

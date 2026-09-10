@@ -140,9 +140,10 @@ export function ResultBrowser({ controller, messages }: ResultBrowserProps) {
             onRetry={retry}
             state={listState}
           >
-            {items.map((hit) => (
+            {items.map((hit, index) => (
               <li key={hit.id}>
                 <SearchHitCard
+                  priority={index < 2}
                   density={density}
                   hit={hit}
                   labels={messages.card}
