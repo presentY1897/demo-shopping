@@ -627,6 +627,7 @@ export const ko: Messages = {
       },
       backToCheckout: '주문서로 돌아가기',
       backHome: '홈으로 가기',
+      viewOrders: '주문 내역 보기',
     },
     tossFailure: {
       title: '결제 취소',

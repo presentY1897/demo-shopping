@@ -94,3 +94,7 @@
 ### 구현 정책 확정
 
 예약 행에 sourceCartItemId와 sourceCartUpdatedAt을 저장하고 예약 수량을 구매 수량으로 사용한다. 결제 확정은 Order.cartCleanedAt 표식과 함께 현재 항목 ID·수량·수정시각이 스냅샷과 같은 경우에만 제거한다. 수정된 행과 삭제 후 재담기는 보존한다. 과거 예약에 원본 매핑이 없으면 추정 삭제하지 않는다. 다른 탭에서 증가한 동일 행은 구매분까지 포함해 보수적으로 보존하는 정책이다.
+
+### 통합 검증 진행
+
+2026-09-10 통합 브랜치 `feature/checkout-review-integration`에서 전체 타입·린트·빌드를 통과했다. 전체 테스트 재확인과 CI가 남아 있어 완료 상태로 변경하지 않았다. 공통 결과는 [구매 흐름 검증 기록](../../reviews/2026-09-10-checkout-latency-measurements.md)을 참조한다.

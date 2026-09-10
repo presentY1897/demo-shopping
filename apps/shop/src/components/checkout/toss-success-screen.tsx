@@ -146,7 +146,8 @@ export function TossSuccessScreen({ messages }: TossSuccessScreenProps) {
       try {
         const { payment } = await readPayment(recoverId!, controller.signal)
         if (payment.authorizedAmount !== recoverAmount || controller.signal.aborted) return
-        if (payment.status === 'AUTHORIZED') await capturePayment(payment.id)
+        if (payment.status === 'AUTHORIZED' || payment.status === 'PAID')
+          await capturePayment(payment.id)
         if (payment.status === 'PAID' || payment.status === 'AUTHORIZED') {
           if (!controller.signal.aborted) setState({ status: 'done' })
           return
@@ -180,8 +181,8 @@ export function TossSuccessScreen({ messages }: TossSuccessScreenProps) {
     return (
       <EmptyState
         action={
-          <Link className="text-accent text-sm font-medium underline" href="/">
-            {messages.backHome}
+          <Link className="text-accent text-sm font-medium underline" href="/mypage/orders">
+            {messages.viewOrders}
           </Link>
         }
         description={messages.doneBody}

@@ -753,7 +753,7 @@ describe('손님이 보는 상세 (TASK-0043 4.1)', () => {
     ])
   })
 
-  it('carries the brand, and nothing else about the store', async () => {
+  it('carries the brand and public shipping policy', async () => {
     const product = await create({ status: 'ACTIVE' })
 
     const answer = await api.client.getStorefrontProduct(product.id)
@@ -761,7 +761,12 @@ describe('손님이 보는 상세 (TASK-0043 4.1)', () => {
     expect(answer.seller.id).toBe(product.sellerId)
     expect(answer.seller.brandName).toEqual(expect.any(String))
     // Commission, status and the application history are the console's business.
-    expect(Object.keys(answer.seller).sort()).toEqual(['brandName', 'id'])
+    expect(Object.keys(answer.seller).sort()).toEqual([
+      'brandName',
+      'freeShippingThreshold',
+      'id',
+      'shippingFee',
+    ])
   })
 
   it.each(['DRAFT', 'SUSPENDED'] as const)('is a 404 for a %s listing (F9)', async (status) => {

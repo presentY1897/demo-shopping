@@ -53,7 +53,7 @@ export class CheckoutService {
    */
   async open(principal: RequestPrincipal, input: CreateCheckoutRequest): Promise<CheckoutResponse> {
     const account = await this.account(principal, 'order.write')
-    const rows: CartLineRow[] =
+    const rows: readonly CartLineRow[] =
       input.itemIds !== undefined
         ? await this.orderableLines(account.id, input.itemIds)
         : await Promise.all(

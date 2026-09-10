@@ -1,0 +1,118 @@
+[
+  {
+    "width": 360,
+    "geometry": {
+      "overflow": false,
+      "focusedBottom": 472.25,
+      "barTop": 823,
+      "images": [
+        {
+          "naturalWidth": 750,
+          "src": "https://image.test/valid.webp"
+        }
+      ],
+      "hint": false
+    },
+    "button": {
+      "x": 256,
+      "y": 840,
+      "width": 88,
+      "height": 44
+    },
+    "deletes": 0,
+    "writes": [
+      {
+        "deliveryNote": "문 앞에 놓아 주세요"
+      }
+    ],
+    "paid": true,
+    "text": "주문서\n\n결제가 완료됐어요\n\n카드 승인까지 끝났어요. 주문 내역에서 진행 상황을 볼 수 있어요. 주문번호 20260905-7KQ3M2VB ₩476,500\n\n주문 내역 보기"
+  },
+  {
+    "width": 390,
+    "geometry": {
+      "overflow": false,
+      "focusedBottom": 471.859375,
+      "barTop": 823,
+      "images": [
+        {
+          "naturalWidth": 750,
+          "src": "https://image.test/valid.webp"
+        }
+      ],
+      "hint": false
+    },
+    "button": {
+      "x": 286,
+      "y": 840,
+      "width": 88,
+      "height": 44
+    },
+    "deletes": 0,
+    "writes": [
+      {
+        "deliveryNote": "문 앞에 놓아 주세요"
+      }
+    ],
+    "paid": true,
+    "text": "주문서\n\n결제가 완료됐어요\n\n카드 승인까지 끝났어요. 주문 내역에서 진행 상황을 볼 수 있어요. 주문번호 20260905-7KQ3M2VB ₩476,500\n\n주문 내역 보기"
+  },
+  {
+    "width": 768,
+    "geometry": {
+      "overflow": false,
+      "focusedBottom": 807.078125,
+      "barTop": 823,
+      "images": [
+        {
+          "naturalWidth": 750,
+          "src": "https://image.test/valid.webp"
+        }
+      ],
+      "hint": false
+    },
+    "button": {
+      "x": 664,
+      "y": 840,
+      "width": 88,
+      "height": 44
+    },
+    "deletes": 0,
+    "writes": [
+      {
+        "deliveryNote": "문 앞에 놓아 주세요"
+      }
+    ],
+    "paid": true,
+    "text": "주문서\n\n결제가 완료됐어요\n\n카드 승인까지 끝났어요. 주문 내역에서 진행 상황을 볼 수 있어요. 주문번호 20260905-7KQ3M2VB ₩476,500\n\n주문 내역 보기"
+  },
+  {
+    "width": 1440,
+    "geometry": {
+      "overflow": false,
+      "focusedBottom": 900.078125,
+      "barTop": 357.140625,
+      "images": [
+        {
+          "naturalWidth": 750,
+          "src": "https://image.test/valid.webp"
+        }
+      ],
+      "hint": false
+    },
+    "button": {
+      "x": 913,
+      "y": 357.140625,
+      "width": 286,
+      "height": 44
+    },
+    "deletes": 0,
+    "writes": [
+      {
+        "deliveryNote": "문 앞에 놓아 주세요"
+      }
+    ],
+    "paid": true,
+    "text": "주문서\n\n결제가 완료됐어요\n\n카드 승인까지 끝났어요. 주문 내역에서 진행 상황을 볼 수 있어요. 주문번호 20260905-7KQ3M2VB ₩476,500\n\n주문 내역 보기"
+  }
+]

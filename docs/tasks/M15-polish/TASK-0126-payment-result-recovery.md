@@ -95,3 +95,9 @@
 GET /checkouts/:id/order로 인증된 구매자의 기존 주문을 복구한다. GET /orders/:id/payment는 authorizationPending을 함께 반환해 승인 전 실행 대기와 응답을 잃은 승인 진행을 구분한다. 결과 조회는 최대 12회, 1~5초 간격이며 상한 후에도 실패로 바꾸지 않고 수동 결과 조회와 주문 내역 이동을 제공한다. 완료 화면은 실제 주문 금액과 상세 경로를 사용한다.
 
 승인을 시작하지 않은 READY에서 결제창을 열지 못한 경우에는 수단 변경을 허용한다. 서버는 authorizationStartedAt이 null인 READY만 원자적으로 FAILED 처리한 뒤 새 시도를 만든다. 실행권을 획득한 요청과 경합하면 변경을 거부한다.
+
+### 통합 검증 진행
+
+2026-09-10 통합 브랜치 `feature/checkout-review-integration`에서 전체 타입·린트·빌드를 통과했다. 전체 테스트 재확인과 CI가 남아 있어 완료 상태로 변경하지 않았다. 공통 결과는 [구매 흐름 검증 기록](../../reviews/2026-09-10-checkout-latency-measurements.md)을 참조한다.
+
+신규 개발 의존성: `msw` 2.15.0 (화면의 요청 유실/실패 재현용, 운영 번들 제외).
