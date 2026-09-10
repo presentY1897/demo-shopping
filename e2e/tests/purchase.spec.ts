@@ -125,5 +125,7 @@ test('마우스 없이 데모 발급부터 주문 확인까지 간다 (F1 · TAS
   await page.goto('/mypage/orders')
   await expect(page.getByText(number)).toBeVisible({ timeout: 30_000 })
   await page.goto('/cart')
-  await expect(page.getByRole('heading', { name: '장바구니가 비어 있어요' })).toBeVisible()
+  await expect(
+    page.getByRole('status').getByText('장바구니가 비어 있어요', { exact: true }),
+  ).toBeVisible()
 })
