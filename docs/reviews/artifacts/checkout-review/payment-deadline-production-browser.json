@@ -1,0 +1,87 @@
+{
+  "at": "2026-09-10T16:33:19.313Z",
+  "viewport": 390,
+  "prefetched": false,
+  "usedBrowserPayment": true,
+  "checkoutOpenedViaApi": false,
+  "checkoutReloaded": true,
+  "completionMs": 18976.068274,
+  "paymentFailures": [],
+  "sellerStatuses": ["PAID", "PAID"],
+  "cartItemCount": 0,
+  "unauthorizedCheckout": 0,
+  "responses": [
+    {
+      "path": "/api/v1/cart",
+      "method": "GET",
+      "status": 200,
+      "serverTiming": "total;dur=400.61, auth;dur=0.21;desc=\"1\", db_acquire;dur=0.07;desc=\"2\", db_query;dur=398.62;desc=\"2\", cart_account;dur=199.09;desc=\"1\", cart_linesOf;dur=200.50;desc=\"1\", cart_get;dur=399.70;desc=\"1\""
+    },
+    {
+      "path": "/api/v1/checkouts",
+      "method": "POST",
+      "status": 201,
+      "serverTiming": "total;dur=1541.27, auth;dur=0.14;desc=\"1\", db_acquire;dur=0.11;desc=\"3\", db_query;dur=1531.82;desc=\"7\", checkout_account;dur=219.78;desc=\"1\", transaction;dur=1095.80;desc=\"1\", checkout_open;dur=1539.82;desc=\"1\", cfExtPri"
+    },
+    {
+      "path": "/api/v1/checkouts/:id",
+      "method": "GET",
+      "status": 200,
+      "serverTiming": "total;dur=597.75, auth;dur=0.11;desc=\"1\", db_acquire;dur=197.72;desc=\"2\", db_query;dur=198.79;desc=\"1\", checkout_account;dur=199.16;desc=\"1\", checkout_linesOf;dur=397.87;desc=\"1\", checkout_read;dur=597.16;desc=\"1\", cfExtPri"
+    },
+    {
+      "path": "/api/v1/checkouts/:id/order",
+      "method": "GET",
+      "status": 200,
+      "serverTiming": "total;dur=618.72, auth;dur=0.18;desc=\"1\", db_acquire;dur=207.34;desc=\"2\", order_account;dur=241.56;desc=\"1\", cfExtPri"
+    },
+    {
+      "path": "/api/v1/checkouts/:id/draft",
+      "method": "GET",
+      "status": 200,
+      "serverTiming": "total;dur=974.70, auth;dur=0.12;desc=\"1\", db_acquire;dur=356.69;desc=\"3\", checkout_account;dur=375.99;desc=\"1\", checkout_linesOf;dur=258.68;desc=\"1\", cfExtPri"
+    },
+    {
+      "path": "/api/v1/checkouts/:id/coupons",
+      "method": "GET",
+      "status": 200,
+      "serverTiming": "total;dur=1194.86, auth;dur=0.09;desc=\"1\", db_acquire;dur=254.43;desc=\"4\", db_query;dur=518.01;desc=\"2\", checkout_account;dur=197.97;desc=\"1\", checkout_linesOf;dur=399.32;desc=\"1\", cfExtPri"
+    },
+    {
+      "path": "/api/v1/orders",
+      "method": "POST",
+      "status": 201,
+      "serverTiming": "total;dur=3962.76, auth;dur=0.16;desc=\"1\", db_acquire;dur=800.51;desc=\"12\", order_account;dur=1011.32;desc=\"1\", db_query;dur=3564.93;desc=\"17\", checkout_linesOf;dur=215.78;desc=\"1\", transaction;dur=1489.98;desc=\"1\", order_create;dur=3961.45;desc=\"1\", cfExtPri"
+    },
+    {
+      "path": "/api/v1/payments",
+      "method": "POST",
+      "status": 201,
+      "serverTiming": "total;dur=2418.57, auth;dur=0.12;desc=\"1\", db_acquire;dur=0.50;desc=\"7\", db_query;dur=2605.65;desc=\"13\", payment_account;dur=198.17;desc=\"1\", transaction;dur=1397.47;desc=\"1\", payment_get;dur=623.35;desc=\"1\", payment_start;dur=2417.37;desc=\"1\", cfExtPri"
+    },
+    {
+      "path": "/api/v1/payments/:id/authorize",
+      "method": "POST",
+      "status": 201,
+      "serverTiming": "total;dur=4583.78, auth;dur=0.20;desc=\"1\", db_acquire;dur=554.67;desc=\"11\", db_query;dur=4226.94;desc=\"20\", payment_account;dur=211.51;desc=\"1\", transaction;dur=2330.81;desc=\"2\", provider_authorize;dur=1273.00;desc=\"1\", payment_get;dur=1190.78;desc=\"1\", payment_authorize;dur=4582.88;desc=\"1\", cfExtPri"
+    },
+    {
+      "path": "/api/v1/payments/:id/capture",
+      "method": "POST",
+      "status": 201,
+      "serverTiming": "total;dur=5622.47, auth;dur=0.23;desc=\"1\", db_acquire;dur=0.85;desc=\"14\", db_query;dur=6426.26;desc=\"31\", payment_account;dur=207.55;desc=\"1\", provider_capture;dur=0.04;desc=\"1\", transaction;dur=4182.50;desc=\"2\", order_markPaid;dur=3121.96;desc=\"1\", payment_get;dur=607.30;desc=\"1\", payment_capture;dur=5621.61;desc=\"1\", cfExtPri"
+    },
+    {
+      "path": "/api/v1/cart",
+      "method": "GET",
+      "status": 200,
+      "serverTiming": "total;dur=403.66, auth;dur=0.21;desc=\"1\", db_acquire;dur=0.07;desc=\"2\", db_query;dur=402.28;desc=\"2\", cart_account;dur=203.39;desc=\"1\", cart_linesOf;dur=199.66;desc=\"1\", cart_get;dur=403.10;desc=\"1\", cfExtPri"
+    },
+    {
+      "path": "/api/v1/cart",
+      "method": "GET",
+      "status": 200,
+      "serverTiming": "total;dur=421.47, auth;dur=0.23;desc=\"1\", db_acquire;dur=0.16;desc=\"2\", db_query;dur=220.62;desc=\"1\", cart_account;dur=221.43;desc=\"1\", cart_linesOf;dur=199.33;desc=\"1\", cart_get;dur=420.79;desc=\"1\", cfExtPri"
+    }
+  ]
+}
