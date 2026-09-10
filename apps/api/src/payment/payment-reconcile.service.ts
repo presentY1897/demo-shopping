@@ -193,7 +193,12 @@ export class PaymentReconcileService implements OnModuleInit, OnModuleDestroy {
 
       const rows = await tx.payment.findMany({
         // 유예를 지난 것만. 막 끊긴 건에 물어봐야 돌아오는 답은 `pending` 뿐이다.
-        where: { status: 'UNRESOLVED', updatedAt: { lt: askableBefore(now) } },
+        where: {
+          OR: [
+            { status: 'UNRESOLVED', updatedAt: { lt: askableBefore(now) } },
+            { status: 'READY', authorizationStartedAt: { lt: askableBefore(now) } },
+          ],
+        },
         // 오래된 것부터. 가장 오래 갇혀 있던 사람이 먼저 풀린다.
         orderBy: { updatedAt: 'asc' },
         take: RECONCILE_BATCH_LIMIT,

@@ -5,7 +5,7 @@ import {
   notificationListResponseSchema,
   orderResponseSchema,
 } from '@shopping/shared'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { RequestPrincipal } from '../../src/auth/request-principal.js'
 import { OrderService } from '../../src/orders/order.service.js'
@@ -843,4 +843,95 @@ describe('운영 비활성 (F8 · 4.4 · R1)', () => {
     },
     SLOW_TEST_MS,
   )
+})
+
+describe('TASK-0125 payment idempotency', () => {
+  it('reuses concurrent starts and a paid attempt without charging twice', async () => {
+    const order = await place()
+    const card = await issueCard(1_000_000)
+    const ids = await Promise.all([startPayment(order, card.id), startPayment(order, card.id)])
+    expect(ids[0]).toBe(ids[1])
+    const id = ids[0]
+    await payments().authorize(principal, id)
+    await payments().capture(principal, id)
+    expect(
+      (await payments().start(principal, order.orderId, 'VIRTUAL_CARD', { methodRef: card.id }))
+        .payment.id,
+    ).toBe(id)
+    await payments().authorize(principal, id)
+    await payments().capture(principal, id)
+    const result = await db.one<{ count: number }>(
+      `SELECT count(*)::int AS count FROM "VirtualCardTransaction" WHERE "refId" = $1 AND "kind" = 'CHARGE'`,
+      [id],
+    )
+    expect(result.count).toBe(1)
+    expect((await payments().latest(principal, order.orderId)).payment?.id).toBe(id)
+  })
+
+  it('claims authorization before entering the provider', async () => {
+    const order = await place()
+    const card = await issueCard(1_000_000)
+    const id = await startPayment(order, card.id)
+    const provider = api
+      .resolve<PaymentProviderRegistry>(PaymentProviderRegistry)
+      .resolve('VIRTUAL_CARD')
+    const original = provider.authorize.bind(provider)
+    let release!: () => void
+    let entered!: () => void
+    const inside = new Promise<void>((resolve) => {
+      entered = resolve
+    })
+    const gate = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    const spy = vi.spyOn(provider, 'authorize').mockImplementation(async (input) => {
+      entered()
+      await gate
+      return original(input)
+    })
+    try {
+      const first = payments().authorize(principal, id)
+      await inside
+      await expect(payments().authorize(principal, id)).rejects.toThrow()
+      release()
+      await first
+      expect(spy).toHaveBeenCalledTimes(1)
+    } finally {
+      release()
+      spy.mockRestore()
+    }
+    const result = await db.one<{ count: number }>(
+      `SELECT count(*)::int AS count FROM "VirtualCardTransaction" WHERE "refId" = $1 AND "kind" = 'CHARGE'`,
+      [id],
+    )
+    expect(result.count).toBe(1)
+  })
+
+  it('deduplicates provider charge references independently of the caller', async () => {
+    const card = await issueCard(1_000_000)
+    const ref = 'task-0125-charge'
+    await Promise.all([cards().charge(card.id, 10_000, ref), cards().charge(card.id, 10_000, ref)])
+    const row = await db.one<{ usedAmount: number }>(
+      `SELECT "usedAmount" FROM "VirtualCard" WHERE "id" = $1`,
+      [card.id],
+    )
+    expect(row.usedAmount).toBe(10_000)
+    await expect(cards().charge(card.id, 20_000, ref)).rejects.toThrow()
+  })
+})
+
+describe('TASK-0125 abandoned authorization', () => {
+  it('recovers an aged claim after the provider charged and the process stopped', async () => {
+    const order = await place()
+    const card = await issueCard(1_000_000)
+    const id = await startPayment(order, card.id)
+    await cards().charge(card.id, order.paidAmount, id)
+    await db.query(`UPDATE "Payment" SET "authorizationStartedAt" = $2 WHERE "id" = $1`, [
+      id,
+      new Date(api.clock.now().getTime() - 120_000).toISOString(),
+    ])
+    expect(await payments().resolveUnresolved(id)).toBe('settled')
+    expect((await payments().get(principal, id)).payment.status).toBe('PAID')
+    expect(await payments().resolveUnresolved(id)).toBe('noop')
+  })
 })

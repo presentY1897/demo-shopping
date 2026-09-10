@@ -1,5 +1,9 @@
 import type { Payment } from '@shopping/shared'
-import { paymentProviderSchema, paymentResponseSchema } from '@shopping/shared'
+import {
+  latestPaymentResponseSchema,
+  paymentProviderSchema,
+  paymentResponseSchema,
+} from '@shopping/shared'
 import type { RequestHandler } from 'msw'
 import { http, HttpResponse } from 'msw'
 import { z } from 'zod'
@@ -375,6 +379,17 @@ export const paymentHandlers: readonly RequestHandler[] = [
    * 모르는 주문은 404 다. 실제 서비스가 「내 주문 중에 그 id 가 있는가」로 찾으므로,
    * 남의 주문에 결제를 거는 일도 화면에서는 같은 404 로 보인다.
    */
+  http.get(mockPaths.latestPayment, ({ params }) =>
+    answering(() => {
+      if (params.id !== shopperOrder.order.id) throw new MockApiError(404, '주문을 찾을 수 없어요.')
+      const row = [...store.rows.values()].filter((row) => row.payment.orderId === params.id).at(-1)
+      return HttpResponse.json(
+        defineFixture(latestPaymentResponseSchema, { payment: row?.payment ?? null }),
+      )
+    }),
+  ),
+  http.get(mockPaths.payment, ({ params }) => answering(() => put(rowOf(String(params.id))))),
+
   http.post(mockPaths.payments, ({ request }) =>
     answering(async () => {
       const body = await readBody(request, startPaymentRequestSchema)
@@ -382,6 +397,22 @@ export const paymentHandlers: readonly RequestHandler[] = [
 
       if (body.orderId !== order.id) throw new MockApiError(404, '주문을 찾을 수 없어요.')
 
+      const previous = [...store.rows.values()].find(
+        (row) => row.payment.orderId === body.orderId && row.payment.status !== 'FAILED',
+      )
+      if (previous !== undefined) {
+        if (
+          previous.payment.status === 'PAID' ||
+          previous.payment.status === 'AUTHORIZED' ||
+          (previous.payment.status === 'READY' &&
+            previous.payment.provider === body.provider &&
+            previous.cardId === (body.cardId ?? null))
+        )
+          return put(previous)
+        throw new MockApiError(409, '앞선 결제의 결과를 확인하는 중이에요.', {
+          code: 'PAYMENT_AWAITING_RESULT',
+        })
+      }
       const serial = store.serial + 1
 
       store = { ...store, serial }
@@ -423,6 +454,7 @@ export const paymentHandlers: readonly RequestHandler[] = [
     answering(() => {
       const row = rowOf(String(params.id))
 
+      if (row.payment.status === 'AUTHORIZED' || row.payment.status === 'PAID') return put(row)
       if (row.payment.status !== 'READY') {
         throw new MockApiError(409, '이미 처리된 결제예요.')
       }
@@ -464,6 +496,7 @@ export const paymentHandlers: readonly RequestHandler[] = [
     answering(() => {
       const row = rowOf(String(params.id))
 
+      if (row.payment.status === 'PAID') return put(row)
       if (row.payment.status !== 'AUTHORIZED') {
         throw new MockApiError(409, '승인된 결제만 확정할 수 있어요.')
       }

@@ -235,6 +235,12 @@ export class PaymentController {
     return this.payments.capture(principal, id)
   }
 
+  @Get('orders/:id/payment')
+  @RequirePermission('order.read')
+  latest(@Principal() principal: RequestPrincipal, @Param('id') id: string) {
+    return this.payments.latest(principal, id)
+  }
+
   @Get('payments/:id')
   @RequirePermission('order.read')
   get(@Principal() principal: RequestPrincipal, @Param('id') id: string): Promise<PaymentResponse> {

@@ -526,18 +526,18 @@ describe('상태 전이 (F2)', () => {
   it('captures once however many times the button is pressed', async () => {
     const { paymentId, amount } = await captured()
 
-    const refused = await refusal(payments().capture(principal, paymentId))
+    const repeated = await payments().capture(principal, paymentId)
 
-    expect(refused.status).toBe(409)
+    expect(repeated.payment.status).toBe('PAID')
     expect((await read(paymentId)).status).toBe('PAID')
     // 두 번 매입하면 저쪽에서 두 번 청구된다. 우리가 막지 않으면 아무도 안 막는다.
     expect(virtualCard.callsTo('capture').map((call) => call.amount)).toEqual([amount])
   })
 
-  it('refuses a second authorization of the same payment', async () => {
+  it('returns a second authorization without another provider call', async () => {
     const { paymentId } = await authorized()
 
-    expect((await refusal(payments().authorize(principal, paymentId))).status).toBe(409)
+    expect((await payments().authorize(principal, paymentId)).payment.status).toBe('AUTHORIZED')
     expect((await read(paymentId)).status).toBe('AUTHORIZED')
     expect(virtualCard.callsTo('authorize')).toHaveLength(1)
   })
