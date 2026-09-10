@@ -74,6 +74,7 @@ e2e/blob-report/
 
 # Generated product photography is stored in R2; keep manifests/specs in Git.
 /apps/shop/public/product-image-sets/*/images/
+/apps/shop/public/images/products/*.png
 /apps/shop/public/product-image-sets/*/index.html
 # Local generation traces, DB audit snapshots and machine-specific results.
 /product-images/*
@@ -81,6 +82,7 @@ e2e/blob-report/
 !/product-images/*-v[0-9]*.json
 !/product-images/reviewed-products-export.json
 !/product-images/uploaded-assets.json
+!/product-images/legacy-image-aliases.json
 !/product-images/production-migration-plan.md
 !/product-images/catalog-production.md
 __pycache__/

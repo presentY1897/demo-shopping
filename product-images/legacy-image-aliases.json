@@ -1,0 +1,118 @@
+{
+  "assets": [
+    {
+      "file": "apps/shop/public/images/products/camel-wool-coat-front.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/front.png",
+      "sha256": "9709e8a931c9830d131f952479ebf28cd17d5de8277d54f7fef7b423c09eedd5",
+      "sizeBytes": 1953919
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-v1/images/camel-wool-coat/back.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/back.png",
+      "sha256": "d5fd667568ce87b987bdd68416cf98d5d2f5326cdeede80b57ce732cef9bc3ad",
+      "sizeBytes": 1898687
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-v1/images/camel-wool-coat/editorial.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/editorial.png",
+      "sha256": "894994c08314fc6cfd28fb2bfc3f0a4d42cc647367e26b24d3dc61b2347cf165",
+      "sizeBytes": 1592651
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-v1/images/camel-wool-coat/front.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/front.png",
+      "sha256": "9709e8a931c9830d131f952479ebf28cd17d5de8277d54f7fef7b423c09eedd5",
+      "sizeBytes": 1953919
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-v1/images/camel-wool-coat/model-back.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/model-back.png",
+      "sha256": "631db1b1e084fe7a8745638ceff74fcdc3e85fadd46d4c00c5a6779056b53dc0",
+      "sizeBytes": 1608464
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-v1/images/camel-wool-coat/model-front.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/model-front.png",
+      "sha256": "a841ffc86bb45f8fca24f358e9e5f01ec9d46579e4d89556b958fe88cc89101f",
+      "sizeBytes": 1691837
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-v1/images/camel-wool-coat/model-side.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/model-side.png",
+      "sha256": "bb1bd35fbb91b80879b002568d937ca43a9c0d7d1c3df84546fe96c4ba858670",
+      "sizeBytes": 1540754
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-v1/images/camel-wool-coat/side.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/side.png",
+      "sha256": "c5d1fd148507e89c924e45700946a1fad3c60a9241c81d34be32105a64d5b331",
+      "sizeBytes": 1645230
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-v1/images/camel-wool-coat/texture.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/texture.png",
+      "sha256": "25a00d3b4771c6c394d3a4e45016f169f7ab86ec2749fc98ca725e58164d0466",
+      "sizeBytes": 2942129
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-variants-v1/images/camel-wool-coat/front.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/front.png",
+      "sha256": "9709e8a931c9830d131f952479ebf28cd17d5de8277d54f7fef7b423c09eedd5",
+      "sizeBytes": 1953919
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-variants-v1/images/camel-wool-coat/model-front.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/model-front.png",
+      "sha256": "a841ffc86bb45f8fca24f358e9e5f01ec9d46579e4d89556b958fe88cc89101f",
+      "sizeBytes": 1691837
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-variants-v1/images/camel-wool-coat/texture.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/texture.png",
+      "sha256": "25a00d3b4771c6c394d3a4e45016f169f7ab86ec2749fc98ca725e58164d0466",
+      "sizeBytes": 2942129
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-variants-v1/images/camel-wool-coat/variant-charcoal-front.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/variant-charcoal-front.png",
+      "sha256": "6b6a95c9febee4354806ad090fe8aff674de45dfcfc9f7a6cb5e0a554dc8cb8e",
+      "sizeBytes": 1900690
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-variants-v1/images/camel-wool-coat/variant-charcoal-model-front.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/variant-charcoal-model-front.png",
+      "sha256": "4e184f93ca6f5d46ec98c058a3434592a9d38e0a5ddba9c8a1a07d9b794b6a86",
+      "sizeBytes": 1587800
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-variants-v1/images/camel-wool-coat/variant-herringbone-front.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/variant-herringbone-front.png",
+      "sha256": "be540fda5c0b9368d0917167bbaac5ec698971f69775671931507d1726a1ed60",
+      "sizeBytes": 2073726
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-variants-v1/images/camel-wool-coat/variant-herringbone-model-front.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/variant-herringbone-model-front.png",
+      "sha256": "fb418deebca566c874c705541667f2e6bc9f1bb9b2c672bda53937853c441ed8",
+      "sizeBytes": 1759480
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-variants-v1/images/camel-wool-coat/variant-herringbone-texture.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/variant-herringbone-texture.png",
+      "sha256": "32ef08b1cfcf53cfdb33b20b40e5e5bd677df85421c4a42f919174c1233feac7",
+      "sizeBytes": 2983098
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-variants-v1/images/camel-wool-coat/variant-navy-front.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/variant-navy-front.png",
+      "sha256": "3829442e6a144fa4a852d0e8b8f3b8cfb8152c0ba7557f0f5ae67dfb46bf5fe4",
+      "sizeBytes": 1729736
+    },
+    {
+      "file": "apps/shop/public/product-image-sets/coat-variants-v1/images/camel-wool-coat/variant-navy-model-front.png",
+      "sourceUrl": "http://localhost:3015/product-image-sets/coat-complete-v2/images/camel-wool-coat/variant-navy-model-front.png",
+      "sha256": "461fc85186640046a189c8d524f76ead1fba95298aef28c7791ce0c9d4a09d13",
+      "sizeBytes": 1533978
+    }
+  ]
+}
