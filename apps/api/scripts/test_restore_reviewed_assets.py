@@ -40,6 +40,8 @@ class RestoreImagesTest(unittest.TestCase):
         with patch.object(restore, 'urlopen', return_value=io.BytesIO(self.data)) as request:
             self.run_restore()
         self.assertEqual(request.call_count, 1)
+        self.assertEqual(request.call_args.args[0].get_header('User-agent'),
+                         'shopping-product-image-restore/1.0')
         self.assertEqual((self.root / self.alias['file']).read_bytes(), self.data)
         with patch.object(restore, 'urlopen') as request:
             self.run_restore()
