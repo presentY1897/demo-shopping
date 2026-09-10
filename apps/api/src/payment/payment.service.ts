@@ -603,7 +603,7 @@ export class PaymentService {
     const account = await this.account(principal, 'order.read')
     const order = await this.prisma.order.findFirst({
       where: { id: orderId, userId: account.id },
-      select: { id: true, authorizationStartedAt: true },
+      select: { id: true },
     })
     if (order === null) throw new NotFoundException('주문을 찾을 수 없어요.')
     const row = await this.prisma.payment.findFirst({
