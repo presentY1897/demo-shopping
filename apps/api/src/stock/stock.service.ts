@@ -159,6 +159,93 @@ export class StockService {
     return entry
   }
 
+  /** Confirm locked reservations with a fixed number of database round trips. */
+  async confirmReservations(
+    tx: Tx,
+    reservations: readonly {
+      readonly id: string
+      readonly variantId: string
+      readonly quantity: number
+    }[],
+  ): Promise<void> {
+    if (reservations.length === 0) return
+    const ids = [...new Set(reservations.map((row) => row.variantId))].sort()
+    // Lock first; max(seq) must be read in a subsequent, fresh snapshot.
+    await tx.$queryRaw`
+      SELECT "id" FROM "ProductVariant"
+       WHERE "id" IN (${Prisma.join(ids.map((id) => Prisma.sql`${id}::uuid`))})
+       ORDER BY "id" FOR UPDATE
+    `
+    const states = await tx.$queryRaw<
+      {
+        id: string
+        productId: string
+        stock: number
+        reserved: number
+        lastSeq: number
+      }[]
+    >`
+      SELECT v."id", v."productId", v."stock", v."reserved",
+             COALESCE((SELECT max(l."seq") FROM "StockLedger" l
+                        WHERE l."variantId" = v."id"), 0)::int AS "lastSeq"
+        FROM "ProductVariant" v
+       WHERE v."id" IN (${Prisma.join(ids.map((id) => Prisma.sql`${id}::uuid`))})
+    `
+    const byId = new Map(states.map((row) => [row.id, { ...row, before: row.stock }]))
+    const now = this.clock.now()
+    const entries: Prisma.StockLedgerCreateManyInput[] = []
+    for (const row of reservations) {
+      const draft = normalise({
+        variantId: row.variantId,
+        type: 'RESERVE_CONFIRM',
+        quantity: -row.quantity,
+        refType: 'STOCK_RESERVATION',
+        refId: row.id,
+      })
+      const issues = movementIssues(draft)
+      if (issues.length > 0) throw refusal(issues)
+      const state = byId.get(row.variantId)
+      if (state === undefined) throw new NotFoundException('상품 옵션을 찾을 수 없습니다.')
+      const balance = nextBalance(state.stock, draft.quantity)
+      if (balance === null || state.reserved < row.quantity) {
+        throw new ConflictException('예약 재고가 부족해요.')
+      }
+      state.stock = balance
+      state.reserved -= row.quantity
+      state.lastSeq++
+      entries.push({
+        variantId: row.variantId,
+        seq: state.lastSeq,
+        ...draft,
+        balanceAfter: balance,
+        actorId: null,
+        createdAt: now,
+      })
+    }
+    // Update both caches together so reserved <= stock holds at every statement.
+    const values = [...byId.values()].map(
+      (row) => Prisma.sql`(${row.id}::uuid, ${row.stock}::int, ${row.reserved}::int)`,
+    )
+    await tx.$executeRaw`
+      UPDATE "ProductVariant" v
+         SET "stock" = changed.stock, "reserved" = changed.reserved,
+             "updatedAt" = ${this.nowSql()}
+        FROM (VALUES ${Prisma.join(values)}) AS changed(id, stock, reserved)
+       WHERE v."id" = changed.id
+    `
+    try {
+      await tx.stockLedger.createMany({ data: entries })
+    } catch (error) {
+      throw duplicateOrRethrow(error)
+    }
+    await this.outbox.publishMany(
+      tx,
+      [...byId.values()]
+        .filter((row) => row.before > 0 && row.stock === 0)
+        .map((row) => row.productId),
+    )
+  }
+
   /**
    * Tells the search index only when the **answer** changed (TASK-0038 R3).
    *
