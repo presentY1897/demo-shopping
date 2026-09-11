@@ -89,3 +89,11 @@ PostgreSQL 18 도구로 운영 소스를 읽기 전용 백업하고 네트워크
 ### 운영 배포 후 검증
 
 사용자의 환경변수 변경/재개 후 health database/search ok. 실제 구매3회 1,041.55/972.15/964.94ms, 결제 실패0/장바구니0/이미지 정상/reload401없음. 신규 주문이 대상에만 저장됨을 SQL로 확인했다. 타 계정 주문 접근403, 두 판매자 주문 취소/환불REFUNDED, 이후 재고·카드 대사 불일치0. [운영 이전 검증](../../reviews/2026-09-11-neon-region-migration.md). Ohio 원본과 보안 백업은 별도 삭제 결정 전까지 유지한다. 사용자가 Render 실제 Region도 Singapore임을 확인했다. F1~F5를 모두 충족하여 완료로 전환한다.
+
+### PR146 검증 보완 계획
+
+동일 head의 CI 두 번 모두 기존 payment-finalization 측정이 capture27회/상한26회로 실패했다. 로컬 해당9개는 통과했다. 이 저장소에는 Prisma query event가 응답 이후 도착하여 이웃 측정에 섞이는 문제를 처리하는 `recordStatements`가 이미 있다. API 동작/SQL 예산을 바꾸지 않고 결제 단계별 측정에 이 helper를 사용하여 앞뒤 이벤트를 배출한다. 계측 아래 실 PostgreSQL 해당 파일과 전체 게이트를 확인한다. 검증 보완 완료 전 TASK 상태는 진행중으로 되돌린다.
+
+원인 확인: 계측 아래 이벤트를 완전히 배출하면 capture27회의 마지막 문장은 결제 이벤트 리스너의 비동기 Notification 일괄 INSERT이다. 기존26회는 응답 뒤 도착한 이 문장을 빠뜨린 기준이었다. 동기/나머지 문장 상한26회는 유지하고 Notification 일괄 INSERT가 정확히1회임을 별도 단언한다. 측정 전후에는 기존 recordStatements로 배출한다. SQL 진단 출력은 제거하고 운영 코드는 변경하지 않는다.
+
+보완 후 계측 아래 실 PostgreSQL 해당9개 테스트가 통과했다. 운영 이전 F1~F5는 충족 상태이며 TASK를 완료로 유지한다. 테스트 helper 적용 변경에 대한 로컬 전체 게이트와 새 head CI는 PR 병합 전에 확인하고 PR 본문에 최종 결과를 기록한다.
