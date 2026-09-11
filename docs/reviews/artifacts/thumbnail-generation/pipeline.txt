@@ -1,0 +1,1 @@
+PASS: database trigger -> serial claim -> isolated conversion -> HTTP object uploads -> READY projection -> real public product detail; original unchanged, search update queued
