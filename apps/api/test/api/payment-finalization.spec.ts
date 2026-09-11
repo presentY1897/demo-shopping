@@ -11,6 +11,7 @@ import { ReservationService } from '../../src/reservation/reservation.service.js
 import { StockService } from '../../src/stock/stock.service.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
+import { recordStatements } from '../support/statements.js'
 import {
   createAddress,
   createCategory,
@@ -309,21 +310,35 @@ describe('payment read roundtrips (TASK-0135)', () => {
       sellerId: null,
     } as const
     const payments = api.resolve<PaymentService>(PaymentService)
-    statements.length = 0
-    const { payment } = await payments.start(principal, placed.orderId, 'VIRTUAL_CARD', {
-      methodRef: card.id,
+    let paymentId = ''
+    const startedSql = await recordStatements(statements, async () => {
+      const { payment } = await payments.start(principal, placed.orderId, 'VIRTUAL_CARD', {
+        methodRef: card.id,
+      })
+      paymentId = payment.id
     })
-    expect(statements.length).toBeLessThanOrEqual(10)
-    statements.length = 0
-    await payments.authorize(principal, payment.id)
-    expect(statements.length).toBeLessThanOrEqual(15)
-    statements.length = 0
-    const captured = await payments.capture(principal, payment.id)
-    expect(statements.length).toBeLessThanOrEqual(26)
-    expect(captured.payment.status).toBe('PAID')
+    expect(startedSql.length).toBeLessThanOrEqual(10)
+    const authorizedSql = await recordStatements(statements, () =>
+      payments.authorize(principal, paymentId),
+    )
+    expect(authorizedSql.length).toBeLessThanOrEqual(15)
+    let captured: unknown
+    const capturedSql = await recordStatements(statements, async () => {
+      const result = await payments.capture(principal, paymentId)
+      expect(result.payment.status).toBe('PAID')
+      captured = result
+    })
+    // The paid-event listener inserts notifications after capture returns.
+    // Count that single batched insert too, after its query event has arrived.
+    const notificationSql = capturedSql.filter(
+      (sql) => sql.includes('INSERT INTO') && sql.includes('"Notification"'),
+    )
+    expect(notificationSql).toHaveLength(1)
+    expect(capturedSql.length - notificationSql.length).toBeLessThanOrEqual(26)
     await assertComplete(placed, 2)
-    statements.length = 0
-    expect(await payments.get(principal, payment.id)).toEqual(captured)
-    expect(statements).toHaveLength(1)
+    const readSql = await recordStatements(statements, async () => {
+      expect(await payments.get(principal, paymentId)).toEqual(captured)
+    })
+    expect(readSql).toHaveLength(1)
   })
 })
