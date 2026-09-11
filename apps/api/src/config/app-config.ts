@@ -156,6 +156,7 @@ export interface AppConfig {
    * 왜 데모 계정 판정이나 `PAYMENT_SIMULATION` 을 쓰지 않았는지는
    * `shipping/delivery-simulator.ts` 의 `DELIVERY_STEP_MS` 에 표로 적혀 있다.
    */
+  readonly thumbnailGeneration?: boolean
   readonly fulfillmentPace: FulfillmentPace
 }
 

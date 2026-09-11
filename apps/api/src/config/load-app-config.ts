@@ -85,6 +85,7 @@ function toAppConfig(env: Env, resolved: Resolved): AppConfig {
     appOrigins: resolved.appOrigins,
     paymentSimulation: env.PAYMENT_SIMULATION,
     fulfillmentPace: env.FULFILLMENT_PACE,
+    thumbnailGeneration: env.THUMBNAIL_GENERATION === 'on',
   }
 }
 

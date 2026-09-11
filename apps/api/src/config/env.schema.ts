@@ -176,6 +176,7 @@ export const envSchema = z.object({
    * 배송완료를 못 보고, 구매확정 · 정산 · 반품이 전부 닫히는데 **아무 요청도
    * 실패하지 않는다.** 잘못 뒀을 때 조용한 값을 기본값으로 두지 않는다.
    */
+  THUMBNAIL_GENERATION: z.enum(['off', 'on']).default('off'),
   FULFILLMENT_PACE: z
     .enum(['demo', 'realistic'], { error: "'demo' · 'realistic' 중 하나여야 합니다" })
     .default('demo'),
