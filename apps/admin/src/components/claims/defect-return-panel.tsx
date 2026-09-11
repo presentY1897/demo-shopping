@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductThumbnail } from '@shopping/ui/components'
+
 import type { ApiFailure, ClaimableItem, ClaimableResponse, ReturnReason } from '@shopping/shared'
 import { CLAIM_REASON_MAX_LENGTH } from '@shopping/shared'
 import {
@@ -394,6 +396,10 @@ function DefectReturnForm({
                 className="border-border flex flex-wrap items-center gap-3 rounded-md border p-2"
                 key={item.orderItemId}
               >
+                <ProductThumbnail
+                  src={item.snapshot.thumbnailUrl}
+                  className="size-12 shrink-0 rounded"
+                />
                 <Checkbox
                   checked={chosen !== undefined}
                   description={form.remaining.replace('{count}', String(item.remainingQuantity))}

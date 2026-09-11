@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductIdentity } from '@shopping/ui/components'
+
 import type { ApiFailure, DemoCarrierCode, SellerOrderListItem } from '@shopping/shared'
 import { apiFailure, failureMessage, quotableRequestId } from '@shopping/shared'
 import {
@@ -251,7 +253,7 @@ function OrderListScreen({ title, messages = messagesFor().orderList }: OrderLis
       header: messages.table.items,
       cell: (row) => (
         <span className="flex flex-col">
-          <span>{headlineOf(row, messages)}</span>
+          <ProductIdentity src={row.thumbnailUrl}>{headlineOf(row, messages)}</ProductIdentity>
           <span className="text-fg-muted text-xs">
             {messages.table.quantity.replace('{count}', String(row.totalQuantity))}
           </span>

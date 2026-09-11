@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductIdentity } from '@shopping/ui/components'
+
 import type { ApiFailure, DemoCarrierCode, OrderStatus, SellerOrderAction } from '@shopping/shared'
 import { failureMessage, quotableRequestId } from '@shopping/shared'
 import { CONSOLE_DENSITY } from '@shopping/ui'
@@ -141,7 +143,11 @@ function OrderDetailScreen({
     {
       key: 'product',
       header: messages.items.product,
-      cell: (row) => row.snapshot.productName,
+      cell: (row) => (
+        <ProductIdentity src={row.snapshot.thumbnailUrl}>
+          {row.snapshot.productName}
+        </ProductIdentity>
+      ),
     },
     {
       key: 'option',

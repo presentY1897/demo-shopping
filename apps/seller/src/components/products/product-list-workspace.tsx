@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductIdentity } from '@shopping/ui/components'
+
 import type { ApiFailure, ProductStatus, SellerProductListItem } from '@shopping/shared'
 import { failureMessage, quotableRequestId } from '@shopping/shared'
 import {
@@ -104,7 +106,11 @@ function ProductListScreen({
         />
       ),
     },
-    { key: 'name', header: messages.table.name, cell: (row) => row.name },
+    {
+      key: 'name',
+      header: messages.table.name,
+      cell: (row) => <ProductIdentity src={row.thumbnailUrl}>{row.name}</ProductIdentity>,
+    },
     {
       key: 'status',
       header: messages.table.status,

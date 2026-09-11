@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductIdentity } from '@shopping/ui/components'
+
 import type { ApiFailure, ClaimAction, ClaimItem, SellerClaimDetail } from '@shopping/shared'
 import { failureMessage, hasCode, quotableRequestId } from '@shopping/shared'
 import {
@@ -129,7 +131,11 @@ function ClaimDetailScreen({
     {
       key: 'product',
       header: messages.items.product,
-      cell: (row) => row.snapshot.productName,
+      cell: (row) => (
+        <ProductIdentity src={row.snapshot.thumbnailUrl}>
+          {row.snapshot.productName}
+        </ProductIdentity>
+      ),
     },
     {
       key: 'option',

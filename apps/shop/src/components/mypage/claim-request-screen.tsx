@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductThumbnail } from '@shopping/ui/components'
+
 import type {
   ApiFailure,
   Claim,
@@ -538,6 +540,7 @@ function ItemRow({
   return (
     <li className="border-border bg-surface flex flex-col gap-2 rounded-lg border p-3">
       <div className="flex items-start gap-3">
+        <ProductThumbnail src={item.snapshot.thumbnailUrl} className="size-12 shrink-0 rounded" />
         {exhausted || disabled ? (
           <span className="text-fg text-sm font-medium">{name}</span>
         ) : (
