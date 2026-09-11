@@ -91,3 +91,5 @@ API와 변환 CPU 공유는 기존 지연 문제를 다시 만들 수 있으므�
 로컬 구현/검증 및 운영 활성화 절차: [보고서](../../reviews/2026-09-12-thumbnail-generation.md). 운영 항목은 아직 미충족이다. 통합 검증 브랜치에 TASK0137 커밋을 함께 반영했으며 원래 브랜치도 보존한다.
 
 구현 라이브러리: Sharp ^0.35.4. 상품 편집과 완료 처리의 잠금 순서는 Product→ProductImageDerivative→ProductImage로 맞춘다. 실제 DB에서 이미지 삭제/재등록과 완료가 겹치는 경합 검사를 포함한다.
+
+운영 활성화 진단 보완(2026-09-12): PR147 및 운영 migration/배포 성공 후 사용자가 `THUMBNAIL_GENERATION=on`, `LOG_LEVEL=log`를 확인했다. 기존 소유 이미지 1건을 큐에 등록했으나 PENDING/attempts=0이며 원인은 미확정이다. `feature/thumbnail-worker-diagnostics`에서 시작/설정에 따른 미실행 이유와 메모리 여유를 로그에 남긴다. 메모리 대기는 최초 및 60초마다 기록하고 회복 시 기록한다. 비밀값·파일 URL은 출력하지 않는다. 메모리 한도와 동시성, DB/API 계약은 유지한다. 시작 조건별 스케줄 실행, 메모리 대기 중 claim 미실행, 로그 빈도와 회복을 검사한다. 원인 확인 전 나머지 기존 이미지 일괄 등록은 보류한다.
