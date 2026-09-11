@@ -1451,6 +1451,6 @@ TASK-0131은 운영 trace의 DB 왕복 약210ms와 지연 재현을 확보했다
 TASK-0133/0134는 운영 구매까지 검증 완료했다. TASK0131 재개에서 production process-cold30회와 최신 warm30/32회를 측정했으나 호스팅 scale-to-zero는 미확보다. TASK0135는 결제 응답 단일 조회와 불변 식별자 재사용으로 지연 모형의 SQL66→51, 결제3단계12.42→10.28초를 확인했고 PR144 배포·실제 모바일 구매까지 검증 완료했다. 사용자 확인으로 Neon은Ohio, API 선언은Singapore라 TASK0136에 DB 지역 이전 초안을 작성했다. 실제 이전은 미실행이며 대상 프로젝트 접근과 전환 일정이 필요하다. [최신 기록](reviews/2026-09-11-payment-read-latency.md).
 
 
-### TASK0136 이전 운영 검증 완료, 실제 Render 리전 확인 대기
+### TASK0136 완료 후 운영 기준
 
-`feature/neon-region-alignment` worktree에서 DB 최종 복사와 운영 전환을 검증했다. 원본/대상63테이블·22,561행 및 스키마/sequence 비교 일치, 원장 대사 불일치0. 운영 실제 구매3회 1.04/0.97/0.96초, 취소·환불/권한/이미지/장바구니 검증 통과. 신규 주문이 Singapore에만 쓰이는 것도 확인했다. 실제 Render 대시보드 리전은 사용자 응답 대기라 F1만 미완료다. Ohio 원본과 로컬 보호 백업을 보존하며, 대상에 쓰기가 발생했으므로 원본으로 단순 복귀하지 않는다. [운영 이전 검증](reviews/2026-09-11-neon-region-migration.md).
+Neon 운영 DB와 Render API는 모두Singapore이다(사용자 대시보드 확인). TASK0136의 DB 보존·전환·실구매/환불 검증이 끝났고 구매3회는1.04/0.97/0.96초였다. Ohio 원본과 보호 백업은 별도 삭제 결정 전까지 보존한다. 대상에 이미 쓰기가 있으므로 Ohio로 연결만 되돌리지 않는다. TASK0131의 hosting scale-to-zero 검증은 별도로 남아 있다. [이전 검증](reviews/2026-09-11-neon-region-migration.md).
