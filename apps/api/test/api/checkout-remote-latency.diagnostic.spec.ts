@@ -39,11 +39,12 @@ describe.skipIf(process.env.CHECKOUT_REMOTE_DIAGNOSTIC !== '1')(
     const transactionErrors: string[] = []
     const transactionMs: number[] = []
     const preparationDelayed = process.env.CHECKOUT_REMOTE_PREPARATION === '1'
+    const paymentDelayed = process.env.CHECKOUT_REMOTE_PAYMENT === '1'
     const preparation: { phase: string; ms: number; queries: number }[] = []
     async function prepare<T>(phase: string, work: () => Promise<T>): Promise<T> {
       const start = performance.now()
       const before = queries
-      enabled = preparationDelayed
+      enabled = preparationDelayed || (paymentDelayed && phase.startsWith('payment.'))
       try {
         return await work()
       } finally {
@@ -163,17 +164,23 @@ describe.skipIf(process.env.CHECKOUT_REMOTE_DIAGNOSTIC !== '1')(
           schema: orderResponseSchema,
         }),
       )
-      const { payment } = await client.request({
-        path: '/payments',
-        method: 'POST',
-        body: { orderId: order.id, provider: 'VIRTUAL_CARD', cardId: card.id },
-        schema: paymentResponseSchema,
-      })
-      await client.request({
-        path: `/payments/${payment.id}/authorize`,
-        method: 'POST',
-        schema: paymentResponseSchema,
-      })
+      const { payment } = await prepare('payment.start', () =>
+        client.request({
+          timeoutMs: 30000,
+          path: '/payments',
+          method: 'POST',
+          body: { orderId: order.id, provider: 'VIRTUAL_CARD', cardId: card.id },
+          schema: paymentResponseSchema,
+        }),
+      )
+      await prepare('payment.authorize', () =>
+        client.request({
+          timeoutMs: 30000,
+          path: `/payments/${payment.id}/authorize`,
+          method: 'POST',
+          schema: paymentResponseSchema,
+        }),
+      )
       const start = performance.now()
       let status: number
       enabled = true
@@ -202,6 +209,7 @@ describe.skipIf(process.env.CHECKOUT_REMOTE_DIAGNOSTIC !== '1')(
           'isolated local PostgreSQL; simulated response delay during capture and optionally preparation',
         itemCount,
         preparationDelayed,
+        paymentDelayed,
         preparation,
         delayMs,
         timeout,
@@ -218,7 +226,9 @@ describe.skipIf(process.env.CHECKOUT_REMOTE_DIAGNOSTIC !== '1')(
         process.env.CHECKOUT_REMOTE_OUTPUT ?? '/tmp/checkout-remote-diagnostic.json',
         JSON.stringify(result, null, 2) + '\n',
       )
-      if (preparationDelayed) for (const sample of preparation) expect(sample.ms).toBeLessThan(5000)
+      if (preparationDelayed)
+        for (const sample of preparation.filter((s) => !s.phase.startsWith('payment.')))
+          expect(sample.ms).toBeLessThan(5000)
       expect(status).toBe(201)
       expect(transactionErrors).toEqual([])
       expect(Math.max(...transactionMs)).toBeLessThan(5000)
