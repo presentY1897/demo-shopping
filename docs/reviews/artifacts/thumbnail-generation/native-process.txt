@@ -1,0 +1,3 @@
+{"samples":20,"p95Ms":217.94954400000006}
+{"peakRssBytes":113229824}
+PASS: real WebP/alpha/dimensions, byte/pixel/decode rejection, serial slot, abort/recovery, temporary-file cleanup
