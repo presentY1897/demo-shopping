@@ -117,3 +117,9 @@ PR #137 배포 후 실제 JWT 구매1회의 SQL 횟수/누적 시간·pool·서�
 ### 최신 운영 잔여 지연
 
 PR142 배포 후 두 상품 실제 모바일 구매18,976ms, 결제 요청 실패0·추가 복구 조회0·양쪽 PAID·장바구니0. 서버 주문 생성3,963ms, 결제 생성2,419ms, 승인4,584ms, 확정5,622ms다. [원자료](../../reviews/artifacts/checkout-review/payment-deadline-production-browser.json). 각 SQL·pool 누적 시간은 중첩될 수 있으므로 합산하지 않는다. 반복 후처리 transaction 오류와 브라우저 조기 중단은 해결됐지만 이 단회 warm 결과를 빠른 응답이나 cold p95 달성으로 보지 않는다. 실제 cold start 표본과 결제 단계의 남은 왕복 분석이 후속이다.
+
+### 2026-09-11 잔여 분석 재개 계획
+
+사용자 계속 진행 승인으로 기존 분석 worktree에서 이어간다. 운영 첫 health 요청과 직후 warm 요청을 소량 측정하며, 응답의 uptime·기동 표시 등 실제 재기동 근거가 없으면 cold로 분류하지 않는다. 별도로 로컬 production build 프로세스를 종료·재시작하여 TCP listen까지의 기동과 첫 HTTP/JWT 요청을 측정한다. DB/검색 컨테이너와 OS 캐시는 유지한 process-cold임을 명시하고 호스팅 scale-to-zero와 구분한다.
+
+동일 최신 코드에서 warm30/32표본을 다시 수집한다. 결제 own/read/provider/context/get의 반복 조회 횟수를 확인하여 권한·신선도·상태 잠금이 필요한 조회와 재사용 가능한 불변 식별자를 구분한다. 구현 개선은 근거와 검증 기준을 별도 TASK에 먼저 기록한다. 운영 중단·부하 테스트·요금 변경은 하지 않는다.
