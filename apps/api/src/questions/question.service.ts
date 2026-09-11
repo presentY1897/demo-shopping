@@ -278,7 +278,7 @@ export class QuestionService {
         JOIN "User" u    ON u."id" = q."userId"
         LEFT JOIN "ProductAnswer" a ON a."questionId" = q."id"
         LEFT JOIN LATERAL (
-          SELECT "url" FROM "ProductImage"
+          SELECT COALESCE("thumbnailUrl", "url") AS "url" FROM "ProductImage"
            WHERE "productId" = p."id" ORDER BY "sortOrder" LIMIT 1) pi ON TRUE
        WHERE (${options.questionId ?? null}::uuid IS NULL OR q."id" = ${options.questionId ?? null}::uuid)
          AND (${options.productId ?? null}::uuid IS NULL OR q."productId" = ${options.productId ?? null}::uuid)

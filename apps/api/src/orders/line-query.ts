@@ -24,8 +24,8 @@ const variantJson = Prisma.sql`jsonb_build_object(
     'id', p."id", 'name', p."name", 'status', p."status",
     'deletedAt', p."deletedAt" AT TIME ZONE 'UTC', 'maxPurchaseQuantity', p."maxPurchaseQuantity",
     'category', jsonb_build_object('path', category."path"),
-    'images', COALESCE((SELECT jsonb_agg(jsonb_build_object('url', first_image."url")) FROM
-      (SELECT image."url" FROM "ProductImage" image WHERE image."productId" = p."id"
+    'images', COALESCE((SELECT jsonb_agg(jsonb_build_object('url', first_image."url", 'thumbnailUrl', first_image."thumbnailUrl")) FROM
+      (SELECT image."url", image."thumbnailUrl" FROM "ProductImage" image WHERE image."productId" = p."id"
        ORDER BY image."sortOrder", image."id" LIMIT 1) first_image), '[]'::jsonb),
     'options', COALESCE((SELECT jsonb_agg(jsonb_build_object('id', option."id", 'sortOrder', option."sortOrder") ORDER BY option."id")
       FROM "ProductOption" option WHERE option."productId" = p."id"), '[]'::jsonb),

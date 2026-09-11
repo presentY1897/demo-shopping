@@ -38,7 +38,7 @@ export interface CartLineRow {
       readonly deletedAt: Date | null
       readonly maxPurchaseQuantity: number | null
       readonly category: { readonly path: string }
-      readonly images: readonly { readonly url: string }[]
+      readonly images: readonly { readonly url: string; readonly thumbnailUrl?: string | null }[]
       readonly options: readonly { readonly id: string; readonly sortOrder: number }[]
       readonly seller: {
         readonly id: string
@@ -100,7 +100,8 @@ function snapshotOf(row: CartLineRow): OrderItemSnapshot {
     productName: row.variant.product.name,
     optionLabel: optionLabelOf(row),
     sku: row.variant.sku,
-    thumbnailUrl: row.variant.product.images[0]?.url ?? null,
+    thumbnailUrl:
+      row.variant.product.images[0]?.thumbnailUrl ?? row.variant.product.images[0]?.url ?? null,
     brandName: row.variant.product.seller.brandName,
   }
 }
@@ -154,7 +155,7 @@ export function toLine(row: CartLineRow): OrderLine {
 const REPRESENTATIVE_IMAGE = {
   orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
   take: 1,
-  select: { url: true },
+  select: { url: true, thumbnailUrl: true },
 } satisfies Prisma.Product$imagesArgs
 
 /** Reference projection, compared against line-query.ts on real PostgreSQL. */

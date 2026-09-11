@@ -152,6 +152,8 @@ export type OptionValueMeta = z.infer<typeof optionValueMetaSchema>
 export const PRODUCT_MAX_IMAGES = 12
 
 export const productImageSchema = z.object({
+  thumbnailUrl: z.string().nullable().optional(),
+  cardImageUrl: z.string().nullable().optional(),
   id: z.uuid(),
   url: z.string().min(1),
   alt: z.string().nullable(),

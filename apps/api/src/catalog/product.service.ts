@@ -292,7 +292,7 @@ export class ProductService {
            WHERE "productId" = p."id" AND "deletedAt" IS NULL
         ) v ON true
         LEFT JOIN LATERAL (
-          SELECT "url" FROM "ProductImage"
+          SELECT COALESCE("thumbnailUrl", "url") AS "url" FROM "ProductImage"
            WHERE "productId" = p."id"
            ORDER BY "sortOrder", "id"
            LIMIT 1
@@ -1260,6 +1260,8 @@ export class ProductService {
       images: row.images.map((image) => ({
         id: image.id,
         url: image.url,
+        ...(image.thumbnailUrl ? { thumbnailUrl: image.thumbnailUrl } : {}),
+        ...(image.cardImageUrl ? { cardImageUrl: image.cardImageUrl } : {}),
         alt: image.alt,
         sortOrder: image.sortOrder,
       })),

@@ -184,6 +184,7 @@ function toHit(hit: Record<string, unknown>): SearchHit {
     price: Number(hit.price),
     inStock: hit.inStock === true,
     thumbnailUrl: typeof hit.thumbnailUrl === 'string' ? hit.thumbnailUrl : null,
+    ...(typeof hit.cardImageUrl === 'string' ? { cardImageUrl: hit.cardImageUrl } : {}),
     ratingAvg: Number(hit.ratingAvg ?? 0),
     ratingCount: Number(hit.ratingCount ?? 0),
     salesCount: Number(hit.salesCount ?? 0),

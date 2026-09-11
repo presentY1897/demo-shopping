@@ -38,6 +38,7 @@ export interface ProductSource {
   /** Summed over live, active combinations. */
   readonly totalStock: number
   readonly thumbnailUrl: string | null
+  readonly cardImageUrl?: string | null
   readonly createdAt: Date
 }
 
@@ -72,6 +73,7 @@ export interface ProductDocument {
   readonly salesCount: number
   readonly inStock: boolean
   readonly thumbnailUrl: string | null
+  readonly cardImageUrl?: string | null
   /** Epoch seconds. Meilisearch sorts numbers, not ISO strings. */
   readonly createdAt: number
   /**
@@ -194,6 +196,7 @@ export function toDocument(source: ProductSource): ProductDocument {
     // produce an event at all — only crossing zero changes the document.
     inStock: source.totalStock > 0,
     thumbnailUrl: source.thumbnailUrl,
+    ...(source.cardImageUrl ? { cardImageUrl: source.cardImageUrl } : {}),
     createdAt: Math.floor(source.createdAt.getTime() / 1000),
     hangul: spelled.jamo,
     chosung: spelled.chosung,

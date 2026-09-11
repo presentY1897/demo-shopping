@@ -114,7 +114,7 @@ export class CollectionsService {
         JOIN "Product" p ON p."id" = w."productId"
         JOIN "Seller" s  ON s."id" = p."sellerId"
         LEFT JOIN LATERAL (
-          SELECT "url" FROM "ProductImage"
+          SELECT COALESCE("thumbnailUrl", "url") AS "url" FROM "ProductImage"
            WHERE "productId" = p."id" ORDER BY "sortOrder" LIMIT 1) pi ON TRUE
        WHERE w."userId" = ${userId}::uuid
          AND (${params.cursor ?? null}::timestamp IS NULL
@@ -200,7 +200,7 @@ export class CollectionsService {
         JOIN "Product" p ON p."id" = rv."productId"
         JOIN "Seller" s  ON s."id" = p."sellerId"
         LEFT JOIN LATERAL (
-          SELECT "url" FROM "ProductImage"
+          SELECT COALESCE("thumbnailUrl", "url") AS "url" FROM "ProductImage"
            WHERE "productId" = p."id" ORDER BY "sortOrder" LIMIT 1) pi ON TRUE
        WHERE rv."userId" = ${userId}::uuid
        ORDER BY rv."viewedAt" DESC
