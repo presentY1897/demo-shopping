@@ -9,6 +9,8 @@ import type {
   PaymentProviderPort,
 } from '../../src/payment/payment-provider.js'
 import { PaymentProviderRegistry } from '../../src/payment/payment-registry.js'
+import { PrismaService } from '../../src/prisma/prisma.service.js'
+import { accountOwnershipSelect } from '../../src/auth/resource-ownership.js'
 import { PaymentService } from '../../src/payment/payment.service.js'
 import { useApiApp } from '../support/api-app.js'
 import { barrier, concurrently, fulfilled, rejected } from '../support/concurrently.js'
@@ -813,5 +815,58 @@ describe('동시 환불 (F6 · A7)', () => {
     })
     expect(await refundRows(paymentId)).toHaveLength(2)
     expect((await read(paymentId)).status).toBe('PARTIAL_CANCELED')
+  })
+})
+
+describe('payment response projection (TASK-0135)', () => {
+  it.each([false, true])('matches the previous projection with refunds=%s', async (withRefunds) => {
+    const { paymentId } = withRefunds ? await captured() : await startPayment()
+    const prisma = api.resolve<PrismaService>(PrismaService)
+    if (withRefunds) {
+      await payments().refund(principal, paymentId, 100, 'first')
+      await payments().refund(principal, paymentId, 200, 'second')
+      // UTC millisecond conversion and UUID tie ordering must match Prisma.
+      await prisma.refund.updateMany({
+        where: { paymentId },
+        data: { refundedAt: new Date('2026-09-11T01:23:45.678Z') },
+      })
+      await prisma.payment.update({
+        where: { id: paymentId },
+        data: { approvedAt: new Date('2026-09-11T02:34:56.789Z') },
+      })
+    }
+    const old = await prisma.payment.findUniqueOrThrow({
+      where: { id: paymentId },
+      select: {
+        id: true,
+        orderId: true,
+        provider: true,
+        status: true,
+        authorizedAmount: true,
+        canceledAmount: true,
+        paymentKey: true,
+        approvedAt: true,
+        refunds: {
+          orderBy: [{ refundedAt: 'asc' }, { id: 'asc' }],
+          select: { id: true, amount: true, reason: true, refundedAt: true },
+        },
+        order: { select: { user: { select: accountOwnershipSelect } } },
+      },
+    })
+    const { order: _order, approvedAt, refunds, ...fields } = old
+    const expected = {
+      payment: {
+        ...fields,
+        approvedAt: approvedAt?.toISOString() ?? null,
+        refunds: refunds.map(({ refundedAt, ...refund }) => ({
+          ...refund,
+          refundedAt: refundedAt.toISOString(),
+        })),
+      },
+    }
+    const actual = await payments().get(principal, paymentId)
+    expect(actual).toEqual(expected)
+    expect(paymentResponseSchema.parse(actual)).toEqual(actual)
+    expect(actual.payment).not.toHaveProperty('owner')
   })
 })
