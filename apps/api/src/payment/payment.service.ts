@@ -24,6 +24,7 @@ import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { OrderService } from '../orders/order.service.js'
 import { PaymentProviderRegistry } from './payment-registry.js'
+import { paymentView } from './payment-query.js'
 import { askableBefore } from './payment-reconcile.js'
 import { LOCAL_STEP_BUDGET_MS, PROVIDER_DEADLINE_MS } from './payment-straggler.js'
 import type { RefundRefusal } from './payment-rules.js'
@@ -68,6 +69,8 @@ export type RecoveryOutcome =
 /** 잠금 아래에서 읽은 결제 한 줄. */
 interface PaymentRow {
   readonly id: string
+  readonly orderId: string
+  readonly methodRef: string | null
   /** 어느 결제사인가. 토스 승인 라우트가 남의 결제를 받지 않기 위해 본다 (TASK-0055). */
   readonly provider: PaymentProviderName
   readonly status: PaymentStatus
@@ -193,8 +196,8 @@ export class PaymentService {
     })
     if (claimed.count === 0) throw awaitingPayment()
 
-    const provider = await this.providerOf(paymentId)
-    const context = await this.contextOf(paymentId)
+    const provider = this.registry.resolve(held.provider)
+    const context = held
     const result = await provider.authorize({
       paymentId: held.id,
       orderId: context.orderId,
@@ -307,8 +310,8 @@ export class PaymentService {
   async capture(principal: RequestPrincipal, paymentId: string): Promise<PaymentResponse> {
     const account = await this.account(principal, 'order.write')
 
-    await this.own(account.id, paymentId)
-    await this.settle(paymentId)
+    const held = await this.own(account.id, paymentId)
+    await this.settleHeld(held)
 
     return this.get(principal, paymentId)
   }
@@ -325,10 +328,13 @@ export class PaymentService {
    * 직접 붙이면 남의 결제를 매입할 수 있으므로, 붙이지 않는다.
    */
   async settle(paymentId: string): Promise<void> {
-    const held = await this.read(paymentId)
+    await this.settleHeld(await this.read(paymentId))
+  }
 
+  private async settleHeld(held: PaymentRow): Promise<void> {
+    const paymentId = held.id
     if (held.status === 'PAID') {
-      await this.orders.markPaid((await this.contextOf(paymentId)).orderId)
+      await this.orders.markPaid(held.orderId)
       return
     }
     this.assertTransition(held.status, 'PAID')
@@ -355,7 +361,7 @@ export class PaymentService {
     // 결제가 확정됐으니 주문이 완료된다 (TASK-0054 4.2) — 예약이 실제 차감으로
     // 바뀌고 판매자 몫이 `PAID` 로 간다. **결제가 그 일을 직접 하지 않는다**:
     // 프로바이더가 무엇이든 그 뒤는 같아야 하고, 그 「뒤」를 아는 것은 주문 쪽이다.
-    await this.orders.markPaid((await this.contextOf(paymentId)).orderId)
+    await this.orders.markPaid(held.orderId)
   }
 
   /**
@@ -571,34 +577,11 @@ export class PaymentService {
 
   /** 결제 하나. 산 사람과 운영자가 읽는다. */
   async get(principal: RequestPrincipal, paymentId: string): Promise<PaymentResponse> {
-    const row = await this.prisma.payment.findUnique({
-      where: { id: paymentId },
-      select: {
-        id: true,
-        orderId: true,
-        provider: true,
-        status: true,
-        authorizedAmount: true,
-        canceledAmount: true,
-        paymentKey: true,
-        approvedAt: true,
-        refunds: {
-          // 시각만으로 정렬하면 **같은 밀리초에 들어온 둘의 순서가 정해지지
-          // 않는다.** 부분 환불은 실제로 연달아 일어나고, 그때 화면이 새로고침마다
-          // 다른 순서를 보여 주면 읽는 사람이 기록을 믿지 못한다. id 가 UUIDv7 이라
-          // 그 자체로 시간순이고, 동률의 타이브레이커가 된다.
-          orderBy: [{ refundedAt: 'asc' }, { id: 'asc' }],
-          select: { id: true, amount: true, reason: true, refundedAt: true },
-        },
-        order: { select: { user: { select: accountOwnershipSelect } } },
-      },
-    })
-
-    if (row === null) throw new NotFoundException('결제를 찾을 수 없어요.')
-
-    assertResourceAccess(principal, 'order.read', accountOwnership(row.order.user))
-
-    return { payment: present(row) }
+    const row = await paymentView(this.prisma, paymentId)
+    if (row === undefined) throw new NotFoundException('결제를 찾을 수 없어요.')
+    assertResourceAccess(principal, 'order.read', accountOwnership(row.owner))
+    const { owner: _owner, approvedAt, ...payment } = row
+    return { payment: { ...payment, approvedAt: approvedAt?.toISOString() ?? null } }
   }
 
   /** Find a payment even when the creation response was lost. */
@@ -657,6 +640,8 @@ export class PaymentService {
       where: { id: paymentId },
       select: {
         id: true,
+        orderId: true,
+        methodRef: true,
         provider: true,
         status: true,
         authorizedAmount: true,
@@ -676,6 +661,8 @@ export class PaymentService {
       where: { id: paymentId, order: { userId } },
       select: {
         id: true,
+        orderId: true,
+        methodRef: true,
         provider: true,
         status: true,
         authorizedAmount: true,
@@ -699,7 +686,7 @@ export class PaymentService {
    */
   private async lock(tx: Tx, paymentId: string): Promise<PaymentRow> {
     const rows = await tx.$queryRaw<readonly PaymentRow[]>`
-      SELECT "id", "provider", "status", "authorizedAmount", "canceledAmount", "paymentKey"
+      SELECT "id", "orderId", "methodRef", "provider", "status", "authorizedAmount", "canceledAmount", "paymentKey"
         FROM "Payment"
        WHERE "id" = ${paymentId}::uuid
        FOR UPDATE
@@ -720,31 +707,6 @@ export class PaymentService {
         field: 'status',
       }),
     )
-  }
-
-  private async providerOf(paymentId: string) {
-    const row = await this.prisma.payment.findUnique({
-      where: { id: paymentId },
-      select: { provider: true },
-    })
-
-    if (row === null) throw new NotFoundException('결제를 찾을 수 없어요.')
-
-    return this.registry.resolve(row.provider)
-  }
-
-  /** 이 결제가 어느 주문의 것이고 어느 수단으로 내는가. */
-  private async contextOf(
-    paymentId: string,
-  ): Promise<{ readonly orderId: string; readonly methodRef: string | null }> {
-    const row = await this.prisma.payment.findUnique({
-      where: { id: paymentId },
-      select: { orderId: true, methodRef: true },
-    })
-
-    if (row === null) throw new NotFoundException('결제를 찾을 수 없어요.')
-
-    return row
   }
 
   /**
@@ -851,40 +813,6 @@ function refusalOf(reason: RefundRefusal, refundable: number): Error {
       { field: 'amount', params: { refundable } },
     ),
   )
-}
-
-function present(row: {
-  readonly id: string
-  readonly orderId: string
-  readonly provider: string
-  readonly status: string
-  readonly authorizedAmount: number
-  readonly canceledAmount: number
-  readonly paymentKey: string | null
-  readonly approvedAt: Date | null
-  readonly refunds: readonly {
-    readonly id: string
-    readonly amount: number
-    readonly reason: string
-    readonly refundedAt: Date
-  }[]
-}): Payment {
-  return {
-    id: row.id,
-    orderId: row.orderId,
-    provider: row.provider as PaymentProviderName,
-    status: row.status as PaymentStatus,
-    authorizedAmount: row.authorizedAmount,
-    canceledAmount: row.canceledAmount,
-    paymentKey: row.paymentKey,
-    approvedAt: row.approvedAt?.toISOString() ?? null,
-    refunds: row.refunds.map((refund) => ({
-      id: refund.id,
-      amount: refund.amount,
-      reason: refund.reason,
-      refundedAt: refund.refundedAt.toISOString(),
-    })),
-  }
 }
 
 function awaitingPayment(): ConflictException {
