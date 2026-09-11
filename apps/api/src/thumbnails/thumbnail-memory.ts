@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path'
 import { THUMBNAIL_LIMITS } from './thumbnail-limits.js'
 
 const RESERVE = 64 * 1024 * 1024
+export const THUMBNAIL_START_BYTES = THUMBNAIL_LIMITS.rssBytes + RESERVE
 
 /** Include enclosing groups: the leaf can be unlimited inside a capped parent. */
 export async function thumbnailMemoryAvailable(
@@ -80,7 +81,7 @@ export function availableBytes(limit: string, used: string): number {
     : 0
 }
 export async function canStartThumbnail(): Promise<boolean> {
-  return (await thumbnailMemoryAvailable()) >= THUMBNAIL_LIMITS.rssBytes + RESERVE
+  return (await thumbnailMemoryAvailable()) >= THUMBNAIL_START_BYTES
 }
 export async function mustStopThumbnail(): Promise<boolean> {
   return (await thumbnailMemoryAvailable()) < RESERVE

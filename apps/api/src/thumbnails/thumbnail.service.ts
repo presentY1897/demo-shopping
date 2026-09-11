@@ -10,7 +10,7 @@ import { APP_CONFIG, type AppConfig } from '../config/app-config.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { ThumbnailQueue } from './thumbnail-queue.js'
 import { ThumbnailProcess, cleanOrphanedThumbnails } from './thumbnail-process.js'
-import { canStartThumbnail } from './thumbnail-memory.js'
+import { thumbnailMemoryAvailable, THUMBNAIL_START_BYTES } from './thumbnail-memory.js'
 import { thumbnailTargets } from './thumbnail-targets.js'
 
 @Injectable()
@@ -21,21 +21,30 @@ export class ThumbnailService implements OnApplicationBootstrap, OnModuleDestroy
   private timer?: ReturnType<typeof setTimeout>
   private active?: Promise<void>
   private memoryDeferred = false
+  private memoryWarningAt = -Infinity
   constructor(
     private readonly db: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(APP_CONFIG) private readonly config: AppConfig,
   ) {}
   onApplicationBootstrap(): void {
-    if (
-      !this.config.thumbnailGeneration ||
-      this.config.storage === null ||
-      this.config.nodeEnv === 'test'
-    )
+    if (this.config.nodeEnv === 'test') return
+    if (!this.config.thumbnailGeneration) {
+      this.logger.log('썸네일 작업자 미실행: THUMBNAIL_GENERATION=off')
       return
+    }
+    if (this.config.storage === null) {
+      this.logger.warn('썸네일 작업자 미실행: 이미지 저장소 설정 없음')
+      return
+    }
+    this.logger.log('썸네일 작업자 시작 준비: 활성화됨 · 저장소 설정 있음 · 임시 파일 정리')
     void cleanOrphanedThumbnails()
       .catch(() => this.logger.warn('썸네일 임시 파일 정리 실패'))
-      .finally(() => this.schedule())
+      .finally(() => {
+        if (this.abort.signal.aborted) return
+        this.logger.log('썸네일 작업자 시작: 1초 간격 · 전체 동시성 1')
+        this.schedule()
+      })
   }
   private schedule(): void {
     if (this.abort.signal.aborted) return
@@ -48,12 +57,20 @@ export class ThumbnailService implements OnApplicationBootstrap, OnModuleDestroy
   async drain(): Promise<void> {
     const storage = this.config.storage
     if (storage === null || this.abort.signal.aborted) return
-    if (!(await canStartThumbnail())) {
-      if (!this.memoryDeferred)
-        this.logger.warn('메모리 여유 또는 제한 정보를 확보하지 못해 썸네일 생성을 대기합니다.')
+    const availableBytes = await thumbnailMemoryAvailable()
+    if (availableBytes < THUMBNAIL_START_BYTES) {
+      const now = performance.now()
+      if (!this.memoryDeferred || now - this.memoryWarningAt >= 60_000) {
+        this.logger.warn(
+          `메모리 여유 또는 제한 정보를 확보하지 못해 썸네일 생성을 대기합니다. availableBytes=${availableBytes} requiredBytes=${THUMBNAIL_START_BYTES} (0은 여유 없음 또는 측정 불가)`,
+        )
+        this.memoryWarningAt = now
+      }
       this.memoryDeferred = true
       return
     }
+    if (this.memoryDeferred)
+      this.logger.log(`썸네일 메모리 대기 해제: availableBytes=${availableBytes}`)
     this.memoryDeferred = false
     const started = performance.now()
     const queue = new ThumbnailQueue(this.db)
