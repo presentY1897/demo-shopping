@@ -48,6 +48,12 @@ export class ThumbnailQueue {
         await tx.$executeRaw`UPDATE "ProductImageDerivative" SET "status"=CASE WHEN "attempts">=3 THEN 'FAILED' ELSE 'PENDING' END,
           "nextAttemptAt"=clock_timestamp()+interval '60 seconds',"leaseUntil"=NULL,"token"=NULL WHERE "id"=${job.id}::uuid AND "token"=${job.token}::uuid`
       } else {
+        // Product writes lock the parent before recreating image rows and touching the queue trigger.
+        // Follow that order, so finalisation cannot hold the job while waiting on an editor's image.
+        await tx.$queryRaw`SELECT p."id" FROM "Product" p
+          WHERE p."sellerId"=${job.sellerId}::uuid AND EXISTS
+            (SELECT 1 FROM "ProductImage" i WHERE i."productId"=p."id" AND i."url"=${job.sourceUrl})
+          ORDER BY p."id" FOR UPDATE OF p`
         await tx.$executeRaw`UPDATE "ProductImageDerivative" SET "status"='READY',"thumbnailUrl"=${result.thumbnailUrl},"cardImageUrl"=${result.cardImageUrl},"metadata"=${result.metadata}::jsonb,"token"=NULL,"leaseUntil"=NULL WHERE "id"=${job.id}::uuid AND "token"=${job.token}::uuid`
         const changed = await tx.$queryRaw<
           { productId: string }[]
