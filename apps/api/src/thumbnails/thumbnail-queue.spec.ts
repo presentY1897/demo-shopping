@@ -117,9 +117,8 @@ describe('global thumbnail slot', () => {
       job = (await queue.claim())!
     await db.withConnection(async (writer) => {
       await writer.query('BEGIN')
-      const {
-        rows: [{ pid }],
-      } = await writer.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')
+      const { rows } = await writer.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')
+      const pid = rows[0]!.pid
       await writer.query('SELECT "id" FROM "Product" WHERE "id"=$1 FOR UPDATE', [product.id])
       await writer.query('DELETE FROM "ProductImage" WHERE "productId"=$1', [product.id])
       const finishing = queue
