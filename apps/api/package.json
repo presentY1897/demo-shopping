@@ -27,7 +27,9 @@
     "lint:fix": "eslint . --fix --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "thumbnails:backfill": "nest build && node dist/thumbnails/backfill.js",
+    "thumbnails:verify": "nest build && node scripts/verify-thumbnail-process.cjs"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",
@@ -38,6 +40,7 @@
     "@shopping/shared": "workspace:*",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
+    "sharp": "^0.35.4",
     "zod": "^4.5.4"
   },
   "devDependencies": {

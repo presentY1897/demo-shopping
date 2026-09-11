@@ -199,6 +199,9 @@ jobs:
       # when the two drift. It cannot be written once: pnpm mangles `=` in the
       # arguments it forwards through `run`, so the shard flags have to reach
       # vitest directly.
+      - name: Verify bounded thumbnail subprocess
+        if: matrix.shard == 1
+        run: pnpm --filter @shopping/api thumbnails:verify
       - run: >-
           pnpm --filter @shopping/api exec vitest run --coverage
           --exclude '**/*-performance.spec.ts'
