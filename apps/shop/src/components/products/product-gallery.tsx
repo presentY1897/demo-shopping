@@ -1,5 +1,7 @@
 'use client'
 
+import { useImageFailure } from '@shopping/ui/components'
+
 /**
  * 이미지 갤러리 — 썸네일 · 확대 · 스와이프 (TASK-0043 F5).
  *
@@ -45,8 +47,7 @@ export function ProductGallery({
   const stripRef = useRef<HTMLDivElement>(null)
   const [index, setIndex] = useState(0)
   const [zoomed, setZoomed] = useState(false)
-  const [failedUrls, setFailedUrls] = useState<ReadonlySet<string>>(new Set())
-  const markFailed = (url: string) => setFailedUrls((held) => new Set([...held, url]))
+  const { unavailable, markFailed } = useImageFailure()
 
   /**
    * Moves the strip by writing `scrollLeft`, not by calling `scrollTo`.
@@ -110,7 +111,7 @@ export function ProductGallery({
                 className="bg-surface-muted aspect-square w-full overflow-hidden"
                 onErrorCapture={() => markFailed(image.url)}
               >
-                {!image.url.trim() || failedUrls.has(image.url) ? (
+                {unavailable(image.url) ? (
                   <ProductImagePlaceholder label={messages.empty} />
                 ) : renderImage === undefined ? (
                   // eslint-disable-next-line @next/next/no-img-element -- the page passes `next/image`; this is the fallback for a spec and for Storybook.
@@ -197,7 +198,7 @@ export function ProductGallery({
                 <span className="sr-only">
                   {messages.thumbnailLabel.replace('{index}', String(position + 1))}
                 </span>
-                {!image.url.trim() || failedUrls.has(image.url) ? (
+                {unavailable(image.url) ? (
                   <ProductImagePlaceholder compact />
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element -- small seller thumbnails use arbitrary public image hosts.

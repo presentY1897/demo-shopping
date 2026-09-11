@@ -18,7 +18,7 @@
 // `PORT_OFFSET=10 pnpm dev` working without editing a file.
 
 import { spawn } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, cpSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -54,6 +54,12 @@ if (!WEB_APPS.includes(app)) {
 }
 if (forwarded.length === 0) {
   fail('실행할 next 명령이 없습니다. 예: node scripts/web-app.mjs shop dev')
+}
+
+if (app !== 'shop') {
+  const target = join(ROOT, 'apps', app, 'public', 'seed', 'catalog')
+  mkdirSync(target, { recursive: true })
+  cpSync(join(ROOT, 'apps/shop/public/seed/catalog'), target, { recursive: true })
 }
 
 // Next owns NODE_ENV: `dev` means development, `build` and `start` mean

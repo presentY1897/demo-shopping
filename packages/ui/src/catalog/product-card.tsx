@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import { useImageFailure } from '../media/use-image-failure'
 import { ProductImagePlaceholder } from './product-image-placeholder'
 
 import { cx } from '../lib/cx'
@@ -188,7 +189,7 @@ export function ProductCard({
   const rating = ratingOf(product.ratingAvg)
   const soldOut = product.inStock === false
   const image = product.imageUrl?.trim() ? product.imageUrl.trim() : null
-  const [failedImage, setFailedImage] = useState<string | null>(null)
+  const { unavailable, markFailed } = useImageFailure()
 
   return (
     <article
@@ -203,9 +204,9 @@ export function ProductCard({
     >
       <div
         className={cx('bg-surface-muted relative w-full', IMAGE_RATIO[density])}
-        onErrorCapture={() => setFailedImage(image)}
+        onErrorCapture={() => markFailed(image)}
       >
-        {image === null || failedImage === image ? (
+        {image === null || unavailable(image) ? (
           <ProductImagePlaceholder label={labels.imageUnavailable} />
         ) : renderImage !== undefined ? (
           renderImage({ src: image, alt: product.name })

@@ -86,3 +86,7 @@ e2e/blob-report/
 !/product-images/production-migration-plan.md
 !/product-images/catalog-production.md
 __pycache__/
+
+# Generated from shop assets by scripts/web-app.mjs
+/apps/seller/public/seed/catalog/
+/apps/admin/public/seed/catalog/
