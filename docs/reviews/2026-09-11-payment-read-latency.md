@@ -50,8 +50,14 @@
 
 두 경우 모두201/PAID, 판매자 둘 PAID, 장바구니0, transaction 오류0. SQL 시간은 병렬·상위 구간과 중첩되므로 누적 시간을 단순 합산하지 않는다. 로컬 지연 모형은 운영 p95가 아니다. 남은 원장/상태/예약 처리는 필수이므로 추가 감소는 정합성 근거가 필요하다.
 
-Render 선언은Singapore이나 운영 DB 리전은 확인하지 못했다. 지역 불일치는 아직 가설이다. 지역명 확인과 같은 환경의 실제 RTT 비교 없이 인프라 이전·풀 확대·유료 플랜을 제안하지 않는다.
+사용자가 운영 Neon 리전을 AWS US East2 Ohio(`aws-us-east-2`)로 확인했다. Render 선언은Singapore이다. 장거리 연결은 약200ms DB 왕복을 설명하는 유력한 원인이다. API의 실제 대시보드 리전/연결 프로젝트와 같은 지역 이전 전후를 확인하기 전에는 개선 폭 전체를 단정하지 않는다. [TASK0136](../tasks/M15-polish/TASK-0136-neon-region-alignment.md)에 Singapore 새 프로젝트 복사·검증·전환·되돌리기 계획을 분리했다. 기존 Neon 프로젝트의 리전은 바꿀 수 없으므로 단순 설정 수정으로 취급하지 않는다. [공식 안내](https://neon.com/docs/introduction/regions).
 
 ## 원자료
 
 [최신 warm](artifacts/checkout-review/api-latency-current.json), [warm 집계](artifacts/checkout-review/api-latency-current-summary.json), [process-cold30](artifacts/checkout-review/api-process-cold.json), [운영 첫 health](artifacts/checkout-review/api-first-health-current.json), [개선 전](artifacts/checkout-review/payment-reads-before.json), [개선 후](artifacts/checkout-review/payment-reads-after.json).
+
+## 운영 배포 후 확인
+
+PR144 merge `16115e0`, Render API 배포6387143952 성공 후 실제390px 두 상품 구매를 확인했다. 화면 주문서 진입/새로고침·주문 생성·결제 완료, 양쪽 PAID·장바구니0·장바구니/주문서 이미지 정상·결제 요청 실패0·주문서401 없음. 클릭→완료17,320ms(이전18,976ms). 서버 생성2,116ms·승인4,767ms·확정4,645ms, 응답 조회205~222ms였다. 승인 pool 누적1,633ms 등 변동도 있어 전체 개선을 단일 변경의 인과 효과로 단정하지 않는다. [원자료](artifacts/checkout-review/payment-reads-production.json).
+
+SQL 왕복약200ms가 남아 있으므로 다음 우선순위는 API/DB의 실제 리전 확인과 Singapore DB 복사·전환이다. 호스팅 cold start는 아직 확인되지 않았다.

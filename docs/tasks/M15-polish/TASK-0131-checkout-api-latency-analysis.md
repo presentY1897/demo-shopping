@@ -127,3 +127,7 @@ PR142 배포 후 두 상품 실제 모바일 구매18,976ms, 결제 요청 실�
 ### 재개 측정 결과
 
 [최신 warm30/32·production process-cold30·운영 uptime 확인](../../reviews/2026-09-11-payment-read-latency.md)을 확보했다. 로컬 프로세스 기동 중앙값643ms·첫 JWT 장바구니75ms, 오류0. 운영은 uptime47,040초로 cold가 아니었다. 호스팅 scale-to-zero는 미확보라 F3는 부분 충족으로 유지한다. 반복 조회 후속 TASK0135는 설계·실 DB 검증 진행 중이다.
+
+### 운영 DB 지역 확인
+
+사용자가 Neon 운영 리전을 AWS US East2 Ohio로 확인했다. API는 render.yaml상Singapore이다. 장거리 DB 왕복이 유력한 원인이며, 실제 연결 대상 확인과 같은 지역 이전 후 재측정은 TASK0136 초안으로 분리한다. F3의 호스팅 cold 표본 미확보와는 별개의 근거이다.
