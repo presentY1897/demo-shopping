@@ -103,4 +103,74 @@ describe('global thumbnail slot', () => {
         .thumbnailUrl,
     ).toBe('https://images.example/256.webp')
   })
+  it('finishes after an editor recreates the same image without reversing the lock order', async () => {
+    const user = await createUser(db),
+      seller = await createSeller(db, { userId: user.id }),
+      category = await createCategory(db)
+    const product = await createProduct(db, { sellerId: seller.id, categoryId: category.id })
+    const source = `https://images.example/products/${seller.id}/22222222-2222-4222-8222-222222222222.png`
+    await db.execute(
+      `INSERT INTO "ProductImage"("id","productId","url") VALUES (gen_random_uuid(),$1,$2)`,
+      [product.id, source],
+    )
+    const queue = new ThumbnailQueue(prisma),
+      job = (await queue.claim())!
+    await db.withConnection(async (writer) => {
+      await writer.query('BEGIN')
+      const {
+        rows: [{ pid }],
+      } = await writer.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')
+      await writer.query('SELECT "id" FROM "Product" WHERE "id"=$1 FOR UPDATE', [product.id])
+      await writer.query('DELETE FROM "ProductImage" WHERE "productId"=$1', [product.id])
+      const finishing = queue
+        .finish(job, {
+          thumbnailUrl: 'https://images.example/256.webp',
+          cardImageUrl: 'https://images.example/768.webp',
+          metadata: '[]',
+        })
+        .then(
+          () => null,
+          (error: unknown) => error,
+        )
+      try {
+        let blocked = false
+        for (let i = 0; i < 200; i++) {
+          const row = await db.one<{ count: number }>(
+            'SELECT count(*)::int AS count FROM pg_stat_activity WHERE $1=ANY(pg_blocking_pids(pid))',
+            [pid],
+          )
+          if (row.count > 0) {
+            blocked = true
+            break
+          }
+          await new Promise((resolve) => setTimeout(resolve, 10))
+        }
+        expect(blocked).toBe(true)
+        await writer.query(
+          `INSERT INTO "ProductImage"("id","productId","url") VALUES (gen_random_uuid(),$1,$2)`,
+          [product.id, source],
+        )
+        await writer.query('COMMIT')
+        expect(await finishing).toBeNull()
+      } finally {
+        await writer.query('ROLLBACK')
+        await finishing
+      }
+    })
+    expect(
+      (await db.one<{ thumbnailUrl: string }>('SELECT "thumbnailUrl" FROM "ProductImage"'))
+        .thumbnailUrl,
+    ).toBe('https://images.example/256.webp')
+  })
+
+  it('enforces the singleton, unique source and status rules in PostgreSQL', async () => {
+    await expect(db.execute('INSERT INTO "ThumbnailPool"("id") VALUES (2)')).rejects.toMatchObject({
+      code: '23514',
+    })
+    await enqueue(1)
+    await expect(enqueue(1)).rejects.toMatchObject({ code: '23505' })
+    await expect(
+      db.execute(`UPDATE "ProductImageDerivative" SET "status"='INVALID'`),
+    ).rejects.toMatchObject({ code: '23514' })
+  })
 })
