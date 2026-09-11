@@ -1,0 +1,427 @@
+{
+  "at": "2026-09-11T05:19:16.120Z",
+  "commit": "8d46efed3f7666ae53dd666087b1fc6a91e98875",
+  "environment": "local production Node process restarted; existing PostgreSQL and Meilisearch containers and OS caches retained; pool5; real JWT; same demo buyer; empty cart; 100ms TCP timeout and 10ms retry delay; listen detection upper bound about110ms; not Render/Neon scale-to-zero",
+  "samples": [
+    {
+      "sequence": 0,
+      "listenMs": 631.7645280000002,
+      "first": {
+        "ms": 101.125178,
+        "status": 200,
+        "serverTiming": "total;dur=80.73, auth;dur=0.54;desc=\"1\", db_acquire;dur=7.59;desc=\"2\", db_query;dur=42.78;desc=\"2\", cart_account;dur=40.14;desc=\"1\", cart_linesOf;dur=37.66;desc=\"1\", cart_get;dur=77.98;desc=\"1\""
+      },
+      "warm": {
+        "ms": 6.518880000000081,
+        "status": 200,
+        "serverTiming": "total;dur=4.35, auth;dur=0.15;desc=\"1\", db_acquire;dur=0.06;desc=\"2\", db_query;dur=3.11;desc=\"2\", cart_account;dur=1.32;desc=\"1\", cart_linesOf;dur=2.54;desc=\"1\", cart_get;dur=3.87;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 1,
+      "listenMs": 694.8413239999998,
+      "first": {
+        "ms": 74.42499599999974,
+        "status": 200,
+        "serverTiming": "total;dur=53.10, auth;dur=0.47;desc=\"1\", db_acquire;dur=7.60;desc=\"2\", db_query;dur=19.48;desc=\"2\", cart_account;dur=35.43;desc=\"1\", cart_linesOf;dur=14.86;desc=\"1\", cart_get;dur=50.41;desc=\"1\""
+      },
+      "warm": {
+        "ms": 7.36307399999987,
+        "status": 200,
+        "serverTiming": "total;dur=5.56, auth;dur=0.15;desc=\"1\", db_acquire;dur=0.07;desc=\"2\", db_query;dur=4.17;desc=\"2\", cart_account;dur=1.33;desc=\"1\", cart_linesOf;dur=3.62;desc=\"1\", cart_get;dur=4.96;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 2,
+      "listenMs": 750.6421140000002,
+      "first": {
+        "ms": 82.8291949999998,
+        "status": 200,
+        "serverTiming": "total;dur=58.16, auth;dur=0.54;desc=\"1\", db_acquire;dur=8.45;desc=\"2\", db_query;dur=19.15;desc=\"2\", cart_account;dur=41.53;desc=\"1\", cart_linesOf;dur=13.72;desc=\"1\", cart_get;dur=55.38;desc=\"1\""
+      },
+      "warm": {
+        "ms": 6.9900259999999435,
+        "status": 200,
+        "serverTiming": "total;dur=4.95, auth;dur=0.15;desc=\"1\", db_acquire;dur=0.08;desc=\"2\", db_query;dur=3.49;desc=\"2\", cart_account;dur=1.89;desc=\"1\", cart_linesOf;dur=2.49;desc=\"1\", cart_get;dur=4.40;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 3,
+      "listenMs": 729.6056990000002,
+      "first": {
+        "ms": 90.5835989999996,
+        "status": 200,
+        "serverTiming": "total;dur=58.40, auth;dur=0.53;desc=\"1\", db_acquire;dur=7.86;desc=\"2\", db_query;dur=21.47;desc=\"2\", cart_account;dur=40.77;desc=\"1\", cart_linesOf;dur=14.73;desc=\"1\", cart_get;dur=55.62;desc=\"1\""
+      },
+      "warm": {
+        "ms": 7.792441000000508,
+        "status": 200,
+        "serverTiming": "total;dur=5.80, auth;dur=0.19;desc=\"1\", db_acquire;dur=0.11;desc=\"2\", db_query;dur=4.02;desc=\"2\", cart_account;dur=2.28;desc=\"1\", cart_linesOf;dur=2.75;desc=\"1\", cart_get;dur=5.04;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 4,
+      "listenMs": 814.9417670000003,
+      "first": {
+        "ms": 79.9874949999994,
+        "status": 200,
+        "serverTiming": "total;dur=56.85, auth;dur=0.71;desc=\"1\", db_acquire;dur=7.54;desc=\"2\", db_query;dur=22.54;desc=\"2\", cart_account;dur=35.14;desc=\"1\", cart_linesOf;dur=18.17;desc=\"1\", cart_get;dur=53.43;desc=\"1\""
+      },
+      "warm": {
+        "ms": 7.600698000000193,
+        "status": 200,
+        "serverTiming": "total;dur=5.37, auth;dur=0.15;desc=\"1\", db_acquire;dur=0.13;desc=\"2\", db_query;dur=4.03;desc=\"2\", cart_account;dur=2.22;desc=\"1\", cart_linesOf;dur=2.63;desc=\"1\", cart_get;dur=4.86;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 5,
+      "listenMs": 719.5410590000001,
+      "first": {
+        "ms": 75.45818800000052,
+        "status": 200,
+        "serverTiming": "total;dur=52.03, auth;dur=0.52;desc=\"1\", db_acquire;dur=7.20;desc=\"2\", db_query;dur=18.38;desc=\"2\", cart_account;dur=35.87;desc=\"1\", cart_linesOf;dur=13.38;desc=\"1\", cart_get;dur=49.37;desc=\"1\""
+      },
+      "warm": {
+        "ms": 6.379288000000088,
+        "status": 200,
+        "serverTiming": "total;dur=4.78, auth;dur=0.14;desc=\"1\", db_acquire;dur=0.08;desc=\"2\", db_query;dur=3.48;desc=\"2\", cart_account;dur=1.78;desc=\"1\", cart_linesOf;dur=2.46;desc=\"1\", cart_get;dur=4.26;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 6,
+      "listenMs": 640.8409750000001,
+      "first": {
+        "ms": 75.42783000000054,
+        "status": 200,
+        "serverTiming": "total;dur=55.47, auth;dur=0.47;desc=\"1\", db_acquire;dur=7.17;desc=\"2\", db_query;dur=23.44;desc=\"2\", cart_account;dur=34.01;desc=\"1\", cart_linesOf;dur=18.60;desc=\"1\", cart_get;dur=52.72;desc=\"1\""
+      },
+      "warm": {
+        "ms": 7.595672999999806,
+        "status": 200,
+        "serverTiming": "total;dur=4.95, auth;dur=0.16;desc=\"1\", db_acquire;dur=0.09;desc=\"2\", db_query;dur=3.50;desc=\"2\", cart_account;dur=1.37;desc=\"1\", cart_linesOf;dur=2.98;desc=\"1\", cart_get;dur=4.37;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 7,
+      "listenMs": 674.9286750000001,
+      "first": {
+        "ms": 74.38913400000001,
+        "status": 200,
+        "serverTiming": "total;dur=56.71, auth;dur=0.51;desc=\"1\", db_acquire;dur=7.29;desc=\"2\", db_query;dur=19.16;desc=\"2\", cart_account;dur=39.79;desc=\"1\", cart_linesOf;dur=14.10;desc=\"1\", cart_get;dur=54.00;desc=\"1\""
+      },
+      "warm": {
+        "ms": 8.0285700000004,
+        "status": 200,
+        "serverTiming": "total;dur=6.09, auth;dur=0.18;desc=\"1\", db_acquire;dur=0.09;desc=\"2\", db_query;dur=4.78;desc=\"2\", cart_account;dur=2.86;desc=\"1\", cart_linesOf;dur=2.67;desc=\"1\", cart_get;dur=5.53;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 8,
+      "listenMs": 727.244627,
+      "first": {
+        "ms": 70.37339500000053,
+        "status": 200,
+        "serverTiming": "total;dur=50.41, auth;dur=0.53;desc=\"1\", db_acquire;dur=7.43;desc=\"2\", db_query;dur=18.80;desc=\"2\", cart_account;dur=33.58;desc=\"1\", cart_linesOf;dur=14.11;desc=\"1\", cart_get;dur=47.81;desc=\"1\""
+      },
+      "warm": {
+        "ms": 23.833393000000797,
+        "status": 200,
+        "serverTiming": "total;dur=17.92, auth;dur=0.27;desc=\"1\", db_acquire;dur=0.09;desc=\"2\", db_query;dur=16.09;desc=\"2\", cart_account;dur=3.51;desc=\"1\", cart_linesOf;dur=13.56;desc=\"1\", cart_get;dur=17.09;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 9,
+      "listenMs": 654.2339660000016,
+      "first": {
+        "ms": 82.46192299999893,
+        "status": 200,
+        "serverTiming": "total;dur=66.97, auth;dur=0.57;desc=\"1\", db_acquire;dur=10.36;desc=\"2\", db_query;dur=23.48;desc=\"2\", cart_account;dur=46.49;desc=\"1\", cart_linesOf;dur=17.11;desc=\"1\", cart_get;dur=63.73;desc=\"1\""
+      },
+      "warm": {
+        "ms": 39.173931999999695,
+        "status": 200,
+        "serverTiming": "total;dur=26.74, auth;dur=0.26;desc=\"1\", db_acquire;dur=0.07;desc=\"2\", db_query;dur=24.73;desc=\"2\", cart_account;dur=5.15;desc=\"1\", cart_linesOf;dur=20.40;desc=\"1\", cart_get;dur=25.56;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 10,
+      "listenMs": 682.7998320000006,
+      "first": {
+        "ms": 73.85173399999985,
+        "status": 200,
+        "serverTiming": "total;dur=58.34, auth;dur=0.49;desc=\"1\", db_acquire;dur=7.18;desc=\"2\", db_query;dur=24.88;desc=\"2\", cart_account;dur=36.29;desc=\"1\", cart_linesOf;dur=18.92;desc=\"1\", cart_get;dur=55.35;desc=\"1\""
+      },
+      "warm": {
+        "ms": 7.840291000000434,
+        "status": 200,
+        "serverTiming": "total;dur=5.26, auth;dur=0.17;desc=\"1\", db_acquire;dur=0.12;desc=\"2\", db_query;dur=3.78;desc=\"2\", cart_account;dur=2.18;desc=\"1\", cart_linesOf;dur=2.48;desc=\"1\", cart_get;dur=4.68;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 11,
+      "listenMs": 588.9657189999998,
+      "first": {
+        "ms": 60.417419999999765,
+        "status": 200,
+        "serverTiming": "total;dur=47.25, auth;dur=0.47;desc=\"1\", db_acquire;dur=7.02;desc=\"2\", db_query;dur=17.37;desc=\"2\", cart_account;dur=31.90;desc=\"1\", cart_linesOf;dur=12.67;desc=\"1\", cart_get;dur=44.67;desc=\"1\""
+      },
+      "warm": {
+        "ms": 6.917504999999437,
+        "status": 200,
+        "serverTiming": "total;dur=4.91, auth;dur=0.12;desc=\"1\", db_acquire;dur=0.09;desc=\"2\", db_query;dur=3.74;desc=\"2\", cart_account;dur=2.03;desc=\"1\", cart_linesOf;dur=2.42;desc=\"1\", cart_get;dur=4.47;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 12,
+      "listenMs": 795.03377,
+      "first": {
+        "ms": 80.1226659999993,
+        "status": 200,
+        "serverTiming": "total;dur=58.12, auth;dur=0.56;desc=\"1\", db_acquire;dur=7.88;desc=\"2\", db_query;dur=24.01;desc=\"2\", cart_account;dur=35.42;desc=\"1\", cart_linesOf;dur=19.27;desc=\"1\", cart_get;dur=54.84;desc=\"1\""
+      },
+      "warm": {
+        "ms": 15.388387000000876,
+        "status": 200,
+        "serverTiming": "total;dur=11.20, auth;dur=0.19;desc=\"1\", db_acquire;dur=0.22;desc=\"2\", db_query;dur=9.33;desc=\"2\", cart_account;dur=4.34;desc=\"1\", cart_linesOf;dur=6.17;desc=\"1\", cart_get;dur=10.53;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 13,
+      "listenMs": 770.8135029999994,
+      "first": {
+        "ms": 69.33007999999973,
+        "status": 200,
+        "serverTiming": "total;dur=50.44, auth;dur=0.46;desc=\"1\", db_acquire;dur=7.39;desc=\"2\", db_query;dur=18.76;desc=\"2\", cart_account;dur=33.70;desc=\"1\", cart_linesOf;dur=14.00;desc=\"1\", cart_get;dur=47.81;desc=\"1\""
+      },
+      "warm": {
+        "ms": 7.698014999999941,
+        "status": 200,
+        "serverTiming": "total;dur=6.13, auth;dur=0.16;desc=\"1\", db_acquire;dur=0.06;desc=\"2\", db_query;dur=4.78;desc=\"2\", cart_account;dur=1.19;desc=\"1\", cart_linesOf;dur=4.30;desc=\"1\", cart_get;dur=5.51;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 14,
+      "listenMs": 637.9637489999986,
+      "first": {
+        "ms": 73.81461599999966,
+        "status": 200,
+        "serverTiming": "total;dur=51.93, auth;dur=0.51;desc=\"1\", db_acquire;dur=7.18;desc=\"2\", db_query;dur=20.04;desc=\"2\", cart_account;dur=33.70;desc=\"1\", cart_linesOf;dur=15.06;desc=\"1\", cart_get;dur=48.90;desc=\"1\""
+      },
+      "warm": {
+        "ms": 7.111503000000084,
+        "status": 200,
+        "serverTiming": "total;dur=5.54, auth;dur=0.15;desc=\"1\", db_acquire;dur=0.07;desc=\"2\", db_query;dur=4.21;desc=\"2\", cart_account;dur=1.27;desc=\"1\", cart_linesOf;dur=3.70;desc=\"1\", cart_get;dur=4.98;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 15,
+      "listenMs": 733.1494169999987,
+      "first": {
+        "ms": 73.19405000000006,
+        "status": 200,
+        "serverTiming": "total;dur=52.45, auth;dur=0.54;desc=\"1\", db_acquire;dur=7.32;desc=\"2\", db_query;dur=19.25;desc=\"2\", cart_account;dur=35.29;desc=\"1\", cart_linesOf;dur=14.19;desc=\"1\", cart_get;dur=49.60;desc=\"1\""
+      },
+      "warm": {
+        "ms": 6.522531999999046,
+        "status": 200,
+        "serverTiming": "total;dur=5.02, auth;dur=0.19;desc=\"1\", db_acquire;dur=0.08;desc=\"2\", db_query;dur=3.50;desc=\"2\", cart_account;dur=1.38;desc=\"1\", cart_linesOf;dur=2.96;desc=\"1\", cart_get;dur=4.36;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 16,
+      "listenMs": 668.7879240000002,
+      "first": {
+        "ms": 91.24751800000013,
+        "status": 200,
+        "serverTiming": "total;dur=67.78, auth;dur=0.65;desc=\"1\", db_acquire;dur=10.21;desc=\"2\", db_query;dur=22.23;desc=\"2\", cart_account;dur=47.72;desc=\"1\", cart_linesOf;dur=16.11;desc=\"1\", cart_get;dur=63.97;desc=\"1\""
+      },
+      "warm": {
+        "ms": 10.34870299999966,
+        "status": 200,
+        "serverTiming": "total;dur=8.05, auth;dur=0.14;desc=\"1\", db_acquire;dur=0.09;desc=\"2\", db_query;dur=6.64;desc=\"2\", cart_account;dur=3.18;desc=\"1\", cart_linesOf;dur=4.31;desc=\"1\", cart_get;dur=7.50;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 17,
+      "listenMs": 749.1779000000006,
+      "first": {
+        "ms": 81.72366199999851,
+        "status": 200,
+        "serverTiming": "total;dur=62.78, auth;dur=0.53;desc=\"1\", db_acquire;dur=7.29;desc=\"2\", db_query;dur=19.57;desc=\"2\", cart_account;dur=45.62;desc=\"1\", cart_linesOf;dur=14.09;desc=\"1\", cart_get;dur=59.83;desc=\"1\""
+      },
+      "warm": {
+        "ms": 11.9894690000001,
+        "status": 200,
+        "serverTiming": "total;dur=5.62, auth;dur=0.16;desc=\"1\", db_acquire;dur=0.12;desc=\"2\", db_query;dur=4.01;desc=\"2\", cart_account;dur=2.17;desc=\"1\", cart_linesOf;dur=2.85;desc=\"1\", cart_get;dur=5.03;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 18,
+      "listenMs": 643.150348000001,
+      "first": {
+        "ms": 72.84090799999831,
+        "status": 200,
+        "serverTiming": "total;dur=51.74, auth;dur=0.53;desc=\"1\", db_acquire;dur=7.33;desc=\"2\", db_query;dur=19.03;desc=\"2\", cart_account;dur=34.83;desc=\"1\", cart_linesOf;dur=14.10;desc=\"1\", cart_get;dur=49.04;desc=\"1\""
+      },
+      "warm": {
+        "ms": 9.176539000000048,
+        "status": 200,
+        "serverTiming": "total;dur=7.15, auth;dur=0.17;desc=\"1\", db_acquire;dur=0.09;desc=\"2\", db_query;dur=5.71;desc=\"2\", cart_account;dur=3.61;desc=\"1\", cart_linesOf;dur=2.97;desc=\"1\", cart_get;dur=6.59;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 19,
+      "listenMs": 639.8134839999984,
+      "first": {
+        "ms": 71.00476799999888,
+        "status": 200,
+        "serverTiming": "total;dur=50.85, auth;dur=0.53;desc=\"1\", db_acquire;dur=7.44;desc=\"2\", db_query;dur=18.20;desc=\"2\", cart_account;dur=34.64;desc=\"1\", cart_linesOf;dur=13.33;desc=\"1\", cart_get;dur=48.14;desc=\"1\""
+      },
+      "warm": {
+        "ms": 7.934238000001642,
+        "status": 200,
+        "serverTiming": "total;dur=5.41, auth;dur=0.14;desc=\"1\", db_acquire;dur=0.10;desc=\"2\", db_query;dur=4.09;desc=\"2\", cart_account;dur=2.26;desc=\"1\", cart_linesOf;dur=2.64;desc=\"1\", cart_get;dur=4.91;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 20,
+      "listenMs": 629.2922729999991,
+      "first": {
+        "ms": 77.92519099999845,
+        "status": 200,
+        "serverTiming": "total;dur=56.12, auth;dur=0.54;desc=\"1\", db_acquire;dur=7.29;desc=\"2\", db_query;dur=21.26;desc=\"2\", cart_account;dur=37.94;desc=\"1\", cart_linesOf;dur=15.38;desc=\"1\", cart_get;dur=53.43;desc=\"1\""
+      },
+      "warm": {
+        "ms": 19.605972000001202,
+        "status": 200,
+        "serverTiming": "total;dur=16.06, auth;dur=0.20;desc=\"1\", db_acquire;dur=0.06;desc=\"2\", db_query;dur=14.69;desc=\"2\", cart_account;dur=2.71;desc=\"1\", cart_linesOf;dur=12.67;desc=\"1\", cart_get;dur=15.39;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 21,
+      "listenMs": 627.788488000002,
+      "first": {
+        "ms": 65.63998399999764,
+        "status": 200,
+        "serverTiming": "total;dur=51.38, auth;dur=0.49;desc=\"1\", db_acquire;dur=7.03;desc=\"2\", db_query;dur=19.64;desc=\"2\", cart_account;dur=34.81;desc=\"1\", cart_linesOf;dur=13.71;desc=\"1\", cart_get;dur=48.64;desc=\"1\""
+      },
+      "warm": {
+        "ms": 7.370367999999871,
+        "status": 200,
+        "serverTiming": "total;dur=5.14, auth;dur=0.17;desc=\"1\", db_acquire;dur=0.12;desc=\"2\", db_query;dur=3.74;desc=\"2\", cart_account;dur=1.98;desc=\"1\", cart_linesOf;dur=2.62;desc=\"1\", cart_get;dur=4.61;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 22,
+      "listenMs": 629.5992690000021,
+      "first": {
+        "ms": 76.31932600000073,
+        "status": 200,
+        "serverTiming": "total;dur=53.01, auth;dur=0.57;desc=\"1\", db_acquire;dur=6.98;desc=\"2\", db_query;dur=18.90;desc=\"2\", cart_account;dur=36.34;desc=\"1\", cart_linesOf;dur=13.87;desc=\"1\", cart_get;dur=50.33;desc=\"1\""
+      },
+      "warm": {
+        "ms": 6.953513000000385,
+        "status": 200,
+        "serverTiming": "total;dur=5.02, auth;dur=0.13;desc=\"1\", db_acquire;dur=0.10;desc=\"2\", db_query;dur=3.80;desc=\"2\", cart_account;dur=2.03;desc=\"1\", cart_linesOf;dur=2.50;desc=\"1\", cart_get;dur=4.54;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 23,
+      "listenMs": 629.5714009999974,
+      "first": {
+        "ms": 67.8157140000003,
+        "status": 200,
+        "serverTiming": "total;dur=51.32, auth;dur=0.46;desc=\"1\", db_acquire;dur=7.18;desc=\"2\", db_query;dur=19.62;desc=\"2\", cart_account;dur=34.67;desc=\"1\", cart_linesOf;dur=13.80;desc=\"1\", cart_get;dur=48.58;desc=\"1\""
+      },
+      "warm": {
+        "ms": 8.470259000001533,
+        "status": 200,
+        "serverTiming": "total;dur=6.11, auth;dur=0.22;desc=\"1\", db_acquire;dur=0.08;desc=\"2\", db_query;dur=4.70;desc=\"2\", cart_account;dur=2.89;desc=\"1\", cart_linesOf;dur=2.60;desc=\"1\", cart_get;dur=5.50;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 24,
+      "listenMs": 626.8735670000024,
+      "first": {
+        "ms": 72.87389999999868,
+        "status": 200,
+        "serverTiming": "total;dur=50.36, auth;dur=0.52;desc=\"1\", db_acquire;dur=7.12;desc=\"2\", db_query;dur=18.32;desc=\"2\", cart_account;dur=33.98;desc=\"1\", cart_linesOf;dur=13.58;desc=\"1\", cart_get;dur=47.66;desc=\"1\""
+      },
+      "warm": {
+        "ms": 7.931730999996944,
+        "status": 200,
+        "serverTiming": "total;dur=5.36, auth;dur=0.13;desc=\"1\", db_acquire;dur=0.11;desc=\"2\", db_query;dur=4.04;desc=\"2\", cart_account;dur=2.15;desc=\"1\", cart_linesOf;dur=2.70;desc=\"1\", cart_get;dur=4.86;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 25,
+      "listenMs": 642.5668809999988,
+      "first": {
+        "ms": 75.17756599999848,
+        "status": 200,
+        "serverTiming": "total;dur=50.56, auth;dur=0.51;desc=\"1\", db_acquire;dur=7.00;desc=\"2\", db_query;dur=19.66;desc=\"2\", cart_account;dur=33.29;desc=\"1\", cart_linesOf;dur=14.32;desc=\"1\", cart_get;dur=47.73;desc=\"1\""
+      },
+      "warm": {
+        "ms": 6.121498000000429,
+        "status": 200,
+        "serverTiming": "total;dur=4.59, auth;dur=0.17;desc=\"1\", db_acquire;dur=0.10;desc=\"2\", db_query;dur=3.16;desc=\"2\", cart_account;dur=1.24;desc=\"1\", cart_linesOf;dur=2.76;desc=\"1\", cart_get;dur=4.01;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 26,
+      "listenMs": 624.7111359999981,
+      "first": {
+        "ms": 82.55260700000144,
+        "status": 200,
+        "serverTiming": "total;dur=55.58, auth;dur=0.61;desc=\"1\", db_acquire;dur=7.67;desc=\"2\", db_query;dur=20.54;desc=\"2\", cart_account;dur=36.63;desc=\"1\", cart_linesOf;dur=15.96;desc=\"1\", cart_get;dur=52.71;desc=\"1\""
+      },
+      "warm": {
+        "ms": 7.29033200000049,
+        "status": 200,
+        "serverTiming": "total;dur=5.27, auth;dur=0.14;desc=\"1\", db_acquire;dur=0.13;desc=\"2\", db_query;dur=3.80;desc=\"2\", cart_account;dur=2.17;desc=\"1\", cart_linesOf;dur=2.59;desc=\"1\", cart_get;dur=4.77;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 27,
+      "listenMs": 627.8466090000002,
+      "first": {
+        "ms": 75.90212400000019,
+        "status": 200,
+        "serverTiming": "total;dur=52.57, auth;dur=0.45;desc=\"1\", db_acquire;dur=7.20;desc=\"2\", db_query;dur=19.67;desc=\"2\", cart_account;dur=33.97;desc=\"1\", cart_linesOf;dur=15.14;desc=\"1\", cart_get;dur=49.28;desc=\"1\""
+      },
+      "warm": {
+        "ms": 8.572706999999355,
+        "status": 200,
+        "serverTiming": "total;dur=5.89, auth;dur=0.21;desc=\"1\", db_acquire;dur=0.12;desc=\"2\", db_query;dur=4.15;desc=\"2\", cart_account;dur=2.56;desc=\"1\", cart_linesOf;dur=2.63;desc=\"1\", cart_get;dur=5.20;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 28,
+      "listenMs": 638.2895290000015,
+      "first": {
+        "ms": 70.96780199999921,
+        "status": 200,
+        "serverTiming": "total;dur=53.17, auth;dur=0.51;desc=\"1\", db_acquire;dur=6.88;desc=\"2\", db_query;dur=19.39;desc=\"2\", cart_account;dur=36.05;desc=\"1\", cart_linesOf;dur=14.29;desc=\"1\", cart_get;dur=50.45;desc=\"1\""
+      },
+      "warm": {
+        "ms": 8.324087999997573,
+        "status": 200,
+        "serverTiming": "total;dur=6.34, auth;dur=0.19;desc=\"1\", db_acquire;dur=0.07;desc=\"2\", db_query;dur=4.98;desc=\"2\", cart_account;dur=2.75;desc=\"1\", cart_linesOf;dur=2.97;desc=\"1\", cart_get;dur=5.74;desc=\"1\""
+      }
+    },
+    {
+      "sequence": 29,
+      "listenMs": 615.777180000001,
+      "first": {
+        "ms": 63.88458499999979,
+        "status": 200,
+        "serverTiming": "total;dur=54.02, auth;dur=0.52;desc=\"1\", db_acquire;dur=6.98;desc=\"2\", db_query;dur=18.42;desc=\"2\", cart_account;dur=37.81;desc=\"1\", cart_linesOf;dur=13.48;desc=\"1\", cart_get;dur=51.40;desc=\"1\""
+      },
+      "warm": {
+        "ms": 7.601022999999259,
+        "status": 200,
+        "serverTiming": "total;dur=5.11, auth;dur=0.14;desc=\"1\", db_acquire;dur=0.11;desc=\"2\", db_query;dur=3.78;desc=\"2\", cart_account;dur=1.98;desc=\"1\", cart_linesOf;dur=2.63;desc=\"1\", cart_get;dur=4.62;desc=\"1\""
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "sequence": 0,
+    "ms": 1290.53,
+    "httpStatus": 200,
+    "uptimeSeconds": 47040,
+    "status": "ok"
+  },
+  {
+    "sequence": 1,
+    "ms": 1300.98,
+    "httpStatus": 200,
+    "uptimeSeconds": 47041,
+    "status": "ok"
+  },
+  {
+    "sequence": 2,
+    "ms": 1761.33,
+    "httpStatus": 200,
+    "uptimeSeconds": 47043,
+    "status": "ok"
+  }
+]

@@ -1448,4 +1448,4 @@ TASK-0129는 임의 상품 검증으로 기존 시드 CDN 객체 누락을 확�
 
 TASK-0131은 운영 trace의 DB 왕복 약210ms와 지연 재현을 확보했다. TASK-0132가 후처리 일괄 처리로 PR #140 배포됐고 운영 두 상품PAID/장바구니0을 확인했다. [검증 기록](reviews/2026-09-11-payment-finalization.md). 실제 cold start와 운영500 원본 예외는 미확보다.
 
-TASK-0133은 `feature-checkout-roundtrip-reduction`에서 운영 브라우저 앞 단계 응답 중단을 수정한다. 대상 카탈로그 단일 조인·예약/주문 생성 일괄 기록으로 210ms 지연 조건의 주문서3.85→1.53초, 주문4.51→3.22초를 확인했다. [측정](reviews/2026-09-11-checkout-roundtrips.md). 전체 게이트와 배포 후 모바일 구매 확인 전에는 완료 처리하지 않는다.
+TASK-0133/0134는 운영 구매까지 검증 완료했다. TASK0131 재개에서 production process-cold30회와 최신 warm30/32회를 측정했으나 호스팅 scale-to-zero는 미확보다. TASK0135는 결제 응답 단일 조회와 불변 식별자 재사용으로 지연 모형의 SQL66→51, 결제3단계12.42→10.28초를 확인했고 전체 게이트/운영 검증 중이다. [최신 기록](reviews/2026-09-11-payment-read-latency.md).

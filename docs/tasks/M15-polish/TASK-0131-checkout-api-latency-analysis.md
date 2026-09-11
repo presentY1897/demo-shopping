@@ -123,3 +123,7 @@ PR142 배포 후 두 상품 실제 모바일 구매18,976ms, 결제 요청 실�
 사용자 계속 진행 승인으로 기존 분석 worktree에서 이어간다. 운영 첫 health 요청과 직후 warm 요청을 소량 측정하며, 응답의 uptime·기동 표시 등 실제 재기동 근거가 없으면 cold로 분류하지 않는다. 별도로 로컬 production build 프로세스를 종료·재시작하여 TCP listen까지의 기동과 첫 HTTP/JWT 요청을 측정한다. DB/검색 컨테이너와 OS 캐시는 유지한 process-cold임을 명시하고 호스팅 scale-to-zero와 구분한다.
 
 동일 최신 코드에서 warm30/32표본을 다시 수집한다. 결제 own/read/provider/context/get의 반복 조회 횟수를 확인하여 권한·신선도·상태 잠금이 필요한 조회와 재사용 가능한 불변 식별자를 구분한다. 구현 개선은 근거와 검증 기준을 별도 TASK에 먼저 기록한다. 운영 중단·부하 테스트·요금 변경은 하지 않는다.
+
+### 재개 측정 결과
+
+[최신 warm30/32·production process-cold30·운영 uptime 확인](../../reviews/2026-09-11-payment-read-latency.md)을 확보했다. 로컬 프로세스 기동 중앙값643ms·첫 JWT 장바구니75ms, 오류0. 운영은 uptime47,040초로 cold가 아니었다. 호스팅 scale-to-zero는 미확보라 F3는 부분 충족으로 유지한다. 반복 조회 후속 TASK0135는 설계·실 DB 검증 진행 중이다.
