@@ -121,6 +121,7 @@ export function ProductTable({
 
   return (
     <Table
+      className="[contain:layout]"
       caption={messages.listLabel}
       columns={columns}
       rowKey={(row) => row.id}

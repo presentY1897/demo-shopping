@@ -1,0 +1,33 @@
+{
+  "api": "contract-shaped browser stub",
+  "images": "real local assets",
+  "results": [
+    {
+      "path": "/",
+      "signedIn": false,
+      "imageLoaded": true,
+      "historyPreserved": true
+    },
+    {
+      "path": "/mypage/recent",
+      "signedIn": false,
+      "imageLoaded": true,
+      "historyPreserved": true
+    },
+    {
+      "path": "/",
+      "signedIn": true,
+      "imageLoaded": true
+    },
+    {
+      "path": "/mypage/recent",
+      "signedIn": true,
+      "imageLoaded": true
+    },
+    {
+      "path": "/mypage/wishlist",
+      "signedIn": true,
+      "imageLoaded": true
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "role": "SELLER_OWNER",
+    "width": 360,
+    "imageLoaded": true,
+    "overflow": false
+  },
+  {
+    "role": "SELLER_OWNER",
+    "width": 768,
+    "imageLoaded": true,
+    "overflow": false
+  },
+  {
+    "role": "SELLER_OWNER",
+    "width": 1440,
+    "imageLoaded": true,
+    "overflow": false
+  },
+  {
+    "role": "ADMIN_SUPER",
+    "width": 360,
+    "imageLoaded": true,
+    "overflow": false
+  },
+  {
+    "role": "ADMIN_SUPER",
+    "width": 768,
+    "imageLoaded": true,
+    "overflow": false
+  },
+  {
+    "role": "ADMIN_SUPER",
+    "width": 1440,
+    "imageLoaded": true,
+    "overflow": false
+  }
+]

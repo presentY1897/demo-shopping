@@ -24,5 +24,5 @@
 | [TASK-0134](./TASK-0134-payment-request-deadline.md) | 결제 응답 대기 제한 조정 | 완료 | 0133 |
 | [TASK-0135](./TASK-0135-payment-read-roundtrips.md) | 결제의 반복 조회 축소 | 완료 | 0134 · 0131 측정 |
 | [TASK-0136](./TASK-0136-neon-region-alignment.md) | Neon DB와 API 리전 일치 | 완료 | 0135 · 대상 준비 |
-| [TASK-0137](./TASK-0137-product-thumbnail-consistency.md) | 세 앱 상품 썸네일 표시 통합 | 승인됨 | 0129 |
+| [TASK-0137](./TASK-0137-product-thumbnail-consistency.md) | 세 앱 상품 썸네일 표시 통합 | 진행중 | 0129 |
 | [TASK-0138](./TASK-0138-product-thumbnail-generation.md) | 상품 이미지 자동 썸네일 생성과 데이터 연결 | 승인됨 | 0011 · 0033 · 0130 |
