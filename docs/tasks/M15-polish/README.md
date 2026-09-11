@@ -24,3 +24,4 @@
 | [TASK-0134](./TASK-0134-payment-request-deadline.md) | 결제 응답 대기 제한 조정 | 완료 | 0133 |
 | [TASK-0135](./TASK-0135-payment-read-roundtrips.md) | 결제의 반복 조회 축소 | 완료 | 0134 · 0131 측정 |
 | [TASK-0136](./TASK-0136-neon-region-alignment.md) | Neon DB와 API 리전 일치 | 완료 | 0135 · 대상 준비 |
+| [TASK-0137](./TASK-0137-product-thumbnail-consistency.md) | 최근 본 상품·찜 썸네일 공통 처리 | 진행중 | 0129 |
