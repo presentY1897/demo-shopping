@@ -2,7 +2,7 @@
 
 > 이어받을 것과 이월된 항목은 [`docs/HANDOFF.md`](../HANDOFF.md) 에 있다.
 
-아래 인덱스에 등록된 **132개** TASK: **125개 완료**, **4개 진행중**, **3개 승인됨**, **0개 초안**. TASK-0124 검토 완료 후 TASK-0125~0131을 후속 작업으로 작성하고 사용자 승인을 받았다. 폐기 TASK는 이 집계에 포함하지 않는다.
+아래 인덱스에 등록된 **133개** TASK: **125개 완료**, **3개 진행중**, **5개 승인됨**, **0개 초안**. TASK-0124 검토 완료 후 TASK-0125~0131을 후속 작업으로 작성하고 사용자 승인을 받았다. 폐기 TASK는 이 집계에 포함하지 않는다.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
@@ -20,7 +20,7 @@
 | [M12](./M12-settlement/) 정산 | 수수료 정책, 정산서 배치, 승인·지급, 매출 대시보드 | **5/5 완료** |
 | [M13](./M13-community/) 회원 부가 | 리뷰, 위시리스트, Q&A, 팔로우, 알림, 신고 | **9/9 완료** |
 | [M14](./M14-admin/) 관리자 | 대시보드, 회원·판매자 관리, 전체 조회, 데모 관리 | **5/5 완료** |
-| [M15](./M15-polish/) 마무리 | 성능·정합성, 접근성, E2E·데모 시나리오, 포트폴리오 문서 | 18/21 |
+| [M15](./M15-polish/) 마무리 | 성능·정합성, 접근성, E2E·데모 시나리오, 포트폴리오 문서 | 18/22 |
 
 ---
 
@@ -237,7 +237,7 @@
 
 </details>
 
-<details><summary><b>M15. 마무리</b> (18/21)</summary>
+<details><summary><b>M15. 마무리</b> (18/22)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -261,7 +261,8 @@
 | [TASK-0134](./M15-polish/TASK-0134-payment-request-deadline.md) | 결제 응답 대기 제한 조정 | 완료 |
 | [TASK-0135](./M15-polish/TASK-0135-payment-read-roundtrips.md) | 결제의 반복 조회 축소 | 완료 |
 | [TASK-0136](./M15-polish/TASK-0136-neon-region-alignment.md) | Neon DB와 API 리전 일치 | 완료 |
-| [TASK-0137](./M15-polish/TASK-0137-product-thumbnail-consistency.md) | 최근 본 상품·찜 썸네일 공통 처리 | 진행중 |
+| [TASK-0137](./M15-polish/TASK-0137-product-thumbnail-consistency.md) | 세 앱 상품 썸네일 표시 통합 | 승인됨 |
+| [TASK-0138](./M15-polish/TASK-0138-product-thumbnail-generation.md) | 상품 이미지 자동 썸네일 생성과 데이터 연결 | 승인됨 |
 
 </details>
 
