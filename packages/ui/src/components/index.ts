@@ -182,3 +182,8 @@ export {
   stepStateAt,
   TRACKING_EVENT_KINDS,
 } from '../shipment'
+
+export { ProductThumbnail } from '../media/product-thumbnail'
+export { productImageUrl } from '../media/product-image-url'
+export { ProductIdentity } from '../media/product-identity'
+export { useImageFailure } from '../media/use-image-failure'
