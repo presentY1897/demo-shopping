@@ -14,7 +14,7 @@
  */
 
 import { sessionBuyer } from '@shopping/api-mocks'
-import { screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -194,4 +194,40 @@ describe('F7 삭제', () => {
     expect(await screen.findByText(page.emptyTitle)).toBeVisible()
     expect(localStorage.getItem(RECENT_STORAGE_KEY)).toBeNull()
   })
+})
+
+describe('상품 썸네일 공통 처리', () => {
+  it.each([
+    ['strip', false],
+    ['strip', true],
+    ['page', false],
+    ['page', true],
+  ] as const)(
+    'normalizes legacy images and handles failure in %s (signed in: %s)',
+    async (view, signedIn) => {
+      const original =
+        'https://cdn.demo-shopping.com/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg'
+      const items = [{ ...MOCK_RECENT[0]!, thumbnailUrl: original }]
+      if (signedIn) stub.state.recent = items
+      else seedLocal(items)
+      renderAccountScreen(
+        view === 'strip' ? (
+          <RecentlyViewedStrip copy={strip} />
+        ) : (
+          <RecentScreen messages={messages.mypage} />
+        ),
+        { session: signedIn ? sessionBuyer : null },
+      )
+      const list = await screen.findByRole('list', {
+        name: view === 'strip' ? strip.listLabel : page.listLabel,
+      })
+      const image = list.querySelector('img')!
+      expect(image).toHaveAttribute('src', '/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg')
+      fireEvent.error(image)
+      expect(list.querySelector('img')).toBeNull()
+      expect(list.querySelector('svg')).not.toBeNull()
+      if (!signedIn) expect(localStorage.getItem(RECENT_STORAGE_KEY)).toBe(JSON.stringify(items))
+      else expect(stub.state.recent[0]?.thumbnailUrl).toBe(original)
+    },
+  )
 })

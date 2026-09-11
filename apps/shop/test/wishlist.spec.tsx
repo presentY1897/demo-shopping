@@ -22,7 +22,7 @@ import { SEARCH_CATALOGUE, sessionBuyer } from '@shopping/api-mocks'
 import type { WishlistItem } from '@shopping/shared'
 import { WISHLIST_MAX_LIMIT } from '@shopping/shared'
 import { DensityProvider } from '@shopping/ui/density'
-import { screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -358,4 +358,17 @@ describe('목록 카드의 하트 (4.6)', () => {
     expect(navigation.push).toHaveBeenCalledWith('/login?next=%2F')
     expect(stub.requests.some((one) => one.method === 'POST')).toBe(false)
   })
+})
+
+it('normalizes wishlist thumbnails and replaces failed images without changing saved data', async () => {
+  const original = 'https://cdn.demo-shopping.com/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg'
+  stub.state.wishlist = [{ ...MOCK_WISHLIST[0]!, thumbnailUrl: original }]
+  renderAccountScreen(<WishlistScreen messages={messages.mypage} />, { session: sessionBuyer })
+  const list = await screen.findByRole('list', { name: screenCopy.listLabel })
+  const image = list.querySelector('img')!
+  expect(image).toHaveAttribute('src', '/seed/catalog/8a339cd2282243e9aaf043e297815b91.svg')
+  fireEvent.error(image)
+  expect(list.querySelector('img')).toBeNull()
+  expect(list.querySelector('svg')).not.toBeNull()
+  expect(stub.state.wishlist[0]?.thumbnailUrl).toBe(original)
 })
