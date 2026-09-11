@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductThumbnail } from '@/components/products/product-thumbnail'
+
 import type { ApiFailure, WishlistItem } from '@shopping/shared'
 import { Button, EmptyState, Tag } from '@shopping/ui/components'
 import { formatMoney } from '@shopping/ui/format'
@@ -143,16 +145,7 @@ function WishlistRow({
     <>
       <Link className="flex flex-col gap-1" href={`/products/${item.productId}`}>
         <div className="bg-surface-muted border-border aspect-square w-full overflow-hidden rounded-md border">
-          {item.thumbnailUrl === null ? null : (
-            // eslint-disable-next-line @next/next/no-img-element -- 주소의 호스트가 배포마다 다르다.
-            <img
-              alt=""
-              className="h-full w-full object-cover"
-              decoding="async"
-              loading="lazy"
-              src={item.thumbnailUrl}
-            />
-          )}
+          <ProductThumbnail src={item.thumbnailUrl} className="size-full" />
         </div>
         <span className="text-fg-subtle text-xs">{item.brandName}</span>
         <span className="text-fg line-clamp-2 text-sm font-medium">{item.productName}</span>
