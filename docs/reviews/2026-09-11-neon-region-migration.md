@@ -2,6 +2,8 @@
 
 TASK0136에서 운영 DB를 Ohio에서 Singapore의 새 프로젝트로 이전했다. 사용자 승인으로 최종 복사 전 Render API를 Suspend하고, 복사 검증 후 사용자가 DATABASE_URL을 바꾸어 서비스를 재개·배포했다. 연결 정보와 백업 파일은 저장소 밖 소유자 전용 경로에 보관한다.
 
+사용자가 Render 실제 대시보드 리전도 Singapore임을 확인했다. API와 DB가 같은 리전이다.
+
 ## 데이터 보존
 
 - 소스/대상 PostgreSQL18.6, PostgreSQL18 도구 사용. pooled 호스트를 직접 연결 호스트로 변환하여 dump/restore했다.

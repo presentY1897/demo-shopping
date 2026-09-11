@@ -23,4 +23,4 @@
 | [TASK-0133](./TASK-0133-checkout-roundtrip-reduction.md) | 주문서 진입·주문 생성 DB 왕복 축소 | 완료 | 0132 |
 | [TASK-0134](./TASK-0134-payment-request-deadline.md) | 결제 응답 대기 제한 조정 | 완료 | 0133 |
 | [TASK-0135](./TASK-0135-payment-read-roundtrips.md) | 결제의 반복 조회 축소 | 완료 | 0134 · 0131 측정 |
-| [TASK-0136](./TASK-0136-neon-region-alignment.md) | Neon DB와 API 리전 일치 | 진행중 | 0135 · 대상 준비 |
+| [TASK-0136](./TASK-0136-neon-region-alignment.md) | Neon DB와 API 리전 일치 | 완료 | 0135 · 대상 준비 |
