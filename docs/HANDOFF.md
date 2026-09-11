@@ -1448,7 +1448,7 @@ TASK-0129는 임의 상품 검증으로 기존 시드 CDN 객체 누락을 확�
 
 TASK-0131은 운영 trace의 DB 왕복 약210ms와 지연 재현을 확보했다. TASK-0132가 후처리 일괄 처리로 PR #140 배포됐고 운영 두 상품PAID/장바구니0을 확인했다. [검증 기록](reviews/2026-09-11-payment-finalization.md). 실제 cold start와 운영500 원본 예외는 미확보다.
 
-TASK-0133/0134는 운영 구매까지 검증 완료했다. TASK0131 재개에서 production process-cold30회와 최신 warm30/32회를 측정했으나 호스팅 scale-to-zero는 미확보다. TASK0135는 결제 응답 단일 조회와 불변 식별자 재사용으로 지연 모형의 SQL66→51, 결제3단계12.42→10.28초를 확인했고 PR144 배포·실제 모바일 구매까지 검증 완료했다. 사용자 확인으로 Neon은Ohio, API 선언은Singapore라 TASK0136에 DB 지역 이전 초안을 작성했다. 실제 이전은 미실행이며 대상 프로젝트 접근과 전환 일정이 필요하다. [최신 기록](reviews/2026-09-11-payment-read-latency.md).
+TASK-0133/0134는 운영 구매까지 검증 완료했다. TASK0131 재개에서 production process-cold30회와 최신 warm30/32회를 측정했으나 호스팅 scale-to-zero는 미확보다. TASK0135는 결제 응답 단일 조회와 불변 식별자 재사용으로 지연 모형의 SQL66→51, 결제3단계12.42→10.28초를 확인했고 PR144 배포·실제 모바일 구매까지 검증 완료했다. TASK0136에서 Neon을Singapore로 이전하고 API도실제Singapore임을 확인했다. 실제 구매3회는1.04/0.97/0.96초이며 이전 및 정합성 검증은 완료했다. [최신 기록](reviews/2026-09-11-payment-read-latency.md).
 
 
 ### TASK0136 완료 후 운영 기준
