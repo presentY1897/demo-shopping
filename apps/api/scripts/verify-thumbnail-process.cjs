@@ -1,11 +1,14 @@
 // Real decoder/network/process integration. Run after `pnpm --filter @shopping/api build`.
 const assert = require('node:assert/strict')
 const { createServer } = require('node:http')
-const { readdir } = require('node:fs/promises')
+const { readdir, mkdtemp } = require('node:fs/promises')
 const { tmpdir } = require('node:os')
 const sharp = require('sharp')
 const { THUMBNAIL_LIMITS } = require('../dist/thumbnails/thumbnail-limits.js')
-const { ThumbnailProcess } = require('../dist/thumbnails/thumbnail-process.js')
+const {
+  ThumbnailProcess,
+  cleanOrphanedThumbnails,
+} = require('../dist/thumbnails/thumbnail-process.js')
 
 async function main() {
   const fixture = await sharp({
@@ -32,6 +35,12 @@ async function main() {
   const small = await sharp(fixture).resize(64, 40).png().toBuffer()
   const saved = new Map()
   const server = createServer((req, res) => {
+    if (req.method === 'PUT' && req.url.startsWith('/reject')) {
+      req.resume()
+      res.statusCode = 403
+      res.end()
+      return
+    }
     if (req.method === 'PUT') {
       const chunks = []
       req.on('data', (chunk) => chunks.push(chunk))
@@ -42,6 +51,16 @@ async function main() {
       return
     }
     if (req.url === '/stall') return
+    if (req.url === '/forbidden' || req.url === '/not-found') {
+      res.statusCode = req.url === '/forbidden' ? 403 : 404
+      res.end()
+      return
+    }
+    if (req.url === '/stream') {
+      res.write(Buffer.alloc(11 * 1024 * 1024))
+      res.end()
+      return
+    }
     if (req.url === '/bytes') {
       res.setHeader('Content-Length', 11 * 1024 * 1024)
       res.flushHeaders()
@@ -99,7 +118,7 @@ async function main() {
     }
     times.sort((a, b) => a - b)
     console.log(JSON.stringify({ samples: 20, p95Ms: times[18] }))
-    for (const source of ['/bad', '/pixels', '/bytes'])
+    for (const source of ['/bad', '/pixels', '/bytes', '/stream', '/forbidden', '/not-found'])
       await assert.rejects(pool.run(command(source)), /conversion_failed/)
     const abort = new AbortController()
     const held = pool.run(command('/stall'), abort.signal)
@@ -117,6 +136,12 @@ async function main() {
     THUMBNAIL_LIMITS.timeoutMs = timeout
     assert.equal((await pool.run(command('/image'))).length, 2)
     console.log(JSON.stringify({ peakRssBytes }))
+    await assert.rejects(
+      pool.run({ ...command('/image'), targets: [{ edge: 256, url: base + '/reject' }] }),
+      /conversion_failed/,
+    )
+    await mkdtemp(tmpdir() + '/shopping-thumbnail-999999999-')
+    await cleanOrphanedThumbnails()
     const after = (await readdir(tmpdir()))
       .filter((name) => name.startsWith('shopping-thumbnail-'))
       .sort()

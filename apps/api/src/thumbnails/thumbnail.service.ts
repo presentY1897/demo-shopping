@@ -10,6 +10,7 @@ import { APP_CONFIG, type AppConfig } from '../config/app-config.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { ThumbnailQueue } from './thumbnail-queue.js'
 import { ThumbnailProcess, cleanOrphanedThumbnails } from './thumbnail-process.js'
+import { canStartThumbnail } from './thumbnail-memory.js'
 import { thumbnailTargets } from './thumbnail-targets.js'
 
 @Injectable()
@@ -19,6 +20,7 @@ export class ThumbnailService implements OnApplicationBootstrap, OnModuleDestroy
   private readonly abort = new AbortController()
   private timer?: ReturnType<typeof setTimeout>
   private active?: Promise<void>
+  private memoryDeferred = false
   constructor(
     private readonly db: PrismaService,
     @Inject(CLOCK) private readonly clock: Clock,
@@ -46,6 +48,13 @@ export class ThumbnailService implements OnApplicationBootstrap, OnModuleDestroy
   async drain(): Promise<void> {
     const storage = this.config.storage
     if (storage === null || this.abort.signal.aborted) return
+    if (!(await canStartThumbnail())) {
+      if (!this.memoryDeferred)
+        this.logger.warn('메모리 여유 또는 제한 정보를 확보하지 못해 썸네일 생성을 대기합니다.')
+      this.memoryDeferred = true
+      return
+    }
+    this.memoryDeferred = false
     const started = performance.now()
     const queue = new ThumbnailQueue(this.db)
     const job = await queue.claim()
@@ -59,7 +68,7 @@ export class ThumbnailService implements OnApplicationBootstrap, OnModuleDestroy
       result = {
         thumbnailUrl: command.targets[0]!.publicUrl,
         cardImageUrl: command.targets[1]!.publicUrl,
-        metadata: JSON.stringify(outputs),
+        metadata: JSON.stringify({ version: 1, format: 'webp', outputs }),
       }
     } finally {
       await queue.finish(job, result)

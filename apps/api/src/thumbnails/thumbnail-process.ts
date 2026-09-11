@@ -1,3 +1,4 @@
+import { canStartThumbnail, mustStopThumbnail } from './thumbnail-memory.js'
 import { fork } from 'node:child_process'
 import { readFile, mkdtemp, rm, readdir, access } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -21,6 +22,7 @@ export class ThumbnailProcess {
     this.peakRssBytes = 0
     let directory: string | undefined
     try {
+      if (!(await canStartThumbnail())) throw new Error('thumbnail_memory_budget_unavailable')
       directory = await mkdtemp(join(tmpdir(), `shopping-thumbnail-${process.pid}-`))
       return await this.execute({ ...command, directory }, signal)
     } finally {
@@ -55,6 +57,9 @@ export class ThumbnailProcess {
       const timer = setTimeout(stop, THUMBNAIL_LIMITS.timeoutMs)
       const monitor = setInterval(() => {
         if (child.pid === undefined) return
+        void mustStopThumbnail().then((stopNeeded) => {
+          if (stopNeeded) stop()
+        })
         void readFile(`/proc/${child.pid}/status`, 'utf8').then(
           (status) => {
             const rss = /^VmRSS:\s+(\d+) kB/m.exec(status)?.[1]

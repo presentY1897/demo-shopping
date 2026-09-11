@@ -128,7 +128,7 @@ export function ProductImageField({
                 <ProductThumbnail
                   alt={image.alt ?? label}
                   className="border-border h-24 w-20 rounded-md border object-cover"
-                  src={image.url}
+                  src={image.thumbnailUrl ?? image.url}
                 />
                 <Button
                   onClick={() => {
