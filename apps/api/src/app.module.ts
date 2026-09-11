@@ -34,6 +34,7 @@ import { DashboardModule } from './dashboard/dashboard.module.js'
 import { SettlementModule } from './settlement/settlement.module.js'
 import { ShipmentModule } from './shipping/shipment.module.js'
 import { StockModule } from './stock/stock.module.js'
+import { ThumbnailService } from './thumbnails/thumbnail.service.js'
 import { StorageModule } from './storage/storage.module.js'
 import { UsersModule } from './users/users.module.js'
 
@@ -76,6 +77,7 @@ export class AppModule {
         UsersModule,
       ],
       providers: [
+        ThumbnailService,
         CheckoutDiagnosticsService,
         { provide: APP_FILTER, useClass: AllExceptionsFilter },
       ],

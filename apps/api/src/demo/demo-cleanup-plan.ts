@@ -187,6 +187,9 @@ export const cleanupPlan: readonly CleanupStep[] = [
 
 /** Tables a step never touches, and the reason each one is left alone. */
 export const untouchedTables: Readonly<Record<string, string>> = {
+  ProductImageDerivative:
+    '주문 스냅샷이 참조하는 파생 파일과 원본 관계를 보존한다. 상품 삭제로 제거하지 않는다',
+  ThumbnailPool: '전체 변환 작업의 단일 슬롯이며 계정 소유가 아니다',
   StockLedger: 'append-only. 사라진 상품의 재고 이력이 남는 것이 옳다',
   ProductImage: 'Product 에 Cascade 로 매달려 있고, 상품이 소프트 삭제라 함께 숨는다',
   CartItem: 'Cart 에 Cascade 로 매달려 있다. 장바구니가 지워지면 함께 간다 (TASK-0045)',
