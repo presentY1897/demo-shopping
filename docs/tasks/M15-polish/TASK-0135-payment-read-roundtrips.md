@@ -23,10 +23,12 @@
 
 | # | 기준 | 충족 |
 | --- | --- | --- |
-| F1 | 실제 PostgreSQL에서 기존 응답 projection과 동등(환불 동률·UTC·NULL), 권한/데모 격리 회귀 통과 | [ ] |
-| F2 | 동일210ms DB 지연 조건에서 생성+승인+확정 총 SQL 최소8개 감소, 전체201·PAID·장바구니0 | [ ] |
-| F3 | 중복 승인·capture·재시도·대사·환불·rollback 회귀 통과, 잠금/실행권/CHARGE 유일성 유지 | [ ] |
+| F1 | 실제 PostgreSQL에서 기존 응답 projection과 동등(환불 동률·UTC·NULL), 권한/데모 격리 회귀 통과 | [x] |
+| F2 | 동일210ms DB 지연 조건에서 생성+승인+확정 총 SQL 최소8개 감소, 전체201·PAID·장바구니0 | [x] |
+| F3 | 중복 승인·capture·재시도·대사·환불·rollback 회귀 통과, 잠금/실행권/CHARGE 유일성 유지 | [x] |
 | F4 | 전체 typecheck/lint/format/build/test 및 정확한 head CI4개·E2E·Lighthouse 통과 | [ ] |
 | F5 | 운영 모바일 두 상품 구매/썸네일/새로고침/장바구니 비움 검증과 시간 기록 | [ ] |
 
 공통 품질 게이트 적용. 새 스키마·환경변수·라이브러리 없음. 단회 운영 측정은 p95나 인과 효과 전체를 증명하지 않는다. 실제 호스팅 scale-to-zero는 process-cold 측정과 분리한다.
+
+검증: [동일 조건 SQL66→51·시간12.42→10.28초](../../reviews/2026-09-11-payment-read-latency.md), 기존 결제/대사/환불/최종화77개 및 새 SQL 횟수 검사 포함최종화9개 통과. F1의 전체 데모 격리는 전체 게이트에서도 확인한다.
