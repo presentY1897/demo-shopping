@@ -116,6 +116,7 @@ export const searchHitSchema = z.object({
   price: priceSchema,
   inStock: z.boolean(),
   thumbnailUrl: z.string().nullable(),
+  cardImageUrl: z.string().nullable().optional(),
   ratingAvg: z.int().min(0).max(500),
   ratingCount: z.int().min(0),
   salesCount: z.int().min(0),

@@ -96,7 +96,7 @@ export function ProductDetail({
     productId: product.id,
     productName: product.name,
     brandName: seller.brandName,
-    thumbnailUrl: product.images[0]?.url ?? null,
+    thumbnailUrl: product.images[0]?.thumbnailUrl ?? product.images[0]?.url ?? null,
     price: product.minPrice,
     viewedAt: new Date().toISOString(),
   })

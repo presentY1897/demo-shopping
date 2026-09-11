@@ -21,6 +21,7 @@ interface SourceRow {
   readonly attributes: unknown
   readonly totalStock: bigint | number | null
   readonly thumbnailUrl: string | null
+  readonly cardImageUrl?: string | null
   readonly createdAt: Date
 }
 
@@ -62,11 +63,12 @@ const SOURCE_SQL = `
                     WHERE v."productId" = p."id"
                       AND v."deletedAt" IS NULL
                       AND v."isActive"), 0)                AS "totalStock",
-         (SELECT i."url"
+         (SELECT COALESCE(i."thumbnailUrl", i."url")
             FROM "ProductImage" i
            WHERE i."productId" = p."id"
            ORDER BY i."sortOrder" ASC
            LIMIT 1)                                        AS "thumbnailUrl",
+         (SELECT i."cardImageUrl" FROM "ProductImage" i WHERE i."productId"=p."id" ORDER BY i."sortOrder", i."id" LIMIT 1) AS "cardImageUrl",
          p."createdAt"
     FROM "Product" p
     JOIN "Seller" s ON s."id" = p."sellerId"
@@ -97,6 +99,7 @@ function toSource(row: SourceRow): ProductSource {
     attributes: attributesOf(row.attributes),
     totalStock: Number(row.totalStock ?? 0),
     thumbnailUrl: row.thumbnailUrl,
+    cardImageUrl: row.cardImageUrl ?? null,
     createdAt: row.createdAt,
   }
 }

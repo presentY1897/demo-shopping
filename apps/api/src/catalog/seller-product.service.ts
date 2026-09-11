@@ -277,7 +277,7 @@ export class SellerProductService {
            WHERE "productId" = p."id" AND "deletedAt" IS NULL
         ) v ON true
         LEFT JOIN LATERAL (
-          SELECT "url" FROM "ProductImage"
+          SELECT COALESCE("thumbnailUrl", "url") AS "url" FROM "ProductImage"
            WHERE "productId" = p."id"
            ORDER BY "sortOrder", "id"
            LIMIT 1

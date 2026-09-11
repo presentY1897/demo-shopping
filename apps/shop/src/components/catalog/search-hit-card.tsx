@@ -68,7 +68,7 @@ export function SearchHitCard({
         name: hit.name,
         brandName: hit.brandName,
         price: hit.price,
-        imageUrl: hit.thumbnailUrl,
+        imageUrl: hit.cardImageUrl ?? hit.thumbnailUrl,
         ratingAvg: hit.ratingAvg,
         ratingCount: hit.ratingCount,
         salesCount: hit.salesCount,

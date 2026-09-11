@@ -61,7 +61,7 @@ interface CartLineRow {
       readonly status: string
       readonly deletedAt: Date | null
       readonly maxPurchaseQuantity: number | null
-      readonly images: readonly { readonly url: string }[]
+      readonly images: readonly { readonly url: string; readonly thumbnailUrl?: string | null }[]
       readonly options: readonly { readonly id: string; readonly sortOrder: number }[]
       readonly seller: {
         readonly id: string
@@ -437,7 +437,8 @@ function present(lines: readonly CartLineRow[]): CartResponse {
       productId: line.variant.product.id,
       productName: line.variant.product.name,
       optionLabel: optionLabelOf(line),
-      thumbnailUrl: line.variant.product.images[0]?.url ?? null,
+      thumbnailUrl:
+        line.variant.product.images[0]?.thumbnailUrl ?? line.variant.product.images[0]?.url ?? null,
       sku: line.variant.sku,
       quantity: line.quantity,
       price: line.variant.price,
