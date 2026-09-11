@@ -841,6 +841,8 @@ model Product {
 /// an order snapshot copies the URL as a string — and an editor that replaces
 /// the gallery should not leave a growing tail of retired rows behind.
 model ProductImage {
+  thumbnailUrl String?
+  cardImageUrl String?
   id        String @id @default(uuid(7)) @db.Uuid
   productId String @db.Uuid
 
@@ -3784,4 +3786,28 @@ model Report {
   @@index([status, id(sort: Desc)])
   /// **이 대상이 몇 번 신고됐나** — 임시 숨김의 임계치가 세는 값이다.
   @@index([targetType, targetId, status])
+}
+
+
+model ProductImageDerivative {
+  id String @id @default(uuid(7)) @db.Uuid
+  sellerId String @db.Uuid
+  sourceUrl String
+  status String @default("PENDING")
+  attempts Int @default(0)
+  nextAttemptAt DateTime @default(now())
+  leaseUntil DateTime?
+  token String? @db.Uuid
+  thumbnailUrl String?
+  cardImageUrl String?
+  metadata Json?
+  createdAt DateTime @default(now())
+  @@unique([sellerId, sourceUrl])
+  @@index([status, nextAttemptAt])
+}
+
+model ThumbnailPool {
+  id Int @id
+  token String? @db.Uuid
+  leaseUntil DateTime?
 }
