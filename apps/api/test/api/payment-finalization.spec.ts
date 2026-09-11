@@ -3,6 +3,8 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
 import { checkoutResponseSchema, orderResponseSchema } from '@shopping/shared'
 import { afterAll, describe, expect, it, vi } from 'vitest'
+import { PaymentService } from '../../src/payment/payment.service.js'
+import { VirtualCardService } from '../../src/payment/virtual-card.service.js'
 import { OrderService } from '../../src/orders/order.service.js'
 import { SellerOrderService } from '../../src/orders/seller-order.service.js'
 import { ReservationService } from '../../src/reservation/reservation.service.js'
@@ -291,5 +293,37 @@ describe('payment finalization batches', () => {
         select: { stock: true, reserved: true },
       }),
     ).toEqual({ stock: 2, reserved: 1 })
+  })
+})
+
+describe('payment read roundtrips (TASK-0135)', () => {
+  it('bounds all three payment stages and reads the full response in one statement', async () => {
+    const placed = await fixture(2)
+    const card = await api
+      .resolve<VirtualCardService>(VirtualCardService)
+      .issueFor(placed.buyerId, 1000000)
+    const principal = {
+      app: 'shop',
+      userId: placed.buyerId,
+      roles: ['BUYER'],
+      sellerId: null,
+    } as const
+    const payments = api.resolve<PaymentService>(PaymentService)
+    statements.length = 0
+    const { payment } = await payments.start(principal, placed.orderId, 'VIRTUAL_CARD', {
+      methodRef: card.id,
+    })
+    expect(statements.length).toBeLessThanOrEqual(10)
+    statements.length = 0
+    await payments.authorize(principal, payment.id)
+    expect(statements.length).toBeLessThanOrEqual(15)
+    statements.length = 0
+    const captured = await payments.capture(principal, payment.id)
+    expect(statements.length).toBeLessThanOrEqual(26)
+    expect(captured.payment.status).toBe('PAID')
+    await assertComplete(placed, 2)
+    statements.length = 0
+    expect(await payments.get(principal, payment.id)).toEqual(captured)
+    expect(statements).toHaveLength(1)
   })
 })
