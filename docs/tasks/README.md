@@ -2,7 +2,7 @@
 
 > 이어받을 것과 이월된 항목은 [`docs/HANDOFF.md`](../HANDOFF.md) 에 있다.
 
-아래 인덱스에 등록된 **133개** TASK: **125개 완료**, **3개 진행중**, **5개 승인됨**, **0개 초안**. TASK-0124 검토 완료 후 TASK-0125~0131을 후속 작업으로 작성하고 사용자 승인을 받았다. 폐기 TASK는 이 집계에 포함하지 않는다.
+아래 인덱스에 등록된 **133개** TASK: **125개 완료**, **4개 진행중**, **4개 승인됨**, **0개 초안**. TASK-0124 검토 완료 후 TASK-0125~0131을 후속 작업으로 작성하고 사용자 승인을 받았다. 폐기 TASK는 이 집계에 포함하지 않는다.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
@@ -261,7 +261,7 @@
 | [TASK-0134](./M15-polish/TASK-0134-payment-request-deadline.md) | 결제 응답 대기 제한 조정 | 완료 |
 | [TASK-0135](./M15-polish/TASK-0135-payment-read-roundtrips.md) | 결제의 반복 조회 축소 | 완료 |
 | [TASK-0136](./M15-polish/TASK-0136-neon-region-alignment.md) | Neon DB와 API 리전 일치 | 완료 |
-| [TASK-0137](./M15-polish/TASK-0137-product-thumbnail-consistency.md) | 세 앱 상품 썸네일 표시 통합 | 승인됨 |
+| [TASK-0137](./M15-polish/TASK-0137-product-thumbnail-consistency.md) | 세 앱 상품 썸네일 표시 통합 | 진행중 |
 | [TASK-0138](./M15-polish/TASK-0138-product-thumbnail-generation.md) | 상품 이미지 자동 썸네일 생성과 데이터 연결 | 승인됨 |
 
 </details>
