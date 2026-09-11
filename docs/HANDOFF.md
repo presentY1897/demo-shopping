@@ -1454,3 +1454,8 @@ TASK-0133/0134는 운영 구매까지 검증 완료했다. TASK0131 재개에서
 ### TASK0136 완료 후 운영 기준
 
 Neon 운영 DB와 Render API는 모두Singapore이다(사용자 대시보드 확인). TASK0136의 DB 보존·전환·실구매/환불 검증이 끝났고 구매3회는1.04/0.97/0.96초였다. Ohio 원본과 보호 백업은 별도 삭제 결정 전까지 보존한다. 대상에 이미 쓰기가 있으므로 Ohio로 연결만 되돌리지 않는다. TASK0131의 hosting scale-to-zero 검증은 별도로 남아 있다. [이전 검증](reviews/2026-09-11-neon-region-migration.md).
+
+
+### TASK0137 상품 썸네일 공통 처리
+
+사용자 제보로 최근 본 상품 스트립/전체 목록과 찜 목록이 기존 ProductThumbnail을 사용하지 않는 누락을 확인했다. `feature/product-thumbnail-consistency` worktree에서 세 화면을 기존 컴포넌트로 통일했다. 회귀5개 수정 전 실패/수정 후 성공, 관련42개 검사 및 브라우저5개 경로 이미지 로드 통과. shop typecheck/lint/build와 전체1,275개 테스트도 통과했다. 기존 로컬 이력/서버 응답 저장값은 유지한다. PR 전 전체 품질 게이트 및 운영 배포는 아직 남아 있다.
