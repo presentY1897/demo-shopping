@@ -13,7 +13,7 @@ CREATE TABLE "ThumbnailPool" ("id" INTEGER PRIMARY KEY CHECK ("id" = 1), "token"
 INSERT INTO "ThumbnailPool"("id") VALUES (1);
 CREATE FUNCTION enqueue_product_thumbnail() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
- IF NEW."url" !~ '/products/[0-9a-f-]{36}/[0-9a-f-]{36}\.(jpeg|jpg|png|webp)$' THEN
+ IF octet_length(NEW."url") > 2048 OR NEW."url" !~ '/products/[0-9a-f-]{36}/[0-9a-f-]{36}\.(jpeg|jpg|png|webp)$' THEN
    RETURN NEW;
  END IF;
  INSERT INTO "ProductImageDerivative" ("sellerId", "sourceUrl")

@@ -198,7 +198,7 @@ export function ProductGallery({
                 <span className="sr-only">
                   {messages.thumbnailLabel.replace('{index}', String(position + 1))}
                 </span>
-                {unavailable(image.url) ? (
+                {unavailable(image.thumbnailUrl ?? image.url) ? (
                   <ProductImagePlaceholder compact />
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element -- small seller thumbnails use arbitrary public image hosts.
@@ -206,8 +206,8 @@ export function ProductGallery({
                     alt=""
                     aria-hidden="true"
                     className="size-full object-cover"
-                    src={productImageUrl(image.url)}
-                    onError={() => markFailed(image.url)}
+                    src={productImageUrl(image.thumbnailUrl ?? image.url)}
+                    onError={() => markFailed(image.thumbnailUrl ?? image.url)}
                   />
                 )}
               </button>

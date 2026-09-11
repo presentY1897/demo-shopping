@@ -66,7 +66,7 @@ const SOURCE_SQL = `
          (SELECT COALESCE(i."thumbnailUrl", i."url")
             FROM "ProductImage" i
            WHERE i."productId" = p."id"
-           ORDER BY i."sortOrder" ASC
+           ORDER BY i."sortOrder" ASC, i."id" ASC
            LIMIT 1)                                        AS "thumbnailUrl",
          (SELECT i."cardImageUrl" FROM "ProductImage" i WHERE i."productId"=p."id" ORDER BY i."sortOrder", i."id" LIMIT 1) AS "cardImageUrl",
          p."createdAt"
