@@ -1451,8 +1451,6 @@ TASK-0131은 운영 trace의 DB 왕복 약210ms와 지연 재현을 확보했다
 TASK-0133/0134는 운영 구매까지 검증 완료했다. TASK0131 재개에서 production process-cold30회와 최신 warm30/32회를 측정했으나 호스팅 scale-to-zero는 미확보다. TASK0135는 결제 응답 단일 조회와 불변 식별자 재사용으로 지연 모형의 SQL66→51, 결제3단계12.42→10.28초를 확인했고 PR144 배포·실제 모바일 구매까지 검증 완료했다. 사용자 확인으로 Neon은Ohio, API 선언은Singapore라 TASK0136에 DB 지역 이전 초안을 작성했다. 실제 이전은 미실행이며 대상 프로젝트 접근과 전환 일정이 필요하다. [최신 기록](reviews/2026-09-11-payment-read-latency.md).
 
 
-### TASK0136 이전 진행 중
+### TASK0136 이전 운영 검증 완료, 실제 Render 리전 확인 대기
 
-사용자가 이전을 승인하고 저장소 밖 보안 파일로 소스/대상 연결을 제공했다. `feature/neon-region-alignment` worktree에서 진행한다. Ohio/Singapore 직접 접속 성공, 양쪽 PostgreSQL18.6, 대상 빈 DB 확인. 로컬 PostgreSQL18 복원 리허설은 63테이블/22,561행 및 재고·카드 대사 불일치0으로 통과했다. 아직 최종 운영 복사/연결 전환은 미실행이다. 사용자가 Render 대시보드에서 직접 서비스를 중지하고 DATABASE_URL을 변경하는 방식이다. Render 중지 확인 전에는 최종 복사하지 않는다. 민감한 백업/접속정보는 저장소 밖 소유자 전용 디렉터리에만 보관한다.
-
-TASK0136 최종 DB 복사 완료: 사용자 Render Suspend 확인 및 health503 후 별도 백업/복원했다. 원본/대상 전체 데이터·스키마·sequence 비교 일치, 63테이블/22,561행, 재고·카드 대사 불일치0. F2 완료. 다음은 사용자가 Render DATABASE_URL을 보안 파일의 TARGET_DATABASE_URL 값으로 변경하고 서비스를 재개·배포하는 단계다. API 재개 뒤 배치 쓰기가 시작되므로 이후 Ohio로 단순 복귀하지 않는다. 운영 동작/성능 검증은 아직 남아 있다.
+`feature/neon-region-alignment` worktree에서 DB 최종 복사와 운영 전환을 검증했다. 원본/대상63테이블·22,561행 및 스키마/sequence 비교 일치, 원장 대사 불일치0. 운영 실제 구매3회 1.04/0.97/0.96초, 취소·환불/권한/이미지/장바구니 검증 통과. 신규 주문이 Singapore에만 쓰이는 것도 확인했다. 실제 Render 대시보드 리전은 사용자 응답 대기라 F1만 미완료다. Ohio 원본과 로컬 보호 백업을 보존하며, 대상에 쓰기가 발생했으므로 원본으로 단순 복귀하지 않는다. [운영 이전 검증](reviews/2026-09-11-neon-region-migration.md).

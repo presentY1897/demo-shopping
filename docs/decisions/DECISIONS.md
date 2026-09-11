@@ -369,3 +369,8 @@ TASK 착수 시점에 확정할 세부 사항만 남아 있다.
 ### D-273 구매 요청 진단
 
 명시적 `X-Checkout-Diagnostics: 1` 요청의 인증된 BUYER에게만 Server-Timing 구간 시간/횟수를 제공한다. SQL/매개변수/개인정보를 기록하지 않고 권한과 응답 본문은 유지한다. [결정 근거](2026-09-10-checkout-diagnostics.md).
+
+
+### D-277 DB 리전 이전
+
+Neon 운영 DB는 Singapore로 이전했다. 운영 API의 신규 주문이 대상 DB에 기록됨을 확인했다. Ohio 원본/백업은 별도 삭제 결정 전까지 유지하고, 대상에 쓰기가 생긴 뒤에는 단순 연결 복귀를 하지 않는다. [결정 및 검증](2026-09-11-neon-region-migration.md).
