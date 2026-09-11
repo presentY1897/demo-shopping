@@ -848,3 +848,7 @@ UTC 에서는 우연히 맞고 오프셋이 붙는 날 조용히 틀린다.
 
 잠그는 것은 **장바구니**이지 Variant 가 아니다. 재고를 예약하지 않으므로 Variant 를 잠글 이유가
 없고, 잠그면 같은 인기 상품을 담는 사람들이 서로를 기다리게 된다.
+
+### 상품 파생 이미지 (TASK-0138, 구현 중)
+
+ProductImage.url은 업로드 자산을 보존하고 thumbnailUrl/cardImageUrl은 READY 자산의 읽기용 투영이다. ProductImageDerivative는 (sellerId, sourceUrl)별 하나의 영속 작업이며 status/attempts/nextAttemptAt/leaseUntil/token 및 크기별 metadata를 저장한다. 상품 이미지 INSERT 트리거가 같은 트랜잭션 안에서 작업을 등록한다. ThumbnailPool의 단일 행은 전체 작업 풀 lease를 관리한다. 연결이 끊긴 작업은 120초 lease 이후 재시도하며 변환 프로세스는 최대 30초만 실행한다. 완료는 소유 token 검증 후 파생 파일 메타데이터와 같은 URL의 현재 ProductImage 투영 및 SearchOutbox를 함께 반영한다. 삭제 cascade를 걸지 않아 주문 참조 파일과 작업 이력을 보존한다.
