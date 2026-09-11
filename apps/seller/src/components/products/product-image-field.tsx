@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductThumbnail } from '@shopping/ui/components'
+
 import type { ProductImage, ProductImageInput } from '@shopping/shared'
 import { Button } from '@shopping/ui/components'
 import { useCallback, useId, useMemo, useState } from 'react'
@@ -123,13 +125,7 @@ export function ProductImageField({
           <ul className="flex flex-wrap gap-3">
             {rows.map(({ image, label }) => (
               <li className="flex flex-col items-center gap-1" key={image.id}>
-                {/*
-                  A plain `<img>` for the reason `ProductPreview` gives: the URL
-                  is whatever was uploaded, and `next/image` would need a
-                  `remotePatterns` entry per storage host.
-                */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <ProductThumbnail
                   alt={image.alt ?? label}
                   className="border-border h-24 w-20 rounded-md border object-cover"
                   src={image.url}

@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductIdentity } from '@shopping/ui/components'
+
 import type { ProductSummary } from '@shopping/shared'
 import type { TableColumn } from '@shopping/ui/components'
 import { Badge, Button, Table } from '@shopping/ui/components'
@@ -60,7 +62,7 @@ export function ProductTable({
       header: messages.columns.product,
       cell: (row) => (
         <div className="flex flex-col gap-1">
-          <span className="text-fg font-medium">{row.name}</span>
+          <ProductIdentity src={row.thumbnailUrl}>{row.name}</ProductIdentity>
           <span className="text-fg-subtle text-xs">
             {messages.variantValue.replace('{count}', catalogCount(row.variantCount))}
           </span>

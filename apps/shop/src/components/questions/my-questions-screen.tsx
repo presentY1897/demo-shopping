@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductIdentity } from '@shopping/ui/components'
+
 import { Button, EmptyState, Tag } from '@shopping/ui/components'
 import { formatDate } from '@shopping/ui/format'
 import Link from 'next/link'
@@ -66,7 +68,9 @@ export function MyQuestionsScreen({ messages }: { readonly messages: MyPageMessa
               className="text-fg-muted text-xs underline-offset-2 hover:underline"
               href={`/products/${question.productId}`}
             >
-              {copy.openProduct.replace('{name}', question.productName)}
+              <ProductIdentity src={question.thumbnailUrl}>
+                {copy.openProduct.replace('{name}', question.productName)}
+              </ProductIdentity>
             </Link>
 
             <p className="text-fg text-sm whitespace-pre-line">{question.content}</p>

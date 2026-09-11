@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductThumbnail } from '@shopping/ui/components'
+
 import type { AttributeValue } from '@shopping/shared'
 import { DEFAULT_DENSITY } from '@shopping/ui'
 import { Badge, Modal } from '@shopping/ui/components'
@@ -117,15 +119,7 @@ export function ProductPreview({
           <ul className="flex gap-2 overflow-x-auto">
             {images.map((image, index) => (
               <li key={index}>
-                {/*
-                  A plain `<img>`. `next/image` optimises through a proxy that
-                  needs a `remotePatterns` entry per storage host, and the URL
-                  here is whatever the widget uploaded — a rehearsal of somebody
-                  else's screen is not where that configuration should be
-                  decided. TASK-0043 owns the buyer's real gallery.
-                */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <ProductThumbnail
                   alt={image.alt ?? ''}
                   className="border-border h-40 w-32 rounded-md border object-cover"
                   src={image.url}

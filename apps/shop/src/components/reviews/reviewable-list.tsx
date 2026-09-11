@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductIdentity } from '@shopping/ui/components'
+
 import type { ApiFailure, Review, ReviewableItem } from '@shopping/shared'
 import { failureMessage } from '@shopping/shared'
 import { Button, DataList, EmptyState, Tag } from '@shopping/ui/components'
@@ -144,7 +146,7 @@ function ReviewableRow({
   return (
     <li className="border-border flex flex-col gap-3 rounded-md border p-4">
       <div className="flex flex-col gap-1">
-        <p className="text-fg text-sm font-medium">{item.productName}</p>
+        <ProductIdentity src={item.thumbnailUrl}>{item.productName}</ProductIdentity>
         {item.optionLabel === null ? null : (
           <p className="text-fg-muted text-xs">{item.optionLabel}</p>
         )}

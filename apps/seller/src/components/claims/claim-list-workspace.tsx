@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductIdentity } from '@shopping/ui/components'
+
 import type { ApiFailure, SellerClaimListItem } from '@shopping/shared'
 import { failureMessage } from '@shopping/shared'
 import {
@@ -95,7 +97,7 @@ export function ClaimListWorkspace({
       header: messages.table.items,
       cell: (row) => (
         <span className="flex flex-col">
-          <span>{headlineOf(row, messages)}</span>
+          <ProductIdentity src={row.thumbnailUrl}>{headlineOf(row, messages)}</ProductIdentity>
           <span className="text-fg-muted text-xs">
             {messages.table.quantity.replace('{count}', String(row.totalQuantity))}
           </span>

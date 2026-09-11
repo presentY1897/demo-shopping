@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductIdentity } from '@shopping/ui/components'
+
 import type { ApiFailure, Claim, ClaimFault, ReturnReason } from '@shopping/shared'
 import { CLAIM_REASON_MAX_LENGTH, claimFaults, returnReasons } from '@shopping/shared'
 import type { TableColumn } from '@shopping/ui/components'
@@ -122,7 +124,15 @@ export function ClaimForceDialog({
   const issues = forceIssues(claim.type, current)
 
   const itemColumns: readonly TableColumn<Claim['items'][number]>[] = [
-    { key: 'product', header: detail.items.product, cell: (row) => row.snapshot.productName },
+    {
+      key: 'product',
+      header: detail.items.product,
+      cell: (row) => (
+        <ProductIdentity src={row.snapshot.thumbnailUrl}>
+          {row.snapshot.productName}
+        </ProductIdentity>
+      ),
+    },
     {
       key: 'option',
       header: detail.items.option,

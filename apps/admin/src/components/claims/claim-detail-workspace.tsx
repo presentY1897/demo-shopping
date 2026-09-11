@@ -1,5 +1,7 @@
 'use client'
 
+import { ProductIdentity } from '@shopping/ui/components'
+
 import type { ApiFailure, Claim, ClaimItem, ErrorMessages } from '@shopping/shared'
 import { errorMessage, failureMessage, grantedScopes } from '@shopping/shared'
 import type { TableColumn } from '@shopping/ui/components'
@@ -152,7 +154,15 @@ function ClaimDetailScreen({ claimId, messages, errors, notice }: ClaimDetailWor
   }
 
   const itemColumns: readonly TableColumn<ClaimItem>[] = [
-    { key: 'product', header: detail.items.product, cell: (row) => row.snapshot.productName },
+    {
+      key: 'product',
+      header: detail.items.product,
+      cell: (row) => (
+        <ProductIdentity src={row.snapshot.thumbnailUrl}>
+          {row.snapshot.productName}
+        </ProductIdentity>
+      ),
+    },
     {
       key: 'option',
       header: detail.items.option,
