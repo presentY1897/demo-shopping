@@ -20,13 +20,18 @@ export { expect, test }
  * 있는가」는 아무도 검사하지 않게 된다. 그 버튼은 이 서비스의 첫 문이다.
  */
 export async function issueDemo(page: Page, app: 'shop' | 'seller' | 'admin'): Promise<void> {
-  await waitForDemoBudget()
+  await waitForDemoBudget(page)
   await page.goto(`${APPS[app]}/login`)
   const button = page.getByRole('button', { name: /데모 계정 받기/ })
   await expect(button).toBeEnabled()
+  const issued = page.waitForResponse(
+    (response) => response.url().endsWith('/auth/demo') && response.request().method() === 'POST',
+  )
   await button.click()
+  const response = await issued
+  expect(response.status()).toBe(200)
+  recordDemoIssue(response.headers().date)
   await page.waitForURL((url) => !url.pathname.startsWith('/login'), { timeout: 30_000 })
-  recordDemoIssue()
 }
 
 /** 스택이 없으면 타임아웃 대신 「무엇을 띄우라」는 말을 듣는다. */
