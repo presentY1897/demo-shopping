@@ -6,6 +6,7 @@ import { DEMO_CARD_LIMIT, VirtualCardService } from '../payment/virtual-card.ser
 import { SellerService } from '../sellers/seller.service.js'
 import { createDemoAccount } from './demo-account.js'
 import { cloneCatalogIntoDemoStore } from './demo-catalog-clone.js'
+import { DemoTradeSeedService } from './demo-trade-seed.service.js'
 import { demoBrandName, demoEmail, demoName, demoSlug } from './demo-identity.js'
 
 /**
@@ -49,6 +50,7 @@ export class DemoSeedService {
   constructor(
     private readonly sellers: SellerService,
     private readonly cards: VirtualCardService,
+    private readonly trades: DemoTradeSeedService,
   ) {}
 
   /**
@@ -68,6 +70,7 @@ export class DemoSeedService {
     for (const seeder of this.seeders[role]) {
       await seeder(context)
     }
+    await this.trades.seed(role, context)
   }
 
   /**
