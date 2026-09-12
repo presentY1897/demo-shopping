@@ -63,6 +63,7 @@ describe('시간을 재는 검사는 커버리지 실행에서 빠진다', () =>
     // 워커 하나. 지연을 재는 동안 같은 러너에서 다른 파일이 코어를 다투면 재는
     // 값이 그 경합이 된다.
     expect(perf).toContain('--maxWorkers=1')
+    expect(perf).toContain('VITEST_MAX_WORKERS=1')
     expect(read('.github/workflows/ci.yml')).toContain('run test:perf')
   })
 })
