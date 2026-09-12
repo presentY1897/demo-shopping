@@ -2,7 +2,6 @@ import type { DemoRole } from '@shopping/shared'
 import { describe, expect, it, vi } from 'vitest'
 import {
   claimResponseSchema,
-  claimTransitionResponseSchema,
   sellerOrderTransitionResponseSchema,
   shipmentResponseSchema,
   settlementResponseSchema,
@@ -194,15 +193,33 @@ describe('example orders remain actionable through the real API', () => {
     const userId = await issue('ADMIN')
     const prisma = api.resolve<PrismaService>(PrismaService)
     const admin = api.clientAs({ userId, roles: ['DEMO_ADMIN'] })
-    const claim = await prisma.claimRequest.findFirstOrThrow()
+    const claim = await prisma.claimRequest.findFirstOrThrow({
+      include: { items: true, statusHistory: { orderBy: { createdAt: 'asc' } } },
+    })
+    expect(claim.status).toBe('RETURN_REJECTED')
+    expect(claim.statusHistory.map((entry) => entry.toStatus)).toEqual([
+      'RETURN_REQUESTED',
+      'RETURN_REJECTED',
+    ])
+    const item = await prisma.orderItem.findUniqueOrThrow({
+      where: { id: claim.items[0]!.orderItemId },
+    })
+    expect(item.claimedQuantity).toBe(0)
     expect(
       await admin.request({
-        path: `/claims/${claim.id}/transitions`,
+        path: '/admin/claims',
         method: 'POST',
-        body: { to: 'RETURN_APPROVED', reason: '체험 반품을 승인합니다.' },
-        schema: claimTransitionResponseSchema,
+        body: {
+          sellerOrderId: claim.sellerOrderId,
+          items: [{ orderItemId: item.id, quantity: 1 }],
+          reason: '체험 반품 조건을 재검토해 승인합니다.',
+          fault: null,
+          return: { returnReason: 'CHANGE_OF_MIND', photoKeys: [] },
+          overturnsClaimId: claim.id,
+        },
+        schema: claimResponseSchema,
       }),
-    ).toMatchObject({ claim: { status: 'RETURN_APPROVED' }, changed: true })
+    ).toMatchObject({ claim: { status: 'RETURN_APPROVED', overturnsClaimId: claim.id } })
     const settlement = await prisma.settlement.findFirstOrThrow()
     expect(
       await admin.request({

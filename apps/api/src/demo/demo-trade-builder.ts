@@ -245,45 +245,61 @@ export async function buildDemoTrade(
 
 export async function buildDemoClaim(
   tx: Prisma.TransactionClient,
-  input: { sellerOrderId: string; itemId: string; buyerId: string; shippingFee: number; now: Date },
+  input: {
+    sellerOrderId: string
+    itemId: string
+    buyerId: string
+    sellerUserId: string
+    shippingFee: number
+    now: Date
+  },
 ): Promise<void> {
-  await tx.orderItem.update({
-    where: { id: input.itemId },
-    data: { claimedQuantity: 1, updatedAt: input.now },
-  })
+  const requestedAt = new Date(input.now.getTime() - 60_000)
   await tx.claimRequest.create({
     data: {
       sellerOrderId: input.sellerOrderId,
       requestedById: input.buyerId,
       type: 'RETURN',
-      status: 'RETURN_REQUESTED',
-      fault: 'SELLER',
-      reason: '체험용 상품 하자 반품 신청',
-      createdAt: input.now,
+      status: 'RETURN_REJECTED',
+      fault: 'CUSTOMER',
+      reason: '체험용 단순 변심 반품 신청',
+      createdAt: requestedAt,
       updatedAt: input.now,
       items: {
         create: {
           orderItemId: input.itemId,
           quantity: 1,
-          createdAt: input.now,
+          createdAt: requestedAt,
           updatedAt: input.now,
         },
       },
       statusHistory: {
-        create: {
-          toStatus: 'RETURN_REQUESTED',
-          actor: 'BUYER',
-          actorId: input.buyerId,
-          reason: '체험용 상품 하자 반품 신청',
-          createdAt: input.now,
-        },
+        create: [
+          {
+            toStatus: 'RETURN_REQUESTED',
+            actor: 'BUYER',
+            actorId: input.buyerId,
+            reason: '체험용 단순 변심 반품 신청',
+            createdAt: requestedAt,
+          },
+          {
+            fromStatus: 'RETURN_REQUESTED',
+            toStatus: 'RETURN_REJECTED',
+            actor: 'SELLER',
+            actorId: input.sellerUserId,
+            reason: '반품 조건 재검토가 필요한 체험용 거절',
+            createdAt: input.now,
+          },
+        ],
       },
       returnDetail: {
         create: {
-          reason: 'DEFECTIVE',
-          feeBearer: 'SELLER',
+          reason: 'CHANGE_OF_MIND',
+          feeBearer: 'BUYER',
           returnShippingFee: input.shippingFee,
-          createdAt: input.now,
+          returnShippingDeduction: input.shippingFee,
+          originalShippingRefund: 0,
+          createdAt: requestedAt,
           updatedAt: input.now,
         },
       },
