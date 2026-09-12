@@ -11,16 +11,16 @@ import { APPS } from './apps.js'
 // Timestamps only. Sharing this file preserves the budget across repeat workers.
 const file = join(
   tmpdir(),
-  `shopping-demo-server-issues-${createHash('sha256').update(APPS.api).digest('hex').slice(0, 12)}.json`,
+  `shopping-demo-batch-issues-${createHash('sha256').update(APPS.api).digest('hex').slice(0, 12)}.json`,
 )
-const windowMs = DEMO_ISSUE_WINDOW_SECONDS * 1000 + 1000
+const windowMs = DEMO_ISSUE_WINDOW_SECONDS * 1000 + 5000
 
-function recent(now: number): number[] {
+function recorded(): number[] {
   const values: unknown = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : []
   if (!Array.isArray(values) || !values.every((value) => typeof value === 'number')) {
     throw new Error('데모 발급 시각 기록을 읽을 수 없습니다.')
   }
-  return values.filter((at) => at > now - windowMs)
+  return values
 }
 
 function serverTime(date: string | undefined): number {
@@ -35,7 +35,9 @@ export async function waitForDemoBudget(page: Page): Promise<void> {
       async () => {
         const response = await page.request.head(`${APPS.api}/health`)
         expect(response.ok()).toBeTruthy()
-        return recent(serverTime(response.headers().date)).length
+        const values = recorded()
+        const expired = values.every((at) => at <= serverTime(response.headers().date) - windowMs)
+        return expired ? 0 : values.length
       },
       {
         timeout: windowMs + 2000,
@@ -49,5 +51,7 @@ export async function waitForDemoBudget(page: Page): Promise<void> {
 export function recordDemoIssue(date: string | undefined): void {
   // HTTP dates have second precision; retain an issue through the next second.
   const now = serverTime(date) + 1000
-  writeFileSync(file, JSON.stringify([...recent(now), now]), { mode: 0o600 })
+  const values = recorded()
+  const batch = values.length >= DEMO_ISSUE_LIMIT ? [] : values
+  writeFileSync(file, JSON.stringify([...batch, now]), { mode: 0o600 })
 }
