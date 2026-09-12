@@ -45,6 +45,7 @@ export interface CloneInput {
   readonly sellerId: string
   readonly now: Date
   readonly limit?: number
+  readonly requirePurchasableVariant?: boolean
 }
 
 /** One copied option value: its new id, and the option it now hangs off. */
@@ -69,6 +70,9 @@ export async function cloneCatalogIntoDemoStore(
     where: {
       status: 'ACTIVE',
       deletedAt: null,
+      ...(input.requirePurchasableVariant === true
+        ? { variants: { some: { isActive: true, deletedAt: null, price: { gt: 0 } } } }
+        : {}),
       // Never another demo's store: a demo copying a demo would compound a copy
       // of a copy every twenty-four hours, and the point is to show the real
       // catalogue.

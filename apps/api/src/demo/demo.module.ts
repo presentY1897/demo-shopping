@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common'
 
+import { PointsModule } from '../points/points.module.js'
+import { StockModule } from '../stock/stock.module.js'
+import { SettlementModule } from '../settlement/settlement.module.js'
+import { DemoTradeSeedService } from './demo-trade-seed.service.js'
 import { AuthModule } from '../auth/auth.module.js'
 import { SearchModule } from '../search/search.module.js'
 import { PaymentModule } from '../payment/payment.module.js'
@@ -23,9 +27,17 @@ import { DemoService } from './demo.service.js'
  * does the rest. The force-expiry endpoint is the one part a caller reaches.
  */
 @Module({
-  imports: [AuthModule, PaymentModule, SellersModule, SearchModule],
+  imports: [
+    AuthModule,
+    PaymentModule,
+    SellersModule,
+    SearchModule,
+    PointsModule,
+    StockModule,
+    SettlementModule,
+  ],
   controllers: [DemoController],
-  providers: [DemoService, DemoSeedService, DemoCleanupService],
+  providers: [DemoService, DemoSeedService, DemoTradeSeedService, DemoCleanupService],
   exports: [DemoService, DemoCleanupService],
 })
 export class DemoModule {}
