@@ -40,7 +40,7 @@ export async function waitForDemoBudget(page: Page): Promise<void> {
         return expired ? 0 : values.length
       },
       {
-        timeout: windowMs + 2000,
+        timeout: windowMs * 2,
         intervals: [500, 1000],
         message: '서버의 데모 발급 창 안에서 다음 계정 발급을 기다립니다.',
       },
