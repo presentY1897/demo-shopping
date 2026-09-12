@@ -43,7 +43,7 @@ const settlementIdSchema = z.uuid()
  * 읽기는 `settlement.read`, 승인·보류는 `settlement.approve`, 지급은
  * `settlement.pay` 다. 셋을 나눈 이유는 **되돌릴 수 있는 정도가 다르기** 때문이고,
  * F7 의 「데모 관리자는 지급 확정 불가」가 여기서 따로 판정되지 않는 것도 그래서다 —
- * 데모 관리자는 운영자에서 파생되고 운영자에게는 뒤의 둘이 없다.
+ * 데모 관리자는 데모 정산 승인만 추가로 허용하고 지급 권한은 갖지 않는다(D-279).
  *
  * ## 라우트 순서
  *
@@ -102,12 +102,13 @@ export class SettlementController {
    */
   @Post('settlements/approvals')
   @RequirePermission('settlement.approve')
-  approveMany(
+  async approveMany(
     @Principal() principal: RequestPrincipal,
     @Body() body: unknown,
   ): Promise<BulkApproveSettlementsResponse> {
     const { ids } = parseInput(bulkApproveSettlementsRequestSchema, body)
 
+    await this.console.assertMayApprove(principal, ids)
     return this.console.bulkApprove(principal.userId, ids)
   }
 
@@ -140,6 +141,7 @@ export class SettlementController {
   ): Promise<SettlementResponse> {
     const settlementId = parseInput(settlementIdSchema, id, 'id')
 
+    await this.console.assertMayApprove(principal, [settlementId])
     return { settlement: await this.console.approve(principal.userId, settlementId) }
   }
 
@@ -154,6 +156,7 @@ export class SettlementController {
     const settlementId = parseInput(settlementIdSchema, id, 'id')
     const { reason } = parseInput(holdSettlementRequestSchema, body)
 
+    await this.console.assertMayApprove(principal, [settlementId])
     return { settlement: await this.console.hold(principal.userId, settlementId, reason) }
   }
 

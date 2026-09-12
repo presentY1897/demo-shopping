@@ -38,7 +38,7 @@
 | `coupon.claim` | `own` | `own` | — | `any` | — |
 | `coupon.delete` | — | `own` | — | `any` | — |
 | `settlement.read` | — | `own` | `any` | `any` | `any` |
-| `settlement.approve` | — | — | — | `any` | — |
+| `settlement.approve` | — | — | — | `any` | `demo` |
 | `settlement.pay` | — | — | — | `any` | — |
 | `commission.read` | — | — | `any` | `any` | `any` |
 | `commission.write` | — | — | — | `any` | — |
@@ -83,7 +83,7 @@
 
 ### DEMO_ADMIN
 
-퍼미션 24개 — `catalog.read:any` · `catalog.write:demo` · `product.read:any` · `product.write:demo` · `media.upload:demo` · `order.read:any` · `claim.read:any` · `claim.handle:demo` · `review.moderate:demo` · `content.moderate:demo` · `review.reply:demo` · `question.answer:demo` · `coupon.read:any` · `coupon.write:demo` · `coupon.platform:demo` · `settlement.read:any` · `commission.read:any` · `user.read:any` · `seller.read:any` · `seller.approve:demo` · `demo.manage:demo` · `reservation.sweep:demo` · `notification.read:own` · `report.write:own`
+퍼미션 25개 — `catalog.read:any` · `catalog.write:demo` · `product.read:any` · `product.write:demo` · `media.upload:demo` · `order.read:any` · `claim.read:any` · `claim.handle:demo` · `review.moderate:demo` · `content.moderate:demo` · `review.reply:demo` · `question.answer:demo` · `coupon.read:any` · `coupon.write:demo` · `coupon.platform:demo` · `settlement.read:any` · `commission.read:any` · `user.read:any` · `seller.read:any` · `seller.approve:demo` · `demo.manage:demo` · `reservation.sweep:demo` · `notification.read:own` · `report.write:own` · `settlement.approve:demo`
 
 ---
 

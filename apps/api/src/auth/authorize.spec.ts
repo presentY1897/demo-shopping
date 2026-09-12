@@ -91,7 +91,10 @@ describe('the role table', () => {
         : { ...entry, scope: 'demo' },
     )
 
-    expect(rolePermissions.DEMO_ADMIN).toEqual(expected)
+    expect(rolePermissions.DEMO_ADMIN).toEqual([
+      ...expected,
+      { permission: 'settlement.approve', scope: 'demo' },
+    ])
   })
 
   it('never grants user.write to a role that could then escalate itself', () => {

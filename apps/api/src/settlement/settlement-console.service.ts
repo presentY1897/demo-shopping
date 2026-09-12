@@ -319,6 +319,16 @@ export class SettlementConsoleService {
    * 스토어를 지정하지 않은 조회는 **플랫폼 전체**를 보는 일이다. `platformOwnership`
    * 은 아무도 소유하지 않으므로 `any` 말고는 어떤 스코프도 닿지 않는다.
    */
+  async assertMayApprove(principal: RequestPrincipal, ids: readonly string[]): Promise<void> {
+    const rows = await this.prisma.settlement.findMany({
+      where: { id: { in: [...ids] } },
+      select: { seller: { select: sellerOwnershipSelect } },
+    })
+    for (const row of rows) {
+      assertResourceAccess(principal, 'settlement.approve', sellerOwnership(row.seller))
+    }
+  }
+
   private async assertMayRead(
     principal: RequestPrincipal,
     sellerId: string | undefined,
