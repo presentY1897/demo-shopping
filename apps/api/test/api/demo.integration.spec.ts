@@ -282,7 +282,7 @@ describe('POST /auth/demo — 판매자', () => {
       values: 6,
       variants: 6,
       mappings: 6,
-      ledger: 6,
+      ledger: 12, // Six opening balances, example replenishment, and five sales.
       inStock: 42,
     })
 
