@@ -269,6 +269,7 @@ export class ProductService {
     // it. Without this a buyer's `product.read:any` would list every seller's
     // drafts — the catalogue before anybody decided to publish it.
     const hidden = this.maySeeHidden(principal, sellerId)
+    const demoHidden = grantedScopes(principal, 'product.write').includes('demo')
     const limit = query.limit ?? PRODUCT_LIST_DEFAULT_LIMIT
     const categoryId = query.categoryId ?? null
     const status = query.status ?? null
@@ -301,7 +302,10 @@ export class ProductService {
          AND (${sellerId}::uuid IS NULL OR p."sellerId" = ${sellerId}::uuid)
          AND (${categoryId}::int IS NULL OR p."categoryId" = ${categoryId}::int)
          AND (${status}::"ProductStatus" IS NULL OR p."status" = ${status}::"ProductStatus")
-         AND (${hidden}::boolean OR p."status" = 'ACTIVE')
+         AND (${hidden}::boolean OR p."status" = 'ACTIVE' OR (${demoHidden}::boolean AND EXISTS (
+           SELECT 1 FROM "Seller" s JOIN "User" u ON u."id" = s."userId"
+            WHERE s."id" = p."sellerId" AND u."isDemo" = true
+         )))
          AND (${pattern}::text IS NULL OR p."name" ILIKE ${pattern}::text ESCAPE '\\')
          AND (${cursor}::uuid IS NULL OR p."id" < ${cursor}::uuid)
        ORDER BY p."id" DESC
@@ -326,11 +330,15 @@ export class ProductService {
    * 403 would confirm it.
    */
   async get(principal: RequestPrincipal, id: string): Promise<ProductResponse> {
-    assertResourceAccess(principal, 'product.read', await this.ownershipOfProduct(id))
+    const ownership = await this.ownershipOfProduct(id)
+    assertResourceAccess(principal, 'product.read', ownership)
 
     const product = await this.load(this.prisma, id)
 
-    if (product.status !== 'ACTIVE' && !this.maySeeHidden(principal, product.sellerId)) {
+    if (
+      product.status !== 'ACTIVE' &&
+      !this.maySeeHidden(principal, product.sellerId, ownership.ownerIsDemo)
+    ) {
       throw new NotFoundException('상품을 찾을 수 없습니다.')
     }
 
@@ -1343,19 +1351,15 @@ export class ProductService {
     return principal.sellerId
   }
 
-  /**
-   * Whether this caller may see a listing that is not on sale.
-   *
-   * The owning seller, and anyone holding `product.write` at `any` — the
-   * operator. A demo administrator's `demo`-scoped write does not widen a
-   * listing, because a listing names no row for that scope to be resolved
-   * against; they still reach every hidden product they can act on by asking
-   * for it by id.
-   */
-  private maySeeHidden(principal: RequestPrincipal, sellerId: string | null): boolean {
+  /** Demo writes expose hidden rows only when their owner is a demo account. */
+  private maySeeHidden(
+    principal: RequestPrincipal,
+    sellerId: string | null,
+    ownerIsDemo = false,
+  ): boolean {
     if (sellerId !== null && principal.sellerId === sellerId) return true
-
-    return grantedScopes(principal, 'product.write').includes('any')
+    const scopes = grantedScopes(principal, 'product.write')
+    return scopes.includes('any') || (ownerIsDemo && scopes.includes('demo'))
   }
 
   /**

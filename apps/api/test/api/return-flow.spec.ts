@@ -10,6 +10,8 @@ import {
 } from '@shopping/shared'
 import { beforeEach, describe, expect, it } from 'vitest'
 
+import { PrismaService } from '../../src/prisma/prisma.service.js'
+
 import type { ReturnCompleted } from '../../src/claims/return-events.js'
 import { RETURN_REFUND_EVENTS, RETURN_RESTOCK_EVENTS } from '../../src/claims/return-events.js'
 import type { AppConfig } from '../../src/config/app-config.js'
@@ -880,4 +882,40 @@ describe('S5 — 마지막 방어선은 데이터베이스에 있다', () => {
       ),
     ).rejects.toThrow(/ReturnShipment_claimId_direction_key/u)
   })
+})
+
+describe('settled cancellations leave only the remaining items to return', () => {
+  it.each(['CANCEL_APPROVED', 'REFUNDED'] as const)(
+    'closes the order after returning the remainder of a %s cancellation',
+    async (status) => {
+      const prisma = api.resolve<PrismaService>(PrismaService)
+      const canceled = placed.items[1]!
+      await prisma.claimRequest.create({
+        data: {
+          sellerOrderId: placed.sellerOrderId,
+          requestedById: buyer.userId,
+          type: 'CANCEL',
+          status,
+          fault: 'CUSTOMER',
+          reason: '발송 전 확정된 취소',
+          items: { create: { orderItemId: canceled.id, quantity: canceled.quantity } },
+        },
+      })
+      await prisma.orderItem.update({
+        where: { id: canceled.id },
+        data: { claimedQuantity: canceled.quantity },
+      })
+      const claimId = await upToInspecting({ returnReason: 'CHANGE_OF_MIND' })
+      await inspect(claimId, true)
+      expect(
+        (await prisma.sellerOrder.findUniqueOrThrow({ where: { id: placed.sellerOrderId } }))
+          .status,
+      ).toBe('RETURNED')
+      expect(
+        await prisma.orderStatusHistory.count({
+          where: { sellerOrderId: placed.sellerOrderId, toStatus: 'RETURNED' },
+        }),
+      ).toBe(1)
+    },
+  )
 })
