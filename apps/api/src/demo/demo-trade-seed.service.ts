@@ -157,6 +157,7 @@ export class DemoTradeSeedService {
         await buildDemoClaim(tx, {
           ...trade,
           buyerId,
+          sellerUserId,
           shippingFee: store.shippingFee,
           now: context.now,
         })
