@@ -33,6 +33,8 @@ import {
   productsNarrowed,
 } from '@/lib/catalog/product-console'
 
+import { productSearch } from '@/lib/catalog/console-api'
+
 import { CATALOG_CATEGORY_ID, CATALOG_SELLER_ID, categoryTree } from './support/catalog'
 
 const BUYER_ID = '019596e0-0041-7000-8000-000000000001'
@@ -58,6 +60,14 @@ function refusal(status: number, code: string): ReturnType<typeof apiFailure> {
 }
 
 describe('상품 필터 → 질의', () => {
+  it('delivers an encoded product name to the HTTP query without changing its meaning', () => {
+    const name = '코트 & 셔츠 + 100%'
+    const query = new URLSearchParams(productSearch(productQueryOf(productFilters({ q: name }))))
+    expect(query.get('q')).toBe(name)
+    expect([...query.keys()]).toEqual(['q'])
+    expect(productSearch({})).toBe('')
+  })
+
   it('sends nothing when nothing is narrowed', () => {
     expect(productQueryOf(EMPTY_PRODUCT_FILTERS)).toEqual({})
   })

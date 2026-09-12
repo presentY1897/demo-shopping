@@ -46,6 +46,7 @@ import { getApiClient } from '@/lib/api'
 export function productSearch(query: ProductListQuery): string {
   const params = new URLSearchParams()
 
+  if (query.q !== undefined) params.set('q', query.q)
   if (query.sellerId !== undefined) params.set('sellerId', query.sellerId)
   if (query.categoryId !== undefined) params.set('categoryId', String(query.categoryId))
   if (query.status !== undefined) params.set('status', query.status)
