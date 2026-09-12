@@ -94,7 +94,7 @@ erDiagram
 | `SELLER_OWNER` | 자기 스토어의 product·order·claim·coupon·settlement |
 | `ADMIN_OPERATOR` | 전체 read + catalog/product/coupon write + claim.handle + seller.approve |
 | `ADMIN_SUPER` | 전부 (delete · settlement.pay · user.delete 포함) |
-| `DEMO_ADMIN` | `ADMIN_OPERATOR` 퍼미션 + **리소스 스코프 `demo`** |
+| `DEMO_ADMIN` | `ADMIN_OPERATOR` 퍼미션 + **리소스 스코프 `demo`**, `settlement.approve:demo` 추가(D-279) |
 
 **리소스 스코프**가 퍼미션을 보완한다. 퍼미션은 "무엇을 할 수 있나"만 답하고, "누구 것에"는 스코프가 답한다.
 
@@ -711,6 +711,10 @@ erDiagram
 
 상품 카탈로그는 공용이고 개인 데이터만 격리한다. 만료 스케줄러가 `demoExpiresAt <= now` 인 계정을
 15분마다 최대 50건씩 수거한다(TASK-0025).
+
+### 발급 시 거래 예제 (TASK0140)
+
+구매자는 주문3건(PAID/SHIPPED/DELIVERED), 판매자는 주문5건(PAID/PREPARING/SHIPPED/CONFIRMED2)과 정산2회차, 관리자는 입점 대기2건·반품 신청1건·승인 대기 정산1건을 받는다. 거래 상대는 동일 만료 시각의 보조 데모 계정이며, 원본 재고를 변경하지 않는 복제 상품을 사용한다. 카탈로그가 없는 환경에서는 거래 없이 발급을 성공시킨다. 주문·결제·카드 원장·재고·예약·배송·구매확정 적립·정산 근거는 발급 트랜잭션 안에서 함께 생성된다.
 
 ### 만료 시 무엇이 어떻게 되나
 
