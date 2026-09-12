@@ -131,7 +131,7 @@ describe('발급의 원자성', () => {
       [store?.id],
     )
 
-    expect(ledger).toHaveLength(1)
+    expect(ledger).toHaveLength(7) // Opening, demo replenishment, and five sales.
   })
 })
 
