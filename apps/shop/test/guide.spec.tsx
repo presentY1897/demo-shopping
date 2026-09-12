@@ -58,16 +58,17 @@ describe('안내가 약속하는 것', () => {
     }
   })
 
-  it('콘솔의 경로는 그 앱 안에서 로그인 문을 가리킨다 (F6)', () => {
-    const consoleSteps = guide.steps.filter((step) => step.app !== 'shop')
-
-    expect(consoleSteps.length).toBeGreaterThan(0)
-
-    // 콘솔 화면은 이 앱에 없으므로 파일로 확인할 수 없다. 대신 **로그인 뒤에 있는
-    // 화면을 바로 가리키지 않는다**를 지킨다 — 세션 없이 열면 로그인 화면으로
-    // 튕기고, 안내를 따라온 사람은 자기가 길을 잘못 든 줄 안다.
-    for (const step of consoleSteps) {
-      expect(step.path).toBe('/login')
+  it('each role starts at login and later steps return to an existing console route (F6)', () => {
+    const visited = new Set<string>()
+    expect(guide.steps.map((step) => step.app)).toEqual(['seller', 'shop', 'seller', 'admin'])
+    for (const step of guide.steps) {
+      if (!visited.has(step.app)) expect(step.path).toBe('/login')
+      const appDir = join(APP_DIR, '..', '..', '..', step.app, 'src', 'app')
+      const segments = step.path.split('/').filter(Boolean)
+      expect(existsSync(join(appDir, ...segments, 'page.tsx')), `${step.app}${step.path}`).toBe(
+        true,
+      )
+      visited.add(step.app)
     }
   })
 })
