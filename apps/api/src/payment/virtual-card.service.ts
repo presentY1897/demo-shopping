@@ -195,37 +195,46 @@ export class VirtualCardService {
    * 잠금이 그것을 직렬화하고 `VirtualCard_usedAmount_check` 가 마지막 줄로 남는다.
    */
   charge(cardId: string, amount: number, refId: string): Promise<IssuedCard> {
-    return this.prisma.$transaction(async (tx) => {
-      const card = await this.lock(tx, cardId)
+    return this.prisma.$transaction((tx) => this.chargeWithin(tx, cardId, amount, refId))
+  }
 
-      // **유효기간은 여기서 본다.** 순수 판단 모듈은 시계를 갖지 않는데(그래야 분기
-      // 100% 가 정직하다), 지난 카드로 결제되면 「가상 카드도 실물처럼 만료된다」는
-      // 약속이 아무 데서도 지켜지지 않는다. 돌려주는 쪽(`release`)은 보지 않는다 —
-      // 만료된 카드의 미결 환불도 반드시 돌아와야 한다.
-      if (card.expiresAt.getTime() <= this.clock.now().getTime()) {
-        throw new ConflictException(
-          domainFailure('CARD_EXPIRED', '유효기간이 지난 카드예요.', { field: 'cardId' }),
-        )
-      }
+  /** A demo issue may own the transaction containing its card and example payments. */
+  async chargeWithin(
+    tx: Tx,
+    cardId: string,
+    amount: number,
+    refId: string,
+    at = this.clock.now(),
+  ): Promise<IssuedCard> {
+    const card = await this.lock(tx, cardId)
 
-      const previous = await tx.virtualCardTransaction.findFirst({
-        where: { refId, kind: 'CHARGE' },
-      })
-      if (previous !== null) {
-        if (previous.cardId !== cardId || previous.amount !== amount) {
-          throw new ConflictException('같은 결제의 카드 또는 금액이 달라요.')
-        }
-        return present(await tx.virtualCard.findUniqueOrThrow({ where: { id: card.id } }))
-      }
+    // **유효기간은 여기서 본다.** 순수 판단 모듈은 시계를 갖지 않는데(그래야 분기
+    // 100% 가 정직하다), 지난 카드로 결제되면 「가상 카드도 실물처럼 만료된다」는
+    // 약속이 아무 데서도 지켜지지 않는다. 돌려주는 쪽(`release`)은 보지 않는다 —
+    // 만료된 카드의 미결 환불도 반드시 돌아와야 한다.
+    if (card.expiresAt.getTime() <= at.getTime()) {
+      throw new ConflictException(
+        domainFailure('CARD_EXPIRED', '유효기간이 지난 카드예요.', { field: 'cardId' }),
+      )
+    }
 
-      const decision = chargeDecision(card, amount)
-
-      if (decision.outcome === 'refused') {
-        throw chargeRefusal(decision.reason, decision.availableAmount)
-      }
-
-      return this.record(tx, card.id, 'CHARGE', amount, decision.usedAmount, refId)
+    const previous = await tx.virtualCardTransaction.findFirst({
+      where: { refId, kind: 'CHARGE' },
     })
+    if (previous !== null) {
+      if (previous.cardId !== cardId || previous.amount !== amount) {
+        throw new ConflictException('같은 결제의 카드 또는 금액이 달라요.')
+      }
+      return present(await tx.virtualCard.findUniqueOrThrow({ where: { id: card.id } }))
+    }
+
+    const decision = chargeDecision(card, amount)
+
+    if (decision.outcome === 'refused') {
+      throw chargeRefusal(decision.reason, decision.availableAmount)
+    }
+
+    return this.record(tx, card.id, 'CHARGE', amount, decision.usedAmount, refId, at)
   }
 
   /**
@@ -429,9 +438,8 @@ export class VirtualCardService {
     amount: number,
     usedAmount: number,
     refId: string,
+    now = this.clock.now(),
   ): Promise<IssuedCard> {
-    const now = this.clock.now()
-
     await tx.virtualCardTransaction.create({
       data: { cardId, kind, amount, balanceAfter: usedAmount, refId, createdAt: now },
     })

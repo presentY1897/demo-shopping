@@ -211,26 +211,60 @@ export class PointsService {
     const accountId = await this.accountIdFor(input.userId)
     const now = this.clock.now()
 
-    return this.prisma.$transaction(async (tx) => {
-      const account = await this.lock(tx, accountId)
-      const balance = account.balance + amount
+    return this.prisma.$transaction((tx) =>
+      this.recordEarning(tx, input, policy, accountId, amount, now),
+    )
+  }
 
-      return this.record(tx, account.id, {
-        draft: {
-          type: 'EARN',
-          amount,
-          refType: input.refType,
-          refId: input.refId,
-          reason: null,
-        },
-        balanceAfter: balance,
-        lot: {
-          expiresAt: expiryFrom(now, policy.validityDays),
-          remainingAmount: amount,
-          earnRateBp: policy.earnRateBp,
-        },
-        now,
-      })
+  /** Keeps example confirmation rewards atomic with the new demo account. */
+  async earnWithin(
+    tx: Tx,
+    input: EarnInput,
+    now = this.clock.now(),
+  ): Promise<PointLedgerEntry | null> {
+    const policy = await tx.pointPolicy.upsert({
+      where: { id: 1 },
+      create: {},
+      update: {},
+      select: POLICY_SELECT,
+    })
+    const amount = earnedAmount(input.paidAmount, policy.earnRateBp)
+    if (amount === 0) return null
+    const account = await tx.pointAccount.upsert({
+      where: { userId: input.userId },
+      create: { userId: input.userId },
+      update: {},
+      select: { id: true },
+    })
+    return this.recordEarning(tx, input, policy, account.id, amount, now)
+  }
+
+  private async recordEarning(
+    tx: Tx,
+    input: EarnInput,
+    policy: PointPolicy,
+    accountId: string,
+    amount: number,
+    now: Date,
+  ): Promise<PointLedgerEntry> {
+    const account = await this.lock(tx, accountId)
+    const balance = account.balance + amount
+
+    return this.record(tx, account.id, {
+      draft: {
+        type: 'EARN',
+        amount,
+        refType: input.refType,
+        refId: input.refId,
+        reason: null,
+      },
+      balanceAfter: balance,
+      lot: {
+        expiresAt: expiryFrom(now, policy.validityDays),
+        remainingAmount: amount,
+        earnRateBp: policy.earnRateBp,
+      },
+      now,
     })
   }
 
