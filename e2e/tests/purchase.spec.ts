@@ -57,7 +57,7 @@ async function tabAndPress(page: Page, target: Locator, key = 'Enter'): Promise<
 test('마우스 없이 데모 발급부터 주문 확인까지 간다 (F1 · TASK-0098 F2)', async ({ page }) => {
   await issueDemo(page, 'shop')
 
-  await page.goto('/search?q=코트')
+  await page.goto('/search?q=코트&inStock=true')
 
   const grid = page.getByRole('list', { name: '검색 결과 목록' })
 
