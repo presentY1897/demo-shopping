@@ -36,6 +36,7 @@ import {
 } from '../../src/search/search-indexer.service.js'
 import { SearchService } from '../../src/search/search.service.js'
 import { SearchOutboxService } from '../../src/search/search-outbox.service.js'
+import { DemoCleanupService } from '../../src/demo/demo-cleanup.service.js'
 import { PrismaService } from '../../src/prisma/prisma.service.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
@@ -245,6 +246,12 @@ describe('F1 · F2 — a change reaches the index', () => {
       .toEqual(copies.map((copy) => copy.id))
     await purchaseDiscoveredProduct(copies[0]!.id)
     await moderateDiscoveredProduct(copies[0]!.id, copies[0]!.sellerId)
+    api.clock.advance(25 * 3_600_000)
+    const report = await api.resolve<DemoCleanupService>(DemoCleanupService).sweep()
+    expect(report.failed).toBe(0)
+    await indexer().drain()
+    await settled()
+    expect(await search('', `sellerId = "${copies[0]!.sellerId}"`)).toEqual([])
   })
 
   it('indexes a listing the outbox names', async () => {

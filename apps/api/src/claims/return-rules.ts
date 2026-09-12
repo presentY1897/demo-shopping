@@ -328,6 +328,7 @@ export const returnSettledStatuses: readonly ClaimStatus[] = claimStatuses.filte
  * 돌아오는 순간이 언제나 「부분」이 된다 (`CancelLine` 과 같은 판단).
  */
 export interface ReturnLine {
+  /** Original quantity less settled cancellations. */
   readonly ordered: number
   /** 반품이 확정된 수량 ({@link RETURN_SETTLED} 인 클레임들의 합). */
   readonly returned: number

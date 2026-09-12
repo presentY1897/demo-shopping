@@ -1166,7 +1166,10 @@ export class ClaimService {
   private async returnedLines(tx: Tx, sellerOrderId: string): Promise<readonly ReturnLine[]> {
     return tx.$queryRaw<readonly ReturnedLineRow[]>`
       SELECT oi."id" AS "orderItemId",
-             oi."quantity" AS "ordered",
+             (oi."quantity" - COALESCE(sum(ci."quantity") FILTER (
+               WHERE c."type" = 'CANCEL'
+                 AND c."status"::text = ANY (${cancelSettledStatuses}::text[])
+             ), 0))::int AS "ordered",
              COALESCE(sum(ci."quantity") FILTER (
                WHERE c."type" = 'RETURN'
                  AND c."status"::text = ANY (${returnSettledStatuses}::text[])
