@@ -25,7 +25,7 @@ export default defineConfig({
    * **한 번에 하나씩 돈다.**
    *
    * 데모 계정 발급이 한 주소에서 1분에 다섯 개로 묶여 있고(`DEMO_ISSUE_LIMIT`),
-   * 시나리오 넷이 합쳐 딱 다섯 개를 받는다. 동시에 돌리면 그 다섯이 같은 몇 초에
+   * 시나리오 넷이 합쳐 일곱 개를 받는다. 발급 예산이 실제 시간 창을 기다린다. 동시에 돌리면 그 다섯이 같은 몇 초에
    * 몰려 뒤쪽이 거절당한다 — 코드가 아니라 순서 때문에 빨개지는 검사가 된다.
    *
    * 한도를 검사용으로 낮추거나 끄지 않는 이유는, 그러면 이 흐름이 실제로 열리는
@@ -44,6 +44,8 @@ export default defineConfig({
   reporter: isCi ? [['github'], ['html', { open: 'never' }]] : [['list']],
   use: {
     baseURL: APPS.shop,
+    actionTimeout: 15_000,
+    navigationTimeout: 30_000,
     // 실패한 것만 남긴다. 통과한 시나리오의 트레이스는 아무도 보지 않고 용량만 든다.
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',

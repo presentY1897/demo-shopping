@@ -15,10 +15,10 @@ const ports = resolvePorts()
 export const isCi = process.env.CI === 'true' || process.env.CI === '1'
 
 export const APPS = {
-  shop: `http://localhost:${String(ports.shop)}`,
-  seller: `http://localhost:${String(ports.seller)}`,
-  admin: `http://localhost:${String(ports.admin)}`,
-  api: `http://localhost:${String(ports.api)}/api/v1`,
+  shop: process.env.E2E_SHOP_URL ?? `http://localhost:${String(ports.shop)}`,
+  seller: process.env.E2E_SELLER_URL ?? `http://localhost:${String(ports.seller)}`,
+  admin: process.env.E2E_ADMIN_URL ?? `http://localhost:${String(ports.admin)}`,
+  api: process.env.E2E_API_URL ?? `http://localhost:${String(ports.api)}/api/v1`,
 } as const
 
 export type AppName = keyof typeof APPS
