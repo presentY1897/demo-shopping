@@ -30,7 +30,7 @@ jobs:
   e2e:
     name: e2e
     runs-on: ubuntu-latest
-    # 시나리오 넷은 14초에 돈다 (F8 예산 10분). 20분은 스택을 세우고 빌드하는 시간까지
+    # 시나리오 실행 예산은10분이다. 20분은 스택을 세우고 빌드하는 시간까지
     # 포함한 값이고, 여기에 걸리면 검사가 느려진 것이 아니라 **뭔가 멈춘 것**이다.
     timeout-minutes: 20
     services:
@@ -102,9 +102,16 @@ jobs:
       - name: Run the scenarios
         run: pnpm --filter @shopping/e2e run e2e
 
+      - name: Remove authentication from test artifacts
+        id: sanitize
+        if: always()
+        run: |
+          python3 e2e/scripts/test_sanitize_traces.py
+          python3 e2e/scripts/sanitize-traces.py e2e/test-results e2e/playwright-report
+
       # 실패한 것만 남는다 — 통과한 시나리오의 트레이스는 아무도 열지 않고 용량만 든다.
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: failure() && steps.sanitize.outcome == 'success'
         with:
           name: playwright-report
           path: |
