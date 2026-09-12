@@ -18,8 +18,8 @@ import type { SettlementActionMessages } from '@/messages'
  *
  * ## 막힌 버튼은 감추지 않는다 (F7)
  *
- * 승인·보류는 `settlement.approve`, 지급은 `settlement.pay` 이고 둘 다 최고
- * 관리자만 갖는다. 운영자와 데모 관리자에게 이 버튼들을 감추면 콘솔이 실제보다 적은
+ * 승인·보류는 `settlement.approve`, 지급은 `settlement.pay` 다. 데모 관리자는
+ * 데모 소유 정산 승인·보류만 할 수 있고 지급은 최고 관리자에게만 열린다(D-279). 운영자와 데모 관리자에게 이 버튼들을 감추면 콘솔이 실제보다 적은
  * 기능을 가진 것처럼 보이고, 무엇을 요청해야 하는지도 알 수 없다. 그래서 자리에
  * 그대로 두고 **왜 못 누르는지**를 말한다 — 회색으로 죽이는 대신 키보드가 닿는
  * 자리에 두는 것이 `GuardedButton` 의 규약이다 (TASK-0023 4장).

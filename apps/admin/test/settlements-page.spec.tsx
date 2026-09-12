@@ -390,6 +390,15 @@ describe('CSV 내보내기 (F8)', () => {
   })
 })
 
+it('allows demo administrators to submit an example settlement approval', async () => {
+  const user = await openScreen(sessionDemoAdmin)
+  await user.click(screen.getByRole('checkbox', { name: copy.list.selectPage }))
+  await user.click(screen.getByRole('button', { name: copy.bulk.approve }))
+  const dialog = await screen.findByRole('dialog')
+  await user.click(within(dialog).getByRole('button', { name: copy.bulk.confirm.confirm }))
+  await waitFor(() => expect(api.approveSettlements).toHaveBeenCalled())
+})
+
 describe('처리 자격이 없는 계정 (F7)', () => {
   /**
    * 데모 관리자는 운영자에서 파생되고(`role-permissions.ts`), 운영자에게
@@ -397,24 +406,24 @@ describe('처리 자격이 없는 계정 (F7)', () => {
    * 권한 목록의 **빈자리**가 만들고, 화면은 서버가 묻는 것과 같은 표에 물어 같은
    * 답을 받는다.
    */
-  it.each([
-    ['an operator', sessionAdminOperator],
-    ['a demo administrator', sessionDemoAdmin],
-  ])('shows %s everything and blocks the one write, with a reason', async (_name, session) => {
-    const user = await openScreen(session)
+  it.each([['an operator', sessionAdminOperator]])(
+    'shows %s everything and blocks the one write, with a reason',
+    async (_name, session) => {
+      const user = await openScreen(session)
 
-    // 목록도 총액도 내보내기도 선택도 그대로 있다. 감추면 콘솔이 실제보다 적은
-    // 기능을 가진 것처럼 보이고, 무엇을 요청해야 하는지도 알 수 없다.
-    expect(screen.getByRole('region', { name: copy.list.totals.title })).toBeVisible()
-    expect(screen.getByRole('button', { name: copy.export.label })).toBeEnabled()
+      // 목록도 총액도 내보내기도 선택도 그대로 있다. 감추면 콘솔이 실제보다 적은
+      // 기능을 가진 것처럼 보이고, 무엇을 요청해야 하는지도 알 수 없다.
+      expect(screen.getByRole('region', { name: copy.list.totals.title })).toBeVisible()
+      expect(screen.getByRole('button', { name: copy.export.label })).toBeEnabled()
 
-    await user.click(screen.getByRole('checkbox', { name: copy.list.selectPage }))
+      await user.click(screen.getByRole('checkbox', { name: copy.list.selectPage }))
 
-    const approve = screen.getByRole('button', { name: copy.bulk.approve })
+      const approve = screen.getByRole('button', { name: copy.bulk.approve })
 
-    expect(approve).toHaveAttribute('aria-disabled', 'true')
-    expect(approve).toHaveAccessibleDescription(auth.denials.missing_permission)
-  })
+      expect(approve).toHaveAttribute('aria-disabled', 'true')
+      expect(approve).toHaveAccessibleDescription(auth.denials.missing_permission)
+    },
+  )
 
   /**
    * 속성 `disabled` 였다면 졌다. 키보드가 닿지 못하는 컨트롤은 자기가 왜 막혔는지도

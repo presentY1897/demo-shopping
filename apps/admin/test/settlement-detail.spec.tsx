@@ -310,29 +310,43 @@ describe('승인 · 보류 · 지급 (F3 · F4 · F5)', () => {
   })
 })
 
+it('lets a demo administrator approve an example but keeps payout unavailable', async () => {
+  const user = await openScreen(sessionDemoAdmin)
+  await user.click(screen.getByRole('button', { name: copy.actions.labels.approve }))
+  const dialog = await screen.findByRole('dialog')
+  await user.click(
+    within(dialog).getByRole('button', { name: copy.actions.confirm.approve.confirm }),
+  )
+  await waitFor(() => expect(api.approveSettlement).toHaveBeenCalled())
+  const pay = await screen.findByRole('button', { name: copy.actions.labels.pay })
+  expect(pay).toHaveAttribute('aria-disabled', 'true')
+  await user.click(pay)
+  expect(api.paySettlement).not.toHaveBeenCalled()
+})
+
 describe('처리 자격이 없는 계정 (F7)', () => {
   /**
    * 데모 관리자는 운영자에서 파생되고(`role-permissions.ts`), 운영자에게
    * `settlement.approve` 도 `settlement.pay` 도 없다. 거절은 조건문이 아니라 권한
    * 목록의 **빈자리**가 만든다.
    */
-  it.each([
-    ['an operator', sessionAdminOperator],
-    ['a demo administrator', sessionDemoAdmin],
-  ])('shows %s the whole settlement and blocks both writes, with a reason', async (_n, session) => {
-    await openScreen(session)
+  it.each([['an operator', sessionAdminOperator]])(
+    'shows %s the whole settlement and blocks both writes, with a reason',
+    async (_n, session) => {
+      await openScreen(session)
 
-    // 계산 근거도 항목도 그대로 보인다. 볼 수 있는 자격과 처리할 수 있는 자격은
-    // 다른 것이다.
-    expect(screen.getByRole('region', { name: copy.detail.sections.calculation })).toBeVisible()
+      // 계산 근거도 항목도 그대로 보인다. 볼 수 있는 자격과 처리할 수 있는 자격은
+      // 다른 것이다.
+      expect(screen.getByRole('region', { name: copy.detail.sections.calculation })).toBeVisible()
 
-    for (const label of [copy.actions.labels.approve, copy.actions.labels.hold]) {
-      const button = screen.getByRole('button', { name: label })
+      for (const label of [copy.actions.labels.approve, copy.actions.labels.hold]) {
+        const button = screen.getByRole('button', { name: label })
 
-      expect(button).toHaveAttribute('aria-disabled', 'true')
-      expect(button).toHaveAccessibleDescription(auth.denials.missing_permission)
-    }
-  })
+        expect(button).toHaveAttribute('aria-disabled', 'true')
+        expect(button).toHaveAccessibleDescription(auth.denials.missing_permission)
+      }
+    },
+  )
 
   /** 지급 확정도 같은 자리에서 막힌다 — 그쪽은 `settlement.pay` 다 (D-058). */
   it('blocks the payment for an operator, and lets nothing through the keyboard (P4)', async () => {
