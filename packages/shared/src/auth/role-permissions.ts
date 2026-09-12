@@ -192,7 +192,11 @@ function narrowToDemo(entry: PermissionGrant): PermissionGrant {
   return isReadPermission(entry.permission) ? entry : grant(entry.permission, 'demo')
 }
 
-const DEMO_ADMIN_GRANTS: readonly PermissionGrant[] = ADMIN_OPERATOR_GRANTS.map(narrowToDemo)
+const DEMO_ADMIN_GRANTS: readonly PermissionGrant[] = [
+  ...ADMIN_OPERATOR_GRANTS.map(narrowToDemo),
+  // D-279: example settlements are actionable only within demo ownership.
+  grant('settlement.approve', 'demo'),
+]
 
 /**
  * The whole authorization table, as a code constant.
