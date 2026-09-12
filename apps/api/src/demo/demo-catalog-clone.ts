@@ -131,8 +131,9 @@ export async function cloneCatalogIntoDemoStore(
   // arrive carrying `TSHIRT-BLACK-M`.
   const skus = new Set<string>()
 
+  const copiedIds: string[] = []
   for (const source of sources) {
-    await cloneOne(tx, input, skus, {
+    const id = await cloneOne(tx, input, skus, {
       product: source,
       images: images.filter((image) => image.productId === source.id),
       options: options.filter((option) => option.productId === source.id),
@@ -140,7 +141,18 @@ export async function cloneCatalogIntoDemoStore(
       variants: variants.filter((variant) => variant.productId === source.id),
       mappings,
     })
+    copiedIds.push(id)
   }
+
+  // Commit the index request with the copy, without contacting the search engine.
+  await tx.searchOutbox.createMany({
+    data: copiedIds.map((productId) => ({
+      productId,
+      kind: 'UPSERT' as const,
+      createdAt: input.now,
+      nextAttemptAt: input.now,
+    })),
+  })
 
   return sources.length
 }
@@ -190,7 +202,7 @@ async function cloneOne(
   input: CloneInput,
   skus: Set<string>,
   source: Source,
-): Promise<void> {
+): Promise<string> {
   const { now, sellerId } = input
 
   // One statement per table rather than one nested write, which is the shape
@@ -306,7 +318,7 @@ async function cloneOne(
     }
   })
 
-  if (drafts.length === 0) return
+  if (drafts.length === 0) return product.id
 
   const created = await tx.productVariant.createManyAndReturn({
     data: drafts.map((draft) => draft.data),
@@ -347,4 +359,5 @@ async function cloneOne(
     }))
 
   if (ledger.length > 0) await tx.stockLedger.createMany({ data: ledger })
+  return product.id
 }

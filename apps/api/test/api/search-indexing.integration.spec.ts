@@ -11,6 +11,18 @@
  */
 
 import { beforeEach, describe, expect, it } from 'vitest'
+import {
+  APP_ID_HEADER,
+  createApiClient,
+  sessionResponseSchema,
+  cartResponseSchema,
+  checkoutResponseSchema,
+  orderResponseSchema,
+  paymentResponseSchema,
+  productListResponseSchema,
+  productModerationResponseSchema,
+} from '@shopping/shared'
+import { parseSetCookie } from '../support/cookie-jar.js'
 
 import type { AppConfig } from '../../src/config/app-config.js'
 import { APP_CONFIG } from '../../src/config/app-config.js'
@@ -202,6 +214,38 @@ beforeEach(async () => {
 })
 
 describe('F1 · F2 — a change reaches the index', () => {
+  it('discovers all twelve demo clones without an edit or a full rebuild', async () => {
+    for (let i = 0; i < 12; i++) await listing({ name: `검색 체험 상품 ${i}` })
+    await indexer().drain()
+    await settled()
+    const response = await fetch(`${api.baseUrl}/api/v1/auth/demo`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', [APP_ID_HEADER]: 'seller' },
+      body: JSON.stringify({ role: 'SELLER' }),
+    })
+    expect(response.status).toBe(200)
+    await response.text()
+    const copies = await db.query<{ id: string; sellerId: string }>(
+      `SELECT p.id,p."sellerId" FROM "Product" p JOIN "Seller" s ON s.id=p."sellerId"
+       JOIN "User" u ON u.id=s."userId" WHERE u."isDemo" ORDER BY p.id`,
+    )
+    expect(copies).toHaveLength(12)
+    expect(await indexer().drain()).toBe(12)
+    await expect
+      .poll(
+        async () => {
+          const r = await fetch(`${api.baseUrl}/api/v1/search?sellerIds=${copies[0]!.sellerId}`)
+          expect(r.status).toBe(200)
+          const body = (await r.json()) as { items: { id: string }[] }
+          return body.items.map((item) => item.id).sort()
+        },
+        { timeout: 10_000 },
+      )
+      .toEqual(copies.map((copy) => copy.id))
+    await purchaseDiscoveredProduct(copies[0]!.id)
+    await moderateDiscoveredProduct(copies[0]!.id, copies[0]!.sellerId)
+  })
+
   it('indexes a listing the outbox names', async () => {
     const product = await listing({ name: '리넨 블라우스' })
 
@@ -608,3 +652,115 @@ describe('F7 — the queue is observable', () => {
     expect(health.searchIndex.oldestPendingAt).not.toBeNull()
   })
 })
+
+async function demoClient(app: 'shop' | 'admin') {
+  const issued = await fetch(`${api.baseUrl}/api/v1/auth/demo`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', [APP_ID_HEADER]: app },
+    body: JSON.stringify({ role: app === 'shop' ? 'BUYER' : 'ADMIN' }),
+  })
+  expect(issued.status).toBe(200)
+  const cookie = parseSetCookie(issued.headers.getSetCookie()[0] ?? '')!
+  const refreshed = await fetch(`${api.baseUrl}/api/v1/auth/refresh`, {
+    method: 'POST',
+    headers: { [APP_ID_HEADER]: app, cookie: `${cookie.name}=${cookie.value}` },
+  })
+  expect(refreshed.status).toBe(200)
+  const session = sessionResponseSchema.parse(await refreshed.json())
+  const client = createApiClient({
+    baseUrl: api.baseUrl,
+    appId: app,
+    fetch: (input, init) =>
+      fetch(input, {
+        ...init,
+        headers: {
+          ...Object.fromEntries(new Headers(init?.headers)),
+          authorization: `Bearer ${session.accessToken}`,
+        },
+      }),
+  })
+  return { client, session }
+}
+
+/** A real demo session buys the discovered clone through the normal HTTP endpoints. */
+async function purchaseDiscoveredProduct(productId: string): Promise<void> {
+  const { client, session } = await demoClient('shop')
+  const [variant] = await db.query<{ id: string }>(
+    'SELECT id FROM "ProductVariant" WHERE "productId"=$1 AND "isActive" LIMIT 1',
+    [productId],
+  )
+  const [address] = await db.query<{ id: string }>('SELECT id FROM "Address" WHERE "userId"=$1', [
+    session.user.id,
+  ])
+  const [card] = await db.query<{ id: string }>('SELECT id FROM "VirtualCard" WHERE "userId"=$1', [
+    session.user.id,
+  ])
+  const cart = await client.request({
+    path: '/cart/items',
+    method: 'POST',
+    body: { variantId: variant!.id, quantity: 1 },
+    schema: cartResponseSchema,
+  })
+  const itemId = cart.groups
+    .flatMap((group) => group.items)
+    .find((item) => item.variantId === variant!.id)!.id
+  const { checkout } = await client.request({
+    path: '/checkouts',
+    method: 'POST',
+    body: { itemIds: [itemId] },
+    schema: checkoutResponseSchema,
+  })
+  const { order } = await client.request({
+    path: '/orders',
+    method: 'POST',
+    body: { checkoutId: checkout.id, addressId: address!.id },
+    schema: orderResponseSchema,
+  })
+  const { payment } = await client.request({
+    path: '/payments',
+    method: 'POST',
+    body: { orderId: order.id, provider: 'VIRTUAL_CARD', cardId: card!.id },
+    schema: paymentResponseSchema,
+  })
+  await client.request({
+    path: `/payments/${payment.id}/authorize`,
+    method: 'POST',
+    schema: paymentResponseSchema,
+  })
+  const captured = await client.request({
+    path: `/payments/${payment.id}/capture`,
+    method: 'POST',
+    schema: paymentResponseSchema,
+  })
+  expect(captured.payment.status).toBe('PAID')
+  const after = await client.request({ path: '/cart', schema: cartResponseSchema })
+  expect(after.groups.flatMap((group) => group.items)).toHaveLength(0)
+}
+
+async function moderateDiscoveredProduct(productId: string, sellerId: string): Promise<void> {
+  const { client } = await demoClient('admin')
+  const listed = await client.request({
+    path: `/products?sellerId=${sellerId}`,
+    schema: productListResponseSchema,
+  })
+  expect(listed.products.map((product) => product.id)).toContain(productId)
+  await client.request({
+    path: `/admin/products/${productId}/hidden`,
+    method: 'POST',
+    body: { reason: '데모 상품 검색 노출 회귀 검사' },
+    schema: productModerationResponseSchema,
+  })
+  await indexer().drain()
+  await expect
+    .poll(() => search('', `sellerId = "${sellerId}"`), { timeout: 10_000 })
+    .not.toContain(productId)
+  await client.request({
+    path: `/admin/products/${productId}/hidden`,
+    method: 'DELETE',
+    schema: productModerationResponseSchema,
+  })
+  await indexer().drain()
+  await expect
+    .poll(() => search('', `sellerId = "${sellerId}"`), { timeout: 10_000 })
+    .toContain(productId)
+}

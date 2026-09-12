@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest'
 
 import type { DemoSeedContext } from '../../src/demo/demo-seed.service.js'
 import { DemoSeedService } from '../../src/demo/demo-seed.service.js'
+import { cloneCatalogIntoDemoStore } from '../../src/demo/demo-catalog-clone.js'
+import { PrismaService } from '../../src/prisma/prisma.service.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
 import {
@@ -39,6 +41,32 @@ function issue(baseUrl: string, role: string, app: string): Promise<Response> {
 describe('발급의 원자성', () => {
   const db = useDatabase()
   const api = useApiApp({ database: db })
+
+  it('rolls back the search request together with a failed catalogue copy', async () => {
+    const owner = await createUser(db)
+    const originalSeller = await createSeller(db, { userId: owner.id })
+    const category = await createCategory(db)
+    await createProduct(db, {
+      sellerId: originalSeller.id,
+      categoryId: category.id,
+      status: 'ACTIVE',
+      minPrice: 9000,
+    })
+    const demo = await createUser(db, { isDemo: true })
+    const store = await createSeller(db, { userId: demo.id })
+    await expect(
+      api.resolve<PrismaService>(PrismaService).$transaction(async (tx) => {
+        // A variant-less source must still enqueue its copied product.
+        await cloneCatalogIntoDemoStore(tx, { sellerId: store.id, now: api.clock.now() })
+        expect(await tx.searchOutbox.count()).toBe(1)
+        throw new Error('rollback after clone')
+      }),
+    ).rejects.toThrow('rollback after clone')
+    expect(await db.query('SELECT 1 FROM "Product" WHERE "sellerId"=$1', [store.id])).toHaveLength(
+      0,
+    )
+    expect(await db.query('SELECT 1 FROM "SearchOutbox"')).toHaveLength(0)
+  })
 
   /** How many distinct transactions wrote the rows this account is made of. */
   async function writingTransactions(): Promise<number> {
