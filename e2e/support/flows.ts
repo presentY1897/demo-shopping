@@ -8,6 +8,8 @@
  */
 
 import { expect, type Page } from '@playwright/test'
+import type { Order } from '@shopping/shared'
+import { productDetailResponseSchema, orderResponseSchema } from '@shopping/shared'
 
 import { APPS } from './apps.js'
 import { chooseFromSelect } from './forms.js'
@@ -102,13 +104,38 @@ export async function publishProduct(page: Page, name: string): Promise<string> 
 }
 
 export interface PlacedOrder {
+  readonly id: string
+  readonly sellerOrders: Order['sellerOrders']
   readonly number: string
   readonly paid: number
 }
 
 /** 상세 화면에서 옵션을 고르고 담는다. */
+export async function discoverProduct(page: Page, productId: string): Promise<void> {
+  const response = await page.request.get(`${APPS.api}/products/${productId}/detail`)
+  expect(response.ok()).toBeTruthy()
+  const detail = productDetailResponseSchema.parse(await response.json())
+  const query = new URLSearchParams({ q: detail.product.name, sellerIds: detail.seller.id })
+  await expect
+    .poll(
+      async () => {
+        await page.goto(`${APPS.shop}/search?${query.toString()}`)
+        return page
+          .locator(`a[href="/products/${productId}"]`)
+          .first()
+          .waitFor({ state: 'visible', timeout: 3000 })
+          .then(() => true)
+          .catch(() => false)
+      },
+      { timeout: 30_000, intervals: [500, 1000, 2000] },
+    )
+    .toBe(true)
+  await page.locator(`a[href="/products/${productId}"]`).first().click()
+  await expect(page).toHaveURL(new RegExp(`/products/${productId}$`))
+}
+
 async function addToCart(page: Page, productId: string): Promise<void> {
-  await page.goto(`${APPS.shop}/products/${productId}`)
+  await discoverProduct(page, productId)
 
   // Counting does not wait for a streamed product panel to render.
   await expect(page.getByRole('button', { name: '장바구니 담기' })).toBeVisible()
@@ -138,6 +165,10 @@ export async function buy(page: Page, productIds: readonly string[]): Promise<Pl
   )
 
   await page.getByRole('checkbox', { name: /동의합니다/ }).click()
+  const created = page.waitForResponse(
+    (response) =>
+      response.url().endsWith('/orders') && response.request().method() === 'POST' && response.ok(),
+  )
   await page.getByRole('button', { name: '주문하기' }).click()
 
   const done = page.getByText(/주문번호 \d{8}-[0-9A-Z]{8}/)
@@ -146,7 +177,11 @@ export async function buy(page: Page, productIds: readonly string[]): Promise<Pl
 
   const number = /주문번호 (\d{8}-[0-9A-Z]{8})/.exec(await done.innerText())?.[1]
   if (number === undefined) throw new Error('완료 화면의 주문번호를 읽지 못했습니다.')
-  return { number, paid }
+  const { order } = orderResponseSchema.parse(await (await created).json())
+  expect(order.orderNumber).toBe(number)
+  await page.goto(`${APPS.shop}/cart`)
+  await expect(page.getByText('장바구니가 비어 있어요', { exact: true })).toBeVisible()
+  return { number, paid, id: order.id, sellerOrders: order.sellerOrders }
 }
 
 /**

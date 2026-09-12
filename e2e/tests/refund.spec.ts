@@ -16,6 +16,8 @@
 
 import type { Page } from '@playwright/test'
 
+import { returnWithIntervention } from '../support/return-flow.js'
+
 import { APPS } from '../support/apps.js'
 import { buy, productsOf, won } from '../support/flows.js'
 import { expect, guardStack, issueDemo, test } from '../support/fixtures.js'
@@ -47,6 +49,7 @@ test('두 상품 중 하나를 취소하면 그만큼만 돌아온다 (F3)', asy
 
   const seller = await browser.newContext()
   const buyer = await browser.newContext()
+  const admin = await browser.newContext()
 
   try {
     const sellerPage = await seller.newPage()
@@ -105,8 +108,12 @@ test('두 상품 중 하나를 취소하면 그만큼만 돌아온다 (F3)', asy
 
     expect(refunded).toBeGreaterThan(0)
     expect(refunded).toBeLessThan(order.paid)
+    expect(await available(buyerPage)).toBe(before - order.paid + refunded)
+    await returnWithIntervention(buyerPage, sellerPage, await admin.newPage(), order)
+    expect(await available(buyerPage)).toBeGreaterThan(before - order.paid + refunded)
   } finally {
     await seller.close()
     await buyer.close()
+    await admin.close()
   }
 })

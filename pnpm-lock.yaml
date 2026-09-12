@@ -351,6 +351,9 @@ importers:
       '@shopping/config':
         specifier: workspace:*
         version: link:../packages/config
+      '@shopping/shared':
+        specifier: workspace:*
+        version: link:../packages/shared
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3
