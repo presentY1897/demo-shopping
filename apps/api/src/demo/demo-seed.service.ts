@@ -10,23 +10,9 @@ import { DemoTradeSeedService } from './demo-trade-seed.service.js'
 import { demoBrandName, demoEmail, demoName, demoSlug } from './demo-identity.js'
 
 /**
- * What a freshly issued account already has in it (TASK-0024 4.7).
- *
- * A visitor handed an empty account sees "데이터 없음" on every screen, and a
- * feature nobody can see is a feature that was not demonstrated. So each persona
- * arrives with the rows its console reads.
- *
- * **The list is the shape, on purpose.** Most of what the approved task
- * described cannot be written yet — orders, coupons, points, virtual cards,
- * settlements, reviews and wishlists have no tables until M07~M13 — so the
- * seeders are a list per persona and the tasks that create those tables add an
- * entry to it. That is the retrieval mechanism the task document names, and it
- * is the reason this is a list of functions rather than one long method.
- *
- * Everything here runs **inside the caller's transaction**. A demo account whose
- * store was created but whose products were not is a half-built demonstration
- * that nothing would ever repair, and the visitor would have no way to ask for
- * another one — they are already signed in as the broken account.
+ * Initial account data followed by the bounded trade fixtures (TASK-0024/0140).
+ * Both stages share the issue transaction: an account, its helper parties and
+ * their ledger entries either become visible together or all roll back.
  */
 
 /** What a seeder is given: the account being built, and when. */
