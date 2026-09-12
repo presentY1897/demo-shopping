@@ -168,7 +168,7 @@ export function Table<Row>({
   return (
     <div
       aria-labelledby={captionId}
-      className={cx('w-full overflow-x-auto', FOCUS_RING, className)}
+      className={cx('relative w-full overflow-x-auto', FOCUS_RING, className)}
       role="region"
       // WCAG 2.1.1: a region that can only be panned by dragging cannot be
       // reached without a pointer. Focusable, the arrow keys scroll it.

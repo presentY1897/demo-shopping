@@ -27,9 +27,7 @@ import type {
 /**
  * 목록 필터가 들고 있는 것. 셋 다 `null` 이 「전체」다.
  *
- * **이름 검색이 없다.** `GET /products` 의 계약에 `q` 가 없기 때문이고
- * (`productListQuerySchema`), 없는 조건을 화면에만 만들면 서버가 무시하는 파라미터를
- * 하나 실어 보내면서 **아무것도 안 좁힌 목록을 「검색 결과」라고 부르게** 된다.
+ * 이름 검색은 `GET /products`의 q 계약을 사용한다.
  */
 export interface ProductFilters {
   /**
