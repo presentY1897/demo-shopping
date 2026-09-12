@@ -27,3 +27,5 @@
 | [TASK-0137](./TASK-0137-product-thumbnail-consistency.md) | 세 앱 상품 썸네일 표시 통합 | 진행중 | 0129 |
 | [TASK-0138](./TASK-0138-product-thumbnail-generation.md) | 상품 이미지 자동 썸네일 생성과 데이터 연결 | 진행중 | 0011 · 0033 · 0130 |
 | [TASK-0139](./TASK-0139-demo-seller-search-visibility.md) | 데모 셀러 초기 상품의 구매자 검색 노출 복구 | 초안 | 0024 · 0038 |
+| [TASK-0140](./TASK-0140-demo-transaction-fixtures.md) | 역할별 데모 거래 초기 데이터 보완 | 초안 | 0139 · 0024 |
+| [TASK-0141](./TASK-0141-cross-role-demo-e2e.md) | 세 역할이 연결되는 데모 거래 E2E 검증 | 초안 | 0139 · 0140 · 0099 |
