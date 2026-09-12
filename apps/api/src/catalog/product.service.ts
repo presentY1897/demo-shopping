@@ -34,7 +34,11 @@ import {
 
 import { accessDenied, assertResourceAccess } from '../auth/access-denied.js'
 import type { SellerRow } from '../auth/resource-ownership.js'
-import { sellerOwnership, sellerOwnershipSelect } from '../auth/resource-ownership.js'
+import {
+  sellerOwnership,
+  sellerOwnershipSelect,
+  sellerDemoOwnershipSql,
+} from '../auth/resource-ownership.js'
 import type { RequestPrincipal } from '../auth/request-principal.js'
 import type { Clock } from '../common/clock.js'
 import { CLOCK } from '../common/clock.js'
@@ -269,6 +273,7 @@ export class ProductService {
     // it. Without this a buyer's `product.read:any` would list every seller's
     // drafts — the catalogue before anybody decided to publish it.
     const hidden = this.maySeeHidden(principal, sellerId)
+    const demoOwnership = sellerDemoOwnershipSql(Prisma.sql`p."sellerId"`)
     const demoHidden = grantedScopes(principal, 'product.write').includes('demo')
     const limit = query.limit ?? PRODUCT_LIST_DEFAULT_LIMIT
     const categoryId = query.categoryId ?? null
@@ -302,10 +307,7 @@ export class ProductService {
          AND (${sellerId}::uuid IS NULL OR p."sellerId" = ${sellerId}::uuid)
          AND (${categoryId}::int IS NULL OR p."categoryId" = ${categoryId}::int)
          AND (${status}::"ProductStatus" IS NULL OR p."status" = ${status}::"ProductStatus")
-         AND (${hidden}::boolean OR p."status" = 'ACTIVE' OR (${demoHidden}::boolean AND EXISTS (
-           SELECT 1 FROM "Seller" s JOIN "User" u ON u."id" = s."userId"
-            WHERE s."id" = p."sellerId" AND u."isDemo" = true
-         )))
+         AND (${hidden}::boolean OR p."status" = 'ACTIVE' OR (${demoHidden}::boolean AND ${demoOwnership}))
          AND (${pattern}::text IS NULL OR p."name" ILIKE ${pattern}::text ESCAPE '\\')
          AND (${cursor}::uuid IS NULL OR p."id" < ${cursor}::uuid)
        ORDER BY p."id" DESC
@@ -335,10 +337,7 @@ export class ProductService {
 
     const product = await this.load(this.prisma, id)
 
-    if (
-      product.status !== 'ACTIVE' &&
-      !this.maySeeHidden(principal, product.sellerId, ownership.ownerIsDemo)
-    ) {
+    if (product.status !== 'ACTIVE' && !this.maySeeHidden(principal, product.sellerId, ownership)) {
       throw new NotFoundException('상품을 찾을 수 없습니다.')
     }
 
@@ -1355,11 +1354,14 @@ export class ProductService {
   private maySeeHidden(
     principal: RequestPrincipal,
     sellerId: string | null,
-    ownerIsDemo = false,
+    ownership?: ResourceOwnership,
   ): boolean {
     if (sellerId !== null && principal.sellerId === sellerId) return true
     const scopes = grantedScopes(principal, 'product.write')
-    return scopes.includes('any') || (ownerIsDemo && scopes.includes('demo'))
+    return (
+      scopes.includes('any') ||
+      (ownership !== undefined && authorizeResource(principal, 'product.write', ownership).allowed)
+    )
   }
 
   /**

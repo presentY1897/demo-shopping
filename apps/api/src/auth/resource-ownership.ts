@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client'
+
 import type { ResourceOwnership } from '@shopping/shared'
 
 /**
@@ -144,4 +146,12 @@ export function withinDemoGroup(owner: ResourceOwnership, account: AccountRow): 
  */
 export function accountFilterFor(group: 'ALL' | 'DEMO'): { readonly isDemo?: true } {
   return group === 'DEMO' ? { isDemo: true } : {}
+}
+
+/** A bounded SQL ownership predicate, so catalogue queries never read the flag themselves. */
+export function sellerDemoOwnershipSql(sellerId: Prisma.Sql): Prisma.Sql {
+  return Prisma.sql`EXISTS (
+    SELECT 1 FROM "Seller" scope_seller JOIN "User" scope_owner ON scope_owner."id" = scope_seller."userId"
+     WHERE scope_seller."id" = ${sellerId} AND scope_owner."isDemo" = true
+  )`
 }
