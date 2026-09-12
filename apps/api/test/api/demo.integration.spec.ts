@@ -238,6 +238,18 @@ describe('POST /auth/demo — 판매자', () => {
 
     expect(copies).toHaveLength(3)
 
+    const events = await db.query<{ productId: string; sameTransaction: boolean; dueAt: Date }>(
+      `SELECT o."productId", o.xmin = p.xmin AS "sameTransaction", o."nextAttemptAt" AT TIME ZONE 'UTC' AS "dueAt"
+         FROM "SearchOutbox" o JOIN "Product" p ON p.id=o."productId"
+        WHERE p."sellerId"=$1 AND o.kind='UPSERT' ORDER BY o."productId"`,
+      [store?.id],
+    )
+    expect(events.map((event) => event.productId)).toEqual(copies.map((copy) => copy.id).sort())
+    expect(events.every((event) => event.sameTransaction)).toBe(true)
+    expect(events.every((event) => event.dueAt.toISOString() === ISSUED_AT.toISOString())).toBe(
+      true,
+    )
+
     // F2b: the copy is a whole listing, not a name — options, values, variants,
     // their mappings and the opening balance all came with it.
     const [counts] = await db.query<{
