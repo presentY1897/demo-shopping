@@ -1471,3 +1471,7 @@ Neon 운영 DB와 Render API는 모두Singapore이다(사용자 대시보드 확
 ### TASK0137/0138 구현 (2026-09-12)
 
 사용자의 두 TASK 승인 및 한 번에 한 이미지/메모리 보호 조건에 따라 구현했다. TASK0137 브랜치는 별도 보존하고 TASK0138 브랜치에 통합했다. UI/전체API 검증과 native 프로세스·실제 공개 API 연결 검증은 통과했으며 [보고서](reviews/2026-09-12-thumbnail-generation.md)에 조건을 기록했다. 자동 생성은 기본 off, 운영 migration/R2/활성화와 기존 이미지 보완은 아직 미실행이다. 추가 승인이 필요한 상태로 되돌리지 않는다.
+
+### TASK0139 데모 셀러 검색 노출 조사 (2026-09-12)
+
+최근 유효 데모 셀러의 ACTIVE/재고 있는 상품12개가 공개 상세 HTTP200이지만 판매자 필터 검색은0건임을 읽기 전용으로 확인했다. 데모 복제 경로에 SearchOutbox UPSERT 등록이 없다. `feature/demo-seller-search-visibility` worktree에서 TASK0139 초안과 인덱스를 작성했다. 신규 생성의 트랜잭션 연결 및 기존 누락 복구를 함께 계획했으며, 구현/운영 검색 변경은 승인 전이다.
