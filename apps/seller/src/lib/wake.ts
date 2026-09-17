@@ -56,7 +56,12 @@ export async function wakeApi(
   signal: AbortSignal,
   onAttempt: WakeAttemptListener,
 ): Promise<HealthResult> {
-  const startedAt = Date.now()
+  // **`performance.now()`, not `Date.now()`.** A budget of elapsed time has to be
+  // read off a clock that only measures elapsed time. The system clock gets
+  // corrected while the loop runs — stepped back 1.7s every half minute on the
+  // machine that replayed this (TASK-0118 6.3) — and every correction would
+  // lengthen or shorten a budget counted on it.
+  const startedAt = performance.now()
   // Assigned on the first pass, before anything can read it. Declaring it
   // without a value says that: an initialiser here would be dead code standing
   // in for a state this function never has.
@@ -73,7 +78,7 @@ export async function wakeApi(
     // "not yet" quickly gets asked again rather than exhausting the policy —
     // which is what a booting instance needs (TASK-0118 4.4).
     const backoffMs = backoffFor(policy, attempt)
-    if (Date.now() - startedAt + backoffMs >= policy.budgetMs) break
+    if (performance.now() - startedAt + backoffMs >= policy.budgetMs) break
 
     await sleep(backoffMs, signal)
     if (signal.aborted) return { ok: false, endpoint: result.endpoint, reason: 'aborted' }

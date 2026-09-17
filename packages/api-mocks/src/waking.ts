@@ -97,7 +97,11 @@ export function wakesAfter(
  * attempts against a held request spend their full deadlines, three attempts
  * against an instant 502 spend about a second between them (TASK-0118 4.1).
  *
- * The clock starts on the first request, exactly as the spin-up does.
+ * The clock starts on the first request, exactly as the spin-up does — and it
+ * is the **monotonic** clock. `Date.now()` is corrected underneath a running
+ * test, and a boot timed on it ends late by however much the system clock was
+ * stepped back meanwhile: the 90 second replay came up at 103s on such a
+ * machine, where the schedule says 95 (TASK-0118 6.3).
  */
 export function sleepingInstance(
   path: MockPath,
@@ -109,7 +113,7 @@ export function sleepingInstance(
   // Not `async`: the refusal is what this helper is *for*, and it involves no
   // waiting at all — which is exactly the difference from the model it replaced.
   return http.get(path, () => {
-    readyAt ??= Date.now() + wakesAfterMs
+    readyAt ??= performance.now() + wakesAfterMs
 
     // **A transport failure, not a 502 — and the difference is the browser.**
     //
@@ -122,7 +126,7 @@ export function sleepingInstance(
     // It matters which one the double produces: a 502 body reaching the client
     // classifies as `malformed_response`, which the wake-up loop treats as final
     // and does not retry (TASK-0118 R8).
-    if (Date.now() < readyAt) return HttpResponse.error()
+    if (performance.now() < readyAt) return HttpResponse.error()
 
     return HttpResponse.json(body)
   })
@@ -147,9 +151,9 @@ export function heldRequestInstance(
   let readyAt: number | null = null
 
   return http.get(path, async () => {
-    readyAt ??= Date.now() + wakesAfterMs
+    readyAt ??= performance.now() + wakesAfterMs
 
-    const remaining = readyAt - Date.now()
+    const remaining = readyAt - performance.now()
     if (remaining > 0) await delay(remaining)
 
     return HttpResponse.json(body)

@@ -31,14 +31,16 @@ const { wake } = messagesFor()
 const MEASURED_COLD_START_MS = 90_000
 
 /**
- * What the replay itself costs, over and above the sequence it is replaying.
+ * Slack for running this at full speed — real requests through msw, real
+ * renders, `findBy` polling. **Not part of the policy.**
  *
- * The instant-refusal model turns the loop about fifteen times in ninety
- * seconds, and each turn is a real request through msw and a real React render.
- * **Not part of the policy** — it is the price of running this at full speed
- * rather than against a stubbed clock.
+ * It used to be 20 seconds, to fit a run that came up at 103s. That was not
+ * overhead. The double timed the boot on `Date.now()`, the system clock was
+ * being stepped back 1.7s every half minute underneath it, and the attempt the
+ * schedule puts at 95s was refused by a clock that had not reached 90 yet. On
+ * the monotonic clock the same run lands at 95.1s (TASK-0118 6.3).
  */
-const REPLAY_OVERHEAD_MS = 20_000
+const REPLAY_OVERHEAD_MS = 3_000
 
 const enabled = process.env.COLD_START_REPLAY === '1'
 
@@ -88,7 +90,9 @@ describe.skipIf(!enabled)('a 90 second cold start, at full speed', () => {
       // **The bound has two parts, and only the first is a claim.** Boot plus one
       // backoff ceiling is the structural worst case: an attempt refused just
       // before the instance came up sleeps a whole ceiling before the next one
-      // (TASK-0118 4.5). The rest is what this replay costs to run.
+      // (TASK-0118 4.5). With this policy the attempts fall at 87s and 95s, so
+      // the instant refusal recovers at 95 — measured 95.1s. The rest is slack
+      // for running at full speed.
       expect(milestones.ready).toBeGreaterThanOrEqual(MEASURED_COLD_START_MS)
       expect(milestones.ready).toBeLessThan(
         MEASURED_COLD_START_MS + (WAKE_POLICY.backoffMs.at(-1) ?? 0) + REPLAY_OVERHEAD_MS,

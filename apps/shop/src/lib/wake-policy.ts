@@ -32,6 +32,9 @@ export interface WakePolicy {
    * instance behind them needs a minute and a half. Counting elapsed time
    * instead means a fast failure costs the budget nothing, which is the correct
    * response to a platform that says "not yet" quickly (TASK-0118 4.3).
+   *
+   * "Wall clock" as opposed to a count — the loop reads it off the monotonic
+   * clock, so a correction to the system time cannot stretch or cut it.
    */
   readonly budgetMs: number
   /**
