@@ -15,3 +15,4 @@ Meilisearch 인덱싱과 구매자 탐색 화면을 만든다. **밀도 3단계�
 | [TASK-0044](./TASK-0044-home-brand.md) | 홈 · 브랜드관 | 완료 | 0040 |
 | [TASK-0102](./TASK-0102-seo.md) | SEO | 완료 | 0043, 0044 |
 | [TASK-0103](./TASK-0103-hangul-autocomplete.md) | 한글 자모 · 초성 자동완성 | 완료 | 0039 |
+| [TASK-0143](./TASK-0143-search-unavailable.md) | 검색 엔진에 닿지 못할 때 — 503 · 화면은 기다린다 | 완료 | 0039 · 0101 · 0118 · 0119 |
