@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M06 검색·탐색 |
-| 상태 | 초안 |
+| 상태 | 승인됨 |
 | 작성일 | 2026-09-17 |
 | 브랜치 | `feature/search-unavailable` |
 | 선행 작업 | TASK-0039, TASK-0101, TASK-0118, TASK-0119 |
@@ -197,3 +197,4 @@ Render 관문은 HTML 을 돌려준다. TASK-0119 가 `SearchEngineError.code` �
 | 날짜 | 내용 |
 | --- | --- |
 | 2026-09-17 | 최초 작성. 운영에서 관측한 검색 500 에서 출발 |
+| 2026-09-17 | 소유자 승인. 두 갈래가 공유할 계약(`SEARCH_UNAVAILABLE`)을 먼저 `@shopping/shared` 에 넣고 구현 착수 |
