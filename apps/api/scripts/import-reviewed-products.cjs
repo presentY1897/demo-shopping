@@ -58,20 +58,13 @@ async function main() {
   const target = process.env[argument('--target-url-env', 'IMPORT_TARGET_DATABASE_URL')]
   if (!target)
     throw Error('Explicit IMPORT_TARGET_DATABASE_URL is required; no implicit .env target')
-  const db = new URL(target)
+  const guard = require('./reviewed-production-guard.cjs')
   const productionPlanFile = argument('--production-plan', null)
-  if (
-    !productionPlanFile &&
-    (!['localhost', '127.0.0.1'].includes(db.hostname) ||
-      db.port !== '5582' ||
-      db.pathname !== '/shopping')
-  )
-    throw Error('Only the confirmed localhost:5582/shopping target is allowed')
+  if (!productionPlanFile) guard.assertLocalTarget(target)
   const exported = read(argument('--export', 'product-images/reviewed-products-export.json'))
   const mapped = read(argument('--asset-map', 'product-images/reviewed-assets-uploaded.json'))
   if (productionPlanFile) {
-    if (planOnly) throw Error('Production requires public asset verification')
-    require('./reviewed-production-guard.cjs').validateProductionPlan({
+    guard.validateProductionPlan({
       target,
       plan: read(productionPlanFile),
       exportBytes: readFileSync(
@@ -79,6 +72,7 @@ async function main() {
       ),
       mapped,
       apply,
+      planOnly,
     })
   }
   if (

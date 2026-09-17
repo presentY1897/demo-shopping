@@ -3,8 +3,21 @@ const { readFileSync } = require('node:fs')
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex')
 
+// Without a production plan the import may only touch the confirmed local database.
+function assertLocalTarget(target) {
+  const db = new URL(target)
+  if (
+    !['localhost', '127.0.0.1'].includes(db.hostname) ||
+    db.port !== '5582' ||
+    db.pathname !== '/shopping'
+  )
+    throw Error('Only the confirmed localhost:5582/shopping target is allowed')
+}
+
 // A production run pins its target and reviewed inputs; the local guard stays intact.
-function validateProductionPlan({ target, plan, exportBytes, mapped, apply }) {
+function validateProductionPlan({ target, plan, exportBytes, mapped, apply, planOnly }) {
+  // `--plan-only` skips the public byte check, which production may never skip.
+  if (planOnly) throw Error('Production requires public asset verification')
   const db = new URL(target)
   const base = new URL(plan.publicBaseUrl)
   if (
@@ -51,4 +64,4 @@ function validateProductionPlan({ target, plan, exportBytes, mapped, apply }) {
   }
 }
 
-module.exports = { validateProductionPlan }
+module.exports = { assertLocalTarget, validateProductionPlan }
