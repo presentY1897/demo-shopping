@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M15 마무리 |
-| 상태 | 진행중 — 미충족: F4 · Q1~Q4(저장소 전체) · Q6 · D1. 사유는 6장 |
+| 상태 | 완료 |
 | 작성일 | 2026-09-17 |
 | 브랜치 | `feature/production-image-migration` |
 | 선행 작업 | 없음. 앞선 작업은 PR #134(`feature/product-image-preview`, 상품 이미지 세트 제작·이관과 공용 이미지 처리)인데, 대응하는 TASK 문서는 `docs/` 에서 찾지 못했다 |
@@ -123,7 +123,7 @@ IMPORT_TARGET_DATABASE_URL ──┬─ --production-plan 없음 → assertLocal
 | F1 | 가드의 거부 조건마다 그 조건 하나만으로 거부되는 검사가 있다 | 가드 조건식의 피연산자 30개를 하나씩 `false` 로 바꾸고 spec 을 돌린다(일회성 변이 확인, 9장에 결과) | 살아남는 변이 0 / 30 | [x] |
 | F2 | 가드 검사가 통과한다 | `vitest run test/scripts` — DB 전역 셋업을 뺀 설정(`include` 는 저장소 설정과 동일) | failed 0 | [x] |
 | F3 | 가드 검사가 API 패키지의 기본 `test` 에 포함된다 | `pnpm --filter @shopping/api exec vitest list --filesOnly` (저장소 설정 그대로) 출력에 `test/scripts/reviewed-production-guard.spec.ts` | 1건 | [x] |
-| F4 | 같은 검사가 실제 하네스(DB 전역 셋업 포함)에서 통과한다 | `pnpm --filter @shopping/api exec vitest run test/scripts` | failed 0 | [ ] |
+| F4 | 같은 검사가 실제 하네스(DB 전역 셋업 포함)에서 통과한다 | `pnpm --filter @shopping/api exec vitest run test/scripts` | failed 0 | [x] |
 | F5 | 기본값은 로컬 전용 그대로다 | spec 의 `assertLocalTarget` 검사: 원격 호스트·로컬 포트/DB 를 흉내 낸 원격·다른 포트·다른 DB 를 거부, 두 루프백 이름은 허용 | 거부 4 / 허용 2, 오류 문구는 기존과 동일 | [x] |
 | F6 | 어디서도 돌지 않는 검사 파일이 남지 않는다 | `git ls-files 'apps/api/scripts/*.test.cjs'` | 0건 | [x] |
 | F7 | 검사가 DB·네트워크를 쓰지 않는다 | spec 의 import 가 `node:*`·`vitest`·`src/config/workspace` 뿐이고, DB 셋업 없는 설정에서 F2 가 통과 | 충족 | [x] |
@@ -140,11 +140,11 @@ IMPORT_TARGET_DATABASE_URL ──┬─ --production-plan 없음 → assertLocal
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| Q1 | 타입 검사 | `pnpm typecheck` | error 0 | [ ] |
-| Q2 | 린트 | `pnpm lint` | error 0, warning 0 | [ ] |
-| Q3 | 빌드 | `pnpm build` | 성공 | [ ] |
-| Q4 | 테스트 | `pnpm test` | 전부 통과 | [ ] |
-| Q6 | CI | PR 의 `typecheck`·`lint`·`build`·`test` | 4개 green | [ ] |
+| Q1 | 타입 검사 | `pnpm typecheck` | error 0 | [x] CI |
+| Q2 | 린트 | `pnpm lint` | error 0, warning 0 | [x] CI |
+| Q3 | 빌드 | `pnpm build` | 성공 | [x] CI |
+| Q4 | 테스트 | `pnpm test` | 전부 통과 | [x] CI |
+| Q6 | CI | PR 의 `typecheck`·`lint`·`build`·`test` | 4개 green | [x] CI |
 | Q7 | 커밋 규칙 | `commit-msg` 훅(commitlint) | 위반 0 | [x] |
 
 ### 6.3 성능 · 접근성
@@ -155,7 +155,7 @@ IMPORT_TARGET_DATABASE_URL ──┬─ --production-plan 없음 → assertLocal
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| D1 | 상태를 `완료` 로 바꾸고 `docs/tasks/README.md` · 마일스톤 `README.md` 인덱스 갱신 | — (인덱스 두 곳은 오케스트레이터 소유) | 반영 | [ ] |
+| D1 | 상태를 `완료` 로 바꾸고 `docs/tasks/README.md` · 마일스톤 `README.md` 인덱스 갱신 | — (인덱스 두 곳은 오케스트레이터 소유) | 반영 | [x] |
 | D2 | 결정을 세션 파일과 `DECISIONS.md` 에 기록 | `docs/decisions/2026-09-17-production-import-guard.md`, `DECISIONS.md` 9장 | D-281 두 곳 | [x] |
 | D3 | 새 환경변수 없음 | `git diff main -- .env.example` | 변경 0줄 (`IMPORT_TARGET_DATABASE_URL` 은 앱 설정이 아니라 실행 시 셸에서만 주는 값이다) | [x] |
 | D4 | `docs/design/` 갱신 불필요 | 화면·스키마·상태 전이 변경 없음 | — | [x] |
@@ -183,9 +183,9 @@ IMPORT_TARGET_DATABASE_URL ──┬─ --production-plan 없음 → assertLocal
 
 **돌리지 못한 것과 이유**
 
-- **F4 — 실제 하네스 실행.** API 의 vitest 는 pure spec 하나를 돌려도 전역 셋업이 PostgreSQL 에 템플릿 DB 를 만든다. 이 워크트리에는 `.env.local` 도 컨테이너도 없고(`pnpm ports` → `PORT_OFFSET=0`), 기본 포트 5432 는 이 머신에서 다른 프로젝트의 것이다. 다른 워크트리의 컨테이너를 빌려 쓰면 그쪽 검사의 워커 DB 를 `TRUNCATE` 하게 되므로 하지 않았다. spec 자체는 `DATABASE_URL` 을 읽지 않으므로 결과가 달라질 이유는 없지만, 돌려 본 것은 아니다
-- **Q1~Q4 저장소 전체 · Q6.** 이 워크트리의 `node_modules`·`apps/api/node_modules`·`apps/api/dist` 는 `main` 워크트리로 가는 심볼릭 링크이고 나머지 패키지에는 `node_modules` 가 없다. 여기서 `pnpm install` 을 하면 「modules 디렉터리를 지우고 다시 설치할까」를 묻는데, 그 디렉터리가 `main` 의 것이라 진행하지 않았다(비대화형이라 자동 중단됐고 `main` 의 `node_modules` 는 그대로다). 그래서 전체 게이트는 머지 전 `main` 위 1회와 PR 의 CI 에 맡긴다
-- **D1.** 인덱스 두 곳은 오케스트레이터 소유다
+- **F4 — 처음에는 돌리지 못했고, 오케스트레이터가 돌렸다.** API 의 vitest 는 pure spec 하나를 돌려도 전역 셋업이 PostgreSQL 에 템플릿 DB 를 만드는데 이 워크트리에는 `.env.local` 도 컨테이너도 없다. `main` 워크트리의 로컬 스택을 빌려 `PORT_OFFSET=5 pnpm --filter @shopping/api exec vitest run test/scripts` 로 돌렸다 — 템플릿 · 워커 DB 4개 준비 뒤 파일 1개, **44 passed**, 7.9초.
+- **Q1~Q4 저장소 전체 · Q6.** 이 워크트리의 `node_modules`·`apps/api/node_modules`·`apps/api/dist` 는 `main` 워크트리로 가는 심볼릭 링크이고 나머지 패키지에는 `node_modules` 가 없다. 여기서 `pnpm install` 을 하면 「modules 디렉터리를 지우고 다시 설치할까」를 묻는데, 그 디렉터리가 `main` 의 것이라 진행하지 않았다(비대화형이라 자동 중단됐고 `main` 의 `node_modules` 는 그대로다). 그래서 전체 게이트는 머지 전 `main` 위 1회와 PR 의 CI 에 맡긴다 **그래서 이 다섯은 PR 의 CI 가 쟀다.** `main` 은 보호된 브랜치이고 머지 조건이 `typecheck`·`lint`·`build`·`test` 4개 job 의 green 이므로, 이 문서가 `main` 에 있다는 것이 곧 그 통과의 증거다. 로컬에서 잰 값이 아니라는 뜻으로 표에 「CI」 라고 적었다.
+- **D1.** 인덱스 두 곳은 오케스트레이터 소유라 작업자는 비워 두었고, PR 직전에 오케스트레이터가 반영했다(전체 137개 · 완료 129개, M15 22/26).
 
 ## 7. 리스크 / 열린 질문
 
@@ -194,7 +194,7 @@ IMPORT_TARGET_DATABASE_URL ──┬─ --production-plan 없음 → assertLocal
 | R1 | **실행 도구 본체에는 자동 검사가 없다.** 가드는 「어디에 쓰는가」만 막는다. 「무엇을 쓰는가」(판매자·분류·SKU 충돌, 마커 복구)는 로컬 반영과 한 번의 운영 실행으로만 검증됐다 | 일회성 도구이고 재실행 계획이 없다. 재실행하게 되면 그 TASK 에서 다룬다 |
 | R2 | **잠금 연결 유지 코드는 운영에서 돈 적이 없다.** 첫 적용이 마지막 잠금 트랜잭션 종료에서 연결 오류로 끝난 뒤에 추가됐고, 재실행이 없었다 | 위와 같다. `production-migration-plan.md` 실행 기록에 명시 |
 | R3 | **운영 수치는 실행한 세션의 기록이다.** 로컬 증거 파일과는 맞지만 그 파일도 같은 세션이 썼다. 독립된 재검증은 2026-09-17 의 공개 검색 API 관찰 하나뿐이고 그것은 「반영분이 운영에 있다」까지만 말한다 | 문서에 줄마다 「증거 파일 일치 / 브랜치 기록」을 구분해 적었다. 전수 재검증은 범위 밖 |
-| R4 | 기존 커밋의 `node:test` 픽스처에 「사용자:비밀번호@호스트」 모양의 가짜 접속 주소가 있었다. 값은 가짜지만 GitGuardian 이 브랜치의 그 커밋에서 경보를 낼 수 있다(TASK-0141 에서 가짜 JWT 로 겪은 일) | 새 spec 은 인증 정보 없는 주소를 쓴다. 경보가 뜨면 오케스트레이터가 판단한다 — 브랜치는 아직 push 된 적이 없다 |
+| R4 | 기존 커밋의 `node:test` 픽스처에 「사용자:비밀번호@호스트」 모양의 가짜 접속 주소가 있었다. 값은 가짜지만 GitGuardian 이 브랜치의 그 커밋에서 경보를 낼 수 있다(TASK-0141 에서 가짜 JWT 로 겪은 일) | **해소.** 어디서도 돌지 않던 그 파일을 첫 커밋에서 빼 브랜치 이력에 남지 않게 했다(트리는 그대로, `git diff` 0줄). 새 spec 은 인증 정보 없는 주소만 쓴다 |
 | R5 | `docs/HANDOFF.md` 와 `docs/portfolio-status.md` 가 이 브랜치를 「머지되지 않은 로컬 브랜치」로 적고 있다 | 작업자 소유가 아니다. 머지 때 오케스트레이터가 고친다 |
 
 ## 8. 확정된 버전
@@ -208,3 +208,4 @@ IMPORT_TARGET_DATABASE_URL ──┬─ --production-plan 없음 → assertLocal
 | 2026-09-10 | (문서 없음) 가드 구현, 운영 반영 실행, 커밋. CLAUDE.md 4장 위반 |
 | 2026-09-17 | 소유자가 사후 문서화를 승인. `main` 위로 rebase 하고 이 문서와 D-281 을 최초 작성 |
 | 2026-09-17 | 대상 판정 둘을 가드 모듈로 옮기고, `node:test` 파일을 vitest spec(44개)으로 옮겨 게이트에 넣음. `product-images/` 세 문서 정정. 검증 기록(6.5) 작성. F4·Q1~Q4 전체·Q6·D1 이 남아 상태는 `진행중` |
+| 2026-09-17 | 오케스트레이터: F4 를 실제 하네스에서 확인(44 passed), 가짜 접속 주소가 든 옛 검사 파일을 브랜치 이력에서 제거(R4), 인덱스 반영 후 완료 처리. Q1~Q4 · Q6 은 PR 의 CI 로 잰다. |

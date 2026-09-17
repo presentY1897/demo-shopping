@@ -29,3 +29,4 @@
 | [TASK-0139](./TASK-0139-demo-seller-search-visibility.md) | 데모 셀러 초기 상품의 구매자 검색 노출 복구 | 완료 | 0024 · 0038 |
 | [TASK-0140](./TASK-0140-demo-transaction-fixtures.md) | 역할별 데모 거래 초기 데이터 보완 | 완료 | 0139 · 0024 |
 | [TASK-0141](./TASK-0141-cross-role-demo-e2e.md) | 세 역할이 연결되는 데모 거래 E2E 검증 | 완료 | 0139 · 0140 · 0099 |
+| [TASK-0142](./TASK-0142-production-image-import-guard.md) | 운영 상품 이미지 반영 가드와 실행 기록 (사후 문서) | 완료 | 없음 (PR #134 뒤) |
