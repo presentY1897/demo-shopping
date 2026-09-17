@@ -165,8 +165,11 @@ export {
   heldRequestInstance,
   neverAnswers,
   neverAnswersOn,
+  searchUnavailableFor,
   sleepingInstance,
   slowResponse,
+  unreachableSearchEngine,
   wakesAfter,
 } from './waking'
+export type { UnreachableSearchEngine } from './waking'
 export * from './fixtures'
