@@ -6,10 +6,10 @@
 # 갱신하며(New → Blueprint), sync 할 때 대시보드에서 바꾼 값을 이 파일 값으로
 # 덮는다. 설정을 바꾸려면 이 파일을 고치고 커밋한다.
 #
-# 절차와 롤백: README "배포" 절. 소유자가 클릭할 것: docs/OWNER-CHECKLIST.md
+# 절차와 롤백: docs/development.md "배포" 절. 소유자가 클릭할 것: docs/OWNER-CHECKLIST.md
 #
 # 위 첫 줄의 스키마는 Render 가 공개하는 공식 JSON Schema 다. 편집기(YAML
-# 확장)가 이 파일을 그것으로 검증한다. CLI 로 확인하려면 README "배포" 절 참조.
+# 확장)가 이 파일을 그것으로 검증한다. CLI 로 확인하려면 docs/development.md "배포" 절 참조.
 #
 # PostgreSQL 은 여기에 없다. Render 무료 Postgres 는 생성 30일 뒤 만료되므로
 # Neon 을 쓰기로 했고(D-060), Neon 은 Render 밖이라 DATABASE_URL 로만 연결된다.
