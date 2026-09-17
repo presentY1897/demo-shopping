@@ -7,10 +7,11 @@
 | ID | 제목 | 상태 | 선행 |
 | --- | --- | --- | --- |
 | [TASK-0008](./TASK-0008-domain-dns.md) | 도메인 확보 · DNS 구성 | 완료 | M01 |
-| [TASK-0009](./TASK-0009-backend-deploy.md) | 백엔드 배포 (API·DB·검색) | 승인됨 | M01 |
+| [TASK-0009](./TASK-0009-backend-deploy.md) | 백엔드 배포 (API·DB·검색) | 진행중 | M01 |
 | [TASK-0010](./TASK-0010-frontend-deploy.md) | 프론트 배포 (Vercel × 3) | 완료 | 0008, 0009 |
 | [TASK-0011](./TASK-0011-object-storage.md) | 오브젝트 스토리지 (R2) | 진행중 | 0009 |
 | [TASK-0012](./TASK-0012-cd-pipeline.md) | 배포 자동화 · 환경변수 관리 | 승인됨 | 0010 |
 | [TASK-0013](./TASK-0013-observability.md) | 로그 · 에러 추적 · 모니터링 | 승인됨 | 0012 |
 | [TASK-0101](./TASK-0101-cold-start.md) | 콜드 스타트 대응 · 웨이크업 UX | 완료 | 0010 |
+| [TASK-0118](./TASK-0118-cold-start-502.md) | 콜드 스타트 502 · 재시도 예산을 경과 시간으로 | 진행중 | 0101 |
 | [TASK-0119](./TASK-0119-empty-catalogue.md) | 배포 카탈로그 부트스트랩 · 빈 카탈로그 신호 | 완료 | 0037 · 0038 |

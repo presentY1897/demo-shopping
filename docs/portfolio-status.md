@@ -69,9 +69,8 @@ TASK-0009·0011은 진행중, TASK-0012·0013은 승인됨으로 남아 있다. 
 `product-images/` 의 세 문서는 운영 DB·`shopping-prod` 로 이관하지 않았다고 적고 있었지만, 2026-09-17 운영
 검색 응답에는 검수 상품과 `cdn.demo-shopping.com/thumbnails/` 썸네일이 나왔다. 이관 실행 기록이 머지되지
 않은 로컬 브랜치에만 있었기 때문이고, [TASK-0142](./tasks/M15-polish/TASK-0142-production-image-import-guard.md)가
-그 기록과 가드를 `main` 에 올려 바로잡았다. 콜드 스타트 502 대응(TASK-0118)은 아직 로컬 브랜치
-`feature/cold-start-502` 에만 있고, `main` 의 TASK-0119·0121 은 없는 문서를 참조한다. 이 문서 작업의
-범위가 아니며 [인계 문서](./HANDOFF.md)에 열린 항목으로 적었다.
+그 기록과 가드를 `main` 에 올려 바로잡았다. 콜드 스타트 502 대응(TASK-0118)도 같은 날 `main` 에 들어와
+TASK-0119·0121 의 끊긴 참조가 이어졌다. 502 창 재측정만 [인계 문서](./HANDOFF.md)에 열린 항목으로 남았다.
 
 ## 2026-09-08 검증
 
