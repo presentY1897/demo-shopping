@@ -51,8 +51,16 @@ export function ResultBrowser({ controller, messages }: ResultBrowserProps) {
   const term = query.q ?? ''
   const items = results.status === 'ready' ? results.items : []
   const facets = results.status === 'ready' ? results.facets : {}
+  // 「준비 중」 is a skeleton to the list: the rows are on their way and nothing is
+  // wrong. What tells it apart from an ordinary load is the sentence above it.
   const listState =
-    results.status === 'ready' ? (items.length === 0 ? 'empty' : 'ready') : results.status
+    results.status === 'ready'
+      ? items.length === 0
+        ? 'empty'
+        : 'ready'
+      : results.status === 'preparing'
+        ? 'loading'
+        : results.status
 
   const panel = (
     <FilterPanel
@@ -80,7 +88,9 @@ export function ResultBrowser({ controller, messages }: ResultBrowserProps) {
             <p aria-live="polite" className="text-fg-muted text-sm" role="status">
               {results.status === 'ready'
                 ? messages.totalLabel.replace('{count}', results.total.toLocaleString('ko-KR'))
-                : ''}
+                : results.status === 'preparing'
+                  ? messages.preparing
+                  : ''}
             </p>
 
             <div className="flex items-center gap-2">

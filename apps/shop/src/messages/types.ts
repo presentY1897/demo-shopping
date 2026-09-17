@@ -1700,6 +1700,12 @@ export interface SearchMessages {
   readonly titleFor: string
   /** `{count}` */
   readonly totalLabel: string
+  /**
+   * Said where the count goes while the API answers `SEARCH_UNAVAILABLE` and the
+   * screen is asking again by itself (TASK-0143 4.4). A wait, not a failure —
+   * so it lives in the same `status` region and offers no button.
+   */
+  readonly preparing: string
   /** Names the results region. */
   readonly resultsLabel: string
   readonly promptTitle: string

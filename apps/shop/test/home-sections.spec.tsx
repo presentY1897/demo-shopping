@@ -167,22 +167,25 @@ describe('상품 조회 복구', () => {
     expect(screen.getAllByRole('alert')).toHaveLength(1)
   })
 
-  it('retries failed products after health recovery', async () => {
+  // Nobody presses anything. The gate used to stop at `search: "degraded"` and
+  // put a button in its notice; it keeps asking now, and the rows re-read when
+  // it hears `ok` (TASK-0143 4.3).
+  it('re-reads failed products by itself once health reports search ready', async () => {
     testServer.server.use(
       malformedResponse(mockPaths.health, healthSearchIndexing),
       networkFailureOn('get', mockPaths.search),
     )
     renderHome()
-    const status = await screen.findByRole('status')
-    const button = within(status).getByRole('button', { name: messages.wake.retryLabel })
+    expect(await screen.findByText(messages.wake.storefrontPreparing)).toBeVisible()
     expect(screen.queryByText(home.sectionEmpty)).toBeNull()
+    expect(screen.queryByText(home.sectionFailed)).toBeNull()
     expect(screen.queryByRole('link', { name: home.moreLabel })).toBeNull()
     testServer.server.use(...healthHandlers, ...searchHandlers)
-    await userEvent.click(button)
     await waitFor(() =>
       expect(screen.getAllByRole('link', { name: home.moreLabel })).toHaveLength(2),
     )
     expect(screen.queryByText(messages.wake.storefrontPreparing)).toBeNull()
+    expect(screen.queryByRole('alert')).toBeNull()
   })
 })
 
@@ -427,9 +430,8 @@ it('does not cache an empty index while search is preparing', async () => {
     ),
   )
   renderHome()
-  const button = await screen.findByRole('button', { name: messages.wake.retryLabel })
+  expect(await screen.findByText(messages.wake.storefrontPreparing)).toBeVisible()
   expect(screen.queryByText(home.sectionEmpty)).toBeNull()
   testServer.server.use(...healthHandlers, ...searchHandlers)
-  await userEvent.click(button)
   expect(await sectionGrid(home.newTitle)).toBeVisible()
 })

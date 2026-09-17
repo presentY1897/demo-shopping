@@ -223,6 +223,7 @@ export const ko: Messages = {
     title: '검색',
     titleFor: '‘{term}’ 검색 결과',
     totalLabel: '{count}개',
+    preparing: '검색을 준비하고 있어요. 잠시만 기다려 주세요.',
     resultsLabel: '검색 결과',
     promptTitle: '무엇을 찾으세요?',
     promptBody: '상품명이나 브랜드를 입력하면 결과가 여기에 나옵니다.',
