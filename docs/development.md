@@ -1,10 +1,8 @@
-# shopping
+# 개발 · 운영 참고
 
-> 처음 보는 분을 위한 [포트폴리오 README 초안](./README.draft.md)과
-> [최신 로컬 실행 안내](./docs/getting-started.md)를 준비했습니다. 아래는 개발·운영 참고 문서입니다.
-
-취업 포트폴리오용 이커머스 서비스. 사용자 / 판매자 / 관리자 3개 역할을 지원하며,
-방문자는 데모 계정을 즉시 발급받아 전체 기능을 체험할 수 있다.
+> 프로젝트 소개는 [README](../README.md), 처음 실행하는 절차는 [로컬 실행 안내](./getting-started.md)에 있다.
+> 이 문서는 저장소에서 작업하는 사람을 위한 참고서다 — 워크트리와 포트, 로컬 인프라, 테스트 하네스,
+> 개발 워크플로, 배포와 롤백, 커밋 이력 읽는 법. 2026-09-17 까지 루트 README 였다.
 
 ## 지금 열어 볼 수 있는 것
 
@@ -18,14 +16,14 @@
 
 세 앱에는 구매·판매·운영 흐름이 구현되어 있다. 상점은 표시 밀도 3단계를 지원하고,
 Storybook에서 공통 컴포넌트를 확인할 수 있다. 같은 주문을 역할별로 보려면
-[데모 체험 안내](./docs/demo-guide.md)를 따른다. 최종 공개 점검은 진행 중이다.
+[데모 체험 안내](./demo-guide.md)를 따른다. 최종 공개 점검은 진행 중이다.
 
 > API 는 Render 무료 인스턴스라 15분 놀면 잠든다. 첫 요청이 최대 90초 걸릴 수 있다
 > (TASK-0101 이 그동안 무엇을 보여 줄지 다룬다).
 
 ## 저장소 구조
 
-`bare + worktree` 레이아웃이다. 자세한 내용은 [CLAUDE.md](./CLAUDE.md) 참조.
+`bare + worktree` 레이아웃이다. 자세한 내용은 [CLAUDE.md](../CLAUDE.md) 참조.
 
 ```
 shopping/
@@ -77,7 +75,7 @@ cp .env.example .env          # .env 는 커밋되지 않는다
 ```
 
 **복사한 뒤 `JWT_SECRET`을 생성해 설정해야 한다.** 생성 명령은
-[로컬 실행 안내](./docs/getting-started.md)에 있다. `DATABASE_URL` · `MEILI_HOST` · `API_PORT` · `CORS_ORIGINS` 는 `.env` 에 없으면
+[로컬 실행 안내](./getting-started.md)에 있다. `DATABASE_URL` · `MEILI_HOST` · `API_PORT` · `CORS_ORIGINS` 는 `.env` 에 없으면
 API 가 부팅 시 `PORT_OFFSET` 에서 계산해 채운다. 명시하면 그 값이 그대로 쓰이므로, 로컬 스택이 아닌 곳
 (Neon, 원격 검색 서버)을 가리킬 때만 주석을 풀면 된다. 실제 포트는 `pnpm ports` 로 확인할 수 있다.
 
@@ -174,7 +172,7 @@ Prisma 명령은 저장소 루트에서 실행한다. `DATABASE_URL` 은 이 워
 
 **브랜드명은 전부 가상이다.** 실제 상표를 쓰지 않는다.
 
-#### 카탈로그 이미지 — 지금은 생성된 플레이스홀더다
+#### 카탈로그 이미지 — 시드는 플레이스홀더, 검수 상품은 AI 생성 이미지
 
 시드가 만드는 이미지는 **카테고리 색으로 칠한 SVG 플레이스홀더**이지 사진이 아니다. 사진인
 척하지 않는 이유는 그것이 더 정직하고, 흐릿한 가짜는 카탈로그를 미완성이 아니라 고장 난 것으로
@@ -194,8 +192,10 @@ assets/seed-images/
 이미지는 R2 의 `seed/catalog/<내용 해시>` 로 올라가고, 같은 바이트는 한 번만 올라간다.
 R2 가 설정돼 있지 않으면 이미지 없이 진행하고 경고만 남긴다.
 
-**AI 로 생성한 이미지를 쓰게 되면 그 사실과 생성 방법을 여기에 적는다.** 감추면 신뢰를 잃고,
-밝히면 데이터 조달까지 고려한 판단으로 읽힌다 (TASK-0037 4장).
+**시드와 별개로, 검수한 상품 66개(이미지 660장)는 AI 로 생성한 콘셉트 이미지를 쓴다.** 원본은
+Git 이 아니라 R2 에 두고, 세 앱은 자동 생성된 썸네일을 쓴다. 제작 · 검수 · 복원 방법은
+[`product-images/README.md`](../product-images/README.md) 에 있다. 감추면 신뢰를 잃고, 밝히면 데이터
+조달까지 고려한 판단으로 읽힌다 (TASK-0037 4장) — 그래서 루트 README 에도 같은 사실을 적었다.
 
 ## 테스트
 
@@ -209,8 +209,8 @@ pnpm test:coverage     # 커버리지 리포트 + 임계값 (M05 부터 적용)
 
 **백엔드 테스트는 실제 PostgreSQL 에 대해 돈다.** 이 프로젝트는 불변식을 DB 가 강제하도록
 설계했으므로(부분 유니크 인덱스·CHECK·조건부 재고 갱신·행 잠금), Prisma 를 모킹하면 정확히
-그 부분만 검증에서 빠진다. 근거는 [D-207](./docs/decisions/2026-09-03-session-02.md),
-규약은 [QUALITY-GATES 6장](./docs/tasks/QUALITY-GATES.md#6-테스트-대역-규약).
+그 부분만 검증에서 빠진다. 근거는 [D-207](./decisions/2026-09-03-session-02.md),
+규약은 [QUALITY-GATES 6장](./tasks/QUALITY-GATES.md#6-테스트-대역-규약).
 
 Postgres 가 없으면 **건너뛰지 않고 실패한다.** 5초 안에 원인과 `pnpm infra:up` 을 안내한다 —
 아무것도 검증하지 않은 초록이 가장 나쁜 결과이기 때문이다.
@@ -476,7 +476,7 @@ pnpm --filter @shopping/shared build
 | `apps/api` | vitest | node | 서비스 · 가드 · 설정 |
 
 무엇을 실제로 쓰고 무엇을 대역으로 바꾸는지는
-[`docs/tasks/QUALITY-GATES.md`](./docs/tasks/QUALITY-GATES.md) 6장이 정한다.
+[`docs/tasks/QUALITY-GATES.md`](./tasks/QUALITY-GATES.md) 6장이 정한다.
 
 #### 프론트 테스트는 실 API 를 부르지 않는다
 
@@ -622,14 +622,14 @@ gh pr merge --rebase --delete-branch
 
 머지는 **rebase 만** 허용된다(squash·merge commit 은 껐다). 4개 job 이 green 이어야
 머지 버튼이 열리고, PR 브랜치는 `main` 기준 최신이어야 한다.
-자세한 내용은 [`docs/branch-protection.md`](./docs/branch-protection.md).
+자세한 내용은 [`docs/branch-protection.md`](./branch-protection.md).
 
 ## 배포
 
 > **현재 상태: 아직 배포되어 있지 않다.** `render.yaml` 은 저장소에 들어왔지만
 > Render 서비스가 아직 만들어지지 않았다. 소유자가 해야 할 클릭은
-> [`docs/OWNER-CHECKLIST.md`](./docs/OWNER-CHECKLIST.md) 에, 남은 항목은
-> [TASK-0009](./docs/tasks/M02-deployment/TASK-0009-backend-deploy.md) 6.1 표에 있다.
+> [`docs/OWNER-CHECKLIST.md`](./OWNER-CHECKLIST.md) 에, 남은 항목은
+> [TASK-0009](./tasks/M02-deployment/TASK-0009-backend-deploy.md) 6.1 표에 있다.
 
 | 대상 | 어디에 | 정의된 곳 |
 | --- | --- | --- |
@@ -819,15 +819,15 @@ PR 본문 끝에는 **저장소 안 문서로 가는 링크**가 붙는다. 예�
 
 | 알고 싶은 것 | 볼 곳 |
 | --- | --- |
-| 지금 무엇이 정해져 있나 | [`docs/decisions/DECISIONS.md`](./docs/decisions/DECISIONS.md) |
+| 지금 무엇이 정해져 있나 | [`docs/decisions/DECISIONS.md`](./decisions/DECISIONS.md) |
 | 왜 그렇게 정했나, 무엇을 버렸나 | `docs/decisions/YYYY-MM-DD-session-NN.md` |
 | 이 작업의 목적·설계·완료 기준·검증 결과 | `docs/tasks/M<NN>-*/TASK-<0000>-*.md` |
 | 무엇을 어떻게 검증했나 | 해당 PR 본문 |
-| 화면·데이터·상태 전이·금액 규칙 | [`docs/design/`](./docs/design/) |
+| 화면·데이터·상태 전이·금액 규칙 | [`docs/design/`](./design/) |
 
 즉 **커밋 하나를 이해하는 데 필요한 것은 전부 `git clone` 안에 있다.** 저장소 밖을 봐야만 알 수 있는 것은 남기지 않는다.
 
 ## 문서
 
-- 작업 계획: [`docs/tasks/`](./docs/tasks/)
-- 결정 이력: [`docs/decisions/`](./docs/decisions/)
+- 작업 계획: [`docs/tasks/`](./tasks/)
+- 결정 이력: [`docs/decisions/`](./decisions/)

@@ -142,7 +142,7 @@ gh pr view <PR> --json statusCheckRollup \
 - 위 타입 목록은 `commitlint.config.mjs` 의 `type-enum` 과 **동일해야 한다.** `commit-msg` 훅이
   이 목록으로 커밋을 거부한다. `ci` · `build` · `revert` 는 쓰지 않으며 CI 작업도 `chore` 다.
   한쪽을 고치면 반드시 다른 쪽도 고친다.
-- 커밋 훅은 `pnpm install` 이 설치한다. 훅 우회 방법은 README 의 "개발 워크플로" 절 참조.
+- 커밋 훅은 `pnpm install` 이 설치한다. 훅 우회 방법은 `docs/development.md` 의 "개발 워크플로" 절 참조.
 - **커밋·PR 에 붙는 링크는 전부 다른 사람이 열 수 있어야 한다.** 계정에 묶인
   `https://claude.ai/code/session_...` 링크는 붙이지 않는다 (D-211). 커밋 트레일러는
   `Co-Authored-By: Claude <모델> <noreply@anthropic.com>` 한 줄이고, PR 본문 끝에는 저장소
@@ -152,7 +152,7 @@ gh pr view <PR> --json statusCheckRollup \
   정리한다 — 결정은 `docs/decisions/`, 작업의 목적·설계·검증은 TASK 문서, 검증 결과는 PR 본문.
   PR 을 읽는 사람이 알아야 할 것은 본문과 `../blob/main/...` 로 닿는 곳에 전부 있어야 하고,
   `.github/pull_request_template.md` 가 그 뼈대를 준다.
-  트레일러가 무엇인지는 README 의 "커밋 이력 읽는 법" 절이 설명한다.
+  트레일러가 무엇인지는 `docs/development.md` 의 "커밋 이력 읽는 법" 절이 설명한다.
 
 ### 게이트를 돌리는 방법 — 개발 중에는 좁게, 마지막에 전체
 

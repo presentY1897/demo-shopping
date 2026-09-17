@@ -64,7 +64,7 @@ API, PostgreSQL, Meilisearch 를 배포 환경에 올리고 서로 연결한다.
 | M01 중 | Render 가입 → GitHub 연동 → `demo-shopping` 접근 허용. **여기까지만.** |
 | 이 TASK 의 PR 머지 후 | Render 대시보드에서 `New → Blueprint` → 저장소 선택 → 비밀값 입력 → 2단계로 `MEILI_HOST` 채우기 |
 
-절차는 [`docs/OWNER-CHECKLIST.md`](../../OWNER-CHECKLIST.md) 와 [README "배포"](../../../README.md#배포) 에 클릭 단위로 적혀 있다.
+절차는 [`docs/OWNER-CHECKLIST.md`](../../OWNER-CHECKLIST.md) 와 [개발 · 운영 참고 "배포"](../../development.md#배포) 에 클릭 단위로 적혀 있다.
 
 비밀값은 파일에 담을 수 없으므로 `sync: false` 로 선언해 Render 가 생성 시 묻게 한다.
 

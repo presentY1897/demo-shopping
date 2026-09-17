@@ -1,9 +1,15 @@
 # 인계 — 다음 세션이 여기서 이어받는다
 
-> **2026-09-08 포트폴리오 작업:** 최신 구현 기준 문서 초안과 미검증 항목은
-> [초안 점검표](./portfolio-status.md)를 먼저 읽는다. TASK-0099는 안내 수동 재검증으로
-> 다시 진행중이며 TASK-0100은 초안 작성 중이다. 아래 날짜별 인계 내용은 작성 당시의 기록으로,
-> 현재 상태 집계는 [TASK 인덱스](./tasks/README.md)를 따른다.
+> **2026-09-17 포트폴리오 작업:** 루트 README 를 포트폴리오 문서로 교체했고 옛 README 는
+> [개발 · 운영 참고](./development.md)가 됐다. TASK-0100 은 진행중이며 남은 일(스크린샷, 저장소 메타,
+> 신규 환경 실행, 설계 문서 전수 대조)은 [점검표](./portfolio-status.md)에 있다.
+>
+> **머지되지 않은 로컬 브랜치 둘이 있다.** `feature/cold-start-502` — TASK-0118 문서와 구현(콜드 스타트
+> 재시도를 벽시계 예산으로). `main` 의 TASK-0119·0121 이 이 문서를 참조하지만 `main` 에는 없다.
+> `feature/production-image-migration` — 운영 이미지 이관 가드와 실행 기록. `main` 의 `product-images/`
+> 문서는 아직 「운영 미이관」이라고 적는다. 살릴지 버릴지는 소유자 판단을 기다린다.
+>
+> 아래 날짜별 인계 내용은 작성 당시의 기록으로, 현재 상태 집계는 [TASK 인덱스](./tasks/README.md)를 따른다.
 
 > **지금 무엇이 열려 있는지**만 담는다. 결정은 `docs/decisions/`, 작업의 설계·검증은 TASK 문서,
 > 진척은 `docs/tasks/README.md`, 사용자가 할 일은 [`OWNER-CHECKLIST.md`](./OWNER-CHECKLIST.md) 가

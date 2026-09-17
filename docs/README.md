@@ -1,8 +1,8 @@
 # 문서 체계
 
-처음 보는 독자는 [포트폴리오 초안](../README.draft.md) → [아키텍처](./architecture.md) →
+처음 보는 독자는 [README](../README.md) → [아키텍처](./architecture.md) →
 [프론트 개발과 AI 작업 프로세스](./ai-workflow.md)를 읽고, 도메인 설계는 [기술적 의사결정](./WHY.md)을 참조한다. 직접 실행은 [실행 방법](./getting-started.md),
-체험은 [데모 안내](./demo-guide.md), 공개 전 남은 일은 [초안 점검표](./portfolio-status.md)를 따른다.
+체험은 [데모 안내](./demo-guide.md), 공개 전 남은 일은 [점검표](./portfolio-status.md)를 따른다. 저장소에서 작업하는 방법은 [개발 · 운영 참고](./development.md)에 있다.
 
 | 문서 | 목적 |
 | --- | --- |
