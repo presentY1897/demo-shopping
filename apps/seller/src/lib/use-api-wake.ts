@@ -21,11 +21,32 @@ export interface WakeState {
    */
   readonly attempt: number
   readonly elapsedMs: number
+  /**
+   * The API has answered and said search is not ready, and the loop is still
+   * asking. Only ever true under {@link WakeOptions.waitForSearch}, and only
+   * means something while `result` is `null` — once the loop returns, `result`
+   * is the word on search.
+   */
+  readonly searchPending: boolean
   /** Automatic search re-checks already spent. Equal to the budget means done. */
   readonly searchRechecks: number
   readonly searchRecheckBudget: number
   /** Starts the whole sequence again and refills the re-check budget. */
   readonly retry: () => void
+}
+
+export interface WakeOptions {
+  /**
+   * Keep asking, inside the same budget, until `search` is `"ok"` as well.
+   *
+   * **A property of the screen, not of the policy**, which is why it is not a
+   * field of {@link WakePolicy}: the policy is how long anybody waits and is the
+   * same three files in three apps, while this is whether the screen can do
+   * anything without search. The storefront cannot — its rows *are* searches —
+   * so it waits. A console can, shows search as one line of a panel, and leaves
+   * this off (TASK-0143 4.3).
+   */
+  readonly waitForSearch?: boolean
 }
 
 /**
@@ -44,11 +65,15 @@ export interface WakeState {
  * @param policy Must be a stable reference; it is an effect dependency. The
  *   default is a module constant, and specs pass their own module constant.
  */
-export function useApiWake(policy: WakePolicy = WAKE_POLICY): WakeState {
+export function useApiWake(
+  policy: WakePolicy = WAKE_POLICY,
+  { waitForSearch = false }: WakeOptions = {},
+): WakeState {
   const [run, setRun] = useState(0)
   const [attempt, setAttempt] = useState(1)
   const [result, setResult] = useState<HealthResult | null>(null)
   const [elapsedMs, setElapsedMs] = useState(0)
+  const [searchPending, setSearchPending] = useState(false)
 
   // A ref as well as state: the automatic re-check has to read the count inside
   // a timeout without making itself a dependency of the effect that owns it.
@@ -70,6 +95,7 @@ export function useApiWake(policy: WakePolicy = WAKE_POLICY): WakeState {
     setAttempt(1)
     setResult(null)
     setElapsedMs(0)
+    setSearchPending(false)
     setRun((previous) => previous + 1)
   }, [])
 
@@ -82,7 +108,16 @@ export function useApiWake(policy: WakePolicy = WAKE_POLICY): WakeState {
       setElapsedMs(performance.now() - startedAt)
     }, policy.tickMs)
 
-    void wakeApi(policy, controller.signal, setAttempt).then((outcome) => {
+    // `result` stays `null` until the loop returns, whichever way this is set:
+    // an answer in between is not the outcome, and a caller that does not wait
+    // for search must see exactly the sequence it saw before there was a choice.
+    const onSearchPending = waitForSearch
+      ? (): void => {
+          setSearchPending(true)
+        }
+      : undefined
+
+    void wakeApi(policy, controller.signal, setAttempt, onSearchPending).then((outcome) => {
       clearInterval(ticker)
       if (controller.signal.aborted) return
 
@@ -94,7 +129,7 @@ export function useApiWake(policy: WakePolicy = WAKE_POLICY): WakeState {
       controller.abort()
       clearInterval(ticker)
     }
-  }, [policy, run])
+  }, [policy, run, waitForSearch])
 
   // Wake-up detected from the outside: the network came back, or the visitor
   // returned to a tab that had given up. One request each, and only from a
@@ -125,7 +160,12 @@ export function useApiWake(policy: WakePolicy = WAKE_POLICY): WakeState {
   // R10). These re-checks are what turn "준비 중" back into a usable search
   // without the visitor doing anything — and they stop, on their own, after the
   // budget in the policy.
-  const searchNotReady = result?.ok === true && result.response.search !== 'ok'
+  //
+  // **Not for a caller that waited for search.** Its loop already spent the
+  // whole budget asking this very question, so an answer that still says "not
+  // ready" is where the asking ends: re-checks on top would be requests past
+  // the ceiling the budget exists to set (TASK-0143 R3).
+  const searchNotReady = !waitForSearch && result?.ok === true && result.response.search !== 'ok'
 
   useEffect(() => {
     if (!searchNotReady) return
@@ -161,6 +201,7 @@ export function useApiWake(policy: WakePolicy = WAKE_POLICY): WakeState {
     elapsedMs,
     result,
     retry,
+    searchPending,
     searchRecheckBudget: policy.searchRecheckDelaysMs.length,
     searchRechecks,
   }
