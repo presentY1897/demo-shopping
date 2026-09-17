@@ -497,6 +497,17 @@ export const domainErrorCodes = [
    * 읽으면 된다.
    */
   'USER_SUSPENSION_UNCHANGED',
+  /**
+   * 검색 엔진에 닿지 못했다 (TASK-0143 · D-282).
+   *
+   * 엔진은 API 와 따로 뜨는 서비스라 따로 잠들고 따로 재기동한다. 그동안의 검색은
+   * **결함이 아니라 상태**다 — 잠깐 뒤에 된다. 그래서 500 이 아니라 503 이고, 화면은
+   * 이 코드를 보면 실패를 말하는 대신 기다렸다가 다시 묻는다.
+   *
+   * 일반 코드 `SERVICE_UNAVAILABLE` 과 가르는 이유는 **기다릴 가치가 다르기** 때문이다.
+   * 그쪽은 「설정되지 않았다」(결제 · 이미지 저장소)이고 다시 물어도 같은 답이 온다.
+   */
+  'SEARCH_UNAVAILABLE',
 ] as const
 
 export type DomainErrorCode = (typeof domainErrorCodes)[number]

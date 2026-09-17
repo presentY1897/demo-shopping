@@ -3041,6 +3041,7 @@ export const ko: Messages = {
     REPORT_ALREADY_HANDLED: '이미 처리된 신고예요. 목록을 새로고침해 주세요.',
     REPORT_NOT_REMOVABLE: '상품은 지울 수 없어요. 숨김으로 처리해 주세요.',
     USER_SUSPENSION_UNCHANGED: '이미 처리된 회원이에요. 목록을 다시 읽어 주세요.',
+    SEARCH_UNAVAILABLE: '검색을 준비하고 있어요. 잠시 후 다시 시도해 주세요.',
     PRODUCT_NOT_MODERATABLE:
       '지금 상태에서는 이 상품을 내리거나 올릴 수 없어요. 목록을 새로고침해 주세요.',
     // 쿠폰 (TASK-0072). 관리자 콘솔은 플랫폼 쿠폰을 내므로 범위 거절을 만날 일이
