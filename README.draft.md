@@ -1,176 +1,155 @@
-<!--
-  README 초안 (TASK-0100). 지금의 README.md 를 대체할 후보입니다.
-
-  지금 README 는 **이 저장소에서 일하는 사람**을 위한 문서입니다 — 워크트리, 포트,
-  게이트, 마이그레이션. 이 초안은 **처음 보는 사람**을 위한 문서이고, 개발자용
-  내용은 아래쪽으로 밀거나 링크로 뺐습니다.
-
-  TASK-0100 4장이 정한 순서를 그대로 따릅니다: 위에서부터 읽다가 멈춰도 전달되게.
--->
-
 # 데모 마켓
 
-**멀티 셀러 이커머스.** 구매자 · 판매자 · 관리자 세 앱이 하나의 API 위에 있고,
-방문자는 **가입 없이 데모 계정을 받아** 세 역할을 모두 써 볼 수 있습니다.
+**세 역할의 웹 앱과 공통 UI·검증 환경을 구축한 멀티 셀러 이커머스입니다.**
+구매자·판매자·관리자 앱을 모노레포로 구성하고, AI에 작업을 위임하는 과정과
+Storybook·MSW·Playwright·CI/CD를 통한 검토 체계를 함께 만들었습니다.
+방문자는 가입 없이 데모 계정을 발급받아 구매·판매·운영 화면을 체험할 수 있습니다.
 
-| | 주소 |
+| 체험 | 주소 |
 | --- | --- |
-| 구매자 앱 | <https://shop.demo-shopping.com> |
-| 판매자 콘솔 | <https://seller.demo-shopping.com> |
-| 관리자 콘솔 | <https://admin.demo-shopping.com> |
-| 디자인 시스템 | <https://presenty1897.github.io/demo-shopping/> |
+| 구매자 | <https://shop.demo-shopping.com> |
+| 판매자 | <https://seller.demo-shopping.com> |
+| 관리자 | <https://admin.demo-shopping.com> |
+| 공통 UI · Storybook | <https://presenty1897.github.io/demo-shopping/> |
 
-> **5분 둘러보기**: <https://shop.demo-shopping.com/guide> — 세 역할을 차례로 열어
-> 한 주문이 지나가는 길을 봅니다. 각 앱의 로그인 화면에서 「데모 계정 받기」를 누르면
-> 24시간짜리 계정이 즉시 만들어집니다. 세 앱의 세션이 서로 독립이라 **탭 세 개를
-> 동시에** 열 수 있습니다.
->
-> API 는 무료 인스턴스라 15분 놀면 잠듭니다. 첫 요청이 최대 90초 걸릴 수 있고,
-> 그동안 화면은 「깨우는 중」을 보여 줍니다.
+각 앱의 로그인 화면에서 **데모 계정 받기**를 누릅니다. 세 앱은 세션이 독립이므로 탭을
+동시에 열 수 있습니다. 계정은 기본 24시간 유효하며, 가상 카드와 배송 시뮬레이터를 사용합니다.
+토스페이먼츠 연동도 테스트 환경입니다. 실제 결제·운송은 일어나지 않습니다.
 
-<!-- TODO(소유자): 스크린샷 3장. 밀도 3단계 비교가 첫 장이어야 합니다 (4장). -->
+**같은 주문을 세 역할로 보려면 판매자 계정을 먼저 만드세요.** 그 스토어의 상품을 구매한 뒤
+주문번호로 판매자 화면에서 찾습니다. [체험 순서와 확인할 결과](./docs/demo-guide.md)를 따르세요.
+API 콜드 스타트와 검색 반영에 대기가 생길 수 있습니다.
 
----
+## 한 화면을 세 가지 밀도로
 
-## 이 프로젝트의 차별점 — 표시 밀도 3단계
+상점의 표시 밀도를 바꾸면 상품 배치와 카드의 정보량이 함께 바뀝니다. 콘솔은 표준 밀도로 고정합니다.
 
-같은 화면을 **미니멀 · 표준 · 맥시멀** 세 단계로 바꿉니다. 글자 크기만 바뀌는 것이
-아니라 **한 줄에 놓이는 상품 수와 카드에 적히는 정보량이 함께** 바뀝니다.
-
-| | 미니멀 | 표준 | 맥시멀 |
+| 1440px 상점 그리드 | 미니멀 | 표준 | 맥시멀 |
 | --- | --- | --- | --- |
-| 한 줄 (1440px) | 3개 | 4개 | 6개 |
-| 카드에 보이는 것 | 이름 · 가격 | + 브랜드 · 평점 · 색상 | + 판매량 · 남은 수량 · 바로 담기 |
+| 한 줄의 상품 수 | 3개 | 4개 | 6개 |
+| 표현 의도 | 사진과 가격 중심 | 비교에 필요한 정보 | 더 많은 상품과 상세 정보 |
 
-고른 값은 다음 방문에도 유지되고, **첫 페인트 전에** 적용됩니다 — 화면이 한 번
-바뀌었다가 되돌아오지 않습니다.
+밀도 토큰·그리드 규칙은 공통 UI에 두고, 저장된 선택을 첫 페인트 전에 적용합니다.
+[밀도 규칙](./packages/ui/src/density/density.ts) · [브라우저 검증](./e2e/tests/density.spec.ts)
 
----
 
-## 핵심 기능
+## 구현 범위
 
-### 구매자
-- 검색 (오타 보정 · 자동완성 · 속성 패싯) · 카테고리 · 브랜드관
-- 옵션 조합별 재고, 장바구니, **재고를 예약하는 주문서**
-- 가상 카드 결제 + 토스페이먼츠 결제창, 쿠폰 · 적립금
-- 부분 취소 · 반품, 리뷰 · 문의, 위시리스트 · 팔로우
-
-### 판매자
-- 상품 등록 (카테고리가 요구하는 속성이 폼에 자동으로 나타남)
-- 옵션 조합별 가격 · 재고 일괄 편집, 이미지 업로드
-- 주문 확인 · 발송 처리, 취소 · 반품 처리
-- 매출 대시보드, 정산 내역
-
-### 관리자
-- 카테고리 트리 · 속성 정의 (여기서 늘리면 등록 폼과 검색 필터가 함께 바뀜)
-- 입점 심사, 상품 신고 처리, 쿠폰 발행
-- 플랫폼 대시보드, 정산, 데모 계정 정책
-
----
-
-## 기술 스택
-
-| | |
+| 역할 | 주요 기능 |
 | --- | --- |
-| 프론트 | Next.js 16 (App Router) · React 19 · Tailwind CSS 4 · TypeScript 6 |
-| 백엔드 | NestJS 12 · Prisma 7 · PostgreSQL 17 |
-| 검색 | Meilisearch |
-| 결제 | 가상 카드(자체) · 토스페이먼츠 |
-| 이미지 | Cloudflare R2 (presigned URL 직접 업로드) |
-| 검사 | Vitest · Playwright · axe-core · Lighthouse CI |
-| 배포 | Vercel (앱 3개) · Render (API · 검색) · Neon (PostgreSQL) |
+| 구매자 | 검색·속성 필터, 장바구니·재고 예약, 가상 카드·토스 테스트 결제, 쿠폰·적립금, 취소·반품, 리뷰·문의 |
+| 판매자 | 속성 정의 기반 상품 등록, 옵션별 가격·재고, 주문 확인·발송, 클레임 처리, 매출·정산 |
+| 관리자 | 카테고리·속성 관리, 입점 심사, 회원·상품·주문 조회, 쿠폰·정산, 데모 정책·정합성 확인 |
 
-무료 티어만 씁니다. 그 제약이 설계에 그대로 들어와 있습니다 — API 가 15분 뒤 잠들기
-때문에 **상점의 첫 화면은 정적으로 미리 만들어** 두고, 검색 인덱스는 재시작마다
-사라지므로 **부팅에 자동으로 다시 색인**합니다.
+## 구조
 
-<!-- TODO(소유자): 아키텍처 다이어그램. 세 앱 → API → DB/검색/스토리지. -->
-
----
-
-## 왜 그렇게 만들었나
-
-이 프로젝트에서 실제로 갈림길이었던 여섯 가지를 「문제 → 선택지 → 근거 → 결과」로
-정리했습니다.
-
-**[기술적 의사결정 →](./docs/WHY.md)**
-
-1. 왜 주문을 두 단으로 나눴나 — 돈은 한 번, 물건은 여러 번 움직인다
-2. 왜 속성을 EAV 대신 하이브리드로 했나 — 정의는 표, 값은 JSONB
-3. 왜 재고를 예약 방식으로 했나 — 결제를 마친 사람에게 「없다」고 하지 않으려고
-4. 왜 결제를 추상화했나 — 가상 카드가 진짜 결제 수단인 이유
-5. 왜 검색을 Meilisearch 로 했나 — 없는 문제를 위해 무거운 것을 들이지 않는다
-6. 부분 환불의 안분을 어떻게 풀었나 — 1원을 버리면 합계가 안 맞는다
-
----
-
-## 측정한 것
-
-숫자는 전부 CI 안에서 세운 스택을 잰 값입니다. 방법과 전후 비교는
-[성능 예산](./docs/design/performance.md)에 있습니다.
-
-| | 값 | 예산 |
-| --- | --- | --- |
-| LCP (여섯 화면) | 1.54~1.60초 | 2.5초 |
-| Cumulative Layout Shift | 0.000~0.002 | 0.1 |
-| 접근성 점수 | 1.00 | 0.9 |
-| 공통 JS (gzip) | 앱당 166KB | 200KB |
-| API p95 | 목록·상세 300ms · 검색 200ms | 동일 |
-| E2E 시나리오 넷 | 14초 | 10분 |
-
-**구매 흐름을 마우스 없이 완주합니다.** E2E 가 `Tab` 으로만 데모 발급부터 주문
-확인까지 건넙니다.
-
----
-
-## 로컬에서 실행하기
-
-```bash
-pnpm install
-pnpm infra:up          # PostgreSQL + Meilisearch (Docker)
-pnpm db:deploy         # 마이그레이션
-pnpm db:seed           # 카탈로그 시드
-pnpm search:reindex    # 검색 색인
-pnpm dev               # 세 앱 + API
+```mermaid
+flowchart LR
+  Shop[구매자 · Next.js] --> API[NestJS API]
+  Seller[판매자 · Next.js] --> API
+  Admin[관리자 · Next.js] --> API
+  API --> DB[(PostgreSQL · Prisma)]
+  API --> Search[Meilisearch]
+  DB --> Outbox[검색 Outbox · API 내부 워커]
+  Outbox --> Search
+  API --> Storage[Cloudflare R2 · 업로드 URL 발급]
+  Seller -->|발급된 URL로 직접 업로드| Storage
+  API --> Virtual[가상 카드 · 거래 원장]
+  API --> Toss[토스페이먼츠 테스트]
 ```
 
-| | 주소 |
+| 영역 | 사용 기술 |
 | --- | --- |
-| 구매자 | <http://localhost:3000> |
-| 판매자 | <http://localhost:3001> |
-| 관리자 | <http://localhost:3002> |
-| API | <http://localhost:4000/api/v1/health> |
+| 웹 | Next.js 16 · React 19 · Tailwind CSS 4 |
+| API · DB | NestJS 12 · Prisma 7 · PostgreSQL 17 |
+| 공통 | TypeScript 6 · pnpm workspace · Zod 계약·API 클라이언트 |
+| 검증 | Vitest · 실제 PostgreSQL 통합 테스트 · MSW · Playwright · axe-core · Lighthouse CI |
+| 배포 구성 | Vercel(웹) · Render(API·검색) · Neon(DB) · Cloudflare R2 |
 
-포트는 **`PORT_OFFSET` 하나**에서 파생됩니다. 워크트리를 여럿 두고 병행 작업할 때
-`.env.local` 에 오프셋만 적으면 전부 비켜 갑니다.
+API는 하나의 애플리케이션이며 도메인별 NestJS 모듈로 나눴습니다. 검색은 DB 변경과 같은
+트랜잭션에 Outbox를 기록한 뒤 비동기로 반영합니다. 검색 엔진에 장애가 나도 상품 저장과
+검색 동기화를 분리할 수 있습니다. [상세 구조와 경계](./docs/architecture.md)
 
-<details>
-<summary>필요한 것</summary>
+## 프론트엔드 개발 기반
 
-- Node.js 24 · pnpm 9.15
-- Docker (PostgreSQL · Meilisearch)
-- Google OAuth · 토스페이먼츠 · R2 는 **없어도 됩니다** — 데모 계정 로그인과 가상 카드
-  결제는 그것 없이 동작합니다.
+| 주제 | 구성과 목적 | 근거 |
+| --- | --- | --- |
+| 세 앱과 공통 패키지 | shop·seller·admin은 독립 앱으로, UI·API 계약·설정은 공통 패키지로 구성 | [워크스페이스](./pnpm-workspace.yaml), [공통 UI](./packages/ui), [API 계약](./packages/shared) |
+| 컴포넌트 개발·검토 | Storybook에서 상태·밀도별 UI를 확인하고, 스토리 접근성 검사를 테스트에 연결 | [스토리](./packages/ui/stories), [접근성 검사](./packages/ui/test/story-a11y.spec.tsx) |
+| API 모킹 환경 | MSW로 화면 테스트의 API 상태를 구성하고, 처리되지 않은 요청은 실패로 검출 | [MSW 하네스](./packages/api-mocks/src/node.ts) |
+| 연결된 동작 검증 | 실제 API·DB 통합 테스트와 Playwright E2E로 구매·판매·부분 취소 등을 확인 | [API 테스트](./apps/api/test), [E2E](./e2e/tests) |
+| 지속적인 검사·배포 | CI에서 타입·lint·빌드·테스트 검사, 관련 main 변경 시 Storybook 배포 | [CI](./.github/workflows/ci.yml), [Storybook 배포](./.github/workflows/storybook.yml) |
 
-</details>
+Storybook은 컴포넌트를 직접 검토하는 화면이고, CI는 코드로 정의한 조건을 자동 검사합니다.
+Playwright E2E는 로컬·CI에서 실행한 서비스가 대상이며, 실제 배포 서비스의 동작 검증과 구분합니다.
 
----
+## AI를 활용한 작업 구조화
 
-## 문서
+설계·구현·테스트·검토에 AI를 활용했습니다. TASK에 범위·선행 조건·완료 기준을 작성하고,
+사용자가 검토·승인한 작업을 worktree별로 위임했습니다. 조정 역할은 공통 파일 소유권과
+브랜치 통합을 맡고, 작업자는 담당 범위의 구현과 검사를 수행하도록 나눴습니다.
 
-이 저장소는 **문서를 먼저 쓰고 코드를 씁니다.** 100개의 작업 문서가 각각 완료 기준과
-그 근거를 담고 있고, 코드의 주석은 「무엇을」이 아니라 「왜」를 적습니다.
+**작업별 검사 통과가 전체 기능 완성을 뜻하지는 않았습니다.** 병행 구현 후 통합 검토에서
+홈과 팔로우 기능 사이의 누락을 발견했고, 원래 TASK의 완료 기준을 통합 후 다시 대조하도록
+규칙을 보완했습니다. 역할 분담·위임 절차·실패 사례는 [AI 작업 프로세스](./docs/ai-workflow.md)에 있습니다.
 
-| | |
+거래를 뒷받침하는 주문 분리·재고 예약·결제 복구·할인액 안분과 환불 계산은
+[도메인 의사결정](./docs/WHY.md)에 정리했습니다.
+
+## 검증과 측정
+
+CI에서 구성한 스택의 공개 화면 6개를 측정했습니다. 측정 방식별 결과와 개선 전후는
+[성능 문서](./docs/design/performance.md)에서 확인할 수 있습니다.
+
+| 지표 | 기록된 결과 | 조건·의미 |
+| --- | --- | --- |
+| LCP | 1.54~1.60초 | 공개 화면 6개, DevTools throttling, 3회 중앙값 |
+| LCP | 3.01~3.16초 | 같은 문서의 Lantern 시뮬레이션 결과. CI 상한은 3.4초 |
+| 홈·검색 CLS | 0.223→0.000 / 0.366→0.000 | 늦게 나타나는 영역의 공간 확보 전후 |
+| Lighthouse 접근성 | 0.96~1.00 | 공개 화면 측정 기록. 모든 화면·보조기기 검증을 뜻하지 않음 |
+| 공통 JS gzip | 앱별 166.0~166.4KB | 모든 경로가 공유하는 청크. 개별 페이지 전체 JS 크기가 아님 |
+
+API 성능 예산은 목록·상세 p95 300ms, 검색 p95 200ms입니다.
+실제 DB를 사용하는 성능 테스트에서 시간과 쿼리 수를 검사합니다.
+
+백엔드는 실제 DB의 제약·잠금·동시 요청을, 프론트는 공통 계약 기반 MSW 테스트로 검증합니다.
+[구매·판매자·부분 취소·밀도 전환 E2E](./e2e/tests)도 구성했습니다. 키보드 조작 등 상세 검증 범위는
+[검증 기록](./docs/portfolio-status.md)에 정리했습니다.
+
+## 로컬 실행
+
+Node.js 24, pnpm 9.15, Docker Compose가 필요합니다. 저장소를 클론한 루트에서 실행합니다.
+
+```bash
+pnpm install --frozen-lockfile
+cp .env.example .env
+node -e 'const fs = require("node:fs"); const crypto = require("node:crypto"); fs.appendFileSync(".env", "\nJWT_SECRET=" + crypto.randomBytes(48).toString("base64") + "\n")'
+pnpm infra:up
+pnpm db:deploy
+pnpm db:seed
+pnpm search:reindex
+pnpm dev
+```
+
+새 환경에서 한 번 설정하는 절차입니다. 기존 `.env`가 있으면 덮어쓰지 말고
+[실행 안내](./docs/getting-started.md)를 따릅니다. Google OAuth·토스·R2 키 없이도 데모 발급과
+가상 카드 결제를 사용할 수 있습니다. 이미지 업로드와 외부 연동은 각각의 설정이 필요합니다.
+
+기본 주소는 구매자 `localhost:3000`, 판매자 `localhost:3001`, 관리자 `localhost:3002`,
+API `localhost:4000/api/v1/health`입니다. 포트 변경은 [실행 안내](./docs/getting-started.md)를 따릅니다.
+
+## 범위와 문서
+
+교환·실제 운송·실결제는 제공하지 않습니다. 구매자 클레임 진행 알림과 판매자 신규 리뷰 알림은
+미구현이며, 외부 환불 성공 후 내부 기록 실패의 복구 보장은 추가 검증이 필요합니다.
+[알려진 제한과 공개 전 점검](./docs/portfolio-status.md)
+
+| 문서 | 내용 |
 | --- | --- |
-| [결정 이력](./docs/decisions/DECISIONS.md) | 프로젝트 전체의 판단을 한 줄씩 |
-| [기술적 의사결정](./docs/WHY.md) | 그중 여섯 가지를 길게 |
-| [ERD](./docs/design/erd.md) | 표와 제약, 그리고 각 제약의 이유 |
-| [화면 설계](./docs/design/pages.md) | 세 앱의 라우트와 밀도 규약 |
-| [금액 계산](./docs/design/pricing.md) | 할인 안분과 환불 규칙 |
-| [상태 기계](./docs/design/state-machines.md) | 주문 · 클레임 · 정산의 상태 전이 |
-| [권한 매트릭스](./docs/design/permission-matrix.md) | 역할 × 권한 × 범위 |
-| [성능 예산](./docs/design/performance.md) | 무엇을 어떻게 쟀나 |
-| [TASK 인덱스](./docs/tasks/README.md) | 100개 작업의 상태 |
-| [품질 게이트](./docs/tasks/QUALITY-GATES.md) | 모든 작업이 통과해야 하는 것 |
-| [개발 규약](./CLAUDE.md) | 워크트리 · 브랜치 · 커밋 · 마이그레이션 |
+| [AI 작업 프로세스](./docs/ai-workflow.md) | 작업 분해·위임·검증·통합과 실패 사례 |
+| [도메인 의사결정](./docs/WHY.md) | 여섯 가지 설계와 코드·테스트 근거 |
+| [아키텍처](./docs/architecture.md) | 앱·데이터·외부 시스템 경계 |
+| [실행 방법](./docs/getting-started.md) | 필수 환경 설정, 실행과 검사 |
+| [체험 안내](./docs/demo-guide.md) | 같은 거래를 역할별로 확인하는 순서 |
+| [데이터 모델](./docs/design/erd.md) · [상태 전이](./docs/design/state-machines.md) · [할인액 안분과 환불 계산](./docs/design/pricing.md) | 도메인 설계 |
+| [작업 인덱스](./docs/tasks/README.md) · [결정 이력](./docs/decisions/DECISIONS.md) | 진행 상태와 판단 기록 |

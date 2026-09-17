@@ -1,5 +1,8 @@
 # shopping
 
+> 처음 보는 분을 위한 [포트폴리오 README 초안](./README.draft.md)과
+> [최신 로컬 실행 안내](./docs/getting-started.md)를 준비했습니다. 아래는 개발·운영 참고 문서입니다.
+
 취업 포트폴리오용 이커머스 서비스. 사용자 / 판매자 / 관리자 3개 역할을 지원하며,
 방문자는 데모 계정을 즉시 발급받아 전체 기능을 체험할 수 있다.
 
@@ -13,8 +16,9 @@
 | 관리자 콘솔 | <https://admin.demo-shopping.com> |
 | API 헬스체크 | <https://api.demo-shopping.com/api/v1/health> |
 
-세 앱은 아직 화면을 채우는 중이다. **디자인 시스템은 컴포넌트를 밀도 3단계로 토글하며
-볼 수 있다** — 이 프로젝트가 무엇을 어떤 기준으로 만들고 있는지 가장 빨리 확인할 수 있는 곳이다.
+세 앱에는 구매·판매·운영 흐름이 구현되어 있다. 상점은 표시 밀도 3단계를 지원하고,
+Storybook에서 공통 컴포넌트를 확인할 수 있다. 같은 주문을 역할별로 보려면
+[데모 체험 안내](./docs/demo-guide.md)를 따른다. 최종 공개 점검은 진행 중이다.
 
 > API 는 Render 무료 인스턴스라 15분 놀면 잠든다. 첫 요청이 최대 90초 걸릴 수 있다
 > (TASK-0101 이 그동안 무엇을 보여 줄지 다룬다).
@@ -72,7 +76,8 @@ PostgreSQL 과 Meilisearch 를 Docker 로 띄운다. `docker compose` 를 직접
 cp .env.example .env          # .env 는 커밋되지 않는다
 ```
 
-**복사한 뒤 고칠 것은 없다.** `DATABASE_URL` · `MEILI_HOST` · `API_PORT` · `CORS_ORIGINS` 는 `.env` 에 없으면
+**복사한 뒤 `JWT_SECRET`을 생성해 설정해야 한다.** 생성 명령은
+[로컬 실행 안내](./docs/getting-started.md)에 있다. `DATABASE_URL` · `MEILI_HOST` · `API_PORT` · `CORS_ORIGINS` 는 `.env` 에 없으면
 API 가 부팅 시 `PORT_OFFSET` 에서 계산해 채운다. 명시하면 그 값이 그대로 쓰이므로, 로컬 스택이 아닌 곳
 (Neon, 원격 검색 서버)을 가리킬 때만 주석을 풀면 된다. 실제 포트는 `pnpm ports` 로 확인할 수 있다.
 
@@ -244,7 +249,7 @@ it('...', async () => {
 | --- | --- | --- |
 | `useDatabase()` | `apps/api/test/support/database.ts` | 워커 DB 풀, `query` · `one` · `execute` · `withConnection`, 테스트마다 TRUNCATE |
 | `useApiApp()` | `apps/api/test/support/api-app.ts` | `main.ts` 와 **같은** `configureApp` 으로 앱을 띄우고 실제 소켓에 바인딩. `client` 는 프론트가 쓰는 `createApiClient` |
-| `useApiApp({ authenticate: true })` · `api.clientAs(caller)` | `apps/api/test/support/principal.ts` | 헤더로 호출자를 지정한다. 인증이 아직 없어(TASK-0021·0022) 이것 없이는 모든 보호 엔드포인트가 401 이라 **게이트 A3(403)을 관측할 수 없다** |
+| `useApiApp({ authenticate: true })` · `api.clientAs(caller)` | `apps/api/test/support/principal.ts` | 헤더로 테스트 호출자를 지정해 권한·소유 범위를 검사한다. 실제 JWT·refresh 인증은 별도의 세션 테스트로 검증한다 |
 | `useApiApp({ prisma })` | `apps/api/test/support/api-app.ts` | 앱이 쓸 Prisma 클라이언트를 교체한다. 용도는 **쿼리 로깅 하나** — 게이트 A5(N+1 없음)를 코드 읽기가 아니라 **문장 수 측정**으로 확인한다. 모킹이 아니라 같은 클래스·같은 워커 DB 다 |
 | `concurrently(n, fn)` · `barrier(n)` | `apps/api/test/support/concurrently.ts` | 동시 호출과 결정적 인터리빙 |
 | `fixedClock(iso)` | `apps/api/test/support/clock.ts` | `CLOCK` 포트에 바인딩되는 고정 시각 |
