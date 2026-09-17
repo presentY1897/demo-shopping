@@ -1,6 +1,15 @@
 # 운영 반영 절차
 
-개발 반영 대상은 R2 shopping-dev와 로컬 localhost:5582/shopping이다. localhost:3015는 별도 shopping_image_preview DB의 미리보기 화면이다. 운영 실행 결과는 아래 실행 기록을 확인한다.
+반영 대상은 두 벌이고 서로 섞지 않는다.
+
+| | 이미지 | DB | 상태 |
+| --- | --- | --- | --- |
+| 개발 | R2 `shopping-dev` (r2.dev 공개 주소) | 로컬 `localhost:5582/shopping` | 2026-09-10 반영. [catalog-production.md](catalog-production.md) |
+| 운영 | R2 `shopping-prod` (`https://cdn.demo-shopping.com`) | 운영 Neon DB | 2026-09-10 반영. 아래 실행 기록 |
+
+`localhost:3015`는 별도 `shopping_image_preview` DB의 미리보기 화면이고 위 두 벌 어느 쪽도 아니다.
+
+1~5장은 실행 전에 세운 절차이고, 그 아래가 실제로 쓴 도구와 실행 기록이다. 실행 도구의 가드와 이 문서의 사후 정리는 [TASK-0142](../docs/tasks/M15-polish/TASK-0142-production-image-import-guard.md)가 소유한다. **운영 반영은 끝났고 다시 실행할 계획은 없다.**
 
 ## 1. 운영 대상과 계정 매핑 확정
 
@@ -32,16 +41,34 @@ DB 도구에는 `IMPORT_TARGET_DATABASE_URL`을 비밀 환경변수로 전달하
 
 운영 계획 파일의 필드는 `version: 1`, `databaseHost`, `databasePath`, `bucket`, `publicBaseUrl`, `exportSha256`, `assetCount`이다. 쓰기 전에는 `backupVerified`, `backupFile`, `backupSha256`, `dryRunVerified`, `dryRunFile`, `dryRunSha256`도 필요하다. 백업은 운영 PostgreSQL과 호환되는 pg_dump로 만들고 pg_restore로 전체 아카이브를 읽어 검증한다. 실행 가드는 백업 서명과 SHA, dry-run 결과의 SHA 및 검증 완료 수를 재확인한다. 비밀 설정·백업·실행 계획·행 해시·생성된 운영 맵은 커밋하지 않는다.
 
+가드는 운영 DB 호스트를 코드에 적어 두지 않는다. 계획 파일의 `databaseHost`·`databasePath`와 환경변수의 접속 주소가 일치하는지, 그 호스트가 `*.neon.tech`인지, `sslmode`가 `require` 또는 `verify-full`인지를 본다. 버킷(`shopping-prod`)과 공개 주소(`https://cdn.demo-shopping.com/`)는 코드에 고정돼 있다. `--production-plan`이 없으면 `localhost:5582/shopping` 이외의 주소를 거부하는 기본값은 그대로다. 거부 조건 하나하나는 `apps/api/test/scripts/reviewed-production-guard.spec.ts`가 DB·네트워크 없이 검사하고, 이 검사는 `pnpm --filter @shopping/api test`에 포함된다.
+
 운영 전용 Prisma 클라이언트는 상품 하나의 원격 트랜잭션에 60초를 허용한다. 일반 API의 트랜잭션 기본값에는 영향을 주지 않는다. 전역 이관 잠금과 상품별 prepared/complete 마커를 함께 사용하므로, 재개 시 같은 입력과 맵을 유지해야 한다. 도메인 쓰기가 다른 연결에서 실행되는 동안 잠금 트랜잭션이 유휴 상태가 되므로, 상품마다 잠금 연결을 조회해 유지하고 연결 상실 시 다음 상품 쓰기를 중단한다.
 
 ## 2026-09-10 실행 기록
 
-- 운영 판매자 8곳의 브랜드명·slug·활성 상태·소유자 상태 검증 완료.
-- 반영 전 상품 800개, 카테고리 40개. 신규 상품 66개·변형 151개·카테고리 8개 계획. 기존 SKU 충돌과 누락 마이그레이션 없음.
-- 운영 버킷 `shopping-prod`, 공개 주소 `https://cdn.demo-shopping.com`. 기존 객체의 S3 GET과 공개 GET 해시 일치로 연결 확인.
-- 검수 이미지 660장 업로드 및 공개 SHA 검증 완료. 운영 DB 백업 생성과 아카이브 전체 읽기 검증 완료.
-- 운영 DB dry-run 통과 후 상품 66개·변형 151개·카테고리 8개 추가 완료. 상품 총 866개, 변형 3,746개, 카테고리 48개.
-- 기존 User·Seller·Product·ProductVariant·ProductImage·ProductOption·ProductOptionValue·Category·Order 행의 해시가 모두 반영 전과 일치.
-- 공개 상세 API 66개에서 이름·이미지 순서·변형 수·옵션별 갤러리 검증 완료. 검색 인덱스에 66개 모두 존재하며 search outbox 대기 0, DB 상태 정상.
-- 운영 코트 상세 페이지에서 기본·네이비·헤링본 갤러리와 모바일 화면 확인 완료.
-- 첫 실행은 66개 개별 트랜잭션과 complete 마커 기록 후 마지막 잠금 트랜잭션 종료에서 연결 오류가 발생했다. 운영의 idle_in_transaction_session_timeout은 5분이었다. 읽기 전용으로 완료 마커 66개의 입력 해시를 검증해 결과 보고서를 복구했고, 위 전체 공개 API·기존 행 보존 검사로 반영을 확인했다. 재등록은 하지 않았다. 이후 실행 도구에 상품별 잠금 연결 확인을 추가했다.
+실행한 세션이 남긴 기록이다. 2026-09-17에 이 문서를 정리하면서 각 줄을 같은 세션이 남긴 로컬 증거 파일(사전 점검·dry-run·적용 보고서·운영 업로드 맵. 커밋하지 않는다)과 대조했다. **대조는 기록끼리 어긋나지 않는다는 뜻이지 운영을 다시 조회했다는 뜻이 아니다.** 증거 파일에 대응하는 값이 없는 줄은 「브랜치 기록」이라고 적었다.
+
+| 기록 | 증거 파일 대조 |
+| --- | --- |
+| 운영 판매자 8곳을 원본 판매자에 매핑했다 | 매핑 8건 일치. 브랜드명·slug·활성·소유자 상태를 검증했다는 부분은 브랜치 기록 |
+| 반영 전 상품 800개·변형 3,595개·카테고리 40개. 기존 SKU 충돌 0, 누락 마이그레이션 0, 기존 이관 마커 0 | 일치 (읽기 전용 트랜잭션으로 조회) |
+| 운영 버킷 `shopping-prod`, 공개 주소 `https://cdn.demo-shopping.com` | 일치. 기존 객체의 S3 GET과 공개 GET 해시가 같았다는 부분은 브랜치 기록 |
+| 검수 이미지 660장(1,228,911,310바이트) 업로드, 공개 주소에서 SHA-256 검증 | 업로드 맵 660건 전부 `verified`, 전부 위 공개 주소 |
+| 운영 DB 백업 생성과 아카이브 전체 읽기 검증 | 브랜치 기록 |
+| dry-run: 상품 66개 생성·변형 151개·카테고리 8개 계획, 공개 파일 660개 검증 | 일치 (`mode: dry-run`, 대상 `confirmed-production`) |
+| 적용: 상품 66개·변형 151개·카테고리 8개 추가. 상품 총 866개 | 상품 66·변형 151·총 866 일치. 변형 3,746개·카테고리 48개는 반영 전 값에 더한 수와 같고, 반영 후 조회값은 증거 파일에 없다 |
+| 기존 User·Seller·Product·ProductVariant·ProductImage·ProductOption·ProductOptionValue·Category·Order 행의 해시가 반영 전과 일치 | 「기존 행 불변」 표시만 있다. 테이블별 해시는 브랜치 기록 |
+| 공개 상세 API 66개에서 이름·이미지 순서·변형 수·옵션별 갤러리 확인, 검색 인덱스에 66개 존재 | 66·66 일치. search outbox 대기 0과 DB 상태 정상은 브랜치 기록 |
+| 운영 코트 상세 페이지의 기본·네이비·헤링본 갤러리와 모바일 화면 확인 | 브랜치 기록 |
+
+첫 적용 실행은 상품 66개의 개별 트랜잭션과 complete 마커를 모두 기록한 뒤, 마지막에 전역 잠금 트랜잭션을 닫다가 연결 오류로 끝났다. 브랜치 기록은 운영의 `idle_in_transaction_session_timeout`이 5분이었다고 적는다. 재등록은 하지 않았다. 완료 마커 66개의 입력 해시를 읽기 전용으로 검증해 적용 보고서를 복구했고(보고서의 66건 모두 「마커에서 검증한 생성」으로 표시돼 있다), 위의 공개 API·기존 행 검사로 반영을 확인했다.
+
+그 뒤 실행 도구에 상품마다 잠금 연결을 조회하는 코드를 추가했다. **이 코드는 추가된 뒤 운영에서 실행된 적이 없고**(재실행이 없었다) 자동 검사도 없다. 다시 실행할 일이 생기면 그때 처음 도는 경로다.
+
+## 2026-09-10 이후
+
+- **2026-09-11 DB 리전 이전.** 운영 Neon DB는 dump/restore로 다른 리전의 새 프로젝트로 옮겨졌다([TASK-0136](../docs/tasks/M15-polish/TASK-0136-neon-region-alignment.md), D-277). 위 실행이 쓴 곳은 이전 **전** DB이고, 추가한 행은 재실행이 아니라 복원으로 새 DB에 넘어갔다. 실행 때 쓴 계획 파일은 옛 호스트를 가리키므로 새 DB에는 가드가 거부한다 — 다시 실행하려면 계획 파일과 백업·dry-run을 새로 만들어야 한다.
+- **썸네일은 이 작업의 결과가 아니다.** 지금 운영 목록에 보이는 `cdn.demo-shopping.com/thumbnails/...` 파생 파일은 TASK-0137·0138(PR #147·#148)의 결과다. 이 실행이 올린 것은 원본 660장이다.
+- **2026-09-17 관찰.** 운영 공개 검색 API 응답에 검수 상품이 나오고 그 썸네일 주소가 `https://cdn.demo-shopping.com/thumbnails/` 아래다([점검표](../docs/portfolio-status.md)). 리전 이전 뒤에도 반영분이 운영에 있다는 것까지가 이 관찰이 말해 주는 범위다.
+- **다시 확인하지 않은 것.** 66개 전수와 660장 전수의 현재 상태, 변형·카테고리 수, 기존 행 보존, 검색 인덱스의 66개. 2026-09-17에는 운영 DB·R2에 접속하지 않았다.
