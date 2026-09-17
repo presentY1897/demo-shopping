@@ -1,4 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common'
+import type { ServerResponse } from 'node:http'
+
+import { Controller, Get, Query, Res, ServiceUnavailableException } from '@nestjs/common'
 import type {
   SearchFiltersResponse,
   SearchQuery,
@@ -29,8 +31,13 @@ export class SearchController {
 
   @Get()
   @PublicEndpoint()
-  async run(@Query() raw: Record<string, string>): Promise<SearchResponse> {
-    return this.search.search(parseInput(searchQuerySchema, readQuery(raw), 'query'))
+  async run(
+    @Query() raw: Record<string, string>,
+    @Res({ passthrough: true }) response: ServerResponse,
+  ): Promise<SearchResponse> {
+    const query = parseInput(searchQuerySchema, readQuery(raw), 'query')
+
+    return neverStoredWhenUnavailable(response, this.search.search(query))
   }
 
   @Get('filters')
@@ -43,10 +50,42 @@ export class SearchController {
 
   @Get('suggest')
   @PublicEndpoint()
-  async suggest(@Query('q') q: string | undefined): Promise<SearchSuggestResponse> {
+  async suggest(
+    @Query('q') q: string | undefined,
+    @Res({ passthrough: true }) response: ServerResponse,
+  ): Promise<SearchSuggestResponse> {
     const term = parseInput(searchTermSchema, q ?? '', 'q')
+    const suggestions = await neverStoredWhenUnavailable(response, this.search.suggest(term))
 
-    return { suggestions: [...(await this.search.suggest(term))] }
+    return { suggestions: [...suggestions] }
+  }
+}
+
+/**
+ * Marks the "engine not reached" answer as one nobody may keep (TASK-0143 R4).
+ *
+ * The 503 is true for seconds. The API sits behind a proxy (D-214), and an
+ * intermediary that stored it — or a browser that did — would go on saying "not
+ * ready" to a screen that is polling precisely to learn the moment it stops
+ * being true. Nothing else this API answers carries a caching header, so this
+ * one is set here, on the one answer whose staleness has a cost, rather than
+ * for every response.
+ *
+ * On the response rather than on the exception because the exception filter
+ * writes status and body and leaves headers already set where they are.
+ */
+async function neverStoredWhenUnavailable<T>(
+  response: ServerResponse,
+  answer: Promise<T>,
+): Promise<T> {
+  try {
+    return await answer
+  } catch (error) {
+    if (error instanceof ServiceUnavailableException) {
+      response.setHeader('Cache-Control', 'no-store')
+    }
+
+    throw error
   }
 }
 

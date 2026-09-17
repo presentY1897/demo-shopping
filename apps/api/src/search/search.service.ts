@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common'
+import { Inject, Injectable, Logger, ServiceUnavailableException } from '@nestjs/common'
 import type {
   FacetCounts,
   SearchFilter,
@@ -8,10 +8,11 @@ import type {
 } from '@shopping/shared'
 import { classifyHangulQuery, hangulQueryFor, SEARCH_SUGGEST_LIMIT } from '@shopping/shared'
 
+import { domainFailure } from '../common/domain-failure.js'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { ATTRIBUTE_FACET_PREFIX } from './search-document.js'
-import type { SearchIndex } from './search-index.js'
-import { SEARCH_INDEX } from './search-index.js'
+import type { SearchAnswer, SearchIndex } from './search-index.js'
+import { SEARCH_INDEX, SearchEngineUnreachableError } from './search-index.js'
 import { SearchIndexerService } from './search-indexer.service.js'
 import { nextCursorFor, toSearchRequest } from './search-query.js'
 
@@ -44,7 +45,7 @@ export class SearchService {
   async search(query: SearchQuery): Promise<SearchResponse> {
     const facets = await this.facetFields(query.categoryId ?? null)
     const request = toSearchRequest(query, facets)
-    const answer = await this.index.search(request)
+    const answer = await this.ask(request)
 
     // A search that found nothing may mean the index is empty rather than the
     // catalogue is (TASK-0038 F5b) — a restart leaves the engine blank. Asking
@@ -123,7 +124,7 @@ export class SearchService {
      */
     const kind = classifyHangulQuery(term)
 
-    const answer = await this.index.search({
+    const answer = await this.ask({
       q: hangulQueryFor(term, kind),
       filter: 'inStock = true',
       sort: [],
@@ -142,6 +143,40 @@ export class SearchService {
     }
 
     return [...names]
+  }
+
+  /**
+   * Asks the engine, and answers 503 when it could not be reached (TASK-0143 4.1).
+   *
+   * **Only that one error, and only here.** The engine sleeps and restarts on a
+   * schedule of its own, so "not reached" is a state a screen can wait out —
+   * `SEARCH_UNAVAILABLE` is what lets it tell that from a fault and keep the
+   * failure notice back. Anything the engine *said* (a key mismatch, a filter it
+   * rejects) stays the 500 it was: waiting does not fix it, and calling it
+   * temporary would have a storefront retrying a broken deployment forever.
+   *
+   * The indexer holds the same port and is deliberately not behind this — it
+   * already swallows the raw error and tries again on its next tick.
+   *
+   * **No wake-up request goes out from here** (4.2). The query that just failed
+   * is the request that reached the platform's gateway, and that is what starts
+   * the engine; one more would only blur `SearchWarmupService`'s "exactly once".
+   */
+  private async ask(request: Parameters<SearchIndex['search']>[0]): Promise<SearchAnswer> {
+    try {
+      return await this.index.search(request)
+    } catch (error) {
+      if (!(error instanceof SearchEngineUnreachableError)) throw error
+
+      // One line and no stack: while the engine is down every visitor's query
+      // lands here, and the reason is the same sentence each time.
+      this.logger.warn(error.message)
+
+      throw new ServiceUnavailableException(
+        domainFailure('SEARCH_UNAVAILABLE', '검색을 준비하고 있어요. 잠시 후 다시 시도해 주세요.'),
+        { cause: error },
+      )
+    }
   }
 
   /** Which fields to count, for the category being looked at. */
