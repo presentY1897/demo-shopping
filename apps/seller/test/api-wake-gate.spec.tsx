@@ -33,6 +33,7 @@ import {
   neverAnswers,
   sleepingInstance,
   slowResponse,
+  unreachableSearchEngine,
   wakesAfter,
 } from '@shopping/api-mocks'
 import { render, screen, waitFor, within } from '@testing-library/react'
@@ -379,6 +380,32 @@ describe('when search is not ready', () => {
 
     expect(await screen.findByText(healthSearchIndexing.version)).toBeVisible()
     expect(screen.queryByRole('alert')).toBeNull()
+  })
+
+  /**
+   * TASK-0143 F11. The storefront now keeps its wake-up loop going while
+   * `search` is not `"ok"`, through the same `wake.ts` this console runs — so
+   * what is pinned here is that a console did not come along. It stops at the
+   * first `ok: true`, draws the panel, and leaves search to the three bounded
+   * re-checks it always had: an engine that never returns costs 1 + 3 requests,
+   * not the 21 a budgeted loop would spend.
+   */
+  it('stops waking at the first answer even though search is down', async () => {
+    const engine = unreachableSearchEngine({ downChecks: Number.POSITIVE_INFINITY })
+    testServer.server.use(...engine.handlers)
+    renderGate()
+
+    // The panel is up after one request — nothing held it back for search.
+    expect(await screen.findByText(wake.search.waking)).toBeVisible()
+    expect(screen.getByText(healthDegraded.version)).toBeVisible()
+    expect(screen.queryByRole('alert')).toBeNull()
+
+    await waitFor(() => {
+      expect(engine.healthRequests()).toBe(1 + FAST.searchRecheckDelaysMs.length)
+    })
+    await pause(200)
+
+    expect(engine.healthRequests()).toBe(1 + FAST.searchRecheckDelaysMs.length)
   })
 
   it('picks the search back up on its own once the index is there', async () => {

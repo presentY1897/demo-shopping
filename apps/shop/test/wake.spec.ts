@@ -14,10 +14,12 @@ import {
   networkFailure,
   neverAnswers,
   sleepingInstance,
+  unreachableSearchEngine,
   wakesAfter,
 } from '@shopping/api-mocks'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import type { HealthResult } from '@/lib/health'
 import { wakeApi } from '@/lib/wake'
 import type { WakePolicy } from '@/lib/wake-policy'
 import { WAKE_POLICY } from '@/lib/wake-policy'
@@ -51,6 +53,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  vi.useRealTimers()
   testServer.server.events.removeAllListeners('request:start')
 })
 
@@ -195,5 +198,144 @@ describe('failures that another attempt cannot fix', () => {
     await expect(pending).resolves.toMatchObject({ ok: false })
     expect(seen.length).toBeLessThan(4)
     expect(requests.length).toBeLessThan(3)
+  })
+})
+
+/**
+ * TASK-0143 — the API is awake and its search engine is not. Health answers
+ * 200 with `search: "down"`, which the loop used to take for "done".
+ *
+ * Whether that answer is worth another attempt is the caller's to say, by
+ * handing over a listener: the storefront does, the consoles do not.
+ */
+describe('an API that is up beside a search engine that is not', () => {
+  function pendingRecorder(): { seen: string[]; onSearchPending: (result: HealthResult) => void } {
+    const seen: string[] = []
+
+    return {
+      seen,
+      onSearchPending: (result) => {
+        seen.push(result.ok ? result.response.search : result.reason)
+      },
+    }
+  }
+
+  // F11, at the level of the loop: no listener, no waiting — byte for byte what
+  // the consoles ran before there was a choice.
+  it('stops at the first answer when nobody waits for search', async () => {
+    const engine = unreachableSearchEngine({ downChecks: Number.POSITIVE_INFINITY })
+    testServer.server.use(...engine.handlers)
+    const { seen, onAttempt } = attemptRecorder()
+
+    const result = await wakeApi(FAST, new AbortController().signal, onAttempt)
+
+    expect(result).toMatchObject({ ok: true, response: { search: 'down' } })
+    expect(seen).toEqual([1])
+    expect(engine.healthRequests()).toBe(1)
+  })
+
+  it('keeps asking for a caller that does, and returns the answer that says ok', async () => {
+    const engine = unreachableSearchEngine({ downChecks: 2 })
+    testServer.server.use(...engine.handlers)
+    const { seen, onSearchPending } = pendingRecorder()
+
+    const result = await wakeApi(
+      FAST,
+      new AbortController().signal,
+      () => undefined,
+      onSearchPending,
+    )
+
+    expect(result).toMatchObject({ ok: true, response: healthOk })
+    // Each answer in between reached the caller, which is what lets a screen say
+    // 「준비 중」 while `result` is still to come.
+    expect(seen).toEqual(['down', 'down'])
+    expect(engine.healthRequests()).toBe(3)
+  })
+
+  it('waits through an index that is still being rebuilt (R2)', async () => {
+    const engine = unreachableSearchEngine({ downChecks: 1, indexingChecks: 1 })
+    testServer.server.use(...engine.handlers)
+    const { seen, onSearchPending } = pendingRecorder()
+
+    const result = await wakeApi(
+      FAST,
+      new AbortController().signal,
+      () => undefined,
+      onSearchPending,
+    )
+
+    expect(result).toMatchObject({ ok: true, response: healthOk })
+    expect(seen).toEqual(['down', 'degraded'])
+  })
+
+  it('waits on the same schedule as any other "not yet"', async () => {
+    const engine = unreachableSearchEngine({ downChecks: 2 })
+    testServer.server.use(...engine.handlers)
+
+    const startedAt = performance.now()
+    await wakeApi(
+      FAST,
+      new AbortController().signal,
+      () => undefined,
+      () => undefined,
+    )
+
+    // The two backoffs of `FAST` — 5 and 10 — and not a loop that spins.
+    expect(performance.now() - startedAt).toBeGreaterThanOrEqual(12)
+  })
+
+  it('returns the last answer, still pending, when the budget ends first', async () => {
+    const engine = unreachableSearchEngine({ downChecks: Number.POSITIVE_INFINITY })
+    testServer.server.use(...engine.handlers)
+
+    const result = await wakeApi(
+      FAST,
+      new AbortController().signal,
+      () => undefined,
+      () => undefined,
+    )
+
+    // `ok: true` — the API did answer. What to say about a search that never
+    // came is the screen's decision, and it has what it needs to make it.
+    expect(result).toMatchObject({ ok: true, response: { search: 'down' } })
+    expect(engine.healthRequests()).toBeGreaterThan(1)
+
+    const spent = engine.healthRequests()
+    await new Promise((resolve) => setTimeout(resolve, 100))
+
+    expect(engine.healthRequests()).toBe(spent)
+  })
+
+  /**
+   * F8 — **the production policy, not a fast one**, because the ceiling is a
+   * property of those numbers: 1 + 2 + 4 + 8 and then 8s waits inside 150s is 21
+   * requests (TASK-0118 4.5), and waiting for search must not buy a 22nd.
+   *
+   * The clock is faked here and nowhere else in this file — 150 seconds cannot
+   * be turned down without ceasing to be the thing measured. Only the backoff's
+   * `setTimeout` and the budget's `performance.now()` are replaced; the request
+   * still goes through msw, and it is the double that counts.
+   */
+  it('F8 — asks at most 21 times on the production policy', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance'] })
+    const engine = unreachableSearchEngine({ downChecks: Number.POSITIVE_INFINITY })
+    testServer.server.use(...engine.handlers)
+
+    let result: HealthResult | null = null
+    void wakeApi(
+      WAKE_POLICY,
+      new AbortController().signal,
+      () => undefined,
+      () => undefined,
+    ).then((outcome) => {
+      result = outcome
+    })
+
+    while (result === null) await vi.advanceTimersToNextTimerAsync()
+
+    expect(result).toMatchObject({ ok: true, response: { search: 'down' } })
+    expect(engine.healthRequests()).toBe(21)
+    expect(performance.now()).toBeLessThan(WAKE_POLICY.budgetMs)
   })
 })
