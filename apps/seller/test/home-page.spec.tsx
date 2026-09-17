@@ -9,8 +9,8 @@
  * while the API is still asleep, and a failure is shown rather than swallowed.
  *
  * The wake-up sequence itself — thresholds, backoff, automatic recovery — is
- * covered once, in `apps/shop/test/api-wake-gate.spec.tsx`, against the same
- * component.
+ * covered in `./api-wake-gate.spec.tsx`. The storefront's gate is a different
+ * component now (DECISIONS 콜드 스타트) and has a spec of its own.
  *
  * **Signed out on purpose.** TASK-0082 put the revenue dashboard on this route,
  * and it asks the API for takings only once it knows the caller has a store —

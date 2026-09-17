@@ -9,8 +9,9 @@
  * while the API is still asleep, and a failure is shown rather than swallowed.
  *
  * The wake-up sequence itself — thresholds, backoff, automatic recovery — is
- * covered once, in `apps/shop/test/api-wake-gate.spec.tsx`, against the same
- * component.
+ * covered once, in `apps/seller/test/api-wake-gate.spec.tsx`, against a gate
+ * that is byte for byte this app's. The storefront's gate is a different
+ * component now (DECISIONS 콜드 스타트) and has a spec of its own.
  */
 
 import {
