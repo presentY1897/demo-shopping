@@ -11,7 +11,7 @@ import {
   sleepingInstance,
   wakesAfter,
 } from '@shopping/api-mocks'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useContext } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -73,8 +73,9 @@ afterEach(() => {
   testServer.server.events.removeListener('request:start', countHealthRequest)
 })
 
+// `products pending` · `products ready` · `products failed` — what a row is told.
 function ReadinessProbe() {
-  return <p>{useContext(SectionReadiness) ? 'products ready' : 'products pending'}</p>
+  return <p>{`products ${useContext(SectionReadiness)}`}</p>
 }
 function renderGate(policy: WakePolicy = FAST) {
   render(
@@ -130,24 +131,18 @@ describe('storefront readiness', () => {
     await expectReady()
   })
 
-  it('enables products after automatic search rechecking', async () => {
+  // The engine wakes on its own schedule, and the gate used to stop here and
+  // offer a button. Now the same loop keeps asking (TASK-0143 4.3); what that
+  // looks like end to end — no alert, no button, a bounded number of requests —
+  // is measured criterion by criterion in `search-unavailable.spec.tsx`.
+  it('enables products once search is ready, with nobody pressing anything', async () => {
     testServer.server.use(malformedResponse(mockPaths.health, healthSearchIndexing))
     renderGate()
     expect(await screen.findByRole('status')).toHaveTextContent(wake.storefrontPreparing)
     expect(screen.getByText('products pending')).toBeVisible()
     expect(screen.queryByText(wake.search.indexing)).toBeNull()
+    expect(screen.queryByRole('button', { name: wake.retryLabel })).toBeNull()
     testServer.server.use(...healthHandlers)
-    await expectReady()
-  })
-
-  it('bounds search rechecks and retains manual recovery', async () => {
-    testServer.server.use(malformedResponse(mockPaths.health, healthSearchIndexing))
-    renderGate()
-    await waitFor(() => expect(healthRequests).toBe(1 + FAST.searchRecheckDelaysMs.length))
-    await pause(200)
-    expect(healthRequests).toBe(1 + FAST.searchRecheckDelaysMs.length)
-    testServer.server.use(...healthHandlers)
-    await userEvent.click(screen.getByRole('button', { name: wake.retryLabel }))
     await expectReady()
   })
 })
@@ -184,6 +179,7 @@ describe('a sleeping instance', () => {
     renderGate(GIVES_UP)
 
     expect(await screen.findByRole('alert')).toHaveTextContent(wake.storefrontFailed)
+    expect(screen.getByText('products failed')).toBeVisible()
     const spent = healthRequests
     await pause(200)
 

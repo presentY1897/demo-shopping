@@ -5,8 +5,12 @@ import { apiFailure } from '@shopping/shared'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import type { WakePolicy } from '@/lib/wake-policy'
+import { WAKE_POLICY } from '@/lib/wake-policy'
+
 import { fetchSearch, fetchSearchFilters } from './search-api'
 import { readSearchParams, writeSearchParams } from './search-params'
+import { untilSearchAnswers } from './until-search-answers'
 
 /**
  * 검색 화면의 상태 — 인데, 상태를 들고 있지 않다 (TASK-0041 4장 「URL 동기화」).
@@ -29,6 +33,12 @@ import { readSearchParams, writeSearchParams } from './search-params'
 
 export type SearchResultsState =
   | { readonly status: 'loading' }
+  /**
+   * The API answered `SEARCH_UNAVAILABLE` and the hook is asking again by
+   * itself. Not `error`: there is nothing for the visitor to do but wait, and
+   * a retry button would be asking them to do what is already being done.
+   */
+  | { readonly status: 'preparing' }
   | { readonly status: 'error'; readonly failure: ApiFailure }
   | {
       readonly status: 'ready'
@@ -68,7 +78,15 @@ export interface SearchController {
  */
 export type PinnedQuery = Pick<SearchQuery, 'categoryId' | 'sellerIds'>
 
-export function useSearch(pinned: PinnedQuery = {}): SearchController {
+/**
+ * @param policy How long an unreachable engine is waited out. Injected only by
+ *   specs, which turn the clock down; must be a stable reference, because it is
+ *   an effect dependency.
+ */
+export function useSearch(
+  pinned: PinnedQuery = {},
+  policy: WakePolicy = WAKE_POLICY,
+): SearchController {
   const router = useRouter()
   const pathname = usePathname()
   const params = useSearchParams()
@@ -150,10 +168,22 @@ export function useSearch(pinned: PinnedQuery = {}): SearchController {
       else setLoadingMore(true)
 
       try {
-        const page = await fetchSearch(readSearchParams(new URLSearchParams(canonical)), {
-          cursor,
-          signal: controller.signal,
-        })
+        const page = await untilSearchAnswers(
+          policy,
+          controller.signal,
+          () =>
+            fetchSearch(readSearchParams(new URLSearchParams(canonical)), {
+              cursor,
+              signal: controller.signal,
+            }),
+          () => {
+            // A first page only. While *more* is being fetched the rows already
+            // on screen stay where they are, and the list's own "loading more"
+            // is the honest thing to show — dropping them to say 「준비 중」
+            // would also make the next page replace the list instead of joining it.
+            if (cursor === null) setResults({ status: 'preparing' })
+          },
+        )
 
         if (controller.signal.aborted) return
 
@@ -183,7 +213,7 @@ export function useSearch(pinned: PinnedQuery = {}): SearchController {
     return () => {
       controller.abort()
     }
-  }, [canonical, cursor, reloadToken])
+  }, [canonical, cursor, policy, reloadToken])
 
   const setQuery = useCallback(
     (next: SearchQuery) => {
