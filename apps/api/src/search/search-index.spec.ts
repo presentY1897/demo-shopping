@@ -1,7 +1,15 @@
+import type { Server, ServerResponse } from 'node:http'
+import { createServer } from 'node:http'
+import type { AddressInfo } from 'node:net'
+
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import type { AppConfig } from '../config/app-config.js'
-import { MeilisearchIndex, SearchEngineError } from './search-index.js'
+import {
+  MeilisearchIndex,
+  SearchEngineError,
+  SearchEngineUnreachableError,
+} from './search-index.js'
 
 const CONFIG = {
   search: {
@@ -38,7 +46,7 @@ function answerWithHtml(status: number): void {
         ok: false,
         status,
         json: () => Promise.reject(new Error('not json')),
-        text: () => Promise.resolve('<!DOCTYPE html><title>404</title>'),
+        text: () => Promise.resolve(`<!DOCTYPE html><title>${String(status)}</title>`),
       }),
     ),
   )
@@ -148,5 +156,142 @@ describe('search against a healthy index', () => {
       total: 1,
       facets: {},
     })
+  })
+})
+
+/**
+ * TASK-0143 4.1 — "not reached" is told apart from "refused".
+ *
+ * The first is a state: the engine is a free service that sleeps and restarts on
+ * its own, and waiting fixes it. The second is a fault, and waiting does not.
+ * The public search paths answer the first as 503 and the second as 500, so the
+ * line drawn here is the line a visitor's screen ends up on one side of.
+ */
+describe('an engine that answers through the platform gateway', () => {
+  it.each([502, 503, 504])('reads a %i with no code as unreachable (F2)', async (status) => {
+    answerWithHtml(status)
+
+    await expect(new MeilisearchIndex(CONFIG).search(QUERY)).rejects.toThrow(
+      SearchEngineUnreachableError,
+    )
+  })
+
+  it('keeps what the gateway said as the cause, for the log', async () => {
+    answerWithHtml(503)
+
+    const error = await new MeilisearchIndex(CONFIG).search(QUERY).catch((cause: unknown) => cause)
+
+    expect(error).toMatchObject({ cause: { name: 'SearchEngineError', status: 503, code: null } })
+  })
+
+  /**
+   * The negative control for the rule. Meilisearch has 503s of its own, and they
+   * come with a code; a status alone would have called them "asleep".
+   */
+  it('reads the same status as a refusal when the engine put a code on it', async () => {
+    answerWith({ code: 'too_many_search_requests' }, { ok: false, status: 503 })
+
+    const error = await new MeilisearchIndex(CONFIG).search(QUERY).catch((cause: unknown) => cause)
+
+    expect(error).toBeInstanceOf(SearchEngineError)
+    expect(error).not.toBeInstanceOf(SearchEngineUnreachableError)
+  })
+
+  it('does not read a 200 that is not JSON as something to wait out', async () => {
+    // Whatever answered, it answered — and it said success. Waiting is not what
+    // fixes a host that points at the wrong thing.
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve({ ok: true, status: 200, text: () => Promise.resolve('<!DOCTYPE html>') }),
+      ),
+    )
+
+    await expect(new MeilisearchIndex(CONFIG).search(QUERY)).rejects.toThrow(SyntaxError)
+  })
+
+  it('does not read a key mismatch as something to wait out (F3)', async () => {
+    answerWith({ code: 'invalid_api_key' }, { ok: false, status: 403 })
+
+    await expect(new MeilisearchIndex(CONFIG).search(QUERY)).rejects.not.toBeInstanceOf(
+      SearchEngineUnreachableError,
+    )
+  })
+})
+
+/**
+ * Over real sockets, on the loopback interface only.
+ *
+ * What `fetch` throws for a refused port or a passed deadline is the runtime's
+ * business, and a stubbed rejection would assert this file's guess about it
+ * rather than the thing itself.
+ */
+describe('an engine that does not answer at all', () => {
+  const servers: Server[] = []
+
+  /** A local engine that does whatever `respond` does — including nothing. */
+  async function engineThat(respond: (response: ServerResponse) => void): Promise<AppConfig> {
+    const server = createServer((_request, response) => {
+      respond(response)
+    })
+
+    servers.push(server)
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve))
+
+    return configFor((server.address() as AddressInfo).port)
+  }
+
+  function configFor(port: number): AppConfig {
+    return {
+      search: { ...CONFIG.search, host: `http://127.0.0.1:${String(port)}` },
+    } as AppConfig
+  }
+
+  afterEach(async () => {
+    for (const server of servers.splice(0)) {
+      server.closeAllConnections()
+      await new Promise((resolve) => server.close(resolve))
+    }
+  })
+
+  it('reads a refused connection as unreachable, and says why', async () => {
+    // A port that was just listening and no longer is: closed for certain,
+    // without guessing at a number nobody else on this machine uses.
+    const config = await engineThat(() => undefined)
+    const [server] = servers.splice(0)
+
+    await new Promise((resolve) => server?.close(resolve))
+
+    const error = await new MeilisearchIndex(config).search(QUERY).catch((cause: unknown) => cause)
+
+    expect(error).toBeInstanceOf(SearchEngineUnreachableError)
+    // `fetch failed` alone does not tell a closed port from a mistyped host.
+    expect((error as Error).message).toContain('ECONNREFUSED')
+    expect((error as Error).cause).toBeInstanceOf(TypeError)
+  })
+
+  it('reads a passed deadline as unreachable', async () => {
+    // Accepts the connection and never answers — what a request held by a
+    // waking instance looks like from this side.
+    const config = await engineThat(() => undefined)
+
+    const error = await new MeilisearchIndex(config).search(QUERY).catch((cause: unknown) => cause)
+
+    expect(error).toBeInstanceOf(SearchEngineUnreachableError)
+    expect(error).toMatchObject({ cause: { name: 'TimeoutError' } })
+  })
+
+  it('reads an answer that stops arriving as unreachable', async () => {
+    // Headers and half a body, then silence. The status says 200, so nothing
+    // but the deadline would ever end this — and it ends inside the body read,
+    // after `fetch` has already resolved.
+    const config = await engineThat((response) => {
+      response.writeHead(200, { 'content-type': 'application/json' })
+      response.write('{"hits":[')
+    })
+
+    await expect(new MeilisearchIndex(config).search(QUERY)).rejects.toThrow(
+      SearchEngineUnreachableError,
+    )
   })
 })

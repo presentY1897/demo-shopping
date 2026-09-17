@@ -79,6 +79,50 @@ export class SearchEngineError extends Error {
 }
 
 /**
+ * What the platform's gateway answers while the service behind it is asleep or
+ * restarting. Only these three: a 404 page is a wrong host, not a sleeping one.
+ */
+const GATEWAY_STATUSES: ReadonlySet<number> = new Set([502, 503, 504])
+
+/**
+ * The engine was never heard from (TASK-0143 4.1).
+ *
+ * **A state, not a fault.** The engine is a free service of its own: it sleeps
+ * on its own schedule and, having no disk, restarts on its own too. A query that
+ * lands in that window fails for a reason that waiting fixes, and nothing else
+ * this file throws is like that — a key mismatch stays wrong however long the
+ * caller waits. The public search paths answer this one as 503 and leave every
+ * other throw the 500 it was.
+ *
+ * Two things count, and **Meilisearch's `code` is what tells them from a
+ * refusal**, for the reason `SearchEngineError` carries one: no answer at all
+ * (connection refused, the deadline passing), and a 502 · 503 · 504 whose body
+ * has no code — the platform's gateway speaking for a service that is not up.
+ *
+ * The original failure rides along as `cause`, so the log still says *which* of
+ * them it was.
+ */
+export class SearchEngineUnreachableError extends Error {
+  constructor(cause: unknown) {
+    super(`검색 엔진에 닿지 못했습니다: ${reasonOf(cause)}`, { cause })
+    this.name = 'SearchEngineUnreachableError'
+  }
+}
+
+/**
+ * `fetch` says only "fetch failed" and keeps the reason — `ECONNREFUSED`,
+ * `ENOTFOUND` — one level down. A port nobody listens on and a host that does
+ * not resolve are different afternoons for whoever reads the log, so the line
+ * carries both levels.
+ */
+function reasonOf(failure: unknown): string {
+  const inner =
+    failure instanceof Error && failure.cause instanceof Error ? ` (${failure.cause.message})` : ''
+
+  return `${String(failure)}${inner}`
+}
+
+/**
  * Meilisearch answers every error as JSON with a stable `code`. Anything in
  * front of it — a proxy, a platform error page — answers HTML, and HTML has no
  * code to read. A body without a code is never `index_not_found`.
@@ -218,30 +262,63 @@ export class MeilisearchIndex implements SearchIndex {
   }
 
   private async request(method: string, path: string, body: unknown): Promise<unknown> {
-    const base = this.config.search.host.replace(/\/+$/, '')
-    const response = await fetch(`${base}${path}`, {
-      method,
-      // Without a deadline a hung engine holds the worker's tick open until
-      // something else times out, and the queue stops moving with no error to
-      // point at.
-      signal: AbortSignal.timeout(this.config.search.timeoutMs),
-      headers: {
-        accept: 'application/json',
-        ...(body === undefined ? {} : { 'content-type': 'application/json' }),
-        ...(this.config.search.masterKey === ''
-          ? {}
-          : { authorization: `Bearer ${this.config.search.masterKey}` }),
-      },
-      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-    })
+    const answer = await this.exchange(method, path, body)
 
-    if (!response.ok) {
-      const body = await response.text()
+    if (!answer.ok) {
+      const code = codeOf(answer.body)
+      const refusal = new SearchEngineError(answer.status, code, answer.body)
 
-      throw new SearchEngineError(response.status, codeOf(body), body)
+      // The gateway in front of a sleeping engine answers HTML, and HTML has no
+      // code. The same status *with* a code is Meilisearch itself speaking, and
+      // what it refuses it will refuse again.
+      if (code === null && GATEWAY_STATUSES.has(answer.status)) {
+        throw new SearchEngineUnreachableError(refusal)
+      }
+
+      throw refusal
     }
 
-    return response.json()
+    return JSON.parse(answer.body) as unknown
+  }
+
+  /**
+   * One round trip, read to the end.
+   *
+   * **Everything the transport can throw is thrown in here**, which is what lets
+   * the classification be a place rather than a list of error names: `fetch`
+   * rejects only when there was no response (`TypeError` for a refused or
+   * unresolvable host, `TimeoutError` when the deadline passes), and reading the
+   * body fails only when the response stopped arriving. Parsing happens outside,
+   * so an engine that answered nonsense is still a fault.
+   */
+  private async exchange(
+    method: string,
+    path: string,
+    body: unknown,
+  ): Promise<{ readonly ok: boolean; readonly status: number; readonly body: string }> {
+    const base = this.config.search.host.replace(/\/+$/, '')
+
+    try {
+      const response = await fetch(`${base}${path}`, {
+        method,
+        // Without a deadline a hung engine holds the worker's tick open until
+        // something else times out, and the queue stops moving with no error to
+        // point at.
+        signal: AbortSignal.timeout(this.config.search.timeoutMs),
+        headers: {
+          accept: 'application/json',
+          ...(body === undefined ? {} : { 'content-type': 'application/json' }),
+          ...(this.config.search.masterKey === ''
+            ? {}
+            : { authorization: `Bearer ${this.config.search.masterKey}` }),
+        },
+        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      })
+
+      return { ok: response.ok, status: response.status, body: await response.text() }
+    } catch (cause) {
+      throw new SearchEngineUnreachableError(cause)
+    }
   }
 }
 
