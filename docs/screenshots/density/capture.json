@@ -1,0 +1,103 @@
+{
+  "url": "http://localhost:3040/search?q=%EC%BD%94%ED%8A%B8",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "source": "local production build, real API, full seed without R2 images",
+  "results": [
+    {
+      "density": 1,
+      "name": "미니멀",
+      "columns": 3,
+      "items": [
+        "/products/01a07fc8-810e-7228-bd6a-a6d3ccec23c2",
+        "/products/01a07fc8-824e-7611-84ce-2f4bf54545d3",
+        "/products/01a07fc8-8454-779e-bfc8-ce1c53445929",
+        "/products/01a07fc8-854f-73bd-a6c5-c1397e9009e8",
+        "/products/01a07fc8-8756-7309-8610-20ed39e84d18",
+        "/products/01a07fc8-8869-75a8-9dec-76c469ccdb7c",
+        "/products/01a07fc8-8958-740e-889e-64cd23168377",
+        "/products/01a07fc8-8b5b-76e9-86aa-3889719a1a9e",
+        "/products/01a07fc8-8c4c-76eb-9d6e-f6a207109d09",
+        "/products/01a07fc8-8d45-75d9-a56c-85bc97089e72",
+        "/products/01a07fc8-8e32-7390-83ae-b019b0c4efc3",
+        "/products/01a07fc8-8f17-7064-9aad-49a1c8b1fc97",
+        "/products/01a07fc8-8fff-716d-bf31-922ed444d489",
+        "/products/01a07fc8-90ea-77d9-a77b-f364e2bbb5b8",
+        "/products/01a07fc8-92c2-7134-9281-3dcf0d008766",
+        "/products/01a07fc8-93b9-771a-baf3-6ed66651f524",
+        "/products/01a07fc8-94a8-76cc-9547-08940142947c",
+        "/products/01a07fc8-95a3-702d-b080-790fcacf40de",
+        "/products/01a07fc8-968b-7551-ad6a-27a006ab8981",
+        "/products/01a07fc8-977c-745c-b0a0-6d572542d2f5",
+        "/products/01a07fc8-9a57-73bc-ad95-41999ce1e4bf",
+        "/products/01a07fc8-9a57-73bc-ad97-4336e1ed80dd",
+        "/products/01a07fc8-9a57-73bc-ad99-ac09ebb9e787",
+        "/products/01a07fc8-9890-71f9-9833-b3408d83ca48"
+      ]
+    },
+    {
+      "density": 2,
+      "name": "표준",
+      "columns": 4,
+      "items": [
+        "/products/01a07fc8-810e-7228-bd6a-a6d3ccec23c2",
+        "/products/01a07fc8-824e-7611-84ce-2f4bf54545d3",
+        "/products/01a07fc8-8454-779e-bfc8-ce1c53445929",
+        "/products/01a07fc8-854f-73bd-a6c5-c1397e9009e8",
+        "/products/01a07fc8-8756-7309-8610-20ed39e84d18",
+        "/products/01a07fc8-8869-75a8-9dec-76c469ccdb7c",
+        "/products/01a07fc8-8958-740e-889e-64cd23168377",
+        "/products/01a07fc8-8b5b-76e9-86aa-3889719a1a9e",
+        "/products/01a07fc8-8c4c-76eb-9d6e-f6a207109d09",
+        "/products/01a07fc8-8d45-75d9-a56c-85bc97089e72",
+        "/products/01a07fc8-8e32-7390-83ae-b019b0c4efc3",
+        "/products/01a07fc8-8f17-7064-9aad-49a1c8b1fc97",
+        "/products/01a07fc8-8fff-716d-bf31-922ed444d489",
+        "/products/01a07fc8-90ea-77d9-a77b-f364e2bbb5b8",
+        "/products/01a07fc8-92c2-7134-9281-3dcf0d008766",
+        "/products/01a07fc8-93b9-771a-baf3-6ed66651f524",
+        "/products/01a07fc8-94a8-76cc-9547-08940142947c",
+        "/products/01a07fc8-95a3-702d-b080-790fcacf40de",
+        "/products/01a07fc8-968b-7551-ad6a-27a006ab8981",
+        "/products/01a07fc8-977c-745c-b0a0-6d572542d2f5",
+        "/products/01a07fc8-9a57-73bc-ad95-41999ce1e4bf",
+        "/products/01a07fc8-9a57-73bc-ad97-4336e1ed80dd",
+        "/products/01a07fc8-9a57-73bc-ad99-ac09ebb9e787",
+        "/products/01a07fc8-9890-71f9-9833-b3408d83ca48"
+      ]
+    },
+    {
+      "density": 3,
+      "name": "맥시멀",
+      "columns": 6,
+      "items": [
+        "/products/01a07fc8-810e-7228-bd6a-a6d3ccec23c2",
+        "/products/01a07fc8-824e-7611-84ce-2f4bf54545d3",
+        "/products/01a07fc8-8454-779e-bfc8-ce1c53445929",
+        "/products/01a07fc8-854f-73bd-a6c5-c1397e9009e8",
+        "/products/01a07fc8-8756-7309-8610-20ed39e84d18",
+        "/products/01a07fc8-8869-75a8-9dec-76c469ccdb7c",
+        "/products/01a07fc8-8958-740e-889e-64cd23168377",
+        "/products/01a07fc8-8b5b-76e9-86aa-3889719a1a9e",
+        "/products/01a07fc8-8c4c-76eb-9d6e-f6a207109d09",
+        "/products/01a07fc8-8d45-75d9-a56c-85bc97089e72",
+        "/products/01a07fc8-8e32-7390-83ae-b019b0c4efc3",
+        "/products/01a07fc8-8f17-7064-9aad-49a1c8b1fc97",
+        "/products/01a07fc8-8fff-716d-bf31-922ed444d489",
+        "/products/01a07fc8-90ea-77d9-a77b-f364e2bbb5b8",
+        "/products/01a07fc8-92c2-7134-9281-3dcf0d008766",
+        "/products/01a07fc8-93b9-771a-baf3-6ed66651f524",
+        "/products/01a07fc8-94a8-76cc-9547-08940142947c",
+        "/products/01a07fc8-95a3-702d-b080-790fcacf40de",
+        "/products/01a07fc8-968b-7551-ad6a-27a006ab8981",
+        "/products/01a07fc8-977c-745c-b0a0-6d572542d2f5",
+        "/products/01a07fc8-9a57-73bc-ad95-41999ce1e4bf",
+        "/products/01a07fc8-9a57-73bc-ad97-4336e1ed80dd",
+        "/products/01a07fc8-9a57-73bc-ad99-ac09ebb9e787",
+        "/products/01a07fc8-9890-71f9-9833-b3408d83ca48"
+      ]
+    }
+  ]
+}

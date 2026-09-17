@@ -2,7 +2,7 @@
 
 > 이어받을 것과 이월된 항목은 [`docs/HANDOFF.md`](../HANDOFF.md) 에 있다.
 
-아래 인덱스에 등록된 **136개** TASK: **128개 완료**, **5개 진행중**, **3개 승인됨**, **0개 초안**. TASK-0124 검토 완료 후 TASK-0125~0131을 후속 작업으로 작성하고 사용자 승인을 받았다. 폐기 TASK는 이 집계에 포함하지 않는다.
+아래 인덱스에 등록된 **136개** TASK: **128개 완료**, **6개 진행중**, **2개 승인됨**, **0개 초안**. TASK-0124 검토 완료 후 TASK-0125~0131을 후속 작업으로 작성하고 사용자 승인을 받았다. 폐기 TASK는 이 집계에 포함하지 않는다.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
@@ -244,7 +244,7 @@
 | [TASK-0097](./M15-polish/TASK-0097-performance.md) | 성능 최적화 · 측정 | 완료 |
 | [TASK-0098](./M15-polish/TASK-0098-accessibility.md) | 접근성 점검 | 완료 |
 | [TASK-0099](./M15-polish/TASK-0099-e2e-demo.md) | E2E 테스트 · 데모 시나리오 | 완료 |
-| [TASK-0100](./M15-polish/TASK-0100-portfolio-docs.md) | README · 포트폴리오 문서 | 승인됨 |
+| [TASK-0100](./M15-polish/TASK-0100-portfolio-docs.md) | README · 포트폴리오 문서 | 진행중 |
 | [TASK-0122](./M15-polish/TASK-0122-factory-clock.md) | 테스트 팩토리의 데이터베이스 시계 | 완료 |
 | [TASK-0121](./M15-polish/TASK-0121-racy-optimistic-spec.md) | 낙관적 갱신 검사의 타이밍 가정 | 완료 |
 | [TASK-0123](./M15-polish/TASK-0123-storefront-copy-cleanup.md) | 구매자 메인 설명 정리 | 완료 |
