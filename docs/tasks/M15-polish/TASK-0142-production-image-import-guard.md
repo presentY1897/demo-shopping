@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M15 마무리 |
-| 상태 | 진행중 |
+| 상태 | 진행중 — 미충족: F4 · Q1~Q4(저장소 전체) · Q6 · D1. 사유는 6장 |
 | 작성일 | 2026-09-17 |
 | 브랜치 | `feature/production-image-migration` |
 | 선행 작업 | 없음. 앞선 작업은 PR #134(`feature/product-image-preview`, 상품 이미지 세트 제작·이관과 공용 이미지 처리)인데, 대응하는 TASK 문서는 `docs/` 에서 찾지 못했다 |
@@ -59,7 +59,7 @@
   - 업로드 맵의 모든 항목이 `verified` 이고 위 공개 주소의 origin 이며 query·fragment·인증 정보가 없다
 - [x] 운영에서는 공개 파일 검증을 건너뛰는 `--plan-only` 를 거부한다
 - [x] `--apply` 는 추가로 `backupVerified`·`dryRunVerified`, 백업 파일의 `PGDMP` 서명과 SHA-256, dry-run 보고서의 SHA-256·`mode: dry-run`·대상 `confirmed-production`·검증 파일 수·상품 수를 요구한다
-- [ ] 위 거부 조건마다 **그 조건 하나만으로** 거부되는 검사가 있고, 그 검사는 API 패키지의 기본 `test` 스크립트로 돈다
+- [x] 위 거부 조건마다 **그 조건 하나만으로** 거부되는 검사가 있고, 그 검사는 API 패키지의 기본 `test` 스크립트로 돈다
 
 ### 비기능 요구사항
 
@@ -120,14 +120,14 @@ IMPORT_TARGET_DATABASE_URL ──┬─ --production-plan 없음 → assertLocal
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| F1 | 가드의 거부 조건마다 그 조건 하나만으로 거부되는 검사가 있다 | 가드 조건식의 피연산자 30개를 하나씩 `false` 로 바꾸고 spec 을 돌린다(일회성 변이 확인, 9장에 결과) | 살아남는 변이 0 / 30 | [ ] |
-| F2 | 가드 검사가 통과한다 | `vitest run test/scripts` — DB 전역 셋업을 뺀 설정(`include` 는 저장소 설정과 동일) | failed 0 | [ ] |
-| F3 | 가드 검사가 API 패키지의 기본 `test` 에 포함된다 | `pnpm --filter @shopping/api exec vitest list --filesOnly` (저장소 설정 그대로) 출력에 `test/scripts/reviewed-production-guard.spec.ts` | 1건 | [ ] |
+| F1 | 가드의 거부 조건마다 그 조건 하나만으로 거부되는 검사가 있다 | 가드 조건식의 피연산자 30개를 하나씩 `false` 로 바꾸고 spec 을 돌린다(일회성 변이 확인, 9장에 결과) | 살아남는 변이 0 / 30 | [x] |
+| F2 | 가드 검사가 통과한다 | `vitest run test/scripts` — DB 전역 셋업을 뺀 설정(`include` 는 저장소 설정과 동일) | failed 0 | [x] |
+| F3 | 가드 검사가 API 패키지의 기본 `test` 에 포함된다 | `pnpm --filter @shopping/api exec vitest list --filesOnly` (저장소 설정 그대로) 출력에 `test/scripts/reviewed-production-guard.spec.ts` | 1건 | [x] |
 | F4 | 같은 검사가 실제 하네스(DB 전역 셋업 포함)에서 통과한다 | `pnpm --filter @shopping/api exec vitest run test/scripts` | failed 0 | [ ] |
-| F5 | 기본값은 로컬 전용 그대로다 | spec 의 `assertLocalTarget` 검사: 원격 호스트·로컬 포트/DB 를 흉내 낸 원격·다른 포트·다른 DB 를 거부, 두 루프백 이름은 허용 | 거부 4 / 허용 2, 오류 문구는 기존과 동일 | [ ] |
-| F6 | 어디서도 돌지 않는 검사 파일이 남지 않는다 | `git ls-files 'apps/api/scripts/*.test.cjs'` | 0건 | [ ] |
-| F7 | 검사가 DB·네트워크를 쓰지 않는다 | spec 의 import 가 `node:*`·`vitest`·`src/config/workspace` 뿐이고, DB 셋업 없는 설정에서 F2 가 통과 | 충족 | [ ] |
-| F8 | 새 의존성이 없다 | `git diff main -- '*package.json' pnpm-lock.yaml` | 변경 0줄 | [ ] |
+| F5 | 기본값은 로컬 전용 그대로다 | spec 의 `assertLocalTarget` 검사: 원격 호스트·로컬 포트/DB 를 흉내 낸 원격·다른 포트·다른 DB 를 거부, 두 루프백 이름은 허용 | 거부 4 / 허용 2, 오류 문구는 기존과 동일 | [x] |
+| F6 | 어디서도 돌지 않는 검사 파일이 남지 않는다 | `git ls-files 'apps/api/scripts/*.test.cjs'` | 0건 | [x] |
+| F7 | 검사가 DB·네트워크를 쓰지 않는다 | spec 의 import 가 `node:*`·`vitest`·`src/config/workspace` 뿐이고, DB 셋업 없는 설정에서 F2 가 통과 | 충족 | [x] |
+| F8 | 새 의존성이 없다 | `git diff main -- '*package.json' pnpm-lock.yaml` | 변경 0줄 | [x] |
 
 ### 6.2 품질 게이트
 
@@ -145,7 +145,7 @@ IMPORT_TARGET_DATABASE_URL ──┬─ --production-plan 없음 → assertLocal
 | Q3 | 빌드 | `pnpm build` | 성공 | [ ] |
 | Q4 | 테스트 | `pnpm test` | 전부 통과 | [ ] |
 | Q6 | CI | PR 의 `typecheck`·`lint`·`build`·`test` | 4개 green | [ ] |
-| Q7 | 커밋 규칙 | `commit-msg` 훅(commitlint) | 위반 0 | [ ] |
+| Q7 | 커밋 규칙 | `commit-msg` 훅(commitlint) | 위반 0 | [x] |
 
 ### 6.3 성능 · 접근성
 
@@ -156,13 +156,36 @@ IMPORT_TARGET_DATABASE_URL ──┬─ --production-plan 없음 → assertLocal
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
 | D1 | 상태를 `완료` 로 바꾸고 `docs/tasks/README.md` · 마일스톤 `README.md` 인덱스 갱신 | — (인덱스 두 곳은 오케스트레이터 소유) | 반영 | [ ] |
-| D2 | 결정을 세션 파일과 `DECISIONS.md` 에 기록 | `docs/decisions/2026-09-17-production-import-guard.md`, `DECISIONS.md` 9장 | D-281 두 곳 | [ ] |
-| D3 | 새 환경변수 없음 | `git diff main -- .env.example` | 변경 0줄 (`IMPORT_TARGET_DATABASE_URL` 은 앱 설정이 아니라 실행 시 셸에서만 주는 값이다) | [ ] |
-| D4 | `docs/design/` 갱신 불필요 | 화면·스키마·상태 전이 변경 없음 | — | [ ] |
-| D5 | 기록과 모순되는 「운영 미반영」 서술이 없다 | `git grep -nE '원격 운영 DB는 반영하지 않았다\|shopping-prod로 이관하지 않았다\|이 문서는 계획이다' -- product-images README.md` | 0건 | [ ] |
-| D6 | `product-images/` 세 문서가 모두 2026-09-10 운영 반영을 말하고, 개발(`shopping-dev` + 로컬)과 운영(`shopping-prod` + 운영 DB)을 구분한다 | `git grep -lE 'shopping-prod' -- 'product-images/*.md'` | 3개 파일 | [ ] |
-| D7 | 문서의 수치가 서로, 그리고 루트 `README.md`(상품 66개·사진 660장)와 같다 | `git grep -nE '66개\|660' -- README.md 'product-images/*.md'` 를 읽어 대조 | 불일치 0건 | [ ] |
-| D8 | 추적되는 파일에 호스트·접속 문자열·키가 새로 들어가지 않았다 | `git diff main \| grep -nE '^\+.*(neon\.tech\|postgres(ql)?://\|r2\.cloudflarestorage\|SECRET\|ACCESS_KEY)'` 의 결과를 읽어, 가짜 픽스처(`ep-example`·`db.invalid`)와 코드의 접미사 검사 외의 것이 있는지 본다 | 실제 값 0건 | [ ] |
+| D2 | 결정을 세션 파일과 `DECISIONS.md` 에 기록 | `docs/decisions/2026-09-17-production-import-guard.md`, `DECISIONS.md` 9장 | D-281 두 곳 | [x] |
+| D3 | 새 환경변수 없음 | `git diff main -- .env.example` | 변경 0줄 (`IMPORT_TARGET_DATABASE_URL` 은 앱 설정이 아니라 실행 시 셸에서만 주는 값이다) | [x] |
+| D4 | `docs/design/` 갱신 불필요 | 화면·스키마·상태 전이 변경 없음 | — | [x] |
+| D5 | 기록과 모순되는 「운영 미반영」 서술이 없다 | `git grep -nE '원격 운영 DB는 반영하지 않았다\|shopping-prod로 이관하지 않았다\|이 문서는 계획이다' -- product-images README.md` | 0건 | [x] |
+| D6 | `product-images/` 세 문서가 모두 2026-09-10 운영 반영을 말하고, 개발(`shopping-dev` + 로컬)과 운영(`shopping-prod` + 운영 DB)을 구분한다 | `git grep -lE 'shopping-prod' -- 'product-images/*.md'` | 3개 파일 | [x] |
+| D7 | 문서의 수치가 서로, 그리고 루트 `README.md`(상품 66개·사진 660장)와 같다 | `git grep -nE '66개\|660' -- README.md 'product-images/*.md'` 를 읽어 대조 | 불일치 0건 | [x] |
+| D8 | 추적되는 파일에 호스트·접속 문자열·키가 새로 들어가지 않았다 | `git diff main \| grep -nE '^\+.*(neon\.tech\|postgres(ql)?://\|r2\.cloudflarestorage\|SECRET\|ACCESS_KEY)'` 의 결과를 읽어, 가짜 픽스처(`ep-example`·`db.invalid`)와 코드의 접미사 검사 외의 것이 있는지 본다 | 실제 값 0건 | [x] |
+
+### 6.5 검증 기록 (2026-09-17)
+
+전부 `feature-production-image-migration` 워크트리에서, 운영·원격 접속 없이 돌렸다.
+
+| 기준 | 실행 | 결과 |
+| --- | --- | --- |
+| F2 · F5 · F7 | `pnpm --filter @shopping/api exec vitest run --root . --config <DB 셋업을 뺀 임시 설정> test/scripts` — 임시 설정의 `include` 는 저장소 설정과 같고 `globalSetup`·`setupFiles` 만 없다 | 파일 1개, **44 passed**, failed 0 (약 0.2초). 그중 `assertLocalTarget` 이 허용 2·거부 4 |
+| F1 | 가드 조건식의 피연산자 30개(로컬 3, plan-only 1, 계획 대조 17, 증거 요구 2, 증거 대조 7)를 하나씩 `false` 로 바꿔 위 명령을 30번 실행. 끝나면 원본과 바이트 비교로 복원 확인 | 첫 실행은 2개 생존 — `publicBaseUrl` 고정(자산 origin 검사가 대신 거부), dry-run SHA(`mode` 검사가 대신 거부). 두 경우를 분리한 뒤 **생존 0 / 30** |
+| F3 | `pnpm --filter @shopping/api exec vitest list --filesOnly` (저장소 설정 그대로. 이 모드는 파일만 고르고 전역 셋업을 돌리지 않는다) | 248개 파일 중 `test/scripts/reviewed-production-guard.spec.ts` 1건 |
+| F6 · F8 · D3 | 표의 명령 | 0건 · 0줄 · 0줄 |
+| D5 · D6 | 표의 명령 | 0건 · 3개 파일 |
+| D7 | 표의 명령 출력을 읽어 대조 | 상품 66 · 이미지 660(1,228,911,310바이트) · 변형 151 · 운영 800→866 · 로컬 1358→1424. 불일치 0건 |
+| D8 | 표의 명령 | 걸린 줄은 가짜 픽스처(`ep-example.neon.tech`·`db.invalid`·`localhost`)와 접미사 규칙을 설명하는 문장뿐. 실제 값 0건 |
+| Q7 | 커밋마다 `commit-msg` 훅 | 위반 0 |
+| (Q1 의 일부) | `pnpm --filter @shopping/api exec tsc --noEmit` | error 0 |
+| (Q2 의 일부) | `pnpm --filter @shopping/api exec eslint test/scripts scripts/reviewed-production-guard.cjs scripts/import-reviewed-products.cjs --max-warnings 0` | error 0, warning 0 |
+
+**돌리지 못한 것과 이유**
+
+- **F4 — 실제 하네스 실행.** API 의 vitest 는 pure spec 하나를 돌려도 전역 셋업이 PostgreSQL 에 템플릿 DB 를 만든다. 이 워크트리에는 `.env.local` 도 컨테이너도 없고(`pnpm ports` → `PORT_OFFSET=0`), 기본 포트 5432 는 이 머신에서 다른 프로젝트의 것이다. 다른 워크트리의 컨테이너를 빌려 쓰면 그쪽 검사의 워커 DB 를 `TRUNCATE` 하게 되므로 하지 않았다. spec 자체는 `DATABASE_URL` 을 읽지 않으므로 결과가 달라질 이유는 없지만, 돌려 본 것은 아니다
+- **Q1~Q4 저장소 전체 · Q6.** 이 워크트리의 `node_modules`·`apps/api/node_modules`·`apps/api/dist` 는 `main` 워크트리로 가는 심볼릭 링크이고 나머지 패키지에는 `node_modules` 가 없다. 여기서 `pnpm install` 을 하면 「modules 디렉터리를 지우고 다시 설치할까」를 묻는데, 그 디렉터리가 `main` 의 것이라 진행하지 않았다(비대화형이라 자동 중단됐고 `main` 의 `node_modules` 는 그대로다). 그래서 전체 게이트는 머지 전 `main` 위 1회와 PR 의 CI 에 맡긴다
+- **D1.** 인덱스 두 곳은 오케스트레이터 소유다
 
 ## 7. 리스크 / 열린 질문
 
@@ -184,3 +207,4 @@ IMPORT_TARGET_DATABASE_URL ──┬─ --production-plan 없음 → assertLocal
 | --- | --- |
 | 2026-09-10 | (문서 없음) 가드 구현, 운영 반영 실행, 커밋. CLAUDE.md 4장 위반 |
 | 2026-09-17 | 소유자가 사후 문서화를 승인. `main` 위로 rebase 하고 이 문서와 D-281 을 최초 작성 |
+| 2026-09-17 | 대상 판정 둘을 가드 모듈로 옮기고, `node:test` 파일을 vitest spec(44개)으로 옮겨 게이트에 넣음. `product-images/` 세 문서 정정. 검증 기록(6.5) 작성. F4·Q1~Q4 전체·Q6·D1 이 남아 상태는 `진행중` |
