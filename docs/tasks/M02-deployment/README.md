@@ -15,4 +15,4 @@
 | [TASK-0101](./TASK-0101-cold-start.md) | 콜드 스타트 대응 · 웨이크업 UX | 완료 | 0010 |
 | [TASK-0118](./TASK-0118-cold-start-502.md) | 콜드 스타트 502 · 재시도 예산을 경과 시간으로 | 진행중 | 0101 |
 | [TASK-0119](./TASK-0119-empty-catalogue.md) | 배포 카탈로그 부트스트랩 · 빈 카탈로그 신호 | 완료 | 0037 · 0038 |
-| [TASK-0145](./TASK-0145-render-paid-plan.md) | Render 유료 전환 — 두 서비스 Starter, 검색 엔진에 디스크 | 진행중 | 0009 · 0101 · 0118 · 0143 |
+| [TASK-0145](./TASK-0145-render-paid-plan.md) | Render 유료 전환 — 두 서비스 Starter, 검색 엔진에 디스크 | 완료 | 0009 · 0101 · 0118 · 0143 |

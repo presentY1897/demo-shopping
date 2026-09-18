@@ -2,16 +2,16 @@
 
 > 이어받을 것과 이월된 항목은 [`docs/HANDOFF.md`](../HANDOFF.md) 에 있다.
 
-아래 인덱스에 등록된 **140개** TASK: **129개 완료**, **9개 진행중**, **2개 승인됨**, **0개 초안**. TASK-0124 검토 완료 후 TASK-0125~0131을 후속 작업으로 작성하고 사용자 승인을 받았다. 폐기 TASK는 이 집계에 포함하지 않는다.
+아래 인덱스에 등록된 **141개** TASK: **131개 완료**, **7개 진행중**, **2개 승인됨**, **1개 초안**(TASK-0144, 보류). TASK-0124 검토 완료 후 TASK-0125~0131을 후속 작업으로 작성하고 사용자 승인을 받았다. 폐기 TASK는 이 집계에 포함하지 않는다.
 
 | 마일스톤 | 범위 | 진행 |
 | --- | --- | --- |
 | [M01](./M01-foundation/) 기반 구축 | 워크스페이스, 공유 설정, 로컬 인프라, API/웹 부트스트랩, CI | **7/7 완료** |
-| [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 4/10 |
+| [M02](./M02-deployment/) 배포 파이프라인 | 도메인, Vercel×3, Railway, R2, 자동 배포, 관측, 콜드 스타트 | 5/10 |
 | [M03](./M03-design-system/) 디자인 시스템 | 토큰·밀도 3단계, Radix 컴포넌트, 폼, 레이아웃, Storybook | **7/7 완료** |
 | [M04](./M04-auth/) 인증·계정 | Google OAuth, JWT, RBAC, 데모 발급·정리, 입점, 테스트 기반 | **14/14 완료** |
 | [M05](./M05-catalog/) 카탈로그 | 카테고리·속성 정의, 상품·SKU, 이미지, 재고 원장, 시드 | **13/13 완료** |
-| [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | 9/10 |
+| [M06](./M06-search/) 검색·탐색 | Meilisearch 인덱싱, 검색 API, 3단계 뷰, SEO, 한글 자동완성 | 10/11 |
 | [M07](./M07-cart-order/) 장바구니·주문 | 장바구니, 금액 계산 엔진, 재고 예약, 주문 2단 분할 | **7/7 완료** |
 | [M08](./M08-payment/) 결제 | 프로바이더 추상화, 가상 카드, 토스 연동, 웹훅, 실패 복구 | **7/7 완료** |
 | [M09](./M09-fulfillment/) 배송·주문관리 | 상태 머신, 주문 화면, 가상 배송, 구매확정 | **6/6 완료** |
@@ -38,7 +38,7 @@
 
 </details>
 
-<details><summary><b>M02. 배포 파이프라인</b> (4/10)</summary>
+<details><summary><b>M02. 배포 파이프라인</b> (5/10)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -51,7 +51,7 @@
 | [TASK-0101](./M02-deployment/TASK-0101-cold-start.md) | 콜드 스타트 대응 · 서버 웨이크업 UX | 완료 |
 | [TASK-0118](./M02-deployment/TASK-0118-cold-start-502.md) | 콜드 스타트 502 · 재시도 예산을 경과 시간으로 | 진행중 |
 | [TASK-0119](./M02-deployment/TASK-0119-empty-catalogue.md) | 배포 카탈로그 부트스트랩 · 빈 카탈로그 신호 | 완료 |
-| [TASK-0145](./M02-deployment/TASK-0145-render-paid-plan.md) | Render 유료 전환 — 두 서비스 Starter, 검색 엔진에 디스크 | 진행중 |
+| [TASK-0145](./M02-deployment/TASK-0145-render-paid-plan.md) | Render 유료 전환 — 두 서비스 Starter, 검색 엔진에 디스크 | 완료 |
 
 </details>
 
@@ -114,7 +114,7 @@
 
 </details>
 
-<details><summary><b>M06. 검색·탐색</b> (9/10)</summary>
+<details><summary><b>M06. 검색·탐색</b> (10/11)</summary>
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
@@ -127,7 +127,8 @@
 | [TASK-0044](./M06-search/TASK-0044-home-brand.md) | 홈 · 브랜드관 | 완료 |
 | [TASK-0102](./M06-search/TASK-0102-seo.md) | SEO | 완료 |
 | [TASK-0103](./M06-search/TASK-0103-hangul-autocomplete.md) | 한글 자모 · 초성 자동완성 | 완료 |
-| [TASK-0143](./M06-search/TASK-0143-search-unavailable.md) | 검색 엔진에 닿지 못할 때 — 503 · 화면은 기다린다 | 진행중 |
+| [TASK-0143](./M06-search/TASK-0143-search-unavailable.md) | 검색 엔진에 닿지 못할 때 — 503 · 화면은 기다린다 | 완료 |
+| [TASK-0144](./M06-search/TASK-0144-listing-fallback.md) | 검색 엔진 없이도 목록은 나온다 — 질의 없는 목록의 DB 폴백 (보류) | 초안 |
 
 </details>
 
