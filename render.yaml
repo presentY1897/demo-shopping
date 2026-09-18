@@ -14,20 +14,26 @@
 # PostgreSQL 은 여기에 없다. Render 무료 Postgres 는 생성 30일 뒤 만료되므로
 # Neon 을 쓰기로 했고(D-060), Neon 은 Render 밖이라 DATABASE_URL 로만 연결된다.
 #
-# 무료 플랜의 제약 (2026-09-03 확인. 근거는 TASK-0009 7장 R6·R7):
-#   - Private Service 는 무료 플랜에 없다. 그래서 검색 엔진도 web 서비스다.
-#   - 무료 web 서비스는 사설망 요청을 보낼 수는 있어도 받지 못한다. 그래서
+# 플랜 (2026-09-18, TASK-0145 · D-283): 두 서비스 모두 starter. **플랜을 대시보드에서 바꾸지 않는다** —
+# 이 파일이 push 되면 Render 가 자동으로 sync 하고, 그때 대시보드의 값을 이 파일 값으로
+# 덮는다. 주석만 고친 push 도 sync 를 일으킨다(2026-09-17 에 그렇게 유료 → free 로 되돌아갔다).
+#
+# 무료 플랜 시절의 제약에서 남아 있는 구조 (근거는 TASK-0009 7장 R6·R7):
+#   - 검색 엔진이 Private Service 가 아니라 web 서비스다. 무료에 Private Service 가 없어서
+#     그렇게 시작했고, 바꾸려면 주소 · 환경변수 · 헬스 경로가 함께 바뀐다. 그래서
 #     API 는 검색 엔진의 공개 URL 로 접속하고, 보호는 마스터 키가 전담한다.
-#   - preDeployCommand 는 유료 전용이라 마이그레이션이 startCommand 에 있다.
-#   - 영구 디스크가 없어 재기동마다 검색 인덱스가 빈다 → 자동 재색인(TASK-0038).
-#   - 무료 인스턴스 시간 750h/월을 두 서비스가 나눠 쓴다. 항상 깨워 두면 넘는다.
+#   - 마이그레이션이 startCommand 에 있다. preDeployCommand 는 유료에서 쓸 수 있지만
+#     아직 옮기지 않았다.
+#   - 자동 재색인(TASK-0038)은 그대로 둔다. 디스크가 붙어 재기동에는 인덱스가 남지만,
+#     빈 디스크 · 문서 모양 변경 · 이미지 버전 교체 때는 여전히 그것이 채운다.
 
 services:
   # --- API (NestJS) ----------------------------------------------------------
   - type: web
     name: shopping-api
     runtime: node
-    plan: free
+    # 0.5 CPU · 512MB, 잠들지 않는다. 새 표기로는 0.5c-512mb 이고 둘 다 유효하다.
+    plan: starter
     region: singapore
     branch: main
     healthCheckPath: /api/v1/health
@@ -181,12 +187,21 @@ services:
   - type: web
     name: shopping-search
     runtime: image
-    plan: free
+    plan: starter
     region: singapore
     image:
       url: docker.io/getmeili/meilisearch:v1.24.0
     # /health 만 인증 없이 열려 있고 {"status":"available"} 을 돌려준다.
     healthCheckPath: /health
+    # 공식 이미지의 작업 디렉터리. data.ms · 덤프 · 스냅샷이 전부 이 아래에 생기므로
+    # 환경변수를 더하지 않고 마운트 위치만 맞춘다. 디스크는 늘릴 수만 있다.
+    # **이미지 버전을 올릴 때는 data.ms 를 비운다** — 옛 버전이 쓴 것을 새 버전이 못
+    # 읽을 수 있고, 인덱스는 PostgreSQL 의 사본이라 자동 재색인이 다시 채운다. disk.name 을
+    # 바꾸는 것은 새 디스크가 아니라 이름 변경이다. 절차: docs/development.md "배포" 절.
+    disk:
+      name: meili-data
+      mountPath: /meili_data
+      sizeGB: 1
 
     envVars:
       # Render web 서비스의 기본 포트가 10000 이다. Meilisearch 는 PORT 를 읽지
