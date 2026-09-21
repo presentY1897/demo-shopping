@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | M15 마무리 |
-| 상태 | 진행중 (2026-09-21 승인) |
+| 상태 | 완료 (2026-09-21) |
 | 작성일 | 2026-09-20 |
 | 브랜치 | `chore/perf-timing-gate` |
 | 선행 작업 | TASK-0097 |
@@ -57,14 +57,14 @@
 
 ### 기능 요구사항
 
-- [ ] 시간 단언은 전부 헬퍼를 거친다 — 스펙 파일에 `toBeLessThan(300)` 꼴의 시간 비교가 남지 않는다
-- [ ] 헬퍼는 표본을 재기 전에 같은 호출을 **2회 버린다** (커넥션 풀 · JIT 의 첫 비용을 표본에서 뺀다)
-- [ ] 모드는 `PERF_TIMING=strict|loose` 로 고르고, 없으면 `CI` 환경변수 유무로 정한다 (있으면 loose)
-- [ ] 실패 메시지가 **모드 · 예산 · 중앙값 · p95 · 최댓값**을 함께 말한다 — 「335 < 300」만으로는 플레이크인지 회귀인지 읽을 수 없었다
-- [ ] `pre-push` 는 푸시되는 커밋이 4.3 의 경로를 건드렸을 때만 돈다. `docs/` 만 바꾼 푸시는 0초다
-- [ ] 로컬 인프라가 꺼져 있으면 `pre-push` 는 테스트를 시작하지 않고 `pnpm infra:up` 을 안내하며 멈춘다
-- [ ] `SKIP_PERF=1 git push` 로 건너뛸 수 있고, 건너뛰었다는 한 줄을 남긴다
-- [ ] `pnpm gate` 는 typecheck → lint → build → test → `test:perf`(엄격) 순으로 돌고 첫 실패에서 멈춘다
+- [x] 시간 단언은 전부 헬퍼를 거친다 — 스펙 파일에 `toBeLessThan(300)` 꼴의 시간 비교가 남지 않는다
+- [x] 헬퍼는 표본을 재기 전에 같은 호출을 **2회 버린다** (커넥션 풀 · JIT 의 첫 비용을 표본에서 뺀다)
+- [x] 모드는 `PERF_TIMING=strict|loose` 로 고르고, 없으면 `CI` 환경변수 유무로 정한다 (있으면 loose)
+- [x] 실패 메시지가 **모드 · 예산 · 중앙값 · p95 · 최댓값**을 함께 말한다 — 「335 < 300」만으로는 플레이크인지 회귀인지 읽을 수 없었다
+- [x] `pre-push` 는 푸시되는 커밋이 4.3 의 경로를 건드렸을 때만 돈다. `docs/` 만 바꾼 푸시는 0초다
+- [x] 로컬 인프라가 꺼져 있으면 `pre-push` 는 테스트를 시작하지 않고 `pnpm infra:up` 을 안내하며 멈춘다
+- [x] `SKIP_PERF=1 git push` 로 건너뛸 수 있고, 건너뛰었다는 한 줄을 남긴다
+- [x] `pnpm gate` 는 typecheck → lint → build → test → `test:perf`(엄격) 순으로 돌고 첫 실패에서 멈춘다
 
 ### 비기능 요구사항
 
@@ -184,7 +184,7 @@ export function expectWithinBudget(durations: readonly number[], budgetMs: numbe
 | F7 | 문서만 바꾼 푸시는 훅이 돌지 않는다 | `pre-push-perf.spec` — `docs/**` 만 있는 범위 | 실행 안 함 | [x] 스펙 통과. 실제로도 — `HEAD~3..HEAD`(문서 커밋 셋)를 넣으면 출력 없이 0 |
 | F8 | API 를 건드린 푸시는 훅이 돈다 | `pre-push-perf.spec` — `apps/api/src/**` 가 있는 범위 | 실행함 | [x] 스펙 통과 (감시 경로 다섯을 하나씩, 닮은 경로 `apps/api-mocks/` · `packages/shared-x/` · `docs/apps/api/src/` 는 제외) |
 | F9 | 인프라가 꺼져 있으면 안내하고 멈춘다 | `pnpm infra:down` 뒤 API 변경을 푸시 | 종료 코드 1 · `infra:up` 안내 | [x] `main` 의 인프라는 다른 작업이 쓰고 있어 내리지 않고, 아무것도 듣지 않는 포트로 확인했다 — `PORT_OFFSET=873` 에 `ed18629`(API 변경) 범위: postgres `localhost:6305` · meilisearch `localhost:8573` 연결 안 됨 · `pnpm infra:up` 안내 · 종료 코드 1. 검사는 시작되지 않았다 |
-| F10 | CI 에서 같은 검사가 연속으로 안정적이다 | PR 의 `test-api-perf` 를 5회 재실행 | 5회 통과 | [ ] |
+| F10 | CI 에서 같은 검사가 연속으로 안정적이다 | PR 의 `test-api-perf` 를 5회 재실행 | 5회 통과 | [x] PR #160 의 실행 35563111244 — 최초 + 재실행 5회, **6회 전부 102개 통과**. 6.1b |
 
 ### 6.1a 실측 (2026-09-21, 로컬 · WSL2)
 
@@ -209,6 +209,25 @@ export function expectWithinBudget(durations: readonly number[], budgetMs: numbe
 - 새 워크트리에서 `search-performance` 가 401 로 실패했다. 시간이 아니라 `.env` 의 `MEILI_MASTER_KEY` 가 없어서였다.
   훅은 포트가 열려 있는지만 보므로 이 경우를 미리 말해 주지 못한다 — 워크트리를 만들면 `.env` 를 함께 옮긴다
 
+### 6.1b CI 에서 여섯 번 (2026-09-21, PR #160 · 실행 35563111244)
+
+`test-api-perf` 를 다섯 번 다시 돌렸다. 매번 다른 러너다.
+
+| 시도 | 주문 생성 루프 (워밍업 · 준비 포함 32회) | `orders-performance` 파일 | 결과 |
+| --- | --- | --- | --- |
+| 1 | 2,323ms | 8,808ms | 102 통과 |
+| 2 | 2,264ms | 8,602ms | 102 통과 |
+| 3 | 3,711ms | 11,690ms | 102 통과 |
+| 4 | 2,638ms | 9,186ms | 102 통과 |
+| 5 | 4,099ms | 10,264ms | 102 통과 |
+| 6 | 2,328ms | 8,751ms | 102 통과 |
+
+같은 코드의 같은 루프가 러너에 따라 **1.8배**(2,264 → 4,099ms) 달랐다. 2026-09-18 에 `main` 을 빨갛게 한 것과 같은
+종류의 흔들림이고, 느슨한 판정은 여섯 번 다 그것을 지나갔다.
+
+그리고 이 PR 의 첫 푸시에서 `pre-push` 가 실제로 돌았다 — API 에 닿는 파일 22개를 감지했고, 엄격 검사 19개 파일 ·
+102개를 106초에 통과한 뒤 푸시가 나갔다.
+
 ### 6.2 품질 게이트 (공통 · 모든 TASK 적용)
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
@@ -217,13 +236,13 @@ export function expectWithinBudget(durations: readonly number[], budgetMs: numbe
 | Q2 | 린트 | `pnpm lint` | error 0, warning 0 | [x] |
 | Q3 | 빌드 | `pnpm build` | 성공 | [x] 세 앱 컴파일 성공 |
 | Q4 | 단위 테스트 | `pnpm test` | 전부 통과 | [x] 전 패키지 순차 실행 — 9,354개 통과 · 6개 skip, 254초 (shared 103 · ui 961 · api 4,435 · api-mocks 486 · admin 1,166 · seller 895 · shop 1,308) |
-| Q5 | 신규/변경 코드 커버리지 | 커버리지 리포트 | 80% 이상 | [ ] |
+| Q5 | 신규/변경 코드 커버리지 | 커버리지 리포트 | 80% 이상 | [x] `src/` 를 바꾸지 않는다. CI 의 병합 커버리지 문턱 통과 |
 
 ### 6.3 성능 · 접근성 (사용자 화면이 있는 TASK)
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| P2 | API 응답 | `PERF_TIMING=strict pnpm --filter @shopping/api run test:perf` (로컬) | 전부 통과 — 예산은 바꾸지 않는다 | [ ] |
+| P2 | API 응답 | `PERF_TIMING=strict pnpm --filter @shopping/api run test:perf` (로컬) | 전부 통과 — 예산은 바꾸지 않는다 | [x] 10회 연속 + 푸시 때 1회 (6.1a · 6.1b) |
 
 > P1 · P3 · P4 해당 없음 — 화면을 바꾸지 않는다.
 
@@ -231,10 +250,10 @@ export function expectWithinBudget(durations: readonly number[], budgetMs: numbe
 
 | # | 기준 | 충족 |
 | --- | --- | --- |
-| D1 | 이 문서의 상태를 `완료` 로 변경하고 `docs/tasks/README.md` 인덱스 갱신 | [ ] |
-| D2 | D-284 「시간 기준은 로컬에서, CI 는 느슨하게」를 세션 파일과 `DECISIONS.md` 에 기록 | [ ] |
-| D3 | 해당 없음 — `PERF_TIMING` · `SKIP_PERF` 는 앱 환경변수가 아니다. `QUALITY-GATES` A1 에 적는다 | [ ] |
-| D4 | `QUALITY-GATES` A1 의 측정 방법 갱신, TASK-0097 F3 에 이 TASK 로의 링크 | [ ] |
+| D1 | 이 문서의 상태를 `완료` 로 변경하고 `docs/tasks/README.md` 인덱스 갱신 | [x] |
+| D2 | D-284 「시간 기준은 로컬에서, CI 는 느슨하게」를 세션 파일과 `DECISIONS.md` 에 기록 | [x] `2026-09-20-perf-timing-gate.md` · `DECISIONS.md` 「CI 게이트」 세 줄 |
+| D3 | 해당 없음 — `PERF_TIMING` · `SKIP_PERF` 는 앱 환경변수가 아니다. `QUALITY-GATES` A1 에 적는다 | [x] |
+| D4 | `QUALITY-GATES` A1 의 측정 방법 갱신, TASK-0097 F3 에 이 TASK 로의 링크 | [x] `development.md` 의 훅 표 · 우회, `CLAUDE.md` 의 마지막 확인, `HANDOFF.md` 의 함정 표도 함께 |
 
 ## 7. 리스크 / 열린 질문
 
@@ -251,5 +270,6 @@ export function expectWithinBudget(durations: readonly number[], budgetMs: numbe
 | 날짜 | 내용 |
 | --- | --- |
 | 2026-09-20 | 최초 작성 — 2026-09-18 main CI 실패(`66a83ba`, 실행 35359933228) 조사에서 출발 |
+| 2026-09-21 | 완료 — CI 에서 여섯 번(6.1b), 푸시에서 훅이 실제로 돈 것까지 확인 |
 | 2026-09-21 | `gate` 가 패키지를 하나씩 돌리게 했다 — 첫 실행이 세 웹 앱을 동시에 띄우다 메모리 부족으로 중단됐다 (4.4) |
 | 2026-09-21 | 승인 · 착수. 대상을 바로잡았다 — 초안은 `toBeLessThan(300)` 꼴만 세어 15개 파일 · 35개라 적었는데, 상수(`P95_BUDGET_MS`)나 자체 `p95()` 로 재는 스펙까지 **19개 파일 · 43개**다. F1 의 측정을 「스펙이 직접 시계를 읽는 자리」로 바꿨다 |
