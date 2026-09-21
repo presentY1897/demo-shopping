@@ -228,7 +228,12 @@ jobs:
           # merge discover it. `warn` is what made the failure land in the wrong
           # job the first time.
           if-no-files-found: error
-          retention-days: 1
+          # Three days, because the merge job reads these on a *re-run* too.
+          # At one day, `gh run rerun --failed` on a Friday failure answered
+          # `ENOENT: scandir .vitest-reports` on Monday — the shards were not
+          # re-run, and what they had uploaded was gone (2026-09-20, TASK-0146).
+          # Past three days the way back to green is a full `gh run rerun`.
+          retention-days: 3
 
   # The wall-clock gate (A1), and the only shape in which it means anything.
   #
@@ -293,6 +298,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
+      # The clock is judged loosely here — median against three times the
+      # budget — because `CI` is set and `test/support/timing.ts` reads it. A
+      # shared runner was 2.6x slower than its neighbour on 2026-09-18 and
+      # turned a docs-only commit red. The budgets as written (A1) are held
+      # locally, by `pre-push` and `pnpm gate`; what is exact on this runner
+      # is the statement counts and the `EXPLAIN` checks (TASK-0146).
       - run: pnpm --filter @shopping/api run test:perf
         env:
           MEILI_MASTER_KEY: ci-master-key
