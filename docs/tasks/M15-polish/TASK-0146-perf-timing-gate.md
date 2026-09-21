@@ -133,10 +133,16 @@ export function expectWithinBudget(durations: readonly number[], budgetMs: numbe
 ### 4.4 `pnpm gate`
 
 ```json
-"gate": "pnpm typecheck && pnpm lint && pnpm build && pnpm test && PERF_TIMING=strict pnpm --filter @shopping/api run test:perf"
+"gate": "pnpm typecheck && pnpm lint && pnpm build && pnpm -r --workspace-concurrency=1 --if-present test && PERF_TIMING=strict pnpm test:perf"
 ```
 
 `QUALITY-GATES` Q1~Q4 와 A1 을 순서대로 도는 것뿐이다. 새 규칙을 만들지 않는다.
+
+**패키지를 하나씩 돌린다 (`--workspace-concurrency=1`).** `pnpm test` 는 서로 의존하지 않는 `shop` · `admin` ·
+`seller` 를 동시에 띄우고, 각자 코어 수만큼 jsdom 워커를 띄운다. 이 머신(16코어 · 15.5GB)에서 앱 하나가 vitest
+프로세스 17개 · 약 5.7GB 이므로 셋이면 17GB 다 — 첫 `pnpm gate` 가 메모리 부족으로 중단됐다(2026-09-21). 하나씩
+돌리면 피크 6.4GB · 254초이고, 동시에 돌릴 때(325초, `CLAUDE.md` 의 실측)보다 빠르다. CI 가 같은 이유로 이미 그렇게
+돌린다 (D-223).
 
 ### 4.5 `pnpm test` 에서 성능 스펙을 뺀다
 
@@ -207,10 +213,10 @@ export function expectWithinBudget(durations: readonly number[], budgetMs: numbe
 
 | # | 기준 | 측정 방법 | 목표 | 충족 |
 | --- | --- | --- | --- | --- |
-| Q1 | 타입 검사 | `pnpm typecheck` | error 0 | [ ] |
-| Q2 | 린트 | `pnpm lint` | error 0, warning 0 | [ ] |
-| Q3 | 빌드 | `pnpm build` | 성공 | [ ] |
-| Q4 | 단위 테스트 | `pnpm test` | 전부 통과 | [ ] |
+| Q1 | 타입 검사 | `pnpm typecheck` | error 0 | [x] `pnpm gate` 의 첫 단계 |
+| Q2 | 린트 | `pnpm lint` | error 0, warning 0 | [x] |
+| Q3 | 빌드 | `pnpm build` | 성공 | [x] 세 앱 컴파일 성공 |
+| Q4 | 단위 테스트 | `pnpm test` | 전부 통과 | [x] 전 패키지 순차 실행 — 9,354개 통과 · 6개 skip, 254초 (shared 103 · ui 961 · api 4,435 · api-mocks 486 · admin 1,166 · seller 895 · shop 1,308) |
 | Q5 | 신규/변경 코드 커버리지 | 커버리지 리포트 | 80% 이상 | [ ] |
 
 ### 6.3 성능 · 접근성 (사용자 화면이 있는 TASK)
@@ -245,4 +251,5 @@ export function expectWithinBudget(durations: readonly number[], budgetMs: numbe
 | 날짜 | 내용 |
 | --- | --- |
 | 2026-09-20 | 최초 작성 — 2026-09-18 main CI 실패(`66a83ba`, 실행 35359933228) 조사에서 출발 |
+| 2026-09-21 | `gate` 가 패키지를 하나씩 돌리게 했다 — 첫 실행이 세 웹 앱을 동시에 띄우다 메모리 부족으로 중단됐다 (4.4) |
 | 2026-09-21 | 승인 · 착수. 대상을 바로잡았다 — 초안은 `toBeLessThan(300)` 꼴만 세어 15개 파일 · 35개라 적었는데, 상수(`P95_BUDGET_MS`)나 자체 `p95()` 로 재는 스펙까지 **19개 파일 · 43개**다. F1 의 측정을 「스펙이 직접 시계를 읽는 자리」로 바꿨다 |
