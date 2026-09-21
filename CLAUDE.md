@@ -198,6 +198,10 @@ pnpm typecheck & pnpm lint & wait
 pnpm gate     # typecheck → lint → build → test → test:perf(엄격). 첫 실패에서 멈춘다
 ```
 
+`gate` 는 패키지를 **하나씩** 테스트한다(`--workspace-concurrency=1`). `pnpm test` 는 세 웹 앱을 동시에 띄우고
+각자 코어 수만큼 jsdom 워커를 띄워서, 16코어 · 15.5GB 머신에서 약 17GB 를 요구한다. 하나씩이면 피크 6.4GB ·
+254초다.
+
 `pnpm test` 는 **성능 스펙을 돌리지 않는다.** 시간은 워커 하나로 따로 재야 하고(`pnpm test:perf`), 300ms 같은
 예산을 글자 그대로 재는 자리는 CI 가 아니라 **로컬**이다 — CI 의 공유 러너는 같은 코드를 2.6배 느리게 돌린
 적이 있어서 같은 스펙을 느슨하게 판정한다 (D-284). API 에 닿는 변경을 담은 푸시에는 `pre-push` 훅이 그것을
