@@ -23,6 +23,7 @@ import {
 import type { TestCaller } from '../support/principal.js'
 import { VirtualCardService } from '../../src/payment/virtual-card.service.js'
 import { recordStatements } from '../support/statements.js'
+import { expectWithinBudget, sample, samplePrepared } from '../support/timing.js'
 
 /**
  * 주문의 A1(응답 시간)과 A5(N+1 없음).
@@ -70,12 +71,6 @@ const SAMPLES = 30
  * 읽히지만 아니다. 실제로 전체 게이트에서 한 번 그렇게 빨개졌다.
  */
 const SAMPLING_BUDGET_MS = 180_000
-
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-
-  return sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.95) - 1)] ?? 0
-}
 
 let buyer: TestCaller
 let addressId: string
@@ -155,17 +150,13 @@ describe('A1 — 응답 시간', () => {
     'creates a three-store order well inside 300ms at p95',
     { timeout: SAMPLING_BUDGET_MS },
     async () => {
-      const durations: number[] = []
+      const durations = await samplePrepared(
+        async () => [await add(await variantOf(50)), await add(await variantOf(50))],
+        (itemIds) => place(itemIds),
+        { samples: SAMPLES },
+      )
 
-      for (let index = 0; index < SAMPLES; index += 1) {
-        const itemIds = [await add(await variantOf(50)), await add(await variantOf(50))]
-        const started = performance.now()
-
-        await place(itemIds)
-        durations.push(performance.now() - started)
-      }
-
-      expect(p95Of(durations)).toBeLessThan(300)
+      expectWithinBudget(durations, 300)
     },
   )
 
@@ -174,17 +165,13 @@ describe('A1 — 응답 시간', () => {
     { timeout: SAMPLING_BUDGET_MS },
     async () => {
       const orderId = await orderAcross(10)
-      const durations: number[] = []
       const caller = client()
+      const durations = await sample(
+        () => caller.request({ path: `/orders/${orderId}`, schema: orderResponseSchema }),
+        { samples: SAMPLES },
+      )
 
-      for (let index = 0; index < SAMPLES; index += 1) {
-        const started = performance.now()
-
-        await caller.request({ path: `/orders/${orderId}`, schema: orderResponseSchema })
-        durations.push(performance.now() - started)
-      }
-
-      expect(p95Of(durations)).toBeLessThan(300)
+      expectWithinBudget(durations, 300)
     },
   )
 })
@@ -258,22 +245,19 @@ describe('주문서 (TASK-0050)', () => {
     'opens a ten-store checkout well inside 300ms at p95',
     { timeout: SAMPLING_BUDGET_MS },
     async () => {
-      const durations: number[] = []
+      const durations = await samplePrepared(
+        async () => [await add(await variantOf(50)), await add(await variantOf(50))],
+        (itemIds) =>
+          client().request({
+            path: '/checkouts',
+            method: 'POST',
+            body: { itemIds },
+            schema: checkoutResponseSchema,
+          }),
+        { samples: SAMPLES },
+      )
 
-      for (let index = 0; index < SAMPLES; index += 1) {
-        const itemIds = [await add(await variantOf(50)), await add(await variantOf(50))]
-        const started = performance.now()
-
-        await client().request({
-          path: '/checkouts',
-          method: 'POST',
-          body: { itemIds },
-          schema: checkoutResponseSchema,
-        })
-        durations.push(performance.now() - started)
-      }
-
-      expect(p95Of(durations)).toBeLessThan(300)
+      expectWithinBudget(durations, 300)
     },
   )
 

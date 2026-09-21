@@ -9,6 +9,7 @@ import { useDatabase } from '../support/database.js'
 import { createUser } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
 import { recordStatements } from '../support/statements.js'
+import { expectWithinBudget, sample, WARMUP_RUNS } from '../support/timing.js'
 
 /**
  * 쿠폰 경로의 A1 · A5 (TASK-0072).
@@ -110,42 +111,25 @@ async function buyers(count: number): Promise<readonly TestCaller[]> {
   return rows
 }
 
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-  const index = Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.95) - 1)
-
-  return sorted[index] ?? 0
-}
-
 describe('A1 — 응답 시간', () => {
   it('발행이 300ms 안에 끝난다', async () => {
-    const durations: number[] = []
+    const durations = await sample(() => issueCoupon({ withCode: true }), { samples: SAMPLES })
 
-    for (let index = 0; index < SAMPLES; index += 1) {
-      const started = performance.now()
-
-      await issueCoupon({ withCode: true })
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(P95_BUDGET_MS)
+    expectWithinBudget(durations, P95_BUDGET_MS)
   })
 
   it('코드 발급이 300ms 안에 끝난다 — 이미 나간 장이 쌓여도', async () => {
     // 표본이 진행될수록 이 쿠폰의 발급 행이 늘어난다. 발급 비용이 그 수에 따라
     // 늘어난다면 p95 는 뒤쪽 표본에서 무너진다.
     const { coupon } = await issueCoupon({ withCode: true })
-    const people = await buyers(SAMPLES)
-    const durations: number[] = []
+    // 버려지는 워밍업 호출도 실제 발급이라 그 몫의 사람이 따로 있어야 한다.
+    const people = await buyers(SAMPLES + WARMUP_RUNS)
+    const durations = await sample(
+      (index) => claim(people[index] ?? emptyCaller(), coupon.code ?? ''),
+      { samples: SAMPLES },
+    )
 
-    for (const person of people) {
-      const started = performance.now()
-
-      await claim(person, coupon.code ?? '')
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(P95_BUDGET_MS)
+    expectWithinBudget(durations, P95_BUDGET_MS)
   })
 })
 

@@ -1,12 +1,13 @@
 import { randomUUID } from 'node:crypto'
 
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 
 import { GOOGLE_OAUTH } from '../../src/auth/google-oauth.client.js'
 import { OAUTH_STATE_COOKIE } from '../../src/auth/oauth-state.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
 import { A_GOOGLE_PROFILE, createFakeGoogle } from '../support/google-oauth.js'
+import { expectWithinBudget, sample, samplePrepared } from '../support/timing.js'
 
 /**
  * Gate A1 (response time) for the two sign-in endpoints.
@@ -32,12 +33,6 @@ const api = useApiApp({
 
 const SAMPLES = 50
 
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-
-  return sorted[Math.floor(sorted.length * 0.95)] ?? Number.POSITIVE_INFINITY
-}
-
 async function beginOnce(): Promise<{ cookie: string; state: string }> {
   const response = await fetch(`${api.baseUrl}/api/v1/auth/google?app=shop`, {
     redirect: 'manual',
@@ -57,16 +52,9 @@ function callbackOnce(cookie: string, state: string): Promise<Response> {
 
 describe('A1 — 응답 시간', () => {
   it('authorize 가 300ms 안에 답한다', async () => {
-    const durations: number[] = []
+    const durations = await sample(() => beginOnce(), { samples: SAMPLES })
 
-    for (let index = 0; index < SAMPLES; index += 1) {
-      const started = performance.now()
-
-      await beginOnce()
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('재로그인 콜백이 300ms 안에 답한다', async () => {
@@ -75,33 +63,27 @@ describe('A1 — 응답 시간', () => {
     const first = await beginOnce()
     await callbackOnce(first.cookie, first.state)
 
-    const durations: number[] = []
+    const durations = await samplePrepared(
+      () => beginOnce(),
+      ({ cookie, state }) => callbackOnce(cookie, state),
+      { samples: SAMPLES },
+    )
 
-    for (let index = 0; index < SAMPLES; index += 1) {
-      const { cookie, state } = await beginOnce()
-      const started = performance.now()
-
-      await callbackOnce(cookie, state)
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('최초 로그인 콜백이 300ms 안에 답한다', async () => {
-    const durations: number[] = []
+    const durations = await samplePrepared(
+      () => {
+        // A new identity every time, so every sample takes the insert path.
+        google.setProfile({ ...A_GOOGLE_PROFILE, sub: `perf-${randomUUID()}` })
 
-    for (let index = 0; index < SAMPLES; index += 1) {
-      // A new identity every time, so every sample takes the insert path.
-      google.setProfile({ ...A_GOOGLE_PROFILE, sub: `perf-${randomUUID()}` })
+        return beginOnce()
+      },
+      ({ cookie, state }) => callbackOnce(cookie, state),
+      { samples: SAMPLES },
+    )
 
-      const { cookie, state } = await beginOnce()
-      const started = performance.now()
-
-      await callbackOnce(cookie, state)
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 })

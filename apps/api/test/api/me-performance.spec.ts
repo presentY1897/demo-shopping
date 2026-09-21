@@ -8,6 +8,7 @@ import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
 import { createUser } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 /**
  * Gates A1 (response time) and A5 (no N+1) for the `/me` family, measured rather
@@ -104,12 +105,6 @@ function addressStatements(seen: readonly string[]): string[] {
   return seen.filter((statement) => statement.includes('"Address"'))
 }
 
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-
-  return sorted[Math.floor(sorted.length * 0.95)] ?? Number.POSITIVE_INFINITY
-}
-
 describe('배송지 목록은 건수에 비례하지 않는다 (A5)', () => {
   it('1건과 50건을 같은 수의 문장으로 읽는다', async () => {
     await saveAddresses(1)
@@ -148,28 +143,14 @@ describe('응답 시간 (A1)', () => {
   it('배송지 50건 목록을 300ms 안에 답한다', async () => {
     await saveAddresses(50)
 
-    const durations: number[] = []
+    const durations = await sample(() => listAddresses(), { samples: 50 })
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await listAddresses()
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('프로필과 설정을 300ms 안에 답한다', async () => {
-    const durations: number[] = []
+    const durations = await sample(() => readMe(), { samples: 50 })
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await readMe()
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 })

@@ -17,6 +17,7 @@ import { useDatabase } from '../support/database.js'
 import { createSellableVariant, createSeller, createUser } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
 import { recordStatements } from '../support/statements.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 /**
  * 관리자 콘솔의 A1·A5 (TASK-0092 F5 · TASK-0094 · TASK-0095 §6.2 3장).
@@ -138,23 +139,17 @@ function metrics(): Promise<unknown> {
   })
 }
 
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-
-  return sorted[Math.floor(sorted.length * 0.95)] ?? Number.POSITIVE_INFINITY
-}
-
 /**
  * 표본 수. **20개였을 때 p95 는 사실상 최댓값이었다.**
  *
- * `floor(20 × 0.95) = 19` 는 정렬된 20개의 마지막 값이다. 그러면 느린 표본 **하나**가
- * 검사를 빨갛게 만들고, 공유 러너에서 그 하나는 코드와 무관하게 나온다 — 이 저장소가
- * 이미 세 번 겪은 종류의 실패다(`performance.md`). 실제로 이 검사가 CI 에서 648ms 로
- * 걸렸고 로컬에서는 통과했다.
+ * 그때 이 파일은 `sorted[floor(n × 0.95)]` 를 읽었고, `floor(20 × 0.95) = 19` 는 정렬된
+ * 20개의 마지막 값이다. 그러면 느린 표본 **하나**가 검사를 빨갛게 만들고, 공유 러너에서
+ * 그 하나는 코드와 무관하게 나온다 — 이 저장소가 이미 세 번 겪은 종류의 실패다
+ * (`performance.md`). 실제로 이 검사가 CI 에서 648ms 로 걸렸고 로컬에서는 통과했다.
  *
- * 30개면 `floor(30 × 0.95) = 28` 이라 가장 느린 하나를 넘긴다. **예산을 늘린 것이
- * 아니라 p95 를 p95 로 만든 것이다** — 다른 성능 스펙들이 먼저 30을 쓰고 있었다
- * (`orders-performance.spec.ts`).
+ * 30개면 p95 는 두 번째로 느린 값이라(`support/timing.ts` 의 `p95Of`) 가장 느린 하나를
+ * 넘긴다. **예산을 늘린 것이 아니라 p95 를 p95 로 만든 것이다** — 다른 성능 스펙들이
+ * 먼저 30을 쓰고 있었다 (`orders-performance.spec.ts`).
  */
 const SAMPLES = 30
 
@@ -174,16 +169,9 @@ describe('응답 시간 (A1 · F5)', () => {
     async () => {
       await fill()
 
-      const durations: number[] = []
+      const durations = await sample(() => metrics(), { samples: SAMPLES })
 
-      for (let index = 0; index < SAMPLES; index += 1) {
-        const started = performance.now()
-
-        await metrics()
-        durations.push(performance.now() - started)
-      }
-
-      expect(p95Of(durations)).toBeLessThan(500)
+      expectWithinBudget(durations, 500)
     },
   )
 
@@ -194,14 +182,18 @@ describe('응답 시간 (A1 · F5)', () => {
   it('answers the queue much faster than the metrics', async () => {
     await fill()
 
-    const started = performance.now()
+    // 표본은 하나다 — 여기서 보는 것은 분포가 아니라 「지표(500ms)보다 훨씬 가볍다」는
+    // 자릿수이고, 워밍업을 버린 뒤의 한 번이면 그것을 말하기에 충분하다.
+    const durations = await sample(
+      () =>
+        client().request({
+          path: '/admin/dashboard/pending',
+          schema: dashboardPendingResponseSchema,
+        }),
+      { samples: 1 },
+    )
 
-    await client().request({
-      path: '/admin/dashboard/pending',
-      schema: dashboardPendingResponseSchema,
-    })
-
-    expect(performance.now() - started).toBeLessThan(200)
+    expectWithinBudget(durations, 200)
   })
 })
 

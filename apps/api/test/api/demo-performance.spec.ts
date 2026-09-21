@@ -9,6 +9,7 @@ import { cloneCatalogIntoDemoStore } from '../../src/demo/demo-catalog-clone.js'
 import { DEMO_PRODUCT_COUNT } from '../../src/demo/demo-catalog-clone.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
+import { expectWithinBudget, p95Of, sample } from '../support/timing.js'
 
 /**
  * Gates A1 (response time) and A5 (no N+1) for demo issuing.
@@ -62,10 +63,10 @@ function issue(role: string, app: string, ip: string): Promise<Response> {
 /**
  * Fifty, like every other performance spec here.
  *
- * The number is not decoration: `p95Of` reads `sorted[floor(n * 0.95)]`, so with
- * twenty samples "p95" is the **maximum** and a single scheduling hiccup decides
- * the gate. Fifty puts three samples above the index and makes the number the
- * shape of the distribution rather than its worst moment.
+ * The number is not decoration: a nearest-rank p95 of twenty samples is the
+ * second-slowest of them, so a couple of scheduling hiccups decide the gate.
+ * Fifty puts the p95 at the third-slowest and makes the number the shape of the
+ * distribution rather than its worst moment.
  */
 const SAMPLES = 50
 
@@ -84,20 +85,15 @@ const SAMPLES = 50
  */
 const SAMPLING_BUDGET_MS = 180_000
 
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-
-  return sorted[Math.floor(sorted.length * 0.95)] ?? Number.POSITIVE_INFINITY
-}
-
 /**
- * A fresh address per sample.
+ * A fresh address per sample — the discarded warm-up calls included, which is
+ * why this takes the sampler's continuous index.
  *
  * The issue limit is per address (`demo-rate-limit.ts`), so measuring fifty
  * issues from one would measure the refusal instead of the work.
  */
-function addressFor(prefix: string, sample: number): string {
-  return `${prefix}.${String(Math.floor(sample / 250))}.${String((sample % 250) + 1)}`
+function addressFor(prefix: string, index: number): string {
+  return `${prefix}.${String(Math.floor(index / 250))}.${String((index % 250) + 1)}`
 }
 
 /**
@@ -182,19 +178,18 @@ describe('발급의 응답 시간', () => {
       expect(first.status).toBe(200)
       await first.text()
       const cold = performance.now() - coldStart
-      const durations: number[] = []
-      for (let sample = 0; sample < SAMPLES; sample += 1) {
-        const started = performance.now()
-        const response = await issue(role, app, addressFor('198.18', sample))
-        expect(response.status).toBe(200)
-        await response.text()
-        durations.push(performance.now() - started)
-      }
-      const p95 = p95Of(durations)
-      process.stdout.write(
-        `${JSON.stringify({ role, coldMs: Math.round(cold), warmSamples: SAMPLES, p95Ms: Math.round(p95) })}\n`,
+      const durations = await sample(
+        async (index) => {
+          const response = await issue(role, app, addressFor('198.18', index))
+          expect(response.status).toBe(200)
+          await response.text()
+        },
+        { samples: SAMPLES },
       )
-      expect(p95).toBeLessThan(300)
+      process.stdout.write(
+        `${JSON.stringify({ role, coldMs: Math.round(cold), warmSamples: SAMPLES, p95Ms: Math.round(p95Of(durations)) })}\n`,
+      )
+      expectWithinBudget(durations, 300)
     },
   )
 })

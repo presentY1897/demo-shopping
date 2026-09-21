@@ -8,6 +8,7 @@ import { useDatabase } from '../support/database.js'
 import type { CategoryRow } from '../support/factories.js'
 import { createCategory } from '../support/factories.js'
 import { callers } from '../support/principal.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 /**
  * Gates A1 (response time) and A5 (no N+1), measured rather than asserted by
@@ -170,21 +171,10 @@ describe('response time (A1)', () => {
   it('answers a tree read well inside 300ms at p95', async () => {
     await branchOfWidth(40, 'timed')
 
-    const durations: number[] = []
     const caller = client()
+    const durations = await sample(() => caller.getCategoryTree(), { samples: 50 })
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await caller.getCategoryTree()
-      durations.push(performance.now() - started)
-    }
-
-    durations.sort((left, right) => left - right)
-
-    const p95 = durations[Math.floor(durations.length * 0.95)] ?? Number.POSITIVE_INFINITY
-
-    expect(p95).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('answers a move well inside 300ms at p95', async () => {
@@ -195,20 +185,12 @@ describe('response time (A1)', () => {
       destinations.push((await createCategory(db, { slug: `swing-${String(index)}` })).id)
     }
 
-    const durations: number[] = []
     const caller = client()
+    const durations = await sample(
+      (index) => caller.moveCategory(child.id, { parentId: destinations[index % 2]! }),
+      { samples: 30 },
+    )
 
-    for (let index = 0; index < 30; index += 1) {
-      const started = performance.now()
-
-      await caller.moveCategory(child.id, { parentId: destinations[index % 2]! })
-      durations.push(performance.now() - started)
-    }
-
-    durations.sort((left, right) => left - right)
-
-    const p95 = durations[Math.floor(durations.length * 0.95)] ?? Number.POSITIVE_INFINITY
-
-    expect(p95).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 })

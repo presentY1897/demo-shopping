@@ -12,6 +12,7 @@ import { createSeller, createUser } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
 import { callers } from '../support/principal.js'
 import { recordStatements } from '../support/statements.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 /**
  * 예약 경로의 A1 · A5 (TASK-0048).
@@ -100,13 +101,6 @@ async function twelveVariantListing(): Promise<{ productId: string; variantIds: 
   return { productId: product.id, variantIds: product.variants.map((variant) => variant.id) }
 }
 
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-  const index = Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.95) - 1)
-
-  return sorted[index] ?? 0
-}
-
 describe('A1 — 응답 시간', () => {
   it('answers a twelve-variant storefront detail well inside 300ms with holds on every SKU', async () => {
     const { productId, variantIds } = await twelveVariantListing()
@@ -118,32 +112,22 @@ describe('A1 — 응답 시간', () => {
       await reservations().hold({ variantId, quantity: 3, userId: buyer, checkoutId: randomUUID() })
     }
 
-    const durations: number[] = []
     const caller = client()
+    const durations = await sample(() => caller.getStorefrontProduct(productId), { samples: 50 })
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await caller.getStorefrontProduct(productId)
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('holds a unit well inside 300ms at p95', async () => {
     const { variantIds } = await twelveVariantListing()
     const variantId = variantIds[0] ?? ''
-    const durations: number[] = []
+    const durations = await sample(
+      () =>
+        reservations().hold({ variantId, quantity: 1, userId: buyer, checkoutId: randomUUID() }),
+      { samples: 50 },
+    )
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await reservations().hold({ variantId, quantity: 1, userId: buyer, checkoutId: randomUUID() })
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 })
 
