@@ -9,7 +9,7 @@
 
 import type { ApiClient } from '@shopping/shared'
 import { searchResponseSchema, searchSuggestResponseSchema } from '@shopping/shared'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, it } from 'vitest'
 
 import { PrismaService } from '../../src/prisma/prisma.service.js'
 import type { SearchIndex } from '../../src/search/search-index.js'
@@ -31,6 +31,7 @@ import {
   searchIndexForTests,
   searchKeyForTests,
 } from '../support/search-host.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 const db = useDatabase()
 const api = useApiApp({
@@ -70,22 +71,6 @@ async function settled(): Promise<void> {
 
     return settled()
   }
-}
-
-/** The p95 of `samples` runs, in milliseconds. */
-async function p95(work: () => Promise<unknown>): Promise<number> {
-  const timings: number[] = []
-
-  for (let index = 0; index < SAMPLES; index += 1) {
-    const startedAt = performance.now()
-
-    await work()
-    timings.push(performance.now() - startedAt)
-  }
-
-  timings.sort((a, b) => a - b)
-
-  return timings[Math.floor(timings.length * 0.95)] ?? 0
 }
 
 let categoryId: number
@@ -136,25 +121,28 @@ beforeEach(async () => {
 
 describe('A1 — p95 200ms', () => {
   it('answers a keyword search inside the budget', async () => {
-    const measured = await p95(() =>
-      client().request({ path: '/search?q=코트&limit=20', schema: searchResponseSchema }),
+    const durations = await sample(
+      () => client().request({ path: '/search?q=코트&limit=20', schema: searchResponseSchema }),
+      { samples: SAMPLES },
     )
 
-    expect(measured).toBeLessThan(BUDGET_MS)
+    expectWithinBudget(durations, BUDGET_MS)
   })
 
   it('answers a filtered, faceted, sorted search inside the budget', async () => {
     // The shape a category page actually sends: a filter, a sort and the facet
     // counts beside them. Timing the bare keyword query alone would measure the
     // easy case.
-    const measured = await p95(() =>
-      client().request({
-        path: `/search?categoryId=${String(categoryId)}&attr.fit=오버사이즈&sort=price_asc&limit=20`,
-        schema: searchResponseSchema,
-      }),
+    const durations = await sample(
+      () =>
+        client().request({
+          path: `/search?categoryId=${String(categoryId)}&attr.fit=오버사이즈&sort=price_asc&limit=20`,
+          schema: searchResponseSchema,
+        }),
+      { samples: SAMPLES },
     )
 
-    expect(measured).toBeLessThan(BUDGET_MS)
+    expectWithinBudget(durations, BUDGET_MS)
   })
 
   /**
@@ -169,13 +157,15 @@ describe('A1 — p95 200ms', () => {
     ['조합 중', '코ㅌ'],
     ['초성', 'ㅋㅌ'],
   ])('answers a %s autocomplete inside the budget', async (_kind, term) => {
-    const measured = await p95(() =>
-      client().request({
-        path: `/search/suggest?q=${encodeURIComponent(term)}`,
-        schema: searchSuggestResponseSchema,
-      }),
+    const durations = await sample(
+      () =>
+        client().request({
+          path: `/search/suggest?q=${encodeURIComponent(term)}`,
+          schema: searchSuggestResponseSchema,
+        }),
+      { samples: SAMPLES },
     )
 
-    expect(measured).toBeLessThan(BUDGET_MS)
+    expectWithinBudget(durations, BUDGET_MS)
   })
 })

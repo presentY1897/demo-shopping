@@ -15,6 +15,7 @@ import {
 } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
 import { recordStatements } from '../support/statements.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 /**
  * 장바구니의 A1(응답 시간)과 A5(N+1 없음).
@@ -49,12 +50,6 @@ afterAll(async () => {
 })
 
 const SAMPLES = 40
-
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-
-  return sorted[Math.floor(sorted.length * 0.95)] ?? Number.POSITIVE_INFINITY
-}
 
 let buyer: TestCaller
 
@@ -137,15 +132,8 @@ describe('A1 — 응답 시간', () => {
   it('answers a ten-store cart well inside 300ms at p95', async () => {
     await fill(10)
 
-    const durations: number[] = []
+    const durations = await sample(() => cart(), { samples: SAMPLES })
 
-    for (let index = 0; index < SAMPLES; index += 1) {
-      const started = performance.now()
-
-      await cart()
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 })

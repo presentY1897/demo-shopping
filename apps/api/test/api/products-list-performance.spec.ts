@@ -8,6 +8,7 @@ import { useDatabase } from '../support/database.js'
 import { recordStatements } from '../support/statements.js'
 import { createCategory, createSeller, createUser } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 /**
  * Gates A5 (no N+1) and A1 (response time) for the seller console
@@ -204,45 +205,30 @@ describe('a bulk status change costs a fixed number per listing (A5)', () => {
 })
 
 describe('response time (A1)', () => {
-  function p95Of(durations: readonly number[]): number {
-    const sorted = [...durations].sort((left, right) => left - right)
-
-    return sorted[Math.floor(sorted.length * 0.95)] ?? Number.POSITIVE_INFINITY
-  }
-
   it('answers a page of 100 listings well inside 300ms at p95', async () => {
     await bulkListings(100)
 
-    const durations: number[] = []
     const caller = client()
+    const durations = await sample(() => caller.getSellerProducts({ limit: 100 }), {
+      samples: 50,
+    })
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await caller.getSellerProducts({ limit: 100 })
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('answers a filtered, searched page well inside 300ms at p95', async () => {
     await bulkListings(100)
 
-    const durations: number[] = []
     const caller = client()
-
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await caller.getSellerProducts({ limit: 20, q: '대량', stock: 'low', status: 'ACTIVE' })
-      durations.push(performance.now() - started)
-    }
+    const durations = await sample(
+      () => caller.getSellerProducts({ limit: 20, q: '대량', stock: 'low', status: 'ACTIVE' }),
+      { samples: 50 },
+    )
 
     // Worth measuring separately: the name search is an `ILIKE` with a leading
     // wildcard, which no index serves. What keeps it cheap is that it is always
     // bounded to one store's catalogue by the partial index on `sellerId`.
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('answers a twelve-row stock table well inside 300ms at p95', async () => {
@@ -250,35 +236,26 @@ describe('response time (A1)', () => {
       request({ options: COLOUR_AND_SIZE, skuPrefix: 'PERF' }),
     )
 
-    const durations: number[] = []
     const caller = client()
+    const durations = await sample(() => caller.getSellerProductVariants(product.id), {
+      samples: 50,
+    })
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await caller.getSellerProductVariants(product.id)
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('records an adjustment well inside 300ms at p95, row lock included', async () => {
     const { product } = await client().createProduct(request({ skuPrefix: 'ADJ' }))
     const variantId = product.variants[0]?.id ?? ''
 
-    const durations: number[] = []
     const caller = client()
-
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await caller.adjustVariantStock(variantId, { delta: 1, type: 'INBOUND' })
-      durations.push(performance.now() - started)
-    }
+    const durations = await sample(
+      () => caller.adjustVariantStock(variantId, { delta: 1, type: 'INBOUND' }),
+      { samples: 50 },
+    )
 
     // The lock, the position read, the level write and the ledger insert, in
     // one transaction — the shape every adjustment pays for.
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 })

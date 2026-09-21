@@ -8,6 +8,7 @@ import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
 import { recordStatements } from '../support/statements.js'
 import { callers } from '../support/principal.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 /**
  * Gates A1 (response time) and A5 (no N+1) for the review queue.
@@ -47,12 +48,6 @@ afterAll(async () => {
 })
 
 const SAMPLES = 50
-
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-
-  return sorted[Math.floor(sorted.length * 0.95)] ?? Number.POSITIVE_INFINITY
-}
 
 function reviewList(search = ''): Promise<SellerReviewListResponse> {
   return api
@@ -102,33 +97,21 @@ describe('A1 — 심사 목록 100건의 응답 시간', () => {
   })
 
   it('answers a hundred applications well inside 300ms at p95', async () => {
-    const durations: number[] = []
-
-    for (let sample = 0; sample < SAMPLES; sample += 1) {
-      const started = performance.now()
-
-      await reviewList('?limit=100')
-      durations.push(performance.now() - started)
-    }
+    const durations = await sample(() => reviewList('?limit=100'), { samples: SAMPLES })
 
     const { sellers } = await reviewList('?limit=100')
 
     // A number measured over an empty table would say nothing.
     expect(sellers).toHaveLength(100)
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('answers the filtered queue just as fast', async () => {
-    const durations: number[] = []
+    const durations = await sample(() => reviewList('?status=PENDING&limit=100'), {
+      samples: SAMPLES,
+    })
 
-    for (let sample = 0; sample < SAMPLES; sample += 1) {
-      const started = performance.now()
-
-      await reviewList('?status=PENDING&limit=100')
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 })
 

@@ -10,6 +10,7 @@ import { useDatabase } from '../support/database.js'
 import { createSellableVariant, createSeller, createUser } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
 import { recordStatements } from '../support/statements.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 /**
  * 매출 집계의 A1 · A5 (TASK-0082 F7).
@@ -125,47 +126,33 @@ async function seedOrders(): Promise<void> {
   )
 }
 
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-  const index = Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.95) - 1)
-
-  return sorted[index] ?? 0
-}
-
 describe('A1 — 응답 시간 (F7)', () => {
   it('주문 500건에서 매출 집계가 300ms 안에 끝난다', async () => {
     await seedOrders()
 
     const client = api.clientAs(seller)
-    const durations: number[] = []
+    const durations = await sample(
+      () => client.request({ path: '/seller-revenue', schema: sellerRevenueResponseSchema }),
+      { samples: SAMPLES },
+    )
 
-    for (let index = 0; index < SAMPLES; index += 1) {
-      const started = performance.now()
-
-      await client.request({ path: '/seller-revenue', schema: sellerRevenueResponseSchema })
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(P95_BUDGET_MS)
+    expectWithinBudget(durations, P95_BUDGET_MS)
   })
 
   it('주문 500건에서 정산 예정 금액이 300ms 안에 끝난다', async () => {
     await seedOrders()
 
     const client = api.clientAs(seller)
-    const durations: number[] = []
+    const durations = await sample(
+      () =>
+        client.request({
+          path: '/seller-settlement-outlook',
+          schema: settlementOutlookResponseSchema,
+        }),
+      { samples: SAMPLES },
+    )
 
-    for (let index = 0; index < SAMPLES; index += 1) {
-      const started = performance.now()
-
-      await client.request({
-        path: '/seller-settlement-outlook',
-        schema: settlementOutlookResponseSchema,
-      })
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(P95_BUDGET_MS)
+    expectWithinBudget(durations, P95_BUDGET_MS)
   })
 })
 

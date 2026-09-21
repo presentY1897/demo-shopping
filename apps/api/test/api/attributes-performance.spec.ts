@@ -8,6 +8,7 @@ import { useDatabase } from '../support/database.js'
 import type { CategoryRow } from '../support/factories.js'
 import { createAttributeDefinition, createCategory } from '../support/factories.js'
 import { callers } from '../support/principal.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 /**
  * Gates A1 (response time), A5 (no N+1) and S3 (the index is used), measured
@@ -224,45 +225,29 @@ describe('response time (A1)', () => {
   it('answers a three-level lineage well inside 300ms at p95', async () => {
     const { deepest } = await lineage(3, 20, 'timed')
 
-    const durations: number[] = []
     const caller = client()
+    const durations = await sample(() => caller.getAttributes({ categoryId: deepest.id }), {
+      samples: 50,
+    })
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await caller.getAttributes({ categoryId: deepest.id })
-      durations.push(performance.now() - started)
-    }
-
-    durations.sort((left, right) => left - right)
-
-    const p95 = durations[Math.floor(durations.length * 0.95)] ?? Number.POSITIVE_INFINITY
-
-    expect(p95).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('creates a definition well inside 300ms at p95, tree lock included', async () => {
     const { deepest } = await lineage(3, 20, 'timed-create')
 
-    const durations: number[] = []
     const caller = client()
+    const durations = await sample(
+      (index) =>
+        caller.createAttribute({
+          categoryId: deepest.id,
+          key: `created_${String(index)}`,
+          label: `생성 ${String(index)}`,
+          type: 'TEXT',
+        }),
+      { samples: 30 },
+    )
 
-    for (let index = 0; index < 30; index += 1) {
-      const started = performance.now()
-
-      await caller.createAttribute({
-        categoryId: deepest.id,
-        key: `created_${String(index)}`,
-        label: `생성 ${String(index)}`,
-        type: 'TEXT',
-      })
-      durations.push(performance.now() - started)
-    }
-
-    durations.sort((left, right) => left - right)
-
-    const p95 = durations[Math.floor(durations.length * 0.95)] ?? Number.POSITIVE_INFINITY
-
-    expect(p95).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 })

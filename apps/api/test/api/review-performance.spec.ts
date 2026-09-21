@@ -10,6 +10,7 @@ import { useDatabase } from '../support/database.js'
 import { createSellableVariant, createUser } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
 import { recordStatements } from '../support/statements.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 /**
  * 리뷰가 목록을 무겁게 하지 않는가 (TASK-0084 F7 · A1 · A5).
@@ -117,13 +118,6 @@ async function seedReviews(): Promise<void> {
   )
 }
 
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-  const index = Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.95) - 1)
-
-  return sorted[index] ?? 0
-}
-
 describe('A5 — 상품 목록의 N+1 (F7)', () => {
   /**
    * **리뷰 수가 상품 목록의 문장 수를 바꾸지 않는다.**
@@ -168,15 +162,11 @@ describe('A1 — 응답 시간', () => {
     await seedReviews()
 
     const path = `/products/${store.product.id}/reviews?limit=10`
-    const durations: number[] = []
+    const durations = await sample(
+      () => api.client.request({ path, schema: reviewListResponseSchema }),
+      { samples: SAMPLES },
+    )
 
-    for (let index = 0; index < SAMPLES; index += 1) {
-      const started = performance.now()
-
-      await api.client.request({ path, schema: reviewListResponseSchema })
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(P95_BUDGET_MS)
+    expectWithinBudget(durations, P95_BUDGET_MS)
   })
 })

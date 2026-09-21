@@ -7,6 +7,7 @@ import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
 import { createSeller, createUser } from '../support/factories.js'
 import { callers } from '../support/principal.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 /**
  * Gates A1 (response time) and A5 (no N+1) for `POST /uploads/presign`.
@@ -117,19 +118,8 @@ describe('response time (A1)', () => {
   it('answers well inside 300ms at p95', async () => {
     const sellerId = await createStore()
     const client = api.clientAs(callers.superAdmin)
-    const durations: number[] = []
+    const durations = await sample(() => client.presignUpload(request(sellerId)), { samples: 50 })
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await client.presignUpload(request(sellerId))
-      durations.push(performance.now() - started)
-    }
-
-    durations.sort((left, right) => left - right)
-
-    const p95 = durations[Math.floor(durations.length * 0.95)] ?? Number.POSITIVE_INFINITY
-
-    expect(p95).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 })

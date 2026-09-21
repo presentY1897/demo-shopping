@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 
 import type { AppId } from '@shopping/shared'
 import { APP_ID_HEADER, sessionResponseSchema } from '@shopping/shared'
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 
 import { GOOGLE_OAUTH } from '../../src/auth/google-oauth.client.js'
 import { OAUTH_STATE_COOKIE } from '../../src/auth/oauth-state.js'
@@ -10,6 +10,7 @@ import { refreshCookieName } from '../../src/auth/session-cookie.js'
 import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
 import { A_GOOGLE_PROFILE, createFakeGoogle } from '../support/google-oauth.js'
+import { expectWithinBudget, sample, samplePrepared } from '../support/timing.js'
 
 /**
  * Gate A1 (response time) for the three session endpoints TASK-0022 adds.
@@ -54,12 +55,6 @@ const api = useApiApp({
 const SAMPLES = 50
 const APP: AppId = 'shop'
 const REFRESH_COOKIE = refreshCookieName(APP)
-
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-
-  return sorted[Math.floor(sorted.length * 0.95)] ?? Number.POSITIVE_INFINITY
-}
 
 function setCookiesOf(response: Response): string[] {
   return response.headers.getSetCookie()
@@ -131,39 +126,43 @@ describe('response time (A1)', () => {
     // the ten-second grace-window branch instead of the live-token branch a
     // real renewal takes (TASK-0022 4장) — a different, and misleadingly
     // cheap, query shape.
-    let cookie = await signUpAndPlant()
-    const durations: number[] = []
+    const planted = await signUpAndPlant()
+    let answered: Response | undefined
 
-    for (let index = 0; index < SAMPLES; index += 1) {
-      const started = performance.now()
-      const response = await callRefresh(cookie)
-
-      durations.push(performance.now() - started)
-
+    function rotatedFrom(response: Response): string {
       const rotated = cookieFrom(setCookiesOf(response), REFRESH_COOKIE)
+
       if (rotated === undefined) throw new Error('refresh did not rotate the cookie')
-      cookie = rotated
+
+      return rotated
     }
 
-    expect(p95Of(durations)).toBeLessThan(300)
+    // Reading the next credential out of the last answer stays off the clock,
+    // so it is the next call's preparation rather than the tail of this one.
+    const durations = await samplePrepared(
+      () => Promise.resolve(answered === undefined ? planted : rotatedFrom(answered)),
+      async (cookie) => {
+        answered = await callRefresh(cookie)
+      },
+      { samples: SAMPLES },
+    )
+
+    expectWithinBudget(durations, 300)
   })
 
   it('resolves a bearer-authenticated request well inside 300ms at p95', async () => {
     const cookie = await signUpAndPlant()
     const response = await callRefresh(cookie)
     const { accessToken } = sessionResponseSchema.parse(await response.json())
-    const durations: number[] = []
+    const durations = await sample(
+      () =>
+        fetch(`${api.baseUrl}/api/v1/categories`, {
+          headers: { authorization: `Bearer ${accessToken}` },
+        }),
+      { samples: SAMPLES },
+    )
 
-    for (let index = 0; index < SAMPLES; index += 1) {
-      const started = performance.now()
-
-      await fetch(`${api.baseUrl}/api/v1/categories`, {
-        headers: { authorization: `Bearer ${accessToken}` },
-      })
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('answers a logout well inside 300ms at p95', async () => {
@@ -172,16 +171,12 @@ describe('response time (A1)', () => {
     // token turns the second `UPDATE` into a no-op that matches zero rows —
     // cheaper than, and not representative of, the sign-out a person actually
     // waits on.
-    const durations: number[] = []
+    const durations = await samplePrepared(
+      () => signUpAndPlant(),
+      (cookie) => callLogout(cookie),
+      { samples: SAMPLES },
+    )
 
-    for (let index = 0; index < SAMPLES; index += 1) {
-      const cookie = await signUpAndPlant()
-      const started = performance.now()
-
-      await callLogout(cookie)
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 })

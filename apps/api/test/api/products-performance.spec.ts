@@ -8,6 +8,7 @@ import { useDatabase } from '../support/database.js'
 import { recordStatements } from '../support/statements.js'
 import { createCategory, createSeller, createUser } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
+import { expectWithinBudget, sample, WARMUP_RUNS } from '../support/timing.js'
 
 /**
  * Gates A1 (response time), A5 (no N+1) and S3 (the index is used), measured
@@ -400,26 +401,13 @@ describe('팔로워가 늘어도 등록 비용은 그대로다 (TASK-0089 F5)', 
 })
 
 describe('response time (A1)', () => {
-  function p95Of(durations: readonly number[]): number {
-    const sorted = [...durations].sort((left, right) => left - right)
-
-    return sorted[Math.floor(sorted.length * 0.95)] ?? Number.POSITIVE_INFINITY
-  }
-
   it('answers a page of listings well inside 300ms at p95', async () => {
     await bulkListings(200)
 
-    const durations: number[] = []
     const caller = client()
+    const durations = await sample(() => caller.getProducts({ limit: 20 }), { samples: 50 })
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await caller.getProducts({ limit: 20 })
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('answers a twelve-variant detail well inside 300ms at p95', async () => {
@@ -427,33 +415,21 @@ describe('response time (A1)', () => {
       request({ options: COLOUR_AND_SIZE, skuPrefix: 'DETAIL' }),
     )
 
-    const durations: number[] = []
     const caller = client()
+    const durations = await sample(() => caller.getProduct(product.id), { samples: 50 })
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await caller.getProduct(product.id)
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('creates a twelve-variant listing well inside 300ms at p95, row lock included', async () => {
-    const durations: number[] = []
     const caller = client()
+    const durations = await sample(
+      (index) =>
+        caller.createProduct(request({ options: COLOUR_AND_SIZE, skuPrefix: `P${String(index)}` })),
+      { samples: 30 },
+    )
 
-    for (let index = 0; index < 30; index += 1) {
-      const started = performance.now()
-
-      await caller.createProduct(
-        request({ options: COLOUR_AND_SIZE, skuPrefix: `P${String(index)}` }),
-      )
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('publishes a twelve-variant listing well inside 300ms at p95 (TASK-0113)', async () => {
@@ -469,10 +445,13 @@ describe('response time (A1)', () => {
     // whole package's perf specs — including ones this task never touched —
     // start failing on tail latency (`docs/HANDOFF.md` 5). Twenty rounds put
     // p95 at the 19th sample, which is the same shape of measurement.
+    const rounds = 20
     const caller = client()
     const products: Product[] = []
 
-    for (let index = 0; index < 20; index += 1) {
+    // Publishing spends the draft's version, so the warm-up calls need a
+    // listing each as well.
+    for (let index = 0; index < rounds + WARMUP_RUNS; index += 1) {
       const { product } = await caller.createProduct(
         request({
           options: COLOUR_AND_SIZE,
@@ -484,15 +463,15 @@ describe('response time (A1)', () => {
       products.push(product)
     }
 
-    const durations: number[] = []
+    const durations = await sample(
+      (index) => {
+        const product = products[index]!
 
-    for (const product of products) {
-      const started = performance.now()
+        return caller.publishProduct(product.id, { version: product.version })
+      },
+      { samples: rounds },
+    )
 
-      await caller.publishProduct(product.id, { version: product.version })
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 })

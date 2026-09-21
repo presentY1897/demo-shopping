@@ -8,6 +8,7 @@ import { useApiApp } from '../support/api-app.js'
 import { useDatabase } from '../support/database.js'
 import { createCategory, createSeller, createUser } from '../support/factories.js'
 import type { TestCaller } from '../support/principal.js'
+import { expectWithinBudget, sample } from '../support/timing.js'
 
 /**
  * Gates A1 (response time), A5 (no N+1) and S3 (the index is used) for the
@@ -92,12 +93,6 @@ async function variantOf(opening: number): Promise<string> {
   })
 
   return product.variants[0]?.id ?? ''
-}
-
-function p95Of(durations: readonly number[]): number {
-  const sorted = [...durations].sort((left, right) => left - right)
-
-  return sorted[Math.floor(sorted.length * 0.95)] ?? Number.POSITIVE_INFINITY
 }
 
 describe('원장 쓰기는 조합 수에 비례하지 않는다 (A5)', () => {
@@ -223,31 +218,22 @@ describe('응답 시간 (A1)', () => {
       await stock().adjust({ variantId, type: 'INBOUND', quantity: 1 })
     }
 
-    const durations: number[] = []
     const caller = client()
+    const durations = await sample(() => caller.getVariantLedger(variantId, { limit: 20 }), {
+      samples: 50,
+    })
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await caller.getVariantLedger(variantId, { limit: 20 })
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('records a movement well inside 300ms at p95, row lock included', async () => {
     const variantId = await variantOf(500)
-    const durations: number[] = []
+    const durations = await sample(
+      () => stock().adjust({ variantId, type: 'SALE', quantity: -1 }),
+      { samples: 50 },
+    )
 
-    for (let index = 0; index < 50; index += 1) {
-      const started = performance.now()
-
-      await stock().adjust({ variantId, type: 'SALE', quantity: -1 })
-      durations.push(performance.now() - started)
-    }
-
-    expect(p95Of(durations)).toBeLessThan(300)
+    expectWithinBudget(durations, 300)
   })
 
   it('reconciles a thousand variants well inside 300ms', async () => {
@@ -273,11 +259,9 @@ describe('응답 시간 (A1)', () => {
          FROM "ProductVariant" v, generate_series(1, 3) AS n`,
     )
 
-    const started = performance.now()
-    const discrepancies = await stock().reconcile()
-    const elapsed = performance.now() - started
+    const durations = await sample(() => stock().reconcile(), { samples: 1 })
 
-    expect(discrepancies).toEqual([])
-    expect(elapsed).toBeLessThan(300)
+    expect(await stock().reconcile()).toEqual([])
+    expectWithinBudget(durations, 300)
   })
 })
