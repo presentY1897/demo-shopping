@@ -19,7 +19,7 @@
     "db:studio": "prisma studio --port $(node ../../scripts/ports.mjs --port studio)",
     "docs:matrix": "node scripts/write-permission-matrix.mjs",
     "storage:roundtrip": "node scripts/verify-presign-roundtrip.mjs",
-    "test": "vitest run",
+    "test": "vitest run --exclude '**/*-performance.spec.ts'",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage --exclude '**/*-performance.spec.ts'",
     "test:perf": "VITEST_MAX_WORKERS=1 vitest run --maxWorkers=1 performance.spec.ts",

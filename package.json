@@ -18,6 +18,8 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
     "test:coverage": "pnpm -r --if-present test:coverage",
+    "test:perf": "pnpm --filter @shopping/api run test:perf",
+    "gate": "pnpm typecheck && pnpm lint && pnpm build && pnpm test && PERF_TIMING=strict pnpm test:perf",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:generate": "pnpm --filter @shopping/api db:generate",
