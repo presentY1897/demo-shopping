@@ -195,8 +195,13 @@ pnpm typecheck & pnpm lint & wait
 **마지막 확인 (PR 올리기 직전 한 번)**
 
 ```bash
-pnpm typecheck && pnpm lint && pnpm build && pnpm test
+pnpm gate     # typecheck → lint → build → test → test:perf(엄격). 첫 실패에서 멈춘다
 ```
+
+`pnpm test` 는 **성능 스펙을 돌리지 않는다.** 시간은 워커 하나로 따로 재야 하고(`pnpm test:perf`), 300ms 같은
+예산을 글자 그대로 재는 자리는 CI 가 아니라 **로컬**이다 — CI 의 공유 러너는 같은 코드를 2.6배 느리게 돌린
+적이 있어서 같은 스펙을 느슨하게 판정한다 (D-284). API 에 닿는 변경을 담은 푸시에는 `pre-push` 훅이 그것을
+자동으로 돌린다. 인프라가 떠 있어야 하고(`pnpm infra:up`), 건너뛰려면 `SKIP_PERF=1 git push`.
 
 커버리지 문턱까지 로컬에서 보려면 `pnpm --filter @shopping/api test:coverage` 를 따로 돌린다.
 두 배가 걸리므로 매번은 아니고, `vitest.config.mjs` 의 문턱을 건드렸을 때다. CI 는 그것을
