@@ -558,12 +558,20 @@ testServer.server.use(heldRequestInstance(mockPaths.health, 90_000, healthOk))  
 | --- | --- | --- |
 | `pre-commit` | 스테이징된 파일만 `eslint --fix` → `prettier --write` | lint-staged |
 | `commit-msg` | Conventional Commits 형식 검증 | commitlint |
+| `pre-push` | **API 에 닿는 변경을 담은 푸시에서만** 성능 스펙을 엄격하게(p95 < 예산) 돌린다. 약 1분 30초 | `scripts/pre-push-perf.mjs` |
 
 - 훅은 **변경된 파일만** 본다. 저장소가 커져도 커밋이 느려지지 않는다. 전체 검사는 CI 몫이다.
 - 포맷이 어긋난 파일은 훅이 **고쳐서 다시 스테이징**하므로 그대로 커밋된다.
   자동으로 못 고치는 린트 오류(미사용 변수 등)는 파일·줄 번호를 출력하고 커밋을 중단한다.
 - 훅은 `pnpm install` 이 설치한다(루트 `prepare: husky`). **새 워크트리를 만들면
   `pnpm install` 을 한 번 돌려야** 훅이 붙는다.
+- `pre-push` 가 보는 경로는 `apps/api/{src,prisma,test}/**` · `packages/shared/**` · `pnpm-lock.yaml` 이다.
+  `docs/` 만 바꾼 푸시에는 아무것도 돌지 않는다. 실 PostgreSQL 과 검색 엔진에 대고 재므로 인프라가 떠 있어야
+  하고, 꺼져 있으면 검사를 시작하지 않고 `pnpm infra:up` 을 안내하며 멈춘다. 포트는 그 워크트리의
+  `PORT_OFFSET` 을 따른다.
+- 300ms 를 **여기서** 재는 이유: CI 의 공유 러너는 같은 코드를 2.6배 느리게 돌린 적이 있어서, 그쪽은 같은
+  스펙을 느슨하게(중앙값 < 예산 × 3) 판정한다 (D-284). 로컬에서 CI 의 눈으로 보려면
+  `PERF_TIMING=loose pnpm test:perf`.
 
 ### 커밋 메시지
 
@@ -583,11 +591,14 @@ chore(ci): PR 에서 typecheck · lint · build · test 병렬 실행
 git commit --no-verify -m "..."    # 이 커밋만
 HUSKY=0 git commit -m "..."        # 이 커밋만 (환경변수 방식)
 HUSKY=0 git rebase -i main         # 커밋을 여러 개 다시 쓰는 명령 전체
+SKIP_PERF=1 git push               # pre-push 의 성능 검사만 건너뛴다
 ```
 
 rebase·cherry-pick 은 커밋마다 훅을 돌리므로 `HUSKY=0` 쪽이 편하다.
 우회하더라도 **PR 에서 같은 검사가 다시 돈다.** 결국 고쳐야 하므로, 우회는 중간 커밋을
 정리하는 동안만 쓴다.
+단 **`pre-push` 의 엄격한 시간 판정은 CI 에 같은 것이 없다** — 건너뛰었다면 PR 을 올리기 전에
+`pnpm gate` 가 그 몫을 한다.
 
 ### CI
 

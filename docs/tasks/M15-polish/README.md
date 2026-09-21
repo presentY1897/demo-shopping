@@ -30,3 +30,4 @@
 | [TASK-0140](./TASK-0140-demo-transaction-fixtures.md) | 역할별 데모 거래 초기 데이터 보완 | 완료 | 0139 · 0024 |
 | [TASK-0141](./TASK-0141-cross-role-demo-e2e.md) | 세 역할이 연결되는 데모 거래 E2E 검증 | 완료 | 0139 · 0140 · 0099 |
 | [TASK-0142](./TASK-0142-production-image-import-guard.md) | 운영 상품 이미지 반영 가드와 실행 기록 (사후 문서) | 완료 | 없음 (PR #134 뒤) |
+| [TASK-0146](./TASK-0146-perf-timing-gate.md) | 성능 검사의 시간 기준을 러너에서 떼어 낸다 — CI 는 느슨하게, 300ms 는 푸시 전에 | 진행중 | 0097 |
